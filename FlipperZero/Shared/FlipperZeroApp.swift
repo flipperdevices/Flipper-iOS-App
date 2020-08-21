@@ -1,6 +1,6 @@
 //
 //  FlipperZeroApp.swift
-//  Shared
+//  FlipperZero
 //
 //  Created by Yakov Shapovalov on 21.08.2020.
 //
@@ -11,7 +11,7 @@ import SwiftUI
 struct FlipperZeroApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
         }
     }
 }
