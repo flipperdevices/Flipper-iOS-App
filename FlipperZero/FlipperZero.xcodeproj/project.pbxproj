@@ -168,9 +168,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F0DBFA2024EF2F9900EB2880 /* FlipperZero (iOS) */ = {
+		F0DBFA2024EF2F9900EB2880 /* FlipperZero(iOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero (iOS)" */;
+			buildConfigurationList = F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(iOS)" */;
 			buildPhases = (
 				F0DBFA1D24EF2F9900EB2880 /* Sources */,
 				F0DBFA1E24EF2F9900EB2880 /* Frameworks */,
@@ -180,14 +180,14 @@
 			);
 			dependencies = (
 			);
-			name = "FlipperZero (iOS)";
+			name = "FlipperZero(iOS)";
 			productName = "FlipperZero (iOS)";
 			productReference = F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F0DBFA2824EF2F9900EB2880 /* FlipperZero (macOS) */ = {
+		F0DBFA2824EF2F9900EB2880 /* FlipperZero(macOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F0DBFA4E24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero (macOS)" */;
+			buildConfigurationList = F0DBFA4E24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(macOS)" */;
 			buildPhases = (
 				F0DBFA2524EF2F9900EB2880 /* Sources */,
 				F0DBFA2624EF2F9900EB2880 /* Frameworks */,
@@ -197,7 +197,7 @@
 			);
 			dependencies = (
 			);
-			name = "FlipperZero (macOS)";
+			name = "FlipperZero(macOS)";
 			productName = "FlipperZero (macOS)";
 			productReference = F0DBFA2924EF2F9900EB2880 /* FlipperZero.app */;
 			productType = "com.apple.product-type.application";
@@ -276,8 +276,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F0DBFA2024EF2F9900EB2880 /* FlipperZero (iOS) */,
-				F0DBFA2824EF2F9900EB2880 /* FlipperZero (macOS) */,
+				F0DBFA2024EF2F9900EB2880 /* FlipperZero(iOS) */,
+				F0DBFA2824EF2F9900EB2880 /* FlipperZero(macOS) */,
 				F0DBFA3024EF2F9900EB2880 /* Tests iOS */,
 				F0DBFA3B24EF2F9900EB2880 /* Tests macOS */,
 			);
@@ -359,12 +359,12 @@
 /* Begin PBXTargetDependency section */
 		F0DBFA3324EF2F9900EB2880 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F0DBFA2024EF2F9900EB2880 /* FlipperZero (iOS) */;
+			target = F0DBFA2024EF2F9900EB2880 /* FlipperZero(iOS) */;
 			targetProxy = F0DBFA3224EF2F9900EB2880 /* PBXContainerItemProxy */;
 		};
 		F0DBFA3E24EF2F9900EB2880 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F0DBFA2824EF2F9900EB2880 /* FlipperZero (macOS) */;
+			target = F0DBFA2824EF2F9900EB2880 /* FlipperZero(macOS) */;
 			targetProxy = F0DBFA3D24EF2F9900EB2880 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -675,7 +675,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero (iOS)" */ = {
+		F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F0DBFA4C24EF2F9900EB2880 /* Debug */,
@@ -684,7 +684,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F0DBFA4E24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero (macOS)" */ = {
+		F0DBFA4E24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(macOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F0DBFA4F24EF2F9900EB2880 /* Debug */,
