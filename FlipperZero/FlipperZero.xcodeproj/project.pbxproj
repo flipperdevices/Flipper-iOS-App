@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		44A13C2924EF8D4100617FEA /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A13C2824EF8D4100617FEA /* RootView.swift */; };
+		44A13C2A24EF8D4100617FEA /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A13C2824EF8D4100617FEA /* RootView.swift */; };
+		44A13C2C24EF8DD700617FEA /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A13C2B24EF8DD700617FEA /* HomeView.swift */; };
+		44A13C2D24EF8DD700617FEA /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A13C2B24EF8DD700617FEA /* HomeView.swift */; };
 		F0DBFA3624EF2F9900EB2880 /* Tests_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA3524EF2F9900EB2880 /* Tests_iOS.swift */; };
 		F0DBFA4124EF2F9900EB2880 /* Tests_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA4024EF2F9900EB2880 /* Tests_macOS.swift */; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4424EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
-		F0DBFA4524EF2F9900EB2880 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1B24EF2F9600EB2880 /* ContentView.swift */; };
-		F0DBFA4624EF2F9900EB2880 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1B24EF2F9600EB2880 /* ContentView.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 		F0DBFA4824EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -35,8 +37,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		44A13C2824EF8D4100617FEA /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		44A13C2B24EF8DD700617FEA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
-		F0DBFA1B24EF2F9600EB2880 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0DBFA2424EF2F9900EB2880 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -84,6 +87,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		44A13C2724EF8D1B00617FEA /* View */ = {
+			isa = PBXGroup;
+			children = (
+				44A13C2824EF8D4100617FEA /* RootView.swift */,
+				44A13C2B24EF8DD700617FEA /* HomeView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		F0DBFA1424EF2F9600EB2880 = {
 			isa = PBXGroup;
 			children = (
@@ -100,8 +112,8 @@
 		F0DBFA1924EF2F9600EB2880 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				44A13C2724EF8D1B00617FEA /* View */,
 				F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */,
-				F0DBFA1B24EF2F9600EB2880 /* ContentView.swift */,
 				F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */,
 			);
 			path = Shared;
@@ -310,8 +322,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0DBFA4524EF2F9900EB2880 /* ContentView.swift in Sources */,
+				44A13C2C24EF8DD700617FEA /* HomeView.swift in Sources */,
 				F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */,
+				44A13C2924EF8D4100617FEA /* RootView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -319,8 +332,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0DBFA4624EF2F9900EB2880 /* ContentView.swift in Sources */,
+				44A13C2D24EF8DD700617FEA /* HomeView.swift in Sources */,
 				F0DBFA4424EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */,
+				44A13C2A24EF8D4100617FEA /* RootView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
