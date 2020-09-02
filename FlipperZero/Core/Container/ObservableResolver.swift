@@ -12,6 +12,7 @@ public class ObservableResolver: Resolver, ObservableObject {
 
     public init() {
         self.container = Container()
+        self.container.register(BluetoothService.init, as: BluetoothConnector.self)
     }
 
     public func resolve<Service>(_ type: Service.Type) -> Service {
