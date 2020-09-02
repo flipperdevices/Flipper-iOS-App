@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject var container: ObservableResolver
+
     var body: some View {
         Text("Hello, Flipper users!")
             .padding()

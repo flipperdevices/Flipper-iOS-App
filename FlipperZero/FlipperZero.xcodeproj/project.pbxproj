@@ -21,6 +21,9 @@
 		4983062C25299C0600B04AFD /* Born2bSportyV2.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */; };
 		4983062D25299C0600B04AFD /* HelvetiPixel.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498305C12527FEE900B04AFD /* HelvetiPixel.ttf */; };
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
+		B2FA88F43F8859CE0F038451 /* ObservableResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA84CE17FB8491B8891960 /* ObservableResolver.swift */; };
+		B2FA8A35BF4A74EA20B234E0 /* Resolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA80C7A7CD8772E74460E1 /* Resolver.swift */; };
+		B2FA8BF96DD4BD3F143FCD43 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA8169B16AE4C26E532D4A /* Container.swift */; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4424EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
@@ -103,6 +106,9 @@
 		498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		49BE36C6253BE71200F727EF /* .xcccr.toml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .xcccr.toml; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		B2FA80C7A7CD8772E74460E1 /* Resolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
+		B2FA8169B16AE4C26E532D4A /* Container.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Container.swift; sourceTree = "<group>"; };
+		B2FA84CE17FB8491B8891960 /* ObservableResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableResolver.swift; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -162,6 +168,7 @@
 				44A13C2724EF8D1B00617FEA /* View */,
 				44A5B59A24F05E74009EE7FB /* Core.h */,
 				44A5B59B24F05E74009EE7FB /* Info.plist */,
+				B2FA874723ECB425F97E632C /* Container */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -189,6 +196,16 @@
 				498305C12527FEE900B04AFD /* HelvetiPixel.ttf */,
 			);
 			path = Fonts;
+			sourceTree = "<group>";
+		};
+		B2FA874723ECB425F97E632C /* Container */ = {
+			isa = PBXGroup;
+			children = (
+				B2FA80C7A7CD8772E74460E1 /* Resolver.swift */,
+				B2FA8169B16AE4C26E532D4A /* Container.swift */,
+				B2FA84CE17FB8491B8891960 /* ObservableResolver.swift */,
+			);
+			path = Container;
 			sourceTree = "<group>";
 		};
 		F0DBFA1424EF2F9600EB2880 = {
@@ -464,6 +481,9 @@
 			files = (
 				44A5B5AF24F05ECC009EE7FB /* RootView.swift in Sources */,
 				44A5B5B024F05ED0009EE7FB /* HomeView.swift in Sources */,
+				B2FA8A35BF4A74EA20B234E0 /* Resolver.swift in Sources */,
+				B2FA8BF96DD4BD3F143FCD43 /* Container.swift in Sources */,
+				B2FA88F43F8859CE0F038451 /* ObservableResolver.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
