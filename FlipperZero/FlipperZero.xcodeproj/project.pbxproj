@@ -21,8 +21,10 @@
 		4983062C25299C0600B04AFD /* Born2bSportyV2.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */; };
 		4983062D25299C0600B04AFD /* HelvetiPixel.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498305C12527FEE900B04AFD /* HelvetiPixel.ttf */; };
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
+		B2FA823F458ED6FC57954CA9 /* ConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA8204BD4B6A42C9C5E88B /* ConnectionsView.swift */; };
 		B2FA842552A2630E9A81B0B5 /* BluetoothService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA8A967D55B6E19EAB26F1 /* BluetoothService.swift */; };
 		B2FA875A5249681A492A74D0 /* Peripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA871849FD3AEA2F11E6B4 /* Peripheral.swift */; };
+		B2FA88A253850BF9F2017806 /* ConnectionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA8DB4A270E70FC69BA448 /* ConnectionsViewModel.swift */; };
 		B2FA88F43F8859CE0F038451 /* ObservableResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA84CE17FB8491B8891960 /* ObservableResolver.swift */; };
 		B2FA899DF643F77F8C2EF7C6 /* EquatableById.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA80C09CFF768FF67E24D3 /* EquatableById.swift */; };
 		B2FA8A35BF4A74EA20B234E0 /* Resolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA80C7A7CD8772E74460E1 /* Resolver.swift */; };
@@ -115,12 +117,14 @@
 		B2FA80C09CFF768FF67E24D3 /* EquatableById.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EquatableById.swift; sourceTree = "<group>"; };
 		B2FA80C7A7CD8772E74460E1 /* Resolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
 		B2FA8169B16AE4C26E532D4A /* Container.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Container.swift; sourceTree = "<group>"; };
+		B2FA8204BD4B6A42C9C5E88B /* ConnectionsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionsView.swift; sourceTree = "<group>"; };
 		B2FA820DFEAA58C2703C5C95 /* BluetoothStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothStatus.swift; sourceTree = "<group>"; };
 		B2FA833E55828477610B44D0 /* BluetoothConnector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothConnector.swift; sourceTree = "<group>"; };
 		B2FA84CE17FB8491B8891960 /* ObservableResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableResolver.swift; sourceTree = "<group>"; };
 		B2FA871849FD3AEA2F11E6B4 /* Peripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Peripheral.swift; sourceTree = "<group>"; };
 		B2FA8A967D55B6E19EAB26F1 /* BluetoothService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothService.swift; sourceTree = "<group>"; };
 		B2FA8CB90070F1B5C37EBDA2 /* CombineExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CombineExtensions.swift; sourceTree = "<group>"; };
+		B2FA8DB4A270E70FC69BA448 /* ConnectionsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionsViewModel.swift; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -170,6 +174,7 @@
 			children = (
 				44A13C2824EF8D4100617FEA /* RootView.swift */,
 				44A13C2B24EF8DD700617FEA /* HomeView.swift */,
+				B2FA8204BD4B6A42C9C5E88B /* ConnectionsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -226,6 +231,7 @@
 			isa = PBXGroup;
 			children = (
 				B2FA8CB90070F1B5C37EBDA2 /* CombineExtensions.swift */,
+				B2FA8DB4A270E70FC69BA448 /* ConnectionsViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -540,6 +546,8 @@
 				B2FA8EE14865B67E25FCDF47 /* BluetoothConnector.swift in Sources */,
 				B2FA8F3E5178DFD55372FA8D /* CombineExtensions.swift in Sources */,
 				B2FA842552A2630E9A81B0B5 /* BluetoothService.swift in Sources */,
+				B2FA88A253850BF9F2017806 /* ConnectionsViewModel.swift in Sources */,
+				B2FA823F458ED6FC57954CA9 /* ConnectionsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
