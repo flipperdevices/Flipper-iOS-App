@@ -49,7 +49,7 @@ struct ConnectionsView_Previews: PreviewProvider {
 
     private static func getContainer(_ status: BluetoothStatus) -> Resolver {
         let container = Container()
-        container.register(TestConnector(status), as: BluetoothConnector.self)
+        container.register(instance: TestConnector(status), as: BluetoothConnector.self)
         return container
     }
 }
