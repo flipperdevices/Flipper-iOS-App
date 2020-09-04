@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		44A5B5A124F05E75009EE7FB /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; };
-		44A5B5A624F05E75009EE7FB /* CoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A5B5A524F05E75009EE7FB /* CoreTests.swift */; };
 		44A5B5A824F05E75009EE7FB /* Core.h in Headers */ = {isa = PBXBuildFile; fileRef = 44A5B59A24F05E74009EE7FB /* Core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		44A5B5AF24F05ECC009EE7FB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A13C2824EF8D4100617FEA /* RootView.swift */; };
 		44A5B5B024F05ED0009EE7FB /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A13C2B24EF8DD700617FEA /* HomeView.swift */; };
@@ -29,6 +28,7 @@
 		B2FA88F43F8859CE0F038451 /* ObservableResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA84CE17FB8491B8891960 /* ObservableResolver.swift */; };
 		B2FA899DF643F77F8C2EF7C6 /* EquatableById.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA80C09CFF768FF67E24D3 /* EquatableById.swift */; };
 		B2FA8A35BF4A74EA20B234E0 /* Resolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA80C7A7CD8772E74460E1 /* Resolver.swift */; };
+		B2FA8BDA1D9F39BBE33F7C00 /* ServiceFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA8F2B542F29C99AB02B30 /* ServiceFactoryTests.swift */; };
 		B2FA8BF96DD4BD3F143FCD43 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA8169B16AE4C26E532D4A /* Container.swift */; };
 		B2FA8D2EEB791271D0314B63 /* BluetoothStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA820DFEAA58C2703C5C95 /* BluetoothStatus.swift */; };
 		B2FA8EE14865B67E25FCDF47 /* BluetoothConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA833E55828477610B44D0 /* BluetoothConnector.swift */; };
@@ -107,7 +107,6 @@
 		44A5B59A24F05E74009EE7FB /* Core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Core.h; sourceTree = "<group>"; };
 		44A5B59B24F05E74009EE7FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		44A5B5A024F05E74009EE7FB /* CoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		44A5B5A524F05E75009EE7FB /* CoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreTests.swift; sourceTree = "<group>"; };
 		44A5B5A724F05E75009EE7FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		497F0FC1252702B7000B2A86 /* perform_lint.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
 		498305F62529569200B04AFD /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
@@ -127,6 +126,7 @@
 		B2FA8C80B37F033214EF18CC /* ServiceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceFactory.swift; sourceTree = "<group>"; };
 		B2FA8CB90070F1B5C37EBDA2 /* CombineExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CombineExtensions.swift; sourceTree = "<group>"; };
 		B2FA8DB4A270E70FC69BA448 /* ConnectionsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionsViewModel.swift; sourceTree = "<group>"; };
+		B2FA8F2B542F29C99AB02B30 /* ServiceFactoryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceFactoryTests.swift; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -198,8 +198,8 @@
 		44A5B5A424F05E75009EE7FB /* CoreTests */ = {
 			isa = PBXGroup;
 			children = (
-				44A5B5A524F05E75009EE7FB /* CoreTests.swift */,
 				44A5B5A724F05E75009EE7FB /* Info.plist */,
+				B2FA82E423A0E23496E26953 /* Container */,
 			);
 			path = CoreTests;
 			sourceTree = "<group>";
@@ -227,6 +227,14 @@
 				B2FA8FE12FC96305D26AE9CE /* Bluetooth */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		B2FA82E423A0E23496E26953 /* Container */ = {
+			isa = PBXGroup;
+			children = (
+				B2FA8F2B542F29C99AB02B30 /* ServiceFactoryTests.swift */,
+			);
+			path = Container;
 			sourceTree = "<group>";
 		};
 		B2FA856B0F9FD57909122ECC /* ViewModel */ = {
@@ -559,7 +567,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				44A5B5A624F05E75009EE7FB /* CoreTests.swift in Sources */,
+				B2FA8BDA1D9F39BBE33F7C00 /* ServiceFactoryTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
