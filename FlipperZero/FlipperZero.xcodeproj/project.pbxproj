@@ -285,6 +285,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0DBFA4E24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(macOS)" */;
 			buildPhases = (
+				497F0FAA25269B8A000B2A86 /* Check code with SwiftLint */,
 				F0DBFA2524EF2F9900EB2880 /* Sources */,
 				F0DBFA2624EF2F9900EB2880 /* Frameworks */,
 				F0DBFA2724EF2F9900EB2880 /* Resources */,
@@ -378,6 +379,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		497F0FAA25269B8A000B2A86 /* Check code with SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Check code with SwiftLint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Lint with systemwide installation if present\nif which swiftlint >/dev/null; then\n  swiftlint\n  exit 0\nfi\n# Lint with local swiftlint copy if present\nif [ -f ${PROJECT_DIR}/swiftlint ]; then\n  ${PROJECT_DIR}/swiftlint\nelse\n  # Download a copy of swiftlint to project root and lint afterwards\n  curl -o- -Ls https://github.com/realm/SwiftLint/releases/latest/download/portable_swiftlint.zip | tar xzf - swiftlint \\\n  && chmod +x swiftlint || echo \"warning: Failed to download SwiftLint\"; exit 0\n  ${PROJECT_DIR}/swiftlint \nfi\n";
+		};
 		49CE8F942525E73200B9CBE4 /* Check code with SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -394,7 +413,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, concider runing 'brew install swiftlint' first\"\nfi\n";
+			shellScript = "# Lint with systemwide installation if present\nif which swiftlint >/dev/null; then\n  swiftlint\n  exit 0\nfi\n# Lint with local swiftlint copy if present\nif [ -f ${PROJECT_DIR}/swiftlint ]; then\n  ${PROJECT_DIR}/swiftlint\nelse\n  # Download a copy of swiftlint to project root and lint afterwards\n  curl -o- -Ls https://github.com/realm/SwiftLint/releases/latest/download/portable_swiftlint.zip | tar xzf - swiftlint \\\n  && chmod +x swiftlint || echo \"warning: Failed to download SwiftLint\"; exit 0\n  ${PROJECT_DIR}/swiftlint \nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
