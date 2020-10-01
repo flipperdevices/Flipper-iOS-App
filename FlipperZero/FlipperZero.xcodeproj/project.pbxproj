@@ -265,6 +265,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(iOS)" */;
 			buildPhases = (
+				49CE8F942525E73200B9CBE4 /* Check code with SwiftLint */,
 				F0DBFA1D24EF2F9900EB2880 /* Sources */,
 				F0DBFA1E24EF2F9900EB2880 /* Frameworks */,
 				F0DBFA1F24EF2F9900EB2880 /* Resources */,
@@ -375,6 +376,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		49CE8F942525E73200B9CBE4 /* Check code with SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Check code with SwiftLint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, concider runing 'brew install swiftlint' first\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		44A5B59424F05E74009EE7FB /* Sources */ = {
