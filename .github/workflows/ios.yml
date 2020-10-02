@@ -1,0 +1,20 @@
+name: iOS
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build and Test FlipperZero(ios) scheme using iPhone 11 simulator
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Xcode version selection
+        run: sudo xcode-select --switch /Applications/Xcode_12.app
+      - name: Xcode test
+        run: xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' test DSTROOT=./output/test/build.dst OBJROOT=./output/test/build.obj SYMROOT=./output/test/build.sym SHARED_PRECOMPS_DIR=./output/test/build.pch -destination platform='iOS Simulator,name=iPhone 11' | xcpretty
