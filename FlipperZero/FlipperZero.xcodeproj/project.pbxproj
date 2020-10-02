@@ -16,8 +16,8 @@
 		44A5B5B324F05FCE009EE7FB /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		44A5B5B724F05FD5009EE7FB /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; };
 		44A5B5B824F05FD5009EE7FB /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		49CE8F9E25262E2300B9CBE4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* Launch Screen.storyboard */; };
-		49CE8F9F25262E2400B9CBE4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* Launch Screen.storyboard */; };
+		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
+		49CE8F9F25262E2400B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4424EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
@@ -83,7 +83,7 @@
 		44A5B5A024F05E74009EE7FB /* CoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		44A5B5A524F05E75009EE7FB /* CoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreTests.swift; sourceTree = "<group>"; };
 		44A5B5A724F05E75009EE7FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		49CE8F9D25262E2300B9CBE4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -181,7 +181,7 @@
 			children = (
 				F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */,
 				F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */,
-				49CE8F9D25262E2300B9CBE4 /* Launch Screen.storyboard */,
+				49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -366,7 +366,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49CE8F9E25262E2300B9CBE4 /* Launch Screen.storyboard in Resources */,
+				49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */,
 				F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -375,7 +375,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49CE8F9F25262E2400B9CBE4 /* Launch Screen.storyboard in Resources */,
+				49CE8F9F25262E2400B9CBE4 /* LaunchScreen.storyboard in Resources */,
 				F0DBFA4824EF2F9900EB2880 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
