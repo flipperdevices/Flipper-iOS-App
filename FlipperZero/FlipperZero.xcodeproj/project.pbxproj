@@ -16,6 +16,7 @@
 		44A5B5B324F05FCE009EE7FB /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		44A5B5B724F05FD5009EE7FB /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; };
 		44A5B5B824F05FD5009EE7FB /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		497F0FB02526F14D000B2A86 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 497F0FAF2526F14D000B2A86 /* Intents.intentdefinition */; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4424EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
@@ -81,6 +82,7 @@
 		44A5B5A024F05E74009EE7FB /* CoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		44A5B5A524F05E75009EE7FB /* CoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreTests.swift; sourceTree = "<group>"; };
 		44A5B5A724F05E75009EE7FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		497F0FAF2526F14D000B2A86 /* Intents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Intents.intentdefinition; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -198,6 +200,7 @@
 			children = (
 				F0DBFA2424EF2F9900EB2880 /* Info.plist */,
 				44A5B59224F05647009EE7FB /* iOS.entitlements */,
+				497F0FAF2526F14D000B2A86 /* Intents.intentdefinition */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				497F0FB02526F14D000B2A86 /* Intents.intentdefinition in Sources */,
 				F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
