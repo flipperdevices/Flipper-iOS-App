@@ -48,5 +48,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Born2bSportyV2.ttf</string>
+		<string>HelvetiPixel.ttf</string>
+	</array>
 </dict>
 </plist>
