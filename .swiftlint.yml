@@ -1,0 +1,15 @@
+
+excluded:
+ - Pods
+ - Products
+ - Frameworks
+
+disabled_rules:
+ - force_try
+ - identifier_name
+ - line_length
+ - force_cast
+ - trailing_whitespace
+ - opening_brace
+
+reporter: "xcode"
