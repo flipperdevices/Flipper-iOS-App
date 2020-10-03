@@ -16,7 +16,6 @@
 		44A5B5B324F05FCE009EE7FB /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		44A5B5B724F05FD5009EE7FB /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; };
 		44A5B5B824F05FD5009EE7FB /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		497F0FC2252702B7000B2A86 /* perform_lint.sh in Resources */ = {isa = PBXBuildFile; fileRef = 497F0FC1252702B7000B2A86 /* perform_lint.sh */; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4424EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
@@ -368,7 +367,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */,
-				497F0FC2252702B7000B2A86 /* perform_lint.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

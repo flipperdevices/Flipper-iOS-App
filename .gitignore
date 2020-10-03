@@ -1,1 +1,6 @@
 xcuserdata/
+
+
+# Project specific
+# Local copy of linter
+FlipperZero/swiftlint
