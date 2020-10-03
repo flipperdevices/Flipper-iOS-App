@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina5_5" orientation="portrait" appearance="light"/>
+    <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -13,39 +13,32 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" userInteractionEnabled="NO" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tabBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JCv-Nx-Gkx">
-                                <rect key="frame" x="0.0" y="687" width="414" height="49"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <items>
-                                    <tabBarItem title="Home" image="house.fill" catalog="system" id="gWh-Lx-bja"/>
-                                </items>
-                            </tabBar>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="フリッパー" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" minimumFontSize="18" translatesAutoresizingMaskIntoConstraints="NO" id="GJd-Yh-RWb">
-                                <rect key="frame" x="0.0" y="332.66666666666669" width="414" height="20.333333333333314"/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchScreenLogo" translatesAutoresizingMaskIntoConstraints="NO" id="7Wz-bq-WlV">
-                                <rect key="frame" x="80" y="166" width="254" height="158.66666666666663"/>
+                                <rect key="frame" x="80" y="222.66666666666669" width="254" height="158.66666666666669"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="7Wz-bq-WlV" secondAttribute="height" multiplier="1.6:1" id="Fdc-kc-sph"/>
                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="512" id="oG8-bP-FVl"/>
                                 </constraints>
                             </imageView>
+                            <tabBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JCv-Nx-Gkx">
+                                <rect key="frame" x="0.0" y="779" width="414" height="83"/>
+                                <items>
+                                    <tabBarItem title="Home" image="house.fill" catalog="system" id="gWh-Lx-bja"/>
+                                </items>
+                            </tabBar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="7Wz-bq-WlV" firstAttribute="centerX" secondItem="Bcu-3y-fUS" secondAttribute="centerX" id="1ft-UK-ggH"/>
                             <constraint firstItem="7Wz-bq-WlV" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Bcu-3y-fUS" secondAttribute="top" constant="80" id="4D7-f4-56u"/>
+                            <constraint firstItem="JCv-Nx-Gkx" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" id="4y4-ZA-bfG"/>
                             <constraint firstItem="Bcu-3y-fUS" firstAttribute="leading" relation="lessThanOrEqual" secondItem="7Wz-bq-WlV" secondAttribute="leading" constant="-80" id="P4t-4A-CJj"/>
-                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="centerX" secondItem="GJd-Yh-RWb" secondAttribute="centerX" id="Q3B-4B-g5h"/>
-                            <constraint firstItem="7Wz-bq-WlV" firstAttribute="centerX" secondItem="Bcu-3y-fUS" secondAttribute="centerX" id="aDK-af-pct"/>
-                            <constraint firstItem="GJd-Yh-RWb" firstAttribute="top" secondItem="7Wz-bq-WlV" secondAttribute="bottom" constant="8" symbolic="YES" id="fOe-nw-ziT"/>
-                            <constraint firstItem="GJd-Yh-RWb" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" symbolic="YES" id="x7j-FC-K8j"/>
+                            <constraint firstItem="JCv-Nx-Gkx" firstAttribute="centerX" secondItem="Bcu-3y-fUS" secondAttribute="centerX" id="cYg-OK-RRt"/>
+                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="bottom" secondItem="JCv-Nx-Gkx" secondAttribute="bottom" id="iMJ-dq-rSH"/>
                             <constraint firstItem="7Wz-bq-WlV" firstAttribute="centerY" secondItem="Bcu-3y-fUS" secondAttribute="centerY" multiplier="1/1.5" id="yYB-du-jJ5"/>
                         </constraints>
                     </view>
