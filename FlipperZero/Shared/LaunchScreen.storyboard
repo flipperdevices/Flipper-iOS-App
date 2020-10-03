@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina6_5" orientation="portrait" appearance="light"/>
+    <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -13,18 +13,18 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" userInteractionEnabled="NO" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchScreenLogo" translatesAutoresizingMaskIntoConstraints="NO" id="7Wz-bq-WlV">
-                                <rect key="frame" x="80" y="222.66666666666669" width="254" height="158.66666666666669"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="DolphinLogo" translatesAutoresizingMaskIntoConstraints="NO" id="7Wz-bq-WlV">
+                                <rect key="frame" x="80" y="206.66666666666669" width="215" height="134.66666666666669"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="7Wz-bq-WlV" secondAttribute="height" multiplier="1.6:1" id="Fdc-kc-sph"/>
                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="512" id="oG8-bP-FVl"/>
                                 </constraints>
                             </imageView>
                             <tabBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JCv-Nx-Gkx">
-                                <rect key="frame" x="0.0" y="779" width="414" height="83"/>
+                                <rect key="frame" x="0.0" y="695" width="375" height="83"/>
                                 <items>
                                     <tabBarItem title="Home" image="house.fill" catalog="system" id="gWh-Lx-bja"/>
                                 </items>
@@ -49,7 +49,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchScreenLogo" width="512" height="319"/>
+        <image name="DolphinLogo" width="512" height="319"/>
         <image name="house.fill" catalog="system" width="128" height="106"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
