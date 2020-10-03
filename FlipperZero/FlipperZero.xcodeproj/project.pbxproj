@@ -90,6 +90,7 @@
 		498305C12527FEE900B04AFD /* HelvetiPixel.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HelvetiPixel.ttf; sourceTree = "<group>"; };
 		498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		497F0FC1252702B7000B2A86 /* perform_lint.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -186,6 +187,7 @@
 				F0DBFA2324EF2F9900EB2880 /* iOS */,
 				F0DBFA2A24EF2F9900EB2880 /* macOS */,
 				F0DBFA1924EF2F9600EB2880 /* Shared */,
+				497F0FC1252702B7000B2A86 /* perform_lint.sh */,
 				F0DBFA2224EF2F9900EB2880 /* Products */,
 				44A5B5B124F05FCE009EE7FB /* Frameworks */,
 			);
@@ -285,6 +287,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(iOS)" */;
 			buildPhases = (
+				49CE8F942525E73200B9CBE4 /* Check code with SwiftLint */,
 				F0DBFA1D24EF2F9900EB2880 /* Sources */,
 				F0DBFA1E24EF2F9900EB2880 /* Frameworks */,
 				F0DBFA1F24EF2F9900EB2880 /* Resources */,
@@ -304,6 +307,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0DBFA4E24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(macOS)" */;
 			buildPhases = (
+				497F0FAA25269B8A000B2A86 /* Check code with SwiftLint */,
 				F0DBFA2524EF2F9900EB2880 /* Sources */,
 				F0DBFA2624EF2F9900EB2880 /* Frameworks */,
 				F0DBFA2724EF2F9900EB2880 /* Resources */,
@@ -401,6 +405,45 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		497F0FAA25269B8A000B2A86 /* Check code with SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Check code with SwiftLint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Initiate lint\n${PROJECT_DIR}/perform_lint.sh\n";
+		};
+		49CE8F942525E73200B9CBE4 /* Check code with SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Check code with SwiftLint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Initiate lint\n${PROJECT_DIR}/perform_lint.sh\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		44A5B59424F05E74009EE7FB /* Sources */ = {
