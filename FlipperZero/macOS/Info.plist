@@ -22,10 +22,7 @@
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Born2bSportyV2.ttf</string>
-		<string>HelvetiPixel.ttf</string>
-	</array>
+	<key>ATSApplicationFontsPath</key>
+	<string>Fonts</string>
 </dict>
 </plist>
