@@ -82,6 +82,7 @@
 		44A5B5A524F05E75009EE7FB /* CoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreTests.swift; sourceTree = "<group>"; };
 		44A5B5A724F05E75009EE7FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		497F0FC1252702B7000B2A86 /* perform_lint.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
+		498305F62529569200B04AFD /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -170,6 +171,7 @@
 				F0DBFA2A24EF2F9900EB2880 /* macOS */,
 				F0DBFA1924EF2F9600EB2880 /* Shared */,
 				497F0FC1252702B7000B2A86 /* perform_lint.sh */,
+				498305F62529569200B04AFD /* .swiftlint.yml */,
 				F0DBFA2224EF2F9900EB2880 /* Products */,
 				44A5B5B124F05FCE009EE7FB /* Frameworks */,
 			);
