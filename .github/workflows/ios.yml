@@ -32,7 +32,7 @@ jobs:
           mkdir output/coverage
           if [ ${GITHUB_REF#refs/heads/} = 'master' ] ; then
           xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/master-coverage.json 2>/dev/null
-          else xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/${GITHUB_SHA}-coverage.json 2>/dev/null
+          else xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/pullreq-coverage.json 2>/dev/null
           fi 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v2
@@ -45,10 +45,21 @@ jobs:
     runs-on: macos-latest
     needs: build
     steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master
       - uses: actions/download-artifact@v2
         with:
           path: input
       - name: Code coverage report
         run: |
           curl -s https://raw.githubusercontent.com/illabo/xcccr/master/main.go > main.go && go build -o xcccr main.go && rm main.go
-          ./xcccr -lst=input/coverage/master-coverage.json -cur=input/coverage/${GITHUB_SHA}-coverage.json
+          if [ ! -f input/coverage/pullreq-coverage.json ] ; then
+          cat input/coverage/master-coverage.json | ./xcccr
+          else 
+          sudo xcode-select --switch /Applications/Xcode_12.app
+          xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test -destination platform='iOS Simulator,name=iPhone 11' >/dev/null 2>&1 
+          echo 'Complete building master'
+          xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > input/coverage/master-coverage.json
+          ./xcccr -lst=input/coverage/master-coverage.json -cur=input/coverage/pullreq-coverage.json
+          fi
