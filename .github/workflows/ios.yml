@@ -5,20 +5,50 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
+  
 jobs:
+
+  lint:
+    name: Lint with SwiftLint
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: SwiftLint report
+        run: swiftlint lint --reporter github-actions-logging --config "FlipperZero/.swiftlint.yml"
+  
   build:
     name: Build and Test FlipperZero(ios) scheme using iPhone 11 simulator
     runs-on: macos-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Xcode version selection
         run: sudo xcode-select --switch /Applications/Xcode_12.app
-      - name: SwiftLint report
-        run: swiftlint lint --reporter github-actions-logging --config "FlipperZero/.swiftlint.yml"
       - name: Xcode test
-        run: xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath ./output/DerivedData -enableCodeCoverage YES test DSTROOT=./output/test/build.dst OBJROOT=./output/test/build.obj SYMROOT=./output/test/build.sym SHARED_PRECOMPS_DIR=./output/test/build.pch -destination platform='iOS Simulator,name=iPhone 11' | xcpretty
+        run: xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test DSTROOT=output/test/build.dst OBJROOT=output/test/build.obj SYMROOT=output/test/build.sym SHARED_PRECOMPS_DIR=./output/test/build.pch -destination platform='iOS Simulator,name=iPhone 11' | xcpretty
+      - name: Export test coverege
+        run: |
+          mkdir output/coverage
+          if [ ${GITHUB_REF#refs/heads/} = 'master' ] ; then
+          xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/master-coverage.json 2>/dev/null
+          else xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/${GITHUB_SHA}-coverage.json 2>/dev/null
+          fi 
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: output/coverage
+  
+  coverage:
+    name: Measure Coverage
+    runs-on: macos-latest
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          path: input
       - name: Code coverage report
-        run: xcrun xccov view --report ./output/DerivedData/Logs/Test/*.xcresult
+        run: |
+          curl -s https://raw.githubusercontent.com/illabo/xcccr/master/main.go > main.go && go build -o xcccr main.go && rm main.go
+          ./xcccr -lst=input/coverage/master-coverage.json -cur=input/coverage/${GITHUB_SHA}-coverage.json
