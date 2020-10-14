@@ -80,6 +80,5 @@ opt_in_rules:
  - vertical_parameter_alignment_on_call
  - vertical_whitespace_closing_braces
  - xct_specific_matcher
- - yoda_condition
 
 reporter: "xcode"
