@@ -53,7 +53,7 @@ jobs:
           path: input
       - name: Code coverage report
         run: |
-          curl -s https://github.com/illabo/xcccr/releases/latest/download/xcccr > xcccr
+          curl -sL https://github.com/illabo/xcccr/releases/latest/download/xcccr > xcccr
           chmod +x xcccr
           if [ ! -f input/coverage/pullreq-coverage.json ] ; then
           cat input/coverage/master-coverage.json | ./xcccr
