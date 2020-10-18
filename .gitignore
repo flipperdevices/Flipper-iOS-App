@@ -1,6 +1,69 @@
+### Xcode
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+/*.gcno
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+## Build generated
+build/
+DerivedData/
+
+## Various settings
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
 xcuserdata/
 
+## Other
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
 
-# Project specific
-# Local copy of linter
+## Obj-C/Swift specific
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+### Package management
+## Swift Package Manager
+Packages/
+Package.pins
+Package.resolved
+.build/
+
+## CocoaPods
+Pods/
+
+## Carthage
+Carthage/Checkouts
+Carthage/Build
+
+### Automations
+## fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+screenshots/
+
+### Project specific
+## SwiftLint
 FlipperZero/swiftlint
+
+### Generally unwanted files
+.DS_Store
+vendor/
+Gemfile.lock
+.ruby-version
