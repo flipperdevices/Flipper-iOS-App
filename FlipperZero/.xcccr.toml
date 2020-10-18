@@ -1,0 +1,3 @@
+
+FilterTargets = ["CoreTests"]
+FilterPaths = ["Core/View"]

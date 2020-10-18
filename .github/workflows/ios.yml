@@ -2,12 +2,11 @@ name: iOS
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
-  
-jobs:
+    branches: [master]
 
+jobs:
   lint:
     name: Lint with SwiftLint
     runs-on: macos-latest
@@ -16,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
       - name: SwiftLint report
         run: swiftlint lint --reporter github-actions-logging --config "FlipperZero/.swiftlint.yml"
-  
+
   build:
     name: Build and Test FlipperZero(ios) scheme using iPhone 11 simulator
     runs-on: macos-latest
@@ -31,15 +30,16 @@ jobs:
         run: |
           mkdir output/coverage
           if [ ${GITHUB_REF#refs/heads/} = 'master' ] ; then
-          xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/master-coverage.json 2>/dev/null
-          else xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/pullreq-coverage.json 2>/dev/null
-          fi 
+            xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/master-coverage.json 2>/dev/null
+          else 
+            xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/pullreq-coverage.json 2>/dev/null
+          fi
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v2
         with:
           name: coverage
           path: output/coverage
-  
+
   coverage:
     name: Measure Coverage
     runs-on: macos-latest
@@ -56,11 +56,11 @@ jobs:
           curl -sL https://github.com/illabo/xcccr/releases/latest/download/xcccr > xcccr
           chmod +x xcccr
           if [ ! -f input/coverage/pullreq-coverage.json ] ; then
-          cat input/coverage/master-coverage.json | ./xcccr
+            cat input/coverage/master-coverage.json | ./xcccr
           else 
-          sudo xcode-select --switch /Applications/Xcode_12.app
-          xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test -destination platform='iOS Simulator,name=iPhone 11' >/dev/null 2>&1 
-          echo 'Complete building master'
-          xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > input/coverage/master-coverage.json
-          ./xcccr -lst=input/coverage/master-coverage.json -cur=input/coverage/pullreq-coverage.json
+            sudo xcode-select --switch /Applications/Xcode_12.app
+            xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test -destination platform='iOS Simulator,name=iPhone 11' >/dev/null 2>&1 
+            echo 'Complete building master'
+            xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > input/coverage/master-coverage.json
+            ./xcccr -lst=input/coverage/master-coverage.json -cur=input/coverage/pullreq-coverage.json
           fi

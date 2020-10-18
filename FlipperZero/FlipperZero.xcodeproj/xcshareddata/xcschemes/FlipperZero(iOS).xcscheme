@@ -37,20 +37,6 @@
             BlueprintName = "Core"
             ReferencedContainer = "container:FlipperZero.xcodeproj">
          </BuildableReference>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F0DBFA2024EF2F9900EB2880"
-            BuildableName = "FlipperZero.app"
-            BlueprintName = "FlipperZero(iOS)"
-            ReferencedContainer = "container:FlipperZero.xcodeproj">
-         </BuildableReference>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F0DBFA2824EF2F9900EB2880"
-            BuildableName = "FlipperZero.app"
-            BlueprintName = "FlipperZero(macOS)"
-            ReferencedContainer = "container:FlipperZero.xcodeproj">
-         </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
          <TestableReference
