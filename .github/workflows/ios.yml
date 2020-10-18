@@ -24,8 +24,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Xcode version selection
         run: sudo xcode-select --switch /Applications/Xcode_12.app
-      - name: SwiftLint report
-        run: swiftlint lint --reporter github-actions-logging --config "FlipperZero/.swiftlint.yml"
       - name: Xcode test
         run: xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test DSTROOT=output/test/build.dst OBJROOT=output/test/build.obj SYMROOT=output/test/build.sym SHARED_PRECOMPS_DIR=./output/test/build.pch -destination platform='iOS Simulator,name=iPhone 11' | xcpretty
       - name: Export test coverege
@@ -58,7 +56,7 @@ jobs:
           curl -sL https://github.com/illabo/xcccr/releases/latest/download/xcccr > xcccr
           chmod +x xcccr
           if [ ! -f input/coverage/pullreq-coverage.json ] ; then
-            cat input/coverage/master-coverage.json | ./xcccr
+            cat input/coverage/master-coverage.json | ./xcccr -cfg=FlipperZero/.xcccr.toml
           else 
             sudo xcode-select --switch /Applications/Xcode_12.app
             xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test -destination platform='iOS Simulator,name=iPhone 11' >/dev/null 2>&1 
