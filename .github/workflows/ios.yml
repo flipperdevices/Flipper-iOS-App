@@ -29,6 +29,7 @@ jobs:
       - name: Export test coverege
         run: |
           mkdir output/coverage
+          echo "Current branch is ${GITHUB_REF#refs/heads/}"
           if [ ${GITHUB_REF#refs/heads/} = 'master' ] ; then
             xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/master-coverage.json 2>/dev/null
           else 
@@ -56,11 +57,15 @@ jobs:
           curl -sL https://github.com/illabo/xcccr/releases/latest/download/xcccr > xcccr
           chmod +x xcccr
           if [ ! -f input/coverage/pullreq-coverage.json ] ; then
+            echo 'Pull request coverage json not found.'
+            echo 'Skipping build and looking for recent master coverage json.'
             cat input/coverage/master-coverage.json | ./xcccr -cfg=FlipperZero/.xcccr.toml
           else 
             sudo xcode-select --switch /Applications/Xcode_12.app
             xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test -destination platform='iOS Simulator,name=iPhone 11' >/dev/null 2>&1 
             echo 'Complete building master'
             xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > input/coverage/master-coverage.json
+            echo 'Current xcccr config:'
+            cat FlipperZero/.xcccr.toml
             ./xcccr -lst=input/coverage/master-coverage.json -cur=input/coverage/pullreq-coverage.json -cfg=FlipperZero/.xcccr.toml
           fi
