@@ -66,6 +66,6 @@ jobs:
             echo 'Complete building master'
             xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > input/coverage/master-coverage.json
             echo 'Current xcccr config:'
-            cat FlipperZero/.xcccr.toml
+            cat FlipperZero/.xcccr.toml || echo 'No config provided. Please keep FlipperZero/.xcccr.toml at master. Checking coverage using default configuration.'
             ./xcccr -lst=input/coverage/master-coverage.json -cur=input/coverage/pullreq-coverage.json -cfg=FlipperZero/.xcccr.toml
           fi
