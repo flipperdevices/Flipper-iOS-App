@@ -62,5 +62,5 @@ jobs:
             xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test -destination platform='iOS Simulator,name=iPhone 11' >/dev/null 2>&1 
             echo 'Complete building master'
             xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > input/coverage/master-coverage.json
-            ./xcccr -lst=input/coverage/master-coverage.json -cur=input/coverage/pullreq-coverage.json
+            ./xcccr -lst=input/coverage/master-coverage.json -cur=input/coverage/pullreq-coverage.json -cfg=FlipperZero/.xcccr.toml
           fi
