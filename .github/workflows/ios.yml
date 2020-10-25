@@ -48,7 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_BASE_REF:-master}
+          ref: ${{github.base_ref || 'master'}}
       - uses: actions/download-artifact@v2
         with:
           path: input
