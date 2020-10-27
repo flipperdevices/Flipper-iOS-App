@@ -1,3 +1,7 @@
 FilterTargets = ["CoreTests"]
-FilterPaths = ["Core/View"]
+FilterPaths = [
+    "Core/Container/ObservableResolver.swift",
+    "Core/Service/Platform",
+    "Core/View"
+]
 ZeroWarnOnly = true
