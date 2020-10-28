@@ -15,11 +15,11 @@ public struct RootView: View {
 
     public var body: some View {
         TabView {
-          HomeView()
-            .tabItem {
-                Image(systemName: "house.fill")
-                Text(self.homeTabTitle)
-            }
+            HomeView()
+                .tabItem {
+                    Image(systemName: "house.fill")
+                    Text(self.homeTabTitle)
+                }
         }
     }
 }

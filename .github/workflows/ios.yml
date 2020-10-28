@@ -2,21 +2,75 @@ name: iOS
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: '*'
 
 jobs:
+  lint:
+    name: Lint with SwiftLint
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: SwiftLint report
+        run: swiftlint lint --reporter github-actions-logging --config "FlipperZero/.swiftlint.yml"
+
   build:
     name: Build and Test FlipperZero(ios) scheme using iPhone 11 simulator
     runs-on: macos-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Xcode version selection
         run: sudo xcode-select --switch /Applications/Xcode_12.app
       - name: Xcode test
-        run: swiftlint lint --reporter github-actions-logging --config "FlipperZero/.swiftlint.yml"
-        run: xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath ./output/DerivedData -enableCodeCoverage YES test DSTROOT=./output/test/build.dst OBJROOT=./output/test/build.obj SYMROOT=./output/test/build.sym SHARED_PRECOMPS_DIR=./output/test/build.pch -destination platform='iOS Simulator,name=iPhone 11' | xcpretty
-        run: xcrun xccov view --report ./output/DerivedData/Logs/Test/*.xcresult
+        run: xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test DSTROOT=output/test/build.dst OBJROOT=output/test/build.obj SYMROOT=output/test/build.sym SHARED_PRECOMPS_DIR=./output/test/build.pch -destination platform='iOS Simulator,name=iPhone 11' | xcpretty
+      - name: Export test coverege
+        run: |
+          mkdir output/coverage
+          echo "Current branch is ${GITHUB_REF#refs/heads/}"
+          if [ ${GITHUB_REF#refs/heads/} = 'master' ] ; then
+            xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/master-coverage.json 2>/dev/null
+          else 
+            xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/pullreq-coverage.json 2>/dev/null
+          fi
+          mv FlipperZero/.xcccr.toml output/coverage/.xcccr.toml 2>/dev/null
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: output/coverage
+
+  coverage:
+    name: Measure Coverage
+    runs-on: macos-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{github.base_ref || 'master'}}
+      - uses: actions/download-artifact@v2
+        with:
+          path: input
+      - name: Code coverage report
+        run: |
+          curl -sL https://github.com/illabo/xcccr/releases/latest/download/xcccr > xcccr
+          chmod +x xcccr
+          if [ ! -f input/coverage/.xcccr.toml ] ; then
+            echo "No xcccr config in commit. Looking on ${GITHUB_BASE_REF:-master} branch."
+            mv FlipperZero/.xcccr.toml input/coverage/.xcccr.toml 2>/dev/null
+          fi
+          printf '%b\n' "Current xcccr config:\n$(cat input/coverage/.xcccr.toml 2>/dev/null || echo 'File is missing. Using default settings.')"
+          if [ ! -f input/coverage/pullreq-coverage.json ] ; then
+            echo 'Pull request coverage json not found.'
+            echo 'Skipping build and looking for recent master coverage json.'
+            cat input/coverage/master-coverage.json | ./xcccr -cfg=input/coverage/.xcccr.toml
+          else 
+            echo "Testing ${GITHUB_BASE_REF:-master} branch"
+            sudo xcode-select --switch /Applications/Xcode_12.app
+            xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test -destination platform='iOS Simulator,name=iPhone 11' >/dev/null 2>&1 
+            echo 'Test complete. Preparing XCCov report.'
+            xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > base-coverage.json 2>/dev/null
+            ./xcccr -lst=base-coverage.json -cur=input/coverage/pullreq-coverage.json -cfg=input/coverage/.xcccr.toml
+          fi
