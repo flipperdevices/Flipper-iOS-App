@@ -54,6 +54,7 @@ jobs:
         with:
           path: input
       - uses: jitterbit/get-changed-files@v1
+        id: files
         with:
           format: 'csv'
       - name: Code coverage report
