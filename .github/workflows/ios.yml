@@ -35,6 +35,7 @@ jobs:
           else 
             xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > output/coverage/pullreq-coverage.json 2>/dev/null
           fi
+          mv FlipperZero/.xcccr.toml output/coverage/.xcccr.toml 2>/dev/null
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v2
         with:
@@ -56,16 +57,20 @@ jobs:
         run: |
           curl -sL https://github.com/illabo/xcccr/releases/latest/download/xcccr > xcccr
           chmod +x xcccr
+          if [ ! -f input/coverage/.xcccr.toml ] ; then
+            echo "No xcccr config in commit. Looking on ${GITHUB_BASE_REF:-master} branch."
+            mv FlipperZero/.xcccr.toml input/coverage/.xcccr.toml 2>/dev/null
+          fi
+          printf '%b\n' "Current xcccr config:\n$(cat input/coverage/.xcccr.toml 2>/dev/null || echo 'File is missing. Using default settings.')"
           if [ ! -f input/coverage/pullreq-coverage.json ] ; then
             echo 'Pull request coverage json not found.'
             echo 'Skipping build and looking for recent master coverage json.'
-            cat input/coverage/master-coverage.json | ./xcccr -cfg=FlipperZero/.xcccr.toml
+            cat input/coverage/master-coverage.json | ./xcccr -cfg=input/coverage/.xcccr.toml
           else 
+            echo "Testing ${GITHUB_BASE_REF:-master} branch"
             sudo xcode-select --switch /Applications/Xcode_12.app
             xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test -destination platform='iOS Simulator,name=iPhone 11' >/dev/null 2>&1 
-            echo 'Complete building master'
-            xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > input/coverage/master-coverage.json
-            echo 'Current xcccr config:'
-            cat FlipperZero/.xcccr.toml || echo 'No config provided. Please keep FlipperZero/.xcccr.toml at master. Checking coverage using default configuration.'
-            ./xcccr -lst=input/coverage/master-coverage.json -cur=input/coverage/pullreq-coverage.json -cfg=FlipperZero/.xcccr.toml
+            echo 'Test complete. Preparing XCCov report.'
+            xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > base-coverage.json 2>/dev/null
+            ./xcccr -lst=base-coverage.json -cur=input/coverage/pullreq-coverage.json -cfg=input/coverage/.xcccr.toml
           fi
