@@ -103,7 +103,6 @@
 		498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		49BE36C6253BE71200F727EF /* .xcccr.toml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .xcccr.toml; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		498305F62529569200B04AFD /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
