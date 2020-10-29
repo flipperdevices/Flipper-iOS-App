@@ -53,6 +53,9 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           path: input
+      - uses: jitterbit/get-changed-files@v1
+        with:
+          format: 'csv'
       - name: Code coverage report
         run: |
           curl -sL https://github.com/illabo/xcccr/releases/latest/download/xcccr > xcccr
@@ -65,12 +68,12 @@ jobs:
           if [ ! -f input/coverage/pullreq-coverage.json ] ; then
             echo 'Pull request coverage json not found.'
             echo 'Skipping build and looking for recent master coverage json.'
-            cat input/coverage/master-coverage.json | ./xcccr -cfg=input/coverage/.xcccr.toml
+            cat input/coverage/master-coverage.json | ./xcccr -cfg=input/coverage/.xcccr.toml -nw="${{ steps.files.outputs.added_modified }}" -si=w
           else 
             echo "Testing ${GITHUB_BASE_REF:-master} branch"
             sudo xcode-select --switch /Applications/Xcode_12.app
             xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test -destination platform='iOS Simulator,name=iPhone 11' >/dev/null 2>&1 
             echo 'Test complete. Preparing XCCov report.'
             xcrun xccov view --report --json ./output/DerivedData/Logs/Test/*.xcresult > base-coverage.json 2>/dev/null
-            ./xcccr -lst=base-coverage.json -cur=input/coverage/pullreq-coverage.json -cfg=input/coverage/.xcccr.toml
+            ./xcccr -lst=base-coverage.json -cur=input/coverage/pullreq-coverage.json -cfg=input/coverage/.xcccr.toml -nw="${{ steps.files.outputs.added_modified }}" -si=w
           fi
