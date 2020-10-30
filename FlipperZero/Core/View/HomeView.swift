@@ -8,9 +8,29 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject var container: ObservableResolver
+    @State private var displayingConnections = false
+
     var body: some View {
-        Text("Hello, Flipper users!")
-            .padding()
+        VStack {
+            Text("Hello, Flipper users!")
+                .padding()
+            Button("Connect your device") {
+                self.displayingConnections = true
+            }
+                .sheet(isPresented: self.$displayingConnections) {
+                    ConnectionsView(viewModel: ConnectionsViewModel(self.container))
+                    #if os(macOS)
+                    HStack {
+                        Spacer()
+                        Button("Close") {
+                            self.displayingConnections = false
+                        }
+                            .padding(.all)
+                    }
+                    #endif
+                }
+        }
     }
 }
 

@@ -10,9 +10,11 @@ import SwiftUI
 
 @main
 struct FlipperZeroApp: App {
+    @StateObject private var resolver = ObservableResolver()
+
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootView().environmentObject(resolver)
         }
     }
 }
