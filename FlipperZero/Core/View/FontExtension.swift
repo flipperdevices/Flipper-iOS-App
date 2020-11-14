@@ -57,7 +57,7 @@ extension Font {
 }
 
 enum CustomFontStyle: String {
-    case regularPixel  = "HelvetiPixel"
     case boldPixel     = "Born2bSportyV2"
+    case regularPixel  = "HelvetiPixel"
     case regularRoboto = "Roboto-Regular"
 }
