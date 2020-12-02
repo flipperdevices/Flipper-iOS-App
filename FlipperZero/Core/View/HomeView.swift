@@ -38,8 +38,8 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             HomeView()
-            HomeView().body.font(.customFont(customStyle: .boldPixel, size: 50))
-            HomeView().body.font(.customFont(customStyle: .regularPixel))
+            HomeView().body.font(.custom(.boldPixel, size: 50))
+            HomeView().body.font(.custom(.regularPixel))
             HomeView().body.font(.regularPixel())
             HomeView().body.font(.regularRoboto())
         }
