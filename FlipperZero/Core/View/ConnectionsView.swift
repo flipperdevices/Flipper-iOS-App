@@ -32,6 +32,7 @@ struct ConnectionsView: View {
                 }
             }
         }
+        .frame(minWidth: 320, minHeight: 160)
     }
 }
 
@@ -44,7 +45,6 @@ struct ConnectionsView_Previews: PreviewProvider {
             ConnectionsView(viewModel: ConnectionsViewModel(self.getContainer(.notReady(.unauthorized))))
             ConnectionsView(viewModel: ConnectionsViewModel(self.getContainer(.notReady(.unsupported))))
         }
-            .previewLayout(.fixed(width: 480, height: 160))
     }
 
     private static func getContainer(_ status: BluetoothStatus) -> Resolver {
