@@ -117,8 +117,8 @@
 		498305F62529569200B04AFD /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		49BE36C6253BE71200F727EF /* .xcccr.toml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .xcccr.toml; sourceTree = "<group>"; };
 		49CABA11261A947400710EB7 /* collect_licenses.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = collect_licenses.sh; sourceTree = "<group>"; };
-		49CABA1C261A9DCC00710EB7 /* license_plist.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = license_plist.yml; sourceTree = "<group>"; };
 		49CABA22261AA12400710EB7 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		49CABA26261BD2A800710EB7 /* .license_plist.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .license_plist.yml; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B2FA80C09CFF768FF67E24D3 /* EquatableById.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EquatableById.swift; sourceTree = "<group>"; };
 		B2FA80C7A7CD8772E74460E1 /* Resolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
@@ -313,7 +313,7 @@
 				49CABA11261A947400710EB7 /* collect_licenses.sh */,
 				49BE36C6253BE71200F727EF /* .xcccr.toml */,
 				498305F62529569200B04AFD /* .swiftlint.yml */,
-				49CABA1C261A9DCC00710EB7 /* license_plist.yml */,
+				49CABA26261BD2A800710EB7 /* .license_plist.yml */,
 				49CABA22261AA12400710EB7 /* Settings.bundle */,
 				F0DBFA2224EF2F9900EB2880 /* Products */,
 				44A5B5B124F05FCE009EE7FB /* Frameworks */,

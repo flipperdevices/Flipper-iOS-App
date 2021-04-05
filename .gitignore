@@ -67,3 +67,4 @@ FlipperZero/swiftlint
 vendor/
 Gemfile.lock
 .ruby-version
+FlipperZero/license-plist
