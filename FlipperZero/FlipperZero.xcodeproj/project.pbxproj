@@ -16,10 +16,12 @@
 		44A5B5B724F05FD5009EE7FB /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; };
 		44A5B5B824F05FD5009EE7FB /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 44A5B59824F05E74009EE7FB /* Core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4972BA16260B8E31003208B1 /* DesignPlaygroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4972BA15260B8E31003208B1 /* DesignPlaygroundView.swift */; };
-		498305C32527FEE900B04AFD /* HelvetiPixel.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 498305C12527FEE900B04AFD /* HelvetiPixel.ttf */; };
-		498305C52527FEE900B04AFD /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */; };
 		4983062C25299C0600B04AFD /* Born2bSportyV2.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */; };
 		4983062D25299C0600B04AFD /* HelvetiPixel.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498305C12527FEE900B04AFD /* HelvetiPixel.ttf */; };
+		49CABA35261C37D000710EB7 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */; };
+		49CABA36261C37D000710EB7 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 49F73FA5255FEEBF00402267 /* Roboto-Regular.ttf */; };
+		49CABA37261C37D000710EB7 /* HelvetiPixel.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 498305C12527FEE900B04AFD /* HelvetiPixel.ttf */; };
+		49CABA3A261C391A00710EB7 /* Roboto-Regular.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 49F73FA5255FEEBF00402267 /* Roboto-Regular.ttf */; };
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
 		49F73FA2255FE86E00402267 /* FontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F73F9D255FE1EB00402267 /* FontExtension.swift */; };
 		B2FA823F458ED6FC57954CA9 /* ConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FA8204BD4B6A42C9C5E88B /* ConnectionsView.swift */; };
@@ -96,6 +98,7 @@
 			dstPath = Fonts;
 			dstSubfolderSpec = 7;
 			files = (
+				49CABA3A261C391A00710EB7 /* Roboto-Regular.ttf in CopyFiles */,
 				4983062C25299C0600B04AFD /* Born2bSportyV2.ttf in CopyFiles */,
 				4983062D25299C0600B04AFD /* HelvetiPixel.ttf in CopyFiles */,
 			);
@@ -118,6 +121,7 @@
 		498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		498305F62529569200B04AFD /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		49BE36C6253BE71200F727EF /* .xcccr.toml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .xcccr.toml; sourceTree = "<group>"; };
+		49CABA30261C32E700710EB7 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		49F73F9D255FE1EB00402267 /* FontExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontExtension.swift; sourceTree = "<group>"; };
 		49F73FA5255FEEBF00402267 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
@@ -188,6 +192,7 @@
 				4972BA15260B8E31003208B1 /* DesignPlaygroundView.swift */,
 				B2FA8204BD4B6A42C9C5E88B /* ConnectionsView.swift */,
 				49F73F9D255FE1EB00402267 /* FontExtension.swift */,
+				49CABA30261C32E700710EB7 /* .swiftlint.yml */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -515,8 +520,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				498305C52527FEE900B04AFD /* Born2bSportyV2.ttf in Resources */,
-				498305C32527FEE900B04AFD /* HelvetiPixel.ttf in Resources */,
+				49CABA35261C37D000710EB7 /* Born2bSportyV2.ttf in Resources */,
+				49CABA36261C37D000710EB7 /* Roboto-Regular.ttf in Resources */,
+				49CABA37261C37D000710EB7 /* HelvetiPixel.ttf in Resources */,
 				49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */,
 				F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */,
 			);

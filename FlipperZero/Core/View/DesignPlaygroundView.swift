@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-// swiftlint:disable closure_body_length indentation_width let_var_whitespace
 
 struct DesignPlaygroundView: View {
     @State var fontSegment: Int = 0
@@ -22,10 +21,11 @@ struct DesignPlaygroundView: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding()
-            Slider(value: $fontSize,
-                   in: Double(minBound)...Double(maxBound),
-                   minimumValueLabel: Text("\(minBound) pt"),
-                   maximumValueLabel: Text("\(maxBound) pt")) {}
+            Slider(
+                value: $fontSize,
+                in: Double(minBound)...Double(maxBound),
+                minimumValueLabel: Text("\(minBound) pt"),
+                maximumValueLabel: Text("\(maxBound) pt")) { }
                 .padding(.horizontal)
             Text("Current font size is \(Int(fontSize)) pt")
                 .font(.footnote)
@@ -39,6 +39,7 @@ struct DesignPlaygroundView: View {
             Spacer()
         }.padding()
     }
+
     private func fontStyle(for section: Int) -> CustomFontStyle {
         switch section {
         case 0:
