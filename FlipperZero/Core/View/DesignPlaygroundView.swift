@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// swiftlint:disable closure_body_length
 struct DesignPlaygroundView: View {
     @State var fontSegment: Int = 0
     @State var fontSize: Double = 32
