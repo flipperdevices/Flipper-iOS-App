@@ -16,7 +16,7 @@ class ConnectionsViewModel: ObservableObject {
         }
     }
 
-    private let connector: BluetoothConnector
+    @Inject private var connector: BluetoothConnector
     private var disposeBag = DisposeBag()
 
     @Published private(set) var state: State = .init(.preparing) {
@@ -28,8 +28,7 @@ class ConnectionsViewModel: ObservableObject {
         }
     }
 
-    init(_ resolver: Resolver) {
-        self.connector = resolver.resolve(BluetoothConnector.self)
+    init() {
         connector.status
             .combineLatest(connector.peripherals)
             .map { status, peripherals -> State in

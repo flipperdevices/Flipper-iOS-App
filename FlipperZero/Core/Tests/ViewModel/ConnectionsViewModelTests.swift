@@ -66,9 +66,9 @@ class ConnectionsViewModelTests: XCTestCase {
     }
 
     private static func createTarget(_ connector: BluetoothConnector) -> ConnectionsViewModel {
-        let container = Container()
+        let container = Container.shared
         container.register(instance: connector, as: BluetoothConnector.self)
-        return ConnectionsViewModel(container)
+        return ConnectionsViewModel()
     }
 }
 

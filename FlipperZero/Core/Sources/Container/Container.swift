@@ -7,6 +7,8 @@
 
 // TODO: Replace with well-known DI container or extend to support resolving with dependencies
 class Container: Resolver {
+    static let shared: Container = .init()
+
     private struct Key: Hashable {
         private let type: Any.Type
 

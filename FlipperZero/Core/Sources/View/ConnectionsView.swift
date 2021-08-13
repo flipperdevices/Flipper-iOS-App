@@ -26,7 +26,7 @@ struct ConnectionsView: View {
                         .progressViewStyle(CircularProgressViewStyle())
                         .padding(.horizontal)
                 }
-                    .padding(.all)
+                .padding(.all)
                 List(peripherals) { peripheral in
                     Text(peripheral.name)
                 }
@@ -39,18 +39,17 @@ struct ConnectionsView: View {
 struct ConnectionsView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            ConnectionsView(viewModel: ConnectionsViewModel(self.getContainer(.ready)))
-            ConnectionsView(viewModel: ConnectionsViewModel(self.getContainer(.notReady(.poweredOff))))
-            ConnectionsView(viewModel: ConnectionsViewModel(self.getContainer(.notReady(.preparing))))
-            ConnectionsView(viewModel: ConnectionsViewModel(self.getContainer(.notReady(.unauthorized))))
-            ConnectionsView(viewModel: ConnectionsViewModel(self.getContainer(.notReady(.unsupported))))
+            ConnectionsView(viewModel: createObject(.ready))
+            ConnectionsView(viewModel: createObject(.notReady(.poweredOff)))
+            ConnectionsView(viewModel: createObject(.notReady(.preparing)))
+            ConnectionsView(viewModel: createObject(.notReady(.unauthorized)))
+            ConnectionsView(viewModel: createObject(.notReady(.unsupported)))
         }
     }
 
-    private static func getContainer(_ status: BluetoothStatus) -> Resolver {
-        let container = Container()
-        container.register(instance: TestConnector(status), as: BluetoothConnector.self)
-        return container
+    private static func createObject(_ status: BluetoothStatus) -> ConnectionsViewModel {
+        Container.shared.register(instance: TestConnector(status), as: BluetoothConnector.self)
+        return .init()
     }
 }
 

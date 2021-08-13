@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct HomeView: View {
-    @EnvironmentObject var container: ObservableResolver
     @State private var displayingConnections = false
 
     var body: some View {
@@ -18,18 +17,18 @@ struct HomeView: View {
             Button("Connect your device") {
                 self.displayingConnections = true
             }
-                .sheet(isPresented: self.$displayingConnections) {
-                    ConnectionsView(viewModel: ConnectionsViewModel(self.container))
-                    #if os(macOS)
-                    HStack {
-                        Spacer()
-                        Button("Close") {
-                            self.displayingConnections = false
-                        }
-                            .padding(.all)
+            .sheet(isPresented: self.$displayingConnections) {
+                ConnectionsView(viewModel: ConnectionsViewModel())
+                #if os(macOS)
+                HStack {
+                    Spacer()
+                    Button("Close") {
+                        self.displayingConnections = false
                     }
-                    #endif
+                    .padding(.all)
                 }
+                #endif
+            }
         }
     }
 }
