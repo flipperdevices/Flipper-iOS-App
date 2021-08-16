@@ -32,10 +32,10 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "44A5B59F24F05E74009EE7FB"
-               BuildableName = "CoreTests.xctest"
-               BlueprintName = "CoreTests"
-               ReferencedContainer = "container:FlipperZero.xcodeproj">
+               BlueprintIdentifier = "Tests"
+               BuildableName = "Tests"
+               BlueprintName = "Tests"
+               ReferencedContainer = "container:Core">
             </BuildableReference>
          </TestableReference>
       </Testables>

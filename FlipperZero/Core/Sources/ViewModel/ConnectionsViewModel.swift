@@ -4,6 +4,7 @@
 //
 //  Created by Eugene Berdnikov on 8/29/20.
 //
+import Combine
 
 class ConnectionsViewModel: ObservableObject {
     enum State: Equatable {
