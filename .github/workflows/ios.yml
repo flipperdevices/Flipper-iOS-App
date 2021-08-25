@@ -25,7 +25,7 @@ jobs:
       - name: Xcode version selection
         run: sudo xcode-select --switch /Applications/Xcode_12.app
       - name: Xcode test
-        run: xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test DSTROOT=output/test/build.dst OBJROOT=output/test/build.obj SYMROOT=output/test/build.sym SHARED_PRECOMPS_DIR=./output/test/build.pch -destination platform='iOS Simulator,name=iPhone 11' | xcpretty
+        run: xcodebuild -sdk iphonesimulator -workspace ./FlipperZero/FlipperZero.xcodeproj/project.xcworkspace -scheme 'FlipperZero(iOS)' -derivedDataPath output/DerivedData -enableCodeCoverage YES test DSTROOT=output/test/build.dst OBJROOT=output/test/build.obj SYMROOT=$GITHUB_WORKSPACE/output/test/build.sym SHARED_PRECOMPS_DIR=./output/test/build.pch -destination platform='iOS Simulator,name=iPhone 11' | xcpretty
       - name: Export test coverege
         run: |
           mkdir output/coverage
