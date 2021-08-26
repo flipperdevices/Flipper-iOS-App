@@ -1,10 +1,3 @@
-//
-//  HomeView.swift
-//  FlipperZero
-//
-//  Created by Eugene Berdnikov on 8/19/20.
-//
-
 import SwiftUI
 
 struct HomeView: View {

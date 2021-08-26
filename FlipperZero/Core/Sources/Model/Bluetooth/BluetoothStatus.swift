@@ -1,10 +1,3 @@
-//
-//  BluetoothStatus.swift
-//  FlipperZero
-//
-//  Created by Eugene Berdnikov on 8/22/20.
-//
-
 enum BluetoothStatus: Equatable {
     enum NotReadyReason: String {
         case poweredOff

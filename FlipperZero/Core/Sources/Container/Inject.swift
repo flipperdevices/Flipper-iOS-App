@@ -1,8 +1,3 @@
-//
-//  Inject.swift
-//  FlipperZero
-//
-
 import Foundation
 
 @propertyWrapper

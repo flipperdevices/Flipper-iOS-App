@@ -1,10 +1,3 @@
-//
-//  BluetoothService.swift
-//  FlipperZero
-//
-//  Created by Eugene Berdnikov on 8/22/20.
-//
-
 import CoreBluetooth
 
 class BluetoothService: NSObject, BluetoothConnector {

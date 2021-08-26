@@ -1,10 +1,3 @@
-//
-//  FlipperZeroApp.swift
-//  FlipperZero
-//
-//  Created by Yakov Shapovalov on 21.08.2020.
-//
-
 import Core
 import SwiftUI
 

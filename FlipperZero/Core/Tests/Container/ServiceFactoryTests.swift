@@ -1,11 +1,3 @@
-//
-//  ServiceFactoryTests.swift
-//  FlipperZero
-//
-//  Created by Eugene Berdnikov on 9/3/20.
-//
-//
-
 @testable import Core
 import XCTest
 

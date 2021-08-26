@@ -1,10 +1,3 @@
-//
-//  ConnectionsViewModelTests.swift
-//  FlipperZero
-//
-//  Created by Eugene Berdnikov on 9/6/20.
-//
-
 @testable import Core
 import XCTest
 

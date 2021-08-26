@@ -1,10 +1,3 @@
-//
-//  CombineExtensions.swift
-//  FlipperZero
-//
-//  Created by Eugene Berdnikov on 8/22/20.
-//
-
 import Combine
 
 typealias DisposeBag = [AnyCancellable]

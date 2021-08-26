@@ -1,10 +1,3 @@
-//
-//  Container.swift
-//  FlipperZero
-//
-//  Created by Eugene Berdnikov on 8/23/20.
-//
-
 // TODO: Replace with well-known DI container or extend to support resolving with dependencies
 class Container: Resolver {
     static let shared: Container = .init()

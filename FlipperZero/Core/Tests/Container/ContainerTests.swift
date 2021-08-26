@@ -1,11 +1,3 @@
-//
-//  ContainerTests.swift
-//  FlipperZero
-//
-//  Created by Eugene Berdnikov on 9/4/20.
-//
-//
-
 @testable import Core
 import XCTest
 
