@@ -2,17 +2,44 @@ import CoreBluetooth
 
 class BluetoothService: NSObject, BluetoothConnector {
     private let manager: CBCentralManager
+
+    // FIXME: The only CBUUID Flipper advertise
+    private var flipperServiceIDs: [CBUUID] { [.heartRate] }
+
     private let peripheralsSubject = SafeSubject([Peripheral]())
+    private let connectedPeripheralSubject = SafeSubject(Peripheral?.none)
     private let statusSubject = SafeSubject(BluetoothStatus.notReady(.preparing))
 
     var peripherals: SafePublisher<[Peripheral]> {
         self.peripheralsSubject.eraseToAnyPublisher()
     }
 
+    var connectedPeripheral: SafePublisher<Peripheral?> {
+        self.connectedPeripheralSubject.eraseToAnyPublisher()
+    }
+
     private var peripheralsMap = [UUID: CBPeripheral]() {
-        didSet {
-            self.peripheralsSubject.value =
-                self.peripheralsMap.values.compactMap(Peripheral.init).sorted { $0.name < $1.name }
+        didSet { publishPeripherals() }
+    }
+
+    private var connectedCBPeripheral: CBPeripheral? {
+        didSet { publishConnectedPeripheral() }
+    }
+
+    private func publishPeripherals() {
+        peripheralsSubject.value = []
+        let connected = manager.retrieveConnectedPeripherals(withServices: flipperServiceIDs)
+        let discovered = peripheralsMap.values.filter { !connected.contains($0) }
+        peripheralsSubject.value = (connected + discovered)
+            .compactMap(Peripheral.init)
+            .sorted { $0.name < $1.name }
+    }
+
+    private func publishConnectedPeripheral() {
+        if let connected = connectedCBPeripheral {
+            connectedPeripheralSubject.value = .init(connected)
+        } else {
+            connectedPeripheralSubject.value = .none
         }
     }
 
@@ -28,8 +55,7 @@ class BluetoothService: NSObject, BluetoothConnector {
 
     func startScanForPeripherals() {
         if self.statusSubject.value == .ready {
-            // TODO: Provide CBUUID relevant to Flipper devices
-            self.manager.scanForPeripherals(withServices: nil)
+            self.manager.scanForPeripherals(withServices: flipperServiceIDs)
         }
     }
 
@@ -38,6 +64,14 @@ class BluetoothService: NSObject, BluetoothConnector {
             self.peripheralsMap.removeAll()
             self.manager.stopScan()
         }
+    }
+
+    func connect(to uuid: UUID) {
+        guard let peripheral = peripheralsMap[uuid] else {
+            return
+        }
+        manager.connect(peripheral)
+        publishPeripherals()
     }
 }
 
@@ -59,6 +93,120 @@ extension BluetoothService: CBCentralManagerDelegate {
 
             self.peripheralsMap[peripheral.identifier] = peripheral
         }
+    }
+
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        if let connected = connectedCBPeripheral {
+            print("disconnecting from", connected.name ?? "<unknown>")
+            central.cancelPeripheralConnection(connected)
+        }
+        print("connected to \(peripheral)")
+        peripheral.delegate = self
+        connectedCBPeripheral = peripheral
+        publishPeripherals()
+        publishConnectedPeripheral()
+
+        peripheral.discoverServices(nil)
+    }
+
+    // TODO: handle connection failure
+    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        print("did fail to connect to \(peripheral)")
+        if let error = error {
+            print(error)
+        }
+        publishPeripherals()
+        publishConnectedPeripheral()
+    }
+}
+
+extension BluetoothService: CBPeripheralDelegate {
+
+    // MARK: RSSI
+
+    public func peripheralDidUpdateRSSI(
+        _ peripheral: CBPeripheral,
+        error: Error?
+    ) {
+        print("rssi updated")
+    }
+
+    public func peripheral(
+        _ peripheral: CBPeripheral,
+        didReadRSSI RSSI: NSNumber,
+        error: Error?
+    ) {
+        print("new rssi:", RSSI)
+    }
+
+    // MARK: Services
+
+    public func peripheral(
+        _ peripheral: CBPeripheral,
+        didDiscoverServices error: Error?
+    ) {
+        peripheral.services?.forEach { service in
+            print("service discovered", service.uuid.uuidString)
+            guard service.uuid != .heartRate else {
+                return
+            }
+            peripheral.discoverCharacteristics(nil, for: service)
+        }
+    }
+
+    // MARK: Characteristics
+
+    public func peripheral(
+        _ peripheral: CBPeripheral,
+        didDiscoverCharacteristicsFor service: CBService,
+        error: Error?
+    ) {
+        guard let characteristics = service.characteristics else {
+            print("no characteristic discovered")
+            return
+        }
+        print("\(characteristics.count) characteristics discovered for service:", service.uuid)
+        characteristics.forEach { characteristic in
+            peripheral.readValue(for: characteristic)
+        }
+    }
+
+    // MARK: Values
+
+    public func peripheral(
+        _ peripheral: CBPeripheral,
+        didUpdateValueFor characteristic: CBCharacteristic,
+        error: Error?
+    ) {
+        print("new value for:", characteristic.uuid)
+        // let characteristic = Characteristic(characteristic)
+        publishConnectedPeripheral()
+    }
+    public func peripheral(
+        _ peripheral: CBPeripheral,
+        didWriteValueFor characteristic: CBCharacteristic,
+        error: Error?
+    ) {
+        print("value written for:", characteristic.uuid)
+    }
+    public func peripheral(
+        _ peripheral: CBPeripheral,
+        didUpdateNotificationStateFor characteristic: CBCharacteristic,
+        error: Error?
+    ) {
+        print("notification state has changed to:", characteristic.isNotifying)
+    }
+    public func peripheralIsReady(
+        toSendWriteWithoutResponse peripheral: CBPeripheral
+    ) {
+        print("toSendWriteWithoutResponse")
+    }
+    public func peripheral(
+        _ peripheral: CBPeripheral,
+        didOpen channel: CBL2CAPChannel?,
+        error: Error?
+    ) {
+        print("L2CAP channel:", channel?.description ?? "nil")
     }
 }
 
@@ -89,5 +237,59 @@ fileprivate extension Peripheral {
 
         self.id = source.identifier
         self.name = name
+        self.state = .init(source.state)
+        self.services = (source.services ?? [])
+            .map(Service.init)
+            .filter { $0.name == "Device Information" }
     }
+}
+
+fileprivate extension Peripheral.State {
+    init(_ source: CBPeripheralState) {
+        // swiftlint:disable switch_case_on_newline
+        switch source {
+        case .disconnected: self = .disconnected
+        case .connecting: self = .connecting
+        case .connected: self = .connected
+        case .disconnecting: self = .disconnecting
+        @unknown default: self = .disconnected
+        }
+    }
+}
+
+extension Peripheral.Service {
+    init(_ source: CBService) {
+        self.name = source.uuid.description
+        self.characteristics = source.characteristics?.map(Characteristic.init) ?? []
+    }
+}
+
+extension Peripheral.Service.Characteristic {
+    init(_ source: CBCharacteristic) {
+        self.name = .init(source.uuid.description.dropLast(" String".count))
+        guard let data = source.value else {
+            value = ""
+            return
+        }
+        guard let service = source.service else {
+            fatalError("invalid service")
+        }
+        switch service.uuid {
+        case .heartRate:
+            self.value = String(format: "%02hhx", [UInt8](data))
+        case .deviceInformation:
+            self.value = String(data: data.dropLast(), encoding: .utf8) ?? ""
+        default:
+            self.value = "<unsupported>"
+        }
+    }
+}
+
+extension CBUUID {
+    static var deviceInformation: CBUUID { .init(string: "180A") }
+    static var heartRate: CBUUID { .init(string: "180D") }
+    static var battery: CBUUID { .init(string: "180F") }
+    static var continuity: CBUUID { .init(string: "D0611E78-BBB4-4591-A5F8-487910AE4366") }
+    static var appleWatch: CBUUID { .init(string: "9FA480E0-4967-4542-9390-D343DC5D04AE") }
+    static var service1: CBUUID { .init(string: "be7a721c-34f4-8733-faa2-29d4ae017fcc") }
 }

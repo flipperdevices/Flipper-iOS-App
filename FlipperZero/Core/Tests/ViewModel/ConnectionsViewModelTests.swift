@@ -39,7 +39,7 @@ class ConnectionsViewModelTests: XCTestCase {
         connector.statusSubject.value = .ready
         self.waitForExpectations(timeout: 0.1)
         XCTAssertEqual(target.state, ConnectionsViewModel.State.scanning([]))
-        let peripheral = Peripheral(id: UUID(), name: "Device 42")
+        let peripheral = Peripheral(id: UUID(), name: "Device 42", state: .disconnected)
         connector.peripheralsSubject.value.append(peripheral)
         XCTAssertEqual(target.state, ConnectionsViewModel.State.scanning([peripheral]))
     }
@@ -68,21 +68,31 @@ class ConnectionsViewModelTests: XCTestCase {
 private class MockBluetoothConnector: BluetoothConnector {
     private let onStartScanForPeripherals: () -> Void
     private let onStopScanForPeripherals: (() -> Void)?
+    private let onConnect: (() -> Void)?
     let peripheralsSubject = SafeSubject([Peripheral]())
     let statusSubject: SafeSubject<BluetoothStatus>
+    var connectedPeripheralSubject: SafeSubject<Peripheral?>
 
     init(
         initialState: BluetoothStatus = .notReady(.preparing),
+        connectedPeripheral: Peripheral? = nil,
         onStartScanForPeripherals: @escaping () -> Void,
-        onStopScanForPeripherals: (() -> Void)? = nil
+        onStopScanForPeripherals: (() -> Void)? = nil,
+        onConnect: (() -> Void)? = nil
     ) {
         self.onStartScanForPeripherals = onStartScanForPeripherals
         self.onStopScanForPeripherals = onStopScanForPeripherals
+        self.onConnect = onConnect
         self.statusSubject = SafeSubject(initialState)
+        self.connectedPeripheralSubject = SafeSubject(connectedPeripheral)
     }
 
     var peripherals: SafePublisher<[Peripheral]> {
         self.peripheralsSubject.eraseToAnyPublisher()
+    }
+
+    var connectedPeripheral: SafePublisher<Peripheral?> {
+        self.connectedPeripheralSubject.eraseToAnyPublisher()
     }
 
     var status: SafePublisher<BluetoothStatus> {
@@ -95,5 +105,9 @@ private class MockBluetoothConnector: BluetoothConnector {
 
     func stopScanForPeripherals() {
         self.onStopScanForPeripherals?()
+    }
+
+    func connect(to uuid: UUID) {
+        self.onConnect?()
     }
 }

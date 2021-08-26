@@ -1,4 +1,5 @@
 import Combine
+import struct Foundation.UUID
 
 class ConnectionsViewModel: ObservableObject {
     enum State: Equatable {
@@ -36,6 +37,10 @@ class ConnectionsViewModel: ObservableObject {
             .sink { [weak self] in
                 self?.state = $0
             }.store(in: &self.disposeBag)
+    }
+
+    func connect(to uuid: UUID) {
+        connector.connect(to: uuid)
     }
 
     deinit {

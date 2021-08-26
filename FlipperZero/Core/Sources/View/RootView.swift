@@ -3,8 +3,7 @@ import SwiftUI
 public struct RootView: View {
     let homeTabTitle = "Home"
 
-    public init() {
-    }
+    public init() {}
 
     public var body: some View {
         TabView {
