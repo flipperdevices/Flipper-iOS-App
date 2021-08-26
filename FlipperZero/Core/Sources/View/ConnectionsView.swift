@@ -3,29 +3,67 @@ import SwiftUI
 
 struct ConnectionsView: View {
     @ObservedObject var viewModel: ConnectionsViewModel
+    @State private var showDeviceInfo = false
 
     var body: some View {
-        VStack {
-            switch self.viewModel.state {
-            case .notReady(let reason):
-                Text(reason)
-                    .multilineTextAlignment(.center)
-                    .padding(.all)
-            case .scanning(let peripherals):
-                HStack {
+        NavigationView {
+            VStack {
+                switch self.viewModel.state {
+                case .notReady(let reason):
+                    Text(reason)
+                        .multilineTextAlignment(.center)
+                        .padding(.all)
+                case .scanning(let peripherals):
                     Text("Scanning devices...")
                         .font(.title)
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .padding(.horizontal)
-                }
-                .padding(.all)
-                List(peripherals) { peripheral in
-                    Text(peripheral.name)
+                        .padding(.all)
+                    Form {
+                        Section(header: HStack {
+                            Text("devices")
+                            ProgressView()
+                                .padding(.horizontal, 3)
+                        }) {
+                            List(peripherals) { peripheral in
+                                row(for: peripheral)
+                            }
+                        }
+                    }
                 }
             }
+            .frame(minWidth: 320, minHeight: 160)
         }
-        .frame(minWidth: 320, minHeight: 160)
+    }
+
+    func row(for peripheral: Peripheral) -> some View {
+        HStack {
+            Button(peripheral.name) {
+                if peripheral.state != .connected {
+                    viewModel.connect(to: peripheral.id)
+                }
+            }.foregroundColor(Color.white)
+
+            Spacer()
+
+            if peripheral.state == .connecting {
+                ProgressView()
+            } else if peripheral.state == .connected {
+                NavigationLink(destination: DeviceInfoView(), isActive: $showDeviceInfo) {}
+                    .disabled(true)
+                    .frame(width: 0)
+                    .opacity(0)
+
+                Text("Connected")
+                    .foregroundColor(.secondary)
+
+                Image(systemName: "info.circle")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(.accentColor)
+                    .onTapGesture {
+                        showDeviceInfo = true
+                    }
+            }
+        }
     }
 }
 
@@ -48,6 +86,7 @@ struct ConnectionsView_Previews: PreviewProvider {
 
 private class TestConnector: BluetoothConnector {
     private let peripheralsSubject = SafeSubject([Peripheral]())
+    private let connectedPeripheralSubject = SafeSubject(Peripheral?.none)
     private let statusValue: BluetoothStatus
     private var timer: Timer?
     private let testDevices = Array(1...10).map {
@@ -56,6 +95,10 @@ private class TestConnector: BluetoothConnector {
 
     var peripherals: SafePublisher<[Peripheral]> {
         self.peripheralsSubject.eraseToAnyPublisher()
+    }
+
+    var connectedPeripheral: SafePublisher<Peripheral?> {
+        self.connectedPeripheralSubject.eraseToAnyPublisher()
     }
 
     var status: SafePublisher<BluetoothStatus> {
@@ -89,4 +132,6 @@ private class TestConnector: BluetoothConnector {
         self.timer = nil
         self.peripheralsSubject.value.removeAll()
     }
+
+    func connect(to uuid: UUID) {}
 }
