@@ -1,5 +1,5 @@
 enum BluetoothStatus: Equatable {
-    enum NotReadyReason: String {
+    enum NotReadyReason: String, Equatable {
         case poweredOff
         case preparing
         case unauthorized

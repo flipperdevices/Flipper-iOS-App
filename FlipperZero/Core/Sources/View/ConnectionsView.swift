@@ -10,9 +10,14 @@ struct ConnectionsView: View {
             VStack {
                 switch self.viewModel.state {
                 case .notReady(let reason):
-                    Text(reason)
+                    Text(reason.description)
                         .multilineTextAlignment(.center)
                         .padding(.all)
+                    if reason == .unauthorized {
+                        Button("Open Settings") {
+                            viewModel.openApplicationSettings()
+                        }
+                    }
                 case .scanning(let peripherals):
                     Text("Scanning devices...")
                         .font(.title)
