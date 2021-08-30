@@ -60,7 +60,6 @@
 		498305C12527FEE900B04AFD /* HelvetiPixel.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HelvetiPixel.ttf; sourceTree = "<group>"; };
 		498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		498305F62529569200B04AFD /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
-		49BE36C6253BE71200F727EF /* .xcccr.toml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .xcccr.toml; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B77A9C726CAA3BA00A3DF9F /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Core; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
@@ -124,7 +123,6 @@
 				F0DBFA2A24EF2F9900EB2880 /* macOS */,
 				F0DBFA1924EF2F9600EB2880 /* Shared */,
 				497F0FC1252702B7000B2A86 /* perform_lint.sh */,
-				49BE36C6253BE71200F727EF /* .xcccr.toml */,
 				498305F62529569200B04AFD /* .swiftlint.yml */,
 				F0DBFA2224EF2F9900EB2880 /* Products */,
 				44A5B5B124F05FCE009EE7FB /* Frameworks */,
