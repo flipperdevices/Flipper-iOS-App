@@ -37,7 +37,7 @@ class BluetoothService: NSObject, BluetoothConnector {
 
     private func publishConnectedPeripheral() {
         if let connected = connectedCBPeripheral {
-            connectedPeripheralSubject.value = .init(connected)
+            connectedPeripheralSubject.value = Peripheral(connected)
         } else {
             connectedPeripheralSubject.value = .none
         }
@@ -271,13 +271,10 @@ extension Peripheral.Service.Characteristic {
             value = ""
             return
         }
-        guard let service = source.service else {
-            fatalError("invalid service")
-        }
-        switch service.uuid {
-        case .heartRate:
+        switch source.service?.uuid {
+        case .some(.heartRate):
             self.value = String(format: "%02hhx", [UInt8](data))
-        case .deviceInformation:
+        case .some(.deviceInformation):
             self.value = String(data: data.dropLast(), encoding: .utf8) ?? ""
         default:
             self.value = "<unsupported>"
