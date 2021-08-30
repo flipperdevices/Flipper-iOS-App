@@ -271,7 +271,14 @@ extension Peripheral.Service.Characteristic {
             value = ""
             return
         }
-        switch source.service?.uuid {
+
+        #if targetEnvironment(simulator)
+        let uuid: CBUUID? = source.service.uuid
+        #else
+        let uuid: CBUUID? = source.service?.uuid
+        #endif
+
+        switch uuid {
         case .some(.heartRate):
             self.value = String(format: "%02hhx", [UInt8](data))
         case .some(.deviceInformation):
