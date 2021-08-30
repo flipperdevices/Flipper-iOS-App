@@ -293,7 +293,4 @@ extension CBUUID {
     static var deviceInformation: CBUUID { .init(string: "180A") }
     static var heartRate: CBUUID { .init(string: "180D") }
     static var battery: CBUUID { .init(string: "180F") }
-    static var continuity: CBUUID { .init(string: "D0611E78-BBB4-4591-A5F8-487910AE4366") }
-    static var appleWatch: CBUUID { .init(string: "9FA480E0-4967-4542-9390-D343DC5D04AE") }
-    static var service1: CBUUID { .init(string: "be7a721c-34f4-8733-faa2-29d4ae017fcc") }
 }
