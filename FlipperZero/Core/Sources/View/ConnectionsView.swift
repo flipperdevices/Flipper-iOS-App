@@ -52,7 +52,10 @@ struct ConnectionsView: View {
             if peripheral.state == .connecting {
                 ProgressView()
             } else if peripheral.state == .connected {
-                NavigationLink(destination: DeviceInfoView(), isActive: $showDeviceInfo) {}
+                NavigationLink(
+                    destination: DeviceInfoView(showDeviceInfo: $showDeviceInfo),
+                    isActive: $showDeviceInfo
+                ) {}
                     .disabled(true)
                     .frame(width: 0)
                     .opacity(0)
@@ -139,4 +142,5 @@ private class TestConnector: BluetoothConnector {
     }
 
     func connect(to uuid: UUID) {}
+    func forget(about uuid: UUID) {}
 }

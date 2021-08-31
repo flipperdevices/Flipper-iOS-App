@@ -9,4 +9,5 @@ protocol BluetoothConnector {
     func stopScanForPeripherals()
 
     func connect(to uuid: UUID)
+    func forget(about uuid: UUID)
 }

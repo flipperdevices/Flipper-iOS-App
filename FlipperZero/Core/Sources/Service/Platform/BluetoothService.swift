@@ -73,6 +73,17 @@ class BluetoothService: NSObject, BluetoothConnector {
         }
         publishPeripherals()
     }
+
+    func forget(about uuid: UUID) {
+        manager.retrievePeripherals(withIdentifiers: [uuid]).forEach {
+            manager.cancelPeripheralConnection($0)
+        }
+        if connectedCBPeripheral?.identifier == uuid {
+            connectedCBPeripheral = nil
+            publishConnectedPeripheral()
+        }
+        publishPeripherals()
+    }
 }
 
 extension BluetoothService: CBCentralManagerDelegate {

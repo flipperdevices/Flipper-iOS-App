@@ -13,4 +13,10 @@ class DeviceInfoViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
     }
+
+    func forgetConnectedDevice() {
+        if let device = device {
+            connector.forget(about: device.id)
+        }
+    }
 }

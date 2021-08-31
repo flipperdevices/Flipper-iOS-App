@@ -111,6 +111,9 @@ private class MockBluetoothConnector: BluetoothConnector {
     func connect(to uuid: UUID) {
         self.onConnect?()
     }
+
+    func forget(about uuid: UUID) {
+    }
 }
 
 private class MockStorage: LocalStorage {
