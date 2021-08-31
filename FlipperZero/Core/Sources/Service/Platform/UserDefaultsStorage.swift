@@ -7,8 +7,9 @@ class UserDefaultsStorage: LocalStorage {
 
     var lastConnectedDevice: UUID? {
         get {
-            guard let value = storage.value(forKey: lastDeviceKey) as? String,
-               let uuid = UUID(uuidString: value)
+            guard
+                let value = storage.value(forKey: lastDeviceKey) as? String,
+                let uuid = UUID(uuidString: value)
             else {
                 return nil
             }
