@@ -61,6 +61,7 @@ class ConnectionsViewModelTests: XCTestCase {
     private static func createTarget(_ connector: BluetoothConnector) -> ConnectionsViewModel {
         let container = Container.shared
         container.register(instance: connector, as: BluetoothConnector.self)
+        container.register(MockStorage.init, as: LocalStorage.self)
         return ConnectionsViewModel()
     }
 }
@@ -109,5 +110,12 @@ private class MockBluetoothConnector: BluetoothConnector {
 
     func connect(to uuid: UUID) {
         self.onConnect?()
+    }
+}
+
+private class MockStorage: LocalStorage {
+    var lastConnectedDevice: UUID? {
+        get { nil }
+        set { _ = newValue }
     }
 }

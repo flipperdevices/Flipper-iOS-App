@@ -1,9 +1,12 @@
 import SwiftUI
 
 public struct RootView: View {
+    let viewModel: RootViewModel
     let homeTabTitle = "Home"
 
-    public init() {}
+    public init(viewModel: RootViewModel) {
+        self.viewModel = viewModel
+    }
 
     public var body: some View {
         TabView {
@@ -18,6 +21,6 @@ public struct RootView: View {
 
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
-        RootView()
+        RootView(viewModel: .init())
     }
 }
