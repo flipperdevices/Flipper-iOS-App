@@ -22,6 +22,8 @@
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Bluetooth is required to connect to your Flipper device</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth is required to connect to your Flipper device</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Born2bSportyV2.ttf</string>
