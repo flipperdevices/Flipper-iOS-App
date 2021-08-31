@@ -67,10 +67,10 @@ class BluetoothService: NSObject, BluetoothConnector {
     }
 
     func connect(to uuid: UUID) {
-        guard let peripheral = peripheralsMap[uuid] else {
-            return
+        manager.retrievePeripherals(withIdentifiers: [uuid]).forEach {
+            peripheralsMap[$0.identifier] = $0
+            manager.connect($0)
         }
-        manager.connect(peripheral)
         publishPeripherals()
     }
 }
