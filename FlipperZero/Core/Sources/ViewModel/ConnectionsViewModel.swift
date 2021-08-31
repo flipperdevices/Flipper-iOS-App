@@ -1,12 +1,13 @@
 import Combine
+import struct Foundation.UUID
 
 class ConnectionsViewModel: ObservableObject {
     enum State: Equatable {
-        case notReady(String)
+        case notReady(BluetoothStatus.NotReadyReason)
         case scanning([Peripheral])
 
         init(_ notReadyReason: BluetoothStatus.NotReadyReason) {
-            self = .notReady(notReadyReason.description)
+            self = .notReady(notReadyReason)
         }
     }
 
@@ -30,7 +31,7 @@ class ConnectionsViewModel: ObservableObject {
                 case .ready:
                     return .scanning(peripherals)
                 case .notReady(let reason):
-                    return .notReady(reason.description)
+                    return .notReady(reason)
                 }
             }.removeDuplicates(by: ==).eraseToAnyPublisher()
             .sink { [weak self] in
@@ -38,12 +39,20 @@ class ConnectionsViewModel: ObservableObject {
             }.store(in: &self.disposeBag)
     }
 
+    func connect(to uuid: UUID) {
+        connector.connect(to: uuid)
+    }
+
+    func openApplicationSettings() {
+        Application.openSettings()
+    }
+
     deinit {
         self.connector.stopScanForPeripherals()
     }
 }
 
-fileprivate extension BluetoothStatus.NotReadyReason {
+extension BluetoothStatus.NotReadyReason: CustomStringConvertible {
     // TODO: support localizations here
     var description: String {
         switch self {

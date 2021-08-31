@@ -8,7 +8,7 @@ class ConnectionsViewModelTests: XCTestCase {
         }
 
         let target = Self.createTarget(connector)
-        XCTAssertEqual(target.state, ConnectionsViewModel.State.notReady("Bluetooth is powered off"))
+        XCTAssertEqual(target.state, ConnectionsViewModel.State.notReady(.poweredOff))
     }
 
     func testStateWhenBluetoothIsUnauthorized() {
@@ -18,7 +18,7 @@ class ConnectionsViewModelTests: XCTestCase {
 
         let target = Self.createTarget(connector)
         XCTAssertEqual(
-            target.state, ConnectionsViewModel.State.notReady("The application is not authorized to use Bluetooth"))
+            target.state, ConnectionsViewModel.State.notReady(.unauthorized))
     }
 
     func testStateWhenBluetoothIsUnsupported() {
@@ -27,7 +27,7 @@ class ConnectionsViewModelTests: XCTestCase {
         }
 
         let target = Self.createTarget(connector)
-        XCTAssertEqual(target.state, ConnectionsViewModel.State.notReady("Bluetooth is not supported on this device"))
+        XCTAssertEqual(target.state, ConnectionsViewModel.State.notReady(.unsupported))
     }
 
     func testStateWhileScanningDevices() {
@@ -35,11 +35,11 @@ class ConnectionsViewModelTests: XCTestCase {
         let connector = MockBluetoothConnector(onStartScanForPeripherals: startScanExpectation.fulfill)
 
         let target = Self.createTarget(connector)
-        XCTAssertEqual(target.state, ConnectionsViewModel.State.notReady("Bluetooth is not ready"))
+        XCTAssertEqual(target.state, ConnectionsViewModel.State.notReady(.preparing))
         connector.statusSubject.value = .ready
         self.waitForExpectations(timeout: 0.1)
         XCTAssertEqual(target.state, ConnectionsViewModel.State.scanning([]))
-        let peripheral = Peripheral(id: UUID(), name: "Device 42")
+        let peripheral = Peripheral(id: UUID(), name: "Device 42", state: .disconnected)
         connector.peripheralsSubject.value.append(peripheral)
         XCTAssertEqual(target.state, ConnectionsViewModel.State.scanning([peripheral]))
     }
@@ -61,6 +61,7 @@ class ConnectionsViewModelTests: XCTestCase {
     private static func createTarget(_ connector: BluetoothConnector) -> ConnectionsViewModel {
         let container = Container.shared
         container.register(instance: connector, as: BluetoothConnector.self)
+        container.register(MockStorage.init, as: LocalStorage.self)
         return ConnectionsViewModel()
     }
 }
@@ -68,21 +69,31 @@ class ConnectionsViewModelTests: XCTestCase {
 private class MockBluetoothConnector: BluetoothConnector {
     private let onStartScanForPeripherals: () -> Void
     private let onStopScanForPeripherals: (() -> Void)?
+    private let onConnect: (() -> Void)?
     let peripheralsSubject = SafeSubject([Peripheral]())
     let statusSubject: SafeSubject<BluetoothStatus>
+    var connectedPeripheralSubject: SafeSubject<Peripheral?>
 
     init(
         initialState: BluetoothStatus = .notReady(.preparing),
+        connectedPeripheral: Peripheral? = nil,
         onStartScanForPeripherals: @escaping () -> Void,
-        onStopScanForPeripherals: (() -> Void)? = nil
+        onStopScanForPeripherals: (() -> Void)? = nil,
+        onConnect: (() -> Void)? = nil
     ) {
         self.onStartScanForPeripherals = onStartScanForPeripherals
         self.onStopScanForPeripherals = onStopScanForPeripherals
+        self.onConnect = onConnect
         self.statusSubject = SafeSubject(initialState)
+        self.connectedPeripheralSubject = SafeSubject(connectedPeripheral)
     }
 
     var peripherals: SafePublisher<[Peripheral]> {
         self.peripheralsSubject.eraseToAnyPublisher()
+    }
+
+    var connectedPeripheral: SafePublisher<Peripheral?> {
+        self.connectedPeripheralSubject.eraseToAnyPublisher()
     }
 
     var status: SafePublisher<BluetoothStatus> {
@@ -95,5 +106,19 @@ private class MockBluetoothConnector: BluetoothConnector {
 
     func stopScanForPeripherals() {
         self.onStopScanForPeripherals?()
+    }
+
+    func connect(to uuid: UUID) {
+        self.onConnect?()
+    }
+
+    func forget(about uuid: UUID) {
+    }
+}
+
+private class MockStorage: LocalStorage {
+    var lastConnectedDevice: UUID? {
+        get { nil }
+        set { _ = newValue }
     }
 }
