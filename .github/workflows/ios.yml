@@ -17,7 +17,7 @@ jobs:
         run: swiftlint lint --reporter github-actions-logging --config "FlipperZero/.swiftlint.yml"
 
   build:
-    name: Build and Test using iPhone 11 simulator
+    name: Build and Test using iPhone 12 simulator
     runs-on: macos-latest
     steps:
       - name: Checkout
