@@ -28,7 +28,11 @@ class BluetoothService: NSObject, BluetoothConnector {
 
     private func publishPeripherals() {
         peripheralsSubject.value = []
-        let connected = manager.retrieveConnectedPeripherals(withServices: flipperServiceIDs)
+        var connected = manager.retrieveConnectedPeripherals(withServices: flipperServiceIDs)
+        // FIXME: retrieveConnectedPeripherals returns empty result if no services provided
+        if let connectedCBPeripheral = connectedCBPeripheral, !connected.contains(connectedCBPeripheral) {
+            connected.append(connectedCBPeripheral)
+        }
         let discovered = peripheralsMap.values.filter { !connected.contains($0) }
         peripheralsSubject.value = (connected + discovered)
             .compactMap(Peripheral.init)
