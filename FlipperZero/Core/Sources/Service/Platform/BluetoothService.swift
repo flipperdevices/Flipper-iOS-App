@@ -4,7 +4,7 @@ class BluetoothService: NSObject, BluetoothConnector {
     private let manager: CBCentralManager
 
     // FIXME: The only CBUUID Flipper advertise
-    private var flipperServiceIDs: [CBUUID] { [.heartRate] }
+    private var flipperServiceIDs: [CBUUID] { [] }
 
     private let peripheralsSubject = SafeSubject([Peripheral]())
     private let connectedPeripheralSubject = SafeSubject(Peripheral?.none)
@@ -32,6 +32,7 @@ class BluetoothService: NSObject, BluetoothConnector {
         let discovered = peripheralsMap.values.filter { !connected.contains($0) }
         peripheralsSubject.value = (connected + discovered)
             .compactMap(Peripheral.init)
+            .filter { $0.name.starts(with: "Flipper") }
             .sorted { $0.name < $1.name }
     }
 
