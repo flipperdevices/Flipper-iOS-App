@@ -45,7 +45,7 @@ struct ConnectionsView: View {
                 if peripheral.state != .connected {
                     viewModel.connect(to: peripheral.id)
                 }
-            }.foregroundColor(Color.white)
+            }.foregroundColor(.primary)
 
             Spacer()
 
