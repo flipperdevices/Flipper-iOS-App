@@ -1,4 +1,5 @@
-import CoreBluetooth
+import Foundation
+import CoreBluetoothMock
 
 class BluetoothService: NSObject, BluetoothConnector {
     private let manager: CBCentralManager
@@ -51,14 +52,15 @@ class BluetoothService: NSObject, BluetoothConnector {
     }
 
     override init() {
-        self.manager = CBCentralManager()
+        self.manager = CBCentralManagerFactory.instance(forceMock: false)
         super.init()
         self.manager.delegate = self
     }
 
     func startScanForPeripherals() {
         if self.statusSubject.value == .ready {
-            self.manager.scanForPeripherals(withServices: flipperServiceIDs)
+            // FIXME: CoreBluetooth does work with empty array, nordic doesn't
+            self.manager.scanForPeripherals(withServices: nil)
         }
     }
 
