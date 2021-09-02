@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var displayingConnections = false
+    @State private var displayingInstructions = false
 
     var body: some View {
         VStack(spacing: 30) {
@@ -29,7 +29,7 @@ struct HomeView: View {
 
             Spacer()
 
-            Button(action: { self.displayingConnections = true }) {
+            Button(action: { self.displayingInstructions = true }) {
                 Text("I have Flipper device")
                     .fontWeight(.semibold)
                     .padding(14)
@@ -39,13 +39,13 @@ struct HomeView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             }
             .padding(.horizontal, 15)
-            .sheet(isPresented: self.$displayingConnections) {
-                ConnectionsView(viewModel: ConnectionsViewModel())
+            .sheet(isPresented: self.$displayingInstructions) {
+                InstructionsView(viewModel: .init())
                 #if os(macOS)
                 HStack {
                     Spacer()
                     Button("Close") {
-                        self.displayingConnections = false
+                        self.displayingInstructions = false
                     }
                     .padding(.all)
                 }
