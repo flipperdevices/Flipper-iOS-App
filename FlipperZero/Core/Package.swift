@@ -18,8 +18,8 @@ let package = Package(
             path: "../DI"),
         .package(
             name: "CoreBluetoothMock",
-            url: "https://github.com/NordicSemiconductor/IOS-CoreBluetooth-Mock.git",
-            .upToNextMajor(from: "0.13.0"))
+            url: "https://github.com/tonyfreeman/IOS-CoreBluetooth-Mock.git",
+            .branch("dev"))
     ],
     targets: [
         .target(
