@@ -1,4 +1,5 @@
 import Combine
+import Injector
 import struct Foundation.UUID
 
 class ConnectionsViewModel: ObservableObject {

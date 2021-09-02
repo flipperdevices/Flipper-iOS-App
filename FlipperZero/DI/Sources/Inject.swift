@@ -1,14 +1,14 @@
 import Foundation
 
 @propertyWrapper
-struct Inject<Service> {
+public struct Inject<Service> {
     private var service: Service
 
-    init(container: Resolver = Container.shared) {
+    public init(container: Resolver = Container.shared) {
         self.service = container.resolve(Service.self)
     }
 
-    var wrappedValue: Service {
+    public var wrappedValue: Service {
         get { service }
         mutating set { service = newValue }
     }

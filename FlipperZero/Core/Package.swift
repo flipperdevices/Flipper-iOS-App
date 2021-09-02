@@ -12,12 +12,16 @@ let package = Package(
             name: "Core",
             targets: ["Core"])
     ],
+    dependencies: [
+        .package(name: "Injector", path: "../DI")
+    ],
     targets: [
         .target(
             name: "Core",
+            dependencies: ["Injector"],
             path: "Sources"),
         .testTarget(
-            name: "Tests",
+            name: "CoreTests",
             dependencies: ["Core"],
             path: "Tests")
     ]
