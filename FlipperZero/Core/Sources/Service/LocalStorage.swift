@@ -1,5 +1,5 @@
 import struct Foundation.UUID
 
-protocol LocalStorage {
+public protocol LocalStorage {
     var lastConnectedDevice: UUID? { get set }
 }

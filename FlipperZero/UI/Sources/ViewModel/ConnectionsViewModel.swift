@@ -1,3 +1,4 @@
+import Core
 import Combine
 import Injector
 import struct Foundation.UUID
@@ -55,7 +56,7 @@ class ConnectionsViewModel: ObservableObject {
 
 extension BluetoothStatus.NotReadyReason: CustomStringConvertible {
     // TODO: support localizations here
-    var description: String {
+    public var description: String {
         switch self {
         case .poweredOff:
             return "Bluetooth is powered off"

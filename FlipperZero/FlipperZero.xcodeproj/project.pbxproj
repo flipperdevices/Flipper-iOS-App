@@ -12,6 +12,7 @@
 		4983062C25299C0600B04AFD /* Born2bSportyV2.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */; };
 		4983062D25299C0600B04AFD /* HelvetiPixel.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498305C12527FEE900B04AFD /* HelvetiPixel.ttf */; };
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
+		8B7064CC26E27429006CB4A8 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B7064CB26E27429006CB4A8 /* UI */; };
 		8B77A9CB26CAA3C200A3DF9F /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B77A9CA26CAA3C200A3DF9F /* Core */; };
 		8B77A9CD26CAA43300A3DF9F /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B77A9CC26CAA43300A3DF9F /* Core */; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
@@ -61,6 +62,7 @@
 		498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		498305F62529569200B04AFD /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8B7064CA26E2732E006CB4A8 /* UI */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UI; sourceTree = "<group>"; };
 		8B77A9C726CAA3BA00A3DF9F /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Core; sourceTree = "<group>"; };
 		8BEB7C8826E1432600AA9356 /* DI */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DI; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
@@ -77,6 +79,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B7064CC26E27429006CB4A8 /* UI in Frameworks */,
 				8B77A9CD26CAA43300A3DF9F /* Core in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -113,6 +116,7 @@
 			children = (
 				8B77A9C726CAA3BA00A3DF9F /* Core */,
 				8BEB7C8826E1432600AA9356 /* DI */,
+				8B7064CA26E2732E006CB4A8 /* UI */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -189,6 +193,7 @@
 			name = "FlipperZero(iOS)";
 			packageProductDependencies = (
 				8B77A9CC26CAA43300A3DF9F /* Core */,
+				8B7064CB26E27429006CB4A8 /* UI */,
 			);
 			productName = "FlipperZero (iOS)";
 			productReference = F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */;
@@ -587,6 +592,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8B7064CB26E27429006CB4A8 /* UI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UI;
+		};
 		8B77A9CA26CAA3C200A3DF9F /* Core */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Core;

@@ -1,6 +1,6 @@
 import struct Foundation.UUID
 
-protocol BluetoothConnector {
+public protocol BluetoothConnector {
     var peripherals: SafePublisher<[Peripheral]> { get }
     var connectedPeripheral: SafePublisher<Peripheral?> { get }
     var status: SafePublisher<BluetoothStatus> { get }
