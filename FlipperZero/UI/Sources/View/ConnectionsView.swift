@@ -1,6 +1,8 @@
 import Combine
 import SwiftUI
 
+// swiftlint:disable closure_body_length
+
 struct ConnectionsView: View {
     @ObservedObject var viewModel: ConnectionsViewModel
     @State private var showDeviceInfo = false
