@@ -1,5 +1,6 @@
-@testable import Core
 import XCTest
+
+@testable import Injector
 
 class ServiceFactoryTests: XCTestCase {
     func testSingletonFactoryDoesNotInvokeBuilderEarly() {

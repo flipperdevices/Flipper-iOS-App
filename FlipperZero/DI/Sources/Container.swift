@@ -1,6 +1,6 @@
 // TODO: Replace with well-known DI container or extend to support resolving with dependencies
-class Container: Resolver {
-    static let shared: Container = .init()
+public class Container: Resolver {
+    public static let shared: Container = .init()
 
     private struct Key: Hashable {
         private let type: Any.Type
@@ -20,11 +20,17 @@ class Container: Resolver {
 
     private var factories = [Key: ServiceFactory]()
 
-    func register<Service>(_ builder: @escaping () -> Service, as type: Service.Type, isSingleton: Bool = false) {
-        self.factories[Key(type)] = isSingleton ? SingletonFactory(builder) : SingleUseFactory(builder)
+    public func register<Service>(
+        _ builder: @escaping () -> Service,
+        as type: Service.Type,
+        isSingleton: Bool = false
+    ) {
+        self.factories[Key(type)] = isSingleton
+            ? SingletonFactory(builder)
+            : SingleUseFactory(builder)
     }
 
-    func resolve<Service>(_ type: Service.Type) -> Service {
+    public func resolve<Service>(_ type: Service.Type) -> Service {
         guard let factory = self.factories[Key(type)] else {
             fatalError("Factory service for [\(type)] is not registered")
         }
@@ -37,7 +43,7 @@ class Container: Resolver {
     }
 }
 
-extension Container {
+public extension Container {
     func register<Service>(instance: Service) {
         self.register(instance: instance, as: Service.self)
     }

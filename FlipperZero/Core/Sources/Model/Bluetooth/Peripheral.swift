@@ -1,30 +1,44 @@
 import struct Foundation.UUID
 
-struct Peripheral: EquatableById, Identifiable {
-    let id: UUID
-    let name: String
-    var state: State = .disconnected
-    var services: [Service] = []
+// FIXME: this is actually UI model, move there
 
-    enum State {
+public struct Peripheral: Equatable, Identifiable {
+    public let id: UUID
+    public let name: String
+    public var state: State = .disconnected
+    public var services: [Service] = []
+
+    public init(
+        id: UUID,
+        name: String,
+        state: Peripheral.State = .disconnected,
+        services: [Peripheral.Service] = []
+    ) {
+        self.id = id
+        self.name = name
+        self.state = state
+        self.services = services
+    }
+
+    public enum State: Equatable {
         case disconnected
         case connecting
         case connected
         case disconnecting
     }
 
-    struct Service: Identifiable {
-        var id: String { name }
+    public struct Service: Equatable, Identifiable {
+        public var id: String { name }
 
-        var name: String
-        var characteristics: [Characteristic] = []
+        public var name: String
+        public var characteristics: [Characteristic] = []
 
         // swiftlint:disable nesting
-        struct Characteristic: Identifiable {
-            var id: String { name }
+        public struct Characteristic: Equatable, Identifiable {
+            public var id: String { name }
 
-            let name: String
-            let value: String
+            public let name: String
+            public let value: String
         }
     }
 }

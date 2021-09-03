@@ -75,6 +75,9 @@ struct ConnectionsView: View {
     }
 }
 
+import Core
+import Injector
+
 struct ConnectionsView_Previews: PreviewProvider {
     static var previews: some View {
         Group {

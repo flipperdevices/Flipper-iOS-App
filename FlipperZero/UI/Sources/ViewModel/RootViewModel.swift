@@ -1,4 +1,6 @@
+import Core
 import Combine
+import Injector
 import struct Foundation.UUID
 
 public class RootViewModel: ObservableObject {

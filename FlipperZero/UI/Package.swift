@@ -2,27 +2,28 @@
 import PackageDescription
 
 let package = Package(
-    name: "Core",
+    name: "UI",
     platforms: [
         .iOS(.v14),
-        .macOS(.v11)
+        .macOS(.v11),
+        .tvOS(.v14)
     ],
     products: [
         .library(
-            name: "Core",
-            targets: ["Core"])
+            name: "UI",
+            targets: ["UI"])
     ],
     dependencies: [
-        .package(name: "Injector", path: "../DI")
+        .package(name: "Core", path: "../Core"),
     ],
     targets: [
         .target(
-            name: "Core",
-            dependencies: ["Injector"],
+            name: "UI",
+            dependencies: ["Core"],
             path: "Sources"),
         .testTarget(
-            name: "CoreTests",
-            dependencies: ["Core"],
+            name: "UITests",
+            dependencies: ["UI"],
             path: "Tests")
     ]
 )

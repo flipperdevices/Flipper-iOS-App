@@ -1,4 +1,6 @@
+import Core
 import Combine
+import Injector
 
 class DeviceInfoViewModel: ObservableObject {
     @Inject private var connector: BluetoothConnector
