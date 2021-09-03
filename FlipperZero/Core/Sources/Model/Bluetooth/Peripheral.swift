@@ -1,6 +1,8 @@
 import struct Foundation.UUID
 
-public struct Peripheral: EquatableById, Identifiable {
+// FIXME: this is actually UI model, move there
+
+public struct Peripheral: Equatable, Identifiable {
     public let id: UUID
     public let name: String
     public var state: State = .disconnected
@@ -18,21 +20,21 @@ public struct Peripheral: EquatableById, Identifiable {
         self.services = services
     }
 
-    public enum State {
+    public enum State: Equatable {
         case disconnected
         case connecting
         case connected
         case disconnecting
     }
 
-    public struct Service: Identifiable {
+    public struct Service: Equatable, Identifiable {
         public var id: String { name }
 
         public var name: String
         public var characteristics: [Characteristic] = []
 
         // swiftlint:disable nesting
-        public struct Characteristic: Identifiable {
+        public struct Characteristic: Equatable, Identifiable {
             public var id: String { name }
 
             public let name: String

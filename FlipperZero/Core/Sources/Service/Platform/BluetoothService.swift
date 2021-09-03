@@ -26,16 +26,15 @@ class BluetoothService: NSObject, BluetoothConnector {
     }
 
     private func publishPeripherals() {
-        peripheralsSubject.value = []
-        var connected = manager.retrieveConnectedPeripherals(withServices: flipperServiceIDs)
-        // FIXME: retrieveConnectedPeripherals returns empty result if no services provided
-        if let connectedCBPeripheral = connectedCBPeripheral, !connected.contains(connectedCBPeripheral) {
-            connected.append(connectedCBPeripheral)
-        }
-        let discovered = peripheralsMap.values.filter { !connected.contains($0) }
-        peripheralsSubject.value = (connected + discovered)
+        let connected = manager
+            .retrieveConnectedPeripherals(withServices: [.deviceInformation])
+            .filter { $0.state == .connected }
             .compactMap(Peripheral.init)
-            .filter { $0.name.starts(with: "Flipper") }
+
+        let discovered = peripheralsMap.values
+            .compactMap(Peripheral.init)
+
+        peripheralsSubject.value = (connected + discovered)
             .sorted { $0.name < $1.name }
     }
 
@@ -246,7 +245,7 @@ fileprivate extension BluetoothStatus {
 
 fileprivate extension Peripheral {
     init?(_ source: CBPeripheral) {
-        guard let name = source.name else {
+        guard let name = source.name, name.starts(with: "Flipper") else {
             return nil
         }
 
