@@ -1,5 +1,8 @@
-@testable import Core
 import XCTest
+import Core
+import Injector
+
+@testable import UI
 
 class ConnectionsViewModelTests: XCTestCase {
     func testStateWhenBluetoothIsPoweredOff() {
