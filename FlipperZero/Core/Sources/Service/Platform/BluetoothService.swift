@@ -286,13 +286,12 @@ extension Peripheral.Service.Characteristic {
             return
         }
 
-        #if targetEnvironment(simulator)
-        let uuid: CBUUID? = source.service.uuid
-        #else
-        let uuid: CBUUID? = source.service?.uuid
-        #endif
+        // FIXME: hack for github actions where source.service is not optional
+        func getCBUUID(_ service: CBService?) -> CBUUID? {
+            service?.uuid
+        }
 
-        switch uuid {
+        switch getCBUUID(source.service) {
         case .some(.heartRate):
             self.value = String(format: "%02hhx", [UInt8](data))
         case .some(.deviceInformation):
