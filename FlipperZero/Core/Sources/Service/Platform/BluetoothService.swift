@@ -5,9 +5,13 @@ class BluetoothService: NSObject, BluetoothConnector {
 
     private var flipperServiceIDs: [CBUUID] { [.flipperZeroWhite, .flipperZeroBlack] }
 
+    private let statusSubject = SafeSubject(BluetoothStatus.notReady(.preparing))
     private let peripheralsSubject = SafeSubject([Peripheral]())
     private let connectedPeripheralSubject = SafeSubject(Peripheral?.none)
-    private let statusSubject = SafeSubject(BluetoothStatus.notReady(.preparing))
+
+    var status: SafePublisher<BluetoothStatus> {
+        self.statusSubject.eraseToAnyPublisher()
+    }
 
     var peripherals: SafePublisher<[Peripheral]> {
         self.peripheralsSubject.eraseToAnyPublisher()
@@ -46,10 +50,6 @@ class BluetoothService: NSObject, BluetoothConnector {
         }
     }
 
-    var status: SafePublisher<BluetoothStatus> {
-        self.statusSubject.eraseToAnyPublisher()
-    }
-
     override init() {
         self.manager = CBCentralManager()
         super.init()
@@ -71,87 +71,82 @@ class BluetoothService: NSObject, BluetoothConnector {
 
     func connect(to uuid: UUID) {
         manager.retrievePeripherals(withIdentifiers: [uuid]).forEach {
-            peripheralsMap[$0.identifier] = $0
             manager.connect($0)
+            peripheralsMap[$0.identifier] = $0
         }
-        publishPeripherals()
     }
 
     func forget(about uuid: UUID) {
         manager.retrievePeripherals(withIdentifiers: [uuid]).forEach {
             manager.cancelPeripheralConnection($0)
         }
-        if connectedCBPeripheral?.identifier == uuid {
-            connectedCBPeripheral = nil
-            publishConnectedPeripheral()
-        }
-        publishPeripherals()
     }
 }
 
 extension BluetoothService: CBCentralManagerDelegate {
+
+    // MARK: Status changed
+
     func centralManagerDidUpdateState(_ manager: CBCentralManager) {
-        let status = BluetoothStatus(manager.state)
-        self.statusSubject.value = status
-        if status != .ready {
+        if manager.state != .poweredOn {
             self.peripheralsMap.removeAll()
         }
+        self.statusSubject.value = .init(manager.state)
     }
+
+    // MARK: Did discover
 
     func centralManager(
-        _: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber
+        _: CBCentralManager,
+        didDiscover peripheral: CBPeripheral,
+        advertisementData: [String: Any],
+        rssi: NSNumber
     ) {
-        if self.peripheralsMap[peripheral.identifier] == nil,
-            let isConnectable = advertisementData[CBAdvertisementDataIsConnectable] as? Bool,
-            isConnectable {
-
-            self.peripheralsMap[peripheral.identifier] = peripheral
-        }
+        self.peripheralsMap[peripheral.identifier] = peripheral
     }
 
-    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+    // MARK: Connection status changed
+
+    func centralManager(
+        _ central: CBCentralManager,
+        didConnect peripheral: CBPeripheral
+    ) {
         if let connected = connectedCBPeripheral {
-            print("disconnecting from", connected.name ?? "<unknown>")
             central.cancelPeripheralConnection(connected)
         }
-        print("connected to \(peripheral)")
         peripheral.delegate = self
         connectedCBPeripheral = peripheral
-        publishPeripherals()
         publishConnectedPeripheral()
+        publishPeripherals()
 
         peripheral.discoverServices(nil)
     }
 
-    // TODO: handle connection failure
-    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
-        print("did fail to connect to \(peripheral)")
-        if let error = error {
-            print(error)
+    func centralManager(
+        _ central: CBCentralManager,
+        didDisconnectPeripheral peripheral: CBPeripheral,
+        error: Error?
+    ) {
+        if connectedCBPeripheral?.identifier == peripheral.identifier {
+            connectedCBPeripheral = nil
         }
-        publishPeripherals()
         publishConnectedPeripheral()
+        publishPeripherals()
+    }
+
+    func centralManager(
+        _ central: CBCentralManager,
+        didFailToConnect peripheral: CBPeripheral,
+        error: Error?
+    ) {
+        publishConnectedPeripheral()
+        publishPeripherals()
     }
 }
 
+// MARK: Peripheral delegate
+
 extension BluetoothService: CBPeripheralDelegate {
-
-    // MARK: RSSI
-
-    public func peripheralDidUpdateRSSI(
-        _ peripheral: CBPeripheral,
-        error: Error?
-    ) {
-        print("rssi updated")
-    }
-
-    public func peripheral(
-        _ peripheral: CBPeripheral,
-        didReadRSSI RSSI: NSNumber,
-        error: Error?
-    ) {
-        print("new rssi:", RSSI)
-    }
 
     // MARK: Services
 
@@ -160,10 +155,6 @@ extension BluetoothService: CBPeripheralDelegate {
         didDiscoverServices error: Error?
     ) {
         peripheral.services?.forEach { service in
-            print("service discovered", service.uuid.uuidString)
-            guard service.uuid != .heartRate else {
-                return
-            }
             peripheral.discoverCharacteristics(nil, for: service)
         }
     }
@@ -175,12 +166,7 @@ extension BluetoothService: CBPeripheralDelegate {
         didDiscoverCharacteristicsFor service: CBService,
         error: Error?
     ) {
-        guard let characteristics = service.characteristics else {
-            print("no characteristic discovered")
-            return
-        }
-        print("\(characteristics.count) characteristics discovered for service:", service.uuid)
-        characteristics.forEach { characteristic in
+        service.characteristics?.forEach { characteristic in
             peripheral.readValue(for: characteristic)
         }
     }
@@ -192,35 +178,7 @@ extension BluetoothService: CBPeripheralDelegate {
         didUpdateValueFor characteristic: CBCharacteristic,
         error: Error?
     ) {
-        print("new value for:", characteristic.uuid)
-        // let characteristic = Characteristic(characteristic)
         publishConnectedPeripheral()
-    }
-    public func peripheral(
-        _ peripheral: CBPeripheral,
-        didWriteValueFor characteristic: CBCharacteristic,
-        error: Error?
-    ) {
-        print("value written for:", characteristic.uuid)
-    }
-    public func peripheral(
-        _ peripheral: CBPeripheral,
-        didUpdateNotificationStateFor characteristic: CBCharacteristic,
-        error: Error?
-    ) {
-        print("notification state has changed to:", characteristic.isNotifying)
-    }
-    public func peripheralIsReady(
-        toSendWriteWithoutResponse peripheral: CBPeripheral
-    ) {
-        print("toSendWriteWithoutResponse")
-    }
-    public func peripheral(
-        _ peripheral: CBPeripheral,
-        didOpen channel: CBL2CAPChannel?,
-        error: Error?
-    ) {
-        print("L2CAP channel:", channel?.description ?? "nil")
     }
 }
 
@@ -292,8 +250,6 @@ extension Peripheral.Service.Characteristic {
         }
 
         switch getCBUUID(source.service) {
-        case .some(.heartRate):
-            self.value = String(format: "%02hhx", [UInt8](data))
         case .some(.deviceInformation):
             self.value = String(data: data.dropLast(), encoding: .utf8) ?? ""
         default:
@@ -307,6 +263,5 @@ extension CBUUID {
     static var flipperZeroBlack: CBUUID { .init(string: "3081") }
 
     static var deviceInformation: CBUUID { .init(string: "180A") }
-    static var heartRate: CBUUID { .init(string: "180D") }
     static var battery: CBUUID { .init(string: "180F") }
 }
