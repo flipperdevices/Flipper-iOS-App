@@ -3,8 +3,7 @@ import CoreBluetooth
 class BluetoothService: NSObject, BluetoothConnector {
     private let manager: CBCentralManager
 
-    // FIXME: The only CBUUID Flipper advertise
-    private var flipperServiceIDs: [CBUUID] { [] }
+    private var flipperServiceIDs: [CBUUID] { [.flipperZeroWhite, .flipperZeroBlack] }
 
     private let peripheralsSubject = SafeSubject([Peripheral]())
     private let connectedPeripheralSubject = SafeSubject(Peripheral?.none)
@@ -306,6 +305,9 @@ extension Peripheral.Service.Characteristic {
 }
 
 extension CBUUID {
+    static var flipperZeroWhite: CBUUID { .init(string: "3080") }
+    static var flipperZeroBlack: CBUUID { .init(string: "3081") }
+
     static var deviceInformation: CBUUID { .init(string: "180A") }
     static var heartRate: CBUUID { .init(string: "180D") }
     static var battery: CBUUID { .init(string: "180F") }
