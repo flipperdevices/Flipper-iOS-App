@@ -136,23 +136,6 @@ extension BluetoothService: CBCentralManagerDelegate {
 
 extension BluetoothService: CBPeripheralDelegate {
 
-    // MARK: RSSI
-
-    public func peripheralDidUpdateRSSI(
-        _ peripheral: CBPeripheral,
-        error: Error?
-    ) {
-        print("rssi updated")
-    }
-
-    public func peripheral(
-        _ peripheral: CBPeripheral,
-        didReadRSSI RSSI: NSNumber,
-        error: Error?
-    ) {
-        print("new rssi:", RSSI)
-    }
-
     // MARK: Services
 
     public func peripheral(
@@ -195,32 +178,6 @@ extension BluetoothService: CBPeripheralDelegate {
         print("new value for:", characteristic.uuid)
         // let characteristic = Characteristic(characteristic)
         publishConnectedPeripheral()
-    }
-    public func peripheral(
-        _ peripheral: CBPeripheral,
-        didWriteValueFor characteristic: CBCharacteristic,
-        error: Error?
-    ) {
-        print("value written for:", characteristic.uuid)
-    }
-    public func peripheral(
-        _ peripheral: CBPeripheral,
-        didUpdateNotificationStateFor characteristic: CBCharacteristic,
-        error: Error?
-    ) {
-        print("notification state has changed to:", characteristic.isNotifying)
-    }
-    public func peripheralIsReady(
-        toSendWriteWithoutResponse peripheral: CBPeripheral
-    ) {
-        print("toSendWriteWithoutResponse")
-    }
-    public func peripheral(
-        _ peripheral: CBPeripheral,
-        didOpen channel: CBL2CAPChannel?,
-        error: Error?
-    ) {
-        print("L2CAP channel:", channel?.description ?? "nil")
     }
 }
 
@@ -307,6 +264,5 @@ extension CBUUID {
     static var flipperZeroBlack: CBUUID { .init(string: "3081") }
 
     static var deviceInformation: CBUUID { .init(string: "180A") }
-    static var heartRate: CBUUID { .init(string: "180D") }
     static var battery: CBUUID { .init(string: "180F") }
 }
