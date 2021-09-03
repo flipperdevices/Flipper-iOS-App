@@ -68,7 +68,6 @@ opt_in_rules:
  - redundant_nil_coalescing
  - redundant_type_annotation
  - sorted_first_last
- - sorted_imports
  - static_operator
  - switch_case_on_newline
  - toggle_bool
