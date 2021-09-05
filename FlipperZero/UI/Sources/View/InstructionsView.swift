@@ -94,12 +94,6 @@ struct InstructionsView: View {
                 }
                 #endif
             }
-
-            Button(action: {}) {
-                Text("Not now")
-                    .fontWeight(.semibold)
-            }
-            .padding(.bottom, 15)
         }
     }
 }
