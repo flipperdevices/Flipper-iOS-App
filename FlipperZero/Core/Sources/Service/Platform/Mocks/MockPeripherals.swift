@@ -41,6 +41,7 @@ extension CBMCharacteristicMock {
 }
 
 extension CBMServiceMock {
+    // swiftlint:disable vertical_parameter_alignment_on_call
     static let deviceInformationService = CBMServiceMock(
         type: .deviceInformation,
         primary: true,
@@ -50,7 +51,6 @@ extension CBMServiceMock {
             .firmwareRevisionCharacteristic,
             .softwareRevisionCharacteristic
     )
-
 }
 
 private class FlipperCBMPeripheralSpecDelegate: CBMPeripheralSpecDelegate {
@@ -58,18 +58,25 @@ private class FlipperCBMPeripheralSpecDelegate: CBMPeripheralSpecDelegate {
         _ peripheral: CBMPeripheralSpec,
         didReceiveReadRequestFor characteristic: CBMCharacteristicMock
     ) -> Result<Data, Error> {
+        let result: Result<String, Error>
         switch characteristic.uuid {
         case .manufacturerNameCharacteristic:
-            return .success("manufacturer\0".data(using: .utf8)!)
+            result = .success("manufacturer")
         case .modelNumberCharacteristic:
-            return .success("model\0".data(using: .utf8)!)
+            result = .success("model")
         case .firmwareRevisionCharacteristic:
-            return .success("firmware\0".data(using: .utf8)!)
+            result = .success("firmware")
         case .softwareRevisionCharacteristic:
-            return .success("software\0".data(using: .utf8)!)
+            result = .success("software")
         default:
             // FIXME: return an error
-            return .success("<error>\0".data(using: .utf8)!)
+            result = .success("<error>")
+        }
+        switch result {
+        case let .success(string):
+            return .success(.init([UInt8](string.appending("\n").utf8)))
+        case let .failure(error):
+            return .failure(error)
         }
     }
 

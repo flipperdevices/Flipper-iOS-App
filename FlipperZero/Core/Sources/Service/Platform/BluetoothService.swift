@@ -197,8 +197,6 @@ fileprivate extension BluetoothStatus {
             self = .notReady(.poweredOff)
         case .poweredOn:
             self = .ready
-        @unknown default:
-            self = .notReady(.unsupported)
         }
     }
 }

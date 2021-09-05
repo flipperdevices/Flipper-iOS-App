@@ -1,3 +1,4 @@
+// swiftlint:disable file_header
 /*
 * Copyright (c) 2020, Nordic Semiconductor
 * All rights reserved.
