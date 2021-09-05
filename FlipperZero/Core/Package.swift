@@ -13,12 +13,18 @@ let package = Package(
             targets: ["Core"])
     ],
     dependencies: [
-        .package(name: "Injector", path: "../DI")
+        .package(
+            name: "Injector",
+            path: "../DI"),
+        .package(
+            name: "CoreBluetoothMock",
+            url: "https://github.com/tonyfreeman/IOS-CoreBluetooth-Mock.git",
+            .branch("dev"))
     ],
     targets: [
         .target(
             name: "Core",
-            dependencies: ["Injector"],
+            dependencies: ["Injector", "CoreBluetoothMock"],
             path: "Sources"),
         .testTarget(
             name: "CoreTests",
