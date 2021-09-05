@@ -1,14 +1,18 @@
 import SwiftUI
 
 public struct RootView: View {
-    let viewModel: RootViewModel
+    @ObservedObject var viewModel: RootViewModel
 
     public init(viewModel: RootViewModel) {
         self.viewModel = viewModel
     }
 
     public var body: some View {
-        WelcomeView()
+        if viewModel.pairedDeviceUUID == nil {
+            InstructionsView(viewModel: .init())
+        } else {
+            DeviceInfoView(viewModel: .init())
+        }
     }
 }
 
