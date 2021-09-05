@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct HomeView: View {
+struct WelcomeView: View {
     @State private var displayingInstructions = false
 
     var body: some View {
@@ -63,6 +63,6 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        WelcomeView()
     }
 }

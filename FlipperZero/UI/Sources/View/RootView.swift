@@ -8,7 +8,7 @@ public struct RootView: View {
     }
 
     public var body: some View {
-        HomeView()
+        WelcomeView()
     }
 }
 
