@@ -5,7 +5,6 @@ import SwiftUI
 
 struct ConnectionsView: View {
     @ObservedObject var viewModel: ConnectionsViewModel
-    @State private var showDeviceInfo = false
 
     var body: some View {
         NavigationView {
@@ -54,24 +53,8 @@ struct ConnectionsView: View {
             if peripheral.state == .connecting {
                 ProgressView()
             } else if peripheral.state == .connected {
-                NavigationLink(
-                    destination: DeviceInfoView(showDeviceInfo: $showDeviceInfo),
-                    isActive: $showDeviceInfo
-                ) {}
-                    .disabled(true)
-                    .frame(width: 0)
-                    .opacity(0)
-
                 Text("Connected")
                     .foregroundColor(.secondary)
-
-                Image(systemName: "info.circle")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(.accentColor)
-                    .onTapGesture {
-                        showDeviceInfo = true
-                    }
             }
         }
     }

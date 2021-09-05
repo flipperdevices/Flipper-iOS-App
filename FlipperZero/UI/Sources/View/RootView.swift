@@ -1,20 +1,17 @@
 import SwiftUI
 
 public struct RootView: View {
-    let viewModel: RootViewModel
-    let homeTabTitle = "Home"
+    @ObservedObject var viewModel: RootViewModel
 
     public init(viewModel: RootViewModel) {
         self.viewModel = viewModel
     }
 
     public var body: some View {
-        TabView {
-            HomeView()
-                .tabItem {
-                    Image(systemName: "house.fill")
-                    Text(self.homeTabTitle)
-                }
+        if viewModel.pairedDeviceUUID == nil {
+            InstructionsView(viewModel: .init())
+        } else {
+            DeviceInfoView(viewModel: .init())
         }
     }
 }
