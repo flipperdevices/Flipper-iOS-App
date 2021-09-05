@@ -38,6 +38,7 @@ class BluetoothService: NSObject, BluetoothConnector {
 
         let discovered = peripheralsMap.values
             .compactMap(Peripheral.init)
+            .filter { !connected.contains($0) }
 
         peripheralsSubject.value = (connected + discovered)
             .sorted { $0.name < $1.name }
@@ -59,8 +60,7 @@ class BluetoothService: NSObject, BluetoothConnector {
 
     func startScanForPeripherals() {
         if self.statusSubject.value == .ready {
-            // FIXME: CoreBluetooth does work with empty array, nordic doesn't
-            self.manager.scanForPeripherals(withServices: nil)
+            self.manager.scanForPeripherals(withServices: flipperServiceIDs)
         }
     }
 

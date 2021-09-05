@@ -90,8 +90,11 @@ private class FlipperCBMPeripheralSpecDelegate: CBMPeripheralSpecDelegate {
     }
 }
 
+// swiftlint:disable force_unwrapping
 let flipper = CBMPeripheralSpec
-    .simulatePeripheral(identifier: UUID(), proximity: .near)
+    .simulatePeripheral(
+        identifier: UUID(uuidString: "5C285BD5-361F-41DF-B4CB-D79C339E4CB8")!,
+        proximity: .near)
     .advertising(
         advertisementData: [
             CBMAdvertisementDataLocalNameKey: "Flipper Zero",
