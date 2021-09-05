@@ -2,11 +2,9 @@ import SwiftUI
 
 struct DeviceInfoView: View {
     @ObservedObject var viewModel: DeviceInfoViewModel = .init()
-    let showDeviceInfo: Binding<Bool>?
 
-    init(viewModel: DeviceInfoViewModel = .init(), showDeviceInfo: Binding<Bool>? = nil) {
+    init(viewModel: DeviceInfoViewModel = .init()) {
         self.viewModel = viewModel
-        self.showDeviceInfo = showDeviceInfo
     }
 
     var body: some View {
@@ -27,7 +25,6 @@ struct DeviceInfoView: View {
                         }
                         Button("Forget This Device") {
                             viewModel.forgetConnectedDevice()
-                            showDeviceInfo?.wrappedValue = false
                         }
                     }
                 }
