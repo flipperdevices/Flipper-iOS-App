@@ -41,15 +41,15 @@ extension CBMCharacteristicMock {
 }
 
 extension CBMServiceMock {
-    // swiftlint:disable vertical_parameter_alignment_on_call
     static let deviceInformationService = CBMServiceMock(
         type: .deviceInformation,
         primary: true,
-        characteristics:
+        characteristics: [
             .manufacturerNameCharacteristic,
             .modelNumberCharacteristic,
             .firmwareRevisionCharacteristic,
             .softwareRevisionCharacteristic
+        ]
     )
 }
 
