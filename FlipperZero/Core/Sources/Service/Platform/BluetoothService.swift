@@ -212,7 +212,9 @@ fileprivate extension Peripheral {
         self.state = .init(source.state)
         self.services = (source.services ?? [])
             .map(Service.init)
-            .filter { $0.name == "Device Information" }
+            .filter {
+                $0.name == "Device Information" || $0.name == "Battery"
+            }
     }
 }
 
@@ -238,7 +240,11 @@ extension Peripheral.Service {
 
 extension Peripheral.Service.Characteristic {
     init(_ source: CBCharacteristic) {
-        self.name = .init(source.uuid.description.dropLast(" String".count))
+        var description = source.uuid.description
+        if description.hasSuffix(" String") {
+            description = String(description.dropLast(" String".count))
+        }
+        self.name = description
         guard let data = source.value else {
             value = ""
             return
@@ -252,6 +258,8 @@ extension Peripheral.Service.Characteristic {
         switch getCBUUID(source.service) {
         case .some(.deviceInformation):
             self.value = String(data: data.dropLast(), encoding: .utf8) ?? ""
+        case .some(.battery):
+            self.value = String(data.first ?? 0)
         default:
             self.value = "<unsupported>"
         }

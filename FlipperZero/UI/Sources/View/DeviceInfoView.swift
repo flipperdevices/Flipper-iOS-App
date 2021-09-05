@@ -11,9 +11,9 @@ struct DeviceInfoView: View {
         if let device = viewModel.device {
             VStack {
                 Spacer()
-                ForEach(device.services) { service in
-                    Form {
-                        Section(header: Text("About")) {
+                Form {
+                    ForEach(device.services) { service in
+                        Section(header: Text(service.name)) {
                             List(service.characteristics) { characteristic in
                                 HStack {
                                     Text("\(characteristic.name)")
@@ -23,9 +23,9 @@ struct DeviceInfoView: View {
                                 }
                             }
                         }
-                        Button("Forget This Device") {
-                            viewModel.forgetConnectedDevice()
-                        }
+                    }
+                    Button("Forget This Device") {
+                        viewModel.forgetConnectedDevice()
                     }
                 }
             }
