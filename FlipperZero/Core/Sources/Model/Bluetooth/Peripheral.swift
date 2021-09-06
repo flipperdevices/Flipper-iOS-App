@@ -6,17 +6,23 @@ public struct Peripheral: Equatable, Identifiable {
     public let id: UUID
     public let name: String
     public var state: State = .disconnected
+    public var deviceInformation: Service.DeviceInformation?
+    public var battery: Service.Battery?
     public var services: [Service] = []
 
     public init(
         id: UUID,
         name: String,
         state: Peripheral.State = .disconnected,
+        deviceInformation: Service.DeviceInformation? = nil,
+        battery: Service.Battery? = nil,
         services: [Peripheral.Service] = []
     ) {
         self.id = id
         self.name = name
         self.state = state
+        self.deviceInformation = deviceInformation
+        self.battery = battery
         self.services = services
     }
 
@@ -37,8 +43,8 @@ public struct Peripheral: Equatable, Identifiable {
         public struct Characteristic: Equatable, Identifiable {
             public var id: String { name }
 
-            public let name: String
-            public let value: String
+            public var name: String
+            public var value: String
         }
     }
 }

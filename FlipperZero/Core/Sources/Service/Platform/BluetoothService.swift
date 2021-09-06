@@ -210,9 +210,18 @@ fileprivate extension Peripheral {
         self.id = source.identifier
         self.name = name
         self.state = .init(source.state)
+
+        self.deviceInformation = source.services?
+            .first { $0.uuid == .deviceInformation }
+            .map(Service.DeviceInformation.init) ?? nil
+
+        self.battery = source.services?
+            .first { $0.uuid == .battery }
+            .map(Service.Battery.init) ?? nil
+
         self.services = (source.services ?? [])
+            .filter { ![.deviceInformation, .battery].contains($0.uuid) }
             .map(Service.init)
-            .filter { $0.name == "Device Information" }
     }
 }
 
@@ -229,6 +238,40 @@ fileprivate extension Peripheral.State {
     }
 }
 
+fileprivate extension Peripheral.Service.DeviceInformation {
+    init?(_ source: CBService) {
+        guard source.uuid == .deviceInformation else { return nil }
+        self.init(manufacturerName: "", modelNumber: "", firmwareRevision: "", softwareRevision: "")
+        source.characteristics?.forEach {
+            switch $0.uuid.description.dropLast(" String".count) {
+            case manufacturerName.name: self.manufacturerName.value = parse($0.value)
+            case modelNumber.name: self.modelNumber.value = parse($0.value)
+            case firmwareRevision.name: self.firmwareRevision.value = parse($0.value)
+            case softwareRevision.name: self.softwareRevision.value = parse($0.value)
+            default: return
+            }
+        }
+    }
+
+    private func parse(_ data: Data?) -> String {
+        guard let data = data else { return "" }
+        return String(data: data, encoding: .utf8) ?? ""
+    }
+}
+
+fileprivate extension Peripheral.Service.Battery {
+    init?(_ source: CBService) {
+        guard
+            source.uuid == .battery,
+            let level = source.characteristics?.first,
+            let data = level.value, data.count == 1
+        else {
+            return nil
+        }
+        self.init(level: Int(data[0]))
+    }
+}
+
 extension Peripheral.Service {
     init(_ source: CBService) {
         self.name = source.uuid.description
@@ -238,22 +281,12 @@ extension Peripheral.Service {
 
 extension Peripheral.Service.Characteristic {
     init(_ source: CBCharacteristic) {
-        self.name = .init(source.uuid.description.dropLast(" String".count))
-        guard let data = source.value else {
-            value = ""
-            return
-        }
-
-        // FIXME: hack for github actions where source.service is not optional
-        func getCBUUID(_ service: CBService?) -> CBUUID? {
-            service?.uuid
-        }
-
-        switch getCBUUID(source.service) {
-        case .some(.deviceInformation):
-            self.value = String(data: data.dropLast(), encoding: .utf8) ?? ""
-        default:
-            self.value = "<unsupported>"
+        self.name = source.uuid.description
+        switch source.value {
+        case let .some(data):
+            self.value = String(data: data, encoding: .utf8) ?? ""
+        case .none:
+            self.value = ""
         }
     }
 }
@@ -264,4 +297,5 @@ extension CBUUID {
 
     static var deviceInformation: CBUUID { .init(string: "180A") }
     static var battery: CBUUID { .init(string: "180F") }
+    static var batteryLevel: CBUUID { .init(string: "2A19") }
 }
