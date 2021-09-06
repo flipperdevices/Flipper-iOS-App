@@ -9,7 +9,7 @@ on:
 jobs:
   lint:
     name: Lint with SwiftLint
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -18,13 +18,13 @@ jobs:
 
   build:
     name: Build and Test using iPhone 12 simulator
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Xcode version selection
-        run: sudo xcode-select --switch /Applications/Xcode_12.4.app
+        run: sudo xcode-select -s /Applications/Xcode_13.0.app
       - name: Build and Test
-        run: xcodebuild test -project ./FlipperZero/FlipperZero.xcodeproj -scheme 'FlipperZero(iOS)' -destination 'platform=iOS Simulator,name=iPhone 12,OS=14.4' -enableCodeCoverage YES build test
+        run: xcodebuild test -project ./FlipperZero/FlipperZero.xcodeproj -scheme 'FlipperZero(iOS)' -destination 'platform=iOS Simulator,name=iPhone 12,OS=15.0' -enableCodeCoverage YES build test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
