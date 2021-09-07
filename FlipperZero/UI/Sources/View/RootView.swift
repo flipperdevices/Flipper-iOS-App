@@ -8,11 +8,7 @@ public struct RootView: View {
     }
 
     public var body: some View {
-        if viewModel.pairedDeviceUUID == nil {
-            InstructionsView(viewModel: .init())
-        } else {
-            DeviceInfoView(viewModel: .init())
-        }
+        DeviceView(viewModel: .init())
     }
 }
 
