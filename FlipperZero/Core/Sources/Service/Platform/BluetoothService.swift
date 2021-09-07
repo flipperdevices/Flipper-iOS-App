@@ -218,10 +218,6 @@ fileprivate extension Peripheral {
         self.battery = source.services?
             .first { $0.uuid == .battery }
             .map(Service.Battery.init) ?? nil
-
-        self.services = (source.services ?? [])
-            .filter { ![.deviceInformation, .battery].contains($0.uuid) }
-            .map(Service.init)
     }
 }
 
