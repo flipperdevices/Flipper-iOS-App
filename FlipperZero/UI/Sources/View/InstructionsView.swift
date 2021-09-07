@@ -2,6 +2,7 @@ import SwiftUI
 
 struct InstructionsView: View {
     let viewModel: InstructionsViewModel
+    @Environment(\.colorScheme) var colorScheme
     @State private var displayingConnections = false
 
     init(viewModel: InstructionsViewModel = .init()) {
@@ -9,14 +10,13 @@ struct InstructionsView: View {
     }
 
     var body: some View {
-        VStack(spacing: 30) {
+        VStack(spacing: 15) {
             Image("DeviceConnect")
-                .padding(.top, 45)
+                .padding(.top, 25)
 
             Text(
                 """
-                Configure connection
-                to your Flipper
+                Connect your Flipper
                 """)
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -24,50 +24,32 @@ struct InstructionsView: View {
 
             Text(
                 """
-                In order to establish connection to the device
-                you need to complete a few steps.
+                Activate Bluetooth in settings menu
+                on your device.
                 """)
                 .font(.subheadline)
-                .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
 
-            HStack(spacing: 15) {
-                Image(systemName: "iphone")
-                    .font(.system(size: 40))
-                    .foregroundColor(.accentColor)
+            ZStack {
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Grant access to Bluetooth.")
-                        .font(.subheadline)
-                        .fontWeight(.bold)
-                    Text(
-                        """
-                        We need to access to your phone’s
-                        Bluetooth to confirm the connection
-                        between your phone and Flipper device.
-                        """)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
+                VStack {}
+                    .frame(width: 345, height: 345, alignment: .leading)
+                    .background(colorScheme == .light ? Color.white : Color.black)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .shadow(color: .secondary, radius: 5, x: 0, y: 0)
+
+                Image("BTStep2")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .shadow(color: .clear, radius: 0)
             }
-            .padding(.horizontal, 15)
+            .frame(width: 345, height: 345, alignment: .leading)
+            .padding(.top, 5)
 
-            HStack(spacing: 15) {
-                Image("Device")
-                    .font(.system(size: 40))
-                    .foregroundColor(.accentColor)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Enable Bluetooth on Flipper device.")
-                        .font(.subheadline)
-                        .fontWeight(.bold)
-                    Text(
-                        """
-                        Activate Bluetooth in device’s settins menu.
-                        An icon in statusbar should appear.
-                        """)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
+            HStack {
+                Dot(isSelected: false)
+                Dot(isSelected: true)
+                Dot(isSelected: false)
             }
 
             Spacer()
@@ -91,6 +73,16 @@ struct InstructionsView: View {
     }
 }
 
+struct Dot: View {
+    let isSelected: Bool
+
+    var body: some View {
+        ZStack { }
+            .frame(width: 7, height: 7)
+            .background(isSelected ? Color.primary : Color.secondary)
+            .clipShape(Circle())
+    }
+}
 struct InstructionsView_Previews: PreviewProvider {
     static var previews: some View {
         InstructionsView()
