@@ -294,4 +294,8 @@ extension CBUUID {
     static var deviceInformation: CBUUID { .init(string: "180A") }
     static var battery: CBUUID { .init(string: "180F") }
     static var batteryLevel: CBUUID { .init(string: "2A19") }
+
+    static var serial: CBUUID { .init(string: "8FE5B3D5-2E7F-4A98-2A48-7ACC60FE0000") }
+    static var serialRead: CBUUID { .init(string: "19ED82AE-ED21-4C9D-4145-228E61FE0000") }
+    static var serialWrite: CBUUID { .init(string: "19ED82AE-ED21-4C9D-4145-228E62FE0000") }
 }
