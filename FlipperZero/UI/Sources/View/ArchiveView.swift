@@ -12,6 +12,13 @@ struct ArchiveView: View {
             List {
                 ArchiveListItemView()
             }
+
+            Spacer()
+
+            RoundedButton("Scan NFC Tag") {
+
+            }
+            .padding(.bottom, 30)
         }
     }
 }

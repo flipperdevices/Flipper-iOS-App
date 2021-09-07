@@ -72,16 +72,9 @@ struct InstructionsView: View {
 
             Spacer()
 
-            Button(action: { self.displayingConnections = true }) {
-                Text("Continue")
-                    .fontWeight(.semibold)
-                    .padding(14)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.accentColor)
-                    .foregroundColor(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            RoundedButton("Continue") {
+                self.displayingConnections = true
             }
-            .padding(.horizontal, 15)
             .sheet(isPresented: self.$displayingConnections) {
                 ConnectionsView(viewModel: .init())
                 #if os(macOS)
