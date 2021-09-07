@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 
 struct ArchiveView: View {
@@ -9,8 +10,8 @@ struct ArchiveView: View {
 
     var body: some View {
         VStack(alignment: .center) {
-            List {
-                ArchiveListItemView()
+            List(viewModel.items) { item in
+                ArchiveListItemView(item: item)
             }
 
             Spacer()
@@ -24,26 +25,28 @@ struct ArchiveView: View {
 }
 
 struct ArchiveListItemView: View {
+    let item: ArchiveItem
+
     var body: some View {
         HStack(spacing: 15) {
-            Image(systemName: "wifi.circle")
-                .resizable()
+            item.icon
                 .frame(width: 23, height: 23)
-                .rotationEffect(.degrees(90))
                 .scaledToFit()
             VStack(spacing: 10) {
                 HStack {
-                    Text("Moms_bank_card")
+                    Text(item.name)
                         .bold()
-                    Spacer()
-                    Image(systemName: "star.fill")
-                        .foregroundColor(.secondary)
+                    if item.isFavorite {
+                        Spacer()
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.secondary)
+                    }
                 }
 
                 HStack {
-                    Text("ID: 031,33351")
+                    Text(item.description)
                     Spacer()
-                    Text("Mifare")
+                    Text(item.origin)
                     Image(systemName: "checkmark")
                         .foregroundColor(.secondary)
                 }
