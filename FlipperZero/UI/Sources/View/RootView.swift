@@ -8,10 +8,23 @@ public struct RootView: View {
     }
 
     public var body: some View {
-        if viewModel.pairedDeviceUUID == nil {
-            InstructionsView(viewModel: .init())
-        } else {
-            DeviceInfoView(viewModel: .init())
+        TabView {
+            DeviceView(viewModel: .init())
+                .tabItem {
+                    Image("Device")
+                        .renderingMode(.template)
+                    Text("Device")
+                }
+            ArchiveView(viewModel: .init())
+                .tabItem {
+                    Image(systemName: "creditcard.fill")
+                    Text("Archive")
+                }
+            OptionsView()
+                .tabItem {
+                    Image(systemName: "gearshape")
+                    Text("Options")
+                }
         }
     }
 }

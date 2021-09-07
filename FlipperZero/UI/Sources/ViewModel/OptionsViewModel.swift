@@ -2,6 +2,6 @@ import Core
 import Combine
 import Injector
 
-public class RootViewModel: ObservableObject {
+public class OptionsViewModel: ObservableObject {
     public init() {}
 }
