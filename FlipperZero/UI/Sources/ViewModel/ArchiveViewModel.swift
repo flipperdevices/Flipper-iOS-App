@@ -4,18 +4,24 @@ import Injector
 import SwiftUI
 
 class ArchiveViewModel: ObservableObject {
-    @Published var items: [ArchiveItem]
+    @Inject var nfc: NFCServiceProtocol
+
+    @Published var items: [ArchiveItem] = []
+    var disposeBag: DisposeBag = .init()
 
     init() {
-        items = [
-            .init(
-                id: "123",
-                name: "Moms_bank_card",
-                description: "ID: 031,33351",
-                isFavorite: true,
-                kind: .nfc,
-                wut: "Mifare")
-        ]
+        nfc.items
+            .sink { newItems in
+                self.items.removeAll { item in
+                    newItems.contains { $0.id == item.id }
+                }
+                self.items.append(contentsOf: newItems)
+            }
+            .store(in: &disposeBag)
+    }
+
+    func readNFCTag() {
+        nfc.startReader()
     }
 }
 
