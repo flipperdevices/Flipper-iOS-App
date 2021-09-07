@@ -19,13 +19,6 @@ struct DeviceInfoView: View {
                     if let battery = device.battery {
                         BatteryService(battery)
                     }
-                    ForEach(device.services) { service in
-                        Section(header: Text(service.name)) {
-                            ForEach(service.characteristics) { characteristic in
-                                CharacteristicSectionRow(characteristic)
-                            }
-                        }
-                    }
                     Button("Forget This Device") {
                         viewModel.forgetConnectedDevice()
                     }
