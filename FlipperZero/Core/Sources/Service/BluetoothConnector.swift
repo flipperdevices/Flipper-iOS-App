@@ -10,4 +10,7 @@ public protocol BluetoothConnector {
 
     func connect(to uuid: UUID)
     func forget(about uuid: UUID)
+
+    func send(_ bytes: [UInt8])
+    var received: SafePublisher<[UInt8]> { get }
 }

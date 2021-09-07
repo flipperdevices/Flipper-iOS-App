@@ -83,6 +83,28 @@ class BluetoothService: NSObject, BluetoothConnector {
             manager.cancelPeripheralConnection($0)
         }
     }
+
+    // TODO: Refactor
+    private let receivedSubject = SafeSubject([UInt8]())
+    var received: SafePublisher<[UInt8]> {
+        receivedSubject.eraseToAnyPublisher()
+    }
+
+    func send(_ bytes: [UInt8]) {
+        guard let connected = connectedCBPeripheral else {
+            print("no device connected")
+            return
+        }
+        guard let serial = connected.services?.first(where: { $0.uuid == .serial }) else {
+            print("no serial service")
+            return
+        }
+        guard let tx = serial.characteristics?.first(where: { $0.uuid == .serialWrite }) else {
+            print("no tx characteristic")
+            return
+        }
+        connected.writeValue(.init(bytes), for: tx, type: .withResponse)
+    }
 }
 
 extension BluetoothService: CBCentralManagerDelegate {
@@ -169,7 +191,12 @@ extension BluetoothService: CBPeripheralDelegate {
         error: Error?
     ) {
         service.characteristics?.forEach { characteristic in
-            peripheral.readValue(for: characteristic)
+            // FIXME:
+            if characteristic.properties.contains(.notify) {
+                peripheral.setNotifyValue(true, for: characteristic)
+            } else {
+                peripheral.readValue(for: characteristic)
+            }
         }
     }
 
@@ -180,7 +207,14 @@ extension BluetoothService: CBPeripheralDelegate {
         didUpdateValueFor characteristic: CBCharacteristic,
         error: Error?
     ) {
-        publishConnectedPeripheral()
+        if characteristic.uuid == .serialRead {
+            let bytes = [UInt8](characteristic.value ?? .init())
+            // FIXME:
+            guard bytes != [1,0], bytes != [2,0] else { return }
+            receivedSubject.value = bytes
+        } else {
+            publishConnectedPeripheral()
+        }
     }
 }
 

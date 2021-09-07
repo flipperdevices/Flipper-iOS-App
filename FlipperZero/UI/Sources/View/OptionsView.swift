@@ -2,7 +2,7 @@ import SwiftUI
 
 struct OptionsView: View {
     var body: some View {
-        Text("Options")
+        EchoView(viewModel: .init())
     }
 }
 
