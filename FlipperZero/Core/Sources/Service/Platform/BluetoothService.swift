@@ -237,11 +237,11 @@ fileprivate extension Peripheral.State {
 fileprivate extension Peripheral.Service.DeviceInformation {
     init?(_ source: CBService) {
         guard source.uuid == .deviceInformation else { return nil }
-        self.init(manufacturerName: "", modelNumber: "", firmwareRevision: "", softwareRevision: "")
+        self.init(manufacturerName: "", serialNumber: "", firmwareRevision: "", softwareRevision: "")
         source.characteristics?.forEach {
             switch $0.uuid.description.dropLast(" String".count) {
             case manufacturerName.name: self.manufacturerName.value = parse($0.value)
-            case modelNumber.name: self.modelNumber.value = parse($0.value)
+            case serialNumber.name: self.serialNumber.value = parse($0.value)
             case firmwareRevision.name: self.firmwareRevision.value = parse($0.value)
             case softwareRevision.name: self.softwareRevision.value = parse($0.value)
             default: return

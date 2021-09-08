@@ -40,7 +40,7 @@ struct DeviceInformationService: View {
     var body: some View {
         Section(header: Text("Device Information")) {
             CharacteristicSectionRow(deviceInformation.manufacturerName)
-            CharacteristicSectionRow(deviceInformation.modelNumber)
+            CharacteristicSectionRow(deviceInformation.serialNumber)
             CharacteristicSectionRow(deviceInformation.firmwareRevision)
             CharacteristicSectionRow(deviceInformation.softwareRevision)
         }
