@@ -216,10 +216,7 @@ extension BluetoothService: CBPeripheralDelegate {
         error: Error?
     ) {
         if characteristic.uuid == .serialRead {
-            let bytes = [UInt8](characteristic.value ?? .init())
-            // FIXME:
-            guard bytes != [1,0], bytes != [2,0] else { return }
-            receivedSubject.value = bytes
+            receivedSubject.value = .init((characteristic.value ?? .init()))
         } else {
             publishConnectedPeripheral()
         }
