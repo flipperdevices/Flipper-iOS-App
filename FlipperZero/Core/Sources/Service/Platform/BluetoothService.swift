@@ -191,10 +191,18 @@ extension BluetoothService: CBPeripheralDelegate {
         error: Error?
     ) {
         service.characteristics?.forEach { characteristic in
-            // FIXME:
-            if characteristic.properties.contains(.notify) {
-                peripheral.setNotifyValue(true, for: characteristic)
-            } else {
+            switch service.uuid {
+            case .serial:
+                // subscribe to rx updates
+                if characteristic.properties.contains(.indicate) {
+                    peripheral.setNotifyValue(true, for: characteristic)
+                }
+            default:
+                // subscibe to value updates
+                if characteristic.properties.contains(.notify) {
+                    peripheral.setNotifyValue(true, for: characteristic)
+                }
+                // read the value
                 peripheral.readValue(for: characteristic)
             }
         }
