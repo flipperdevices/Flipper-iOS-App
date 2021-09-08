@@ -6,6 +6,9 @@ struct OptionsView: View {
             NavigationLink("Echo server") {
                 EchoView(viewModel: .init())
             }
+            NavigationLink("Speedtest") {
+                SpeedTestView(viewModel: .init())
+            }
         }
     }
 }
