@@ -8,7 +8,10 @@ class BluetoothService: NSObject, BluetoothConnector {
 
     private let statusSubject = SafeSubject(BluetoothStatus.notReady(.preparing))
     private let peripheralsSubject = SafeSubject([Peripheral]())
+
+    // TODO: Move to separate protocol
     private let connectedPeripheralSubject = SafeSubject(Peripheral?.none)
+    private let receivedSubject = SafeSubject([UInt8]())
 
     var status: SafePublisher<BluetoothStatus> {
         self.statusSubject.eraseToAnyPublisher()
@@ -20,6 +23,10 @@ class BluetoothService: NSObject, BluetoothConnector {
 
     var connectedPeripheral: SafePublisher<Peripheral?> {
         self.connectedPeripheralSubject.eraseToAnyPublisher()
+    }
+
+    var received: SafePublisher<[UInt8]> {
+        receivedSubject.eraseToAnyPublisher()
     }
 
     private var peripheralsMap = [UUID: CBPeripheral]() {
@@ -84,12 +91,7 @@ class BluetoothService: NSObject, BluetoothConnector {
         }
     }
 
-    // TODO: Refactor
-    private let receivedSubject = SafeSubject([UInt8]())
-    var received: SafePublisher<[UInt8]> {
-        receivedSubject.eraseToAnyPublisher()
-    }
-
+    // TODO: Move to separate protocol
     func send(_ bytes: [UInt8]) {
         guard let connected = connectedCBPeripheral else {
             print("no device connected")
