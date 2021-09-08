@@ -131,4 +131,12 @@ private class TestConnector: BluetoothConnector {
 
     func connect(to uuid: UUID) {}
     func forget(about uuid: UUID) {}
+
+    // TODO: Refactor
+
+    func send(_ bytes: [UInt8]) {}
+    let receivedSubject = SafeSubject([UInt8]())
+    var received: SafePublisher<[UInt8]> {
+        receivedSubject.eraseToAnyPublisher()
+    }
 }

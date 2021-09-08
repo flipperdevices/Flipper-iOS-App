@@ -75,7 +75,9 @@ private class MockBluetoothConnector: BluetoothConnector {
     private let onConnect: (() -> Void)?
     let peripheralsSubject = SafeSubject([Peripheral]())
     let statusSubject: SafeSubject<BluetoothStatus>
+    // TODO: Move to separate protocol
     var connectedPeripheralSubject: SafeSubject<Peripheral?>
+    var receivedSubject: SafeSubject<[UInt8]>
 
     init(
         initialState: BluetoothStatus = .notReady(.preparing),
@@ -89,6 +91,7 @@ private class MockBluetoothConnector: BluetoothConnector {
         self.onConnect = onConnect
         self.statusSubject = SafeSubject(initialState)
         self.connectedPeripheralSubject = SafeSubject(connectedPeripheral)
+        self.receivedSubject = SafeSubject([])
     }
 
     var peripherals: SafePublisher<[Peripheral]> {
@@ -101,6 +104,10 @@ private class MockBluetoothConnector: BluetoothConnector {
 
     var status: SafePublisher<BluetoothStatus> {
         self.statusSubject.eraseToAnyPublisher()
+    }
+
+    var received: SafePublisher<[UInt8]> {
+        self.receivedSubject.eraseToAnyPublisher()
     }
 
     func startScanForPeripherals() {
@@ -116,6 +123,9 @@ private class MockBluetoothConnector: BluetoothConnector {
     }
 
     func forget(about uuid: UUID) {
+    }
+
+    func send(_ bytes: [UInt8]) {
     }
 }
 

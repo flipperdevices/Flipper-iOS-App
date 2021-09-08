@@ -8,7 +8,10 @@ class BluetoothService: NSObject, BluetoothConnector {
 
     private let statusSubject = SafeSubject(BluetoothStatus.notReady(.preparing))
     private let peripheralsSubject = SafeSubject([Peripheral]())
+
+    // TODO: Move to separate protocol
     private let connectedPeripheralSubject = SafeSubject(Peripheral?.none)
+    private let receivedSubject = SafeSubject([UInt8]())
 
     var status: SafePublisher<BluetoothStatus> {
         self.statusSubject.eraseToAnyPublisher()
@@ -20,6 +23,10 @@ class BluetoothService: NSObject, BluetoothConnector {
 
     var connectedPeripheral: SafePublisher<Peripheral?> {
         self.connectedPeripheralSubject.eraseToAnyPublisher()
+    }
+
+    var received: SafePublisher<[UInt8]> {
+        receivedSubject.eraseToAnyPublisher()
     }
 
     private var peripheralsMap = [UUID: CBPeripheral]() {
@@ -82,6 +89,19 @@ class BluetoothService: NSObject, BluetoothConnector {
         manager.retrievePeripherals(withIdentifiers: [uuid]).forEach {
             manager.cancelPeripheralConnection($0)
         }
+    }
+
+    // TODO: Move to separate protocol
+    func send(_ bytes: [UInt8]) {
+        guard let connected = connectedCBPeripheral else {
+            print("no device connected")
+            return
+        }
+        guard let tx = connected.serialWrite else {
+            print("no serial service")
+            return
+        }
+        connected.writeValue(.init(bytes), for: tx, type: .withResponse)
     }
 }
 
@@ -169,7 +189,20 @@ extension BluetoothService: CBPeripheralDelegate {
         error: Error?
     ) {
         service.characteristics?.forEach { characteristic in
-            peripheral.readValue(for: characteristic)
+            switch service.uuid {
+            case .serial:
+                // subscribe to rx updates
+                if characteristic.properties.contains(.indicate) {
+                    peripheral.setNotifyValue(true, for: characteristic)
+                }
+            default:
+                // subscibe to value updates
+                if characteristic.properties.contains(.notify) {
+                    peripheral.setNotifyValue(true, for: characteristic)
+                }
+                // read the value
+                peripheral.readValue(for: characteristic)
+            }
         }
     }
 
@@ -180,7 +213,20 @@ extension BluetoothService: CBPeripheralDelegate {
         didUpdateValueFor characteristic: CBCharacteristic,
         error: Error?
     ) {
-        publishConnectedPeripheral()
+        if characteristic.uuid == .serialRead {
+            receivedSubject.value = .init((characteristic.value ?? .init()))
+        } else {
+            publishConnectedPeripheral()
+        }
+    }
+}
+
+fileprivate extension CBPeripheral {
+    var serialWrite: CBCharacteristic? {
+        services?
+            .first { $0.uuid == .serial }?
+            .characteristics?
+            .first { $0.uuid == .serialWrite }
     }
 }
 
@@ -294,4 +340,8 @@ extension CBUUID {
     static var deviceInformation: CBUUID { .init(string: "180A") }
     static var battery: CBUUID { .init(string: "180F") }
     static var batteryLevel: CBUUID { .init(string: "2A19") }
+
+    static var serial: CBUUID { .init(string: "8FE5B3D5-2E7F-4A98-2A48-7ACC60FE0000") }
+    static var serialRead: CBUUID { .init(string: "19ED82AE-ED21-4C9D-4145-228E61FE0000") }
+    static var serialWrite: CBUUID { .init(string: "19ED82AE-ED21-4C9D-4145-228E62FE0000") }
 }
