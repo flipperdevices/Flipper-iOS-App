@@ -95,12 +95,8 @@ class BluetoothService: NSObject, BluetoothConnector {
             print("no device connected")
             return
         }
-        guard let serial = connected.services?.first(where: { $0.uuid == .serial }) else {
+        guard let tx = connected.serialWrite else {
             print("no serial service")
-            return
-        }
-        guard let tx = serial.characteristics?.first(where: { $0.uuid == .serialWrite }) else {
-            print("no tx characteristic")
             return
         }
         connected.writeValue(.init(bytes), for: tx, type: .withResponse)
@@ -220,6 +216,15 @@ extension BluetoothService: CBPeripheralDelegate {
         } else {
             publishConnectedPeripheral()
         }
+    }
+}
+
+fileprivate extension CBPeripheral {
+    var serialWrite: CBCharacteristic? {
+        services?
+            .first { $0.uuid == .serial }?
+            .characteristics?
+            .first { $0.uuid == .serialWrite }
     }
 }
 
