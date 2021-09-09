@@ -19,7 +19,7 @@ struct ConnectionsView: View {
                             viewModel.openApplicationSettings()
                         }
                     }
-                case .scanning(let peripherals):
+                case .ready:
                     Text("Scanning devices...")
                         .font(.title)
                         .padding(.all)
@@ -29,7 +29,7 @@ struct ConnectionsView: View {
                             ProgressView()
                                 .padding(.horizontal, 3)
                         }) {
-                            List(peripherals) { peripheral in
+                            List(viewModel.peripherals) { peripheral in
                                 row(for: peripheral)
                             }
                         }
@@ -75,14 +75,15 @@ struct ConnectionsView_Previews: PreviewProvider {
     }
 
     private static func createObject(_ status: BluetoothStatus) -> ConnectionsViewModel {
+        Container.shared.register(instance: TestConnector(status), as: BluetoothCentral.self)
         Container.shared.register(instance: TestConnector(status), as: BluetoothConnector.self)
         return .init()
     }
 }
 
-private class TestConnector: BluetoothConnector {
+private class TestConnector: BluetoothCentral, BluetoothConnector {
     private let peripheralsSubject = SafeSubject([Peripheral]())
-    private let connectedPeripheralSubject = SafeSubject(Peripheral?.none)
+    private let connectedPeripheralsSubject = SafeSubject([Peripheral]())
     private let statusValue: BluetoothStatus
     private var timer: Timer?
     private let testDevices = Array(1...10).map {
@@ -93,8 +94,8 @@ private class TestConnector: BluetoothConnector {
         self.peripheralsSubject.eraseToAnyPublisher()
     }
 
-    var connectedPeripheral: SafePublisher<Peripheral?> {
-        self.connectedPeripheralSubject.eraseToAnyPublisher()
+    var connectedPeripherals: SafePublisher<[Peripheral]> {
+        self.connectedPeripheralsSubject.eraseToAnyPublisher()
     }
 
     var status: SafePublisher<BluetoothStatus> {
@@ -130,11 +131,12 @@ private class TestConnector: BluetoothConnector {
     }
 
     func connect(to uuid: UUID) {}
-    func forget(about uuid: UUID) {}
+    func disconnect(from uuid: UUID) {}
 
     // TODO: Refactor
 
-    func send(_ bytes: [UInt8]) {}
+    func send(_ bytes: [UInt8], to identifier: UUID) {}
+
     let receivedSubject = SafeSubject([UInt8]())
     var received: SafePublisher<[UInt8]> {
         receivedSubject.eraseToAnyPublisher()

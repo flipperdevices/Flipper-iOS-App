@@ -9,16 +9,19 @@ class DeviceInfoViewModel: ObservableObject {
     private var disposeBag: DisposeBag = .init()
 
     init() {
-        connector.connectedPeripheral
-            .sink {
-                self.device = $0
+        connector.connectedPeripherals
+            .sink { [weak self] in
+                self?.device = $0.first {
+                    // TODO: handle .connecting
+                    $0.state == .connecting || $0.state == .connected
+                }
             }
             .store(in: &disposeBag)
     }
 
     func forgetConnectedDevice() {
         if let device = device {
-            connector.forget(about: device.id)
+            connector.disconnect(from: device.id)
         }
     }
 }

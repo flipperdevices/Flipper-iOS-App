@@ -1,17 +1,23 @@
 import Foundation
 import CoreBluetoothMock
 
-class BluetoothService: NSObject, BluetoothConnector {
+class BluetoothService: NSObject, BluetoothCentral, BluetoothConnector {
     private let manager: CBCentralManager
 
-    private var flipperServiceIDs: [CBUUID] { [.flipperZeroWhite, .flipperZeroBlack] }
+    private var flipperServiceIDs: [CBUUID] {
+        [.flipperZeroWhite, .flipperZeroBlack]
+    }
+
+    override init() {
+        self.manager = CBCentralManagerFactory.instance(forceMock: false)
+        super.init()
+        self.manager.delegate = self
+    }
+
+    // MARK: BluetoothCentral
 
     private let statusSubject = SafeSubject(BluetoothStatus.notReady(.preparing))
     private let peripheralsSubject = SafeSubject([Peripheral]())
-
-    // TODO: Move to separate protocol
-    private let connectedPeripheralSubject = SafeSubject(Peripheral?.none)
-    private let receivedSubject = SafeSubject([UInt8]())
 
     var status: SafePublisher<BluetoothStatus> {
         self.statusSubject.eraseToAnyPublisher()
@@ -21,48 +27,14 @@ class BluetoothService: NSObject, BluetoothConnector {
         self.peripheralsSubject.eraseToAnyPublisher()
     }
 
-    var connectedPeripheral: SafePublisher<Peripheral?> {
-        self.connectedPeripheralSubject.eraseToAnyPublisher()
-    }
-
-    var received: SafePublisher<[UInt8]> {
-        receivedSubject.eraseToAnyPublisher()
-    }
-
     private var peripheralsMap = [UUID: CBPeripheral]() {
         didSet { publishPeripherals() }
     }
 
-    private var connectedCBPeripheral: CBPeripheral? {
-        didSet { publishConnectedPeripheral() }
-    }
-
     private func publishPeripherals() {
-        let connected = manager
-            .retrieveConnectedPeripherals(withServices: [.deviceInformation])
-            .filter { $0.state == .connected }
+        peripheralsSubject.value = peripheralsMap.values
             .compactMap(Peripheral.init)
-
-        let discovered = peripheralsMap.values
-            .compactMap(Peripheral.init)
-            .filter { !connected.contains($0) }
-
-        peripheralsSubject.value = (connected + discovered)
             .sorted { $0.name < $1.name }
-    }
-
-    private func publishConnectedPeripheral() {
-        if let connected = connectedCBPeripheral {
-            connectedPeripheralSubject.value = Peripheral(connected)
-        } else {
-            connectedPeripheralSubject.value = .none
-        }
-    }
-
-    override init() {
-        self.manager = CBCentralManagerFactory.instance(forceMock: false)
-        super.init()
-        self.manager.delegate = self
     }
 
     func startScanForPeripherals() {
@@ -78,23 +50,49 @@ class BluetoothService: NSObject, BluetoothConnector {
         }
     }
 
-    func connect(to uuid: UUID) {
-        manager.retrievePeripherals(withIdentifiers: [uuid]).forEach {
+    // MARK: BluetoothConnector
+
+    private let connectedPeripheralsSubject = SafeSubject([Peripheral]())
+
+    var connectedPeripherals: SafePublisher<[Peripheral]> {
+        self.connectedPeripheralsSubject.eraseToAnyPublisher()
+    }
+
+    private var connectedPeripheralsMap = [UUID: CBPeripheral]() {
+        didSet { publishConnectedPeripherals() }
+    }
+
+    private func publishConnectedPeripherals() {
+        connectedPeripheralsSubject.value = connectedPeripheralsMap.values
+            .compactMap(Peripheral.init)
+            .sorted { $0.name < $1.name }
+    }
+
+    func connect(to identifier: UUID) {
+        manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
             manager.connect($0)
-            peripheralsMap[$0.identifier] = $0
+            connectedPeripheralsMap[$0.identifier] = $0
         }
     }
 
-    func forget(about uuid: UUID) {
-        manager.retrievePeripherals(withIdentifiers: [uuid]).forEach {
+    func disconnect(from identifier: UUID) {
+        manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
             manager.cancelPeripheralConnection($0)
+            connectedPeripheralsMap[$0.identifier] = nil
         }
     }
 
     // TODO: Move to separate protocol
-    func send(_ bytes: [UInt8]) {
-        guard let connected = connectedCBPeripheral else {
-            print("no device connected")
+
+    private let receivedSubject = SafeSubject([UInt8]())
+
+    var received: SafePublisher<[UInt8]> {
+        receivedSubject.eraseToAnyPublisher()
+    }
+
+    func send(_ bytes: [UInt8], to identifier: UUID) {
+        guard let connected = connectedPeripheralsMap[identifier] else {
+            print("device disconnected")
             return
         }
         guard let tx = connected.serialWrite else {
@@ -133,14 +131,8 @@ extension BluetoothService: CBCentralManagerDelegate {
         _ central: CBCentralManager,
         didConnect peripheral: CBPeripheral
     ) {
-        if let connected = connectedCBPeripheral {
-            central.cancelPeripheralConnection(connected)
-        }
         peripheral.delegate = self
-        connectedCBPeripheral = peripheral
-        publishConnectedPeripheral()
-        publishPeripherals()
-
+        connectedPeripheralsMap[peripheral.identifier] = peripheral
         peripheral.discoverServices(nil)
     }
 
@@ -149,11 +141,9 @@ extension BluetoothService: CBCentralManagerDelegate {
         didDisconnectPeripheral peripheral: CBPeripheral,
         error: Error?
     ) {
-        if connectedCBPeripheral?.identifier == peripheral.identifier {
-            connectedCBPeripheral = nil
-        }
-        publishConnectedPeripheral()
-        publishPeripherals()
+        // notify disconnected state
+        connectedPeripheralsMap[peripheral.identifier] = peripheral
+        connectedPeripheralsMap[peripheral.identifier] = nil
     }
 
     func centralManager(
@@ -161,8 +151,7 @@ extension BluetoothService: CBCentralManagerDelegate {
         didFailToConnect peripheral: CBPeripheral,
         error: Error?
     ) {
-        publishConnectedPeripheral()
-        publishPeripherals()
+        connectedPeripheralsMap[peripheral.identifier] = nil
     }
 }
 
@@ -216,7 +205,7 @@ extension BluetoothService: CBPeripheralDelegate {
         if characteristic.uuid == .serialRead {
             receivedSubject.value = .init((characteristic.value ?? .init()))
         } else {
-            publishConnectedPeripheral()
+            publishConnectedPeripherals()
         }
     }
 }
