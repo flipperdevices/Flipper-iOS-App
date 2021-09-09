@@ -2,6 +2,7 @@ import Core
 import Combine
 import Injector
 import struct Foundation.Date
+import struct Foundation.UUID
 
 class SpeedTestViewModel: ObservableObject {
     @Inject var connector: BluetoothConnector
@@ -32,22 +33,34 @@ class SpeedTestViewModel: ObservableObject {
         lastTime = Date()
     }
 
+    var deviceUUID: UUID?
+
     init() {
+        connector.connectedPeripherals
+            .sink { [weak self] in
+                self?.deviceUUID = $0.first?.id
+            }
+            .store(in: &disposeBag)
+
         connector.received
-            .sink {
+            .sink { [weak self] in
+                guard let self = self else { return }
                 self.record($0.count)
-                if self.isRunning {
-                    self.connector.send(self.bytes)
+                if self.isRunning, let identifier = self.deviceUUID {
+                    self.connector.send(self.bytes, to: identifier)
                 }
             }
             .store(in: &disposeBag)
     }
 
     func start() {
+        guard let identifier = deviceUUID else {
+            return
+        }
         isRunning = true
         startTime = Date()
         lastTime = Date()
-        self.connector.send(bytes)
+        self.connector.send(bytes, to: identifier)
     }
 
     func stop() {

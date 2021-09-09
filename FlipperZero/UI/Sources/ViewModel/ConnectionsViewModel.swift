@@ -4,41 +4,47 @@ import Injector
 import struct Foundation.UUID
 
 class ConnectionsViewModel: ObservableObject {
-    enum State: Equatable {
-        case notReady(BluetoothStatus.NotReadyReason)
-        case scanning([Peripheral])
-
-        init(_ notReadyReason: BluetoothStatus.NotReadyReason) {
-            self = .notReady(notReadyReason)
-        }
-    }
-
+    @Inject private var central: BluetoothCentral
     @Inject private var connector: BluetoothConnector
     private var disposeBag = DisposeBag()
 
-    @Published private(set) var state: State = .init(.preparing) {
+    @Published private(set) var state: BluetoothStatus = .notReady(.preparing) {
         didSet {
-            let newValue = self.state
-            if case .notReady = oldValue, case .scanning = newValue {
-                self.connector.startScanForPeripherals()
+            switch state {
+            case .ready where oldValue != .ready:
+                central.startScanForPeripherals()
+            case .notReady:
+                peripherals.removeAll()
+            default:
+                break
             }
         }
     }
 
+    @Published private(set) var peripherals: [Peripheral] = []
+
     init() {
-        connector.status
-            .combineLatest(connector.peripherals)
-            .map { status, peripherals -> State in
-                switch status {
-                case .ready:
-                    return .scanning(peripherals)
-                case .notReady(let reason):
-                    return .notReady(reason)
+        central.status.combineLatest(central.peripherals)
+            .sink { [weak self] status, peripherals in
+                self?.state = status
+                // FIXME: don't publish empty erray
+                guard !peripherals.isEmpty else { return }
+                self?.peripherals = peripherals
+            }
+            .store(in: &disposeBag)
+
+        connector.connectedPeripherals
+            .sink { [weak self] connected in
+                guard let self = self else { return }
+                connected.forEach { peripheral in
+                    if let index = self.peripherals.firstIndex(
+                        where: { $0.id == peripheral.id }
+                    ) {
+                        self.peripherals[index] = peripheral
+                    }
                 }
-            }.removeDuplicates(by: ==).eraseToAnyPublisher()
-            .sink { [weak self] in
-                self?.state = $0
-            }.store(in: &self.disposeBag)
+            }
+            .store(in: &disposeBag)
     }
 
     func connect(to uuid: UUID) {
@@ -50,7 +56,7 @@ class ConnectionsViewModel: ObservableObject {
     }
 
     deinit {
-        self.connector.stopScanForPeripherals()
+        self.central.stopScanForPeripherals()
     }
 }
 

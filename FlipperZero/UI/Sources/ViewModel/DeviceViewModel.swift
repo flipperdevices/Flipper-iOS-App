@@ -8,8 +8,10 @@ public class DeviceViewModel: ObservableObject {
     @Inject var storage: LocalStorage
     private var disposeBag: DisposeBag = .init()
 
-    @Published var pairedDeviceUUID: UUID?
     var isReconnecting = false
+    @Published var pairedDeviceUUID: UUID? {
+        didSet { storage.lastConnectedDevice = pairedDeviceUUID }
+    }
 
     public init() {
         if let lastConnectedDevice = storage.lastConnectedDevice {
@@ -21,11 +23,10 @@ public class DeviceViewModel: ObservableObject {
     }
 
     func reconnectOnBluetoothReady(to uuid: UUID) {
-        connector
-            .status
-            .sink { status in
+        connector.status
+            .sink { [weak self] status in
                 if status == .ready {
-                    self.connector.connect(to: uuid)
+                    self?.connector.connect(to: uuid)
                 }
             }
             .store(in: &disposeBag)
@@ -33,14 +34,20 @@ public class DeviceViewModel: ObservableObject {
 
     func saveLastConnectedDeviceOnConnect() {
         connector
-            .connectedPeripheral
-            .sink { peripheral in
-                if peripheral == nil, self.isReconnecting {
-                    self.isReconnecting = false
+            .connectedPeripherals
+            .sink { [weak self] peripherals in
+                guard let self = self else { return }
+                guard let peripheral = peripherals.first else {
+                    if self.isReconnecting { self.isReconnecting = false }
                     return
                 }
-                self.pairedDeviceUUID = peripheral?.id
-                self.storage.lastConnectedDevice = peripheral?.id
+                switch peripheral.state {
+                // TODO: handle .connecting
+                case .connecting, .connected:
+                    self.pairedDeviceUUID = peripherals.first?.id
+                default:
+                    self.pairedDeviceUUID = nil
+                }
             }
             .store(in: &disposeBag)
     }

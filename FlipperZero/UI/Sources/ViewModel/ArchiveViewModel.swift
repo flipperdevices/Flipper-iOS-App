@@ -11,11 +11,11 @@ class ArchiveViewModel: ObservableObject {
 
     init() {
         nfc.items
-            .sink { newItems in
-                self.items.removeAll { item in
+            .sink { [weak self] newItems in
+                self?.items.removeAll { item in
                     newItems.contains { $0.id == item.id }
                 }
-                self.items.append(contentsOf: newItems)
+                self?.items.append(contentsOf: newItems)
             }
             .store(in: &disposeBag)
     }

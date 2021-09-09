@@ -1,16 +1,14 @@
 import struct Foundation.UUID
 
 public protocol BluetoothConnector {
-    var peripherals: SafePublisher<[Peripheral]> { get }
-    var connectedPeripheral: SafePublisher<Peripheral?> { get }
     var status: SafePublisher<BluetoothStatus> { get }
-
-    func startScanForPeripherals()
-    func stopScanForPeripherals()
+    var connectedPeripherals: SafePublisher<[Peripheral]> { get }
 
     func connect(to uuid: UUID)
-    func forget(about uuid: UUID)
+    func disconnect(from uuid: UUID)
 
-    func send(_ bytes: [UInt8])
+    // TODO: move to BluetoothDevice
     var received: SafePublisher<[UInt8]> { get }
+
+    func send(_ bytes: [UInt8], to identifier: UUID)
 }

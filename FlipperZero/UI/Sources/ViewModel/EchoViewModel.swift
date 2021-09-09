@@ -15,9 +15,18 @@ class EchoViewModel: ObservableObject {
         let text: String
     }
 
+    var deviceUUID: UUID?
+
     init() {
+        connector.connectedPeripherals
+            .sink { [weak self] in
+                self?.deviceUUID = $0.first?.id
+            }
+            .store(in: &disposeBag)
+
         connector.received
-            .sink { bytes in
+            .sink { [weak self] bytes in
+                guard let self = self else { return }
                 guard !bytes.isEmpty else { return }
                 let text = String(decoding: bytes, as: UTF8.self)
                 guard !text.isEmpty else { return }
@@ -27,10 +36,14 @@ class EchoViewModel: ObservableObject {
     }
 
     func send(_ text: String) {
+        guard let identifier = deviceUUID else {
+            print("no device connected")
+            return
+        }
         guard let data = text.data(using: .ascii) else {
             print("invalid input")
             return
         }
-        connector.send(.init(data))
+        connector.send(.init(data), to: identifier)
     }
 }
