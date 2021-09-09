@@ -65,7 +65,6 @@ struct InstructionsView: View {
             .padding(.bottom, 20)
         }
         .padding(.top, onMac ? 0 : 40)
-        .padding(.bottom, iOS14 ? 120 : 0)
         .edgesIgnoringSafeArea(.top)
     }
 }
