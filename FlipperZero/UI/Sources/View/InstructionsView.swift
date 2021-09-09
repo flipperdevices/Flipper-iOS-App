@@ -55,15 +55,12 @@ struct InstructionsView: View {
             }
             .sheet(isPresented: self.$displayingConnections) {
                 ConnectionsView(viewModel: .init())
-                #if os(macOS)
-                HStack {
-                    Spacer()
+                if onMac {
                     Button("Close") {
                         self.displayingConnections = false
                     }
-                    .padding(.all)
+                    .padding(.bottom, 120)
                 }
-                #endif
             }
             .padding(.bottom, 20)
         }

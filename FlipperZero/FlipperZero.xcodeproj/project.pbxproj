@@ -9,16 +9,11 @@
 /* Begin PBXBuildFile section */
 		498305C32527FEE900B04AFD /* HelvetiPixel.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 498305C12527FEE900B04AFD /* HelvetiPixel.ttf */; };
 		498305C52527FEE900B04AFD /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */; };
-		4983062C25299C0600B04AFD /* Born2bSportyV2.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */; };
-		4983062D25299C0600B04AFD /* HelvetiPixel.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498305C12527FEE900B04AFD /* HelvetiPixel.ttf */; };
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
 		8B7064CC26E27429006CB4A8 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B7064CB26E27429006CB4A8 /* UI */; };
-		8B77A9CB26CAA3C200A3DF9F /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B77A9CA26CAA3C200A3DF9F /* Core */; };
 		8B77A9CD26CAA43300A3DF9F /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B77A9CC26CAA43300A3DF9F /* Core */; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
-		F0DBFA4424EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
-		F0DBFA4824EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,27 +25,6 @@
 			files = (
 			);
 			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		44A5B5BB24F05FD5009EE7FB /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4983062B25299BEC00B04AFD /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = Fonts;
-			dstSubfolderSpec = 7;
-			files = (
-				4983062C25299C0600B04AFD /* Born2bSportyV2.ttf in CopyFiles */,
-				4983062D25299C0600B04AFD /* HelvetiPixel.ttf in CopyFiles */,
-			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -69,9 +43,6 @@
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0DBFA2424EF2F9900EB2880 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F0DBFA2924EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F0DBFA2B24EF2F9900EB2880 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F0DBFA2C24EF2F9900EB2880 /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,14 +52,6 @@
 			files = (
 				8B7064CC26E27429006CB4A8 /* UI in Frameworks */,
 				8B77A9CD26CAA43300A3DF9F /* Core in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F0DBFA2624EF2F9900EB2880 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8B77A9CB26CAA3C200A3DF9F /* Core in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,7 +89,6 @@
 			children = (
 				8B77A9C626CAA3BA00A3DF9F /* Packages */,
 				F0DBFA2324EF2F9900EB2880 /* iOS */,
-				F0DBFA2A24EF2F9900EB2880 /* macOS */,
 				F0DBFA1924EF2F9600EB2880 /* Shared */,
 				497F0FC1252702B7000B2A86 /* perform_lint.sh */,
 				498305F62529569200B04AFD /* .swiftlint.yml */,
@@ -149,7 +111,6 @@
 			isa = PBXGroup;
 			children = (
 				F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */,
-				F0DBFA2924EF2F9900EB2880 /* FlipperZero.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,15 +123,6 @@
 				49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */,
 			);
 			path = iOS;
-			sourceTree = "<group>";
-		};
-		F0DBFA2A24EF2F9900EB2880 /* macOS */ = {
-			isa = PBXGroup;
-			children = (
-				F0DBFA2B24EF2F9900EB2880 /* Info.plist */,
-				F0DBFA2C24EF2F9900EB2880 /* macOS.entitlements */,
-			);
-			path = macOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -199,29 +151,6 @@
 			productReference = F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F0DBFA2824EF2F9900EB2880 /* FlipperZero(macOS) */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = F0DBFA4E24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(macOS)" */;
-			buildPhases = (
-				497F0FAA25269B8A000B2A86 /* Check code with SwiftLint */,
-				F0DBFA2524EF2F9900EB2880 /* Sources */,
-				F0DBFA2624EF2F9900EB2880 /* Frameworks */,
-				F0DBFA2724EF2F9900EB2880 /* Resources */,
-				44A5B5BB24F05FD5009EE7FB /* Embed Frameworks */,
-				4983062B25299BEC00B04AFD /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "FlipperZero(macOS)";
-			packageProductDependencies = (
-				8B77A9CA26CAA3C200A3DF9F /* Core */,
-			);
-			productName = "FlipperZero (macOS)";
-			productReference = F0DBFA2924EF2F9900EB2880 /* FlipperZero.app */;
-			productType = "com.apple.product-type.application";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -232,9 +161,6 @@
 				LastUpgradeCheck = 1200;
 				TargetAttributes = {
 					F0DBFA2024EF2F9900EB2880 = {
-						CreatedOnToolsVersion = 12.0;
-					};
-					F0DBFA2824EF2F9900EB2880 = {
 						CreatedOnToolsVersion = 12.0;
 					};
 				};
@@ -253,7 +179,6 @@
 			projectRoot = "";
 			targets = (
 				F0DBFA2024EF2F9900EB2880 /* FlipperZero(iOS) */,
-				F0DBFA2824EF2F9900EB2880 /* FlipperZero(macOS) */,
 			);
 		};
 /* End PBXProject section */
@@ -270,35 +195,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F0DBFA2724EF2F9900EB2880 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F0DBFA4824EF2F9900EB2880 /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		497F0FAA25269B8A000B2A86 /* Check code with SwiftLint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Check code with SwiftLint";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Initiate lint\n${PROJECT_DIR}/perform_lint.sh\n";
-		};
 		49CE8F942525E73200B9CBE4 /* Check code with SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -325,14 +224,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F0DBFA2524EF2F9900EB2880 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F0DBFA4424EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -509,56 +400,6 @@
 			};
 			name = Release;
 		};
-		F0DBFA4F24EF2F9900EB2880 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = macOS/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main;
-				PRODUCT_NAME = FlipperZero;
-				SDKROOT = macosx;
-				SUPPORTED_PLATFORMS = macosx;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 6;
-			};
-			name = Debug;
-		};
-		F0DBFA5024EF2F9900EB2880 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = macOS/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main;
-				PRODUCT_NAME = FlipperZero;
-				SDKROOT = macosx;
-				SUPPORTED_PLATFORMS = macosx;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 6;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -580,25 +421,12 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F0DBFA4E24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(macOS)" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F0DBFA4F24EF2F9900EB2880 /* Debug */,
-				F0DBFA5024EF2F9900EB2880 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		8B7064CB26E27429006CB4A8 /* UI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = UI;
-		};
-		8B77A9CA26CAA3C200A3DF9F /* Core */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Core;
 		};
 		8B77A9CC26CAA43300A3DF9F /* Core */ = {
 			isa = XCSwiftPackageProductDependency;
