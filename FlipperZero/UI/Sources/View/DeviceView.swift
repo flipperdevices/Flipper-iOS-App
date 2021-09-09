@@ -10,7 +10,6 @@ public struct DeviceView: View {
     public var body: some View {
         if viewModel.pairedDeviceUUID == nil {
             InstructionsView(viewModel: .init())
-                .padding(.bottom, 30)
         } else {
             DeviceInfoView(viewModel: .init())
         }

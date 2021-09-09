@@ -10,9 +10,8 @@ struct InstructionsView: View {
     }
 
     var body: some View {
-        VStack(spacing: 15) {
+        VStack(spacing: 10) {
             Image("DeviceConnect")
-                .padding(.top, 25)
 
             Text(
                 """
@@ -70,6 +69,9 @@ struct InstructionsView: View {
                 #endif
             }
         }
+        .padding(.top, 75)
+        .iOS14 { $0.padding(.bottom, 120) }
+        .edgesIgnoringSafeArea(.top)
     }
 }
 
