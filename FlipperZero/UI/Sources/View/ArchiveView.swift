@@ -19,7 +19,7 @@ struct ArchiveView: View {
             RoundedButton("Read NFC Tag") {
                 viewModel.readNFCTag()
             }
-            .padding(.bottom, 30)
+            .padding(.bottom, 20)
         }
     }
 }

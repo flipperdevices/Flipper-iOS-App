@@ -12,6 +12,7 @@ struct InstructionsView: View {
     var body: some View {
         VStack(spacing: 10) {
             Image("DeviceConnect")
+                .padding(.top, 15)
 
             Text(
                 """
@@ -29,20 +30,16 @@ struct InstructionsView: View {
                 .font(.subheadline)
                 .multilineTextAlignment(.center)
 
-            ZStack {
-
-                VStack {}
-                    .frame(width: 345, height: 345, alignment: .leading)
-                    .background(colorScheme == .light ? Color.white : Color.black)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: .secondary, radius: 5, x: 0, y: 0)
-
+            VStack {
                 Image("BTStep2")
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: .fit)
                     .shadow(color: .clear, radius: 0)
             }
-            .frame(width: 345, height: 345, alignment: .leading)
+            .background(colorScheme == .light ? Color.white : Color.black)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .secondary, radius: 5, x: 0, y: 0)
+            .padding(.horizontal, 20)
             .padding(.top, 5)
 
             HStack {
@@ -68,9 +65,10 @@ struct InstructionsView: View {
                 }
                 #endif
             }
+            .padding(.bottom, 20)
         }
-        .padding(.top, 75)
-        .iOS14 { $0.padding(.bottom, 120) }
+        .padding(.top, onMac ? 0 : 40)
+        .padding(.bottom, iOS14 ? 120 : 0)
         .edgesIgnoringSafeArea(.top)
     }
 }
