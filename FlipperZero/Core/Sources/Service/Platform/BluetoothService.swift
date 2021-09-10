@@ -1,5 +1,5 @@
 import Foundation
-import CoreBluetoothMock
+import CoreBluetooth
 
 class BluetoothService: NSObject, BluetoothCentral, BluetoothConnector {
     private let manager: CBCentralManager
@@ -9,7 +9,7 @@ class BluetoothService: NSObject, BluetoothCentral, BluetoothConnector {
     }
 
     override init() {
-        self.manager = CBCentralManagerFactory.instance(forceMock: false)
+        self.manager = CBCentralManager()
         super.init()
         self.manager.delegate = self
     }
@@ -232,6 +232,8 @@ fileprivate extension BluetoothStatus {
             self = .notReady(.poweredOff)
         case .poweredOn:
             self = .ready
+        @unknown default:
+            self = .notReady(.unsupported)
         }
     }
 }

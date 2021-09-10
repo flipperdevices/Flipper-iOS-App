@@ -6,7 +6,6 @@ import SwiftUI
 struct FlipperZeroApp: App {
     init() {
         Core.registerDependencies()
-        Core.registerMocks()
     }
 
     var body: some Scene {
