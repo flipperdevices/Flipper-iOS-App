@@ -22,6 +22,7 @@ struct DeviceInfoView: View {
                 }
             }
         }
+        .navigationBarHidden(true)
     }
 }
 
