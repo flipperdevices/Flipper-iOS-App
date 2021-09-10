@@ -65,7 +65,8 @@ class ConnectionsViewModelTests: XCTestCase {
         let container = Container.shared
         container.register(instance: connector, as: BluetoothCentral.self)
         container.register(instance: connector, as: BluetoothConnector.self)
-        container.register(MockStorage.init, as: LocalStorage.self)
+        container.register(MockStorage.init, as: DeviceStorage.self)
+        container.register(MockStorage.init, as: ArchiveStorage.self)
         return ConnectionsViewModel()
     }
 }
@@ -131,9 +132,14 @@ private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {
     }
 }
 
-private class MockStorage: LocalStorage {
-    var lastConnectedDevice: UUID? {
+private class MockStorage: DeviceStorage, ArchiveStorage {
+    var pairedDevice: Peripheral? {
         get { nil }
-        set { _ = newValue }
+        set { }
+    }
+
+    var items: [ArchiveItem] {
+        get { [] }
+        set { }
     }
 }
