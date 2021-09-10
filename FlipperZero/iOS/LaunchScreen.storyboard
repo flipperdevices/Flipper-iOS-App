@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina5_9" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19158" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina5_9" orientation="portrait" appearance="dark"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19141"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -16,20 +17,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="DolphinLogo" translatesAutoresizingMaskIntoConstraints="NO" id="7Wz-bq-WlV">
-                                <rect key="frame" x="80" y="343.66666666666669" width="215" height="134.66666666666669"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" secondItem="7Wz-bq-WlV" secondAttribute="height" multiplier="1.6:1" id="Fdc-kc-sph"/>
-                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="512" id="oG8-bP-FVl"/>
-                                </constraints>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Flipper" translatesAutoresizingMaskIntoConstraints="NO" id="L59-vF-nT9">
+                                <rect key="frame" x="50" y="381" width="275" height="50"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="7Wz-bq-WlV" firstAttribute="centerX" secondItem="Bcu-3y-fUS" secondAttribute="centerX" id="1ft-UK-ggH"/>
-                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="leading" relation="lessThanOrEqual" secondItem="7Wz-bq-WlV" secondAttribute="leading" constant="-80" id="P4t-4A-CJj"/>
-                            <constraint firstItem="7Wz-bq-WlV" firstAttribute="centerY" secondItem="Bcu-3y-fUS" secondAttribute="centerY" id="yYB-du-jJ5"/>
+                            <constraint firstItem="L59-vF-nT9" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="7Iu-EL-RbP"/>
+                            <constraint firstItem="L59-vF-nT9" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="ABc-0j-T6N"/>
+                            <constraint firstAttribute="trailing" secondItem="L59-vF-nT9" secondAttribute="trailing" constant="50" id="DKZ-KC-Xve"/>
+                            <constraint firstItem="L59-vF-nT9" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="t2y-B8-d9L"/>
+                            <constraint firstItem="L59-vF-nT9" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" constant="50" id="vTJ-ar-ZHR"/>
+                            <constraint firstItem="L59-vF-nT9" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="xxe-Bx-ozU"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -39,7 +39,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="DolphinLogo" width="512" height="319"/>
+        <image name="Flipper" width="583" height="50"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
