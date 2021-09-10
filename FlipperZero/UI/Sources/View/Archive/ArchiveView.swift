@@ -2,12 +2,8 @@ import Core
 import SwiftUI
 
 struct ArchiveView: View {
-    @ObservedObject var viewModel: ArchiveViewModel
+    @StateObject var viewModel: ArchiveViewModel
     @EnvironmentObject var sheetManager: SheetManager
-
-    init(viewModel: ArchiveViewModel) {
-        self.viewModel = viewModel
-    }
 
     var categories: [String] = [
         "Favorites", "RFID 125", "Sub-gHz", "NFC", "iButton", "iRda"

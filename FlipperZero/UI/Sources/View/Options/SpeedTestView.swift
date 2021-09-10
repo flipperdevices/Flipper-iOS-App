@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SpeedTestView: View {
-    @ObservedObject var viewModel: SpeedTestViewModel
+    @StateObject var viewModel: SpeedTestViewModel
     @State var packetSize = Double(SpeedTestViewModel.defaultPacketSize)
 
     var body: some View {

@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct DeviceInfoView: View {
-    @ObservedObject var viewModel: DeviceInfoViewModel
+    @StateObject var viewModel: DeviceInfoViewModel
 
     var body: some View {
         VStack {

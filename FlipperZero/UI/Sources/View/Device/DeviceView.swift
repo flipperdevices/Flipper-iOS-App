@@ -1,11 +1,7 @@
 import SwiftUI
 
 public struct DeviceView: View {
-    @ObservedObject var viewModel: DeviceViewModel
-
-    public init(viewModel: DeviceViewModel) {
-        self.viewModel = viewModel
-    }
+    @StateObject var viewModel: DeviceViewModel
 
     public var body: some View {
         if let paired = viewModel.pairedDevice {

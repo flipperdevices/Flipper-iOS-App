@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EchoView: View {
-    @ObservedObject var viewModel: EchoViewModel
+    @StateObject var viewModel: EchoViewModel
     @State var entered: String = ""
 
     var body: some View {
