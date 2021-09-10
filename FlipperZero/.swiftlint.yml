@@ -16,7 +16,6 @@ opt_in_rules:
  - closure_end_indentation
  - closure_spacing
  - collection_alignment
- - conditional_returns_on_newline
  - contains_over_filter_count
  - contains_over_filter_is_empty
  - contains_over_first_not_nil
@@ -32,7 +31,6 @@ opt_in_rules:
  - expiring_todo
  - explicit_init
  - explicit_self
- - extension_access_modifier
  - fatal_error_message
  - file_header
  - file_name_no_space
@@ -65,11 +63,9 @@ opt_in_rules:
  - prefer_zero_over_explicit_init
  - prohibited_interface_builder
  - reduce_into
- - redundant_nil_coalescing
  - redundant_type_annotation
  - sorted_first_last
  - static_operator
- - switch_case_on_newline
  - toggle_bool
  - trailing_closure
  - unneeded_parentheses_in_closure_argument
