@@ -1,5 +1,5 @@
 extension Peripheral.Service {
-    public struct Battery: Equatable {
+    public struct Battery: Equatable, Codable {
         public let level: Characteristic
 
         init(level: Int) {

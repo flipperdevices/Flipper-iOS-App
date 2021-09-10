@@ -2,30 +2,25 @@ import Core
 import SwiftUI
 
 struct DeviceInfoView: View {
-    @ObservedObject var viewModel: DeviceInfoViewModel = .init()
-
-    init(viewModel: DeviceInfoViewModel = .init()) {
-        self.viewModel = viewModel
-    }
+    @ObservedObject var viewModel: DeviceInfoViewModel
 
     var body: some View {
-        if let device = viewModel.device {
-            VStack {
-                Spacer()
-                Form {
-                    if let deviceInformation = device.deviceInformation {
-                        DeviceInformationService(deviceInformation)
-                    }
-                    if let battery = device.battery {
-                        BatteryService(battery)
-                    }
-                    Button("Forget This Device") {
-                        viewModel.forgetConnectedDevice()
-                    }
+        VStack {
+            Form {
+                Section(header: Text("General")) {
+                    SectionRow(name: "Name", value: viewModel.device.name)
+                    SectionRow(name: "UUID", value: viewModel.device.id.uuidString)
+                }
+                if let deviceInformation = viewModel.device.deviceInformation {
+                    DeviceInformationService(deviceInformation)
+                }
+                if let battery = viewModel.device.battery {
+                    BatteryService(battery)
+                }
+                Button("Forget This Device") {
+                    viewModel.forgetConnectedDevice()
                 }
             }
-        } else {
-            Text("No device connected")
         }
     }
 }
@@ -90,6 +85,6 @@ struct SectionRow: View {
 
 struct DeviceInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        DeviceInfoView(viewModel: .init())
+        DeviceInfoView(viewModel: .init(.init(id: .init(), name: "Test Name")))
     }
 }

@@ -8,10 +8,10 @@ public struct DeviceView: View {
     }
 
     public var body: some View {
-        if viewModel.pairedDeviceUUID == nil {
-            InstructionsView(viewModel: .init())
+        if let paired = viewModel.pairedDevice {
+            DeviceInfoView(viewModel: .init(paired))
         } else {
-            DeviceInfoView(viewModel: .init())
+            InstructionsView(viewModel: .init())
         }
     }
 }

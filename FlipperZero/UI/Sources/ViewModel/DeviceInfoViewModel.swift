@@ -3,25 +3,14 @@ import Combine
 import Injector
 
 class DeviceInfoViewModel: ObservableObject {
-    @Inject private var connector: BluetoothConnector
+    @Inject var connector: BluetoothConnector
+    @Published var device: Peripheral
 
-    @Published var device: Peripheral?
-    private var disposeBag: DisposeBag = .init()
-
-    init() {
-        connector.connectedPeripherals
-            .sink { [weak self] in
-                self?.device = $0.first {
-                    // TODO: handle .connecting
-                    $0.state == .connecting || $0.state == .connected
-                }
-            }
-            .store(in: &disposeBag)
+    init(_ device: Peripheral) {
+        self.device = device
     }
 
     func forgetConnectedDevice() {
-        if let device = device {
-            connector.disconnect(from: device.id)
-        }
+        connector.disconnect(from: device.id)
     }
 }
