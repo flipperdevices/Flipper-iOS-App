@@ -1,6 +1,6 @@
 import Foundation
 
-class UserDefaultsStorage: LocalStorage {
+class UserDefaultsStorage {
     var storage: UserDefaults { .standard }
 
     let lastDeviceKey: String = "lastConnectedDeviceUUIDString"

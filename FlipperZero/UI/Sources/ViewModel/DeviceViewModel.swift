@@ -5,19 +5,21 @@ import struct Foundation.UUID
 
 public class DeviceViewModel: ObservableObject {
     @Inject var connector: BluetoothConnector
-    @Inject var storage: LocalStorage
+    @Inject var storage: DeviceStorage
     private var disposeBag: DisposeBag = .init()
 
-    var isReconnecting = false
-    @Published var pairedDeviceUUID: UUID? {
-        didSet { storage.lastConnectedDevice = pairedDeviceUUID }
+var isReconnecting = false
+    @Published var pairedDevice: Peripheral? {
+        didSet {
+            storage.pairedDevice = pairedDevice
+        }
     }
 
     public init() {
-        if let lastConnectedDevice = storage.lastConnectedDevice {
+        if let pairedDevice = storage.pairedDevice {
             isReconnecting = true
-            pairedDeviceUUID = lastConnectedDevice
-            reconnectOnBluetoothReady(to: lastConnectedDevice)
+            self.pairedDevice = pairedDevice
+            reconnectOnBluetoothReady(to: pairedDevice.id)
         }
         saveLastConnectedDeviceOnConnect()
     }
@@ -44,9 +46,9 @@ public class DeviceViewModel: ObservableObject {
                 switch peripheral.state {
                 // TODO: handle .connecting
                 case .connecting, .connected:
-                    self.pairedDeviceUUID = peripherals.first?.id
+                    self.pairedDevice = peripheral
                 default:
-                    self.pairedDeviceUUID = nil
+                    self.pairedDevice = nil
                 }
             }
             .store(in: &disposeBag)

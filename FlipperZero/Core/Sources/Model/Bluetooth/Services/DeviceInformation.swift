@@ -1,5 +1,5 @@
 extension Peripheral.Service {
-    public struct DeviceInformation: Equatable {
+    public struct DeviceInformation: Equatable, Codable {
         public var manufacturerName: Characteristic
         public var serialNumber: Characteristic
         public var firmwareRevision: Characteristic
