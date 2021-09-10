@@ -1,4 +1,4 @@
-public struct ArchiveItem: Identifiable {
+public struct ArchiveItem: Codable, Equatable, Identifiable {
     public let id: String
     public let name: String
     public let description: String
@@ -6,7 +6,7 @@ public struct ArchiveItem: Identifiable {
     public let kind: Kind
     public let origin: String
 
-    public enum Kind {
+    public enum Kind: Codable {
         case ibutton
         case nfc
         case rfid

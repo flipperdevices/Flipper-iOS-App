@@ -5,17 +5,23 @@ import SwiftUI
 
 class ArchiveViewModel: ObservableObject {
     @Inject var nfc: NFCServiceProtocol
+    @Inject var storage: ArchiveStorage
 
-    @Published var items: [ArchiveItem] = []
+    @Published var items: [ArchiveItem] = [] {
+        didSet {
+            storage.items = items
+        }
+    }
     var disposeBag: DisposeBag = .init()
 
     init() {
+        items = storage.items
         nfc.items
             .sink { [weak self] newItems in
-                self?.items.removeAll { item in
-                    newItems.contains { $0.id == item.id }
+                guard let self = self else { return }
+                if let item = newItems.first, !self.items.contains(item) {
+                    self.items.append(item)
                 }
-                self?.items.append(contentsOf: newItems)
             }
             .store(in: &disposeBag)
     }

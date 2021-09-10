@@ -6,4 +6,5 @@ public func registerDependencies() {
     container.register(BluetoothService.init, as: BluetoothConnector.self, isSingleton: true)
     container.register(NFCService.init, as: NFCServiceProtocol.self, isSingleton: false)
     container.register(JSONDeviceStorage.init, as: DeviceStorage.self, isSingleton: true)
+    container.register(JSONArchiveStorage.init, as: ArchiveStorage.self, isSingleton: true)
 }

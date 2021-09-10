@@ -11,7 +11,7 @@ class NFCService: NSObject, NFCServiceProtocol {
 
     override init() {
         super.init()
-        itemsSubject.value = demoData
+        itemsSubject.value = []
     }
 
     func startReader() {
