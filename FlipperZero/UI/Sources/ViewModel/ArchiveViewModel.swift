@@ -32,29 +32,12 @@ class ArchiveViewModel: ObservableObject {
 }
 
 extension ArchiveItem {
-    var icon: some View {
+    var icon: Image {
         switch kind {
-        case .ibutton:
-            return Image(systemName: "key")
-                .resizable()
-                .toAny()
-        case .nfc:
-            return Image(systemName: "wifi.circle")
-                .resizable()
-                .rotationEffect(.degrees(90))
-                .toAny()
-        case .rfid:
-            return Image(systemName: "creditcard.and.123")
-                .resizable()
-                .toAny()
-        case .subghz:
-            return Image(systemName: "antenna.radiowaves.left.and.right")
-                .resizable()
-                .toAny()
+        case .ibutton: return .init("ibutton")
+        case .nfc: return .init("nfc")
+        case .rfid: return .init("rfid")
+        case .subghz: return .init("subhz")
         }
     }
-}
-
-fileprivate extension View {
-    func toAny() -> AnyView { AnyView(self) }
 }

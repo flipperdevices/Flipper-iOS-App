@@ -30,6 +30,7 @@ struct ArchiveListItemView: View {
     var body: some View {
         HStack(spacing: 15) {
             item.icon
+                .resizable()
                 .frame(width: 23, height: 23)
                 .scaledToFit()
             VStack(spacing: 10) {
