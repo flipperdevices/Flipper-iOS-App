@@ -14,7 +14,6 @@ struct ArchiveView: View {
             navbar
             categories
             items
-
         }
     }
 
@@ -37,7 +36,9 @@ struct ArchiveView: View {
                     .foregroundColor(Color.primary.opacity(viewModel.device?.state == .connected ? 1 : 0.8))
             }
             Spacer()
-            Button(action: { viewModel.readNFCTag() }) {
+            Button {
+                viewModel.readNFCTag()
+            } label: {
                 Image(systemName: "plus.circle")
                     .resizable()
                     .frame(width: 22, height: 22)
