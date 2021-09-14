@@ -30,7 +30,7 @@ struct ArchiveView: View {
             Spacer()
             ZStack(alignment: .center) {
                 Image("CurrentDevice")
-                Text("Ak1r@")
+                Text(viewModel.device?.name ?? "No device")
                     .bold()
                     .padding(.bottom, 5)
                     .foregroundColor(Color.primary)

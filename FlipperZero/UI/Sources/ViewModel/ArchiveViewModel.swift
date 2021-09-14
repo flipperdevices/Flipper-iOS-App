@@ -5,22 +5,41 @@ import SwiftUI
 
 class ArchiveViewModel: ObservableObject {
     @Inject var nfc: NFCServiceProtocol
-    @Inject var storage: ArchiveStorage
+    @Inject var archive: ArchiveStorage
+    @Inject var storage: DeviceStorage
+    @Inject var connector: BluetoothConnector
 
+    @Published var device: Peripheral?
     @Published var items: [ArchiveItem] = [] {
         didSet {
-            storage.items = items
+            archive.items = items
         }
     }
     var disposeBag: DisposeBag = .init()
 
     init() {
-        items = storage.items
+        device = storage.pairedDevice
+        items = archive.items
+
         nfc.items
             .sink { [weak self] newItems in
                 guard let self = self else { return }
                 if let item = newItems.first, !self.items.contains(item) {
                     self.items.append(item)
+                }
+            }
+            .store(in: &disposeBag)
+
+        connector.connectedPeripherals
+            .sink { [weak self] items in
+                if let paired = self?.device {
+                    // update the state for paired device
+                    if let item = items.first(where: { $0.id == paired.id }) {
+                        self?.device = item
+                    }
+                } else {
+                    // new device connected
+                    self?.device = items.first
                 }
             }
             .store(in: &disposeBag)
@@ -68,6 +87,5 @@ var demo: [ArchiveItem] {
             isFavorite: true,
             kind: .irda,
             wut: "")
-        
     ]
 }
