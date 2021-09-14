@@ -28,12 +28,13 @@ struct ArchiveView: View {
                 .padding(.horizontal, 15)
                 .foregroundColor(Color.accentColor)
             Spacer()
+            // FIXME: Move out, replace images with code
             ZStack(alignment: .center) {
-                Image("CurrentDevice")
+                Image(viewModel.device?.state == .connected ? "CurrentDevice" : "CurrentNoDevice")
                 Text(viewModel.device?.name ?? "No device")
                     .bold()
                     .padding(.bottom, 5)
-                    .foregroundColor(Color.primary)
+                    .foregroundColor(Color.primary.opacity(viewModel.device?.state == .connected ? 1 : 0.8))
             }
             Spacer()
             Button(action: { viewModel.readNFCTag() }) {
