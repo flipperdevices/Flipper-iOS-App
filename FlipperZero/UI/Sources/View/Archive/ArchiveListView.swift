@@ -45,25 +45,25 @@ struct ArchiveListItemView: View {
                 .padding(.horizontal, 17)
                 .padding(.vertical, 22)
                 .background(item.color)
-            VStack(spacing: 10) {
-                HStack {
-                    Text(item.name)
-                        .bold()
-                    if item.isFavorite {
-                        Spacer()
-                        Image(systemName: "star.fill")
-                            .padding(.horizontal, 10)
-                            .foregroundColor(.secondary)
-                    }
-                }
 
-                HStack {
-                    Text(item.description)
-                    Spacer()
-                    Text(item.origin)
-                    Image("cloud.checkmark")
-                        .padding(.horizontal, 10)
-                }
+            VStack(alignment: .leading, spacing: 6) {
+                Text(item.name)
+                    .fontWeight(.medium)
+
+                Text(item.origin)
+                    .fontWeight(.thin)
+            }
+
+            Spacer()
+
+            VStack {
+                Spacer()
+                Image(systemName: "checkmark")
+                    .font(.system(size: 14))
+                    .padding(.trailing, 15)
+                    .foregroundColor(.secondary)
+                    .opacity([true, false].randomElement() ?? false ? 1 : 0)
+                Spacer()
             }
         }
     }
