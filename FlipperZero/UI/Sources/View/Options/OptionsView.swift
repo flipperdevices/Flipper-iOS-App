@@ -2,12 +2,14 @@ import SwiftUI
 
 struct OptionsView: View {
     var body: some View {
-        List {
-            NavigationLink("Echo server") {
-                EchoView(viewModel: .init())
-            }
-            NavigationLink("Speedtest") {
-                SpeedTestView(viewModel: .init())
+        NavigationView {
+            List {
+                NavigationLink("Echo server") {
+                    EchoView(viewModel: .init())
+                }
+                NavigationLink("Speedtest") {
+                    SpeedTestView(viewModel: .init())
+                }
             }
         }
     }
