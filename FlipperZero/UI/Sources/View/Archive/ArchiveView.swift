@@ -3,7 +3,10 @@ import SwiftUI
 
 struct ArchiveView: View {
     @ObservedObject var viewModel: ArchiveViewModel
+    @EnvironmentObject var sheetManager: SheetManager
     @Environment(\.colorScheme) var colorScheme
+
+    var backgroundColor: Color { colorScheme == .light ? .white : .black }
 
     init(viewModel: ArchiveViewModel) {
         self.viewModel = viewModel
@@ -68,9 +71,16 @@ struct ArchiveView: View {
         ScrollView {
             Spacer(minLength: 12)
             ForEach(demo) { item in
-                ArchiveListItemView(item: item)
-                    .background(colorScheme == .light ? Color.white : Color.black)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                Button {
+                    sheetManager.present {
+                        CardSheetView(item: item)
+                    }
+                } label: {
+                    ArchiveListItemView(item: item)
+                        .foregroundColor(.primary)
+                        .background(backgroundColor)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
             }
         }
         .navigationBarHidden(true)

@@ -1,7 +1,6 @@
 import Core
 import Combine
 import Injector
-import SwiftUI
 
 class ArchiveViewModel: ObservableObject {
     @Inject var nfc: NFCServiceProtocol

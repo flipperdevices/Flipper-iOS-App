@@ -38,6 +38,8 @@ struct StepCardView: View {
     @Environment(\.colorScheme) var colorScheme
     let image: String
 
+    var backgroundColor: Color { colorScheme == .light ? .white : .black }
+
     var body: some View {
         VStack {
             Image(image)
@@ -45,7 +47,7 @@ struct StepCardView: View {
                 .aspectRatio(contentMode: .fit)
                 .shadow(color: .clear, radius: 0)
         }
-        .background(colorScheme == .light ? Color.white : Color.black)
+        .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: .secondary, radius: 5, x: 0, y: 0)
     }

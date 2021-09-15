@@ -9,24 +9,31 @@ public struct RootView: View {
 
     public var body: some View {
         NavigationView {
-            TabView {
-                DeviceView(viewModel: .init())
-                    .tabItem {
-                        Image("Device")
-                            .renderingMode(.template)
-                        Text("Device")
-                    }
-                ArchiveView(viewModel: .init())
-                    .tabItem {
-                        Image(systemName: "creditcard.fill")
-                        Text("Archive")
-                    }
-                OptionsView()
-                    .tabItem {
-                        Image(systemName: "gearshape")
-                        Text("Options")
-                    }
+            ZStack {
+                TabView {
+                    DeviceView(viewModel: .init())
+                        .tabItem {
+                            Image("Device")
+                                .renderingMode(.template)
+                            Text("Device")
+                        }
+                    ArchiveView(viewModel: .init())
+                        .tabItem {
+                            Image(systemName: "creditcard.fill")
+                            Text("Archive")
+                        }
+                    OptionsView()
+                        .tabItem {
+                            Image(systemName: "gearshape")
+                            Text("Options")
+                        }
+                }
             }
+            .addPartialSheet(isPresented: $viewModel.isPresentingSheet) {
+                viewModel.sheet
+            }
+            .edgesIgnoringSafeArea(.vertical)
+            .environmentObject(viewModel.sheetManager)
         }
     }
 }
