@@ -13,22 +13,23 @@ struct ArchiveListView: View {
 
     var body: some View {
         ScrollView {
-            Spacer(minLength: 12)
-            ForEach(demo) { item in
-                Button {
-                    itemSelected(item)
-                } label: {
-                    ArchiveListItemView(item: item)
-                        .foregroundColor(.primary)
-                        .background(backgroundColor)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+            VStack(spacing: 12) {
+                ForEach(demo) { item in
+                    Button {
+                        itemSelected(item)
+                    } label: {
+                        ArchiveListItemView(item: item)
+                            .foregroundColor(.primary)
+                            .background(backgroundColor)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
                 }
             }
+            .padding(.vertical, 12)
+            .padding(.leading, 16)
+            .padding(.trailing, 15)
         }
-        .navigationBarHidden(true)
         .frame(maxWidth: .infinity)
-        .padding(.leading, 16)
-        .padding(.trailing, 15)
         .background(Color.gray.opacity(0.1))
     }
 }
