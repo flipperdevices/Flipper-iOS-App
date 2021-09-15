@@ -25,21 +25,18 @@ struct CardSheetView: View {
                 .padding(.horizontal, 16)
 
             VStack(spacing: 0) {
-                HStack {
-                    Text("Start emulating on device")
-                    Spacer()
-                    Image(systemName: "play.circle")
+                ForEach(Array(zip(item.actions.indices, item.actions)), id: \.0) { item in
+                    if item.0 > 0 {
+                        Divider()
+                            .padding(0)
+                    }
+                    HStack {
+                        Text(item.1.name)
+                        Spacer()
+                        item.1.icon
+                    }
+                    .padding(16)
                 }
-                .padding(16)
-                Divider()
-                    .padding(0)
-                HStack {
-                    Text("Start writing on device")
-                    Spacer()
-                    Image(systemName: "line.3.horizontal.decrease.circle")
-                        .rotationEffect(.degrees(90))
-                }
-                .padding(16)
             }
             .background(backgroundColor)
             .foregroundColor(Color.accentColor)
