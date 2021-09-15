@@ -80,40 +80,71 @@ struct CardView: View {
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 0) {
+                CardHeaderView(name: item.name, image: item.icon)
+                    .padding(16)
+
+                CardDivider()
+
+                CardDataView(item: item)
+                    .padding(16)
+
                 HStack {
-                    Text(item.name)
-                        .font(.system(size: 22).weight(.bold))
                     Spacer()
-                    item.icon
-                        .frame(width: 40, height: 40)
+                    Image(systemName: "checkmark")
+                    Spacer()
                 }
-                .padding(16)
-
-                Color.white
-                    .frame(height: 1)
-                    .opacity(0.3)
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(item.description)
-                        .font(.system(size: 20).weight(.semibold))
-                    Text(String(item.description.reversed()))
-                        .font(.system(size: 20).weight(.semibold))
-
-                    HStack {
-                        Text(item.origin)
-                        Spacer()
-                        Text(String(item.origin.reversed()))
-                    }
-
-                    HStack {
-                        Spacer()
-                        Image(systemName: "checkmark")
-                        Spacer()
-                    }
-                }.padding(16)
+                .padding(.bottom, 16)
             }
         }
         .background(gradient)
         .clipShape(RoundedRectangle(cornerRadius: 20))
+    }
+}
+
+struct CardHeaderView: View {
+    let name: String
+    let image: Image
+
+    var body: some View {
+        HStack {
+            Text(name)
+                .font(.system(size: 22).weight(.bold))
+            Spacer()
+            image
+                .frame(width: 40, height: 40)
+        }
+    }
+}
+
+struct CardDivider: View {
+    var body: some View {
+        Color.white
+            .frame(height: 1)
+            .opacity(0.3)
+    }
+}
+
+struct CardDataView: View {
+    var item: ArchiveItem
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if !item.description.isEmpty {
+                Text(item.description)
+                    .font(.system(size: 20).weight(.semibold))
+            }
+            if !item.description.isEmpty {
+                Text(String(item.description.reversed()))
+                    .font(.system(size: 20).weight(.semibold))
+            }
+
+            if !item.origin.isEmpty {
+                HStack {
+                    Text(item.origin)
+                    Spacer()
+                    Text(String(item.origin.reversed()))
+                }
+            }
+        }
     }
 }
