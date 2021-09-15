@@ -70,6 +70,7 @@ struct HeaderDeviceView: View {
                 .padding(.leading, 12)
 
             Text(name)
+                .fontWeight(.semibold)
                 .padding(.horizontal, 20)
 
             if isConnected {

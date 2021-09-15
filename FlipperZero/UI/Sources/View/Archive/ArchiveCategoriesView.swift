@@ -31,6 +31,7 @@ struct ArchiveCategoryItemView: View {
     var body: some View {
         VStack {
             Text(title)
+                .fontWeight(.medium)
                 .foregroundColor(selected == title ? .accentColor : .secondary)
                 .onTapGesture {
                     self.selected = title
