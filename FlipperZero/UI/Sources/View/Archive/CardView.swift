@@ -44,7 +44,7 @@ struct CardSheetView: View {
             .padding(16)
 
             Divider()
-            
+
             HStack(alignment: .top) {
                 Image(systemName: "square.and.pencil")
                 Spacer()
@@ -79,7 +79,7 @@ struct CardView: View {
 
     var body: some View {
         ZStack {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     Text(item.name)
                         .font(.system(size: 22).weight(.bold))
@@ -87,29 +87,31 @@ struct CardView: View {
                     item.icon
                         .frame(width: 40, height: 40)
                 }
+                .padding(16)
 
-                Text(item.description)
-                    .font(.system(size: 20).weight(.semibold))
-                Text(String(item.description.reversed()))
-                    .font(.system(size: 20).weight(.semibold))
+                Color.white
+                    .frame(height: 1)
+                    .opacity(0.3)
 
-                HStack {
-                    Text(item.origin)
-                    Spacer()
-                    Text(String(item.origin.reversed()))
-                }
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(item.description)
+                        .font(.system(size: 20).weight(.semibold))
+                    Text(String(item.description.reversed()))
+                        .font(.system(size: 20).weight(.semibold))
 
-                HStack {
-                    Image("cloud.checkmark")
-                        .resizable()
-                        .frame(width: 32, height: 24)
-                    Spacer()
-                    Image(systemName: "star.fill")
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                }
+                    HStack {
+                        Text(item.origin)
+                        Spacer()
+                        Text(String(item.origin.reversed()))
+                    }
+
+                    HStack {
+                        Spacer()
+                        Image(systemName: "checkmark")
+                        Spacer()
+                    }
+                }.padding(16)
             }
-            .padding(16)
         }
         .background(gradient)
         .clipShape(RoundedRectangle(cornerRadius: 20))
