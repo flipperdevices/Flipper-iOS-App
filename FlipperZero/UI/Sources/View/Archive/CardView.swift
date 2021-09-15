@@ -71,7 +71,7 @@ struct CardView: View {
         .init(
             colors: [
                 item.color,
-                .gray
+                item.color2,
             ],
             startPoint: .top,
             endPoint: .bottom)

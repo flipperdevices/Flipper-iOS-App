@@ -23,6 +23,16 @@ extension ArchiveItem {
         case .irda: return .init(red: 0.69, green: 0.32, blue: 0.87)
         }
     }
+
+    var color2: Color {
+        switch kind {
+        case .ibutton: return .init(red: 0.34, green: 0.21, blue: 0.63)
+        case .nfc: return .init(red: 0.15, green: 0.44, blue: 0.61)
+        case .rfid: return .init(red: 0.59, green: 0.34, blue: 0.81)
+        case .subghz: return .init(red: 0.84, green: 0.41, blue: 0.17)
+        case .irda: return .init(red: 0.86, green: 0.47, blue: 47)
+        }
+    }
 }
 
 extension ArchiveItem {
