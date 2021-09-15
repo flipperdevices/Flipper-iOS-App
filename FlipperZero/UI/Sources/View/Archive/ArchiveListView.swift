@@ -58,13 +58,21 @@ struct ArchiveListItemView: View {
 
             VStack {
                 Spacer()
-                Image(systemName: "checkmark")
+                Image(systemName: randomImage())
                     .font(.system(size: 14))
                     .padding(.trailing, 15)
                     .foregroundColor(.secondary)
-                    .opacity([true, false].randomElement() ?? false ? 1 : 0)
+                    .opacity(randomOpacity())
                 Spacer()
             }
         }
+    }
+
+    func randomImage() -> String {
+        ["checkmark", "arrow.triangle.2.circlepath"].randomElement() ?? ""
+    }
+
+    func randomOpacity() -> Double {
+        [true, false, true].randomElement() ?? false ? 1 : 0
     }
 }
