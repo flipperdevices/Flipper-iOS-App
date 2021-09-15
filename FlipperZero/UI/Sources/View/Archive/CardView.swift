@@ -14,9 +14,9 @@ struct CardSheetView: View {
 
     var body: some View {
         VStack {
-            RoundedRectangle(cornerRadius: 4.65)
+            RoundedRectangle(cornerRadius: 5)
                 .fill(Color.gray)
-                .frame(width: 29.33, height: 6.51)
+                .frame(width: 40, height: 6)
                 .padding(.vertical, 18)
 
             CardView(item: item)

@@ -1,18 +1,19 @@
 import Combine
 import SwiftUI
 
-protocol SheetProtocol: ObservableObject {
-    var sheet: PassthroughSubject<AnyView, Never> { get }
-
-    func present(@ViewBuilder content: @escaping () -> AnyView)
-}
-
-class SheetManager: SheetProtocol {
+class SheetManager: ObservableObject {
     static let shared: SheetManager = .init()
 
-    var sheet: PassthroughSubject<AnyView, Never> = .init()
+    @Published var offset = UIScreen.main.bounds.height
+    @Published var isPresented = false {
+        willSet {
+            offset = newValue ? 0 : UIScreen.main.bounds.height
+        }
+    }
+    var content: AnyView?
 
-    func present<Content: View>(content: @escaping () -> Content) {
-        sheet.send(AnyView(content()))
+    func present<Content: View>(content: () -> Content) {
+        self.content = AnyView(content())
+        self.isPresented = true
     }
 }

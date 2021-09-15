@@ -1,42 +1,53 @@
 import SwiftUI
 
-struct PartialSheetView<SheetView: View>: View {
+struct PartialSheetView: View {
     @Environment(\.colorScheme) var colorScheme
-    @Binding var isPresented: Bool
-    let content: () -> SheetView
+    @EnvironmentObject var sheetManager: SheetManager
 
-    var backgroundColor: Color { colorScheme == .light ? .white : .black }
+    var backgroundColor: Color {
+        colorScheme == .light ? .white : .black
+    }
 
-    init(isPerented: Binding<Bool>, @ViewBuilder content: @escaping () -> SheetView) {
-        self._isPresented = isPerented
-        self.content = content
+    var animation: Animation {
+        .interpolatingSpring(stiffness: 300.0, damping: 30.0, initialVelocity: 10.0)
     }
 
     var body: some View {
-        VStack {
-            Spacer()
-            content()
-                .offset(y: isPresented ? 0 : UIScreen.main.bounds.height)
-                .onTapGesture {}
+        ZStack {
+            Rectangle()
+                .foregroundColor(backgroundColor.opacity(sheetManager.isPresented ? 0.5 : 0))
+                .onTapGesture {
+                    sheetManager.isPresented = false
+                }
+
+            VStack(spacing: 0) {
+                Spacer()
+                sheetManager.content
+                    .offset(y: sheetManager.offset)
+                    .gesture(DragGesture()
+                        .onChanged { value in
+                            if value.translation.height > 0 {
+                                sheetManager.offset = value.translation.height
+                            }
+                        }
+                        .onEnded { _ in
+                            if sheetManager.offset > 100 {
+                                sheetManager.isPresented = false
+                            } else {
+                                sheetManager.isPresented = true
+                            }
+                        })
+            }
         }
-        .background(isPresented ? backgroundColor.opacity(0.5) : Color.clear)
-        .onTapGesture {
-            isPresented = false
-        }
-        .animation(.easeInOut(duration: 0.2))
+        .animation(animation)
     }
 }
 
 extension View {
-    func addPartialSheet<SheetView: View>(
-        isPresented: Binding<Bool>,
-        @ViewBuilder content: @escaping () -> SheetView
-    ) -> some View {
+    func addPartialSheet() -> some View {
         ZStack {
             self
-            PartialSheetView(
-                isPerented: isPresented,
-                content: content)
+            PartialSheetView()
         }
     }
 }

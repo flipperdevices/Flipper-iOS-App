@@ -28,11 +28,9 @@ public struct RootView: View {
                     }
             }
         }
-        .addPartialSheet(isPresented: $viewModel.isPresentingSheet) {
-            viewModel.sheet
-        }
+        .addPartialSheet()
         .edgesIgnoringSafeArea(.vertical)
-        .environmentObject(viewModel.sheetManager)
+        .environmentObject(SheetManager.shared)
     }
 }
 
