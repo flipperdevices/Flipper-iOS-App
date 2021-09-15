@@ -15,7 +15,7 @@ struct ArchiveView: View {
     @State var selectedCategory: String = "Favorites"
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             ArchiveHeaderView(
                 device: viewModel.device,
                 onOptions: viewModel.openOptions,
@@ -23,6 +23,7 @@ struct ArchiveView: View {
             ArchiveCategoriesView(
                 categories: categories,
                 selected: $selectedCategory)
+            Divider()
             ArchiveListView { item in
                 sheetManager.present {
                     CardSheetView(item: item)
