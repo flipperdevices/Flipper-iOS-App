@@ -44,6 +44,9 @@ class ArchiveViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
+    func openOptions() {
+    }
+
     func readNFCTag() {
         nfc.startReader()
     }
