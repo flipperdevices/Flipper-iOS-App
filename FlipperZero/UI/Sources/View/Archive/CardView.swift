@@ -56,7 +56,7 @@ struct CardSheetView: View {
             }
             .foregroundColor(Color.accentColor)
             .padding(.top, 20)
-            .padding(.bottom, 60)
+            .padding(.bottom, 45)
             .padding(.horizontal, 22)
         }
         .background(sheetBackgroundColor)
