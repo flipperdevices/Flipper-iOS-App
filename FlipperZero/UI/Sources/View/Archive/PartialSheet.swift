@@ -4,8 +4,12 @@ struct PartialSheetView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var sheetManager: SheetManager
 
-    var backgroundColor: Color {
+    var themeBackgroundColor: Color {
         colorScheme == .light ? .white : .black
+    }
+
+    var backgroundColor: Color {
+        themeBackgroundColor.opacity(sheetManager.isPresented ? 0.5 : 0)
     }
 
     var animation: Animation {
@@ -14,11 +18,13 @@ struct PartialSheetView: View {
 
     var body: some View {
         ZStack {
-            Rectangle()
-                .foregroundColor(backgroundColor.opacity(sheetManager.isPresented ? 0.5 : 0))
-                .onTapGesture {
-                    sheetManager.isPresented = false
-                }
+            if sheetManager.isPresented {
+                Rectangle()
+                    .foregroundColor(backgroundColor)
+                    .onTapGesture {
+                        sheetManager.isPresented = false
+                    }
+            }
 
             VStack(spacing: 0) {
                 Spacer()
