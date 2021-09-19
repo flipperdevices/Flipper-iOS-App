@@ -1,7 +1,9 @@
 import SwiftUI
 
+// swiftlint:disable multiline_arguments
+
 struct EchoView: View {
-    @ObservedObject var viewModel: EchoViewModel
+    @StateObject var viewModel: EchoViewModel
     @State var entered: String = ""
 
     var body: some View {

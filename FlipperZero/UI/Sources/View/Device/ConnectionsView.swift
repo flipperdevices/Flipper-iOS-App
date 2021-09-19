@@ -4,7 +4,7 @@ import SwiftUI
 // swiftlint:disable closure_body_length
 
 struct ConnectionsView: View {
-    @ObservedObject var viewModel: ConnectionsViewModel
+    @StateObject var viewModel: ConnectionsViewModel
 
     var body: some View {
         NavigationView {

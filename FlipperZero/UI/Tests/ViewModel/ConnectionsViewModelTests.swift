@@ -135,11 +135,11 @@ private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {
 private class MockStorage: DeviceStorage, ArchiveStorage {
     var pairedDevice: Peripheral? {
         get { nil }
-        set { }
+        set { _ = newValue }
     }
 
     var items: [ArchiveItem] {
         get { [] }
-        set { }
+        set { _ = newValue }
     }
 }
