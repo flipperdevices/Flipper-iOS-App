@@ -238,9 +238,10 @@ fileprivate extension BluetoothStatus {
 
 fileprivate extension Peripheral {
     init?(_ source: CBPeripheral) {
-        guard let name = source.name, name.starts(with: "Flipper") else {
+        guard var name = source.name, name.starts(with: "Flipper ") else {
             return nil
         }
+        name = String(name.dropFirst("Flipper ".count))
 
         self.id = source.identifier
         self.name = name

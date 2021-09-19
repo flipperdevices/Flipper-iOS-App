@@ -8,7 +8,7 @@ public struct RootView: View {
     }
 
     public var body: some View {
-        NavigationView {
+        ZStack {
             TabView {
                 DeviceView(viewModel: .init())
                     .tabItem {
@@ -28,6 +28,9 @@ public struct RootView: View {
                     }
             }
         }
+        .addPartialSheet()
+        .edgesIgnoringSafeArea(.vertical)
+        .environmentObject(SheetManager.shared)
     }
 }
 

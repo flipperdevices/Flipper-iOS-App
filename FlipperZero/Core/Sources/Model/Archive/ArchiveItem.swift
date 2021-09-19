@@ -11,6 +11,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
         case nfc
         case rfid
         case subghz
+        case irda
     }
 
     public init(
