@@ -63,8 +63,7 @@ struct HeaderDeviceView: View {
     var body: some View {
         HStack(alignment: .center) {
             Image(systemName: "checkmark")
-                .resizable()
-                .frame(width: 14, height: 14)
+                .font(.system(size: 14))
                 .foregroundColor(activeColor)
                 .opacity(isConnected ? 1 : 0)
                 .padding(.leading, 12)
@@ -95,9 +94,7 @@ struct HeaderDeviceView: View {
 
 extension Image {
     func headerImageStyle() -> some View {
-        self.resizable()
-            .frame(width: 22, height: 22)
-            .scaledToFit()
+        self.font(.system(size: 22))
             .padding(.horizontal, 15)
             .foregroundColor(Color.accentColor)
     }

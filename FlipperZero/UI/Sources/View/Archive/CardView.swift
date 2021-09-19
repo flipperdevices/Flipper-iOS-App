@@ -32,8 +32,10 @@ struct CardSheetView: View {
                     }
                     HStack {
                         Text(item.1.name)
+                            .font(.system(size: 16))
                         Spacer()
                         item.1.icon
+                            .font(.system(size: 22))
                     }
                     .padding(16)
                 }
@@ -54,6 +56,7 @@ struct CardSheetView: View {
                 Spacer()
                 Image(systemName: "trash")
             }
+            .font(.system(size: 22))
             .foregroundColor(Color.accentColor)
             .padding(.top, 20)
             .padding(.bottom, 45)
