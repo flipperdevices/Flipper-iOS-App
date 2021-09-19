@@ -5,7 +5,6 @@ struct CardSheetView: View {
     @Environment(\.colorScheme) var colorScheme
     let item: ArchiveItem
 
-    var backgroundColor: Color { colorScheme == .light ? .white : .black }
     var sheetBackgroundColor: Color {
         colorScheme == .light
             ? .init(red: 0.95, green: 0.95, blue: 0.97)
@@ -19,62 +18,30 @@ struct CardSheetView: View {
                 .frame(width: 40, height: 6)
                 .padding(.vertical, 18)
 
-            CardView(item: item)
+            Card(item: item)
                 .foregroundColor(.white)
                 .padding(.top, 5)
                 .padding(.horizontal, 16)
 
-            VStack(spacing: 0) {
-                ForEach(Array(zip(item.actions.indices, item.actions)), id: \.0) { item in
-                    if item.0 > 0 {
-                        Divider()
-                            .padding(0)
-                    }
-                    HStack {
-                        Text(item.1.name)
-                            .font(.system(size: 16))
-                        Spacer()
-                        item.1.icon
-                            .font(.system(size: 22))
-                    }
-                    .padding(16)
-                }
-            }
-            .background(backgroundColor)
-            .foregroundColor(Color.accentColor)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .padding(16)
+            CardDeviceActions(item: item)
 
             Divider()
 
-            HStack(alignment: .top) {
-                Image(systemName: "square.and.pencil")
-                Spacer()
-                Image(systemName: "square.and.arrow.up")
-                Spacer()
-                Image(systemName: "star")
-                Spacer()
-                Image(systemName: "trash")
-            }
-            .font(.system(size: 22))
-            .foregroundColor(Color.accentColor)
-            .padding(.top, 20)
-            .padding(.bottom, 45)
-            .padding(.horizontal, 22)
+            CardActions(item: item)
         }
         .background(sheetBackgroundColor)
         .cornerRadius(12)
     }
 }
 
-struct CardView: View {
+struct Card: View {
     let item: ArchiveItem
 
     var gradient: LinearGradient {
         .init(
             colors: [
                 item.color,
-                item.color2,
+                item.color2
             ],
             startPoint: .top,
             endPoint: .bottom)
@@ -128,7 +95,7 @@ struct CardDivider: View {
 }
 
 struct CardDataView: View {
-    var item: ArchiveItem
+    let item: ArchiveItem
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -149,5 +116,64 @@ struct CardDataView: View {
                 }
             }
         }
+    }
+}
+
+struct CardDeviceActions: View {
+    @Environment(\.colorScheme) var colorScheme
+    let item: ArchiveItem
+
+    var backgroundColor: Color { colorScheme == .light ? .white : .black }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(zip(item.actions.indices, item.actions)), id: \.0) { item in
+                if item.0 > 0 {
+                    Divider()
+                        .padding(0)
+                }
+                CardDeviceAction(action: item.1)
+            }
+        }
+        .background(backgroundColor)
+        .foregroundColor(Color.accentColor)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .padding(16)
+    }
+}
+
+struct CardDeviceAction: View {
+    let action: ArchiveItem.Action
+
+    var body: some View {
+        HStack {
+            Text(action.name)
+                .font(.system(size: 16))
+            Spacer()
+            action.icon
+                .font(.system(size: 22))
+        }
+        .padding(16)
+    }
+}
+
+struct CardActions: View {
+    let item: ArchiveItem
+
+    var body: some View {
+        HStack(alignment: .top) {
+            Image(systemName: "square.and.pencil")
+            Spacer()
+            Image(systemName: "square.and.arrow.up")
+            Spacer()
+            Image(systemName: "star")
+            Spacer()
+            Image(systemName: "trash")
+        }
+        .font(.system(size: 22))
+        .foregroundColor(Color.accentColor)
+        .padding(.top, 20)
+        .padding(.bottom, 45)
+        .padding(.horizontal, 22)
     }
 }
