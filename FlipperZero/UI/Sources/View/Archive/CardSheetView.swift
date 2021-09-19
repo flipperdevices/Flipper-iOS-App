@@ -43,6 +43,7 @@ struct SheetViewProxy<SheetView: View>: UIViewControllerRepresentable {
 class HostingController<Content: View>: UIHostingController<Content> {
     override func viewDidLoad() {
         super.viewDidLoad()
+        // swiftlint:disable opening_brace
         if let presentationContoller = presentationController
             as? UISheetPresentationController
         {
