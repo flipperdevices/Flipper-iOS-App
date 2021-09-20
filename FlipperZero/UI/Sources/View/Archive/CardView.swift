@@ -160,14 +160,25 @@ struct CardDeviceAction: View {
 struct CardActions: View {
     let item: ArchiveItem
 
+    @State var isEditPresented = false
+    @State var isSharePresented = false
+    @State var isFavorite = false
+    @State var isDeletePresented = false
+
     var body: some View {
         HStack(alignment: .top) {
 
             // MARK: Edit
 
             Button {
+                isEditPresented = true
             } label: {
                 Image(systemName: "square.and.pencil")
+            }
+            .alert(isPresented: $isEditPresented) {
+                Alert(
+                    title: Text("Editing not available"),
+                    dismissButton: .default(Text("Close")))
             }
 
             Spacer()
@@ -175,6 +186,7 @@ struct CardActions: View {
             // MARK: Share
 
             Button {
+                share()
             } label: {
                 Image(systemName: "square.and.arrow.up")
             }
@@ -184,8 +196,9 @@ struct CardActions: View {
             // MARK: Favorite
 
             Button {
+                isFavorite.toggle()
             } label: {
-                Image(systemName: "star")
+                Image(systemName: isFavorite ? "star.fill" : "star")
             }
 
             Spacer()
@@ -193,15 +206,32 @@ struct CardActions: View {
             // MARK: Delete
 
             Button {
+                isDeletePresented = true
             } label: {
                 Image(systemName: "trash")
             }
-
+            .actionSheet(isPresented: $isDeletePresented) {
+                .init(title: Text("Are you sure?"), buttons: [
+                    .destructive(Text("Delete")) { print("delete") },
+                    .cancel()
+                ])
+            }
         }
         .font(.system(size: 22))
         .foregroundColor(Color.accentColor)
         .padding(.top, 20)
         .padding(.bottom, 45)
         .padding(.horizontal, 22)
+    }
+
+    func share() {
+        let activityContoller = UIActivityViewController(
+            activityItems: [item.name],
+            applicationActivities: nil)
+        UIApplication.shared
+            .windows
+            .first?
+            .rootViewController?
+            .present(activityContoller, animated: true, completion: nil)
     }
 }
