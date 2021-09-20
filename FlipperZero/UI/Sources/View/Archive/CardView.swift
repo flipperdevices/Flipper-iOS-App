@@ -162,13 +162,41 @@ struct CardActions: View {
 
     var body: some View {
         HStack(alignment: .top) {
-            Image(systemName: "square.and.pencil")
+
+            // MARK: Edit
+
+            Button {
+            } label: {
+                Image(systemName: "square.and.pencil")
+            }
+
             Spacer()
-            Image(systemName: "square.and.arrow.up")
+
+            // MARK: Share
+
+            Button {
+            } label: {
+                Image(systemName: "square.and.arrow.up")
+            }
+
             Spacer()
-            Image(systemName: "star")
+
+            // MARK: Favorite
+
+            Button {
+            } label: {
+                Image(systemName: "star")
+            }
+
             Spacer()
-            Image(systemName: "trash")
+
+            // MARK: Delete
+
+            Button {
+            } label: {
+                Image(systemName: "trash")
+            }
+
         }
         .font(.system(size: 22))
         .foregroundColor(Color.accentColor)
