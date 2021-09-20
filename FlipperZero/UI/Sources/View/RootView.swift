@@ -8,28 +8,19 @@ public struct RootView: View {
     }
 
     public var body: some View {
-        ZStack {
-            TabView {
+        VStack {
+            ZStack {
                 DeviceView(viewModel: .init())
-                    .tabItem {
-                        Image("Device")
-                            .renderingMode(.template)
-                        Text("Device")
-                    }
+                    .opacity(viewModel.selectedTab == .device ? 1 : 0)
                 ArchiveView(viewModel: .init())
-                    .tabItem {
-                        Image(systemName: "creditcard.fill")
-                        Text("Archive")
-                    }
+                    .opacity(viewModel.selectedTab == .archive ? 1 : 0)
                 OptionsView()
-                    .tabItem {
-                        Image(systemName: "gearshape")
-                        Text("Options")
-                    }
+                    .opacity(viewModel.selectedTab == .options ? 1 : 0)
             }
+            CustomTabView(selected: $viewModel.selectedTab)
         }
         .addPartialSheet()
-        .edgesIgnoringSafeArea(.vertical)
+        .edgesIgnoringSafeArea(.bottom)
         .environmentObject(SheetManager.shared)
     }
 }

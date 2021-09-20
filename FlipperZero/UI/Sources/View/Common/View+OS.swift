@@ -8,4 +8,8 @@ extension View {
     var onMac: Bool {
         ProcessInfo.processInfo.isiOSAppOnMac
     }
+
+    var bottomSafeArea: Double {
+        UIDevice.isFaceIDAvailable ? 34 : 0
+    }
 }
