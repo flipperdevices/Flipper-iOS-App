@@ -78,13 +78,3 @@ extension Data {
         map { String(format: "%02hhX", $0) }.joined()
     }
 }
-
-let demoData: [ArchiveItem] = [
-    .init(
-        id: "123",
-        name: "Demo card",
-        description: "ID: 1234567890",
-        isFavorite: true,
-        kind: .nfc,
-        wut: "Mifare")
-]
