@@ -2,17 +2,26 @@ import SwiftUI
 
 struct ArchiveCategoriesView: View {
     let categories: [String]
-    @Binding var selected: String
+    @Binding var selectedIndex: Int
     @Namespace var animation
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack {
-                ForEach(categories, id: \.self) {
-                    ArchiveCategoryItemView(
-                        title: $0,
-                        animation: animation,
-                        selected: _selected)
+            ScrollViewReader { proxy in
+                HStack {
+                    ForEach(categories, id: \.self) {
+                        ArchiveCategoryItemView(
+                            title: $0,
+                            animation: animation,
+                            isSelected: $0 == categories[selectedIndex]
+                        ) { name in
+                            if let index = categories.firstIndex(of: name) {
+                                self.selectedIndex = index
+                                proxy.scrollTo(name, anchor: .trailing)
+                            }
+                        }
+                        .id($0)
+                    }
                 }
             }
         }
@@ -26,18 +35,20 @@ struct ArchiveCategoriesView: View {
 struct ArchiveCategoryItemView: View {
     let title: String
     let animation: Namespace.ID
-    @Binding var selected: String
+    var isSelected: Bool
+
+    var onTapGesture: (String) -> Void
 
     var body: some View {
         VStack {
             Text(title)
                 .fontWeight(.medium)
-                .foregroundColor(selected == title ? .accentColor : .secondary)
+                .foregroundColor(isSelected ? .accentColor : .secondary)
                 .onTapGesture {
-                    self.selected = title
+                    onTapGesture(title)
                 }
             Spacer()
-            if title == selected {
+            if isSelected {
                 Color.accentColor
                     .frame(height: 3)
                     .cornerRadius(3, corners: [.topLeft, .topRight])

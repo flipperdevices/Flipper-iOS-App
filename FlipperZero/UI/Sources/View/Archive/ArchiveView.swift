@@ -8,8 +8,8 @@ struct ArchiveView: View {
     var categories: [String] = [
         "Favorites", "RFID 125", "Sub-gHz", "NFC", "iButton", "iRda"
     ]
-    @State var selectedCategory: String = "Favorites"
-    @State var isDeletePresented: Bool = false
+    @State var selectedIndex = 0
+    @State var isDeletePresented = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -20,23 +20,31 @@ struct ArchiveView: View {
                 onAddItem: viewModel.readNFCTag)
             ArchiveCategoriesView(
                 categories: categories,
-                selected: $selectedCategory)
+                selectedIndex: $selectedIndex)
             Divider()
-            ArchiveListView(
-                isEditing: $viewModel.isEditing,
-                selectedItems: $viewModel.selectedItems
-            ) { item in
-                if viewModel.isEditing {
-                    viewModel.selectItem(item)
-                } else {
-                    sheetManager.present {
-                        CardSheetView(item: item)
-                    }
-                }
+            CarouselView(
+                spacing: 0,
+                index: $selectedIndex,
+                items: viewModel.itemGroups) { group in
+                ArchiveListView(
+                    items: group.items,
+                    isEditing: $viewModel.isEditing,
+                    selectedItems: $viewModel.selectedItems,
+                    itemSelected: onItemSelected)
             }
 
             if viewModel.isEditing {
                 tabViewOverlay
+            }
+        }
+    }
+
+    func onItemSelected(item: ArchiveItem) {
+        if viewModel.isEditing {
+            viewModel.selectItem(item)
+        } else {
+            sheetManager.present {
+                CardSheetView(item: item)
             }
         }
     }

@@ -2,15 +2,18 @@ import Core
 import SwiftUI
 
 struct ArchiveListView: View {
+    var items: [ArchiveItem]
     @Binding var isEditing: Bool
     @Binding var selectedItems: [ArchiveItem]
     var itemSelected: (ArchiveItem) -> Void
 
     init(
+        items: [ArchiveItem],
         isEditing: Binding<Bool>,
         selectedItems: Binding<[ArchiveItem]>,
         itemSelected: @escaping (ArchiveItem) -> Void
     ) {
+        self.items = items
         self._isEditing = isEditing
         self._selectedItems = selectedItems
         self.itemSelected = itemSelected
@@ -19,7 +22,7 @@ struct ArchiveListView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
-                ForEach(demo) { item in
+                ForEach(items) { item in
                     Button {
                         itemSelected(item)
                     } label: {

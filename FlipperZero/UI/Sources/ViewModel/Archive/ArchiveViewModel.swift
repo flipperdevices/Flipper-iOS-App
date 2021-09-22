@@ -22,7 +22,24 @@ class ArchiveViewModel: ObservableObject {
     var onEditModeChanded: (Bool) -> Void = { _ in }
     var disposeBag: DisposeBag = .init()
 
+    struct Group: Identifiable {
+        var id: ArchiveItem.Kind?
+        var items: [ArchiveItem]
+    }
+
+    var itemGroups: [Group] {
+        var groups: [Group] = [.init(id: nil, items: items)]
+        ArchiveItem.Kind.allCases.forEach { kind in
+            groups.append(.init(
+                id: kind,
+                items: items.filter { $0.kind == kind }))
+        }
+        return groups
+    }
+
     init(onEditModeChanded: @escaping (Bool) -> Void = { _ in }) {
+        archive.items = demo
+
         self.onEditModeChanded = onEditModeChanded
         device = storage.pairedDevice
         items = archive.items
