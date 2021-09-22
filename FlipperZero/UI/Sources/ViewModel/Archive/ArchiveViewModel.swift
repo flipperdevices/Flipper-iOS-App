@@ -16,10 +16,14 @@ class ArchiveViewModel: ObservableObject {
         }
     }
     @Published var selectedItems: [ArchiveItem] = []
-    @Published var isEditing = false
+    @Published var isEditing = false {
+        didSet { onEditModeChanded(isEditing) }
+    }
+    var onEditModeChanded: (Bool) -> Void = { _ in }
     var disposeBag: DisposeBag = .init()
 
-    init() {
+    init(onEditModeChanded: @escaping (Bool) -> Void = { _ in }) {
+        self.onEditModeChanded = onEditModeChanded
         device = storage.pairedDevice
         items = archive.items
 

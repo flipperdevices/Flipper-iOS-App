@@ -12,12 +12,17 @@ public struct RootView: View {
             ZStack {
                 DeviceView(viewModel: .init())
                     .opacity(viewModel.selectedTab == .device ? 1 : 0)
-                ArchiveView(viewModel: .init())
-                    .opacity(viewModel.selectedTab == .archive ? 1 : 0)
+                ArchiveView(viewModel: .init { isEditing in
+                    viewModel.isTabViewHidden = isEditing
+                })
+                .opacity(viewModel.selectedTab == .archive ? 1 : 0)
                 OptionsView()
                     .opacity(viewModel.selectedTab == .options ? 1 : 0)
             }
-            CustomTabView(selected: $viewModel.selectedTab)
+
+            if !viewModel.isTabViewHidden {
+                CustomTabView(selected: $viewModel.selectedTab)
+            }
         }
         .addPartialSheet()
         .edgesIgnoringSafeArea(.bottom)

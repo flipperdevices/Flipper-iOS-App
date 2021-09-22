@@ -63,7 +63,7 @@ struct CustomTabView: View {
             }
             .padding(.bottom, bottomSafeArea)
         }
-        .frame(height: 49 + bottomSafeArea, alignment: .top)
+        .frame(height: tabViewHeight + bottomSafeArea, alignment: .top)
         .background(colorScheme == .light ? Color.white : Color.black)
     }
 }

@@ -12,4 +12,6 @@ extension View {
     var bottomSafeArea: Double {
         UIDevice.isFaceIDAvailable ? 34 : 0
     }
+
+    var tabViewHeight: Double { 49 }
 }

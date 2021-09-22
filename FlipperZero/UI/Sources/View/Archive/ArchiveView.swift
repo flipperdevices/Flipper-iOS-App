@@ -2,6 +2,9 @@ import Core
 import SwiftUI
 
 struct ArchiveView: View {
+    @Environment(\.colorScheme) var colorScheme
+    var backgroundColor: Color { colorScheme == .light ? .white : .black }
+
     @StateObject var viewModel: ArchiveViewModel
     @EnvironmentObject var sheetManager: SheetManager
 
@@ -23,8 +26,8 @@ struct ArchiveView: View {
             Divider()
             ArchiveListView(
                 isEditing: $viewModel.isEditing,
-                selectedItems: $viewModel.selectedItems)
-            { item in
+                selectedItems: $viewModel.selectedItems
+            ) { item in
                 if viewModel.isEditing {
                     viewModel.selectItem(item)
                 } else {
@@ -33,7 +36,34 @@ struct ArchiveView: View {
                     }
                 }
             }
+
+            if viewModel.isEditing {
+                tabViewOverlay
+            }
         }
+    }
+
+    var tabViewOverlay: some View {
+        VStack {
+            HStack(alignment: .center) {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 22))
+                    .foregroundColor(.accentColor)
+
+                Spacer()
+                Text("Chosen \(viewModel.selectedItems.count) objects")
+                    .font(.system(size: 17, weight: .semibold))
+                Spacer()
+                Image(systemName: "trash")
+                    .font(.system(size: 22))
+                    .foregroundColor(.accentColor)
+            }
+            .padding(.top, 12)
+            .padding(.bottom, bottomSafeArea)
+            .padding(.horizontal, 22)
+        }
+        .frame(height: tabViewHeight + bottomSafeArea + 8, alignment: .top)
+        .background(backgroundColor)
     }
 }
 

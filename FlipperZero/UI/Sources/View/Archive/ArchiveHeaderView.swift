@@ -29,6 +29,7 @@ struct ArchiveHeaderView: View {
                     }
                 } label: {
                     Text("Done")
+                        .fontWeight(.medium)
                         .padding(.leading, 15.5)
                 }
             } else {
