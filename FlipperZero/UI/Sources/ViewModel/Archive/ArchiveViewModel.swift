@@ -1,6 +1,7 @@
 import Core
 import Combine
 import Injector
+import SwiftUI
 
 class ArchiveViewModel: ObservableObject {
     @Inject var nfc: NFCServiceProtocol
@@ -14,6 +15,8 @@ class ArchiveViewModel: ObservableObject {
             archive.items = items
         }
     }
+    @Published var selectedItems: [ArchiveItem] = []
+    @Published var isEditing = false
     var disposeBag: DisposeBag = .init()
 
     init() {
@@ -45,6 +48,24 @@ class ArchiveViewModel: ObservableObject {
     }
 
     func openOptions() {
+        toggleEditing()
+    }
+
+    func toggleEditing() {
+        withAnimation {
+            isEditing.toggle()
+        }
+        if isEditing {
+            selectedItems.removeAll()
+        }
+    }
+
+    func selectItem(_ item: ArchiveItem) {
+        if let index = selectedItems.firstIndex(of: item) {
+            selectedItems.remove(at: index)
+        } else {
+            selectedItems.append(item)
+        }
     }
 
     func readNFCTag() {

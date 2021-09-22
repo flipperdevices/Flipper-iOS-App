@@ -5,9 +5,17 @@ struct ArchiveListView: View {
     @Environment(\.colorScheme) var colorScheme
     var backgroundColor: Color { colorScheme == .light ? .white : .black }
 
+    @Binding var isEditing: Bool
+    @Binding var selectedItems: [ArchiveItem]
     var itemSelected: (ArchiveItem) -> Void
 
-    init(itemSelected: @escaping (ArchiveItem) -> Void ) {
+    init(
+        isEditing: Binding<Bool>,
+        selectedItems: Binding<[ArchiveItem]>,
+        itemSelected: @escaping (ArchiveItem) -> Void
+    ) {
+        self._isEditing = isEditing
+        self._selectedItems = selectedItems
         self.itemSelected = itemSelected
     }
 
@@ -18,10 +26,19 @@ struct ArchiveListView: View {
                     Button {
                         itemSelected(item)
                     } label: {
-                        ArchiveListItemView(item: item)
-                            .foregroundColor(.primary)
-                            .background(backgroundColor)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        HStack {
+                            if isEditing {
+                                Image(systemName: selectedItems.contains(item)
+                                      ? "checkmark.circle.fill"
+                                      : "circle"
+                                )
+                                .padding(.trailing, 8)
+                            }
+                            ArchiveListItemView(item: item)
+                                .foregroundColor(.primary)
+                                .background(backgroundColor)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
                     }
                 }
             }

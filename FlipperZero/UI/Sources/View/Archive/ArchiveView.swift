@@ -20,9 +20,16 @@ struct ArchiveView: View {
                 categories: categories,
                 selected: $selectedCategory)
             Divider()
-            ArchiveListView { item in
-                sheetManager.present {
-                    CardSheetView(item: item)
+            ArchiveListView(
+                isEditing: $viewModel.isEditing,
+                selectedItems: $viewModel.selectedItems)
+            { item in
+                if viewModel.isEditing {
+                    viewModel.selectItem(item)
+                } else {
+                    sheetManager.present {
+                        CardSheetView(item: item)
+                    }
                 }
             }
         }
