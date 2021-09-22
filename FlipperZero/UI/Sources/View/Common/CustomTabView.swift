@@ -5,7 +5,6 @@ import SwiftUI
 // TODO: refactor
 
 struct CustomTabView: View {
-    @Environment(\.colorScheme) var colorScheme
     @Binding var selected: Tab
 
     enum Tab {
@@ -64,6 +63,6 @@ struct CustomTabView: View {
             .padding(.bottom, bottomSafeArea)
         }
         .frame(height: tabViewHeight + bottomSafeArea, alignment: .top)
-        .background(colorScheme == .light ? Color.white : Color.black)
+        .background(systemBackground)
     }
 }
