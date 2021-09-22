@@ -67,6 +67,7 @@ struct ArchiveListItemView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(item.name)
                     .fontWeight(.medium)
+                    .lineLimit(1)
 
                 Text(item.origin)
                     .fontWeight(.thin)
