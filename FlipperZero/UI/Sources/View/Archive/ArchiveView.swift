@@ -9,6 +9,7 @@ struct ArchiveView: View {
         "Favorites", "RFID 125", "Sub-gHz", "NFC", "iButton", "iRda"
     ]
     @State var selectedCategory: String = "Favorites"
+    @State var isDeletePresented: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -43,17 +44,34 @@ struct ArchiveView: View {
     var tabViewOverlay: some View {
         VStack {
             HStack(alignment: .center) {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.system(size: 22))
-                    .foregroundColor(.accentColor)
+                Button {
+                    if !viewModel.selectedItems.isEmpty {
+                        share(viewModel.selectedItems.map { $0.name })
+                    }
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 22))
+                }
 
                 Spacer()
                 Text("Chosen \(viewModel.selectedItems.count) objects")
                     .font(.system(size: 17, weight: .semibold))
                 Spacer()
-                Image(systemName: "trash")
-                    .font(.system(size: 22))
-                    .foregroundColor(.accentColor)
+
+                Button {
+                    if !viewModel.selectedItems.isEmpty {
+                        isDeletePresented = true
+                    }
+                } label: {
+                    Image(systemName: "trash")
+                        .font(.system(size: 22))
+                }
+                .actionSheet(isPresented: $isDeletePresented) {
+                    .init(title: Text("You can't undo this action"), buttons: [
+                        .destructive(Text("Delete")) { print("delete") },
+                        .cancel()
+                    ])
+                }
             }
             .padding(.top, 12)
             .padding(.bottom, bottomSafeArea)

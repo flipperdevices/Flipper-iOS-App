@@ -183,7 +183,7 @@ struct CardActions: View {
             // MARK: Share
 
             Button {
-                share()
+                share([item.name])
             } label: {
                 Image(systemName: "square.and.arrow.up")
             }
@@ -208,7 +208,7 @@ struct CardActions: View {
                 Image(systemName: "trash")
             }
             .actionSheet(isPresented: $isDeletePresented) {
-                .init(title: Text("Are you sure?"), buttons: [
+                .init(title: Text("You can't undo this action"), buttons: [
                     .destructive(Text("Delete")) { print("delete") },
                     .cancel()
                 ])
@@ -219,16 +219,5 @@ struct CardActions: View {
         .padding(.top, 20)
         .padding(.bottom, 45)
         .padding(.horizontal, 22)
-    }
-
-    func share() {
-        let activityContoller = UIActivityViewController(
-            activityItems: [item.name],
-            applicationActivities: nil)
-        UIApplication.shared
-            .windows
-            .first?
-            .rootViewController?
-            .present(activityContoller, animated: true, completion: nil)
     }
 }
