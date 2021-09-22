@@ -6,23 +6,38 @@ struct ArchiveHeaderView: View {
     var onOptions: () -> Void
     var onAddItem: () -> Void
 
+    @Binding var isEditing: Bool
+
     init(
         device: Peripheral? = nil,
+        isEditing: Binding<Bool>,
         onOptions: @escaping () -> Void = {},
         onAddItem: @escaping () -> Void = {}
     ) {
         self.device = device
+        self._isEditing = isEditing
         self.onOptions = onOptions
         self.onAddItem = onAddItem
     }
 
     var body: some View {
         HStack {
-            Button {
-                onOptions()
-            } label: {
-                Image(systemName: "ellipsis.circle")
-                    .headerImageStyle()
+            if isEditing {
+                Button {
+                    withAnimation {
+                        isEditing = false
+                    }
+                } label: {
+                    Text("Done")
+                        .padding(.leading, 15.5)
+                }
+            } else {
+                Button {
+                    onOptions()
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .headerImageStyle()
+                }
             }
             Spacer()
             HeaderDeviceView(device: device)
@@ -33,6 +48,7 @@ struct ArchiveHeaderView: View {
                 Image(systemName: "plus.circle")
                     .headerImageStyle()
             }
+            .opacity(isEditing ? 0 : 1)
         }
         .frame(height: 44)
     }

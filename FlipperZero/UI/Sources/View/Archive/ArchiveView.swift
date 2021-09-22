@@ -14,6 +14,7 @@ struct ArchiveView: View {
         VStack(spacing: 0) {
             ArchiveHeaderView(
                 device: viewModel.device,
+                isEditing: $viewModel.isEditing,
                 onOptions: viewModel.openOptions,
                 onAddItem: viewModel.readNFCTag)
             ArchiveCategoriesView(
