@@ -2,9 +2,6 @@ import Core
 import SwiftUI
 
 struct ArchiveListView: View {
-    @Environment(\.colorScheme) var colorScheme
-    var backgroundColor: Color { colorScheme == .light ? .white : .black }
-
     @Binding var isEditing: Bool
     @Binding var selectedItems: [ArchiveItem]
     var itemSelected: (ArchiveItem) -> Void
@@ -36,7 +33,7 @@ struct ArchiveListView: View {
                             }
                             ArchiveListItemView(item: item)
                                 .foregroundColor(.primary)
-                                .background(backgroundColor)
+                                .background(systemBackground)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }

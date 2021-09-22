@@ -14,4 +14,8 @@ extension View {
     }
 
     var tabViewHeight: Double { 49 }
+
+    var systemBackground: Color {
+        .init(UIColor.systemBackground)
+    }
 }

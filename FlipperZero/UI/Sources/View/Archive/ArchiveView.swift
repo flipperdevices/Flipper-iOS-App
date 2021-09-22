@@ -2,9 +2,6 @@ import Core
 import SwiftUI
 
 struct ArchiveView: View {
-    @Environment(\.colorScheme) var colorScheme
-    var backgroundColor: Color { colorScheme == .light ? .white : .black }
-
     @StateObject var viewModel: ArchiveViewModel
     @EnvironmentObject var sheetManager: SheetManager
 
@@ -63,7 +60,7 @@ struct ArchiveView: View {
             .padding(.horizontal, 22)
         }
         .frame(height: tabViewHeight + bottomSafeArea + 8, alignment: .top)
-        .background(backgroundColor)
+        .background(systemBackground)
     }
 }
 

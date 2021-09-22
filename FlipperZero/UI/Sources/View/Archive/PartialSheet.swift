@@ -1,15 +1,10 @@
 import SwiftUI
 
 struct PartialSheetView: View {
-    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var sheetManager: SheetManager
 
-    var themeBackgroundColor: Color {
-        colorScheme == .light ? .white : .black
-    }
-
     var backgroundColor: Color {
-        themeBackgroundColor.opacity(sheetManager.isPresented ? 0.5 : 0)
+        systemBackground.opacity(sheetManager.isPresented ? 0.5 : 0)
     }
 
     var animation: Animation {

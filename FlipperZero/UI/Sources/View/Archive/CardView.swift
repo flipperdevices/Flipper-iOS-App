@@ -120,10 +120,7 @@ struct CardDataView: View {
 }
 
 struct CardDeviceActions: View {
-    @Environment(\.colorScheme) var colorScheme
     let item: ArchiveItem
-
-    var backgroundColor: Color { colorScheme == .light ? .white : .black }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -135,7 +132,7 @@ struct CardDeviceActions: View {
                 CardDeviceAction(action: item.1)
             }
         }
-        .background(backgroundColor)
+        .background(systemBackground)
         .foregroundColor(Color.accentColor)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(16)
