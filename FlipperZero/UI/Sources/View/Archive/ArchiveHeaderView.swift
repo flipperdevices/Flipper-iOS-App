@@ -30,7 +30,7 @@ struct ArchiveHeaderView: View {
                 } label: {
                     Text("Done")
                         .fontWeight(.medium)
-                        .padding(.leading, 15.5)
+                        .padding(.leading, UIDevice.isFaceIDAvailable ? 15.5 : 14)
                 }
             } else {
                 Button {
@@ -87,7 +87,7 @@ struct HeaderDeviceView: View {
 
             Text(name)
                 .fontWeight(.semibold)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 16)
 
             if isConnected {
                 Image("BluetoothOn")
