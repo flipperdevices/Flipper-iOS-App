@@ -107,6 +107,7 @@ struct HeaderDeviceView: View {
                 .font(.system(size: 14))
                 .frame(width: 14, height: 14, alignment: .center)
                 .foregroundColor(leftImageColor)
+                .rotationEffect(.degrees(Double(isConnecting ? -angle : 0)))
                 .padding(.leading, 12)
 
             Text(name)
