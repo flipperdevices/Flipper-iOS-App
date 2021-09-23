@@ -2,30 +2,14 @@ import SwiftUI
 import Core
 
 struct ArchiveHeaderView: View {
-    let device: Peripheral?
-    var onOptions: () -> Void
-    var onAddItem: () -> Void
-
-    @Binding var isEditing: Bool
-
-    init(
-        device: Peripheral? = nil,
-        isEditing: Binding<Bool>,
-        onOptions: @escaping () -> Void = {},
-        onAddItem: @escaping () -> Void = {}
-    ) {
-        self.device = device
-        self._isEditing = isEditing
-        self.onOptions = onOptions
-        self.onAddItem = onAddItem
-    }
+    @StateObject var viewModel: ArchiveViewModel
 
     var body: some View {
         HStack {
-            if isEditing {
+            if viewModel.isEditing {
                 Button {
                     withAnimation {
-                        isEditing = false
+                        viewModel.isEditing = false
                     }
                 } label: {
                     Text("Done")
@@ -34,29 +18,32 @@ struct ArchiveHeaderView: View {
                 }
             } else {
                 Button {
-                    onOptions()
+                    viewModel.openOptions()
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .headerImageStyle()
                 }
             }
             Spacer()
-            HeaderDeviceView(device: device)
+            HeaderDeviceView(viewModel: viewModel)
             Spacer()
             Button {
-                onAddItem()
+                viewModel.readNFCTag()
             } label: {
                 Image(systemName: "plus.circle")
                     .headerImageStyle()
             }
-            .opacity(isEditing ? 0 : 1)
+            .opacity(viewModel.isEditing ? 0 : 1)
         }
         .frame(height: 44)
     }
 }
 
 struct HeaderDeviceView: View {
-    let device: Peripheral?
+    @StateObject var viewModel: ArchiveViewModel
+    @State var angle: Int = 0
+
+    var device: Peripheral? { viewModel.device }
 
     var name: String {
         device?.name ?? "No device"
@@ -95,8 +82,6 @@ struct HeaderDeviceView: View {
     var strokeColor: Color {
         isConnected ? activeColor : inactiveColor
     }
-
-    @State var angle: Int = 0
 
     var body: some View {
         HStack(alignment: .center) {
