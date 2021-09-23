@@ -4,8 +4,8 @@ public struct DeviceView: View {
     @StateObject var viewModel: DeviceViewModel
 
     public var body: some View {
-        if let paired = viewModel.pairedDevice {
-            DeviceInfoView(viewModel: .init(paired))
+        if viewModel.pairedDevice != nil {
+            DeviceInfoView(viewModel: .init())
         } else {
             InstructionsView(viewModel: .init())
         }
