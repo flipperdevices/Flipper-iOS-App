@@ -127,24 +127,34 @@ struct HeaderDeviceView: View {
             }
         }
         .frame(height: 30)
-        .overlay(
-            isConnecting
-            ? AnyView(RoundedRectangle(cornerRadius: 15)
-                .stroke(
-                    AngularGradient(
-                        colors: [inactiveColor, activeColor],
-                        center: .center,
-                        angle: .degrees(Double(-angle))
-                    ),
-                    lineWidth: 2))
-            : AnyView(RoundedRectangle(cornerRadius: 15)
-                .stroke(strokeColor, lineWidth: 2))
-        )
-        .onAppear {
-            if isConnecting {
-                startAnimation()
-            }
-        }
+        .overlay(border)
+    }
+
+    var border: AnyView {
+        isConnecting
+            ? .init(animatedBorder)
+            : .init(staticBorder)
+    }
+
+    var animatedBorder: some View {
+        RoundedRectangle(cornerRadius: 15)
+            .stroke(
+                AngularGradient(
+                    colors: [inactiveColor, activeColor],
+                    center: .center,
+                    angle: .degrees(Double(-angle))
+                ),
+                lineWidth: 2)
+                    .onAppear {
+                        if isConnecting {
+                            startAnimation()
+                        }
+                    }
+    }
+
+    var staticBorder: some View {
+        RoundedRectangle(cornerRadius: 15)
+            .stroke(strokeColor, lineWidth: 2)
     }
 
     func startAnimation() {
