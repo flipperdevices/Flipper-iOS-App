@@ -78,7 +78,7 @@ struct HeaderDeviceView: View {
         .init(red: 0.23, green: 0.87, blue: 0.72)
     }
     var inactiveColor: Color {
-        .init(red: 0.74, green: 0.76, blue: 0.78)
+        .clear
     }
     var arrowsColor: Color {
         .init(red: 0.99, green: 0.68, blue: 0.22)
@@ -131,9 +131,9 @@ struct HeaderDeviceView: View {
             ? AnyView(RoundedRectangle(cornerRadius: 15)
                 .stroke(
                     AngularGradient(
-                        colors: [activeColor, .secondary],
+                        colors: [inactiveColor, activeColor],
                         center: .center,
-                        angle: .degrees(Double(angle))
+                        angle: .degrees(Double(-angle))
                     ),
                     lineWidth: 2))
             : AnyView(RoundedRectangle(cornerRadius: 15)
@@ -147,7 +147,7 @@ struct HeaderDeviceView: View {
     }
 
     func startAnimation() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.005) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
             if angle == 0 {
                 angle = 360
             }
