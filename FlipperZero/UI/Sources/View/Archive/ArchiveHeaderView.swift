@@ -2,30 +2,14 @@ import SwiftUI
 import Core
 
 struct ArchiveHeaderView: View {
-    let device: Peripheral?
-    var onOptions: () -> Void
-    var onAddItem: () -> Void
-
-    @Binding var isEditing: Bool
-
-    init(
-        device: Peripheral? = nil,
-        isEditing: Binding<Bool>,
-        onOptions: @escaping () -> Void = {},
-        onAddItem: @escaping () -> Void = {}
-    ) {
-        self.device = device
-        self._isEditing = isEditing
-        self.onOptions = onOptions
-        self.onAddItem = onAddItem
-    }
+    @StateObject var viewModel: ArchiveViewModel
 
     var body: some View {
         HStack {
-            if isEditing {
+            if viewModel.isEditing {
                 Button {
                     withAnimation {
-                        isEditing = false
+                        viewModel.isEditing = false
                     }
                 } label: {
                     Text("Done")
@@ -34,43 +18,65 @@ struct ArchiveHeaderView: View {
                 }
             } else {
                 Button {
-                    onOptions()
+                    viewModel.openOptions()
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .headerImageStyle()
                 }
             }
             Spacer()
-            HeaderDeviceView(device: device)
+            HeaderDeviceView(viewModel: viewModel)
             Spacer()
             Button {
-                onAddItem()
+                viewModel.readNFCTag()
             } label: {
                 Image(systemName: "plus.circle")
                     .headerImageStyle()
             }
-            .opacity(isEditing ? 0 : 1)
+            .opacity(viewModel.isEditing ? 0 : 1)
         }
         .frame(height: 44)
     }
 }
 
 struct HeaderDeviceView: View {
-    let device: Peripheral?
+    @StateObject var viewModel: ArchiveViewModel
+    @State var angle: Int = 0
+
+    var device: Peripheral? { viewModel.device }
 
     var name: String {
         device?.name ?? "No device"
     }
 
+    var status: Peripheral.State {
+        device?.state ?? .disconnected
+    }
+
+    var isConnecting: Bool {
+        status == .connecting
+    }
+
     var isConnected: Bool {
-        device?.state == .connected
+        status == .connected
     }
 
     var activeColor: Color {
-        .init(red: 0.2, green: 0.78, blue: 0.64)
+        .init(red: 0.23, green: 0.87, blue: 0.72)
     }
     var inactiveColor: Color {
-        .init(red: 0.74, green: 0.76, blue: 0.78)
+        .clear
+    }
+    var arrowsColor: Color {
+        .init(red: 0.99, green: 0.68, blue: 0.22)
+    }
+
+    var leftImageColor: Color {
+        switch status {
+        case .connected: return activeColor
+        case .connecting: return arrowsColor
+        default: return .clear
+        }
     }
 
     var strokeColor: Color {
@@ -79,33 +85,73 @@ struct HeaderDeviceView: View {
 
     var body: some View {
         HStack(alignment: .center) {
-            Image(systemName: "checkmark")
+            // swiftlint:disable indentation_width
+            Image(systemName: isConnecting
+                  ? "arrow.triangle.2.circlepath"
+                  : "checkmark")
                 .font(.system(size: 14))
-                .foregroundColor(activeColor)
-                .opacity(isConnected ? 1 : 0)
+                .frame(width: 14, height: 14, alignment: .center)
+                .foregroundColor(leftImageColor)
+                .rotationEffect(.degrees(Double(isConnecting ? -angle : 0)))
                 .padding(.leading, 12)
 
             Text(name)
                 .fontWeight(.semibold)
                 .padding(.horizontal, 16)
 
-            if isConnected {
+            if isConnected || isConnecting {
                 Image("BluetoothOn")
                     .resizable()
                     .frame(width: 10, height: 14)
-                    .padding(.trailing, 18)
+                    .padding(.trailing, 16)
             } else {
                 Image("BluetoothOff")
                     .resizable()
                     .frame(width: 12, height: 14)
-                    .padding(.trailing, 18)
+                    .padding(.trailing, 14)
             }
         }
         .frame(height: 30)
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(strokeColor, lineWidth: 2)
-        )
+        .overlay(border)
+    }
+
+    var border: AnyView {
+        isConnecting
+            ? .init(animatedBorder)
+            : .init(staticBorder)
+    }
+
+    var animatedBorder: some View {
+        RoundedRectangle(cornerRadius: 15)
+            .stroke(
+                AngularGradient(
+                    colors: [inactiveColor, activeColor],
+                    center: .center,
+                    angle: .degrees(Double(-angle))
+                ),
+                lineWidth: 2)
+                    .onAppear {
+                        if isConnecting {
+                            startAnimation()
+                        }
+                    }
+    }
+
+    var staticBorder: some View {
+        RoundedRectangle(cornerRadius: 15)
+            .stroke(strokeColor, lineWidth: 2)
+    }
+
+    func startAnimation() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
+            if angle == 0 {
+                angle = 360
+            }
+            angle -= 1
+            if isConnecting {
+                startAnimation()
+            }
+        }
     }
 }
 
