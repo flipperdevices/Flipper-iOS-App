@@ -8,4 +8,14 @@ extension View {
     var onMac: Bool {
         ProcessInfo.processInfo.isiOSAppOnMac
     }
+
+    var bottomSafeArea: Double {
+        UIDevice.isFaceIDAvailable ? 34 : 0
+    }
+
+    var tabViewHeight: Double { 49 }
+
+    var systemBackground: Color {
+        .init(UIColor.systemBackground)
+    }
 }

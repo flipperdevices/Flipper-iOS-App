@@ -6,8 +6,10 @@ class SheetManager: ObservableObject {
 
     @Published var offset = UIScreen.main.bounds.height
     @Published var isPresented = false {
-        willSet {
-            offset = newValue ? 0 : UIScreen.main.bounds.height
+        didSet {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                self.offset = self.isPresented ? 0 : UIScreen.main.bounds.height
+            }
         }
     }
     var content: AnyView?

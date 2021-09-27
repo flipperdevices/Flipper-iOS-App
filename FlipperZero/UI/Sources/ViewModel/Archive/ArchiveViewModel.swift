@@ -1,6 +1,7 @@
 import Core
 import Combine
 import Injector
+import SwiftUI
 
 class ArchiveViewModel: ObservableObject {
     @Inject var nfc: NFCServiceProtocol
@@ -14,9 +15,32 @@ class ArchiveViewModel: ObservableObject {
             archive.items = items
         }
     }
+    @Published var selectedItems: [ArchiveItem] = []
+    @Published var isEditing = false {
+        didSet { onEditModeChanded(isEditing) }
+    }
+    var onEditModeChanded: (Bool) -> Void = { _ in }
     var disposeBag: DisposeBag = .init()
 
-    init() {
+    struct Group: Identifiable {
+        var id: ArchiveItem.Kind?
+        var items: [ArchiveItem]
+    }
+
+    var itemGroups: [Group] {
+        var groups: [Group] = [.init(id: nil, items: items)]
+        ArchiveItem.Kind.allCases.forEach { kind in
+            groups.append(.init(
+                id: kind,
+                items: items.filter { $0.kind == kind }))
+        }
+        return groups
+    }
+
+    init(onEditModeChanded: @escaping (Bool) -> Void = { _ in }) {
+        archive.items = demo
+
+        self.onEditModeChanded = onEditModeChanded
         device = storage.pairedDevice
         items = archive.items
 
@@ -45,6 +69,24 @@ class ArchiveViewModel: ObservableObject {
     }
 
     func openOptions() {
+        toggleEditing()
+    }
+
+    func toggleEditing() {
+        withAnimation {
+            isEditing.toggle()
+        }
+        if isEditing {
+            selectedItems.removeAll()
+        }
+    }
+
+    func selectItem(_ item: ArchiveItem) {
+        if let index = selectedItems.firstIndex(of: item) {
+            selectedItems.remove(at: index)
+        } else {
+            selectedItems.append(item)
+        }
     }
 
     func readNFCTag() {

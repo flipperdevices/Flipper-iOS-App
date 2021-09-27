@@ -11,7 +11,6 @@ struct OptionsView: View {
                     SpeedTestView(viewModel: .init())
                 }
             }
-            .padding(.top, 300)
             .navigationBarHidden(true)
         }
     }

@@ -120,10 +120,7 @@ struct CardDataView: View {
 }
 
 struct CardDeviceActions: View {
-    @Environment(\.colorScheme) var colorScheme
     let item: ArchiveItem
-
-    var backgroundColor: Color { colorScheme == .light ? .white : .black }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -135,7 +132,7 @@ struct CardDeviceActions: View {
                 CardDeviceAction(action: item.1)
             }
         }
-        .background(backgroundColor)
+        .background(systemBackground)
         .foregroundColor(Color.accentColor)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(16)
@@ -160,15 +157,62 @@ struct CardDeviceAction: View {
 struct CardActions: View {
     let item: ArchiveItem
 
+    @State var isEditPresented = false
+    @State var isSharePresented = false
+    @State var isFavorite = false
+    @State var isDeletePresented = false
+
     var body: some View {
         HStack(alignment: .top) {
-            Image(systemName: "square.and.pencil")
+
+            // MARK: Edit
+
+            Button {
+                isEditPresented = true
+            } label: {
+                Image(systemName: "square.and.pencil")
+            }
+            .alert(isPresented: $isEditPresented) {
+                Alert(
+                    title: Text("Editing not available"),
+                    dismissButton: .default(Text("Close")))
+            }
+
             Spacer()
-            Image(systemName: "square.and.arrow.up")
+
+            // MARK: Share
+
+            Button {
+                share([item.name])
+            } label: {
+                Image(systemName: "square.and.arrow.up")
+            }
+
             Spacer()
-            Image(systemName: "star")
+
+            // MARK: Favorite
+
+            Button {
+                isFavorite.toggle()
+            } label: {
+                Image(systemName: isFavorite ? "star.fill" : "star")
+            }
+
             Spacer()
-            Image(systemName: "trash")
+
+            // MARK: Delete
+
+            Button {
+                isDeletePresented = true
+            } label: {
+                Image(systemName: "trash")
+            }
+            .actionSheet(isPresented: $isDeletePresented) {
+                .init(title: Text("You can't undo this action"), buttons: [
+                    .destructive(Text("Delete")) { print("delete") },
+                    .cancel()
+                ])
+            }
         }
         .font(.system(size: 22))
         .foregroundColor(Color.accentColor)

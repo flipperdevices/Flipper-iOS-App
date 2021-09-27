@@ -2,26 +2,43 @@ import Core
 import SwiftUI
 
 struct ArchiveListView: View {
-    @Environment(\.colorScheme) var colorScheme
-    var backgroundColor: Color { colorScheme == .light ? .white : .black }
-
+    var items: [ArchiveItem]
+    @Binding var isEditing: Bool
+    @Binding var selectedItems: [ArchiveItem]
     var itemSelected: (ArchiveItem) -> Void
 
-    init(itemSelected: @escaping (ArchiveItem) -> Void ) {
+    init(
+        items: [ArchiveItem],
+        isEditing: Binding<Bool>,
+        selectedItems: Binding<[ArchiveItem]>,
+        itemSelected: @escaping (ArchiveItem) -> Void
+    ) {
+        self.items = items
+        self._isEditing = isEditing
+        self._selectedItems = selectedItems
         self.itemSelected = itemSelected
     }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
-                ForEach(demo) { item in
+                ForEach(items) { item in
                     Button {
                         itemSelected(item)
                     } label: {
-                        ArchiveListItemView(item: item)
-                            .foregroundColor(.primary)
-                            .background(backgroundColor)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        HStack {
+                            if isEditing {
+                                Image(systemName: selectedItems.contains(item)
+                                      ? "checkmark.circle.fill"
+                                      : "circle"
+                                )
+                                .padding(.trailing, 8)
+                            }
+                            ArchiveListItemView(item: item)
+                                .foregroundColor(.primary)
+                                .background(systemBackground)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
                     }
                 }
             }
@@ -50,6 +67,7 @@ struct ArchiveListItemView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(item.name)
                     .fontWeight(.medium)
+                    .lineLimit(1)
 
                 Text(item.origin)
                     .fontWeight(.thin)

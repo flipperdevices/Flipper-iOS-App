@@ -8,22 +8,24 @@ struct EchoView: View {
 
     var body: some View {
         VStack {
-            Form {
-                Section(header: Text("Log")) {
-                    List(viewModel.received) {
-                        Text($0.text)
-                    }.frame(maxHeight: .infinity)
-                }
+            TextField("Input", text: $entered) { isEditing in
+                viewModel.isEditing = isEditing
+            } onCommit: {
+                viewModel.send(entered)
+                entered = ""
             }
-            Form {
-                TextField("Input", text: $entered) { isEditing in
-                    viewModel.isEditing = isEditing
-                } onCommit: {
-                    viewModel.send(entered)
-                    entered = ""
-                }
+            .padding(10)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(Color.gray, lineWidth: 1)
+            ).padding()
+
+            List(viewModel.received) {
+                Text($0.text)
             }
         }
+        .navigationTitle("Echo Server")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
