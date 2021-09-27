@@ -11,6 +11,9 @@ struct CardSheetView: View {
             : .init(red: 0.1, green: 0.1, blue: 0.1)
     }
 
+    @State var string = ""
+    @State var isEditing = false
+
     var body: some View {
         VStack {
             RoundedRectangle(cornerRadius: 5)
@@ -23,12 +26,17 @@ struct CardSheetView: View {
                 .padding(.top, 5)
                 .padding(.horizontal, 16)
 
-            CardDeviceActions(item: item)
+            if !isEditing {
+                CardDeviceActions(item: item)
 
-            Divider()
+                Divider()
 
-            CardActions(item: item)
+                CardActions(item: item, isEditing: $isEditing)
+            } else {
+                Spacer()
+            }
         }
+        .frame(maxHeight: isEditing ? UIScreen.main.bounds.height - 89 : nil)
         .background(sheetBackgroundColor)
         .cornerRadius(12)
     }
@@ -156,8 +164,8 @@ struct CardDeviceAction: View {
 
 struct CardActions: View {
     let item: ArchiveItem
+    @Binding var isEditing: Bool
 
-    @State var isEditPresented = false
     @State var isSharePresented = false
     @State var isFavorite = false
     @State var isDeletePresented = false
@@ -168,14 +176,9 @@ struct CardActions: View {
             // MARK: Edit
 
             Button {
-                isEditPresented = true
+                isEditing = true
             } label: {
                 Image(systemName: "square.and.pencil")
-            }
-            .alert(isPresented: $isEditPresented) {
-                Alert(
-                    title: Text("Editing not available"),
-                    dismissButton: .default(Text("Close")))
             }
 
             Spacer()

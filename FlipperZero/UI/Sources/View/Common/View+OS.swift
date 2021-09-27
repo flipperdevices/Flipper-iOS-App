@@ -19,3 +19,10 @@ extension View {
         .init(UIColor.systemBackground)
     }
 }
+
+extension View {
+    var navigationBarHeight: Double {
+        UINavigationController(rootViewController: UIViewController(nibName: nil, bundle: nil))
+            .navigationBar.frame.size.height
+    }
+}
