@@ -29,7 +29,7 @@ class ConnectionsViewModel: ObservableObject {
                 self?.state = status
                 // FIXME: don't publish empty erray
                 guard !peripherals.isEmpty else { return }
-                self?.peripherals = peripherals
+                self?.peripherals = peripherals.map(Peripheral.init)
             }
             .store(in: &disposeBag)
 
@@ -40,7 +40,7 @@ class ConnectionsViewModel: ObservableObject {
                     if let index = self.peripherals.firstIndex(
                         where: { $0.id == peripheral.id }
                     ) {
-                        self.peripherals[index] = peripheral
+                        self.peripherals[index] = .init(peripheral)
                     }
                 }
             }

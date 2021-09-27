@@ -46,7 +46,7 @@ public class DeviceViewModel: ObservableObject {
                 switch peripheral.state {
                 // TODO: handle .connecting
                 case .connecting, .connected:
-                    self.pairedDevice = peripheral
+                    self.pairedDevice = .init(peripheral)
                 default:
                     self.pairedDevice = nil
                 }

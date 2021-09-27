@@ -33,34 +33,38 @@ class SpeedTestViewModel: ObservableObject {
         lastTime = Date()
     }
 
-    var deviceUUID: UUID?
+    var flipper: BluetoothPeripheral? {
+        didSet { onDeviceChanged() }
+    }
 
     init() {
         connector.connectedPeripherals
             .sink { [weak self] in
-                self?.deviceUUID = $0.first?.id
+                self?.flipper = $0.first
             }
             .store(in: &disposeBag)
+    }
 
-        connector.received
+    func onDeviceChanged() {
+        flipper?.received
             .sink { [weak self] in
                 guard let self = self else { return }
                 self.record($0.count)
-                if self.isRunning, let identifier = self.deviceUUID {
-                    self.connector.send(self.bytes, to: identifier)
+                if self.isRunning {
+                    self.flipper?.send(self.bytes)
                 }
             }
             .store(in: &disposeBag)
     }
 
     func start() {
-        guard let identifier = deviceUUID else {
+        guard let flipper = flipper else {
             return
         }
         isRunning = true
         startTime = Date()
         lastTime = Date()
-        self.connector.send(bytes, to: identifier)
+        flipper.send(bytes)
     }
 
     func stop() {

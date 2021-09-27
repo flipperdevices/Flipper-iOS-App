@@ -15,16 +15,20 @@ class EchoViewModel: ObservableObject {
         let text: String
     }
 
-    var deviceUUID: UUID?
+    var flipper: BluetoothPeripheral? {
+        didSet { onDeviceChanged() }
+    }
 
     init() {
         connector.connectedPeripherals
             .sink { [weak self] in
-                self?.deviceUUID = $0.first?.id
+                self?.flipper = $0.first
             }
             .store(in: &disposeBag)
+    }
 
-        connector.received
+    func onDeviceChanged() {
+        flipper?.received
             .sink { [weak self] bytes in
                 guard let self = self else { return }
                 guard !bytes.isEmpty else { return }
@@ -36,7 +40,7 @@ class EchoViewModel: ObservableObject {
     }
 
     func send(_ text: String) {
-        guard let identifier = deviceUUID else {
+        guard let flipper = flipper else {
             print("no device connected")
             return
         }
@@ -44,6 +48,6 @@ class EchoViewModel: ObservableObject {
             print("invalid input")
             return
         }
-        connector.send(.init(data), to: identifier)
+        flipper.send(.init(data))
     }
 }

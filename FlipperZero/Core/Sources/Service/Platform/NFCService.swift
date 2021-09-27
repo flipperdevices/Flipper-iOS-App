@@ -3,7 +3,7 @@ import CoreNFC
 class NFCService: NSObject, NFCServiceProtocol {
     var session: NFCTagReaderSession?
 
-    private let itemsSubject = SafeSubject([ArchiveItem]())
+    private let itemsSubject = SafeValueSubject([ArchiveItem]())
 
     var items: SafePublisher<[ArchiveItem]> {
         self.itemsSubject.eraseToAnyPublisher()

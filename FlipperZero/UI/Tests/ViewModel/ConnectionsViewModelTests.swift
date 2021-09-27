@@ -1,6 +1,9 @@
 import XCTest
 import Core
 import Injector
+import Combine
+// TODO: remove
+import CoreBluetooth
 
 @testable import UI
 
@@ -42,7 +45,8 @@ class ConnectionsViewModelTests: XCTestCase {
         self.waitForExpectations(timeout: 0.1)
         XCTAssertEqual(target.state, .ready)
         let peripheral = Peripheral(id: UUID(), name: "Device 42", state: .disconnected)
-        connector.peripheralsSubject.value.append(peripheral)
+        let bluetoothPeripheral = MockPeripheral(id: peripheral.id, name: peripheral.name, state: .disconnected)
+        connector.peripheralsSubject.value.append(bluetoothPeripheral)
         XCTAssertEqual(target.peripherals, [peripheral])
     }
 
@@ -71,20 +75,29 @@ class ConnectionsViewModelTests: XCTestCase {
     }
 }
 
+private struct MockPeripheral: BluetoothPeripheral {
+    var id: UUID
+    var name: String
+    var state: CBPeripheralState = .disconnected
+    var services: [CBService] = []
+
+    func send(_ bytes: [UInt8]) {}
+
+    var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
+    var received: SafePublisher<[UInt8]> { Just([]).eraseToAnyPublisher() }
+}
+
 private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {
     private let onStartScanForPeripherals: () -> Void
     private let onStopScanForPeripherals: (() -> Void)?
     private let onConnect: (() -> Void)?
-    let peripheralsSubject = SafeSubject([Peripheral]())
-    let statusSubject: SafeSubject<BluetoothStatus>
-    // TODO: Move to separate protocol
-    var connectedPeripheralsSubject: SafeSubject<[Peripheral]>
-
-    var receivedSubject: SafeSubject<[UInt8]>
+    let statusSubject: SafeValueSubject<BluetoothStatus>
+    let peripheralsSubject = SafeValueSubject([BluetoothPeripheral]())
+    let connectedPeripheralsSubject: SafeValueSubject<[BluetoothPeripheral]>
 
     init(
         initialState: BluetoothStatus = .notReady(.preparing),
-        connectedPeripherals: [Peripheral] = [],
+        connectedPeripherals: [BluetoothPeripheral] = [],
         onStartScanForPeripherals: @escaping () -> Void,
         onStopScanForPeripherals: (() -> Void)? = nil,
         onConnect: (() -> Void)? = nil
@@ -92,25 +105,20 @@ private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {
         self.onStartScanForPeripherals = onStartScanForPeripherals
         self.onStopScanForPeripherals = onStopScanForPeripherals
         self.onConnect = onConnect
-        self.statusSubject = SafeSubject(initialState)
-        self.connectedPeripheralsSubject = SafeSubject(connectedPeripherals)
-        self.receivedSubject = SafeSubject([])
+        self.statusSubject = SafeValueSubject(initialState)
+        self.connectedPeripheralsSubject = SafeValueSubject(connectedPeripherals)
     }
 
-    var peripherals: SafePublisher<[Peripheral]> {
+    var peripherals: SafePublisher<[BluetoothPeripheral]> {
         self.peripheralsSubject.eraseToAnyPublisher()
     }
 
-    var connectedPeripherals: SafePublisher<[Peripheral]> {
+    var connectedPeripherals: SafePublisher<[BluetoothPeripheral]> {
         self.connectedPeripheralsSubject.eraseToAnyPublisher()
     }
 
     var status: SafePublisher<BluetoothStatus> {
         self.statusSubject.eraseToAnyPublisher()
-    }
-
-    var received: SafePublisher<[UInt8]> {
-        self.receivedSubject.eraseToAnyPublisher()
     }
 
     func startScanForPeripherals() {
@@ -126,9 +134,6 @@ private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {
     }
 
     func disconnect(from uuid: UUID) {
-    }
-
-    func send(_ bytes: [UInt8], to identifier: UUID) {
     }
 }
 
