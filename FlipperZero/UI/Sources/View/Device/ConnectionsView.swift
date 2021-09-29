@@ -90,10 +90,10 @@ private class TestConnector: BluetoothCentral, BluetoothConnector {
         var state: CBPeripheralState = .disconnected
         var services: [CBService] = []
 
-        func send(_ bytes: [UInt8]) {}
+        func send(_ request: Request) {}
 
         var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
-        var received: SafePublisher<[UInt8]> { Just([]).eraseToAnyPublisher() }
+        var received: SafePublisher<Response> { Just(.ping).eraseToAnyPublisher() }
     }
 
     private let peripheralsSubject = SafeValueSubject([BluetoothPeripheral]())

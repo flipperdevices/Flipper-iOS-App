@@ -8,8 +8,16 @@ public protocol BluetoothPeripheral {
     var state: CBPeripheralState { get }
     var services: [CBService] { get }
 
-    func send(_ bytes: [UInt8])
-
     var info: SafePublisher<Void> { get }
-    var received: SafePublisher<[UInt8]> { get }
+    var received: SafePublisher<Response> { get }
+
+    func send(_ request: Request)
+}
+
+public enum Request {
+    case ping
+}
+
+public enum Response {
+    case ping
 }

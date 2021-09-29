@@ -36,19 +36,12 @@ class FlipperPeripheral: BluetoothPeripheral {
         delegate.infoSubject.eraseToAnyPublisher()
     }
 
-    var received: SafePublisher<[UInt8]> {
-        delegate.receivedSubject.eraseToAnyPublisher()
+    var received: SafePublisher<Response> {
+        delegate.apiSubject.eraseToAnyPublisher()
     }
 
-    func send(_ bytes: [UInt8]) {
-        guard peripheral.state == .connected else {
-            return
-        }
-        guard let tx = peripheral.serialWrite else {
-            print("no serial service")
-            return
-        }
-        peripheral.writeValue(.init(bytes), for: tx, type: .withResponse)
+    func send(_ request: Request) {
+        delegate.send(request)
     }
 }
 
@@ -64,7 +57,7 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     }
 
     fileprivate let infoSubject = SafeSubject<Void>()
-    fileprivate let receivedSubject = SafeValueSubject([UInt8]())
+    fileprivate let apiSubject = SafeSubject<Response>()
 
     // MARK: Services
 
@@ -111,10 +104,51 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     ) {
         assert(peripheral === self.peripheral)
         switch characteristic.uuid {
-        case .serial:
-            receivedSubject.value = .init((characteristic.value ?? .init()))
+        case .serialRead:
+            handleData(characteristic.value)
         default:
             infoSubject.send()
+        }
+    }
+
+    func handleData(_ data: Data?) {
+        guard var data = data else {
+            print("no data")
+            return
+        }
+        data.removeFirst()
+        guard let main = try? PB_Main(serializedData: data) else {
+            print("can't deserialize", [UInt8](data))
+            return
+        }
+        switch main.content {
+        case .pingResponse: apiSubject.send(.ping)
+        default: print("unsupported api response:", main.content ?? "nil")
+        }
+    }
+
+    func send(_ request: Request) {
+        guard peripheral.state == .connected else {
+            print("invalid state")
+            return
+        }
+        guard let tx = peripheral.serialWrite else {
+            print("no serial service")
+            return
+        }
+        let request = makeProtobufMessage(for: request)
+        guard var data = try? request.serializedData() else {
+            print("can't serialize")
+            return
+        }
+        data.insert(UInt8(data.count), at: 0)
+        peripheral.writeValue(data, for: tx, type: .withResponse)
+    }
+
+    func makeProtobufMessage(for request: Request) -> PB_Main {
+        switch request {
+        case .ping:
+            return PB_Main.with { $0.pingRequest = PBStatus_PingRequest() }
         }
     }
 }

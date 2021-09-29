@@ -81,10 +81,10 @@ private struct MockPeripheral: BluetoothPeripheral {
     var state: CBPeripheralState = .disconnected
     var services: [CBService] = []
 
-    func send(_ bytes: [UInt8]) {}
-
     var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
-    var received: SafePublisher<[UInt8]> { Just([]).eraseToAnyPublisher() }
+    var received: SafePublisher<Response> { Just(.ping).eraseToAnyPublisher() }
+
+    func send(_ request: Request) {}
 }
 
 private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {
