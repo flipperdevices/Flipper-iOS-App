@@ -5,7 +5,7 @@ class BluetoothService: NSObject, BluetoothCentral, BluetoothConnector {
     private let manager: CBCentralManager
 
     private var flipperServiceIDs: [CBUUID] {
-        [.flipperZeroWhite, .flipperZeroBlack]
+        [.flipperZerof6, .flipperZeroBlack, .flipperZeroWhite]
     }
 
     override init() {

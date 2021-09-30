@@ -1,8 +1,9 @@
 import class CoreBluetooth.CBUUID
 
 extension CBUUID {
-    static var flipperZeroWhite: CBUUID { .init(string: "3080") }
+    static var flipperZerof6: CBUUID { .init(string: "3080") }
     static var flipperZeroBlack: CBUUID { .init(string: "3081") }
+    static var flipperZeroWhite: CBUUID { .init(string: "3082") }
 
     // service
     static var deviceInformation: CBUUID { .init(string: "180A") }
