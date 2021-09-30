@@ -30,7 +30,7 @@ struct PBStorage_Element {
 
   var name: String = String()
 
-  var size: UInt64 = 0
+  var size: UInt32 = 0
 
   var data: Data = Data()
 
@@ -194,7 +194,7 @@ extension PBStorage_Element: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularEnumField(value: &self.type) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
-      case 3: try { try decoder.decodeSingularUInt64Field(value: &self.size) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.size) }()
       case 4: try { try decoder.decodeSingularBytesField(value: &self.data) }()
       default: break
       }
@@ -209,7 +209,7 @@ extension PBStorage_Element: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
     }
     if self.size != 0 {
-      try visitor.visitSingularUInt64Field(value: self.size, fieldNumber: 3)
+      try visitor.visitSingularUInt32Field(value: self.size, fieldNumber: 3)
     }
     if !self.data.isEmpty {
       try visitor.visitSingularBytesField(value: self.data, fieldNumber: 4)

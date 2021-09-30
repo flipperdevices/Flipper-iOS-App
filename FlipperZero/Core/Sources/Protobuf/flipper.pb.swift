@@ -88,7 +88,7 @@ struct PB_Main {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var commandID: UInt64 = 0
+  var commandID: UInt32 = 0
 
   var commandStatus: PB_CommandStatus = .ok
 
@@ -289,7 +289,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.commandID) }()
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.commandID) }()
       case 2: try { try decoder.decodeSingularEnumField(value: &self.commandStatus) }()
       case 3: try { try decoder.decodeSingularBoolField(value: &self.notLast) }()
       case 4: try {
@@ -416,7 +416,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.commandID != 0 {
-      try visitor.visitSingularUInt64Field(value: self.commandID, fieldNumber: 1)
+      try visitor.visitSingularUInt32Field(value: self.commandID, fieldNumber: 1)
     }
     if self.commandStatus != .ok {
       try visitor.visitSingularEnumField(value: self.commandStatus, fieldNumber: 2)
