@@ -112,19 +112,19 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     }
 
     func handleData(_ data: Data?) {
-        guard var data = data else {
+        guard let data = data else {
             print("no data")
             return
         }
-        data.removeFirst()
-        guard let main = try? PB_Main(serializedData: data) else {
-            print("can't deserialize", [UInt8](data))
+        guard let response = try? Response([UInt8](data)) else {
+            print("can't deserialize")
             return
         }
-        switch main.content {
-        case .pingResponse: apiSubject.send(.ping)
-        default: print("unsupported api response:", main.content ?? "nil")
+        if case .error(let error) = response {
+            print(error)
+            return
         }
+        apiSubject.send(response)
     }
 
     func send(_ request: Request) {
@@ -136,20 +136,12 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
             print("no serial service")
             return
         }
-        let request = makeProtobufMessage(for: request)
-        guard var data = try? request.serializedData() else {
+        guard let bytes = try? request.serialize(), !bytes.isEmpty else {
             print("can't serialize")
             return
         }
-        data.insert(UInt8(data.count), at: 0)
+        let data = Data(bytes)
         peripheral.writeValue(data, for: tx, type: .withResponse)
-    }
-
-    func makeProtobufMessage(for request: Request) -> PB_Main {
-        switch request {
-        case .ping:
-            return PB_Main.with { $0.pingRequest = PBStatus_PingRequest() }
-        }
     }
 }
 

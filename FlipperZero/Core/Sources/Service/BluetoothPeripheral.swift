@@ -13,11 +13,3 @@ public protocol BluetoothPeripheral {
 
     func send(_ request: Request)
 }
-
-public enum Request {
-    case ping
-}
-
-public enum Response {
-    case ping
-}
