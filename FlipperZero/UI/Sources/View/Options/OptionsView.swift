@@ -7,6 +7,10 @@ struct OptionsView: View {
                 NavigationLink("Protobuf ping") {
                     PingView(viewModel: .init())
                 }
+
+                NavigationLink("Storage list") {
+                    StorageView(viewModel: .init())
+                }
             }
             .navigationBarHidden(true)
         }

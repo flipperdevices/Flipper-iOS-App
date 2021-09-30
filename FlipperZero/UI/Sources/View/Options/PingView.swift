@@ -1,7 +1,5 @@
 import SwiftUI
 
-// swiftlint:disable multiline_arguments
-
 struct PingView: View {
     @StateObject var viewModel: PingViewModel
     @State var entered: String = ""

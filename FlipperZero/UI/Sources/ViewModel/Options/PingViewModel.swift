@@ -2,7 +2,6 @@ import Core
 import Combine
 import Injector
 import Foundation
-import SwiftProtobuf
 
 class PingViewModel: ObservableObject {
     @Inject var connector: BluetoothConnector

@@ -33,3 +33,12 @@ extension Element {
         }
     }
 }
+
+extension Element: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case let .file(item): return item.name
+        case let .directory(item): return item.name
+        }
+    }
+}
