@@ -25,12 +25,13 @@ class StorageViewModel: ObservableObject {
             .sink { [weak self] response in
                 guard let self = self else { return }
                 guard case .list(let elements) = response else { return }
-                self.elements = elements
+                self.elements.append(contentsOf: elements)
             }
             .store(in: &disposeBag)
     }
 
     func sendListRequest(for directory: String) {
+        self.elements.removeAll()
         device?.send(.list(.init(name: directory)))
     }
 }
