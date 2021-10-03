@@ -9,6 +9,12 @@ class StorageViewModel: ObservableObject {
     var root: [Element] = [.directory("int"), .directory("ext")]
     var path: [Directory] = []
 
+    var title: String {
+        path.isEmpty
+            ? "Storage browser"
+            : path.reduce(into: "") { $0.append("/" + $1.name) }
+    }
+
     private var disposeBag: DisposeBag = .init()
 
     var device: BluetoothPeripheral? {

@@ -4,7 +4,7 @@ struct StorageView: View {
     @StateObject var viewModel: StorageViewModel
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack {
             List {
                 if !viewModel.path.isEmpty {
                     Button("..") {
@@ -27,7 +27,7 @@ struct StorageView: View {
                 }
             }
         }
-        .navigationTitle("Storage browser")
+        .navigationTitle(viewModel.title)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
