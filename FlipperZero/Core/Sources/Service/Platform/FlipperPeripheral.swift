@@ -117,7 +117,8 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
             return
         }
         guard let response = try? Response([UInt8](data)) else {
-            print("can't deserialize")
+            print("can't deserialize \(data.count) bytes")
+            print(data.debugHexString)
             return
         }
         if case .error(let error) = response {
