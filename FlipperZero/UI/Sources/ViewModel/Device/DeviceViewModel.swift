@@ -8,7 +8,7 @@ public class DeviceViewModel: ObservableObject {
     @Inject var storage: DeviceStorage
     private var disposeBag: DisposeBag = .init()
 
-var isReconnecting = false
+    var isReconnecting = false
     @Published var pairedDevice: Peripheral? {
         didSet {
             storage.pairedDevice = pairedDevice
@@ -46,7 +46,7 @@ var isReconnecting = false
                 switch peripheral.state {
                 // TODO: handle .connecting
                 case .connecting, .connected:
-                    self.pairedDevice = peripheral
+                    self.pairedDevice = .init(peripheral)
                 default:
                     self.pairedDevice = nil
                 }

@@ -58,11 +58,13 @@ class ArchiveViewModel: ObservableObject {
                 if let paired = self?.device {
                     // update the state for paired device
                     if let item = items.first(where: { $0.id == paired.id }) {
-                        self?.device = item
+                        self?.device = .init(item)
                     }
                 } else {
                     // new device connected
-                    self?.device = items.first
+                    if let item = items.first {
+                        self?.device = .init(item)
+                    }
                 }
             }
             .store(in: &disposeBag)

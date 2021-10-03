@@ -4,11 +4,12 @@ struct OptionsView: View {
     var body: some View {
         NavigationView {
             List {
-                NavigationLink("Echo server") {
-                    EchoView(viewModel: .init())
+                NavigationLink("Protobuf ping") {
+                    PingView(viewModel: .init())
                 }
-                NavigationLink("Speedtest") {
-                    SpeedTestView(viewModel: .init())
+
+                NavigationLink("Storage browser") {
+                    StorageView(viewModel: .init())
                 }
             }
             .navigationBarHidden(true)

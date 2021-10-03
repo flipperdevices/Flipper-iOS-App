@@ -1,13 +1,35 @@
 import Core
 import Combine
 import Injector
+import struct Foundation.UUID
 
 class DeviceInfoViewModel: ObservableObject {
     @Inject var connector: BluetoothConnector
-    @Published var device: Peripheral
+    var flipper: BluetoothPeripheral? {
+        didSet { subscribeToUpdates() }
+    }
+    var disposeBag = DisposeBag()
 
-    init(_ device: Peripheral) {
-        self.device = device
+    @Published var device: Peripheral = .init(id: UUID(), name: String())
+
+    init() {
+        connector.connectedPeripherals
+            .filter { !$0.isEmpty }
+            .sink { [weak self] devices in
+                self?.flipper = devices[0]
+                self?.device = .init(devices[0])
+            }
+            .store(in: &disposeBag)
+    }
+
+    func subscribeToUpdates() {
+        flipper?.info
+            .sink { [weak self] in
+                if let flipper = self?.flipper {
+                    self?.device = .init(flipper)
+                }
+            }
+            .store(in: &disposeBag)
     }
 
     func forgetConnectedDevice() {

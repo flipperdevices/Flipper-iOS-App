@@ -1,3 +1,4 @@
+import Core
 import Combine
 import SwiftUI
 
@@ -62,6 +63,7 @@ struct ConnectionsView: View {
 
 import Core
 import Injector
+import CoreBluetooth
 
 struct ConnectionsView_Previews: PreviewProvider {
     static var previews: some View {
@@ -82,19 +84,31 @@ struct ConnectionsView_Previews: PreviewProvider {
 }
 
 private class TestConnector: BluetoothCentral, BluetoothConnector {
-    private let peripheralsSubject = SafeSubject([Peripheral]())
-    private let connectedPeripheralsSubject = SafeSubject([Peripheral]())
+    private struct TestPeripheral: BluetoothPeripheral {
+        var id: UUID
+        var name: String
+        var state: CBPeripheralState = .disconnected
+        var services: [CBService] = []
+
+        func send(_ request: Request) {}
+
+        var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
+        var received: SafePublisher<Response> { Just(.ping).eraseToAnyPublisher() }
+    }
+
+    private let peripheralsSubject = SafeValueSubject([BluetoothPeripheral]())
+    private let connectedPeripheralsSubject = SafeValueSubject([BluetoothPeripheral]())
     private let statusValue: BluetoothStatus
     private var timer: Timer?
     private let testDevices = Array(1...10).map {
-        Peripheral(id: UUID(), name: "Device \($0)")
+        TestPeripheral(id: UUID(), name: "Device \($0)")
     }
 
-    var peripherals: SafePublisher<[Peripheral]> {
+    var peripherals: SafePublisher<[BluetoothPeripheral]> {
         self.peripheralsSubject.eraseToAnyPublisher()
     }
 
-    var connectedPeripherals: SafePublisher<[Peripheral]> {
+    var connectedPeripherals: SafePublisher<[BluetoothPeripheral]> {
         self.connectedPeripheralsSubject.eraseToAnyPublisher()
     }
 
@@ -132,13 +146,4 @@ private class TestConnector: BluetoothCentral, BluetoothConnector {
 
     func connect(to uuid: UUID) {}
     func disconnect(from uuid: UUID) {}
-
-    // TODO: Refactor
-
-    func send(_ bytes: [UInt8], to identifier: UUID) {}
-
-    let receivedSubject = SafeSubject([UInt8]())
-    var received: SafePublisher<[UInt8]> {
-        receivedSubject.eraseToAnyPublisher()
-    }
 }

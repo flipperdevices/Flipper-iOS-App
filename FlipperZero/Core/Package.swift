@@ -15,12 +15,16 @@ let package = Package(
     dependencies: [
         .package(
             name: "Injector",
-            path: "../DI")
+            path: "../DI"),
+        .package(
+            name: "SwiftProtobuf",
+            url: "https://github.com/apple/swift-protobuf.git",
+            from: "1.18.0")
     ],
     targets: [
         .target(
             name: "Core",
-            dependencies: ["Injector"],
+            dependencies: ["Injector", "SwiftProtobuf"],
             path: "Sources"),
         .testTarget(
             name: "CoreTests",
