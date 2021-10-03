@@ -24,12 +24,16 @@ class ConnectionsViewModel: ObservableObject {
     @Published private(set) var peripherals: [Peripheral] = []
 
     init() {
-        central.status.combineLatest(central.peripherals)
-            .sink { [weak self] status, peripherals in
-                self?.state = status
-                // FIXME: don't publish empty erray
-                guard !peripherals.isEmpty else { return }
-                self?.peripherals = peripherals.map(Peripheral.init)
+        central.status
+            .sink { [weak self] in
+                self?.state = $0
+            }
+            .store(in: &disposeBag)
+
+        central.peripherals
+            .filter { !$0.isEmpty }
+            .sink { [weak self] in
+                self?.peripherals = $0.map(Peripheral.init)
             }
             .store(in: &disposeBag)
 
