@@ -10,15 +10,14 @@ class DeviceInfoViewModel: ObservableObject {
     }
     var disposeBag = DisposeBag()
 
-    @Published var device: Peripheral
+    @Published var device: Peripheral = .init(id: UUID(), name: String())
 
     init() {
-        self.device = .init(id: UUID(), name: "unknown")
-
         connector.connectedPeripherals
             .filter { !$0.isEmpty }
             .sink { [weak self] devices in
                 self?.flipper = devices[0]
+                self?.device = .init(devices[0])
             }
             .store(in: &disposeBag)
     }
