@@ -4,7 +4,10 @@ import Injector
 
 class StorageViewModel: ObservableObject {
     @Inject var connector: BluetoothConnector
-    @Published var elements: [Element] = []
+    @Published var elements: [Element]
+
+    var root: [Element] = [.directory("int"), .directory("ext")]
+    var path: [Directory] = []
 
     private var disposeBag: DisposeBag = .init()
 
@@ -13,6 +16,7 @@ class StorageViewModel: ObservableObject {
     }
 
     init() {
+        elements = root
         connector.connectedPeripherals
             .sink { [weak self] in
                 self?.device = $0.first
@@ -30,8 +34,22 @@ class StorageViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
-    func sendListRequest(for directory: String) {
-        self.elements.removeAll()
-        device?.send(.list(.init(name: directory)))
+    func moveUp() {
+        guard !path.isEmpty else {
+            return
+        }
+        elements.removeAll()
+        path.removeLast()
+        if path.isEmpty {
+            elements = root
+        } else {
+            device?.send(.list(path))
+        }
+    }
+
+    func listDirectory(_ name: String) {
+        elements.removeAll()
+        path.append(.init(name: name))
+        device?.send(.list(path))
     }
 }

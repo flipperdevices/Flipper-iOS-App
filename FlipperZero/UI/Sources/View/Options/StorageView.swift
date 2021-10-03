@@ -2,31 +2,32 @@ import SwiftUI
 
 struct StorageView: View {
     @StateObject var viewModel: StorageViewModel
-    @State var directory: String = "nfc" {
-        didSet {
-            directory = directory.filter { $0.isLetter }
-        }
-    }
 
     var body: some View {
         VStack(spacing: 20) {
-            List(viewModel.elements, id: \.description) {
-                Text($0.description)
+            List {
+                if !viewModel.path.isEmpty {
+                    Button("..") {
+                        viewModel.moveUp()
+                    }
+                }
+                ForEach(viewModel.elements, id: \.description) {
+                    switch $0 {
+                    case .directory(let directory):
+                        Button(directory.name) {
+                            viewModel.listDirectory(directory.name)
+                        }
+                    case .file(let file):
+                        HStack {
+                            Text(file.name)
+                            Spacer()
+                            Text("\(file.size) bytes")
+                        }
+                    }
+                }
             }
-
-            TextField("dir name", text: $directory)
-                .padding(10)
-                .background(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(Color.gray, lineWidth: 1)
-                ).padding()
-
-            RoundedButton("request /ext/\(directory) listing") {
-                viewModel.sendListRequest(for: directory)
-            }
-            .padding(.bottom, 100)
         }
-        .navigationTitle("Storage list")
+        .navigationTitle("Storage browser")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

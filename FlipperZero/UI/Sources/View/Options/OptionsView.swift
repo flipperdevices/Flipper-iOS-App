@@ -8,7 +8,7 @@ struct OptionsView: View {
                     PingView(viewModel: .init())
                 }
 
-                NavigationLink("Storage list") {
+                NavigationLink("Storage browser") {
                     StorageView(viewModel: .init())
                 }
             }

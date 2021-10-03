@@ -2,7 +2,7 @@ import SwiftProtobuf
 
 public enum Request {
     case ping
-    case list(Directory)
+    case list([Directory])
 }
 
 extension Request {
@@ -19,10 +19,12 @@ extension Request {
             return .with {
                 $0.pingRequest = .init()
             }
-        case .list(let directory):
+        case .list(let components):
             return .with {
                 $0.storageListRequest = .with {
-                    $0.path = "/ext" + directory.name
+                    $0.path = components.reduce(into: "") {
+                        $0.append("/" + $1.name)
+                    }
                 }
             }
         }

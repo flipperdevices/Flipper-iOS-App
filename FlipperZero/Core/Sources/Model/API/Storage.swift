@@ -42,3 +42,9 @@ extension Element: CustomStringConvertible {
         }
     }
 }
+
+extension Directory: ExpressibleByStringLiteral {
+    public init(stringLiteral: String) {
+        self.name = stringLiteral
+    }
+}
