@@ -34,11 +34,14 @@
 		497F0FC1252702B7000B2A86 /* perform_lint.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
 		498305C12527FEE900B04AFD /* HelvetiPixel.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HelvetiPixel.ttf; sourceTree = "<group>"; };
 		498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
-		498305F62529569200B04AFD /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B7064CA26E2732E006CB4A8 /* UI */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UI; sourceTree = "<group>"; };
 		8B77A9C726CAA3BA00A3DF9F /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Core; sourceTree = "<group>"; };
 		8BEB7C8826E1432600AA9356 /* DI */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DI; sourceTree = "<group>"; };
+		8BED613A270B61CA009E51E2 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Core/.swiftlint.yml; sourceTree = "<group>"; };
+		8BED6140270B6272009E51E2 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Core/Sources/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
+		8BED6141270B629D009E51E2 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = DI/.swiftlint.yml; sourceTree = "<group>"; };
+		8BED6142270B62C4009E51E2 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = UI/.swiftlint.yml; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -84,14 +87,57 @@
 			name = Packages;
 			sourceTree = "<group>";
 		};
+		8BED6139270B617B009E51E2 /* SwiftLint */ = {
+			isa = PBXGroup;
+			children = (
+				8BED613E270B6202009E51E2 /* UI */,
+				8BED613C270B61EE009E51E2 /* Core */,
+				8BED613D270B61F7009E51E2 /* Injector */,
+			);
+			name = SwiftLint;
+			sourceTree = "<group>";
+		};
+		8BED613C270B61EE009E51E2 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				8BED613F270B6258009E51E2 /* Protobuf */,
+				8BED613A270B61CA009E51E2 /* .swiftlint.yml */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+		8BED613D270B61F7009E51E2 /* Injector */ = {
+			isa = PBXGroup;
+			children = (
+				8BED6141270B629D009E51E2 /* .swiftlint.yml */,
+			);
+			name = Injector;
+			sourceTree = "<group>";
+		};
+		8BED613E270B6202009E51E2 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				8BED6142270B62C4009E51E2 /* .swiftlint.yml */,
+			);
+			name = UI;
+			sourceTree = "<group>";
+		};
+		8BED613F270B6258009E51E2 /* Protobuf */ = {
+			isa = PBXGroup;
+			children = (
+				8BED6140270B6272009E51E2 /* .swiftlint.yml */,
+			);
+			name = Protobuf;
+			sourceTree = "<group>";
+		};
 		F0DBFA1424EF2F9600EB2880 = {
 			isa = PBXGroup;
 			children = (
+				8BED6139270B617B009E51E2 /* SwiftLint */,
 				8B77A9C626CAA3BA00A3DF9F /* Packages */,
 				F0DBFA2324EF2F9900EB2880 /* iOS */,
 				F0DBFA1924EF2F9600EB2880 /* Shared */,
 				497F0FC1252702B7000B2A86 /* perform_lint.sh */,
-				498305F62529569200B04AFD /* .swiftlint.yml */,
 				F0DBFA2224EF2F9900EB2880 /* Products */,
 				44A5B5B124F05FCE009EE7FB /* Frameworks */,
 			);

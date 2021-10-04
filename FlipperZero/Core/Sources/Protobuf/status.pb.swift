@@ -1,4 +1,3 @@
-// swiftlint:disable type_name
 // DO NOT EDIT.
 // swift-format-ignore-file
 //
