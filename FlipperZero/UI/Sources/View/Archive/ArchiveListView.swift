@@ -32,8 +32,8 @@ struct ArchiveListView: View {
                         HStack {
                             if isEditing {
                                 Image(systemName: selectedItems.contains(item)
-                                      ? "checkmark.circle.fill"
-                                      : "circle"
+                                    ? "checkmark.circle.fill"
+                                    : "circle"
                                 )
                                 .padding(.trailing, 8)
                             }
