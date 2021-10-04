@@ -25,7 +25,7 @@ struct ArchiveHeaderView: View {
                 }
             }
             Spacer()
-            HeaderDeviceView(viewModel: viewModel)
+            HeaderDeviceView(device: viewModel.device)
             Spacer()
             Button {
                 viewModel.readNFCTag()
@@ -40,10 +40,9 @@ struct ArchiveHeaderView: View {
 }
 
 struct HeaderDeviceView: View {
-    @StateObject var viewModel: ArchiveViewModel
-    @State var angle: Int = 0
+    let device: Peripheral?
 
-    var device: Peripheral? { viewModel.device }
+    @State private var angle: Int = 0
 
     var name: String {
         device?.name ?? "No device"
