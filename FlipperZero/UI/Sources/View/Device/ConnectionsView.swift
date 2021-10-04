@@ -1,8 +1,4 @@
-import Core
-import Combine
 import SwiftUI
-
-// swiftlint:disable closure_body_length
 
 struct ConnectionsView: View {
     @StateObject var viewModel: ConnectionsViewModel
@@ -62,6 +58,7 @@ struct ConnectionsView: View {
 }
 
 import Core
+import Combine
 import Injector
 import CoreBluetooth
 

@@ -1,4 +1,3 @@
-// swiftlint:disable type_name
 // DO NOT EDIT.
 // swift-format-ignore-file
 //
@@ -282,7 +281,6 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     11: .standard(proto: "storage_delete_request"),
   ]
 
-  // swiftlint:disable cyclomatic_complexity
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler

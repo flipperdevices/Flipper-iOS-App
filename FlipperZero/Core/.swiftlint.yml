@@ -1,8 +1,6 @@
 
 excluded:
- - Pods
- - Products
- - Frameworks
+ - Protobuf
 
 disabled_rules:
  - identifier_name
