@@ -29,8 +29,6 @@ struct CardSheetView: View {
             if !isEditing {
                 CardDeviceActions(item: item)
 
-                Divider()
-
                 CardActions(item: item, isEditing: $isEditing)
             } else {
                 Spacer()
@@ -171,56 +169,60 @@ struct CardActions: View {
     @State var isDeletePresented = false
 
     var body: some View {
-        HStack(alignment: .top) {
+        VStack {
+            Divider()
 
-            // MARK: Edit
+            HStack(alignment: .top) {
 
-            Button {
-                isEditing = true
-            } label: {
-                Image(systemName: "square.and.pencil")
+                // MARK: Edit
+
+                Button {
+                    isEditing = true
+                } label: {
+                    Image(systemName: "square.and.pencil")
+                }
+
+                Spacer()
+
+                // MARK: Share
+
+                Button {
+                    share([item.name])
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+
+                Spacer()
+
+                // MARK: Favorite
+
+                Button {
+                    isFavorite.toggle()
+                } label: {
+                    Image(systemName: isFavorite ? "star.fill" : "star")
+                }
+
+                Spacer()
+
+                // MARK: Delete
+
+                Button {
+                    isDeletePresented = true
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .actionSheet(isPresented: $isDeletePresented) {
+                    .init(title: Text("You can't undo this action"), buttons: [
+                        .destructive(Text("Delete")) { print("delete") },
+                        .cancel()
+                    ])
+                }
             }
-
-            Spacer()
-
-            // MARK: Share
-
-            Button {
-                share([item.name])
-            } label: {
-                Image(systemName: "square.and.arrow.up")
-            }
-
-            Spacer()
-
-            // MARK: Favorite
-
-            Button {
-                isFavorite.toggle()
-            } label: {
-                Image(systemName: isFavorite ? "star.fill" : "star")
-            }
-
-            Spacer()
-
-            // MARK: Delete
-
-            Button {
-                isDeletePresented = true
-            } label: {
-                Image(systemName: "trash")
-            }
-            .actionSheet(isPresented: $isDeletePresented) {
-                .init(title: Text("You can't undo this action"), buttons: [
-                    .destructive(Text("Delete")) { print("delete") },
-                    .cancel()
-                ])
-            }
+            .font(.system(size: 22))
+            .foregroundColor(Color.accentColor)
+            .padding(.top, 20)
+            .padding(.bottom, 45)
+            .padding(.horizontal, 22)
         }
-        .font(.system(size: 22))
-        .foregroundColor(Color.accentColor)
-        .padding(.top, 20)
-        .padding(.bottom, 45)
-        .padding(.horizontal, 22)
     }
 }
