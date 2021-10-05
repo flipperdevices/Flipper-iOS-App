@@ -8,11 +8,8 @@ public enum Response {
 }
 
 extension Response {
-    init(_ bytes: [UInt8]) throws {
-        let main = try BinaryDelimited.parse(
-            messageType: PB_Main.self,
-            from: InputByteStream(bytes))
-        self.init(main)
+    init(serializedData data: Data) throws {
+        self.init(try PB_Main(serializedData: data))
     }
 
     init(_ main: PB_Main) {

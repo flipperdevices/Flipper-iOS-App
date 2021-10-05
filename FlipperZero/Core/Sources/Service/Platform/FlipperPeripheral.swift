@@ -49,6 +49,7 @@ class FlipperPeripheral: BluetoothPeripheral {
 
 private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     let peripheral: CBPeripheral
+    let chunkedResponse: ChunkedResponse = .init()
 
     init(_ peripheral: CBPeripheral) {
         self.peripheral = peripheral
@@ -112,20 +113,20 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     }
 
     func handleData(_ data: Data?) {
-        guard let data = data else {
-            print("no data")
-            return
-        }
-        guard let response = try? Response([UInt8](data)) else {
-            print("can't deserialize \(data.count) bytes")
-            print(data.debugHexString)
-            return
-        }
-        if case .error(let error) = response {
+        do {
+            guard let data = data else { return }
+            // return nil on incomplete message
+            guard let response = try chunkedResponse.feed(data) else {
+                return
+            }
+            if case .error(let error) = response {
+                print(error)
+                return
+            }
+            apiSubject.send(response)
+        } catch {
             print(error)
-            return
         }
-        apiSubject.send(response)
     }
 
     func send(_ request: Request) {
