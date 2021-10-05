@@ -21,20 +21,17 @@ struct CardSheetView: View {
                 .frame(width: 40, height: 6)
                 .padding(.vertical, 18)
 
-            Card(item: item)
+            Card(item: item, isEditing: $isEditing)
                 .foregroundColor(.white)
                 .padding(.top, 5)
                 .padding(.horizontal, 16)
 
             if !isEditing {
                 CardDeviceActions(item: item)
-
-                CardActions(item: item, isEditing: $isEditing)
-            } else {
-                Spacer()
             }
+
+            CardActions(item: item, isEditing: $isEditing)
         }
-        .frame(maxHeight: isEditing ? UIScreen.main.bounds.height - 89 : nil)
         .background(sheetBackgroundColor)
         .cornerRadius(12)
     }
@@ -42,6 +39,7 @@ struct CardSheetView: View {
 
 struct Card: View {
     let item: ArchiveItem
+    @Binding var isEditing: Bool
 
     var gradient: LinearGradient {
         .init(
@@ -56,12 +54,12 @@ struct Card: View {
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 0) {
-                CardHeaderView(name: item.name, image: item.icon)
+                CardHeaderView(name: item.name, image: item.icon, isEditing: $isEditing)
                     .padding(16)
 
                 CardDivider()
 
-                CardDataView(item: item)
+                CardDataView(item: item, isEditing: $isEditing)
                     .padding(16)
 
                 HStack {
@@ -74,12 +72,14 @@ struct Card: View {
         }
         .background(gradient)
         .clipShape(RoundedRectangle(cornerRadius: 20))
+        .padding(.bottom, 16)
     }
 }
 
 struct CardHeaderView: View {
     let name: String
     let image: Image
+    @Binding var isEditing: Bool
 
     var body: some View {
         HStack {
@@ -102,6 +102,9 @@ struct CardDivider: View {
 
 struct CardDataView: View {
     let item: ArchiveItem
+    @Binding var isEditing: Bool
+
+    @State var description: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -141,7 +144,8 @@ struct CardDeviceActions: View {
         .background(systemBackground)
         .foregroundColor(Color.accentColor)
         .clipShape(RoundedRectangle(cornerRadius: 10))
-        .padding(16)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
     }
 }
 
@@ -176,46 +180,55 @@ struct CardActions: View {
 
                 // MARK: Edit
 
-                Button {
-                    isEditing = true
-                } label: {
-                    Image(systemName: "square.and.pencil")
-                }
+                if isEditing {
+                    Button {
+                        isEditing = false
+                    } label: {
+                        Image(systemName: "checkmark.circle")
+                    }
+                    Spacer()
+                } else {
+                    Button {
+                        isEditing = true
+                    } label: {
+                        Image(systemName: "square.and.pencil")
+                    }
 
-                Spacer()
+                    Spacer()
 
-                // MARK: Share
+                    // MARK: Share
 
-                Button {
-                    share([item.name])
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
-                }
+                    Button {
+                        share([item.name])
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
 
-                Spacer()
+                    Spacer()
 
-                // MARK: Favorite
+                    // MARK: Favorite
 
-                Button {
-                    isFavorite.toggle()
-                } label: {
-                    Image(systemName: isFavorite ? "star.fill" : "star")
-                }
+                    Button {
+                        isFavorite.toggle()
+                    } label: {
+                        Image(systemName: isFavorite ? "star.fill" : "star")
+                    }
 
-                Spacer()
+                    Spacer()
 
-                // MARK: Delete
+                    // MARK: Delete
 
-                Button {
-                    isDeletePresented = true
-                } label: {
-                    Image(systemName: "trash")
-                }
-                .actionSheet(isPresented: $isDeletePresented) {
-                    .init(title: Text("You can't undo this action"), buttons: [
-                        .destructive(Text("Delete")) { print("delete") },
-                        .cancel()
-                    ])
+                    Button {
+                        isDeletePresented = true
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                    .actionSheet(isPresented: $isDeletePresented) {
+                        .init(title: Text("You can't undo this action"), buttons: [
+                            .destructive(Text("Delete")) { print("delete") },
+                            .cancel()
+                        ])
+                    }
                 }
             }
             .font(.system(size: 22))
