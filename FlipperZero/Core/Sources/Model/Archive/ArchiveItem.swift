@@ -6,7 +6,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
     public let kind: Kind
     public let origin: String
 
-    public enum Kind: Codable, CaseIterable {
+    public enum Kind: Codable, Comparable, CaseIterable {
         case ibutton
         case nfc
         case rfid

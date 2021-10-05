@@ -68,10 +68,6 @@ class ArchiveViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
-    func openOptions() {
-        toggleEditing()
-    }
-
     func toggleEditing() {
         withAnimation {
             isEditing.toggle()
@@ -86,6 +82,24 @@ class ArchiveViewModel: ObservableObject {
             selectedItems.remove(at: index)
         } else {
             selectedItems.append(item)
+        }
+    }
+
+    enum SortOption {
+        case creationDate
+        case title
+        case oldestFirst
+        case newestFirst
+    }
+
+    func sortItems(by option: SortOption) {
+        items.sort {
+            switch option {
+            case .creationDate: return $0.name < $1.name
+            case .title: return $0.description < $1.description
+            case .oldestFirst: return $0.kind < $1.kind
+            case .newestFirst: return $0.origin < $1.origin
+            }
         }
     }
 

@@ -17,8 +17,32 @@ struct ArchiveHeaderView: View {
                         .padding(.leading, UIDevice.isFaceIDAvailable ? 15.5 : 14)
                 }
             } else {
-                Button {
-                    viewModel.openOptions()
+                Menu {
+                    Button {
+                        viewModel.toggleEditing()
+                    } label: {
+                        Text("Choose items")
+                        Image(systemName: "checkmark.circle")
+                    }
+                    Menu {
+                        Button("Creation Date") {
+                            viewModel.sortItems(by: .creationDate)
+                        }
+                        Button("Title") {
+                            viewModel.sortItems(by: .title)
+                        }
+                        Divider()
+                            .frame(height: 10)
+                        Button("Older First") {
+                            viewModel.sortItems(by: .oldestFirst)
+                        }
+                        Button("Newest First") {
+                            viewModel.sortItems(by: .newestFirst)
+                        }
+                    } label: {
+                        Text("Sort items")
+                        Image(systemName: "arrow.up.arrow.down.circle")
+                    }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .headerImageStyle()
