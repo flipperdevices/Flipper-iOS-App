@@ -49,7 +49,11 @@ struct ArchiveHeaderView: View {
                 }
             }
             Spacer()
-            HeaderDeviceView(device: viewModel.device)
+
+            HeaderDeviceView(
+                name: viewModel.device?.name ?? "No device",
+                status: viewModel.device?.state ?? .disconnected)
+
             Spacer()
             Button {
                 viewModel.readNFCTag()
@@ -64,17 +68,10 @@ struct ArchiveHeaderView: View {
 }
 
 struct HeaderDeviceView: View {
-    let device: Peripheral?
-
     @State private var angle: Int = 0
 
-    var name: String {
-        device?.name ?? "No device"
-    }
-
-    var status: Peripheral.State {
-        device?.state ?? .disconnected
-    }
+    let name: String
+    var status: Peripheral.State
 
     var isConnecting: Bool {
         status == .connecting
