@@ -20,13 +20,13 @@ struct ArchiveView: View {
             ) { group in
                 ArchiveListView(
                     items: group.items,
-                    isEditing: $viewModel.isEditing,
+                    isSelectItemsMode: $viewModel.isSelectItemsMode,
                     selectedItems: $viewModel.selectedItems,
                     itemSelected: onItemSelected,
                     onDragGesture: onDragGesture)
             }
 
-            if viewModel.isEditing {
+            if viewModel.isSelectItemsMode {
                 tabViewOverlay
             }
         }
@@ -39,11 +39,11 @@ struct ArchiveView: View {
     }
 
     func onItemSelected(item: ArchiveItem) {
-        if viewModel.isEditing {
+        if viewModel.isSelectItemsMode {
             viewModel.selectItem(item)
         } else {
             sheetManager.present {
-                CardSheetView(item: item)
+                CardSheetView(device: viewModel.device, item: item)
             }
         }
     }

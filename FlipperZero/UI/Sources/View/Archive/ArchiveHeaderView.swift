@@ -6,10 +6,10 @@ struct ArchiveHeaderView: View {
 
     var body: some View {
         HStack {
-            if viewModel.isEditing {
+            if viewModel.isSelectItemsMode {
                 Button {
                     withAnimation {
-                        viewModel.isEditing = false
+                        viewModel.isSelectItemsMode = false
                     }
                 } label: {
                     Text("Done")
@@ -19,7 +19,7 @@ struct ArchiveHeaderView: View {
             } else {
                 Menu {
                     Button {
-                        viewModel.toggleEditing()
+                        viewModel.toggleSelectItems()
                     } label: {
                         Text("Choose items")
                         Image(systemName: "checkmark.circle")
@@ -61,7 +61,7 @@ struct ArchiveHeaderView: View {
                 Image(systemName: "plus.circle")
                     .headerImageStyle()
             }
-            .opacity(viewModel.isEditing ? 0 : 1)
+            .opacity(viewModel.isSelectItemsMode ? 0 : 1)
         }
         .frame(height: 44)
     }

@@ -24,7 +24,6 @@ struct PartialSheetView: View {
                 }
 
                 VStack(spacing: 0) {
-                    Spacer()
                     sheetManager.content
                         .offset(y: sheetManager.offset)
                         .gesture(DragGesture()

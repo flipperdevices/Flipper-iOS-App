@@ -1,10 +1,10 @@
 public struct ArchiveItem: Codable, Equatable, Identifiable {
     public let id: String
-    public let name: String
-    public let description: String
-    public let isFavorite: Bool
-    public let kind: Kind
-    public let origin: String
+    public var name: String
+    public var description: String
+    public var isFavorite: Bool
+    public var kind: Kind
+    public var origin: String
 
     public enum Kind: Codable, Comparable, CaseIterable {
         case ibutton

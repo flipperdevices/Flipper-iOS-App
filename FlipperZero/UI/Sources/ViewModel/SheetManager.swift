@@ -12,7 +12,7 @@ class SheetManager: ObservableObject {
             }
         }
     }
-    var content: AnyView?
+    @Published var content: AnyView?
 
     func present<Content: View>(content: () -> Content) {
         self.content = AnyView(content())

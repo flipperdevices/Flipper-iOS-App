@@ -16,12 +16,12 @@ class ArchiveViewModel: ObservableObject {
         }
     }
     @Published var selectedCategoryIndex = 0
-    @Published var selectedItems: [ArchiveItem] = []
     @Published var isDeletePresented = false
-    @Published var isEditing = false {
-        didSet { onEditModeChanded(isEditing) }
+    @Published var selectedItems: [ArchiveItem] = []
+    @Published var isSelectItemsMode = false {
+        didSet { onSelectItemsModeChanded(isSelectItemsMode) }
     }
-    var onEditModeChanded: (Bool) -> Void = { _ in }
+    var onSelectItemsModeChanded: (Bool) -> Void = { _ in }
     var disposeBag: DisposeBag = .init()
 
     var categories: [String] = [
@@ -43,10 +43,10 @@ class ArchiveViewModel: ObservableObject {
         return groups
     }
 
-    init(onEditModeChanded: @escaping (Bool) -> Void = { _ in }) {
+    init(onSelectItemsModeChanded: @escaping (Bool) -> Void = { _ in }) {
         archive.items = demo
 
-        self.onEditModeChanded = onEditModeChanded
+        self.onSelectItemsModeChanded = onSelectItemsModeChanded
         device = storage.pairedDevice
         items = archive.items
 
@@ -68,11 +68,11 @@ class ArchiveViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
-    func toggleEditing() {
+    func toggleSelectItems() {
         withAnimation {
-            isEditing.toggle()
+            isSelectItemsMode.toggle()
         }
-        if isEditing {
+        if isSelectItemsMode {
             selectedItems.removeAll()
         }
     }
