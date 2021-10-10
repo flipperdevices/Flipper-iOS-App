@@ -10,5 +10,6 @@ disabled_rules:
  - cyclomatic_complexity
  - function_body_length
  - nesting
+ - comment_spacing
 
 reporter: "xcode"
