@@ -22,7 +22,7 @@ public struct Directory {
 }
 
 extension Element {
-    init(_ element: PBStorage_Element) {
+    init(_ element: PBStorage_File) {
         switch element.type {
         case .file:
             self = .file(.init(name: element.name, size: Int(element.size)))

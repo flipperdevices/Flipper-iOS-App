@@ -26,7 +26,7 @@ extension Response {
         case .pingResponse:
             self = .ping
         case .storageListResponse(let response):
-            self = .list(.init(response.storageElement.map(Element.init)))
+            self = .list(.init(response.file.map(Element.init)))
         default:
             self = .error("unsupported api response: \(content)")
         }
