@@ -20,13 +20,13 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
         description: String,
         isFavorite: Bool,
         kind: ArchiveItem.Kind,
-        wut: String
+        origin: String
     ) {
         self.id = id
         self.name = name
         self.description = description
         self.isFavorite = isFavorite
         self.kind = kind
-        self.origin = wut
+        self.origin = origin
     }
 }

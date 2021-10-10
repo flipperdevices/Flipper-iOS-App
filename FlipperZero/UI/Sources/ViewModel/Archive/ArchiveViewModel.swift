@@ -143,34 +143,34 @@ var demo: [ArchiveItem] {
             description: "ID: 031,33351",
             isFavorite: true,
             kind: .rfid,
-            wut: "EM-Marin"),
+            origin: "EM-Marin"),
         .init(
             id: "Moms_bank_card",
             name: "Moms_bank_card",
             description: "ID: 031,33351",
             isFavorite: true,
             kind: .nfc,
-            wut: "Mifare"),
+            origin: "Mifare"),
         .init(
             id: "Open_garage_door",
             name: "Open_garage_door",
             description: "868,86 MHz",
             isFavorite: true,
             kind: .subghz,
-            wut: "Doorhan"),
+            origin: "Doorhan"),
         .init(
             id: "Unknown_space_portal",
             name: "Unknown_space_portal",
             description: "ID: 03F4",
             isFavorite: true,
             kind: .ibutton,
-            wut: "Cyfral"),
+            origin: "Cyfral"),
         .init(
             id: "Edifier_speaker",
             name: "Edifier_speaker",
             description: "",
             isFavorite: true,
             kind: .irda,
-            wut: "")
+            origin: "")
     ]
 }
