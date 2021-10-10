@@ -24,6 +24,8 @@ class ArchiveViewModel: ObservableObject {
     var onSelectItemsModeChanded: (Bool) -> Void = { _ in }
     var disposeBag: DisposeBag = .init()
 
+    @Published var editingItem: ArchiveItem = .demo
+
     var categories: [String] = [
         "Favorites", "RFID 125", "Sub-gHz", "NFC", "iButton", "iRda"
     ]
@@ -173,4 +175,16 @@ var demo: [ArchiveItem] {
             kind: .irda,
             origin: "")
     ]
+}
+
+extension ArchiveItem {
+    static var demo: Self {
+        .init(
+            id: "",
+            name: "",
+            description: "",
+            isFavorite: false,
+            kind: .ibutton,
+            origin: "")
+    }
 }

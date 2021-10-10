@@ -4,7 +4,7 @@ import Core
 struct CardSheetView: View {
     @Environment(\.colorScheme) var colorScheme
     let device: Peripheral?
-    @State var item: ArchiveItem
+    @Binding var item: ArchiveItem
 
     var sheetBackgroundColor: Color {
         colorScheme == .light

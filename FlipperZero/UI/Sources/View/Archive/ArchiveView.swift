@@ -42,8 +42,11 @@ struct ArchiveView: View {
         if viewModel.isSelectItemsMode {
             viewModel.selectItem(item)
         } else {
+            viewModel.editingItem = item
             sheetManager.present {
-                CardSheetView(device: viewModel.device, item: item)
+                CardSheetView(
+                    device: viewModel.device,
+                    item: $viewModel.editingItem)
             }
         }
     }
