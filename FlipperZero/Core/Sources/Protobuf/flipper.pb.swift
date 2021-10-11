@@ -36,7 +36,7 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
   ///*< Somebody took global lock, so not all commands are available 
   case errorBusy // = 4
 
-  ///*< Not received not_last == 0 
+  ///*< Not received has_next == 0 
   case errorContinuousCommandInterrupted // = 14
 
   ///*< not provided (or provided invalid) crucial parameters to perform rpc 
@@ -168,7 +168,7 @@ struct PB_Main {
 
   var commandStatus: PB_CommandStatus = .ok
 
-  var notLast: Bool = false
+  var hasNext_p: Bool = false
 
   var content: PB_Main.OneOf_Content? = nil
 
@@ -396,7 +396,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "command_id"),
     2: .standard(proto: "command_status"),
-    3: .standard(proto: "not_last"),
+    3: .standard(proto: "has_next"),
     4: .same(proto: "empty"),
     5: .standard(proto: "ping_request"),
     6: .standard(proto: "ping_response"),
@@ -419,7 +419,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt32Field(value: &self.commandID) }()
       case 2: try { try decoder.decodeSingularEnumField(value: &self.commandStatus) }()
-      case 3: try { try decoder.decodeSingularBoolField(value: &self.notLast) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self.hasNext_p) }()
       case 4: try {
         var v: PB_Empty?
         var hadOneofValue = false
@@ -592,8 +592,8 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     if self.commandStatus != .ok {
       try visitor.visitSingularEnumField(value: self.commandStatus, fieldNumber: 2)
     }
-    if self.notLast != false {
-      try visitor.visitSingularBoolField(value: self.notLast, fieldNumber: 3)
+    if self.hasNext_p != false {
+      try visitor.visitSingularBoolField(value: self.hasNext_p, fieldNumber: 3)
     }
     switch self.content {
     case .empty?: try {
@@ -652,7 +652,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
   static func ==(lhs: PB_Main, rhs: PB_Main) -> Bool {
     if lhs.commandID != rhs.commandID {return false}
     if lhs.commandStatus != rhs.commandStatus {return false}
-    if lhs.notLast != rhs.notLast {return false}
+    if lhs.hasNext_p != rhs.hasNext_p {return false}
     if lhs.content != rhs.content {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
