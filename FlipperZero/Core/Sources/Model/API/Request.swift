@@ -5,6 +5,7 @@ public enum Request {
     case list(Path)
     case read(Path)
     case write(Path, [UInt8])
+    case delete(Path)
 }
 
 extension Request {
@@ -38,6 +39,12 @@ extension Request {
                 $0.storageWriteRequest = .with {
                     $0.path = path.string
                     $0.file.data = .init(bytes)
+                }
+            }
+        case let .delete(path):
+            return .with {
+                $0.storageDeleteRequest = .with {
+                    $0.path = path.string
                 }
             }
         }

@@ -20,6 +20,12 @@ public struct Path {
         components.append(component)
     }
 
+    public func appending(_ component: String) -> Path {
+        var path = self
+        path.append(component)
+        return path
+    }
+
     @discardableResult
     public mutating func removeLastComponent() -> String? {
         guard !components.isEmpty else { return nil }

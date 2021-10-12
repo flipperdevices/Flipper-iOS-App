@@ -107,4 +107,23 @@ class StorageViewModel: ObservableObject {
             self.content = .data(bytes)
         }
     }
+
+    // Delete
+
+    func delete(at index: Int) {
+        guard case .list(var elements) = content else {
+            return
+        }
+
+        let element = elements.remove(at: index)
+        self.content = .list(elements)
+
+        device?.send(.delete(path.appending(element.name))) { response in
+            guard case .ok = response else {
+                elements.insert(element, at: index)
+                self.content = .list(elements)
+                return
+            }
+        }
+    }
 }

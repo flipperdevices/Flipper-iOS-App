@@ -21,10 +21,10 @@ struct StorageView: View {
                     }
                 case .data:
                     TextEditor(text: $viewModel.text)
-                        .padding()
                         .clipShape(RoundedRectangle(cornerRadius: 6))
-                        .overlay(RoundedRectangle(cornerRadius: 6)
-                                    .stroke(Color.secondary, lineWidth: 1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6)
+                                .stroke(Color.secondary, lineWidth: 1))
 
                     HStack {
                         RoundedButton("Close") {
@@ -66,6 +66,11 @@ struct StorageView: View {
                         FileRow(file: file)
                     }
                 }
+            }
+        }
+        .onDelete { indexSet in
+            if let index = indexSet.first {
+                viewModel.delete(at: index)
             }
         }
     }

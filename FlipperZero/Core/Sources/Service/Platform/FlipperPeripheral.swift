@@ -128,7 +128,6 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
             // TODO: Compare message id
             if case .error(let error) = response {
                 print(error)
-                return
             }
             guard let continuation = self.continuation else {
                 print("unexpected response", response)
@@ -146,16 +145,21 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
         self.request = request
         self.continuation = continuation
 
+        func error(_ message: String) {
+            print(message)
+            continuation(.error(message))
+        }
+
         guard peripheral.state == .connected else {
-            print("invalid state")
+            error("invalid state")
             return
         }
         guard let tx = peripheral.serialWrite else {
-            print("no serial service")
+            error("no serial service")
             return
         }
         guard let bytes = try? request.serialize(), !bytes.isEmpty else {
-            print("can't serialize")
+            error("can't serialize")
             return
         }
 

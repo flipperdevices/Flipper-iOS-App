@@ -3,6 +3,13 @@ import struct Foundation.Data
 public enum Element {
     case file(File)
     case directory(Directory)
+
+    public var name: String {
+        switch self {
+        case .file(let file): return file.name
+        case .directory(let directory): return directory.name
+        }
+    }
 }
 
 public struct File {
