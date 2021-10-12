@@ -36,12 +36,8 @@ class FlipperPeripheral: BluetoothPeripheral {
         delegate.infoSubject.eraseToAnyPublisher()
     }
 
-    var received: SafePublisher<Response> {
-        delegate.apiSubject.eraseToAnyPublisher()
-    }
-
-    func send(_ request: Request) {
-        delegate.send(request)
+    func send(_ request: Request, continuation: @escaping (Response) -> Void) {
+        delegate.send(request, continuation: continuation)
     }
 }
 
@@ -59,7 +55,6 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     }
 
     fileprivate let infoSubject = SafeSubject<Void>()
-    fileprivate let apiSubject = SafeSubject<Response>()
 
     // MARK: Services
 
@@ -113,6 +108,11 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
         }
     }
 
+    // TODO: Move to FlipperSession
+
+    var request: Request?
+    var continuation: ((Response) -> Void)?
+
     func handleData(_ data: Data?) {
         do {
             guard let data = data else { return }
@@ -125,17 +125,27 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
             guard let response = try sequencedResponse.feed(nextResponse) else {
                 return
             }
+            // TODO: Compare message id
             if case .error(let error) = response {
                 print(error)
                 return
             }
-            apiSubject.send(response)
+            guard let continuation = self.continuation else {
+                print("unexpected response", response)
+                return
+            }
+            self.request = nil
+            self.continuation = nil
+            continuation(response)
         } catch {
             print(error)
         }
     }
 
-    func send(_ request: Request) {
+    func send(_ request: Request, continuation: @escaping (Response) -> Void) {
+        self.request = request
+        self.continuation = continuation
+
         guard peripheral.state == .connected else {
             print("invalid state")
             return
@@ -148,8 +158,8 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
             print("can't serialize")
             return
         }
-        let data = Data(bytes)
-        peripheral.writeValue(data, for: tx, type: .withResponse)
+
+        peripheral.writeValue(.init(bytes), for: tx, type: .withResponse)
     }
 }
 

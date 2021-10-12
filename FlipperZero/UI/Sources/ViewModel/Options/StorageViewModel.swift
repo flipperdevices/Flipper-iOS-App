@@ -26,9 +26,7 @@ class StorageViewModel: ObservableObject {
 
     private var disposeBag: DisposeBag = .init()
 
-    var device: BluetoothPeripheral? {
-        didSet { subscribeToUpdates() }
-    }
+    var device: BluetoothPeripheral?
 
     init() {
         content = .list(root)
@@ -39,25 +37,7 @@ class StorageViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
-    func subscribeToUpdates() {
-        device?.received
-            .sink { [weak self] response in
-                guard let self = self else { return }
-                self.handleResponse(response)
-            }
-            .store(in: &disposeBag)
-    }
-
-    func handleResponse(_ response: Response) {
-        switch response {
-        case .list(let files):
-            self.content = .list(files)
-        case .file(let bytes):
-            self.content = .data(bytes)
-        default:
-            print("error")
-        }
-    }
+    // MARK: Directory
 
     func moveUp() {
         guard !path.isEmpty else {
@@ -68,15 +48,27 @@ class StorageViewModel: ObservableObject {
         if path.isEmpty {
             content = .list(root)
         } else {
-            device?.send(.list(path))
+            sendListRequest()
         }
     }
 
     func listDirectory(_ name: String) {
         content = nil
         path.append(.init(name: name))
-        device?.send(.list(path))
+        sendListRequest()
     }
+
+    private func sendListRequest() {
+        device?.send(.list(path)) { response in
+            guard case .list(let files) = response else {
+                print("invalid response", response)
+                return
+            }
+            self.content = .list(files)
+        }
+    }
+
+    // MARK: File
 
     func canRead(_ file: File) -> Bool {
         supportedExtensions.contains {
@@ -87,6 +79,12 @@ class StorageViewModel: ObservableObject {
     func readFile(_ file: File) {
         content = nil
         path.append(.init(name: file.name))
-        device?.send(.read(path))
+        device?.send(.read(path)) { response in
+            guard case .file(let bytes) = response else {
+                print("invalid response", response)
+                return
+            }
+            self.content = .data(bytes)
+        }
     }
 }
