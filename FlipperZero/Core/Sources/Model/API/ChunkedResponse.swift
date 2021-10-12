@@ -14,7 +14,7 @@ class ChunkedResponse {
         self.length = nil
     }
 
-    func feed(_ chunk: Data) throws -> Response? {
+    func feed(_ chunk: Data) throws -> PB_Main? {
         defer {
             if isCompleteMessage { removeMessageData() }
         }

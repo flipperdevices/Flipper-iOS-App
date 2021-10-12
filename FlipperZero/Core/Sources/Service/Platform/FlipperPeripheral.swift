@@ -50,6 +50,7 @@ class FlipperPeripheral: BluetoothPeripheral {
 private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     let peripheral: CBPeripheral
     let chunkedResponse: ChunkedResponse = .init()
+    let sequencedResponse: SequencedResponse = .init()
 
     init(_ peripheral: CBPeripheral) {
         self.peripheral = peripheral
@@ -115,8 +116,13 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     func handleData(_ data: Data?) {
         do {
             guard let data = data else { return }
-            // return nil on incomplete message
-            guard let response = try chunkedResponse.feed(data) else {
+            // single PB_Main can be split into ble chunks;
+            // returns nil if data.count < main.size
+            guard let nextResponse = try chunkedResponse.feed(data) else {
+                return
+            }
+            // complete PB_Main can be split into multiple messages
+            guard let response = try sequencedResponse.feed(nextResponse) else {
                 return
             }
             if case .error(let error) = response {
