@@ -19,26 +19,20 @@ struct StorageView: View {
                             list(elements: elements)
                         }
                     }
-                case .data(let bytes):
-                    GeometryReader { geometry in
-                        ScrollView(.vertical) {
-                            VStack(alignment: .leading) {
-                                if bytes.isEmpty {
-                                    Text("Empty")
-                                        .foregroundColor(.secondary)
-                                } else {
-                                    Text(String(decoding: bytes, as: UTF8.self))
-                                }
-                            }
-                            .padding()
-                            .frame(width: geometry.size.width)
-                            .frame(minHeight: geometry.size.height)
-                        }
-                    }
+                case .data:
+                    TextEditor(text: $viewModel.text)
+                        .padding()
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .overlay(RoundedRectangle(cornerRadius: 6)
+                                    .stroke(Color.secondary, lineWidth: 1))
 
                     HStack {
                         RoundedButton("Close") {
                             viewModel.moveUp()
+                        }
+
+                        RoundedButton("Save") {
+                            viewModel.save()
                         }
                     }
                     .padding(.bottom, 30)

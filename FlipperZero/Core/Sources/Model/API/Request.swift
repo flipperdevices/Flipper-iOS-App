@@ -4,6 +4,7 @@ public enum Request {
     case ping
     case list(Path)
     case read(Path)
+    case write(Path, [UInt8])
 }
 
 extension Request {
@@ -20,16 +21,23 @@ extension Request {
             return .with {
                 $0.pingRequest = .init()
             }
-        case .list(let path):
+        case let .list(path):
             return .with {
                 $0.storageListRequest = .with {
                     $0.path = path.string
                 }
             }
-        case .read(let path):
+        case let .read(path):
             return .with {
                 $0.storageReadRequest = .with {
                     $0.path = path.string
+                }
+            }
+        case let .write(path, bytes):
+            return .with {
+                $0.storageWriteRequest = .with {
+                    $0.path = path.string
+                    $0.file.data = .init(bytes)
                 }
             }
         }

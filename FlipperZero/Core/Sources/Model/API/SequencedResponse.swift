@@ -21,6 +21,8 @@ class SequencedResponse {
             try handleListResponse(response)
         case .storageReadResponse(let response):
             try handleReadResponse(response)
+        case .empty(let response):
+            try handleEmptyResponse(response)
         default:
             return .error("unsupported api response: \(content)")
         }
@@ -59,6 +61,13 @@ class SequencedResponse {
         default:
             throw SequencedResponseError.unexpectedResponse
         }
+    }
+
+    func handleEmptyResponse(_ response: PB_Empty) throws {
+        guard self.response == nil else {
+            throw SequencedResponseError.unexpectedResponse
+        }
+        self.response = .ok
     }
 }
 

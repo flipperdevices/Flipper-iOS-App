@@ -4,10 +4,18 @@ import Injector
 
 class StorageViewModel: ObservableObject {
     @Inject var connector: BluetoothConnector
-    @Published var content: Content?
+
+    @Published var content: Content? {
+        didSet {
+            if case .data(let bytes) = content {
+                text = .init(decoding: bytes, as: UTF8.self)
+            }
+        }
+    }
+    @Published var text: String = ""
 
     var supportedExtensions: [String] = [
-        ".ibtn", ".nfc", ".sub", ".rfid", ".ir"
+        ".ibtn", ".nfc", ".sub", ".rfid", ".ir", ".txt"
     ]
 
     enum Content {
@@ -61,7 +69,7 @@ class StorageViewModel: ObservableObject {
     private func sendListRequest() {
         device?.send(.list(path)) { response in
             guard case .list(let files) = response else {
-                print("invalid response", response)
+                print("invalid response:", response)
                 return
             }
             self.content = .list(files)
@@ -81,7 +89,19 @@ class StorageViewModel: ObservableObject {
         path.append(file.name)
         device?.send(.read(path)) { response in
             guard case .file(let bytes) = response else {
-                print("invalid response", response)
+                print("invalid response:", response)
+                return
+            }
+            self.content = .data(bytes)
+        }
+    }
+
+    func save() {
+        self.content = nil
+        let bytes = [UInt8](text.utf8)
+        device?.send(.write(path, bytes)) { response in
+            guard case .ok = response else {
+                print("invalid response:", response)
                 return
             }
             self.content = .data(bytes)
