@@ -16,12 +16,12 @@ class StorageViewModel: ObservableObject {
     }
 
     var root: [Element] = [.directory("int"), .directory("ext")]
-    var path: [Directory] = []
+    var path: Path = .init()
 
     var title: String {
         path.isEmpty
             ? "Storage browser"
-            : path.reduce(into: "") { $0.append("/" + $1.name) }
+            : path.string
     }
 
     private var disposeBag: DisposeBag = .init()
@@ -44,7 +44,7 @@ class StorageViewModel: ObservableObject {
             return
         }
         content = nil
-        path.removeLast()
+        path.removeLastComponent()
         if path.isEmpty {
             content = .list(root)
         } else {
@@ -54,7 +54,7 @@ class StorageViewModel: ObservableObject {
 
     func listDirectory(_ name: String) {
         content = nil
-        path.append(.init(name: name))
+        path.append(name)
         sendListRequest()
     }
 
@@ -78,7 +78,7 @@ class StorageViewModel: ObservableObject {
 
     func readFile(_ file: File) {
         content = nil
-        path.append(.init(name: file.name))
+        path.append(file.name)
         device?.send(.read(path)) { response in
             guard case .file(let bytes) = response else {
                 print("invalid response", response)
