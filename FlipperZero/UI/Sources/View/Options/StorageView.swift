@@ -6,46 +6,30 @@ struct StorageView: View {
 
     var body: some View {
         VStack {
-            if let content = viewModel.content {
-                switch content {
-                case .list(let elements):
-                    List {
-                        if !viewModel.path.isEmpty {
-                            Button("..") {
-                                viewModel.moveUp()
-                            }
-                        }
-                        if !elements.isEmpty {
-                            list(elements: elements)
-                        }
-                    }
-                case .data:
-                    TextEditor(text: $viewModel.text)
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 6)
-                                .stroke(Color.secondary, lineWidth: 1))
-
-                    HStack {
-                        RoundedButton("Close") {
-                            viewModel.moveUp()
-                        }
-
-                        RoundedButton("Save") {
-                            viewModel.save()
-                        }
-                    }
-                    .padding(.bottom, 30)
-                }
-            } else {
-                ProgressView()
+            switch viewModel.content {
+            case .list(let elements): listView(with: elements)
+            case .data: editorView()
+            case .none: ProgressView()
             }
         }
         .navigationTitle(viewModel.title)
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    func list(elements: [Element]) -> some View {
+    func listView(with elements: [Element]) -> some View {
+        List {
+            if !viewModel.path.isEmpty {
+                Button("..") {
+                    viewModel.moveUp()
+                }
+            }
+            if !elements.isEmpty {
+                list(with: elements)
+            }
+        }
+    }
+
+    func list(with elements: [Element]) -> some View {
         ForEach(elements, id: \.description) {
             switch $0 {
             case .directory(let directory):
@@ -72,6 +56,27 @@ struct StorageView: View {
             if let index = indexSet.first {
                 viewModel.delete(at: index)
             }
+        }
+    }
+
+    func editorView() -> some View {
+        VStack {
+            TextEditor(text: $viewModel.text)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(Color.secondary, lineWidth: 1))
+
+            HStack {
+                RoundedButton("Close") {
+                    viewModel.moveUp()
+                }
+
+                RoundedButton("Save") {
+                    viewModel.save()
+                }
+            }
+            .padding(.bottom, 30)
         }
     }
 }
