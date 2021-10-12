@@ -4,7 +4,16 @@ import Injector
 
 class StorageViewModel: ObservableObject {
     @Inject var connector: BluetoothConnector
-    @Published var elements: [Element]
+    @Published var content: Content?
+
+    var supportedExtensions: [String] = [
+        ".ibtn", ".nfc", ".sub", ".rfid", ".ir"
+    ]
+
+    enum Content {
+        case list([Element])
+        case data([UInt8])
+    }
 
     var root: [Element] = [.directory("int"), .directory("ext")]
     var path: [Directory] = []
@@ -22,7 +31,7 @@ class StorageViewModel: ObservableObject {
     }
 
     init() {
-        elements = root
+        content = .list(root)
         connector.connectedPeripherals
             .sink { [weak self] in
                 self?.device = $0.first
@@ -34,28 +43,50 @@ class StorageViewModel: ObservableObject {
         device?.received
             .sink { [weak self] response in
                 guard let self = self else { return }
-                guard case .list(let elements) = response else { return }
-                self.elements.append(contentsOf: elements)
+                self.handleResponse(response)
             }
             .store(in: &disposeBag)
+    }
+
+    func handleResponse(_ response: Response) {
+        switch response {
+        case .list(let files):
+            self.content = .list(files)
+        case .file(let bytes):
+            self.content = .data(bytes)
+        default:
+            print("error")
+        }
     }
 
     func moveUp() {
         guard !path.isEmpty else {
             return
         }
-        elements.removeAll()
+        content = nil
         path.removeLast()
         if path.isEmpty {
-            elements = root
+            content = .list(root)
         } else {
             device?.send(.list(path))
         }
     }
 
     func listDirectory(_ name: String) {
-        elements.removeAll()
+        content = nil
         path.append(.init(name: name))
         device?.send(.list(path))
+    }
+
+    func canRead(_ file: File) -> Bool {
+        supportedExtensions.contains {
+            file.name.hasSuffix($0)
+        }
+    }
+
+    func readFile(_ file: File) {
+        content = nil
+        path.append(.init(name: file.name))
+        device?.send(.read(path))
     }
 }
