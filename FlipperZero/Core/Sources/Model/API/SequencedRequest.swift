@@ -11,14 +11,10 @@ class SequencedRequest {
 
     private func splitWriteRequest(path: Path, bytes: [UInt8]) -> [PB_Main] {
         var requests = [PB_Main]()
-        let packetSize = Limits.maxPbPacket
-        let packetsCount = (bytes.count - 1) / packetSize + 1
-        for index in 0..<packetsCount {
-            let startIndex = index * packetSize
-            let endIndex = min(startIndex + packetSize, bytes.count)
-            let nextBytes = [UInt8](bytes[startIndex..<endIndex])
-            let nextMain = Request.write(path, nextBytes)
-            requests.append(nextMain.serialize())
+        bytes.chunk(maxCount: Limits.maxPbPacket).forEach { chunk in
+            let nextRequest = Request.write(path, chunk)
+            let nextMain = nextRequest.serialize()
+            requests.append(nextMain)
         }
         return requests
     }
