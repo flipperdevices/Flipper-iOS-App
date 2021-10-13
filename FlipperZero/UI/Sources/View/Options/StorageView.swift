@@ -9,11 +9,31 @@ struct StorageView: View {
             switch viewModel.content {
             case .list(let elements): listView(with: elements)
             case .data: editorView()
+            case .name: nameView()
             case .none: ProgressView()
             }
         }
         .navigationTitle(viewModel.title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if !viewModel.path.isEmpty, case .list = viewModel.content {
+                Menu {
+                    Button {
+                        viewModel.newElement(isDirectory: false)
+                    } label: {
+                        Text("File")
+                    }
+
+                    Button {
+                        viewModel.newElement(isDirectory: true)
+                    } label: {
+                        Text("Folder")
+                    }
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+        }
     }
 
     func listView(with elements: [Element]) -> some View {
@@ -62,6 +82,7 @@ struct StorageView: View {
     func editorView() -> some View {
         VStack {
             TextEditor(text: $viewModel.text)
+                .padding(.top, 5)
                 .clipShape(RoundedRectangle(cornerRadius: 6))
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
@@ -76,8 +97,25 @@ struct StorageView: View {
                     viewModel.save()
                 }
             }
-            .padding(.bottom, 30)
         }
+        .padding(.bottom, 16)
+    }
+
+    func nameView() -> some View {
+        VStack {
+            TextField("Name", text: $viewModel.name)
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(Color.gray, lineWidth: 1))
+                .padding()
+
+            HStack {
+                RoundedButton("Cancel", action: viewModel.cancel)
+                RoundedButton("Create", action: viewModel.create)
+            }
+        }
+        .padding(16)
     }
 }
 

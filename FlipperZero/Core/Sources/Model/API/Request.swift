@@ -5,6 +5,7 @@ public enum Request {
     case list(Path)
     case read(Path)
     case write(Path, [UInt8])
+    case create(Path, isDirectory: Bool)
     case delete(Path)
 }
 
@@ -45,6 +46,19 @@ extension Request {
             return .with {
                 $0.storageDeleteRequest = .with {
                     $0.path = path.string
+                }
+            }
+        case let .create(path, isDirectory):
+            return .with {
+                if isDirectory {
+                    $0.storageMkdirRequest = .with {
+                        $0.path = path.string
+                    }
+                } else {
+                    $0.storageWriteRequest = .with {
+                        $0.path = path.string
+                        $0.file.data = .init()
+                    }
                 }
             }
         }

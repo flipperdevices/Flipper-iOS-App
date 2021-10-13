@@ -13,6 +13,7 @@ class StorageViewModel: ObservableObject {
         }
     }
     @Published var text: String = ""
+    @Published var name: String = ""
 
     var supportedExtensions: [String] = [
         ".ibtn", ".nfc", ".sub", ".rfid", ".ir", ".txt"
@@ -21,6 +22,7 @@ class StorageViewModel: ObservableObject {
     enum Content {
         case list([Element])
         case data([UInt8])
+        case name(isDirectory: Bool)
     }
 
     var root: [Element] = [.directory("int"), .directory("ext")]
@@ -105,6 +107,33 @@ class StorageViewModel: ObservableObject {
                 return
             }
             self.content = .data(bytes)
+        }
+    }
+
+    // Create
+
+    func newElement(isDirectory: Bool) {
+        content = .name(isDirectory: isDirectory)
+    }
+
+    func cancel() {
+        content = nil
+        sendListRequest()
+    }
+
+    func create() {
+        guard !name.isEmpty else { return }
+        guard case .name(let isDirectory) = content else {
+            return
+        }
+
+        content = nil
+
+        let path = path.appending(name)
+        name = ""
+
+        device?.send(.create(path, isDirectory: isDirectory)) { _ in
+            self.sendListRequest()
         }
     }
 
