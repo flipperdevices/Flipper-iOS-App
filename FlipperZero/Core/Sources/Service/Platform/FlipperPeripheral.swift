@@ -45,8 +45,12 @@ class FlipperPeripheral: BluetoothPeripheral {
 
 private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     let peripheral: CBPeripheral
+
     let chunkedResponse: ChunkedResponse = .init()
     let sequencedResponse: SequencedResponse = .init()
+
+    let sequencedRequest: SequencedRequest = .init()
+    let chunkedRequest: ChunkedRequest = .init()
 
     init(_ peripheral: CBPeripheral) {
         self.peripheral = peripheral
@@ -158,12 +162,19 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
             error("no serial service")
             return
         }
-        guard let bytes = try? request.serialize(), !bytes.isEmpty else {
-            error("can't serialize")
-            return
-        }
 
-        peripheral.writeValue(.init(bytes), for: tx, type: .withResponse)
+        let requests = sequencedRequest.split(request)
+        for request in requests {
+            let chunks = chunkedRequest.split(request)
+            for chunk in chunks {
+                guard !chunk.isEmpty else {
+                    error("empty chunk")
+                    return
+                }
+                let data = Data(chunk)
+                peripheral.writeValue(data, for: tx, type: .withResponse)
+            }
+        }
     }
 }
 

@@ -10,14 +10,7 @@ public enum Request {
 }
 
 extension Request {
-    func serialize() throws -> [UInt8] {
-        let main: PB_Main = serialize()
-        let stream = OutputByteStream()
-        try BinaryDelimited.serialize(message: main, to: stream)
-        return stream.bytes
-    }
-
-    private func serialize() -> PB_Main {
+    func serialize() -> PB_Main {
         switch self {
         case .ping:
             return .with {
@@ -62,5 +55,13 @@ extension Request {
                 }
             }
         }
+    }
+}
+
+extension PB_Main {
+    func serialize() throws -> [UInt8] {
+        let stream = OutputByteStream()
+        try BinaryDelimited.serialize(message: self, to: stream)
+        return stream.bytes
     }
 }
