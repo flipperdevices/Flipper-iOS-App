@@ -13,8 +13,13 @@ class SequencedRequest {
         var requests = [PB_Main]()
         bytes.chunk(maxCount: Limits.maxPbPacket).forEach { chunk in
             let nextRequest = Request.write(path, chunk)
-            let nextMain = nextRequest.serialize()
+            var nextMain = nextRequest.serialize()
+            nextMain.hasNext_p = true
             requests.append(nextMain)
+        }
+        if var last = requests.popLast() {
+            last.hasNext_p = false
+            requests.append(last)
         }
         return requests
     }
