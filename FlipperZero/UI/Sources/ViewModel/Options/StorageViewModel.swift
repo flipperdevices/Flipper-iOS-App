@@ -2,6 +2,8 @@ import Core
 import Combine
 import Injector
 
+import struct Foundation.Date
+
 class StorageViewModel: ObservableObject {
     @Inject var connector: BluetoothConnector
 
@@ -31,7 +33,10 @@ class StorageViewModel: ObservableObject {
     var title: String {
         path.isEmpty
             ? "Storage browser"
-            : path.string
+            : requestTime == nil
+                ? path.string
+                // swiftlint:disable force_unwrapping
+                : path.string + " - \(requestTime!.kindaRounded)s"
     }
 
     private var disposeBag: DisposeBag = .init()
@@ -98,10 +103,16 @@ class StorageViewModel: ObservableObject {
         }
     }
 
+    // Temporary
+    var startTime: Date = .init()
+    var requestTime: Double?
+
     func save() {
         self.content = nil
         let bytes = [UInt8](text.utf8)
+        startTime = .init()
         device?.send(.write(path, bytes)) { response in
+            self.requestTime = Date().timeIntervalSince(self.startTime)
             guard case .ok = response else {
                 print("invalid response:", response)
                 return
@@ -154,5 +165,11 @@ class StorageViewModel: ObservableObject {
                 return
             }
         }
+    }
+}
+
+extension Double {
+    var kindaRounded: Double {
+        (self * 100).rounded() / 100
     }
 }
