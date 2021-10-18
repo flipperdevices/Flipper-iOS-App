@@ -1,4 +1,5 @@
 import Foundation
+import Collections
 import CoreBluetooth
 
 class BluetoothService: NSObject, BluetoothCentral, BluetoothConnector {
@@ -27,7 +28,7 @@ class BluetoothService: NSObject, BluetoothCentral, BluetoothConnector {
         self.peripheralsSubject.eraseToAnyPublisher()
     }
 
-    private var peripheralsMap = [UUID: FlipperPeripheral]() {
+    private var peripheralsMap: OrderedDictionary<UUID, FlipperPeripheral> = [:] {
         didSet { publishPeripherals() }
     }
 
