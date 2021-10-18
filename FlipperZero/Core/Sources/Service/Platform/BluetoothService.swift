@@ -75,7 +75,7 @@ class BluetoothService: NSObject, BluetoothCentral, BluetoothConnector {
     func disconnect(from identifier: UUID) {
         manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
             manager.cancelPeripheralConnection($0)
-            // publish disconnecting state for BluetoothConnector subscibers
+            // publish disconnecting state for BluetoothConnector subscribers
             connectedPeripheralsMap[$0.identifier] = .init($0)
         }
     }
@@ -127,7 +127,7 @@ extension BluetoothService {
         error: Error?
     ) {
         if let device = connectedPeripheralsMap[peripheral.identifier] {
-            // publish disconnected state for BluetoothConnector subscibers
+            // publish disconnected state for BluetoothConnector subscribers
             connectedPeripheralsMap[peripheral.identifier] = .init(peripheral)
             device.onDisconnect()
         }
