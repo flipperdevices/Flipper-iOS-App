@@ -8,14 +8,15 @@ class ChunkedResponse {
         !data.isEmpty && length == data.count
     }
 
-    func clear() {
-        data.removeAll()
-        length = nil
+    func removeMessageData() {
+        guard let length = length else { return }
+        data.removeFirst(length)
+        self.length = nil
     }
 
-    func feed(_ chunk: Data) throws -> Response? {
+    func feed(_ chunk: Data) throws -> PB_Main? {
         defer {
-            if isCompleteMessage { clear() }
+            if isCompleteMessage { removeMessageData() }
         }
         data.append(contentsOf: chunk)
         if length == nil {

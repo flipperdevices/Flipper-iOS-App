@@ -9,7 +9,6 @@ public protocol BluetoothPeripheral {
     var services: [CBService] { get }
 
     var info: SafePublisher<Void> { get }
-    var received: SafePublisher<Response> { get }
 
-    func send(_ request: Request)
+    func send(_ request: Request, continuation: @escaping (Response) -> Void)
 }

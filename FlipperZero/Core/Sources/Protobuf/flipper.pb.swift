@@ -23,10 +23,51 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 enum PB_CommandStatus: SwiftProtobuf.Enum {
   typealias RawValue = Int
   case ok // = 0
+
+  ///*< Unknown error 
   case error // = 1
-  case errorNoSpace // = 2
-  case errorNoFile // = 3
-  case errorDecode // = 4
+
+  ///*< Command can't be decoded successfully - command_id in response may be wrong! 
+  case errorDecode // = 2
+
+  ///*< Command succesfully decoded, but not implemented (deprecated or not yet implemented) 
+  case errorNotImplemented // = 3
+
+  ///*< Somebody took global lock, so not all commands are available 
+  case errorBusy // = 4
+
+  ///*< Not received has_next == 0 
+  case errorContinuousCommandInterrupted // = 14
+
+  ///*< not provided (or provided invalid) crucial parameters to perform rpc 
+  case errorInvalidParameters // = 15
+
+  ///*< FS not ready 
+  case errorStorageNotReady // = 5
+
+  ///*< File/Dir alrady exist 
+  case errorStorageExist // = 6
+
+  ///*< File/Dir does not exist 
+  case errorStorageNotExist // = 7
+
+  ///*< Invalid API parameter 
+  case errorStorageInvalidParameter // = 8
+
+  ///*< Access denied 
+  case errorStorageDenied // = 9
+
+  ///*< Invalid name/path 
+  case errorStorageInvalidName // = 10
+
+  ///*< Internal error 
+  case errorStorageInternal // = 11
+
+  ///*< Functon not implemented 
+  case errorStorageNotImplemented // = 12
+
+  ///*< File/Dir already opened 
+  case errorStorageAlreadyOpen // = 13
   case UNRECOGNIZED(Int)
 
   init() {
@@ -37,9 +78,20 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
     switch rawValue {
     case 0: self = .ok
     case 1: self = .error
-    case 2: self = .errorNoSpace
-    case 3: self = .errorNoFile
-    case 4: self = .errorDecode
+    case 2: self = .errorDecode
+    case 3: self = .errorNotImplemented
+    case 4: self = .errorBusy
+    case 5: self = .errorStorageNotReady
+    case 6: self = .errorStorageExist
+    case 7: self = .errorStorageNotExist
+    case 8: self = .errorStorageInvalidParameter
+    case 9: self = .errorStorageDenied
+    case 10: self = .errorStorageInvalidName
+    case 11: self = .errorStorageInternal
+    case 12: self = .errorStorageNotImplemented
+    case 13: self = .errorStorageAlreadyOpen
+    case 14: self = .errorContinuousCommandInterrupted
+    case 15: self = .errorInvalidParameters
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -48,9 +100,20 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
     switch self {
     case .ok: return 0
     case .error: return 1
-    case .errorNoSpace: return 2
-    case .errorNoFile: return 3
-    case .errorDecode: return 4
+    case .errorDecode: return 2
+    case .errorNotImplemented: return 3
+    case .errorBusy: return 4
+    case .errorStorageNotReady: return 5
+    case .errorStorageExist: return 6
+    case .errorStorageNotExist: return 7
+    case .errorStorageInvalidParameter: return 8
+    case .errorStorageDenied: return 9
+    case .errorStorageInvalidName: return 10
+    case .errorStorageInternal: return 11
+    case .errorStorageNotImplemented: return 12
+    case .errorStorageAlreadyOpen: return 13
+    case .errorContinuousCommandInterrupted: return 14
+    case .errorInvalidParameters: return 15
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -64,15 +127,29 @@ extension PB_CommandStatus: CaseIterable {
   static var allCases: [PB_CommandStatus] = [
     .ok,
     .error,
-    .errorNoSpace,
-    .errorNoFile,
     .errorDecode,
+    .errorNotImplemented,
+    .errorBusy,
+    .errorContinuousCommandInterrupted,
+    .errorInvalidParameters,
+    .errorStorageNotReady,
+    .errorStorageExist,
+    .errorStorageNotExist,
+    .errorStorageInvalidParameter,
+    .errorStorageDenied,
+    .errorStorageInvalidName,
+    .errorStorageInternal,
+    .errorStorageNotImplemented,
+    .errorStorageAlreadyOpen,
   ]
 }
 
 #endif  // swift(>=4.2)
 
-struct PB_Dummy {
+/// There are Server commands (e.g. Storage_write), which have no body message
+/// in response. But 'oneof' obligate to have at least 1 encoded message
+/// in scope. For this needs Empty message is implemented.
+struct PB_Empty {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -91,16 +168,16 @@ struct PB_Main {
 
   var commandStatus: PB_CommandStatus = .ok
 
-  var notLast: Bool = false
+  var hasNext_p: Bool = false
 
   var content: PB_Main.OneOf_Content? = nil
 
-  var dummy: PB_Dummy {
+  var empty: PB_Empty {
     get {
-      if case .dummy(let v)? = content {return v}
-      return PB_Dummy()
+      if case .empty(let v)? = content {return v}
+      return PB_Empty()
     }
-    set {content = .dummy(newValue)}
+    set {content = .empty(newValue)}
   }
 
   var pingRequest: PBStatus_PingRequest {
@@ -167,10 +244,34 @@ struct PB_Main {
     set {content = .storageDeleteRequest(newValue)}
   }
 
+  var storageMkdirRequest: PBStorage_MkdirRequest {
+    get {
+      if case .storageMkdirRequest(let v)? = content {return v}
+      return PBStorage_MkdirRequest()
+    }
+    set {content = .storageMkdirRequest(newValue)}
+  }
+
+  var storageMd5SumRequest: PBStorage_Md5sumRequest {
+    get {
+      if case .storageMd5SumRequest(let v)? = content {return v}
+      return PBStorage_Md5sumRequest()
+    }
+    set {content = .storageMd5SumRequest(newValue)}
+  }
+
+  var storageMd5SumResponse: PBStorage_Md5sumResponse {
+    get {
+      if case .storageMd5SumResponse(let v)? = content {return v}
+      return PBStorage_Md5sumResponse()
+    }
+    set {content = .storageMd5SumResponse(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Content: Equatable {
-    case dummy(PB_Dummy)
+    case empty(PB_Empty)
     case pingRequest(PBStatus_PingRequest)
     case pingResponse(PBStatus_PingResponse)
     case storageListRequest(PBStorage_ListRequest)
@@ -179,6 +280,9 @@ struct PB_Main {
     case storageReadResponse(PBStorage_ReadResponse)
     case storageWriteRequest(PBStorage_WriteRequest)
     case storageDeleteRequest(PBStorage_DeleteRequest)
+    case storageMkdirRequest(PBStorage_MkdirRequest)
+    case storageMd5SumRequest(PBStorage_Md5sumRequest)
+    case storageMd5SumResponse(PBStorage_Md5sumResponse)
 
   #if !swift(>=4.1)
     static func ==(lhs: PB_Main.OneOf_Content, rhs: PB_Main.OneOf_Content) -> Bool {
@@ -186,8 +290,8 @@ struct PB_Main {
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch (lhs, rhs) {
-      case (.dummy, .dummy): return {
-        guard case .dummy(let l) = lhs, case .dummy(let r) = rhs else { preconditionFailure() }
+      case (.empty, .empty): return {
+        guard case .empty(let l) = lhs, case .empty(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       case (.pingRequest, .pingRequest): return {
@@ -222,6 +326,18 @@ struct PB_Main {
         guard case .storageDeleteRequest(let l) = lhs, case .storageDeleteRequest(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
+      case (.storageMkdirRequest, .storageMkdirRequest): return {
+        guard case .storageMkdirRequest(let l) = lhs, case .storageMkdirRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.storageMd5SumRequest, .storageMd5SumRequest): return {
+        guard case .storageMd5SumRequest(let l) = lhs, case .storageMd5SumRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.storageMd5SumResponse, .storageMd5SumResponse): return {
+        guard case .storageMd5SumResponse(let l) = lhs, case .storageMd5SumResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       default: return false
       }
     }
@@ -239,14 +355,25 @@ extension PB_CommandStatus: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "OK"),
     1: .same(proto: "ERROR"),
-    2: .same(proto: "ERROR_NO_SPACE"),
-    3: .same(proto: "ERROR_NO_FILE"),
-    4: .same(proto: "ERROR_DECODE"),
+    2: .same(proto: "ERROR_DECODE"),
+    3: .same(proto: "ERROR_NOT_IMPLEMENTED"),
+    4: .same(proto: "ERROR_BUSY"),
+    5: .same(proto: "ERROR_STORAGE_NOT_READY"),
+    6: .same(proto: "ERROR_STORAGE_EXIST"),
+    7: .same(proto: "ERROR_STORAGE_NOT_EXIST"),
+    8: .same(proto: "ERROR_STORAGE_INVALID_PARAMETER"),
+    9: .same(proto: "ERROR_STORAGE_DENIED"),
+    10: .same(proto: "ERROR_STORAGE_INVALID_NAME"),
+    11: .same(proto: "ERROR_STORAGE_INTERNAL"),
+    12: .same(proto: "ERROR_STORAGE_NOT_IMPLEMENTED"),
+    13: .same(proto: "ERROR_STORAGE_ALREADY_OPEN"),
+    14: .same(proto: "ERROR_CONTINUOUS_COMMAND_INTERRUPTED"),
+    15: .same(proto: "ERROR_INVALID_PARAMETERS"),
   ]
 }
 
-extension PB_Dummy: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Dummy"
+extension PB_Empty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".Empty"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -258,7 +385,7 @@ extension PB_Dummy: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationB
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: PB_Dummy, rhs: PB_Dummy) -> Bool {
+  static func ==(lhs: PB_Empty, rhs: PB_Empty) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -269,16 +396,19 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "command_id"),
     2: .standard(proto: "command_status"),
-    3: .standard(proto: "not_last"),
-    12: .same(proto: "dummy"),
-    4: .standard(proto: "ping_request"),
-    5: .standard(proto: "ping_response"),
-    6: .standard(proto: "storage_list_request"),
-    7: .standard(proto: "storage_list_response"),
-    8: .standard(proto: "storage_read_request"),
-    9: .standard(proto: "storage_read_response"),
-    10: .standard(proto: "storage_write_request"),
-    11: .standard(proto: "storage_delete_request"),
+    3: .standard(proto: "has_next"),
+    4: .same(proto: "empty"),
+    5: .standard(proto: "ping_request"),
+    6: .standard(proto: "ping_response"),
+    7: .standard(proto: "storage_list_request"),
+    8: .standard(proto: "storage_list_response"),
+    9: .standard(proto: "storage_read_request"),
+    10: .standard(proto: "storage_read_response"),
+    11: .standard(proto: "storage_write_request"),
+    12: .standard(proto: "storage_delete_request"),
+    13: .standard(proto: "storage_mkdir_request"),
+    14: .standard(proto: "storage_md5sum_request"),
+    15: .standard(proto: "storage_md5sum_response"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -289,8 +419,21 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt32Field(value: &self.commandID) }()
       case 2: try { try decoder.decodeSingularEnumField(value: &self.commandStatus) }()
-      case 3: try { try decoder.decodeSingularBoolField(value: &self.notLast) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self.hasNext_p) }()
       case 4: try {
+        var v: PB_Empty?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .empty(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .empty(v)
+        }
+      }()
+      case 5: try {
         var v: PBStatus_PingRequest?
         var hadOneofValue = false
         if let current = self.content {
@@ -303,7 +446,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .pingRequest(v)
         }
       }()
-      case 5: try {
+      case 6: try {
         var v: PBStatus_PingResponse?
         var hadOneofValue = false
         if let current = self.content {
@@ -316,7 +459,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .pingResponse(v)
         }
       }()
-      case 6: try {
+      case 7: try {
         var v: PBStorage_ListRequest?
         var hadOneofValue = false
         if let current = self.content {
@@ -329,7 +472,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .storageListRequest(v)
         }
       }()
-      case 7: try {
+      case 8: try {
         var v: PBStorage_ListResponse?
         var hadOneofValue = false
         if let current = self.content {
@@ -342,7 +485,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .storageListResponse(v)
         }
       }()
-      case 8: try {
+      case 9: try {
         var v: PBStorage_ReadRequest?
         var hadOneofValue = false
         if let current = self.content {
@@ -355,7 +498,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .storageReadRequest(v)
         }
       }()
-      case 9: try {
+      case 10: try {
         var v: PBStorage_ReadResponse?
         var hadOneofValue = false
         if let current = self.content {
@@ -368,7 +511,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .storageReadResponse(v)
         }
       }()
-      case 10: try {
+      case 11: try {
         var v: PBStorage_WriteRequest?
         var hadOneofValue = false
         if let current = self.content {
@@ -381,7 +524,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .storageWriteRequest(v)
         }
       }()
-      case 11: try {
+      case 12: try {
         var v: PBStorage_DeleteRequest?
         var hadOneofValue = false
         if let current = self.content {
@@ -394,17 +537,43 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .storageDeleteRequest(v)
         }
       }()
-      case 12: try {
-        var v: PB_Dummy?
+      case 13: try {
+        var v: PBStorage_MkdirRequest?
         var hadOneofValue = false
         if let current = self.content {
           hadOneofValue = true
-          if case .dummy(let m) = current {v = m}
+          if case .storageMkdirRequest(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {
           if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.content = .dummy(v)
+          self.content = .storageMkdirRequest(v)
+        }
+      }()
+      case 14: try {
+        var v: PBStorage_Md5sumRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .storageMd5SumRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .storageMd5SumRequest(v)
+        }
+      }()
+      case 15: try {
+        var v: PBStorage_Md5sumResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .storageMd5SumResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .storageMd5SumResponse(v)
         }
       }()
       default: break
@@ -413,54 +582,67 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if self.commandID != 0 {
       try visitor.visitSingularUInt32Field(value: self.commandID, fieldNumber: 1)
     }
     if self.commandStatus != .ok {
       try visitor.visitSingularEnumField(value: self.commandStatus, fieldNumber: 2)
     }
-    if self.notLast != false {
-      try visitor.visitSingularBoolField(value: self.notLast, fieldNumber: 3)
+    if self.hasNext_p != false {
+      try visitor.visitSingularBoolField(value: self.hasNext_p, fieldNumber: 3)
     }
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every case branch when no optimizations are
-    // enabled. https://github.com/apple/swift-protobuf/issues/1034
     switch self.content {
+    case .empty?: try {
+      guard case .empty(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    }()
     case .pingRequest?: try {
       guard case .pingRequest(let v)? = self.content else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     }()
     case .pingResponse?: try {
       guard case .pingResponse(let v)? = self.content else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
     }()
     case .storageListRequest?: try {
       guard case .storageListRequest(let v)? = self.content else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
     }()
     case .storageListResponse?: try {
       guard case .storageListResponse(let v)? = self.content else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
     }()
     case .storageReadRequest?: try {
       guard case .storageReadRequest(let v)? = self.content else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
     }()
     case .storageReadResponse?: try {
       guard case .storageReadResponse(let v)? = self.content else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
     }()
     case .storageWriteRequest?: try {
       guard case .storageWriteRequest(let v)? = self.content else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
     }()
     case .storageDeleteRequest?: try {
       guard case .storageDeleteRequest(let v)? = self.content else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
-    }()
-    case .dummy?: try {
-      guard case .dummy(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
+    }()
+    case .storageMkdirRequest?: try {
+      guard case .storageMkdirRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
+    }()
+    case .storageMd5SumRequest?: try {
+      guard case .storageMd5SumRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
+    }()
+    case .storageMd5SumResponse?: try {
+      guard case .storageMd5SumResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
     }()
     case nil: break
     }
@@ -470,7 +652,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
   static func ==(lhs: PB_Main, rhs: PB_Main) -> Bool {
     if lhs.commandID != rhs.commandID {return false}
     if lhs.commandStatus != rhs.commandStatus {return false}
-    if lhs.notLast != rhs.notLast {return false}
+    if lhs.hasNext_p != rhs.hasNext_p {return false}
     if lhs.content != rhs.content {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

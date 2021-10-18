@@ -82,9 +82,8 @@ private struct MockPeripheral: BluetoothPeripheral {
     var services: [CBService] = []
 
     var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
-    var received: SafePublisher<Response> { Just(.ping).eraseToAnyPublisher() }
 
-    func send(_ request: Request) {}
+    func send(_ request: Request, continuation: @escaping (Response) -> Void) {}
 }
 
 private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {

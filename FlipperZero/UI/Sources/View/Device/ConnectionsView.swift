@@ -87,7 +87,7 @@ private class TestConnector: BluetoothCentral, BluetoothConnector {
         var state: CBPeripheralState = .disconnected
         var services: [CBService] = []
 
-        func send(_ request: Request) {}
+        func send(_ request: Request, continuation: @escaping (Response) -> Void) {}
 
         var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
         var received: SafePublisher<Response> { Just(.ping).eraseToAnyPublisher() }

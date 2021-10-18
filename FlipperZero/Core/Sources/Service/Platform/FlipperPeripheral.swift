@@ -17,7 +17,7 @@ class FlipperPeripheral: BluetoothPeripheral {
         }
         self.id = peripheral.identifier
         self.name = String(name.dropFirst("Flipper ".count))
-        self.delegate = .init(peripheral)
+        self.delegate = .init(peripheral, FlipperSession())
     }
 
     func onConnect() {
@@ -36,12 +36,8 @@ class FlipperPeripheral: BluetoothPeripheral {
         delegate.infoSubject.eraseToAnyPublisher()
     }
 
-    var received: SafePublisher<Response> {
-        delegate.apiSubject.eraseToAnyPublisher()
-    }
-
-    func send(_ request: Request) {
-        delegate.send(request)
+    func send(_ request: Request, continuation: @escaping (Response) -> Void) {
+        delegate.send(request, continuation: continuation)
     }
 }
 
@@ -49,16 +45,16 @@ class FlipperPeripheral: BluetoothPeripheral {
 
 private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     let peripheral: CBPeripheral
-    let chunkedResponse: ChunkedResponse = .init()
+    let session: Session
 
-    init(_ peripheral: CBPeripheral) {
+    init(_ peripheral: CBPeripheral, _ session: Session) {
         self.peripheral = peripheral
+        self.session = session
         super.init()
         peripheral.delegate = self
     }
 
     fileprivate let infoSubject = SafeSubject<Void>()
-    fileprivate let apiSubject = SafeSubject<Response>()
 
     // MARK: Services
 
@@ -106,44 +102,32 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
         assert(peripheral === self.peripheral)
         switch characteristic.uuid {
         case .serialRead:
-            handleData(characteristic.value)
+            if let data = characteristic.value {
+                session.didReceiveData(data)
+            }
         default:
             infoSubject.send()
         }
     }
 
-    func handleData(_ data: Data?) {
-        do {
-            guard let data = data else { return }
-            // return nil on incomplete message
-            guard let response = try chunkedResponse.feed(data) else {
-                return
-            }
-            if case .error(let error) = response {
-                print(error)
-                return
-            }
-            apiSubject.send(response)
-        } catch {
-            print(error)
+    func send(_ request: Request, continuation: @escaping (Response) -> Void) {
+        func error(_ message: String) {
+            print(message)
+            continuation(.error(message))
         }
-    }
 
-    func send(_ request: Request) {
         guard peripheral.state == .connected else {
-            print("invalid state")
+            error("invalid state")
             return
         }
         guard let tx = peripheral.serialWrite else {
-            print("no serial service")
+            error("no serial service")
             return
         }
-        guard let bytes = try? request.serialize(), !bytes.isEmpty else {
-            print("can't serialize")
-            return
+
+        session.sendRequest(request, continuation: continuation) {
+            peripheral.writeValue($0, for: tx, type: .withResponse)
         }
-        let data = Data(bytes)
-        peripheral.writeValue(data, for: tx, type: .withResponse)
     }
 }
 

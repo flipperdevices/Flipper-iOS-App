@@ -20,12 +20,12 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct PBStorage_Element {
+struct PBStorage_File {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var type: PBStorage_Element.FileType = .file
+  var type: PBStorage_File.FileType = .file
 
   var name: String = String()
 
@@ -70,9 +70,9 @@ struct PBStorage_Element {
 
 #if swift(>=4.2)
 
-extension PBStorage_Element.FileType: CaseIterable {
+extension PBStorage_File.FileType: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PBStorage_Element.FileType] = [
+  static var allCases: [PBStorage_File.FileType] = [
     .file,
     .dir,
   ]
@@ -97,7 +97,7 @@ struct PBStorage_ListResponse {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var storageElement: [PBStorage_Element] = []
+  var file: [PBStorage_File] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -109,7 +109,7 @@ struct PBStorage_ReadRequest {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var filepath: String = String()
+  var path: String = String()
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -121,20 +121,20 @@ struct PBStorage_ReadResponse {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var storageElement: PBStorage_Element {
-    get {return _storageElement ?? PBStorage_Element()}
-    set {_storageElement = newValue}
+  var file: PBStorage_File {
+    get {return _file ?? PBStorage_File()}
+    set {_file = newValue}
   }
-  /// Returns true if `storageElement` has been explicitly set.
-  var hasStorageElement: Bool {return self._storageElement != nil}
-  /// Clears the value of `storageElement`. Subsequent reads from it will return its default value.
-  mutating func clearStorageElement() {self._storageElement = nil}
+  /// Returns true if `file` has been explicitly set.
+  var hasFile: Bool {return self._file != nil}
+  /// Clears the value of `file`. Subsequent reads from it will return its default value.
+  mutating func clearFile() {self._file = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
 
-  fileprivate var _storageElement: PBStorage_Element? = nil
+  fileprivate var _file: PBStorage_File? = nil
 }
 
 struct PBStorage_WriteRequest {
@@ -144,20 +144,20 @@ struct PBStorage_WriteRequest {
 
   var path: String = String()
 
-  var storageElement: PBStorage_Element {
-    get {return _storageElement ?? PBStorage_Element()}
-    set {_storageElement = newValue}
+  var file: PBStorage_File {
+    get {return _file ?? PBStorage_File()}
+    set {_file = newValue}
   }
-  /// Returns true if `storageElement` has been explicitly set.
-  var hasStorageElement: Bool {return self._storageElement != nil}
-  /// Clears the value of `storageElement`. Subsequent reads from it will return its default value.
-  mutating func clearStorageElement() {self._storageElement = nil}
+  /// Returns true if `file` has been explicitly set.
+  var hasFile: Bool {return self._file != nil}
+  /// Clears the value of `file`. Subsequent reads from it will return its default value.
+  mutating func clearFile() {self._file = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
 
-  fileprivate var _storageElement: PBStorage_Element? = nil
+  fileprivate var _file: PBStorage_File? = nil
 }
 
 struct PBStorage_DeleteRequest {
@@ -165,7 +165,43 @@ struct PBStorage_DeleteRequest {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var filename: String = String()
+  var path: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PBStorage_MkdirRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var path: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PBStorage_Md5sumRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var path: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PBStorage_Md5sumResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var md5Sum: String = String()
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -176,8 +212,8 @@ struct PBStorage_DeleteRequest {
 
 fileprivate let _protobuf_package = "PB_Storage"
 
-extension PBStorage_Element: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Element"
+extension PBStorage_File: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".File"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "type"),
     2: .same(proto: "name"),
@@ -216,7 +252,7 @@ extension PBStorage_Element: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: PBStorage_Element, rhs: PBStorage_Element) -> Bool {
+  static func ==(lhs: PBStorage_File, rhs: PBStorage_File) -> Bool {
     if lhs.type != rhs.type {return false}
     if lhs.name != rhs.name {return false}
     if lhs.size != rhs.size {return false}
@@ -226,7 +262,7 @@ extension PBStorage_Element: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   }
 }
 
-extension PBStorage_Element.FileType: SwiftProtobuf._ProtoNameProviding {
+extension PBStorage_File.FileType: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "FILE"),
     1: .same(proto: "DIR"),
@@ -268,7 +304,7 @@ extension PBStorage_ListRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 extension PBStorage_ListResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ListResponse"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "storage_element"),
+    1: .same(proto: "file"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -277,21 +313,21 @@ extension PBStorage_ListResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageI
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.storageElement) }()
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.file) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.storageElement.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.storageElement, fieldNumber: 1)
+    if !self.file.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.file, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: PBStorage_ListResponse, rhs: PBStorage_ListResponse) -> Bool {
-    if lhs.storageElement != rhs.storageElement {return false}
+    if lhs.file != rhs.file {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -300,72 +336,7 @@ extension PBStorage_ListResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 extension PBStorage_ReadRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ReadRequest"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "filepath"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.filepath) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.filepath.isEmpty {
-      try visitor.visitSingularStringField(value: self.filepath, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: PBStorage_ReadRequest, rhs: PBStorage_ReadRequest) -> Bool {
-    if lhs.filepath != rhs.filepath {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension PBStorage_ReadResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ReadResponse"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "storage_element"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._storageElement) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._storageElement {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: PBStorage_ReadResponse, rhs: PBStorage_ReadResponse) -> Bool {
-    if lhs._storageElement != rhs._storageElement {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension PBStorage_WriteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".WriteRequest"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "path"),
-    2: .standard(proto: "storage_element"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -375,7 +346,6 @@ extension PBStorage_WriteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageI
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.path) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._storageElement) }()
       default: break
       }
     }
@@ -385,24 +355,20 @@ extension PBStorage_WriteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     if !self.path.isEmpty {
       try visitor.visitSingularStringField(value: self.path, fieldNumber: 1)
     }
-    if let v = self._storageElement {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: PBStorage_WriteRequest, rhs: PBStorage_WriteRequest) -> Bool {
+  static func ==(lhs: PBStorage_ReadRequest, rhs: PBStorage_ReadRequest) -> Bool {
     if lhs.path != rhs.path {return false}
-    if lhs._storageElement != rhs._storageElement {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension PBStorage_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".DeleteRequest"
+extension PBStorage_ReadResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ReadResponse"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "filename"),
+    1: .same(proto: "file"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -411,21 +377,195 @@ extension PBStorage_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.filename) }()
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._file) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.filename.isEmpty {
-      try visitor.visitSingularStringField(value: self.filename, fieldNumber: 1)
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._file {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBStorage_ReadResponse, rhs: PBStorage_ReadResponse) -> Bool {
+    if lhs._file != rhs._file {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBStorage_WriteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".WriteRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "path"),
+    2: .same(proto: "file"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.path) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._file) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.path.isEmpty {
+      try visitor.visitSingularStringField(value: self.path, fieldNumber: 1)
+    }
+    try { if let v = self._file {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBStorage_WriteRequest, rhs: PBStorage_WriteRequest) -> Bool {
+    if lhs.path != rhs.path {return false}
+    if lhs._file != rhs._file {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBStorage_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".DeleteRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "path"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.path) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.path.isEmpty {
+      try visitor.visitSingularStringField(value: self.path, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: PBStorage_DeleteRequest, rhs: PBStorage_DeleteRequest) -> Bool {
-    if lhs.filename != rhs.filename {return false}
+    if lhs.path != rhs.path {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBStorage_MkdirRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".MkdirRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "path"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.path) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.path.isEmpty {
+      try visitor.visitSingularStringField(value: self.path, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBStorage_MkdirRequest, rhs: PBStorage_MkdirRequest) -> Bool {
+    if lhs.path != rhs.path {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBStorage_Md5sumRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".Md5sumRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "path"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.path) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.path.isEmpty {
+      try visitor.visitSingularStringField(value: self.path, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBStorage_Md5sumRequest, rhs: PBStorage_Md5sumRequest) -> Bool {
+    if lhs.path != rhs.path {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBStorage_Md5sumResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".Md5sumResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "md5sum"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.md5Sum) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.md5Sum.isEmpty {
+      try visitor.visitSingularStringField(value: self.md5Sum, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBStorage_Md5sumResponse, rhs: PBStorage_Md5sumResponse) -> Bool {
+    if lhs.md5Sum != rhs.md5Sum {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
