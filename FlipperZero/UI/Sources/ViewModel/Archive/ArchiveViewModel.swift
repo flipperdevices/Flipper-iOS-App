@@ -55,16 +55,8 @@ class ArchiveViewModel: ObservableObject {
 
         connector.connectedPeripherals
             .sink { [weak self] items in
-                if let paired = self?.device {
-                    // update the state for paired device
-                    if let item = items.first(where: { $0.id == paired.id }) {
-                        self?.device = .init(item)
-                    }
-                } else {
-                    // new device connected
-                    if let item = items.first {
-                        self?.device = .init(item)
-                    }
+                if let item = items.first {
+                    self?.device = .init(item)
                 }
             }
             .store(in: &disposeBag)
