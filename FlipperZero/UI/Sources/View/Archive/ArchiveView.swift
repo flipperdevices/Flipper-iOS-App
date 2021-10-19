@@ -22,16 +22,35 @@ struct ArchiveView: View {
             CarouselView(
                 spacing: 0,
                 index: $selectedIndex,
-                items: viewModel.itemGroups) { group in
+                items: viewModel.itemGroups
+            ) { group in
                 ArchiveListView(
                     items: group.items,
                     isEditing: $viewModel.isEditing,
                     selectedItems: $viewModel.selectedItems,
-                    itemSelected: onItemSelected)
+                    itemSelected: onItemSelected,
+                    onDragGesture: onDragGesture)
             }
 
             if viewModel.isEditing {
                 tabViewOverlay
+            }
+        }
+    }
+
+    func onDragGesture(_ value: DragGesture.Value) {
+        withAnimation {
+            switch value.translation.width {
+            case 10...:
+                if selectedIndex > 0 {
+                    selectedIndex -= 1
+                }
+            case ...(-10):
+                if selectedIndex < viewModel.items.count {
+                    selectedIndex += 1
+                }
+            default:
+                break
             }
         }
     }
