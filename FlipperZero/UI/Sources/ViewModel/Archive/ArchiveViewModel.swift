@@ -15,12 +15,18 @@ class ArchiveViewModel: ObservableObject {
             archive.items = items
         }
     }
+    @Published var selectedCategoryIndex = 0
     @Published var selectedItems: [ArchiveItem] = []
+    @Published var isDeletePresented = false
     @Published var isEditing = false {
         didSet { onEditModeChanded(isEditing) }
     }
     var onEditModeChanded: (Bool) -> Void = { _ in }
     var disposeBag: DisposeBag = .init()
+
+    var categories: [String] = [
+        "Favorites", "RFID 125", "Sub-gHz", "NFC", "iButton", "iRda"
+    ]
 
     struct Group: Identifiable {
         var id: ArchiveItem.Kind?
@@ -85,6 +91,33 @@ class ArchiveViewModel: ObservableObject {
 
     func readNFCTag() {
         nfc.startReader()
+    }
+
+    func onCardSwipe(_ width: Double) {
+        switch width {
+        case 10...:
+            if selectedCategoryIndex > 0 {
+                selectedCategoryIndex -= 1
+            }
+        case ...(-10):
+            if selectedCategoryIndex < items.count {
+                selectedCategoryIndex += 1
+            }
+        default:
+            break
+        }
+    }
+
+    func shareSelectedItems() {
+        if !selectedItems.isEmpty {
+            share(selectedItems.map { $0.name })
+        }
+    }
+
+    func deleteSelectedItems() {
+        if !selectedItems.isEmpty {
+            isDeletePresented = true
+        }
     }
 }
 
