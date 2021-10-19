@@ -3,7 +3,8 @@ import Core
 
 struct CardSheetView: View {
     @Environment(\.colorScheme) var colorScheme
-    let item: ArchiveItem
+    let device: Peripheral?
+    @Binding var item: ArchiveItem
 
     var sheetBackgroundColor: Color {
         colorScheme == .light
@@ -11,31 +12,81 @@ struct CardSheetView: View {
             : .init(red: 0.1, green: 0.1, blue: 0.1)
     }
 
+    @State var string = ""
+    @State var isEditMode = false
+    @State var focusedField = ""
+
+    var isFullScreen: Bool { !focusedField.isEmpty }
+
     var body: some View {
         VStack {
-            RoundedRectangle(cornerRadius: 5)
-                .fill(Color.gray)
-                .frame(width: 40, height: 6)
-                .padding(.vertical, 18)
+            if isFullScreen {
+                HStack {
+                    Button {
+                    } label: {
+                        Text("Cancel")
+                            .font(.system(size: 16))
+                    }
+                    .frame(width: 50)
+                    .padding(.leading, 20)
 
-            Card(item: item)
+                    Spacer()
+                    HeaderDeviceView(
+                        name: device?.name ?? "No device",
+                        status: device?.state ?? .disconnected)
+                    Spacer()
+
+                    Button {
+                    } label: {
+                        Text("Done")
+                            .font(.system(size: 16, weight: .semibold))
+                    }
+                    .frame(width: 50)
+                    .padding(.trailing, 20)
+                }
+                .frame(height: navigationBarHeight)
+                .background(systemBackground)
+            }
+
+            Spacer(minLength: isFullScreen ? 0 : navigationBarHeight)
+
+            VStack {
+                if !isFullScreen {
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color.gray)
+                        .frame(width: 40, height: 6)
+                        .padding(.vertical, 18)
+                }
+
+                Card(
+                    item: $item,
+                    isEditMode: $isEditMode,
+                    focusedField: $focusedField
+                )
                 .foregroundColor(.white)
                 .padding(.top, 5)
                 .padding(.horizontal, 16)
 
-            CardDeviceActions(item: item)
+                if !isEditMode {
+                    CardDeviceActions(item: item)
+                }
 
-            Divider()
-
-            CardActions(item: item)
+                if focusedField.isEmpty {
+                    CardActions(item: item, isEditMode: $isEditMode)
+                } else {
+                    Spacer()
+                }
+            }
+            .background(isFullScreen ? systemBackground : sheetBackgroundColor)
+            .cornerRadius(isFullScreen ? 0 : 12)
         }
-        .background(sheetBackgroundColor)
-        .cornerRadius(12)
     }
 }
 
 struct Card: View {
-    let item: ArchiveItem
+    @Binding var item: ArchiveItem
+    @Binding var isEditMode: Bool
+    @Binding var focusedField: String
 
     var gradient: LinearGradient {
         .init(
@@ -50,13 +101,22 @@ struct Card: View {
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 0) {
-                CardHeaderView(name: item.name, image: item.icon)
-                    .padding(16)
+                CardHeaderView(
+                    name: $item.name,
+                    image: item.icon,
+                    isEditMode: $isEditMode,
+                    focusedField: $focusedField
+                )
+                .padding(16)
 
                 CardDivider()
 
-                CardDataView(item: item)
-                    .padding(16)
+                CardDataView(
+                    item: _item,
+                    isEditMode: $isEditMode,
+                    focusedField: $focusedField
+                )
+                .padding(16)
 
                 HStack {
                     Spacer()
@@ -68,18 +128,48 @@ struct Card: View {
         }
         .background(gradient)
         .clipShape(RoundedRectangle(cornerRadius: 20))
+        .padding(.bottom, 16)
+    }
+}
+
+struct CardTextField: View {
+    let title: String
+    @Binding var text: String
+    @Binding var isEditMode: Bool
+    @Binding var focusedField: String
+
+    var body: some View {
+        TextField("", text: $text) { focused in
+            focusedField = focused ? title : ""
+        }
+        .disableAutocorrection(true)
+        .disabled(!isEditMode)
+        .padding(.horizontal, 5)
+        .padding(.vertical, 2)
+        .background(Color.white.opacity(isEditMode ? 0.3 : 0))
+        .border(Color.white.opacity(focusedField == title ? 1 : 0), width: 2)
+        .cornerRadius(4)
     }
 }
 
 struct CardHeaderView: View {
-    let name: String
+    @Binding var name: String
     let image: Image
+    @Binding var isEditMode: Bool
+    @Binding var focusedField: String
 
     var body: some View {
         HStack {
-            Text(name)
-                .font(.system(size: 22).weight(.bold))
+            CardTextField(
+                title: "name",
+                text: $name,
+                isEditMode: $isEditMode,
+                focusedField: $focusedField
+            )
+            .font(.system(size: 22).weight(.bold))
+
             Spacer()
+
             image
                 .frame(width: 40, height: 40)
         }
@@ -95,22 +185,33 @@ struct CardDivider: View {
 }
 
 struct CardDataView: View {
-    let item: ArchiveItem
+    @Binding var item: ArchiveItem
+    @Binding var isEditMode: Bool
+    @Binding var focusedField: String
+
+    @State var description: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if !item.description.isEmpty {
-                Text(item.description)
-                    .font(.system(size: 20).weight(.semibold))
-            }
-            if !item.description.isEmpty {
-                Text(String(item.description.reversed()))
-                    .font(.system(size: 20).weight(.semibold))
+                CardTextField(
+                    title: "description",
+                    text: $item.description,
+                    isEditMode: $isEditMode,
+                    focusedField: $focusedField
+                )
+                .font(.system(size: 20).weight(.semibold))
             }
 
             if !item.origin.isEmpty {
                 HStack {
-                    Text(item.origin)
+                    CardTextField(
+                        title: "origin",
+                        text: $item.origin,
+                        isEditMode: $isEditMode,
+                        focusedField: $focusedField
+                    )
+                    .font(.system(size: 20).weight(.semibold))
                     Spacer()
                     Text(String(item.origin.reversed()))
                 }
@@ -135,7 +236,8 @@ struct CardDeviceActions: View {
         .background(systemBackground)
         .foregroundColor(Color.accentColor)
         .clipShape(RoundedRectangle(cornerRadius: 10))
-        .padding(16)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
     }
 }
 
@@ -156,68 +258,81 @@ struct CardDeviceAction: View {
 
 struct CardActions: View {
     let item: ArchiveItem
+    @Binding var isEditMode: Bool
 
-    @State var isEditPresented = false
     @State var isSharePresented = false
     @State var isFavorite = false
     @State var isDeletePresented = false
 
     var body: some View {
-        HStack(alignment: .top) {
+        VStack {
+            Divider()
 
-            // MARK: Edit
+            HStack(alignment: .top) {
 
-            Button {
-                isEditPresented = true
-            } label: {
-                Image(systemName: "square.and.pencil")
+                // MARK: Edit
+
+                if isEditMode {
+                    Button {
+                        isEditMode = false
+                    } label: {
+                        Image(systemName: "checkmark.circle")
+                    }
+                    Spacer()
+                } else {
+                    Button {
+                        isEditMode = true
+                    } label: {
+                        Image(systemName: "square.and.pencil")
+                    }
+
+                    Spacer()
+
+                    // MARK: Share
+
+                    Button {
+                        share([item.name])
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+
+                    Spacer()
+
+                    // MARK: Favorite
+
+                    Button {
+                        isFavorite.toggle()
+                    } label: {
+                        Image(systemName: isFavorite ? "star.fill" : "star")
+                    }
+
+                    Spacer()
+
+                    // MARK: Delete
+
+                    Button {
+                        isDeletePresented = true
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                    .actionSheet(isPresented: $isDeletePresented) {
+                        .init(
+                            title: Text("You can't undo this action"),
+                            buttons: [
+                                .destructive(Text("Delete")) {
+                                    print("delete")
+                                },
+                                .cancel()
+                            ]
+                        )
+                    }
+                }
             }
-            .alert(isPresented: $isEditPresented) {
-                Alert(
-                    title: Text("Editing not available"),
-                    dismissButton: .default(Text("Close")))
-            }
-
-            Spacer()
-
-            // MARK: Share
-
-            Button {
-                share([item.name])
-            } label: {
-                Image(systemName: "square.and.arrow.up")
-            }
-
-            Spacer()
-
-            // MARK: Favorite
-
-            Button {
-                isFavorite.toggle()
-            } label: {
-                Image(systemName: isFavorite ? "star.fill" : "star")
-            }
-
-            Spacer()
-
-            // MARK: Delete
-
-            Button {
-                isDeletePresented = true
-            } label: {
-                Image(systemName: "trash")
-            }
-            .actionSheet(isPresented: $isDeletePresented) {
-                .init(title: Text("You can't undo this action"), buttons: [
-                    .destructive(Text("Delete")) { print("delete") },
-                    .cancel()
-                ])
-            }
+            .font(.system(size: 22))
+            .foregroundColor(Color.accentColor)
+            .padding(.top, 20)
+            .padding(.bottom, 45)
+            .padding(.horizontal, 22)
         }
-        .font(.system(size: 22))
-        .foregroundColor(Color.accentColor)
-        .padding(.top, 20)
-        .padding(.bottom, 45)
-        .padding(.horizontal, 22)
     }
 }

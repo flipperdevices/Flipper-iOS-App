@@ -6,10 +6,10 @@ struct ArchiveHeaderView: View {
 
     var body: some View {
         HStack {
-            if viewModel.isEditing {
+            if viewModel.isSelectItemsMode {
                 Button {
                     withAnimation {
-                        viewModel.isEditing = false
+                        viewModel.isSelectItemsMode = false
                     }
                 } label: {
                     Text("Done")
@@ -17,15 +17,43 @@ struct ArchiveHeaderView: View {
                         .padding(.leading, UIDevice.isFaceIDAvailable ? 15.5 : 14)
                 }
             } else {
-                Button {
-                    viewModel.openOptions()
+                Menu {
+                    Button {
+                        viewModel.toggleSelectItems()
+                    } label: {
+                        Text("Choose items")
+                        Image(systemName: "checkmark.circle")
+                    }
+                    Menu {
+                        Button("Creation Date") {
+                            viewModel.sortItems(by: .creationDate)
+                        }
+                        Button("Title") {
+                            viewModel.sortItems(by: .title)
+                        }
+                        Divider()
+                            .frame(height: 10)
+                        Button("Older First") {
+                            viewModel.sortItems(by: .oldestFirst)
+                        }
+                        Button("Newest First") {
+                            viewModel.sortItems(by: .newestFirst)
+                        }
+                    } label: {
+                        Text("Sort items")
+                        Image(systemName: "arrow.up.arrow.down.circle")
+                    }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .headerImageStyle()
                 }
             }
             Spacer()
-            HeaderDeviceView(viewModel: viewModel)
+
+            HeaderDeviceView(
+                name: viewModel.device?.name ?? "No device",
+                status: viewModel.device?.state ?? .disconnected)
+
             Spacer()
             Button {
                 viewModel.readNFCTag()
@@ -33,25 +61,17 @@ struct ArchiveHeaderView: View {
                 Image(systemName: "plus.circle")
                     .headerImageStyle()
             }
-            .opacity(viewModel.isEditing ? 0 : 1)
+            .opacity(viewModel.isSelectItemsMode ? 0 : 1)
         }
         .frame(height: 44)
     }
 }
 
 struct HeaderDeviceView: View {
-    @StateObject var viewModel: ArchiveViewModel
-    @State var angle: Int = 0
+    @State private var angle: Int = 0
 
-    var device: Peripheral? { viewModel.device }
-
-    var name: String {
-        device?.name ?? "No device"
-    }
-
-    var status: Peripheral.State {
-        device?.state ?? .disconnected
-    }
+    let name: String
+    var status: Peripheral.State
 
     var isConnecting: Bool {
         status == .connecting

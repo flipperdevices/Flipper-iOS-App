@@ -3,20 +3,20 @@ import SwiftUI
 
 struct ArchiveListView: View {
     var items: [ArchiveItem]
-    @Binding var isEditing: Bool
+    @Binding var isSelectItemsMode: Bool
     @Binding var selectedItems: [ArchiveItem]
     var itemSelected: (ArchiveItem) -> Void
     var onDragGesture: (DragGesture.Value) -> Void
 
     init(
         items: [ArchiveItem],
-        isEditing: Binding<Bool>,
+        isSelectItemsMode: Binding<Bool>,
         selectedItems: Binding<[ArchiveItem]>,
         itemSelected: @escaping (ArchiveItem) -> Void,
         onDragGesture: @escaping (DragGesture.Value) -> Void
     ) {
         self.items = items
-        self._isEditing = isEditing
+        self._isSelectItemsMode = isSelectItemsMode
         self._selectedItems = selectedItems
         self.itemSelected = itemSelected
         self.onDragGesture = onDragGesture
@@ -30,10 +30,10 @@ struct ArchiveListView: View {
                         itemSelected(item)
                     } label: {
                         HStack {
-                            if isEditing {
+                            if isSelectItemsMode {
                                 Image(systemName: selectedItems.contains(item)
-                                      ? "checkmark.circle.fill"
-                                      : "circle"
+                                    ? "checkmark.circle.fill"
+                                    : "circle"
                                 )
                                 .padding(.trailing, 8)
                             }

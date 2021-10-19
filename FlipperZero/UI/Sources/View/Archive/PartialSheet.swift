@@ -12,35 +12,37 @@ struct PartialSheetView: View {
     }
 
     var body: some View {
-        ZStack {
-            if sheetManager.isPresented {
-                Rectangle()
-                    .foregroundColor(backgroundColor)
-                    .onTapGesture {
-                        sheetManager.isPresented = false
-                    }
-            }
-
-            VStack(spacing: 0) {
-                Spacer()
-                sheetManager.content
-                    .offset(y: sheetManager.offset)
-                    .gesture(DragGesture()
-                        .onChanged { value in
-                            if value.translation.height > 0 {
-                                sheetManager.offset = value.translation.height
-                            }
+        // GeometryReader used as a hack to disable keyboard avoidance
+        GeometryReader { _ in
+            ZStack {
+                if sheetManager.isPresented {
+                    Rectangle()
+                        .foregroundColor(backgroundColor)
+                        .onTapGesture {
+                            sheetManager.isPresented = false
                         }
-                        .onEnded { _ in
-                            if sheetManager.offset > 100 {
-                                sheetManager.isPresented = false
-                            } else {
-                                sheetManager.isPresented = true
+                }
+
+                VStack(spacing: 0) {
+                    sheetManager.content
+                        .offset(y: sheetManager.offset)
+                        .gesture(DragGesture()
+                            .onChanged { value in
+                                if value.translation.height > 0 {
+                                    sheetManager.offset = value.translation.height
+                                }
                             }
-                        })
+                            .onEnded { _ in
+                                if sheetManager.offset > 100 {
+                                    sheetManager.isPresented = false
+                                } else {
+                                    sheetManager.isPresented = true
+                                }
+                            })
+                }
             }
+            .animation(animation)
         }
-        .animation(animation)
     }
 }
 

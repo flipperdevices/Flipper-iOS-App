@@ -1,12 +1,12 @@
 public struct ArchiveItem: Codable, Equatable, Identifiable {
     public let id: String
-    public let name: String
-    public let description: String
-    public let isFavorite: Bool
-    public let kind: Kind
-    public let origin: String
+    public var name: String
+    public var description: String
+    public var isFavorite: Bool
+    public var kind: Kind
+    public var origin: String
 
-    public enum Kind: Codable, CaseIterable {
+    public enum Kind: Codable, Comparable, CaseIterable {
         case ibutton
         case nfc
         case rfid
@@ -20,13 +20,13 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
         description: String,
         isFavorite: Bool,
         kind: ArchiveItem.Kind,
-        wut: String
+        origin: String
     ) {
         self.id = id
         self.name = name
         self.description = description
         self.isFavorite = isFavorite
         self.kind = kind
-        self.origin = wut
+        self.origin = origin
     }
 }
