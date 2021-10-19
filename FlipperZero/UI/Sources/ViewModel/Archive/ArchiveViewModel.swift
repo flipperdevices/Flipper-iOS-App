@@ -8,6 +8,7 @@ class ArchiveViewModel: ObservableObject {
     @Inject var archive: ArchiveStorage
     @Inject var storage: DeviceStorage
     @Inject var connector: BluetoothConnector
+    var disposeBag: DisposeBag = .init()
 
     @Published var device: Peripheral?
     @Published var items: [ArchiveItem] = [] {
@@ -22,7 +23,6 @@ class ArchiveViewModel: ObservableObject {
         didSet { onSelectItemsModeChanded(isSelectItemsMode) }
     }
     var onSelectItemsModeChanded: (Bool) -> Void = { _ in }
-    var disposeBag: DisposeBag = .init()
 
     @Published var editingItem: ArchiveItem = .demo
 
