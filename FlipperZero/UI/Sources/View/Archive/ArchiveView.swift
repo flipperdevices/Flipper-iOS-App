@@ -5,34 +5,36 @@ struct ArchiveView: View {
     @StateObject var viewModel: ArchiveViewModel
     @EnvironmentObject var sheetManager: SheetManager
 
-    var categories: [String] = [
-        "Favorites", "RFID 125", "Sub-gHz", "NFC", "iButton", "iRda"
-    ]
-    @State var selectedIndex = 0
-    @State var isDeletePresented = false
-
     var body: some View {
         VStack(spacing: 0) {
             ArchiveHeaderView(
                 viewModel: viewModel)
             ArchiveCategoriesView(
-                categories: categories,
-                selectedIndex: $selectedIndex)
+                categories: viewModel.categories,
+                selectedIndex: $viewModel.selectedCategoryIndex)
             Divider()
             CarouselView(
                 spacing: 0,
-                index: $selectedIndex,
-                items: viewModel.itemGroups) { group in
+                index: $viewModel.selectedCategoryIndex,
+                items: viewModel.itemGroups
+            ) { group in
                 ArchiveListView(
                     items: group.items,
                     isEditing: $viewModel.isEditing,
                     selectedItems: $viewModel.selectedItems,
-                    itemSelected: onItemSelected)
+                    itemSelected: onItemSelected,
+                    onDragGesture: onDragGesture)
             }
 
             if viewModel.isEditing {
                 tabViewOverlay
             }
+        }
+    }
+
+    func onDragGesture(_ value: DragGesture.Value) {
+        withAnimation {
+            viewModel.onCardSwipe(value.translation.width)
         }
     }
 
@@ -50,9 +52,7 @@ struct ArchiveView: View {
         VStack {
             HStack(alignment: .center) {
                 Button {
-                    if !viewModel.selectedItems.isEmpty {
-                        share(viewModel.selectedItems.map { $0.name })
-                    }
+                    viewModel.shareSelectedItems()
                 } label: {
                     Image(systemName: "square.and.arrow.up")
                         .font(.system(size: 22))
@@ -64,14 +64,12 @@ struct ArchiveView: View {
                 Spacer()
 
                 Button {
-                    if !viewModel.selectedItems.isEmpty {
-                        isDeletePresented = true
-                    }
+                    viewModel.deleteSelectedItems()
                 } label: {
                     Image(systemName: "trash")
                         .font(.system(size: 22))
                 }
-                .actionSheet(isPresented: $isDeletePresented) {
+                .actionSheet(isPresented: $viewModel.isDeletePresented) {
                     .init(title: Text("You can't undo this action"), buttons: [
                         .destructive(Text("Delete")) { print("delete") },
                         .cancel()

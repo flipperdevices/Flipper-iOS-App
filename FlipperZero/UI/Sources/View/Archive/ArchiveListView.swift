@@ -6,17 +6,20 @@ struct ArchiveListView: View {
     @Binding var isEditing: Bool
     @Binding var selectedItems: [ArchiveItem]
     var itemSelected: (ArchiveItem) -> Void
+    var onDragGesture: (DragGesture.Value) -> Void
 
     init(
         items: [ArchiveItem],
         isEditing: Binding<Bool>,
         selectedItems: Binding<[ArchiveItem]>,
-        itemSelected: @escaping (ArchiveItem) -> Void
+        itemSelected: @escaping (ArchiveItem) -> Void,
+        onDragGesture: @escaping (DragGesture.Value) -> Void
     ) {
         self.items = items
         self._isEditing = isEditing
         self._selectedItems = selectedItems
         self.itemSelected = itemSelected
+        self.onDragGesture = onDragGesture
     }
 
     var body: some View {
@@ -38,6 +41,12 @@ struct ArchiveListView: View {
                                 .foregroundColor(.primary)
                                 .background(systemBackground)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .gesture(
+                                    DragGesture()
+                                        .onEnded { value in
+                                            self.onDragGesture(value)
+                                        }
+                                )
                         }
                     }
                 }

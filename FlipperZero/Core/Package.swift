@@ -17,6 +17,9 @@ let package = Package(
             name: "Injector",
             path: "../DI"),
         .package(
+            url: "https://github.com/apple/swift-collections.git",
+            .upToNextMajor(from: "1.0.0")),
+        .package(
             name: "SwiftProtobuf",
             url: "https://github.com/apple/swift-protobuf.git",
             from: "1.18.0")
@@ -24,7 +27,11 @@ let package = Package(
     targets: [
         .target(
             name: "Core",
-            dependencies: ["Injector", "SwiftProtobuf"],
+            dependencies: [
+                "Injector",
+                "SwiftProtobuf",
+                .product(name: "Collections", package: "swift-collections")
+            ],
             path: "Sources"),
         .testTarget(
             name: "CoreTests",
