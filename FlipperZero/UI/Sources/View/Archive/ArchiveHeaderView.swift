@@ -33,18 +33,18 @@ struct ArchiveHeaderView: View {
                 }
                 Menu {
                     Button("Creation Date") {
-                        viewModel.sortItems(by: .creationDate)
+                        viewModel.sortOption = .creationDate
                     }
                     Button("Title") {
-                        viewModel.sortItems(by: .title)
+                        viewModel.sortOption = .title
                     }
                     Divider()
                         .frame(height: 10)
                     Button("Older First") {
-                        viewModel.sortItems(by: .oldestFirst)
+                        viewModel.sortOption = .oldestFirst
                     }
                     Button("Newest First") {
-                        viewModel.sortItems(by: .newestFirst)
+                        viewModel.sortOption = .newestFirst
                     }
                 } label: {
                     Text("Sort items")
