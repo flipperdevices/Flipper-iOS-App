@@ -111,23 +111,22 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     }
 
     func send(_ request: Request, continuation: @escaping (Response) -> Void) {
-        func error(_ message: String) {
-            print(message)
-            continuation(.error(message))
+        session.sendRequest(request, continuation: continuation)
+        { [weak self] in
+            self?.send($0)
         }
+    }
 
+    func send(_ data: Data) {
         guard peripheral.state == .connected else {
-            error("invalid state")
+            print("invalid state")
             return
         }
         guard let tx = peripheral.serialWrite else {
-            error("no serial service")
+            print("no serial service")
             return
         }
-
-        session.sendRequest(request, continuation: continuation) {
-            peripheral.writeValue($0, for: tx, type: .withResponse)
-        }
+        peripheral.writeValue(data, for: tx, type: .withResponse)
     }
 }
 
