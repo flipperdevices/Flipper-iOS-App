@@ -14,9 +14,6 @@ struct DeviceInfoView: View {
                 if let deviceInformation = viewModel.device?.information {
                     DeviceInformationService(deviceInformation)
                 }
-                if let battery = viewModel.device.battery {
-                    BatteryService(battery)
-                }
                 Button {
                     viewModel.forgetConnectedDevice()
                 } label: {
@@ -29,7 +26,7 @@ struct DeviceInfoView: View {
                 }
             }
         }
-        .navigationBarHidden(true)
+        .navigationTitle("Device Info")
     }
 }
 
@@ -46,20 +43,6 @@ struct DeviceInformationService: View {
             CharacteristicSectionRow(deviceInformation.serialNumber)
             CharacteristicSectionRow(deviceInformation.firmwareRevision)
             CharacteristicSectionRow(deviceInformation.softwareRevision)
-        }
-    }
-}
-
-struct BatteryService: View {
-    let battery: Peripheral.Service.Battery
-
-    init(_ battery: Peripheral.Service.Battery) {
-        self.battery = battery
-    }
-
-    var body: some View {
-        Section(header: Text("Battery")) {
-            CharacteristicSectionRow(battery.level)
         }
     }
 }
@@ -83,8 +66,10 @@ struct SectionRow: View {
     var body: some View {
         HStack {
             Text("\(name)")
+                .font(.system(size: 16, weight: .light))
             Spacer()
             Text("\(value)")
+                .font(.system(size: 16, weight: .light))
                 .multilineTextAlignment(.trailing)
                 .foregroundColor(.secondary)
         }
