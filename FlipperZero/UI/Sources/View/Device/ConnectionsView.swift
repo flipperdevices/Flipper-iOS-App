@@ -4,55 +4,97 @@ struct ConnectionsView: View {
     @StateObject var viewModel: ConnectionsViewModel
 
     var body: some View {
-        NavigationView {
-            VStack {
-                switch self.viewModel.state {
-                case .notReady(let reason):
-                    Text(reason.description)
-                        .multilineTextAlignment(.center)
-                        .padding(.all)
-                    if reason == .unauthorized {
-                        Button("Open Settings") {
-                            viewModel.openApplicationSettings()
-                        }
-                    }
-                case .ready:
-                    Text("Scanning devices...")
-                        .font(.title)
-                        .padding(.all)
-                    Form {
-                        Section(header: HStack {
-                            Text("devices")
-                            ProgressView()
-                                .padding(.horizontal, 3)
-                        }) {
-                            List(viewModel.peripherals) { peripheral in
-                                row(for: peripheral)
-                            }
-                        }
+        VStack {
+            switch self.viewModel.state {
+            case .notReady(let reason):
+                Text(reason.description)
+                    .multilineTextAlignment(.center)
+                    .padding(.all)
+                if reason == .unauthorized {
+                    Button("Open Settings") {
+                        viewModel.openApplicationSettings()
                     }
                 }
+            case .ready:
+                Text("Choose your Flipper")
+                    .font(.system(size: 32, weight: .bold))
+                    .padding(.top, 50)
+
+                HStack(spacing: 12) {
+                    Text("Searching")
+                    ProgressView()
+                    Spacer()
+                }
+                .padding(.vertical, 23)
+
+                ForEach(viewModel.peripherals) { peripheral in
+                    row(for: peripheral)
+                }
+
+                Spacer()
+
+                Button("Skip connection") {
+                }
+                .opacity(0)
             }
-            .frame(minWidth: 320, minHeight: 160)
         }
+        .padding(.horizontal, 16)
     }
 
     func row(for peripheral: Peripheral) -> some View {
         HStack {
-            Button(peripheral.name) {
-                if peripheral.state != .connected {
-                    viewModel.connect(to: peripheral.id)
+            HStack {
+                Image("BluetoothOn")
+                    .resizable()
+                    .frame(width: 13, height: 20)
+
+                Text(peripheral.name)
+                    .foregroundColor(.accentColor)
+
+                Spacer()
+
+                switch peripheral.state {
+                case .connecting:
+                    ProgressView()
+                case .connected:
+                    Text("Connected")
+                        .foregroundColor(.secondary)
+                default:
+                    ConnectButton("Connect") {
+                        if peripheral.state != .connected {
+                            viewModel.connect(to: peripheral.id)
+                        }
+                    }
                 }
-            }.foregroundColor(.primary)
-
-            Spacer()
-
-            if peripheral.state == .connecting {
-                ProgressView()
-            } else if peripheral.state == .connected {
-                Text("Connected")
-                    .foregroundColor(.secondary)
             }
+            .padding(.horizontal, 14)
+        }
+        .frame(height: 52)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(12)
+    }
+}
+
+// TODO: Use RoundedButton or iOS15 buttons
+
+struct ConnectButton: View {
+    let text: String
+    let action: () -> Void
+
+    init(_ text: String, action: @escaping () -> Void) {
+        self.text = text
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            Text(text)
+                .font(.system(size: 13, weight: .medium))
+                .padding(.vertical, 5)
+                .padding(.horizontal, 14)
+                .background(Color.accentColor)
+                .foregroundColor(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 7))
         }
     }
 }
