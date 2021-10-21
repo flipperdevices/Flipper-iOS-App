@@ -15,7 +15,7 @@ struct DeviceInfoView: View {
                     DeviceInformationService(deviceInformation)
                 }
                 Button {
-                    viewModel.forgetConnectedDevice()
+                    viewModel.disconnectFlipper()
                 } label: {
                     HStack {
                         Spacer()

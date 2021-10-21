@@ -6,7 +6,7 @@ import SwiftUI
 class ArchiveViewModel: ObservableObject {
     @Inject var nfc: NFCServiceProtocol
     @Inject var storage: DeviceStorage
-    @Inject var connector: BluetoothConnector
+    @Inject var pairedDevice: PairedDeviceProtocol
     var disposeBag: DisposeBag = .init()
 
     @Published var device: Peripheral?
@@ -56,7 +56,6 @@ class ArchiveViewModel: ObservableObject {
 
     init(onSelectItemsModeChanded: @escaping (Bool) -> Void = { _ in }) {
         self.onSelectItemsModeChanded = onSelectItemsModeChanded
-        device = storage.pairedDevice
 
         nfc.items
             .sink { [weak self] newItems in
@@ -67,11 +66,9 @@ class ArchiveViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
 
-        connector.connectedPeripherals
-            .sink { [weak self] items in
-                if let item = items.first {
-                    self?.device = .init(item)
-                }
+        pairedDevice.peripheral
+            .sink { [weak self] item in
+                self?.device = item
             }
             .store(in: &disposeBag)
     }
