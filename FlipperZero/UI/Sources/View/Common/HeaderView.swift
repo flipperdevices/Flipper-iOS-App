@@ -1,6 +1,8 @@
 import Core
 import SwiftUI
 
+// swiftlint:disable function_default_parameter_at_end
+
 struct HeaderView<LeftView: View, RightView: View>: View {
     let title: String
     let status: HeaderDeviceStatus
@@ -8,12 +10,12 @@ struct HeaderView<LeftView: View, RightView: View>: View {
     let rightView: RightView
 
     init(
-        title: String,
+        title: String? = nil,
         status: HeaderDeviceStatus,
         @ViewBuilder leftView: (() -> LeftView),
         @ViewBuilder rightView: (() -> RightView)
     ) {
-        self.title = title
+        self.title = title ?? status.description
         self.status = status
         self.leftView = leftView()
         self.rightView = rightView()
@@ -87,8 +89,8 @@ struct HeaderDeviceView: View {
                 .padding(.leading, 12)
 
             Text(name)
-                .fontWeight(.semibold)
-                .padding(.horizontal, 16)
+                .font(.system(size: 14, weight: .semibold))
+                .frame(width: 94)
 
             if isConnected || isConnecting {
                 Image("BluetoothOn")
@@ -147,11 +149,20 @@ struct HeaderDeviceView: View {
     }
 }
 
-enum HeaderDeviceStatus {
+enum HeaderDeviceStatus: CustomStringConvertible {
     case connecting
     case connected
     case disconnected
     case noDevice
+
+    var description: String {
+        switch self {
+        case .connecting: return "Connecting"
+        case .connected: return "Connected"
+        case .disconnected: return "Disconnected"
+        case .noDevice: return "No device"
+        }
+    }
 
     init(_ state: Peripheral.State?) {
         guard let state = state else {
