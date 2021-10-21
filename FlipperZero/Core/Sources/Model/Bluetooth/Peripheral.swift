@@ -6,20 +6,20 @@ public struct Peripheral: Equatable, Codable, Identifiable {
     public let id: UUID
     public let name: String
     public var state: State = .disconnected
-    public var deviceInformation: Service.DeviceInformation?
+    public var information: Service.DeviceInformation?
     public var battery: Service.Battery?
 
     public init(
         id: UUID,
         name: String,
         state: Peripheral.State = .disconnected,
-        deviceInformation: Service.DeviceInformation? = nil,
+        information: Service.DeviceInformation? = nil,
         battery: Service.Battery? = nil
     ) {
         self.id = id
         self.name = name
         self.state = state
-        self.deviceInformation = deviceInformation
+        self.information = information
         self.battery = battery
     }
 
@@ -54,7 +54,7 @@ public extension Peripheral {
         self.name = source.name
         self.state = .init(source.state)
 
-        self.deviceInformation = source.services
+        self.information = source.services
             .first { $0.uuid == .deviceInformation }
             .map(Service.DeviceInformation.init) ?? nil
 

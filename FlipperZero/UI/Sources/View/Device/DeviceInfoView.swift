@@ -11,7 +11,7 @@ struct DeviceInfoView: View {
                     SectionRow(name: "Name", value: viewModel.device.name)
                     SectionRow(name: "UUID", value: viewModel.device.id.uuidString)
                 }
-                if let deviceInformation = viewModel.device.deviceInformation {
+                if let deviceInformation = viewModel.device?.information {
                     DeviceInformationService(deviceInformation)
                 }
                 if let battery = viewModel.device.battery {
