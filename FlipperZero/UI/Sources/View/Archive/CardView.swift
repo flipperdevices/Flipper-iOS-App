@@ -22,7 +22,7 @@ struct CardSheetView: View {
         VStack {
             if isFullScreen {
                 HeaderView(
-                    title: device?.name ?? "No device",
+                    title: device?.name ?? .noDevice,
                     status: .init(device?.state),
                     leftView: {
                         Text("Cancel")
