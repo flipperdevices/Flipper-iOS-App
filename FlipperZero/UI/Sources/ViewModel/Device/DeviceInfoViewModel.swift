@@ -10,7 +10,15 @@ class DeviceInfoViewModel: ObservableObject {
     }
     var disposeBag = DisposeBag()
 
-    @Published var device: Peripheral = .init(id: UUID(), name: String())
+    @Published var device: Peripheral?
+
+    var name: String {
+        device?.name ?? .noDevice
+    }
+
+    var uuid: String {
+        device?.id.uuidString ?? .noDevice
+    }
 
     init() {
         connector.connectedPeripherals
@@ -33,6 +41,9 @@ class DeviceInfoViewModel: ObservableObject {
     }
 
     func forgetConnectedDevice() {
+        guard let device = self.device else {
+            return
+        }
         connector.disconnect(from: device.id)
     }
 }

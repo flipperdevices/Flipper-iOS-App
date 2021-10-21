@@ -8,8 +8,8 @@ struct DeviceInfoView: View {
         VStack {
             Form {
                 Section(header: Text("General")) {
-                    SectionRow(name: "Name", value: viewModel.device.name)
-                    SectionRow(name: "UUID", value: viewModel.device.id.uuidString)
+                    SectionRow(name: "Name", value: viewModel.name)
+                    SectionRow(name: "UUID", value: viewModel.uuid)
                 }
                 if let deviceInformation = viewModel.device?.information {
                     DeviceInformationService(deviceInformation)
@@ -17,8 +17,15 @@ struct DeviceInfoView: View {
                 if let battery = viewModel.device.battery {
                     BatteryService(battery)
                 }
-                Button("Forget This Device") {
+                Button {
                     viewModel.forgetConnectedDevice()
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Disconnect Flipper")
+                        Spacer()
+                    }
+                    .disabled(viewModel.device?.state != .connected)
                 }
             }
         }
