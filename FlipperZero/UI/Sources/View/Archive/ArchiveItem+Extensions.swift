@@ -38,37 +38,37 @@ extension ArchiveItem {
 extension ArchiveItem {
     struct Action {
         let name: String
-        let icon: Image
+        let image: Image
     }
 
     var emulate: Action {
         .init(
             name: "Start emulating on device",
-            icon: .init(systemName: "play.circle"))
+            image: .init(systemName: "play.circle"))
     }
 
     var write: Action {
         .init(
             name: "Start writing on device",
-            icon: .init(systemName: "line.3.horizontal.decrease.circle"))
+            image: .init(systemName: "line.3.horizontal.decrease.circle"))
     }
 
     var send: Action {
         .init(
             name: "Start sending on device",
-            icon: .init(systemName: "antenna.radiowaves.left.and.right.circle"))
+            image: .init(systemName: "antenna.radiowaves.left.and.right.circle"))
     }
 
     var capture: Action {
         .init(
             name: "Start capturing on device",
-            icon: .init(systemName: "waveform.circle"))
+            image: .init(systemName: "waveform.circle"))
     }
 
     var openRemote: Action {
         .init(
             name: "Open remote on device",
-            icon: .init(systemName: "appletvremote.gen4"))
+            image: .init(systemName: "appletvremote.gen4"))
     }
 
     var actions: [Action] {

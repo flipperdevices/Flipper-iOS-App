@@ -57,7 +57,9 @@ struct CardSheetView: View {
                 .padding(.horizontal, 16)
 
                 if !isEditMode {
-                    CardDeviceActions(item: item)
+                    ActionsForm(actions: item.actions) { id in
+                        print("action \(id) selected")
+                    }
                 }
 
                 if focusedField.isEmpty {
@@ -209,40 +211,8 @@ struct CardDataView: View {
     }
 }
 
-struct CardDeviceActions: View {
-    let item: ArchiveItem
-
-    var body: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(zip(item.actions.indices, item.actions)), id: \.0) { item in
-                if item.0 > 0 {
-                    Divider()
-                        .padding(0)
-                }
-                CardDeviceAction(action: item.1)
-            }
-        }
-        .background(systemBackground)
-        .foregroundColor(Color.accentColor)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
-    }
-}
-
-struct CardDeviceAction: View {
-    let action: ArchiveItem.Action
-
-    var body: some View {
-        HStack {
-            Text(action.name)
-                .font(.system(size: 16))
-            Spacer()
-            action.icon
-                .font(.system(size: 22))
-        }
-        .padding(16)
-    }
+extension ArchiveItem.Action: ActionProtocol {
+    var id: String { name }
 }
 
 struct CardActions: View {
