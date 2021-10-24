@@ -45,13 +45,14 @@ class ArchiveViewModel: ObservableObject {
     }
 
     var itemGroups: [Group] {
-        var groups: [Group] = [.init(id: nil, items: items)]
-        ArchiveItem.Kind.allCases.forEach { kind in
-            groups.append(.init(
-                id: kind,
-                items: items.filter { $0.kind == kind }))
-        }
-        return groups
+        [
+            .init(id: nil, items: items),
+            .init(id: .rfid, items: items.filter { $0.kind == .rfid }),
+            .init(id: .subghz, items: items.filter { $0.kind == .subghz }),
+            .init(id: .nfc, items: items.filter { $0.kind == .nfc }),
+            .init(id: .ibutton, items: items.filter { $0.kind == .ibutton }),
+            .init(id: .irda, items: items.filter { $0.kind == .irda })
+        ]
     }
 
     init(onSelectItemsModeChanded: @escaping (Bool) -> Void = { _ in }) {
