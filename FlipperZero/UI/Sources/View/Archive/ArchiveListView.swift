@@ -90,7 +90,7 @@ struct ArchiveListItemView: View {
                     .font(.system(size: 14))
                     .padding(.trailing, 15)
                     .foregroundColor(.secondary)
-                    .opacity(randomOpacity())
+                    .opacity(0)
                 Spacer()
             }
         }
