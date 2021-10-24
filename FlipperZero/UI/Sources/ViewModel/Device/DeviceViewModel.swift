@@ -7,7 +7,10 @@ public class DeviceViewModel: ObservableObject {
     @Inject var flipper: PairedDeviceProtocol
     private var disposeBag: DisposeBag = .init()
 
-    @Published var device: Peripheral?
+    @Published var device: Peripheral? {
+        didSet { status = .init(device?.state) }
+    }
+    @Published var status: HeaderDeviceStatus = .noDevice
 
     var firmwareVersion: String {
         guard let device = device else { return .noDevice }

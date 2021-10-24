@@ -10,7 +10,7 @@ public struct DeviceView: View {
         NavigationView {
             VStack {
                 DeviceViewHeader(
-                    status: .init(viewModel.device?.state),
+                    status: viewModel.status,
                     displayingConnections: $displayingConnections)
 
                 ScrollView {
