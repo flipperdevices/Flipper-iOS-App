@@ -11,7 +11,13 @@ class PairedDevice: PairedDeviceProtocol, ObservableObject {
     private var peripheralSubject: SafeValueSubject<Peripheral?> = .init(nil)
 
     private var flipper: BluetoothPeripheral? {
-        didSet { subscribeToUpdates() }
+        didSet {
+            if let flipper = flipper {
+                subscribeToUpdates()
+                storage.pairedDevice = .init(flipper)
+                peripheralSubject.value = .init(flipper)
+            }
+        }
     }
 
     var peripheral: SafePublisher<Peripheral?> {
@@ -47,15 +53,7 @@ class PairedDevice: PairedDeviceProtocol, ObservableObject {
                     if self.isReconnecting { self.isReconnecting = false }
                     return
                 }
-                switch peripheral.state {
-                // TODO: handle .connecting
-                case .connecting, .connected:
-                    self.flipper = peripheral
-                    self.peripheralSubject.value = .init(peripheral)
-                default:
-                    self.flipper = nil
-                    self.peripheralSubject.value = nil
-                }
+                self.flipper = peripheral
             }
             .store(in: &disposeBag)
     }
@@ -64,7 +62,7 @@ class PairedDevice: PairedDeviceProtocol, ObservableObject {
         flipper?.info
             .sink { [weak self] in
                 if let flipper = self?.flipper {
-                    self?.peripheralSubject.value = .init(flipper)
+                    self?.flipper = flipper
                 }
             }
             .store(in: &disposeBag)
