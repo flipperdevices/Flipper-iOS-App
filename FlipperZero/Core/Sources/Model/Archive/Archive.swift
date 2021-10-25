@@ -20,11 +20,29 @@ public class Archive: ObservableObject {
     }
 
     public func append(_ item: ArchiveItem) {
+        items.removeAll { $0.id == item.id }
         items.append(item)
     }
 
     public func delete(_ item: ArchiveItem) {
         items.removeAll { $0.id == item.id }
+    }
+
+    public func importKey(
+        name: String,
+        data: [UInt8],
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        let content = String(decoding: data, as: UTF8.self)
+        guard let item = ArchiveItem(fileName: name, content: content) else {
+            print("importKey error, invalid data")
+            return
+        }
+        append(item)
+        let path = Path(components: ["any", item.kind.fileDirectory, name])
+        flipperArchive.writeKey(data, at: path) { result in
+            completion(result)
+        }
     }
 
     public func syncWithDevice(completion: @escaping () -> Void) {
