@@ -10,7 +10,7 @@ public struct DeviceView: View {
         NavigationView {
             VStack {
                 DeviceViewHeader(
-                    status: .init(viewModel.device?.state),
+                    status: viewModel.status,
                     displayingConnections: $displayingConnections)
 
                 ScrollView {
@@ -34,7 +34,7 @@ public struct DeviceView: View {
                                 firmwareBuild: viewModel.firmwareBuild)
                         }
 
-                        RoundedButton("Update Databases") {
+                        RoundedButton("Read keys from device") {
                             viewModel.sync()
                         }
                         .disabled(viewModel.device == nil)

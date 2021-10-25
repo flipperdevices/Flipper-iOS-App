@@ -5,17 +5,26 @@ import SwiftUI
 
 class ArchiveViewModel: ObservableObject {
     @Inject var nfc: NFCServiceProtocol
-    @Inject var archive: ArchiveStorage
     @Inject var storage: DeviceStorage
-    @Inject var connector: BluetoothConnector
+    @Inject var pairedDevice: PairedDeviceProtocol
     var disposeBag: DisposeBag = .init()
 
     @Published var device: Peripheral?
-    @Published var items: [ArchiveItem] = [] {
-        didSet {
-            archive.items = items
+
+    @Published var archive: Archive = .shared
+    @Published var sortOption: SortOption = .title
+
+    var items: [ArchiveItem] {
+        archive.items.sorted {
+            switch sortOption {
+            case .creationDate: return $0.name < $1.name
+            case .title: return $0.description < $1.description
+            case .oldestFirst: return $0.kind < $1.kind
+            case .newestFirst: return $0.origin < $1.origin
+            }
         }
     }
+
     @Published var selectedCategoryIndex = 0
     @Published var isDeletePresented = false
     @Published var selectedItems: [ArchiveItem] = []
@@ -36,36 +45,31 @@ class ArchiveViewModel: ObservableObject {
     }
 
     var itemGroups: [Group] {
-        var groups: [Group] = [.init(id: nil, items: items)]
-        ArchiveItem.Kind.allCases.forEach { kind in
-            groups.append(.init(
-                id: kind,
-                items: items.filter { $0.kind == kind }))
-        }
-        return groups
+        [
+            .init(id: nil, items: items),
+            .init(id: .rfid, items: items.filter { $0.kind == .rfid }),
+            .init(id: .subghz, items: items.filter { $0.kind == .subghz }),
+            .init(id: .nfc, items: items.filter { $0.kind == .nfc }),
+            .init(id: .ibutton, items: items.filter { $0.kind == .ibutton }),
+            .init(id: .irda, items: items.filter { $0.kind == .irda })
+        ]
     }
 
     init(onSelectItemsModeChanded: @escaping (Bool) -> Void = { _ in }) {
-        archive.items = demo
-
         self.onSelectItemsModeChanded = onSelectItemsModeChanded
-        device = storage.pairedDevice
-        items = archive.items
 
         nfc.items
             .sink { [weak self] newItems in
                 guard let self = self else { return }
                 if let item = newItems.first, !self.items.contains(item) {
-                    self.items.append(item)
+                    self.archive.append(item)
                 }
             }
             .store(in: &disposeBag)
 
-        connector.connectedPeripherals
-            .sink { [weak self] items in
-                if let item = items.first {
-                    self?.device = .init(item)
-                }
+        pairedDevice.peripheral
+            .sink { [weak self] item in
+                self?.device = item
             }
             .store(in: &disposeBag)
     }
@@ -92,17 +96,6 @@ class ArchiveViewModel: ObservableObject {
         case title
         case oldestFirst
         case newestFirst
-    }
-
-    func sortItems(by option: SortOption) {
-        items.sort {
-            switch option {
-            case .creationDate: return $0.name < $1.name
-            case .title: return $0.description < $1.description
-            case .oldestFirst: return $0.kind < $1.kind
-            case .newestFirst: return $0.origin < $1.origin
-            }
-        }
     }
 
     func readNFCTag() {
@@ -135,46 +128,6 @@ class ArchiveViewModel: ObservableObject {
             isDeletePresented = true
         }
     }
-}
-
-var demo: [ArchiveItem] {
-    [
-        .init(
-            id: "Office_guest_pass",
-            name: "Office_guest_pass",
-            description: "ID: 031,33351",
-            isFavorite: true,
-            kind: .rfid,
-            origin: "EM-Marin"),
-        .init(
-            id: "Moms_bank_card",
-            name: "Moms_bank_card",
-            description: "ID: 031,33351",
-            isFavorite: true,
-            kind: .nfc,
-            origin: "Mifare"),
-        .init(
-            id: "Open_garage_door",
-            name: "Open_garage_door",
-            description: "868,86 MHz",
-            isFavorite: true,
-            kind: .subghz,
-            origin: "Doorhan"),
-        .init(
-            id: "Unknown_space_portal",
-            name: "Unknown_space_portal",
-            description: "ID: 03F4",
-            isFavorite: true,
-            kind: .ibutton,
-            origin: "Cyfral"),
-        .init(
-            id: "Edifier_speaker",
-            name: "Edifier_speaker",
-            description: "",
-            isFavorite: true,
-            kind: .irda,
-            origin: "")
-    ]
 }
 
 extension ArchiveItem {

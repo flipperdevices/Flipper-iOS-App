@@ -54,6 +54,10 @@ struct HeaderDeviceView: View {
         status == .connected
     }
 
+    var isSynchronizing: Bool {
+        status == .synchronizing
+    }
+
     var activeColor: Color {
         .init(red: 0.23, green: 0.87, blue: 0.72)
     }
@@ -67,32 +71,32 @@ struct HeaderDeviceView: View {
     var leftImageColor: Color {
         switch status {
         case .connected: return activeColor
-        case .connecting: return arrowsColor
+        case .connecting, .synchronizing: return arrowsColor
         default: return .clear
         }
     }
 
     var strokeColor: Color {
-        isConnected ? activeColor : inactiveColor
+        (isConnected || isSynchronizing) ? activeColor : inactiveColor
     }
 
     var body: some View {
         HStack(alignment: .center) {
             // swiftlint:disable indentation_width
-            Image(systemName: isConnecting
+            Image(systemName: isConnecting || isSynchronizing
                   ? "arrow.triangle.2.circlepath"
                   : "checkmark")
                 .font(.system(size: 14))
                 .frame(width: 14, height: 14, alignment: .center)
                 .foregroundColor(leftImageColor)
-                .rotationEffect(.degrees(Double(isConnecting ? -angle : 0)))
+                .rotationEffect(.degrees(Double(isConnecting || isSynchronizing ? -angle : 0)))
                 .padding(.leading, 12)
 
             Text(name)
                 .font(.system(size: 14, weight: .semibold))
                 .frame(width: 94)
 
-            if isConnected || isConnecting {
+            if isConnected || isConnecting || isSynchronizing {
                 Image("BluetoothOn")
                     .resizable()
                     .frame(width: 10, height: 14)
@@ -154,6 +158,7 @@ enum HeaderDeviceStatus: CustomStringConvertible {
     case connected
     case disconnected
     case noDevice
+    case synchronizing
 
     var description: String {
         switch self {
@@ -161,6 +166,7 @@ enum HeaderDeviceStatus: CustomStringConvertible {
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"
         case .noDevice: return "No device"
+        case .synchronizing: return "Connected"
         }
     }
 

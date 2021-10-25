@@ -6,7 +6,7 @@ protocol Session {
     func sendRequest(
         _ request: Request,
         continuation: @escaping Continuation,
-        consumer: (Data) -> Void
+        consumer: @escaping (Data) -> Void
     )
 
     func didReceiveData(_ data: Data)

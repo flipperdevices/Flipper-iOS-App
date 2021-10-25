@@ -5,6 +5,10 @@ public struct Path {
         components.isEmpty
     }
 
+    public init(string: String) {
+        self.components = string.split(separator: "/").map(String.init)
+    }
+
     public init(components: [String] = []) {
         self.components = components
     }

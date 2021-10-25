@@ -185,27 +185,11 @@ struct CardDataView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if !item.description.isEmpty {
-                CardTextField(
-                    title: "description",
-                    text: $item.description,
-                    isEditMode: $isEditMode,
-                    focusedField: $focusedField
-                )
-                .font(.system(size: 20).weight(.semibold))
-            }
-
-            if !item.origin.isEmpty {
                 HStack {
-                    CardTextField(
-                        title: "origin",
-                        text: $item.origin,
-                        isEditMode: $isEditMode,
-                        focusedField: $focusedField
-                    )
-                    .font(.system(size: 20).weight(.semibold))
+                    Text(item.description)
+                        .font(.system(size: 20).weight(.semibold))
                     Spacer()
-                    Text(String(item.origin.reversed()))
-                }
+                }.frame(maxWidth: .infinity)
             }
         }
     }
@@ -240,7 +224,7 @@ struct CardActions: View {
                     Spacer()
                 } else {
                     Button {
-                        isEditMode = true
+                        // isEditMode = true
                     } label: {
                         Image(systemName: "square.and.pencil")
                     }

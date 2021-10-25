@@ -5,9 +5,7 @@ import struct Foundation.UUID
 
 class DeviceInfoViewModel: ObservableObject {
     @Inject var connector: BluetoothConnector
-    var flipper: BluetoothPeripheral? {
-        didSet { subscribeToUpdates() }
-    }
+    @Inject var pairedDevice: PairedDeviceProtocol
     var disposeBag = DisposeBag()
 
     @Published var device: Peripheral?
@@ -21,26 +19,14 @@ class DeviceInfoViewModel: ObservableObject {
     }
 
     init() {
-        connector.connectedPeripherals
-            .filter { !$0.isEmpty }
-            .sink { [weak self] devices in
-                self?.flipper = devices[0]
-                self?.device = .init(devices[0])
+        pairedDevice.peripheral
+            .sink { [weak self] device in
+                self?.device = device
             }
             .store(in: &disposeBag)
     }
 
-    func subscribeToUpdates() {
-        flipper?.info
-            .sink { [weak self] in
-                if let flipper = self?.flipper {
-                    self?.device = .init(flipper)
-                }
-            }
-            .store(in: &disposeBag)
-    }
-
-    func forgetConnectedDevice() {
+    func disconnectFlipper() {
         guard let device = self.device else {
             return
         }
