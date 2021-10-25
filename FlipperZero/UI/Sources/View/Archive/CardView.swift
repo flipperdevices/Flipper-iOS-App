@@ -1,5 +1,5 @@
-import SwiftUI
 import Core
+import SwiftUI
 
 struct CardSheetView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -21,31 +21,20 @@ struct CardSheetView: View {
     var body: some View {
         VStack {
             if isFullScreen {
-                HStack {
-                    Button {
-                    } label: {
+                HeaderView(
+                    title: device?.name ?? .noDevice,
+                    status: .init(device?.state),
+                    leftView: {
                         Text("Cancel")
                             .font(.system(size: 16))
-                    }
-                    .frame(width: 50)
-                    .padding(.leading, 20)
-
-                    Spacer()
-                    HeaderDeviceView(
-                        name: device?.name ?? "No device",
-                        status: device?.state ?? .disconnected)
-                    Spacer()
-
-                    Button {
-                    } label: {
-                        Text("Done")
-                            .font(.system(size: 16, weight: .semibold))
-                    }
-                    .frame(width: 50)
-                    .padding(.trailing, 20)
-                }
-                .frame(height: navigationBarHeight)
-                .background(systemBackground)
+                    },
+                    rightView: {
+                        Button {
+                        } label: {
+                            Text("Done")
+                                .font(.system(size: 16, weight: .semibold))
+                        }
+                    })
             }
 
             Spacer(minLength: isFullScreen ? 0 : navigationBarHeight)
@@ -68,7 +57,9 @@ struct CardSheetView: View {
                 .padding(.horizontal, 16)
 
                 if !isEditMode {
-                    CardDeviceActions(item: item)
+                    ActionsForm(actions: item.actions) { id in
+                        print("action \(id) selected")
+                    }
                 }
 
                 if focusedField.isEmpty {
@@ -220,40 +211,8 @@ struct CardDataView: View {
     }
 }
 
-struct CardDeviceActions: View {
-    let item: ArchiveItem
-
-    var body: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(zip(item.actions.indices, item.actions)), id: \.0) { item in
-                if item.0 > 0 {
-                    Divider()
-                        .padding(0)
-                }
-                CardDeviceAction(action: item.1)
-            }
-        }
-        .background(systemBackground)
-        .foregroundColor(Color.accentColor)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
-    }
-}
-
-struct CardDeviceAction: View {
-    let action: ArchiveItem.Action
-
-    var body: some View {
-        HStack {
-            Text(action.name)
-                .font(.system(size: 16))
-            Spacer()
-            action.icon
-                .font(.system(size: 22))
-        }
-        .padding(16)
-    }
+extension ArchiveItem.Action: ActionProtocol {
+    var id: String { name }
 }
 
 struct CardActions: View {
