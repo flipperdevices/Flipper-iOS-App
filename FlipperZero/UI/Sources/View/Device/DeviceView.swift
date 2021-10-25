@@ -196,6 +196,7 @@ struct DeviceImageNameModelBattery: View {
             }
             .padding(.trailing, 36)
         }
+        .frame(maxWidth: .infinity)
     }
 }
 
