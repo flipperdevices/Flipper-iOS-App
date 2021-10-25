@@ -49,9 +49,9 @@ public class FlipperArchive {
     private func listFiles(
         _ completion: @escaping (Result<[Path], Error>) -> Void
     ) {
-        let supportedPaths: [Path] =
-            ["ibutton", "nfc", "lfrfid", "irda", "subghz/saved"]
-            .map { root.appending($0) }
+        let supportedPaths: [Path] = ArchiveItem.Kind.allCases.map {
+            root.appending($0.fileDirectory)
+        }
 
         var archiveFiles: [Path] = .init()
 
@@ -105,14 +105,34 @@ extension ArchiveItem {
 }
 
 extension ArchiveItem.Kind {
-    init?<T: StringProtocol>(_ ext: T) {
-        switch ext {
+    init?<T: StringProtocol>(_ fileExtension: T) {
+        switch fileExtension {
         case "ibtn": self = .ibutton
         case "nfc": self = .nfc
         case "sub": self = .subghz
         case "rfid": self = .rfid
         case "ir": self = .irda
         default: return nil
+        }
+    }
+
+    var fileExtension: String {
+        switch self {
+        case .ibutton: return "ibtn"
+        case .nfc: return "nfc"
+        case .subghz: return "sub"
+        case .rfid: return "rfid"
+        case .irda: return "ir"
+        }
+    }
+
+    var fileDirectory: String {
+        switch self {
+        case .ibutton: return "ibutton"
+        case .nfc: return "nfc"
+        case .subghz: return "subghz/saved"
+        case .rfid: return "lfrfid"
+        case .irda: return "irda"
         }
     }
 }
