@@ -2,15 +2,20 @@ import Combine
 import Injector
 
 public class Archive: ObservableObject {
+    public static let shared: Archive = .init()
+
     @Inject var storage: ArchiveStorage
 
+    @Published public var isSynchronizing = false
     @Published public var items: [ArchiveItem] = [] {
         didSet {
             storage.items = items
         }
     }
 
-    public init() {
+    private let flipperArchive: FlipperArchive = .shared
+
+    private init() {
         items = storage.items
         if items.isEmpty {
             items = demo
@@ -23,6 +28,15 @@ public class Archive: ObservableObject {
 
     public func delete(_ item: ArchiveItem) {
         items.removeAll { $0.id == item.id }
+    }
+
+    public func syncWithDevice(completion: @escaping () -> Void) {
+        isSynchronizing = true
+        flipperArchive.readFromDevice { items in
+            self.isSynchronizing = false
+            self.items = items
+            completion()
+        }
     }
 }
 

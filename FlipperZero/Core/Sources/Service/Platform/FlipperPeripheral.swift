@@ -110,6 +110,7 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
         }
     }
 
+    // swiftlint:disable opening_brace multiline_arguments
     func send(_ request: Request, continuation: @escaping (Response) -> Void) {
         session.sendRequest(request, continuation: continuation)
         { [weak self] in

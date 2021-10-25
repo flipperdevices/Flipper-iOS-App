@@ -11,7 +11,7 @@ class ArchiveViewModel: ObservableObject {
 
     @Published var device: Peripheral?
 
-    @Published var archive: Archive = .init()
+    @Published var archive: Archive = .shared
     @Published var sortOption: SortOption = .title
 
     var items: [ArchiveItem] {

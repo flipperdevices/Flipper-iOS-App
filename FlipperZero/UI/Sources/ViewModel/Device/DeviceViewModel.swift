@@ -7,6 +7,8 @@ public class DeviceViewModel: ObservableObject {
     @Inject var flipper: PairedDeviceProtocol
     private var disposeBag: DisposeBag = .init()
 
+    private let archive: Archive = .shared
+
     @Published var device: Peripheral? {
         didSet { status = .init(device?.state) }
     }
@@ -50,6 +52,9 @@ public class DeviceViewModel: ObservableObject {
     }
 
     func sync() {
-        // nothing here yet
+        status = .synchronizing
+        archive.syncWithDevice { [weak self] in
+            self?.status = .init(self?.device?.state)
+        }
     }
 }
