@@ -167,6 +167,8 @@ struct PBStorage_DeleteRequest {
 
   var path: String = String()
 
+  var recursive: Bool = false
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -447,6 +449,7 @@ extension PBStorage_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
   static let protoMessageName: String = _protobuf_package + ".DeleteRequest"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "path"),
+    2: .same(proto: "recursive"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -456,6 +459,7 @@ extension PBStorage_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.path) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.recursive) }()
       default: break
       }
     }
@@ -465,11 +469,15 @@ extension PBStorage_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
     if !self.path.isEmpty {
       try visitor.visitSingularStringField(value: self.path, fieldNumber: 1)
     }
+    if self.recursive != false {
+      try visitor.visitSingularBoolField(value: self.recursive, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: PBStorage_DeleteRequest, rhs: PBStorage_DeleteRequest) -> Bool {
     if lhs.path != rhs.path {return false}
+    if lhs.recursive != rhs.recursive {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

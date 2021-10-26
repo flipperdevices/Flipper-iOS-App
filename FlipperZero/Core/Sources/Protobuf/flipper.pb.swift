@@ -24,7 +24,7 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
   typealias RawValue = Int
   case ok // = 0
 
-  ///*< Unknown error 
+  ///*< Common Errors 
   case error // = 1
 
   ///*< Command can't be decoded successfully - command_id in response may be wrong! 
@@ -42,7 +42,7 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
   ///*< not provided (or provided invalid) crucial parameters to perform rpc 
   case errorInvalidParameters // = 15
 
-  ///*< FS not ready 
+  ///*< Storage Errors 
   case errorStorageNotReady // = 5
 
   ///*< File/Dir alrady exist 
@@ -68,6 +68,15 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
 
   ///*< File/Dir already opened 
   case errorStorageAlreadyOpen // = 13
+
+  ///*< Directory, you're going to remove is not empty 
+  case errorStorageDirNotEmpty // = 18
+
+  ///*< Application Errors 
+  case errorAppCantStart // = 16
+
+  ///*< Another app is running 
+  case errorAppSystemLocked // = 17
   case UNRECOGNIZED(Int)
 
   init() {
@@ -92,6 +101,9 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
     case 13: self = .errorStorageAlreadyOpen
     case 14: self = .errorContinuousCommandInterrupted
     case 15: self = .errorInvalidParameters
+    case 16: self = .errorAppCantStart
+    case 17: self = .errorAppSystemLocked
+    case 18: self = .errorStorageDirNotEmpty
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -114,6 +126,9 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
     case .errorStorageAlreadyOpen: return 13
     case .errorContinuousCommandInterrupted: return 14
     case .errorInvalidParameters: return 15
+    case .errorAppCantStart: return 16
+    case .errorAppSystemLocked: return 17
+    case .errorStorageDirNotEmpty: return 18
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -141,6 +156,9 @@ extension PB_CommandStatus: CaseIterable {
     .errorStorageInternal,
     .errorStorageNotImplemented,
     .errorStorageAlreadyOpen,
+    .errorStorageDirNotEmpty,
+    .errorAppCantStart,
+    .errorAppSystemLocked,
   ]
 }
 
@@ -150,6 +168,16 @@ extension PB_CommandStatus: CaseIterable {
 /// in response. But 'oneof' obligate to have at least 1 encoded message
 /// in scope. For this needs Empty message is implemented.
 struct PB_Empty {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PB_StopSession {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -178,6 +206,14 @@ struct PB_Main {
       return PB_Empty()
     }
     set {content = .empty(newValue)}
+  }
+
+  var stopSession: PB_StopSession {
+    get {
+      if case .stopSession(let v)? = content {return v}
+      return PB_StopSession()
+    }
+    set {content = .stopSession(newValue)}
   }
 
   var pingRequest: PBStatus_PingRequest {
@@ -268,10 +304,35 @@ struct PB_Main {
     set {content = .storageMd5SumResponse(newValue)}
   }
 
+  var appStart: PBApp_Start {
+    get {
+      if case .appStart(let v)? = content {return v}
+      return PBApp_Start()
+    }
+    set {content = .appStart(newValue)}
+  }
+
+  var appLockStatusRequest: PBApp_LockStatusRequest {
+    get {
+      if case .appLockStatusRequest(let v)? = content {return v}
+      return PBApp_LockStatusRequest()
+    }
+    set {content = .appLockStatusRequest(newValue)}
+  }
+
+  var appLockStatusResponse: PBApp_LockStatusResponse {
+    get {
+      if case .appLockStatusResponse(let v)? = content {return v}
+      return PBApp_LockStatusResponse()
+    }
+    set {content = .appLockStatusResponse(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Content: Equatable {
     case empty(PB_Empty)
+    case stopSession(PB_StopSession)
     case pingRequest(PBStatus_PingRequest)
     case pingResponse(PBStatus_PingResponse)
     case storageListRequest(PBStorage_ListRequest)
@@ -283,6 +344,9 @@ struct PB_Main {
     case storageMkdirRequest(PBStorage_MkdirRequest)
     case storageMd5SumRequest(PBStorage_Md5sumRequest)
     case storageMd5SumResponse(PBStorage_Md5sumResponse)
+    case appStart(PBApp_Start)
+    case appLockStatusRequest(PBApp_LockStatusRequest)
+    case appLockStatusResponse(PBApp_LockStatusResponse)
 
   #if !swift(>=4.1)
     static func ==(lhs: PB_Main.OneOf_Content, rhs: PB_Main.OneOf_Content) -> Bool {
@@ -292,6 +356,10 @@ struct PB_Main {
       switch (lhs, rhs) {
       case (.empty, .empty): return {
         guard case .empty(let l) = lhs, case .empty(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.stopSession, .stopSession): return {
+        guard case .stopSession(let l) = lhs, case .stopSession(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       case (.pingRequest, .pingRequest): return {
@@ -338,6 +406,18 @@ struct PB_Main {
         guard case .storageMd5SumResponse(let l) = lhs, case .storageMd5SumResponse(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
+      case (.appStart, .appStart): return {
+        guard case .appStart(let l) = lhs, case .appStart(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.appLockStatusRequest, .appLockStatusRequest): return {
+        guard case .appLockStatusRequest(let l) = lhs, case .appLockStatusRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.appLockStatusResponse, .appLockStatusResponse): return {
+        guard case .appLockStatusResponse(let l) = lhs, case .appLockStatusResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       default: return false
       }
     }
@@ -369,6 +449,9 @@ extension PB_CommandStatus: SwiftProtobuf._ProtoNameProviding {
     13: .same(proto: "ERROR_STORAGE_ALREADY_OPEN"),
     14: .same(proto: "ERROR_CONTINUOUS_COMMAND_INTERRUPTED"),
     15: .same(proto: "ERROR_INVALID_PARAMETERS"),
+    16: .same(proto: "ERROR_APP_CANT_START"),
+    17: .same(proto: "ERROR_APP_SYSTEM_LOCKED"),
+    18: .same(proto: "ERROR_STORAGE_DIR_NOT_EMPTY"),
   ]
 }
 
@@ -391,6 +474,25 @@ extension PB_Empty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationB
   }
 }
 
+extension PB_StopSession: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".StopSession"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PB_StopSession, rhs: PB_StopSession) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Main"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -398,6 +500,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     2: .standard(proto: "command_status"),
     3: .standard(proto: "has_next"),
     4: .same(proto: "empty"),
+    19: .standard(proto: "stop_session"),
     5: .standard(proto: "ping_request"),
     6: .standard(proto: "ping_response"),
     7: .standard(proto: "storage_list_request"),
@@ -409,6 +512,9 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     13: .standard(proto: "storage_mkdir_request"),
     14: .standard(proto: "storage_md5sum_request"),
     15: .standard(proto: "storage_md5sum_response"),
+    16: .standard(proto: "app_start"),
+    17: .standard(proto: "app_lock_status_request"),
+    18: .standard(proto: "app_lock_status_response"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -576,6 +682,58 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .storageMd5SumResponse(v)
         }
       }()
+      case 16: try {
+        var v: PBApp_Start?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .appStart(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .appStart(v)
+        }
+      }()
+      case 17: try {
+        var v: PBApp_LockStatusRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .appLockStatusRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .appLockStatusRequest(v)
+        }
+      }()
+      case 18: try {
+        var v: PBApp_LockStatusResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .appLockStatusResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .appLockStatusResponse(v)
+        }
+      }()
+      case 19: try {
+        var v: PB_StopSession?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .stopSession(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .stopSession(v)
+        }
+      }()
       default: break
       }
     }
@@ -643,6 +801,22 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .storageMd5SumResponse?: try {
       guard case .storageMd5SumResponse(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
+    }()
+    case .appStart?: try {
+      guard case .appStart(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
+    }()
+    case .appLockStatusRequest?: try {
+      guard case .appLockStatusRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
+    }()
+    case .appLockStatusResponse?: try {
+      guard case .appLockStatusResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 18)
+    }()
+    case .stopSession?: try {
+      guard case .stopSession(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
     }()
     case nil: break
     }
