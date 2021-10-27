@@ -48,7 +48,7 @@ class ChunkedResponse {
     }
 }
 
-enum ChunkedResponseError: Error {
+enum ChunkedResponseError: Swift.Error {
     case malformedProtobuf
     case insufficientData
 }

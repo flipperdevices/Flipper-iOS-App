@@ -1,17 +1,12 @@
 class SequencedResponse {
     var response: Response?
 
-    func feed(_ main: PB_Main) throws -> Response? {
+    func feed(_ main: PB_Main) throws -> Result<Response, Error>? {
         // always set response to nil on last part
         defer { if !main.hasNext_p { response = nil } }
 
         guard main.commandStatus == .ok else {
-            print("command error", main.commandStatus)
-            return .error(main.commandStatus.rawValue.description)
-        }
-
-        guard let content = main.content else {
-            return .error("main.content is nil")
+            return .failure(.init(main.commandStatus))
         }
 
         switch main.content {
@@ -24,10 +19,14 @@ class SequencedResponse {
         case .empty(let response):
             try handleEmptyResponse(response)
         default:
-            return .error("unsupported api response: \(content)")
+            return .failure(.init(main.commandStatus))
         }
 
-        return main.hasNext_p ? nil : self.response
+        guard main.hasNext_p == false, let response = response else {
+            return nil
+        }
+
+        return .success(response)
     }
 
     func handlePingResponse() throws {
@@ -71,6 +70,6 @@ class SequencedResponse {
     }
 }
 
-enum SequencedResponseError: Error {
+enum SequencedResponseError: Swift.Error {
     case unexpectedResponse
 }

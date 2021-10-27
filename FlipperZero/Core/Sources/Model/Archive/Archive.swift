@@ -32,9 +32,12 @@ public class Archive: ObservableObject {
 
     public func syncWithDevice(completion: @escaping () -> Void) {
         isSynchronizing = true
-        flipperArchive.readFromDevice { items in
+        flipperArchive.readAllItems { result in
             self.isSynchronizing = false
-            self.items = items
+            switch result {
+            case .success(let items): self.items = items
+            case .failure(let error): print(error)
+            }
             completion()
         }
     }

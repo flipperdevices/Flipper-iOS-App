@@ -83,7 +83,7 @@ private struct MockPeripheral: BluetoothPeripheral {
 
     var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
 
-    func send(_ request: Request, continuation: @escaping (Response) -> Void) {}
+    func send(_ request: Request, continuation: @escaping Continuation) {}
 }
 
 private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {
