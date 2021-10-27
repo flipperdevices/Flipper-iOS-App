@@ -71,6 +71,6 @@ class SequencedResponse {
     }
 }
 
-enum SequencedResponseError: Error {
+enum SequencedResponseError: Swift.Error {
     case unexpectedResponse
 }

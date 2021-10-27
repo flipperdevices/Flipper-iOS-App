@@ -60,7 +60,7 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
 
     func peripheral(
         _ peripheral: CBPeripheral,
-        didDiscoverServices error: Error?
+        didDiscoverServices error: Swift.Error?
     ) {
         peripheral.services?.forEach { service in
             peripheral.discoverCharacteristics(nil, for: service)
@@ -72,7 +72,7 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     func peripheral(
         _ peripheral: CBPeripheral,
         didDiscoverCharacteristicsFor service: CBService,
-        error: Error?
+        error: Swift.Error?
     ) {
         service.characteristics?.forEach { characteristic in
             switch service.uuid {
@@ -97,7 +97,7 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     func peripheral(
         _ peripheral: CBPeripheral,
         didUpdateValueFor characteristic: CBCharacteristic,
-        error: Error?
+        error: Swift.Error?
     ) {
         assert(peripheral === self.peripheral)
         switch characteristic.uuid {

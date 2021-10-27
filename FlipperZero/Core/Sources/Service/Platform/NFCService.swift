@@ -29,7 +29,7 @@ extension NFCService: NFCTagReaderSessionDelegate {
 
     func tagReaderSession(
         _ session: NFCTagReaderSession,
-        didInvalidateWithError error: Error
+        didInvalidateWithError error: Swift.Error
     ) {
     }
 
