@@ -74,7 +74,7 @@ class PairedDevice: PairedDeviceProtocol, ObservableObject {
         }
     }
 
-    func send(_ request: Request, continuation: @escaping (Response) -> Void) {
+    func send(_ request: Request, continuation: @escaping Continuation) {
         flipper?.send(request, continuation: continuation)
     }
 }

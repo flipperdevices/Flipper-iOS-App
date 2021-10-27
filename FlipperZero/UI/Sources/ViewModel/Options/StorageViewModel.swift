@@ -25,6 +25,7 @@ class StorageViewModel: ObservableObject {
         case list([Element])
         case data([UInt8])
         case name(isDirectory: Bool)
+        case error(String)
     }
 
     var root: [Element] = [.directory("int"), .directory("ext")]
@@ -74,12 +75,15 @@ class StorageViewModel: ObservableObject {
     }
 
     private func sendListRequest() {
-        device?.send(.list(path)) { response in
-            guard case .list(let files) = response else {
-                print("invalid response:", response)
-                return
+        device?.send(.list(path)) { result in
+            switch result {
+            case .success(.list(let files)):
+                self.content = .list(files)
+            case .failure(let error):
+                self.content = .error(error.description)
+            default:
+                self.content = .error("invalid response: \(result)")
             }
-            self.content = .list(files)
         }
     }
 
@@ -94,12 +98,15 @@ class StorageViewModel: ObservableObject {
     func readFile(_ file: File) {
         content = nil
         path.append(file.name)
-        device?.send(.read(path)) { response in
-            guard case .file(let bytes) = response else {
-                print("invalid response:", response)
-                return
+        device?.send(.read(path)) { result in
+            switch result {
+            case .success(.file(let bytes)):
+                self.content = .data(bytes)
+            case .failure(let error):
+                self.content = .error(error.description)
+            default:
+                self.content = .error("invalid response: \(result)")
             }
-            self.content = .data(bytes)
         }
     }
 
@@ -111,13 +118,15 @@ class StorageViewModel: ObservableObject {
         self.content = nil
         let bytes = [UInt8](text.utf8)
         startTime = .init()
-        device?.send(.write(path, bytes)) { response in
-            self.requestTime = Date().timeIntervalSince(self.startTime)
-            guard case .ok = response else {
-                print("invalid response:", response)
-                return
+        device?.send(.write(path, bytes)) { result in
+            switch result {
+            case .success(.ok):
+                self.content = .data(bytes)
+            case .failure(let error):
+                self.content = .error(error.description)
+            default:
+                self.content = .error("invalid response: \(result)")
             }
-            self.content = .data(bytes)
         }
     }
 
@@ -158,11 +167,14 @@ class StorageViewModel: ObservableObject {
         let element = elements.remove(at: index)
         self.content = .list(elements)
 
-        device?.send(.delete(path.appending(element.name))) { response in
-            guard case .ok = response else {
-                elements.insert(element, at: index)
+        device?.send(.delete(path.appending(element.name))) { result in
+            switch result {
+            case .success(.ok):
                 self.content = .list(elements)
-                return
+            case .failure(let error):
+                self.content = .error(error.description)
+            default:
+                self.content = .error("invalid response: \(result)")
             }
         }
     }

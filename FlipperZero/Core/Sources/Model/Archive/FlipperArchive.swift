@@ -16,56 +16,97 @@ public class FlipperArchive {
             .store(in: &disposeBag)
     }
 
-    public func readFromDevice(
-        _ completion: @escaping ([ArchiveItem]) -> Void
+    public func readAllItems(
+        _ completion: @escaping (Result<[ArchiveItem], Error>) -> Void
+    ) {
+        listFiles { [weak self] result in
+            switch result {
+            case .success(let files):
+                self?.readFiles(files, completion)
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    public func readFiles(
+        _ files: [String],
+        _ completion: @escaping (Result<[ArchiveItem], Error>) -> Void
     ) {
         var items: [ArchiveItem] = []
 
-        listFiles { [weak self] files in
-            for file in files {
-                self?.readFile(path: file) { [weak self] bytes in
+        for file in files {
+            readFile(path: file) { [weak self] result in
+                switch result {
+                case .success(let bytes):
                     let content = String(decoding: bytes, as: UTF8.self)
                     if let next = self?.parse(path: file, content: content) {
                         items.append(next)
                     }
                     if file == files.last {
-                        completion(items)
+                        completion(.success(items))
                     }
+                case .failure(let error):
+                    completion(.failure(error))
                 }
             }
         }
     }
 
-    private func listFiles(_ completion: @escaping ([String]) -> Void) {
+    private func listFiles(
+        _ completion: @escaping (Result<[String], Error>) -> Void
+    ) {
         let paths = ["ibutton", "nfc", "lfrfid", "irda", "subghz/saved"].map {
             "/ext/\($0)"
         }
         var keyPaths: [String] = .init()
 
         for path in paths {
-            flipper?.send(.list(.init(string: path))) { response in
-                guard case .list(let items) = response else {
-                    return
-                }
-                let filePaths = items.fileNames.map { "\(path)/\($0)" }
-                keyPaths.append(contentsOf: filePaths)
+            listDirectory(path: .init(string: path)) { result in
+                switch result {
+                case .success(let elements):
+                    let filePaths = elements.fileNames.map { "\(path)/\($0)" }
+                    keyPaths.append(contentsOf: filePaths)
 
-                if path == paths.last {
-                    completion(keyPaths)
+                    if path == paths.last {
+                        completion(.success(keyPaths))
+                    }
+                case .failure(let error):
+                    completion(.failure(error))
                 }
+            }
+        }
+    }
+
+    private func listDirectory(
+        path: Path,
+        _ completion: @escaping (Result<[Element], Error>) -> Void
+    ) {
+        flipper?.send(.list(path)) { result in
+            switch result {
+            case .success(.list(let items)):
+                completion(.success(items))
+            case .failure(let error):
+                completion(.failure(error))
+            default:
+                completion(.failure(.common(.unknown)))
             }
         }
     }
 
     private func readFile(
         path: String,
-        completion: @escaping ([UInt8]) -> Void
+        completion: @escaping (Result<[UInt8], Error>) -> Void
     ) {
-        flipper?.send(.read(.init(string: path))) { response in
-            guard case .file(let bytes) = response else {
-                return
+        flipper?.send(.read(.init(string: path))) { result in
+            switch result {
+            case .success(.file(let bytes)):
+                completion(.success(bytes))
+            case .failure(let error):
+                completion(.failure(error))
+            default:
+                completion(.failure(.common(.unknown)))
             }
-            completion(bytes)
         }
     }
 

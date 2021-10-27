@@ -12,7 +12,7 @@ class FlipperSession: Session {
     struct Command {
         let id: Int
         let request: Request
-        let continuation: Session.Continuation
+        let continuation: Continuation
         let consumer: (Data) -> Void
     }
 
@@ -28,7 +28,7 @@ class FlipperSession: Session {
 
     func sendRequest(
         _ request: Request,
-        continuation: @escaping Session.Continuation,
+        continuation: @escaping Continuation,
         consumer: @escaping (Data) -> Void
     ) {
         queue.append(.init(
@@ -64,26 +64,23 @@ class FlipperSession: Session {
             guard let nextResponse = try chunkedResponse.feed(data) else {
                 return
             }
-            guard let id = queue.first?.id, nextResponse.commandID == id else {
+            guard let currentCommand = queue.first else {
+                print("unexpected response", nextResponse)
+                return
+            }
+            guard nextResponse.commandID == currentCommand.id else {
                 print("invalid id \(nextResponse.commandID)")
                 return
             }
             // complete PB_Main can be split into multiple messages
-            guard let response = try sequencedResponse.feed(nextResponse) else {
+            guard let result = try sequencedResponse.feed(nextResponse) else {
                 return
-            }
-            guard !queue.isEmpty else {
-                print("unexpected response", response)
-                return
-            }
-            if case .error(let error) = response {
-                print(error)
             }
             // dequeue and send next command
             let command = queue.removeFirst()
             sendNextRequest()
             // handle current response
-            command.continuation(response)
+            command.continuation(result)
         } catch {
             print(error)
         }

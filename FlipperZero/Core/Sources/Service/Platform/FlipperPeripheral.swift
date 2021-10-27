@@ -36,7 +36,7 @@ class FlipperPeripheral: BluetoothPeripheral {
         delegate.infoSubject.eraseToAnyPublisher()
     }
 
-    func send(_ request: Request, continuation: @escaping (Response) -> Void) {
+    func send(_ request: Request, continuation: @escaping Continuation) {
         delegate.send(request, continuation: continuation)
     }
 }
@@ -111,7 +111,7 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     }
 
     // swiftlint:disable opening_brace multiline_arguments
-    func send(_ request: Request, continuation: @escaping (Response) -> Void) {
+    func send(_ request: Request, continuation: @escaping Continuation) {
         session.sendRequest(request, continuation: continuation)
         { [weak self] in
             self?.send($0)

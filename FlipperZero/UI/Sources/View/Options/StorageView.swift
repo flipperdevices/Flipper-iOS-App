@@ -10,6 +10,7 @@ struct StorageView: View {
             case .list(let elements): listView(with: elements)
             case .data: editorView()
             case .name: nameView()
+            case .error(let error): Text(error)
             case .none: ProgressView()
             }
         }
