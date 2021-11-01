@@ -5,12 +5,10 @@ import Injector
 import struct Foundation.Date
 
 class StorageViewModel: ObservableObject {
-    @Inject var connector: BluetoothConnector
-
     @Published var content: Content? {
         didSet {
-            if case .data(let bytes) = content {
-                text = .init(decoding: bytes, as: UTF8.self)
+            if case .file(let text) = content {
+                self.text = text
             }
         }
     }
@@ -23,8 +21,9 @@ class StorageViewModel: ObservableObject {
 
     enum Content {
         case list([Element])
-        case data([UInt8])
+        case file(String)
         case name(isDirectory: Bool)
+        case forceDelete(Path)
         case error(String)
     }
 
@@ -40,17 +39,10 @@ class StorageViewModel: ObservableObject {
                 : path.string + " - \(requestTime!.kindaRounded)s"
     }
 
-    private var disposeBag: DisposeBag = .init()
-
-    var device: BluetoothPeripheral?
+    private let rpc: RPC = .shared
 
     init() {
         content = .list(root)
-        connector.connectedPeripherals
-            .sink { [weak self] in
-                self?.device = $0.first
-            }
-            .store(in: &disposeBag)
     }
 
     // MARK: Directory
@@ -59,30 +51,27 @@ class StorageViewModel: ObservableObject {
         guard !path.isEmpty else {
             return
         }
-        content = nil
         path.removeLastComponent()
         if path.isEmpty {
             content = .list(root)
         } else {
-            sendListRequest()
+            listDirectory()
         }
     }
 
-    func listDirectory(_ name: String) {
-        content = nil
+    func enter(directory name: String) {
         path.append(name)
-        sendListRequest()
+        listDirectory()
     }
 
-    private func sendListRequest() {
-        device?.send(.list(path)) { result in
+    func listDirectory() {
+        content = nil
+        rpc.listDirectory(at: path) { result in
             switch result {
-            case .success(.list(let files)):
-                self.content = .list(files)
+            case .success(let items):
+                self.content = .list(items)
             case .failure(let error):
                 self.content = .error(error.description)
-            default:
-                self.content = .error("invalid response: \(result)")
             }
         }
     }
@@ -98,14 +87,12 @@ class StorageViewModel: ObservableObject {
     func readFile(_ file: File) {
         content = nil
         path.append(file.name)
-        device?.send(.read(path)) { result in
+        rpc.readFile(at: path) { result in
             switch result {
-            case .success(.file(let bytes)):
-                self.content = .data(bytes)
+            case .success(let bytes):
+                self.content = .file(.init(decoding: bytes, as: UTF8.self))
             case .failure(let error):
                 self.content = .error(error.description)
-            default:
-                self.content = .error("invalid response: \(result)")
             }
         }
     }
@@ -115,17 +102,15 @@ class StorageViewModel: ObservableObject {
     var requestTime: Double?
 
     func save() {
+        let text = text
         self.content = nil
-        let bytes = [UInt8](text.utf8)
         startTime = .init()
-        device?.send(.write(path, bytes)) { result in
+        rpc.writeFile(at: path, string: text) { result in
             switch result {
-            case .success(.ok):
-                self.content = .data(bytes)
+            case .success:
+                self.content = .file(text)
             case .failure(let error):
                 self.content = .error(error.description)
-            default:
-                self.content = .error("invalid response: \(result)")
             }
         }
     }
@@ -137,8 +122,7 @@ class StorageViewModel: ObservableObject {
     }
 
     func cancel() {
-        content = nil
-        sendListRequest()
+        listDirectory()
     }
 
     func create() {
@@ -152,8 +136,13 @@ class StorageViewModel: ObservableObject {
         let path = path.appending(name)
         name = ""
 
-        device?.send(.create(path, isDirectory: isDirectory)) { _ in
-            self.sendListRequest()
+        // swiftlint:disable multiline_arguments opening_brace
+        rpc.createFile(at: path, isDirectory: isDirectory)
+        { result in
+            switch result {
+            case .success: self.listDirectory()
+            case .failure(let error): self.content = .error(error.description)
+            }
         }
     }
 
@@ -166,15 +155,30 @@ class StorageViewModel: ObservableObject {
 
         let element = elements.remove(at: index)
         self.content = .list(elements)
+        let elementPath = path.appending(element.name)
 
-        device?.send(.delete(path.appending(element.name))) { result in
+        rpc.deleteFile(at: elementPath, force: false) { result in
             switch result {
-            case .success(.ok):
+            case .success:
                 self.content = .list(elements)
+            case .failure(let error) where error == .storage(.notEmpty):
+                self.content = .forceDelete(elementPath)
             case .failure(let error):
                 self.content = .error(error.description)
-            default:
-                self.content = .error("invalid response: \(result)")
+            }
+        }
+    }
+
+    func forceDelete() {
+        guard case .forceDelete(let path) = content else {
+            return
+        }
+        rpc.deleteFile(at: path, force: true) { result in
+            switch result {
+            case .success:
+                self.listDirectory()
+            case .failure(let error):
+                self.content = .error(error.description)
             }
         }
     }

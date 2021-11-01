@@ -1,10 +1,10 @@
-public enum Error: Swift.Error {
+public enum Error: Equatable, Swift.Error {
     case common(CommonError)
     case storage(StorageError)
     case application(ApplicationError)
     case unsupported(Int)
 
-    public enum CommonError: Swift.Error {
+    public enum CommonError: Equatable, Swift.Error {
         case unknown
         case decode
         case notImplemented
@@ -13,7 +13,7 @@ public enum Error: Swift.Error {
         case invalidParameters
     }
 
-    public enum StorageError: Swift.Error {
+    public enum StorageError: Equatable, Swift.Error {
         case notReady
         case exists
         case doesNotExist
@@ -26,7 +26,7 @@ public enum Error: Swift.Error {
         case notEmpty
     }
 
-    public enum ApplicationError: Swift.Error {
+    public enum ApplicationError: Equatable, Swift.Error {
         case cantStart
         case systemLocked
     }
