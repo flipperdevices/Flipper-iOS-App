@@ -1,12 +1,7 @@
 import SwiftUI
 
 struct InstructionsView: View {
-    let viewModel: InstructionsViewModel
-    @State private var displayingConnections = false
-
-    init(viewModel: InstructionsViewModel = .init()) {
-        self.viewModel = viewModel
-    }
+    @StateObject var viewModel: InstructionsViewModel
 
     var body: some View {
         VStack(spacing: 10) {
@@ -33,19 +28,24 @@ struct InstructionsView: View {
 
             Spacer()
 
-            RoundedButton("Continue") {
-                self.displayingConnections = true
+            RoundedButton("Search for flipper") {
+                viewModel.presentConnectionsSheet = true
             }
-            .sheet(isPresented: self.$displayingConnections) {
+            .sheet(isPresented: $viewModel.presentConnectionsSheet) {
                 ConnectionsView(viewModel: .init())
-                if onMac {
-                    Button("Close") {
-                        self.displayingConnections = false
-                    }
-                    .padding(.bottom, 120)
+                Spacer()
+                Button("Skip connection") {
+                    viewModel.presentConnectionsSheet = false
+                    viewModel.presentWelcomeSheet = false
                 }
+                .padding(.bottom, onMac ? 140 : 16)
             }
             .padding(.bottom, 20)
+
+            Button("Skip connection") {
+                viewModel.presentWelcomeSheet = false
+            }
+            .padding(.bottom, 16)
         }
         .padding(.top, onMac ? 0 : 40)
         .edgesIgnoringSafeArea(.top)
@@ -53,7 +53,9 @@ struct InstructionsView: View {
 }
 
 struct InstructionsView_Previews: PreviewProvider {
+    static var displayWelcomeScreen: Binding<Bool> = .constant(true)
+
     static var previews: some View {
-        InstructionsView()
+        InstructionsView(viewModel: .init(displayWelcomeScreen))
     }
 }

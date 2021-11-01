@@ -30,12 +30,6 @@ struct ConnectionsView: View {
                 ForEach(viewModel.peripherals) { peripheral in
                     row(for: peripheral)
                 }
-
-                Spacer()
-
-                Button("Skip connection") {
-                }
-                .opacity(0)
             }
         }
         .padding(.horizontal, 16)
