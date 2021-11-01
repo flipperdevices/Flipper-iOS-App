@@ -112,6 +112,7 @@ struct DeviceViewHeader: View {
                         )
                 }
                 .padding(.leading, 5)
+                .opacity(status == .connected ? 0 : 1)
             },
             rightView: {
                 Image(systemName: "gamecontroller")
