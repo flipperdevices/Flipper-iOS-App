@@ -1,4 +1,4 @@
-public struct Path {
+public struct Path: Equatable {
     var components: [String]
 
     public var isEmpty: Bool {

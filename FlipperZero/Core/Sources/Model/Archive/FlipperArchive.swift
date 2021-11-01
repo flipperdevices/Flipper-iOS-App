@@ -1,20 +1,10 @@
-import Injector
-
 public class FlipperArchive {
     public static let shared: FlipperArchive = .init()
 
-    var flipper: BluetoothPeripheral?
+    private let root: Path = .init(components: ["ext"])
+    private let rpc: RPC = .shared
 
-    @Inject var connector: BluetoothConnector
-    var disposeBag: DisposeBag = .init()
-
-    private init() {
-        connector.connectedPeripherals
-            .sink { [weak self] peripheral in
-                self?.flipper = peripheral.first
-            }
-            .store(in: &disposeBag)
-    }
+    private init() {}
 
     public func readAllItems(
         _ completion: @escaping (Result<[ArchiveItem], Error>) -> Void
@@ -30,20 +20,23 @@ public class FlipperArchive {
     }
 
     public func readFiles(
-        _ files: [String],
+        _ paths: [Path],
         _ completion: @escaping (Result<[ArchiveItem], Error>) -> Void
     ) {
         var items: [ArchiveItem] = []
 
-        for file in files {
-            readFile(path: file) { [weak self] result in
+        for path in paths {
+            rpc.readFile(at: path) { result in
                 switch result {
                 case .success(let bytes):
                     let content = String(decoding: bytes, as: UTF8.self)
-                    if let next = self?.parse(path: file, content: content) {
+                    if let next = ArchiveItem(
+                        fileName: path.components.last ?? "",
+                        content: content
+                    ) {
                         items.append(next)
                     }
-                    if file == files.last {
+                    if path == paths.last {
                         completion(.success(items))
                     }
                 case .failure(let error):
@@ -54,22 +47,23 @@ public class FlipperArchive {
     }
 
     private func listFiles(
-        _ completion: @escaping (Result<[String], Error>) -> Void
+        _ completion: @escaping (Result<[Path], Error>) -> Void
     ) {
-        let paths = ["ibutton", "nfc", "lfrfid", "irda", "subghz/saved"].map {
-            "/ext/\($0)"
-        }
-        var keyPaths: [String] = .init()
+        let supportedPaths: [Path] =
+            ["ibutton", "nfc", "lfrfid", "irda", "subghz/saved"]
+            .map { root.appending($0) }
 
-        for path in paths {
-            listDirectory(path: .init(string: path)) { result in
+        var archiveFiles: [Path] = .init()
+
+        for path in supportedPaths {
+            rpc.listDirectory(at: path) { result in
                 switch result {
                 case .success(let elements):
-                    let filePaths = elements.fileNames.map { "\(path)/\($0)" }
-                    keyPaths.append(contentsOf: filePaths)
+                    let filePaths = elements.files.map { path.appending($0) }
+                    archiveFiles.append(contentsOf: filePaths)
 
-                    if path == paths.last {
-                        completion(.success(keyPaths))
+                    if path == archiveFiles.last {
+                        completion(.success(archiveFiles))
                     }
                 case .failure(let error):
                     completion(.failure(error))
@@ -77,67 +71,36 @@ public class FlipperArchive {
             }
         }
     }
-
-    private func listDirectory(
-        path: Path,
-        _ completion: @escaping (Result<[Element], Error>) -> Void
-    ) {
-        flipper?.send(.list(path)) { result in
-            switch result {
-            case .success(.list(let items)):
-                completion(.success(items))
-            case .failure(let error):
-                completion(.failure(error))
-            default:
-                completion(.failure(.common(.unknown)))
-            }
-        }
-    }
-
-    private func readFile(
-        path: String,
-        completion: @escaping (Result<[UInt8], Error>) -> Void
-    ) {
-        flipper?.send(.read(.init(string: path))) { result in
-            switch result {
-            case .success(.file(let bytes)):
-                completion(.success(bytes))
-            case .failure(let error):
-                completion(.failure(error))
-            default:
-                completion(.failure(.common(.unknown)))
-            }
-        }
-    }
-
-    private func parse(path: String, content: String) -> ArchiveItem? {
-        let fileName = path.split(separator: "/").last ?? ""
-        let name = String(fileName.split(separator: ".").first ?? "")
-        let ext = fileName.split(separator: ".").last ?? ""
-
-        guard let kind = ArchiveItem.Kind(ext) else {
-            print("unknown extension \(ext)")
-            return nil
-        }
-
-        return .init(
-            id: path,
-            name: name,
-            description: content,
-            isFavorite: false,
-            kind: kind,
-            origin: "ext")
-    }
 }
 
 extension Array where Element == Core.Element {
-    var fileNames: [String] {
+    var files: [String] {
         self.compactMap {
             guard case .file(let file) = $0 else {
                 return nil
             }
             return file.name
         }
+    }
+}
+
+extension ArchiveItem {
+    init?(fileName: String, content: String) {
+        let name = String(fileName.split(separator: ".").first ?? "")
+        let ext = fileName.split(separator: ".").last ?? ""
+
+        guard let kind = Kind(ext) else {
+            print("unknown extension \(ext)")
+            return nil
+        }
+
+        self = .init(
+            id: fileName,
+            name: name,
+            description: content,
+            isFavorite: false,
+            kind: kind,
+            origin: "ext")
     }
 }
 

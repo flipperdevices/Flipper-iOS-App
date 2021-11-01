@@ -8,7 +8,7 @@ struct StorageView: View {
         VStack {
             switch viewModel.content {
             case .list(let elements): listView(with: elements)
-            case .data: editorView()
+            case .file: editorView()
             case .name: nameView()
             case .error(let error): Text(error)
             case .none: ProgressView()
