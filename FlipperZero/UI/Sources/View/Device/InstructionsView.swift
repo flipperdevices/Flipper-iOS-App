@@ -38,14 +38,13 @@ struct InstructionsView: View {
                     viewModel.presentConnectionsSheet = false
                     viewModel.presentWelcomeSheet = false
                 }
-                .padding(.bottom, onMac ? 140 : 16)
+                .padding(.bottom, onMac ? 140 : 20)
             }
-            .padding(.bottom, 20)
 
             Button("Skip connection") {
                 viewModel.presentWelcomeSheet = false
             }
-            .padding(.bottom, 16)
+            .padding(.vertical, 24)
         }
         .padding(.top, onMac ? 0 : 40)
         .edgesIgnoringSafeArea(.top)
