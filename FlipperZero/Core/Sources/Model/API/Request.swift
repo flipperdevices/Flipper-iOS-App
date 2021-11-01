@@ -6,7 +6,7 @@ public enum Request {
     case read(Path)
     case write(Path, [UInt8])
     case create(Path, isDirectory: Bool)
-    case delete(Path)
+    case delete(Path, isForce: Bool)
 }
 
 extension Request {
@@ -35,10 +35,11 @@ extension Request {
                     $0.file.data = .init(bytes)
                 }
             }
-        case let .delete(path):
+        case let .delete(path, isForce):
             return .with {
                 $0.storageDeleteRequest = .with {
                     $0.path = path.string
+                    $0.recursive = isForce
                 }
             }
         case let .create(path, isDirectory):

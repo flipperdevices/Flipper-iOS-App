@@ -11,6 +11,7 @@ struct StorageView: View {
             case .file: editorView()
             case .name: nameView()
             case .error(let error): Text(error)
+            case .forceDelete: forceDeleteView()
             case .none: ProgressView()
             }
         }
@@ -55,7 +56,7 @@ struct StorageView: View {
             switch $0 {
             case .directory(let directory):
                 Button(directory.name) {
-                    viewModel.listDirectory(directory.name)
+                    viewModel.enter(directory: directory.name)
                 }
             case .file(let file):
                 if let data = file.data, !data.isEmpty {
@@ -117,6 +118,22 @@ struct StorageView: View {
             }
         }
         .padding(16)
+    }
+
+    func forceDeleteView() -> some View {
+        VStack(spacing: 50) {
+            Text("The directory is not empty")
+                .font(.title)
+            HStack {
+                RoundedButton(
+                    "Cancel",
+                    action: viewModel.cancel)
+                RoundedButton(
+                    "Force delete",
+                    isDanger: true,
+                    action: viewModel.forceDelete)
+            }
+        }
     }
 }
 

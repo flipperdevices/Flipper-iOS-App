@@ -51,9 +51,10 @@ public class RPC {
 
     public func deleteFile(
         at path: Path,
+        force: Bool = false,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
-        flipper?.send(.delete(path)) { result in
+        flipper?.send(.delete(path, isForce: force)) { result in
             switch result {
             case .success(.ok):
                 completion(.success(()))

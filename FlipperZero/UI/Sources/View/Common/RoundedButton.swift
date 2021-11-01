@@ -2,10 +2,12 @@ import SwiftUI
 
 struct RoundedButton: View {
     let text: String
+    let isDanger: Bool
     let action: () -> Void
 
-    init(_ text: String, action: @escaping () -> Void) {
+    init(_ text: String, isDanger: Bool = false, action: @escaping () -> Void) {
         self.text = text
+        self.isDanger = isDanger
         self.action = action
     }
 
@@ -15,7 +17,7 @@ struct RoundedButton: View {
                 .fontWeight(.semibold)
                 .padding(14)
                 .frame(maxWidth: .infinity)
-                .background(Color.accentColor)
+                .background(isDanger ? Color.red : Color.accentColor)
                 .foregroundColor(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }

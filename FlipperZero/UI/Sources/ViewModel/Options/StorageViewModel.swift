@@ -23,6 +23,7 @@ class StorageViewModel: ObservableObject {
         case list([Element])
         case file(String)
         case name(isDirectory: Bool)
+        case forceDelete(Path)
         case error(String)
     }
 
@@ -50,22 +51,21 @@ class StorageViewModel: ObservableObject {
         guard !path.isEmpty else {
             return
         }
-        content = nil
         path.removeLastComponent()
         if path.isEmpty {
             content = .list(root)
         } else {
-            sendListRequest()
+            listDirectory()
         }
     }
 
-    func listDirectory(_ name: String) {
-        content = nil
+    func enter(directory name: String) {
         path.append(name)
-        sendListRequest()
+        listDirectory()
     }
 
-    private func sendListRequest() {
+    func listDirectory() {
+        content = nil
         rpc.listDirectory(at: path) { result in
             switch result {
             case .success(let items):
@@ -122,8 +122,7 @@ class StorageViewModel: ObservableObject {
     }
 
     func cancel() {
-        content = nil
-        sendListRequest()
+        listDirectory()
     }
 
     func create() {
@@ -141,7 +140,7 @@ class StorageViewModel: ObservableObject {
         rpc.createFile(at: path, isDirectory: isDirectory)
         { result in
             switch result {
-            case .success: self.sendListRequest()
+            case .success: self.listDirectory()
             case .failure(let error): self.content = .error(error.description)
             }
         }
@@ -156,11 +155,28 @@ class StorageViewModel: ObservableObject {
 
         let element = elements.remove(at: index)
         self.content = .list(elements)
+        let elementPath = path.appending(element.name)
 
-        rpc.deleteFile(at: path.appending(element.name)) { result in
+        rpc.deleteFile(at: elementPath, force: false) { result in
             switch result {
             case .success:
                 self.content = .list(elements)
+            case .failure(let error) where error == .storage(.notEmpty):
+                self.content = .forceDelete(elementPath)
+            case .failure(let error):
+                self.content = .error(error.description)
+            }
+        }
+    }
+
+    func forceDelete() {
+        guard case .forceDelete(let path) = content else {
+            return
+        }
+        rpc.deleteFile(at: path, force: true) { result in
+            switch result {
+            case .success:
+                self.listDirectory()
             case .failure(let error):
                 self.content = .error(error.description)
             }
