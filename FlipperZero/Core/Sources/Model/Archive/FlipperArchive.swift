@@ -62,7 +62,7 @@ public class FlipperArchive {
                     let filePaths = elements.files.map { path.appending($0) }
                     archiveFiles.append(contentsOf: filePaths)
 
-                    if path == archiveFiles.last {
+                    if path == supportedPaths.last {
                         completion(.success(archiveFiles))
                     }
                 case .failure(let error):

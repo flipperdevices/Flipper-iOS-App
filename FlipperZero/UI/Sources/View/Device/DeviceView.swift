@@ -36,7 +36,7 @@ public struct DeviceView: View {
                         RoundedButton("Read keys from device") {
                             viewModel.sync()
                         }
-                        .disabled(viewModel.device == nil)
+                        .disabled(viewModel.status == .synchronizing)
                         .padding(.top, 12)
                         .padding(.bottom, 24)
                     }
@@ -45,6 +45,7 @@ public struct DeviceView: View {
                     ActionsForm(actions: actions) { id in
                         self.action = id
                     }
+                    .disabled(viewModel.status == .synchronizing)
                     .padding(.top, 20)
 
                     NavigationLink("", tag: fileManager.name, selection: $action) {
@@ -112,7 +113,7 @@ struct DeviceViewHeader: View {
                         )
                 }
                 .padding(.leading, 5)
-                .opacity(status == .connected ? 0 : 1)
+                .opacity(status == .noDevice ? 1 : 0)
             },
             rightView: {
                 Image(systemName: "gamecontroller")
