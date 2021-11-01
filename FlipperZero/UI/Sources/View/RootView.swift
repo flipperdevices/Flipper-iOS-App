@@ -27,6 +27,13 @@ public struct RootView: View {
         .addPartialSheet()
         .edgesIgnoringSafeArea(.bottom)
         .environmentObject(SheetManager.shared)
+        .opacity(viewModel.isFirstLaunch ? 0 : 1)
+        // swiftlint:disable multiline_arguments
+        .sheet(isPresented: $viewModel.presentWelcomeSheet) {
+            viewModel.isFirstLaunch = false
+        } content: {
+            InstructionsView(viewModel: .init($viewModel.presentWelcomeSheet))
+        }
     }
 }
 

@@ -15,12 +15,12 @@ public class DeviceViewModel: ObservableObject {
     @Published var status: HeaderDeviceStatus = .noDevice {
         didSet {
             if status == .connected {
-                displayingConnections = false
+                presentConnectionsSheet = false
             }
         }
     }
 
-    @Published var displayingConnections = false
+    @Published var presentConnectionsSheet = false
 
     var firmwareVersion: String {
         guard let device = device else { return .noDevice }

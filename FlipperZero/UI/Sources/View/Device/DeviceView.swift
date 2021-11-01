@@ -10,7 +10,7 @@ public struct DeviceView: View {
             VStack {
                 DeviceViewHeader(
                     status: viewModel.status,
-                    displayingConnections: $viewModel.displayingConnections)
+                    displayingConnections: $viewModel.presentConnectionsSheet)
 
                 ScrollView {
                     VStack {
@@ -55,14 +55,13 @@ public struct DeviceView: View {
                 .disabled(viewModel.device?.state != .connected)
             }
             .navigationBarHidden(true)
-            .sheet(isPresented: $viewModel.displayingConnections) {
+            .sheet(isPresented: $viewModel.presentConnectionsSheet) {
                 ConnectionsView(viewModel: .init())
-                if onMac {
-                    Button("Close") {
-                        viewModel.displayingConnections = false
-                    }
-                    .padding(.bottom, 120)
+                Spacer()
+                Button("Skip connection") {
+                    viewModel.presentConnectionsSheet = false
                 }
+                .padding(.bottom, onMac ? 140 : 16)
             }
         }
     }
@@ -113,6 +112,7 @@ struct DeviceViewHeader: View {
                         )
                 }
                 .padding(.leading, 5)
+                .opacity(status == .connected ? 0 : 1)
             },
             rightView: {
                 Image(systemName: "gamecontroller")

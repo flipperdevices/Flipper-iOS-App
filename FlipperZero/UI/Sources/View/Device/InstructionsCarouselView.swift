@@ -29,8 +29,7 @@ struct InstructionsCarouselView: View {
                     .animation(.spring(), value: index == self.index)
             }
         }
-
-        Spacer()
+        .padding(.top, 24)
     }
 }
 
@@ -39,10 +38,13 @@ struct StepCardView: View {
 
     var body: some View {
         VStack {
+            Spacer()
             Image(image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
+                .padding(24)
                 .shadow(color: .clear, radius: 0)
+            Spacer()
         }
         .background(systemBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
