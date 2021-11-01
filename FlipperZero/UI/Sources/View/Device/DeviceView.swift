@@ -3,7 +3,6 @@ import SwiftUI
 
 public struct DeviceView: View {
     @StateObject var viewModel: DeviceViewModel
-    @State private var displayingConnections = false
     @State private var action: String?
 
     public var body: some View {
@@ -11,7 +10,7 @@ public struct DeviceView: View {
             VStack {
                 DeviceViewHeader(
                     status: viewModel.status,
-                    displayingConnections: $displayingConnections)
+                    displayingConnections: $viewModel.displayingConnections)
 
                 ScrollView {
                     VStack {
@@ -56,11 +55,11 @@ public struct DeviceView: View {
                 .disabled(viewModel.device?.state != .connected)
             }
             .navigationBarHidden(true)
-            .sheet(isPresented: self.$displayingConnections) {
+            .sheet(isPresented: $viewModel.displayingConnections) {
                 ConnectionsView(viewModel: .init())
                 if onMac {
                     Button("Close") {
-                        self.displayingConnections = false
+                        viewModel.displayingConnections = false
                     }
                     .padding(.bottom, 120)
                 }

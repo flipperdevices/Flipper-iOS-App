@@ -12,7 +12,15 @@ public class DeviceViewModel: ObservableObject {
     @Published var device: Peripheral? {
         didSet { status = .init(device?.state) }
     }
-    @Published var status: HeaderDeviceStatus = .noDevice
+    @Published var status: HeaderDeviceStatus = .noDevice {
+        didSet {
+            if status == .connected {
+                displayingConnections = false
+            }
+        }
+    }
+
+    @Published var displayingConnections = false
 
     var firmwareVersion: String {
         guard let device = device else { return .noDevice }

@@ -16,6 +16,9 @@ class PairedDevice: PairedDeviceProtocol, ObservableObject {
                 subscribeToUpdates()
                 storage.pairedDevice = .init(flipper)
                 peripheralSubject.value = .init(flipper)
+            } else {
+                storage.pairedDevice = nil
+                peripheralSubject.value = nil
             }
         }
     }
@@ -72,6 +75,7 @@ class PairedDevice: PairedDeviceProtocol, ObservableObject {
         if let flipper = flipper {
             connector.disconnect(from: flipper.id)
         }
+        self.flipper = nil
     }
 
     func send(_ request: Request, continuation: @escaping Continuation) {

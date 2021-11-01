@@ -27,9 +27,6 @@ class DeviceInfoViewModel: ObservableObject {
     }
 
     func disconnectFlipper() {
-        guard let device = self.device else {
-            return
-        }
-        connector.disconnect(from: device.id)
+        pairedDevice.disconnect()
     }
 }

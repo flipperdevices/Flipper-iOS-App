@@ -3,6 +3,7 @@ import SwiftUI
 
 struct DeviceInfoView: View {
     @StateObject var viewModel: DeviceInfoViewModel
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         VStack {
@@ -16,6 +17,7 @@ struct DeviceInfoView: View {
                 }
                 Button {
                     viewModel.disconnectFlipper()
+                    presentationMode.wrappedValue.dismiss()
                 } label: {
                     HStack {
                         Spacer()
