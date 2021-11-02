@@ -45,7 +45,6 @@ public struct DeviceView: View {
                     ActionsForm(actions: actions) { id in
                         self.action = id
                     }
-                    .disabled(viewModel.status == .synchronizing)
                     .padding(.top, 20)
 
                     NavigationLink("", tag: fileManager.name, selection: $action) {

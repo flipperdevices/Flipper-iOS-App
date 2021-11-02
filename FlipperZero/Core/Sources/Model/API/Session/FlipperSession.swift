@@ -7,7 +7,28 @@ class FlipperSession: Session {
     let sequencedRequest: SequencedRequest = .init()
     let chunkedRequest: ChunkedRequest = .init()
 
-    var queue: [Command] = []
+    var queue: Queue = .init()
+    var awaitingResponse: [Command] = []
+
+    struct Queue {
+        private var queue: [Command] = []
+        private var backgroundQueue: [Command] = []
+
+        var count: Int { queue.count + backgroundQueue.count }
+
+        mutating func append(_ command: Command, priority: Priority?) {
+            switch priority {
+            case .none: queue.append(command)
+            case .background: backgroundQueue.append(command)
+            }
+        }
+
+        mutating func dequeue() -> Command? {
+            if !queue.isEmpty { return queue.removeFirst() }
+            if !backgroundQueue.isEmpty { return backgroundQueue.removeFirst() }
+            return nil
+        }
+    }
 
     struct Command {
         let id: Int
@@ -28,24 +49,28 @@ class FlipperSession: Session {
 
     func sendRequest(
         _ request: Request,
+        priority: Priority? = nil,
         continuation: @escaping Continuation,
         consumer: @escaping (Data) -> Void
     ) {
-        queue.append(.init(
+        let command = Command(
             id: nextId,
             request: request,
             continuation: continuation,
-            consumer: consumer))
+            consumer: consumer)
 
         nextId += 1
 
-        if queue.count == 1 {
+        queue.append(command, priority: priority)
+
+        if awaitingResponse.isEmpty {
             sendNextRequest()
         }
     }
 
     func sendNextRequest() {
-        guard let command = queue.first else { return }
+        guard let command = queue.dequeue() else { return }
+        awaitingResponse.append(command)
         let requests = sequencedRequest.split(command.request)
         for var request in requests {
             request.commandID = .init(command.id)
@@ -64,7 +89,7 @@ class FlipperSession: Session {
             guard let nextResponse = try chunkedResponse.feed(data) else {
                 return
             }
-            guard let currentCommand = queue.first else {
+            guard let currentCommand = awaitingResponse.first else {
                 print("unexpected response", nextResponse)
                 return
             }
@@ -77,7 +102,7 @@ class FlipperSession: Session {
                 return
             }
             // dequeue and send next command
-            let command = queue.removeFirst()
+            let command = awaitingResponse.removeFirst()
             sendNextRequest()
             // handle current response
             command.continuation(result)

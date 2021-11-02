@@ -78,7 +78,11 @@ class PairedDevice: PairedDeviceProtocol, ObservableObject {
         self.flipper = nil
     }
 
-    func send(_ request: Request, continuation: @escaping Continuation) {
-        flipper?.send(request, continuation: continuation)
+    func send(
+        _ request: Request,
+        priority: Priority,
+        continuation: @escaping Continuation
+    ) {
+        flipper?.send(request, priority: priority, continuation: continuation)
     }
 }

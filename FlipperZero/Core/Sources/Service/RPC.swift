@@ -18,9 +18,10 @@ public class RPC {
 
     public func listDirectory(
         at path: Path,
+        priority: Priority? = nil,
         _ completion: @escaping (Result<[Element], Error>) -> Void
     ) {
-        flipper?.send(.list(path)) { result in
+        flipper?.send(.list(path), priority: priority) { result in
             switch result {
             case .success(.list(let items)):
                 completion(.success(items))
@@ -35,9 +36,13 @@ public class RPC {
     public func createFile(
         at path: Path,
         isDirectory: Bool,
+        priority: Priority? = nil,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
-        flipper?.send(.create(path, isDirectory: isDirectory)) { result in
+        flipper?.send(
+            .create(path, isDirectory: isDirectory),
+            priority: priority
+        ) { result in
             switch result {
             case .success(.ok):
                 completion(.success(()))
@@ -52,9 +57,13 @@ public class RPC {
     public func deleteFile(
         at path: Path,
         force: Bool = false,
+        priority: Priority? = nil,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
-        flipper?.send(.delete(path, isForce: force)) { result in
+        flipper?.send(
+            .delete(path, isForce: force),
+            priority: priority
+        ) { result in
             switch result {
             case .success(.ok):
                 completion(.success(()))
@@ -68,9 +77,10 @@ public class RPC {
 
     public func readFile(
         at path: Path,
+        priority: Priority? = nil,
         completion: @escaping (Result<[UInt8], Error>) -> Void
     ) {
-        flipper?.send(.read(path)) { result in
+        flipper?.send(.read(path), priority: priority) { result in
             switch result {
             case .success(.file(let bytes)):
                 completion(.success(bytes))
@@ -85,9 +95,10 @@ public class RPC {
     public func writeFile(
         at path: Path,
         bytes: [UInt8],
+        priority: Priority? = nil,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
-        flipper?.send(.write(path, bytes)) { result in
+        flipper?.send(.write(path, bytes), priority: priority) { result in
             switch result {
             case .success(.ok):
                 completion(.success(()))
@@ -104,11 +115,13 @@ extension RPC {
     public func writeFile(
         at path: Path,
         string: String,
+        priority: Priority? = nil,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
         writeFile(
             at: path,
             bytes: .init(string.utf8),
+            priority: priority,
             completion: completion)
     }
 }
