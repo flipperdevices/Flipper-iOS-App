@@ -16,12 +16,12 @@ class FlipperSession: Session {
         let consumer: (Data) -> Void
     }
 
-    var nextId = 0 {
+    var nextId = 1 {
         didSet {
             let commandIdSize = MemoryLayout.size(ofValue: PB_Main().commandID)
             let maxValue = Int(pow(2.0, Double(commandIdSize * 8)) - 1)
             if nextId >= maxValue {
-                nextId = 0
+                nextId = 1
             }
         }
     }
