@@ -7,6 +7,7 @@ class FlipperSession: Session {
     let sequencedRequest: SequencedRequest = .init()
     let chunkedRequest: ChunkedRequest = .init()
 
+    @CommandId var nextId: Int
     var queue: Queue = .init()
     var awaitingResponse: [Command] = []
 
@@ -37,16 +38,6 @@ class FlipperSession: Session {
         let consumer: (Data) -> Void
     }
 
-    var nextId = 1 {
-        didSet {
-            let commandIdSize = MemoryLayout.size(ofValue: PB_Main().commandID)
-            let maxValue = Int(pow(2.0, Double(commandIdSize * 8)) - 1)
-            if nextId >= maxValue {
-                nextId = 1
-            }
-        }
-    }
-
     func sendRequest(
         _ request: Request,
         priority: Priority? = nil,
@@ -58,8 +49,6 @@ class FlipperSession: Session {
             request: request,
             continuation: continuation,
             consumer: consumer)
-
-        nextId += 1
 
         queue.append(command, priority: priority)
 
@@ -108,6 +97,28 @@ class FlipperSession: Session {
             command.continuation(result)
         } catch {
             print(error)
+        }
+    }
+}
+
+@propertyWrapper
+struct CommandId {
+    private var nextId = 1
+
+    let maxId: Int = {
+        let commandIdSize = MemoryLayout.size(ofValue: PB_Main().commandID)
+        return Int(pow(2.0, Double(commandIdSize * 8)) - 1)
+    }()
+
+    var wrappedValue: Int {
+        mutating get {
+            defer {
+                nextId += 1
+                if nextId >= maxId {
+                    nextId = 1
+                }
+            }
+            return nextId
         }
     }
 }
