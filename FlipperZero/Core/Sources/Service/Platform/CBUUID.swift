@@ -23,4 +23,5 @@ extension CBUUID {
     // characteristics
     static var serialRead: CBUUID { .init(string: "19ED82AE-ED21-4C9D-4145-228E61FE0000") }
     static var serialWrite: CBUUID { .init(string: "19ED82AE-ED21-4C9D-4145-228E62FE0000") }
+    static var flowControl: CBUUID { .init(string: "19ED82AE-ED21-4C9D-4145-228E63FE0000") }
 }

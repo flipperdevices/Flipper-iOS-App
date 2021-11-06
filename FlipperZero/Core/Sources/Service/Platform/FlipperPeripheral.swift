@@ -36,14 +36,18 @@ class FlipperPeripheral: BluetoothPeripheral {
         delegate.infoSubject.eraseToAnyPublisher()
     }
 
-    func send(_ request: Request, continuation: @escaping Continuation) {
-        delegate.send(request, continuation: continuation)
+    func send(
+        _ request: Request,
+        priority: Priority?,
+        continuation: @escaping Continuation
+    ) {
+        delegate.send(request, priority: priority, continuation: continuation)
     }
 }
 
 // MARK: CBPeripheralDelegate
 
-private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
+private class _FlipperPeripheral: NSObject, CBPeripheralDelegate, PeripheralOutputDelegate {
     let peripheral: CBPeripheral
     let session: Session
 
@@ -52,6 +56,7 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
         self.session = session
         super.init()
         peripheral.delegate = self
+        session.delegate = self
     }
 
     fileprivate let infoSubject = SafeSubject<Void>()
@@ -75,18 +80,17 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
         error: Swift.Error?
     ) {
         service.characteristics?.forEach { characteristic in
-            switch service.uuid {
-            case .serial:
-                // subscribe to rx updates
-                if characteristic.properties.contains(.indicate) {
-                    peripheral.setNotifyValue(true, for: characteristic)
-                }
-            default:
-                // subscibe to value updates
-                if characteristic.properties.contains(.notify) {
-                    peripheral.setNotifyValue(true, for: characteristic)
-                }
-                // read the value
+            print(service.uuid, characteristic.properties.contains(.notify))
+            // subscribe to rx updates
+            if characteristic.properties.contains(.indicate) {
+                peripheral.setNotifyValue(true, for: characteristic)
+            }
+            // subscibe to value updates
+            if characteristic.properties.contains(.notify) {
+                peripheral.setNotifyValue(true, for: characteristic)
+            }
+            if service.uuid != .serial || characteristic.uuid == .flowControl {
+                // read current value
                 peripheral.readValue(for: characteristic)
             }
         }
@@ -105,17 +109,24 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
             if let data = characteristic.value {
                 session.didReceiveData(data)
             }
+        case .flowControl:
+            if let data = characteristic.value {
+                session.didReceiveFlowControl(data)
+            }
         default:
             infoSubject.send()
         }
     }
 
-    // swiftlint:disable opening_brace multiline_arguments
-    func send(_ request: Request, continuation: @escaping Continuation) {
-        session.sendRequest(request, continuation: continuation)
-        { [weak self] in
-            self?.send($0)
-        }
+    func send(
+        _ request: Request,
+        priority: Priority?,
+        continuation: @escaping Continuation
+    ) {
+        session.sendRequest(
+            request,
+            priority: priority,
+            continuation: continuation)
     }
 
     func send(_ data: Data) {

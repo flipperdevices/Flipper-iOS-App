@@ -125,7 +125,12 @@ private class TestConnector: BluetoothCentral, BluetoothConnector {
 
         var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
 
-        func send(_ request: Request, continuation: @escaping Continuation) {}
+        func send(
+            _ request: Request,
+            priority: Priority?,
+            continuation: @escaping Continuation
+        ) {
+        }
     }
 
     private let peripheralsSubject = SafeValueSubject([BluetoothPeripheral]())

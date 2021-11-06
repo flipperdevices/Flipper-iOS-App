@@ -19,14 +19,14 @@ public class FlipperArchive {
         }
     }
 
-    public func readFiles(
+    private func readFiles(
         _ paths: [Path],
         _ completion: @escaping (Result<[ArchiveItem], Error>) -> Void
     ) {
         var items: [ArchiveItem] = []
 
         for path in paths {
-            rpc.readFile(at: path) { result in
+            rpc.readFile(at: path, priority: .background) { result in
                 switch result {
                 case .success(let bytes):
                     let content = String(decoding: bytes, as: UTF8.self)
@@ -56,7 +56,7 @@ public class FlipperArchive {
         var archiveFiles: [Path] = .init()
 
         for path in supportedPaths {
-            rpc.listDirectory(at: path) { result in
+            rpc.listDirectory(at: path, priority: .background) { result in
                 switch result {
                 case .success(let elements):
                     let filePaths = elements.files.map { path.appending($0) }

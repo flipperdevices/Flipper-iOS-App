@@ -7,53 +7,69 @@ class FlipperSession: Session {
     let sequencedRequest: SequencedRequest = .init()
     let chunkedRequest: ChunkedRequest = .init()
 
-    var queue: [Command] = []
+    var peripheralOutput: PeripheralOutput = .init()
+
+    weak var delegate: PeripheralOutputDelegate? {
+        get { peripheralOutput.delegate }
+        set { peripheralOutput.delegate = newValue }
+    }
+
+    @CommandId var nextId: Int
+    var queue: Queue = .init()
+    var awaitingResponse: [Command] = []
+
+    struct Queue {
+        private var queue: [Command] = []
+        private var backgroundQueue: [Command] = []
+
+        var count: Int { queue.count + backgroundQueue.count }
+
+        mutating func append(_ command: Command, priority: Priority?) {
+            switch priority {
+            case .none: queue.append(command)
+            case .background: backgroundQueue.append(command)
+            }
+        }
+
+        mutating func dequeue() -> Command? {
+            if !queue.isEmpty { return queue.removeFirst() }
+            if !backgroundQueue.isEmpty { return backgroundQueue.removeFirst() }
+            return nil
+        }
+    }
 
     struct Command {
         let id: Int
         let request: Request
         let continuation: Continuation
-        let consumer: (Data) -> Void
-    }
-
-    var nextId = 0 {
-        didSet {
-            let commandIdSize = MemoryLayout.size(ofValue: PB_Main().commandID)
-            let maxValue = Int(pow(2.0, Double(commandIdSize * 8)) - 1)
-            if nextId >= maxValue {
-                nextId = 0
-            }
-        }
     }
 
     func sendRequest(
         _ request: Request,
-        continuation: @escaping Continuation,
-        consumer: @escaping (Data) -> Void
+        priority: Priority? = nil,
+        continuation: @escaping Continuation
     ) {
-        queue.append(.init(
+        let command = Command(
             id: nextId,
             request: request,
-            continuation: continuation,
-            consumer: consumer))
+            continuation: continuation
+        )
 
-        nextId += 1
+        queue.append(command, priority: priority)
 
-        if queue.count == 1 {
+        if awaitingResponse.isEmpty {
             sendNextRequest()
         }
     }
 
     func sendNextRequest() {
-        guard let command = queue.first else { return }
+        guard let command = queue.dequeue() else { return }
+        awaitingResponse.append(command)
         let requests = sequencedRequest.split(command.request)
         for var request in requests {
             request.commandID = .init(command.id)
             let chunks = chunkedRequest.split(request)
-            for chunk in chunks {
-                assert(!chunk.isEmpty)
-                command.consumer(.init(chunk))
-            }
+            peripheralOutput.append(contentsOf: chunks)
         }
     }
 
@@ -64,7 +80,7 @@ class FlipperSession: Session {
             guard let nextResponse = try chunkedResponse.feed(data) else {
                 return
             }
-            guard let currentCommand = queue.first else {
+            guard let currentCommand = awaitingResponse.first else {
                 print("unexpected response", nextResponse)
                 return
             }
@@ -77,12 +93,41 @@ class FlipperSession: Session {
                 return
             }
             // dequeue and send next command
-            let command = queue.removeFirst()
+            let command = awaitingResponse.removeFirst()
             sendNextRequest()
             // handle current response
             command.continuation(result)
         } catch {
             print(error)
+        }
+    }
+
+    func didReceiveFlowControl(_ data: Data) {
+        let freeSpace = data.withUnsafeBytes {
+            $0.load(as: Int32.self).bigEndian
+        }
+        peripheralOutput.didReceiveBufferSpace(Int(freeSpace))
+    }
+}
+
+@propertyWrapper
+struct CommandId {
+    private var nextId = 1
+
+    let maxId: Int = {
+        let commandIdSize = MemoryLayout.size(ofValue: PB_Main().commandID)
+        return Int(pow(2.0, Double(commandIdSize * 8)) - 1)
+    }()
+
+    var wrappedValue: Int {
+        mutating get {
+            defer {
+                nextId += 1
+                if nextId >= maxId {
+                    nextId = 1
+                }
+            }
+            return nextId
         }
     }
 }
