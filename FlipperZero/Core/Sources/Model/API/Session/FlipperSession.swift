@@ -99,6 +99,9 @@ class FlipperSession: Session {
             print(error)
         }
     }
+
+    func didReceiveFlowControl(_ data: Data) {
+    }
 }
 
 @propertyWrapper

@@ -14,6 +14,8 @@ protocol Session: AnyObject {
     )
 
     func didReceiveData(_ data: Data)
+
+    func didReceiveFlowControl(_ data: Data)
 }
 
 protocol SessionDelegate: AnyObject {
