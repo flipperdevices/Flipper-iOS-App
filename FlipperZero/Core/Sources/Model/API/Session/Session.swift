@@ -1,16 +1,21 @@
 import Foundation
 
-protocol Session {
+public enum Priority {
+    case background
+}
+
+protocol Session: AnyObject {
+    var delegate: SessionDelegate? { get set }
+
     func sendRequest(
         _ request: Request,
         priority: Priority?,
-        continuation: @escaping Continuation,
-        consumer: @escaping (Data) -> Void
+        continuation: @escaping Continuation
     )
 
     func didReceiveData(_ data: Data)
 }
 
-public enum Priority {
-    case background
+protocol SessionDelegate: AnyObject {
+    func send(_ data: Data)
 }

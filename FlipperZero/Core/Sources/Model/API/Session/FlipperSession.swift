@@ -7,6 +7,8 @@ class FlipperSession: Session {
     let sequencedRequest: SequencedRequest = .init()
     let chunkedRequest: ChunkedRequest = .init()
 
+    weak var delegate: SessionDelegate?
+
     @CommandId var nextId: Int
     var queue: Queue = .init()
     var awaitingResponse: [Command] = []
@@ -35,20 +37,18 @@ class FlipperSession: Session {
         let id: Int
         let request: Request
         let continuation: Continuation
-        let consumer: (Data) -> Void
     }
 
     func sendRequest(
         _ request: Request,
         priority: Priority? = nil,
-        continuation: @escaping Continuation,
-        consumer: @escaping (Data) -> Void
+        continuation: @escaping Continuation
     ) {
         let command = Command(
             id: nextId,
             request: request,
-            continuation: continuation,
-            consumer: consumer)
+            continuation: continuation
+        )
 
         queue.append(command, priority: priority)
 
@@ -66,7 +66,7 @@ class FlipperSession: Session {
             let chunks = chunkedRequest.split(request)
             for chunk in chunks {
                 assert(!chunk.isEmpty)
-                command.consumer(.init(chunk))
+                delegate?.send(.init(chunk))
             }
         }
     }

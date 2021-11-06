@@ -47,7 +47,7 @@ class FlipperPeripheral: BluetoothPeripheral {
 
 // MARK: CBPeripheralDelegate
 
-private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
+private class _FlipperPeripheral: NSObject, CBPeripheralDelegate, SessionDelegate {
     let peripheral: CBPeripheral
     let session: Session
 
@@ -56,6 +56,7 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
         self.session = session
         super.init()
         peripheral.delegate = self
+        session.delegate = self
     }
 
     fileprivate let infoSubject = SafeSubject<Void>()
@@ -122,10 +123,7 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
         session.sendRequest(
             request,
             priority: priority,
-            continuation: continuation
-        ) { [weak self] in
-            self?.send($0)
-        }
+            continuation: continuation)
     }
 
     func send(_ data: Data) {
