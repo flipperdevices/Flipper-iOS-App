@@ -5,7 +5,7 @@ public enum Priority {
 }
 
 protocol Session: AnyObject {
-    var delegate: SessionDelegate? { get set }
+    var delegate: PeripheralOutputDelegate? { get set }
 
     func sendRequest(
         _ request: Request,
@@ -18,6 +18,6 @@ protocol Session: AnyObject {
     func didReceiveFlowControl(_ data: Data)
 }
 
-protocol SessionDelegate: AnyObject {
+protocol PeripheralOutputDelegate: AnyObject {
     func send(_ data: Data)
 }

@@ -7,7 +7,12 @@ class FlipperSession: Session {
     let sequencedRequest: SequencedRequest = .init()
     let chunkedRequest: ChunkedRequest = .init()
 
-    weak var delegate: SessionDelegate?
+    var peripheralOutput: PeripheralOutput = .init()
+
+    weak var delegate: PeripheralOutputDelegate? {
+        get { peripheralOutput.delegate }
+        set { peripheralOutput.delegate = newValue }
+    }
 
     @CommandId var nextId: Int
     var queue: Queue = .init()
@@ -64,10 +69,7 @@ class FlipperSession: Session {
         for var request in requests {
             request.commandID = .init(command.id)
             let chunks = chunkedRequest.split(request)
-            for chunk in chunks {
-                assert(!chunk.isEmpty)
-                delegate?.send(.init(chunk))
-            }
+            peripheralOutput.append(contentsOf: chunks)
         }
     }
 
@@ -101,6 +103,10 @@ class FlipperSession: Session {
     }
 
     func didReceiveFlowControl(_ data: Data) {
+        let freeSpace = data.withUnsafeBytes {
+            $0.load(as: Int32.self).bigEndian
+        }
+        peripheralOutput.didReceiveBufferSpace(Int(freeSpace))
     }
 }
 

@@ -47,7 +47,7 @@ class FlipperPeripheral: BluetoothPeripheral {
 
 // MARK: CBPeripheralDelegate
 
-private class _FlipperPeripheral: NSObject, CBPeripheralDelegate, SessionDelegate {
+private class _FlipperPeripheral: NSObject, CBPeripheralDelegate, PeripheralOutputDelegate {
     let peripheral: CBPeripheral
     let session: Session
 
