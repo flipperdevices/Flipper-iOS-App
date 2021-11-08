@@ -80,7 +80,6 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate, PeripheralOutp
         error: Swift.Error?
     ) {
         service.characteristics?.forEach { characteristic in
-            print(service.uuid, characteristic.properties.contains(.notify))
             // subscribe to rx updates
             if characteristic.properties.contains(.indicate) {
                 peripheral.setNotifyValue(true, for: characteristic)
