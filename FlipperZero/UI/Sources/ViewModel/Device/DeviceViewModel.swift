@@ -20,7 +20,13 @@ public class DeviceViewModel: ObservableObject {
         }
     }
 
-    @Published var presentConnectionsSheet = false
+    @Published var presentConnectionsSheet = false {
+        willSet {
+            if newValue == true {
+                flipper.disconnect()
+            }
+        }
+    }
 
     var firmwareVersion: String {
         guard let device = device else { return .noDevice }
