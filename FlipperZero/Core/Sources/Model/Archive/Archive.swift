@@ -17,17 +17,32 @@ public class Archive: ObservableObject {
 
     private init() {
         items = storage.items
-        if items.isEmpty {
-            items = demo
-        }
     }
 
     public func append(_ item: ArchiveItem) {
+        items.removeAll { $0.id == item.id }
         items.append(item)
     }
 
     public func delete(_ item: ArchiveItem) {
         items.removeAll { $0.id == item.id }
+    }
+
+    public func importKey(
+        name: String,
+        data: [UInt8],
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        let content = String(decoding: data, as: UTF8.self)
+        guard let item = ArchiveItem(fileName: name, content: content) else {
+            print("importKey error, invalid data")
+            return
+        }
+        append(item)
+        let path = Path(components: ["any", item.kind.fileDirectory, name])
+        flipperArchive.writeKey(data, at: path) { result in
+            completion(result)
+        }
     }
 
     public func syncWithDevice(completion: @escaping () -> Void) {
@@ -41,44 +56,4 @@ public class Archive: ObservableObject {
             completion()
         }
     }
-}
-
-var demo: [ArchiveItem] {
-    [
-        .init(
-            id: "Office_guest_pass",
-            name: "Office_guest_pass",
-            description: "ID: 031,33351",
-            isFavorite: true,
-            kind: .rfid,
-            origin: "EM-Marin"),
-        .init(
-            id: "Moms_bank_card",
-            name: "Moms_bank_card",
-            description: "ID: 031,33351",
-            isFavorite: true,
-            kind: .nfc,
-            origin: "Mifare"),
-        .init(
-            id: "Open_garage_door",
-            name: "Open_garage_door",
-            description: "868,86 MHz",
-            isFavorite: true,
-            kind: .subghz,
-            origin: "Doorhan"),
-        .init(
-            id: "Unknown_space_portal",
-            name: "Unknown_space_portal",
-            description: "ID: 03F4",
-            isFavorite: true,
-            kind: .ibutton,
-            origin: "Cyfral"),
-        .init(
-            id: "Edifier_speaker",
-            name: "Edifier_speaker",
-            description: "",
-            isFavorite: true,
-            kind: .irda,
-            origin: "")
-    ]
 }

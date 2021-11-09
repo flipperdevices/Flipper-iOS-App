@@ -12,6 +12,11 @@
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
 		8B7064CC26E27429006CB4A8 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B7064CB26E27429006CB4A8 /* UI */; };
 		8B77A9CD26CAA43300A3DF9F /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B77A9CC26CAA43300A3DF9F /* Core */; };
+		8BA57F1D273AD21D00A3A33B /* nfc.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F18273AD21D00A3A33B /* nfc.png */; };
+		8BA57F1E273AD21D00A3A33B /* ibutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F19273AD21D00A3A33B /* ibutton.png */; };
+		8BA57F1F273AD21D00A3A33B /* rfid.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1A273AD21D00A3A33B /* rfid.png */; };
+		8BA57F20273AD21D00A3A33B /* subhz.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1B273AD21D00A3A33B /* subhz.png */; };
+		8BA57F21273AD21D00A3A33B /* irda.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1C273AD21D00A3A33B /* irda.png */; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -36,6 +41,11 @@
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B7064CA26E2732E006CB4A8 /* UI */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UI; sourceTree = "<group>"; };
 		8B77A9C726CAA3BA00A3DF9F /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Core; sourceTree = "<group>"; };
+		8BA57F18273AD21D00A3A33B /* nfc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nfc.png; sourceTree = "<group>"; };
+		8BA57F19273AD21D00A3A33B /* ibutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ibutton.png; sourceTree = "<group>"; };
+		8BA57F1A273AD21D00A3A33B /* rfid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rfid.png; sourceTree = "<group>"; };
+		8BA57F1B273AD21D00A3A33B /* subhz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = subhz.png; sourceTree = "<group>"; };
+		8BA57F1C273AD21D00A3A33B /* irda.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = irda.png; sourceTree = "<group>"; };
 		8BEB7C8826E1432600AA9356 /* DI */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DI; sourceTree = "<group>"; };
 		8BED613A270B61CA009E51E2 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Core/.swiftlint.yml; sourceTree = "<group>"; };
 		8BED6140270B6272009E51E2 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Core/Sources/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
@@ -85,6 +95,18 @@
 				8B7064CA26E2732E006CB4A8 /* UI */,
 			);
 			name = Packages;
+			sourceTree = "<group>";
+		};
+		8BA57ED9273AA05900A3A33B /* FileIcons */ = {
+			isa = PBXGroup;
+			children = (
+				8BA57F19273AD21D00A3A33B /* ibutton.png */,
+				8BA57F1C273AD21D00A3A33B /* irda.png */,
+				8BA57F18273AD21D00A3A33B /* nfc.png */,
+				8BA57F1A273AD21D00A3A33B /* rfid.png */,
+				8BA57F1B273AD21D00A3A33B /* subhz.png */,
+			);
+			path = FileIcons;
 			sourceTree = "<group>";
 		};
 		8BED6139270B617B009E51E2 /* SwiftLint */ = {
@@ -164,6 +186,7 @@
 		F0DBFA2324EF2F9900EB2880 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				8BA57ED9273AA05900A3A33B /* FileIcons */,
 				F0DBFA2424EF2F9900EB2880 /* Info.plist */,
 				44A5B59224F05647009EE7FB /* iOS.entitlements */,
 				49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */,
@@ -234,9 +257,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BA57F20273AD21D00A3A33B /* subhz.png in Resources */,
+				8BA57F1F273AD21D00A3A33B /* rfid.png in Resources */,
+				8BA57F21273AD21D00A3A33B /* irda.png in Resources */,
 				498305C52527FEE900B04AFD /* Born2bSportyV2.ttf in Resources */,
+				8BA57F1E273AD21D00A3A33B /* ibutton.png in Resources */,
 				498305C32527FEE900B04AFD /* HelvetiPixel.ttf in Resources */,
 				49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */,
+				8BA57F1D273AD21D00A3A33B /* nfc.png in Resources */,
 				F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

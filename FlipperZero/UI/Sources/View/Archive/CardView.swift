@@ -223,20 +223,30 @@ struct CardActions: View {
                     }
                     Spacer()
                 } else {
+//                    Button {
+//                        // isEditMode = true
+//                    } label: {
+//                        Image(systemName: "square.and.pencil")
+//                    }
+//
+//                    Spacer()
+
+                    // MARK: Share as url
+
                     Button {
-                        // isEditMode = true
+                        share(item, shareOption: .scheme)
                     } label: {
-                        Image(systemName: "square.and.pencil")
+                        Image(systemName: "square.and.arrow.up")
                     }
 
                     Spacer()
 
-                    // MARK: Share
+                    // MARK: Share as file
 
                     Button {
-                        share([item.name])
+                        share(item, shareOption: .file)
                     } label: {
-                        Image(systemName: "square.and.arrow.up")
+                        Image(systemName: "square.and.arrow.up.fill")
                     }
 
                     Spacer()

@@ -1,7 +1,7 @@
 public class FlipperArchive {
     public static let shared: FlipperArchive = .init()
 
-    private let root: Path = .init(components: ["ext"])
+    private let root: Path = .init(components: ["any"])
     private let rpc: RPC = .shared
 
     private init() {}
@@ -13,6 +13,21 @@ public class FlipperArchive {
             switch result {
             case .success(let files):
                 self?.readFiles(files, completion)
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    public func writeKey(
+        _ bytes: [UInt8],
+        at path: Path,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        rpc.writeFile(at: path, bytes: bytes) { response in
+            switch response {
+            case .success:
+                completion(.success(()))
             case .failure(let error):
                 completion(.failure(error))
             }
@@ -49,9 +64,9 @@ public class FlipperArchive {
     private func listFiles(
         _ completion: @escaping (Result<[Path], Error>) -> Void
     ) {
-        let supportedPaths: [Path] =
-            ["ibutton", "nfc", "lfrfid", "irda", "subghz/saved"]
-            .map { root.appending($0) }
+        let supportedPaths: [Path] = ArchiveItem.Kind.allCases.map {
+            root.appending($0.fileDirectory)
+        }
 
         var archiveFiles: [Path] = .init()
 
@@ -100,19 +115,39 @@ extension ArchiveItem {
             description: content,
             isFavorite: false,
             kind: kind,
-            origin: "ext")
+            origin: "flipper")
     }
 }
 
 extension ArchiveItem.Kind {
-    init?<T: StringProtocol>(_ ext: T) {
-        switch ext {
+    init?<T: StringProtocol>(_ fileExtension: T) {
+        switch fileExtension {
         case "ibtn": self = .ibutton
         case "nfc": self = .nfc
         case "sub": self = .subghz
         case "rfid": self = .rfid
         case "ir": self = .irda
         default: return nil
+        }
+    }
+
+    public var fileExtension: String {
+        switch self {
+        case .ibutton: return "ibtn"
+        case .nfc: return "nfc"
+        case .subghz: return "sub"
+        case .rfid: return "rfid"
+        case .irda: return "ir"
+        }
+    }
+
+    var fileDirectory: String {
+        switch self {
+        case .ibutton: return "ibutton"
+        case .nfc: return "nfc"
+        case .subghz: return "subghz/saved"
+        case .rfid: return "lfrfid"
+        case .irda: return "irda"
         }
     }
 }
