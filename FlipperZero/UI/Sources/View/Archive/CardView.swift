@@ -223,13 +223,13 @@ struct CardActions: View {
                     }
                     Spacer()
                 } else {
-                    Button {
-                        // isEditMode = true
-                    } label: {
-                        Image(systemName: "square.and.pencil")
-                    }
-
-                    Spacer()
+//                    Button {
+//                        // isEditMode = true
+//                    } label: {
+//                        Image(systemName: "square.and.pencil")
+//                    }
+//
+//                    Spacer()
 
                     // MARK: Share as url
 
