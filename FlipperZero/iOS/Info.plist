@@ -2,171 +2,61 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UTExportedTypeDeclarations</key>
-	<array>
-		<dict>
-			<key>UTTypeIconFiles</key>
-			<array>
-				<string>irda.png</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>Infrared Key</string>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-			</array>
-			<key>UTTypeIdentifier</key>
-			<string>com.flipperdevices.ir</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>ir</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeIconFiles</key>
-			<array>
-				<string>rfid.png</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>RFID Key</string>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-			</array>
-			<key>UTTypeIdentifier</key>
-			<string>com.flipperdevices.rfid</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>rfid</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeIconFiles</key>
-			<array>
-				<string>subhz.png</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>SubHz Key</string>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-			</array>
-			<key>UTTypeIdentifier</key>
-			<string>com.flipperdevices.sub</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>sub</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeIconFiles</key>
-			<array>
-				<string>nfc.png</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>NFC Key</string>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-			</array>
-			<key>UTTypeIdentifier</key>
-			<string>com.flipperdevices.nfc</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>nfc</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeIconFiles</key>
-			<array>
-				<string>ibutton.png</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>iButton Key</string>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-			</array>
-			<key>UTTypeIdentifier</key>
-			<string>com.flipperdevices.ibutton</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>ibtn</string>
-				</array>
-			</dict>
-		</dict>
-	</array>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Infrared Key</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>com.flipperdevices.ir</string>
 			</array>
-			<key>CFBundleTypeName</key>
-			<string>Infrared Key</string>
-			<key>LSHandlerRank</key>
-			<string>Owner</string>
 		</dict>
 		<dict>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>com.flipperdevices.rfid</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>RFID Key</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
-		</dict>
-		<dict>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.flipperdevices.sub</string>
+				<string>com.flipperdevices.rfid</string>
 			</array>
+		</dict>
+		<dict>
 			<key>CFBundleTypeName</key>
 			<string>SubGhz Key</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
-		</dict>
-		<dict>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.flipperdevices.nfc</string>
+				<string>com.flipperdevices.sub</string>
 			</array>
+		</dict>
+		<dict>
 			<key>CFBundleTypeName</key>
 			<string>NFC Key</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
-		</dict>
-		<dict>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.flipperdevices.ibutton</string>
+				<string>com.flipperdevices.nfc</string>
 			</array>
+		</dict>
+		<dict>
 			<key>CFBundleTypeName</key>
 			<string>iButton Key</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.flipperdevices.ibutton</string>
+			</array>
 		</dict>
 	</array>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -179,9 +69,24 @@
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>com.flipperdevices.main</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>flipper</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NFCReaderUsageDescription</key>
 	<string>NFC is required to read tags</string>
@@ -219,6 +124,114 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Infrared Key</string>
+			<key>UTTypeIconFiles</key>
+			<array>
+				<string>irda.png</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>com.flipperdevices.ir</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>ir</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>RFID Key</string>
+			<key>UTTypeIconFiles</key>
+			<array>
+				<string>rfid.png</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>com.flipperdevices.rfid</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>rfid</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>SubHz Key</string>
+			<key>UTTypeIconFiles</key>
+			<array>
+				<string>subhz.png</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>com.flipperdevices.sub</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>sub</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>NFC Key</string>
+			<key>UTTypeIconFiles</key>
+			<array>
+				<string>nfc.png</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>com.flipperdevices.nfc</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>nfc</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>iButton Key</string>
+			<key>UTTypeIconFiles</key>
+			<array>
+				<string>ibutton.png</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>com.flipperdevices.ibutton</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>ibtn</string>
+				</array>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>
