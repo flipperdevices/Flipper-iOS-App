@@ -131,7 +131,7 @@ extension ArchiveItem.Kind {
         }
     }
 
-    var fileExtension: String {
+    public var fileExtension: String {
         switch self {
         case .ibutton: return "ibtn"
         case .nfc: return "nfc"

@@ -234,7 +234,7 @@ struct CardActions: View {
                     // MARK: Share
 
                     Button {
-                        share([item.name])
+                        share(item)
                     } label: {
                         Image(systemName: "square.and.arrow.up")
                     }
