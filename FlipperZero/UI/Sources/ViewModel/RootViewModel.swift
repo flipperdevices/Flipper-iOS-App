@@ -36,21 +36,51 @@ public class RootViewModel: ObservableObject {
     let achive: Archive = .shared
 
     func importKey(_ keyURL: URL) {
-        let name = keyURL.lastPathComponent
-
         func completion(_ result: Result<Void, Error>) {
             switch result {
             case .success:
-                print("key \(name) imported")
+                print("key imported")
             case .failure(let error):
                 print(error)
             }
         }
 
-        switch try? Data(contentsOf: keyURL) {
+        switch keyURL.scheme {
+        case "file": importFile(keyURL, completion: completion)
+        case "flipper": importURL(keyURL, completion: completion)
+        default: break
+        }
+    }
+
+    func importURL(
+        _ url: URL,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        guard let name = url.host, let content = url.pathComponents.last else {
+            print("invalid url")
+            return
+        }
+        guard let data = Data(base64Encoded: content) else {
+            print("invalid data")
+            return
+        }
+
+        achive.importKey(
+            name: name,
+            data: .init(data),
+            completion: completion)
+    }
+
+    func importFile(
+        _ url: URL,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        let name = url.lastPathComponent
+
+        switch try? Data(contentsOf: url) {
         // internal file
         case .some(let data):
-            try? FileManager.default.removeItem(at: keyURL)
+            try? FileManager.default.removeItem(at: url)
             print("importing internal key", name)
             achive.importKey(
                 name: name,
@@ -58,7 +88,7 @@ public class RootViewModel: ObservableObject {
                 completion: completion)
         // icloud file
         case .none:
-            let doc = KeyDocument(fileURL: keyURL)
+            let doc = KeyDocument(fileURL: url)
             doc.open { [weak self] success in
                 guard success, let data = doc.data else {
                     print("error opening doc")

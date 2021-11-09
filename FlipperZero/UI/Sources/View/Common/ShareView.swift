@@ -17,7 +17,30 @@ func share(
         .present(activityContoller, animated: true, completion: nil)
 }
 
-func share(_ key: ArchiveItem) {
+enum ShareOption {
+    case file
+    case scheme
+}
+
+func share(_ key: ArchiveItem, shareOption: ShareOption) {
+    switch shareOption {
+    case .file: shareFile(key)
+    case .scheme: shareScheme(key)
+    }
+}
+
+func shareScheme(_ key: ArchiveItem) {
+    guard let data = key.description.data(using: .utf8) else {
+        print("invalid description")
+        return
+    }
+    let name = "\(key.name).\(key.kind.fileExtension)"
+    let base64String = data.base64EncodedString()
+    let urlString = "flipper://\(name)/\(base64String)"
+    share([urlString])
+}
+
+func shareFile(_ key: ArchiveItem) {
     let urls = FileManager.default.urls(
         for: .cachesDirectory, in: .userDomainMask)
 

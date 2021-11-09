@@ -231,12 +231,22 @@ struct CardActions: View {
 
                     Spacer()
 
-                    // MARK: Share
+                    // MARK: Share as url
 
                     Button {
-                        share(item)
+                        share(item, shareOption: .scheme)
                     } label: {
                         Image(systemName: "square.and.arrow.up")
+                    }
+
+                    Spacer()
+
+                    // MARK: Share as file
+
+                    Button {
+                        share(item, shareOption: .file)
+                    } label: {
+                        Image(systemName: "square.and.arrow.up.fill")
                     }
 
                     Spacer()
