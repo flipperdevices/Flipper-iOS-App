@@ -26,6 +26,20 @@ public class Archive: ObservableObject {
 
     public func delete(_ item: ArchiveItem) {
         items.removeAll { $0.id == item.id }
+        flipperArchive.delete(item) { result in
+            switch result {
+            case .success:
+                print("deleted")
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+
+    public func favorite(_ item: ArchiveItem) {
+        if let index = items.firstIndex(where: { $0.id == item.id }) {
+            items[index].isFavorite.toggle()
+        }
     }
 
     public func importKey(

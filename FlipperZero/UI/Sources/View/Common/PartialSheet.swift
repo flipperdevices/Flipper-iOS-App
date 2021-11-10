@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PartialSheetView: View {
-    @EnvironmentObject var sheetManager: SheetManager
+    @StateObject var sheetManager: SheetManager = .shared
 
     var backgroundColor: Color {
         systemBackground.opacity(sheetManager.isPresented ? 0.5 : 0)

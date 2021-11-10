@@ -16,6 +16,11 @@ class ArchiveViewModel: ObservableObject {
 
     @Published var archive: Archive = .shared
     @Published var sortOption: SortOption = .title
+    @Published var sheetManager: SheetManager = .shared
+
+    var title: String {
+        device?.name ?? .noDevice
+    }
 
     var items: [ArchiveItem] {
         archive.items.sorted {
@@ -37,7 +42,7 @@ class ArchiveViewModel: ObservableObject {
     }
     var onSelectItemsModeChanded: (Bool) -> Void = { _ in }
 
-    @Published var editingItem: ArchiveItem = .demo
+    @Published var editingItem: ArchiveItem = .none
 
     var categories: [String] = [
         "Favorites", "RFID 125", "Sub-gHz", "NFC", "iButton", "iRda"
@@ -136,8 +141,17 @@ class ArchiveViewModel: ObservableObject {
     }
 
     func deleteSelectedItems() {
-        if !selectedItems.isEmpty {
-            isDeletePresented = true
+        switch editingItem {
+        case .none:
+            selectedItems.forEach(archive.delete)
+            selectedItems.removeAll()
+            withAnimation {
+                isSelectItemsMode = false
+            }
+        default:
+            archive.delete(editingItem)
+            sheetManager.dismiss()
+            editingItem = .none
         }
     }
 
@@ -152,10 +166,15 @@ class ArchiveViewModel: ObservableObject {
             self.status = .init(self.device?.state)
         }
     }
+
+    func favorite() {
+        editingItem.isFavorite.toggle()
+        archive.favorite(editingItem)
+    }
 }
 
 extension ArchiveItem {
-    static var demo: Self {
+    static var none: Self {
         .init(
             id: "",
             name: "",

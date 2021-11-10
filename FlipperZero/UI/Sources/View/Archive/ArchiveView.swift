@@ -3,7 +3,6 @@ import SwiftUI
 
 struct ArchiveView: View {
     @StateObject var viewModel: ArchiveViewModel
-    @EnvironmentObject var sheetManager: SheetManager
 
     var body: some View {
         VStack(spacing: 0) {
@@ -30,6 +29,14 @@ struct ArchiveView: View {
                 tabViewOverlay
             }
         }
+        .actionSheet(isPresented: $viewModel.isDeletePresented) {
+            .init(title: Text("You can't undo this action"), buttons: [
+                .destructive(Text("Delete")) {
+                    viewModel.deleteSelectedItems()
+                },
+                .cancel()
+            ])
+        }
     }
 
     func onAction(_ action: ArchiveListView.Action) {
@@ -51,10 +58,8 @@ struct ArchiveView: View {
             viewModel.selectItem(item)
         } else {
             viewModel.editingItem = item
-            sheetManager.present {
-                CardSheetView(
-                    device: viewModel.device,
-                    item: $viewModel.editingItem)
+            viewModel.sheetManager.present {
+                CardSheetView(viewModel: viewModel)
             }
         }
     }
@@ -75,16 +80,10 @@ struct ArchiveView: View {
                 Spacer()
 
                 Button {
-                    viewModel.deleteSelectedItems()
+                    viewModel.isDeletePresented = true
                 } label: {
                     Image(systemName: "trash")
                         .font(.system(size: 22))
-                }
-                .actionSheet(isPresented: $viewModel.isDeletePresented) {
-                    .init(title: Text("You can't undo this action"), buttons: [
-                        .destructive(Text("Delete")) { print("delete") },
-                        .cancel()
-                    ])
                 }
             }
             .padding(.top, 12)

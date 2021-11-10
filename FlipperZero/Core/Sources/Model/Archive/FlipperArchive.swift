@@ -19,6 +19,13 @@ public class FlipperArchive {
         }
     }
 
+    public func delete(
+        _ item: ArchiveItem,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        rpc.deleteFile(at: item.path, force: false, completion: completion)
+    }
+
     public func writeKey(
         _ bytes: [UInt8],
         at path: Path,
@@ -149,5 +156,15 @@ extension ArchiveItem.Kind {
         case .rfid: return "lfrfid"
         case .irda: return "irda"
         }
+    }
+}
+
+extension ArchiveItem {
+    fileprivate var fileName: String {
+        "\(name).\(kind.fileExtension)"
+    }
+
+    fileprivate var path: Path {
+        .init(components: ["ext", kind.fileDirectory, fileName])
     }
 }
