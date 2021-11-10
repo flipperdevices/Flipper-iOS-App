@@ -3,31 +3,54 @@ import SwiftUI
 
 struct ArchiveListView: View {
     var items: [ArchiveItem]
+    let isSynchronizing: Bool
+    @State var syncLabelOpacity = 0.0
     @Binding var isSelectItemsMode: Bool
     @Binding var selectedItems: [ArchiveItem]
-    var itemSelected: (ArchiveItem) -> Void
-    var onDragGesture: (DragGesture.Value) -> Void
+
+    var onAction: (Action) -> Void
+
+    enum Action {
+        case itemSelected(ArchiveItem)
+        case horizontalDrag(Double)
+        case synchronize
+    }
 
     init(
         items: [ArchiveItem],
+        isSynchronizing: Bool,
         isSelectItemsMode: Binding<Bool>,
         selectedItems: Binding<[ArchiveItem]>,
-        itemSelected: @escaping (ArchiveItem) -> Void,
-        onDragGesture: @escaping (DragGesture.Value) -> Void
+        onAction: @escaping (Action) -> Void
     ) {
         self.items = items
+        self.isSynchronizing = isSynchronizing
         self._isSelectItemsMode = isSelectItemsMode
         self._selectedItems = selectedItems
-        self.itemSelected = itemSelected
-        self.onDragGesture = onDragGesture
+        self.onAction = onAction
     }
 
     var body: some View {
         ScrollView {
+            HStack {
+                Spacer()
+                ZStack {
+                    Text("Keep pulling to sync with device")
+                        .opacity(isSynchronizing ? 0 : 1)
+                    Text("Syncing")
+                        .opacity(isSynchronizing ? 1 : 0)
+                }
+                Spacer()
+            }
+            .foregroundColor(.secondary)
+            .opacity(syncLabelOpacity)
+            .padding(.top, -30)
+            .animation(.spring())
+
             VStack(spacing: 12) {
                 ForEach(items) { item in
                     Button {
-                        itemSelected(item)
+                        onAction(.itemSelected(item))
                     } label: {
                         HStack {
                             if isSelectItemsMode {
@@ -44,19 +67,34 @@ struct ArchiveListView: View {
                                 .gesture(
                                     DragGesture()
                                         .onEnded { value in
-                                            self.onDragGesture(value)
+                                            let width = value.translation.width
+                                            onAction(.horizontalDrag(width))
                                         }
                                 )
                         }
                     }
                 }
             }
-            .padding(.vertical, 12)
+            .padding(.bottom, 12)
             .padding(.leading, 16)
             .padding(.trailing, 15)
+            .background(GeometryReader {
+                Color.clear.preference(
+                    key: ViewOffsetKey.self,
+                    value: $0.frame(in: .global).origin.y)
+            })
+            .onPreferenceChange(ViewOffsetKey.self, perform: onScroll)
         }
         .frame(maxWidth: .infinity)
         .background(Color.gray.opacity(0.1))
+    }
+
+    func onScroll(offset: Double) {
+        switch offset - (UIDevice.isFaceIDAvailable ? 30 : 0) {
+        case 222...: onAction(.synchronize)
+        case 170...: syncLabelOpacity = 1
+        default: syncLabelOpacity = 0
+        }
     }
 }
 

@@ -9,7 +9,10 @@ class ArchiveViewModel: ObservableObject {
     @Inject var pairedDevice: PairedDeviceProtocol
     var disposeBag: DisposeBag = .init()
 
-    @Published var device: Peripheral?
+    @Published var device: Peripheral? {
+        didSet { status = .init(device?.state) }
+    }
+    @Published var status: HeaderDeviceStatus = .noDevice
 
     @Published var archive: Archive = .shared
     @Published var sortOption: SortOption = .title
@@ -25,6 +28,7 @@ class ArchiveViewModel: ObservableObject {
         }
     }
 
+    @Published var isSynchronizing = false
     @Published var selectedCategoryIndex = 0
     @Published var isDeletePresented = false
     @Published var selectedItems: [ArchiveItem] = []
@@ -70,6 +74,14 @@ class ArchiveViewModel: ObservableObject {
         pairedDevice.peripheral
             .sink { [weak self] item in
                 self?.device = item
+            }
+            .store(in: &disposeBag)
+
+        archive.$isSynchronizing
+            .sink { isSynchronizing in
+                self.status = isSynchronizing
+                    ? .synchronizing
+                    : .init(self.device?.state)
             }
             .store(in: &disposeBag)
     }
@@ -126,6 +138,18 @@ class ArchiveViewModel: ObservableObject {
     func deleteSelectedItems() {
         if !selectedItems.isEmpty {
             isDeletePresented = true
+        }
+    }
+
+    func synchronize() {
+        guard !isSynchronizing else {
+            return
+        }
+        isSynchronizing = true
+        status = .synchronizing
+        archive.syncWithDevice {
+            self.isSynchronizing = false
+            self.status = .init(self.device?.state)
         }
     }
 }

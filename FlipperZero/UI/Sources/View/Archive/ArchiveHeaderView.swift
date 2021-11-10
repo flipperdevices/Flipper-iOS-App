@@ -7,7 +7,7 @@ struct ArchiveHeaderView: View {
     var body: some View {
         HeaderView(
             title: viewModel.device?.name ?? .noDevice,
-            status: .init(viewModel.device?.state),
+            status: viewModel.status,
             leftView: { leftView },
             rightView: { rightView })
     }

@@ -20,10 +20,10 @@ struct ArchiveView: View {
             ) { group in
                 ArchiveListView(
                     items: group.items,
+                    isSynchronizing: viewModel.isSynchronizing,
                     isSelectItemsMode: $viewModel.isSelectItemsMode,
                     selectedItems: $viewModel.selectedItems,
-                    itemSelected: onItemSelected,
-                    onDragGesture: onDragGesture)
+                    onAction: onAction)
             }
 
             if viewModel.isSelectItemsMode {
@@ -32,9 +32,17 @@ struct ArchiveView: View {
         }
     }
 
-    func onDragGesture(_ value: DragGesture.Value) {
+    func onAction(_ action: ArchiveListView.Action) {
+        switch action {
+        case .itemSelected(let item): onItemSelected(item: item)
+        case .horizontalDrag(let width): onDragGesture(width)
+        case .synchronize: viewModel.synchronize()
+        }
+    }
+
+    func onDragGesture(_ width: Double) {
         withAnimation {
-            viewModel.onCardSwipe(value.translation.width)
+            viewModel.onCardSwipe(width)
         }
     }
 
