@@ -49,7 +49,7 @@ class ArchiveViewModel: ObservableObject {
         "Favorites", "RFID 125", "Sub-gHz", "NFC", "iButton", "iRda"
     ]
 
-    struct Group: Identifiable {
+    struct Group: Identifiable, Equatable {
         var id: ArchiveItem.FileType?
         var items: [ArchiveItem]
     }

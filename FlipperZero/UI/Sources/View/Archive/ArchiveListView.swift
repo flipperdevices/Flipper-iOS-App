@@ -3,7 +3,9 @@ import SwiftUI
 
 struct ArchiveListView: View {
     var items: [ArchiveItem]
+    let hasFavorites: Bool
     let isSynchronizing: Bool
+    @State var showFavorites = true
     @State var syncLabelOpacity = 0.0
     @State var blockSelection = false
     @Binding var isSelectItemsMode: Bool
@@ -18,12 +20,14 @@ struct ArchiveListView: View {
 
     init(
         items: [ArchiveItem],
+        hasFavorites: Bool,
         isSynchronizing: Bool,
         isSelectItemsMode: Binding<Bool>,
         selectedItems: Binding<[ArchiveItem]>,
         onAction: @escaping (Action) -> Void
     ) {
         self.items = items
+        self.hasFavorites = hasFavorites
         self.isSynchronizing = isSynchronizing
         self._isSelectItemsMode = isSelectItemsMode
         self._selectedItems = selectedItems
@@ -47,39 +51,35 @@ struct ArchiveListView: View {
             .padding(.top, -30)
             .animation(.spring())
 
-            VStack(spacing: 12) {
-                ForEach(items) { item in
-                    Button {
-                        if !blockSelection {
-                            onAction(.itemSelected(item))
-                        }
-                    } label: {
-                        HStack {
-                            if isSelectItemsMode {
-                                Image(systemName: selectedItems.contains(item)
-                                    ? "checkmark.circle.fill"
-                                    : "circle"
-                                )
-                                .padding(.trailing, 8)
-                            }
-                            ArchiveListItemView(item: item)
-                                .foregroundColor(.primary)
-                                .background(systemBackground)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                                .gesture(
-                                    DragGesture()
-                                        .onChanged { value in
-                                            let height = abs(value.translation.height)
-                                            let width = abs(value.translation.width)
-                                            blockSelection = width > height
-                                        }
-                                        .onEnded { _ in
-                                            blockSelection = false
-                                        }
-                                )
+            VStack(alignment: .leading, spacing: 12) {
+                if hasFavorites {
+                    HStack {
+                        Text("Favorites")
+                            .font(.system(size: 28, weight: .bold))
+                        Spacer()
+                        Image(systemName: "chevron.up")
+                            .font(.system(size: 22))
+                            .rotationEffect(.degrees(showFavorites ? 0 : 180))
+                    }
+                    .background(systemBackground.opacity(0.01))
+                    .padding(.horizontal, 16)
+                    .onTapGesture {
+                        withAnimation {
+                            showFavorites.toggle()
                         }
                     }
+
+                    if showFavorites {
+                        list(items.filter { $0.isFavorite })
+                    }
+
+                    Text("All")
+                        .font(.system(size: 28, weight: .bold))
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 8)
                 }
+
+                list(items)
             }
             .padding(.bottom, 12)
             .padding(.leading, 16)
@@ -93,6 +93,41 @@ struct ArchiveListView: View {
         }
         .frame(maxWidth: .infinity)
         .background(Color.gray.opacity(0.1))
+    }
+
+    func list(_ items: [ArchiveItem]) -> some View {
+        ForEach(items) { item in
+            Button {
+                if !blockSelection {
+                    onAction(.itemSelected(item))
+                }
+            } label: {
+                HStack {
+                    if isSelectItemsMode {
+                        Image(systemName: selectedItems.contains(item)
+                            ? "checkmark.circle.fill"
+                            : "circle"
+                        )
+                        .padding(.trailing, 8)
+                    }
+                    ArchiveListItemView(item: item)
+                        .foregroundColor(.primary)
+                        .background(systemBackground)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    let height = abs(value.translation.height)
+                                    let width = abs(value.translation.width)
+                                    blockSelection = width > height
+                                }
+                                .onEnded { _ in
+                                    blockSelection = false
+                                }
+                        )
+                }
+            }
+        }
     }
 
     func onScroll(offset: Double) {
