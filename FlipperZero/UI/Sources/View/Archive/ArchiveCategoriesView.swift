@@ -17,10 +17,14 @@ struct ArchiveCategoriesView: View {
                         ) { name in
                             if let index = categories.firstIndex(of: name) {
                                 self.selectedIndex = index
-                                proxy.scrollTo(name, anchor: .trailing)
                             }
                         }
-                        .id($0)
+                        .id(categories.firstIndex(of: $0))
+                    }
+                }
+                .onChange(of: selectedIndex) { _ in
+                    withAnimation {
+                        proxy.scrollTo(selectedIndex, anchor: .center)
                     }
                 }
             }
