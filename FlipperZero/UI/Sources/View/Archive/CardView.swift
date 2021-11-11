@@ -99,7 +99,7 @@ struct Card: View {
         ZStack {
             VStack(alignment: .leading, spacing: 0) {
                 CardHeaderView(
-                    name: $item.name,
+                    name: $item.name.value,
                     image: item.icon,
                     isEditMode: $isEditMode,
                     focusedField: $focusedField
@@ -190,12 +190,11 @@ struct CardDataView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if !item.description.isEmpty {
-                HStack {
-                    Text(item.description)
+            if !item.properties.isEmpty {
+                ForEach(item.properties, id: \.key) { item in
+                    Text("\(item.key): \(item.value)")
                         .font(.system(size: 20).weight(.semibold))
-                    Spacer()
-                }.frame(maxWidth: .infinity)
+                }
             }
         }
     }

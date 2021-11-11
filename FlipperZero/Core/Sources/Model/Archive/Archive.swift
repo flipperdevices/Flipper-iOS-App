@@ -53,7 +53,7 @@ public class Archive: ObservableObject {
             return
         }
         append(item)
-        let path = Path(components: ["any", item.kind.fileDirectory, name])
+        let path = Path(components: ["any", item.fileType.directory, name])
         flipperArchive.writeKey(data, at: path) { result in
             completion(result)
         }
@@ -61,10 +61,10 @@ public class Archive: ObservableObject {
 
     public func syncWithDevice(completion: @escaping () -> Void) {
         isSynchronizing = true
-        flipperArchive.readAllItems { result in
-            self.isSynchronizing = false
+        flipperArchive.readAllItems { [weak self] result in
+            self?.isSynchronizing = false
             switch result {
-            case .success(let items): self.items = items
+            case .success(let items): self?.items = items
             case .failure(let error): print(error)
             }
             completion()

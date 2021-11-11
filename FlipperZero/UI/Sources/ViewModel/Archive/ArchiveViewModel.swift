@@ -23,14 +23,15 @@ class ArchiveViewModel: ObservableObject {
     }
 
     var items: [ArchiveItem] {
-        archive.items.sorted {
-            switch sortOption {
-            case .creationDate: return $0.name < $1.name
-            case .title: return $0.description < $1.description
-            case .oldestFirst: return $0.kind < $1.kind
-            case .newestFirst: return $0.origin < $1.origin
-            }
-        }
+        archive.items
+//        archive.items.sorted { _, _ in
+//            switch sortOption {
+//            case .creationDate: return $0.name < $1.name
+//            case .title: return $0.description < $1.description
+//            case .oldestFirst: return $0.kind < $1.kind
+//            case .newestFirst: return $0.origin < $1.origin
+//            }
+//        }
     }
 
     @Published var isSynchronizing = false
@@ -49,18 +50,18 @@ class ArchiveViewModel: ObservableObject {
     ]
 
     struct Group: Identifiable {
-        var id: ArchiveItem.Kind?
+        var id: ArchiveItem.FileType?
         var items: [ArchiveItem]
     }
 
     var itemGroups: [Group] {
         [
             .init(id: nil, items: items),
-            .init(id: .rfid, items: items.filter { $0.kind == .rfid }),
-            .init(id: .subghz, items: items.filter { $0.kind == .subghz }),
-            .init(id: .nfc, items: items.filter { $0.kind == .nfc }),
-            .init(id: .ibutton, items: items.filter { $0.kind == .ibutton }),
-            .init(id: .irda, items: items.filter { $0.kind == .irda })
+            .init(id: .rfid, items: items.filter { $0.fileType == .rfid }),
+            .init(id: .subghz, items: items.filter { $0.fileType == .subghz }),
+            .init(id: .nfc, items: items.filter { $0.fileType == .nfc }),
+            .init(id: .ibutton, items: items.filter { $0.fileType == .ibutton }),
+            .init(id: .irda, items: items.filter { $0.fileType == .irda })
         ]
     }
 
@@ -163,9 +164,7 @@ extension ArchiveItem {
         .init(
             id: "",
             name: "",
-            description: "",
-            isFavorite: false,
-            kind: .ibutton,
-            origin: "")
+            fileType: .ibutton,
+            properties: [])
     }
 }

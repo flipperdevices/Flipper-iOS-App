@@ -71,8 +71,8 @@ public class FlipperArchive {
     private func listFiles(
         _ completion: @escaping (Result<[Path], Error>) -> Void
     ) {
-        let supportedPaths: [Path] = ArchiveItem.Kind.allCases.map {
-            root.appending($0.fileDirectory)
+        let supportedPaths: [Path] = ArchiveItem.FileType.allCases.map {
+            root.appending($0.directory)
         }
 
         var archiveFiles: [Path] = .init()
@@ -108,27 +108,58 @@ extension Array where Element == Core.Element {
 
 extension ArchiveItem {
     init?(fileName: String, content: String) {
-        let name = String(fileName.split(separator: ".").first ?? "")
-        let ext = fileName.split(separator: ".").last ?? ""
+        guard let name = Name(fileName: fileName) else {
+            print("invalid file name: \(fileName)")
+            return nil
+        }
 
-        guard let kind = Kind(ext) else {
-            print("unknown extension \(ext)")
+        guard let type = FileType(fileName: fileName) else {
+            print("invalid file type: \(fileName)")
+            return nil
+        }
+
+        guard let properties = [Property](text: content) else {
+            print("invalid content: \(content)")
             return nil
         }
 
         self = .init(
             id: fileName,
             name: name,
-            description: content,
-            isFavorite: false,
-            kind: kind,
-            origin: "flipper")
+            fileType: type,
+            properties: properties,
+            isFavorite: false)
+    }
+
+    public var fileName: String {
+        "\(name).\(fileType.extension)"
+    }
+
+    public var content: String {
+        properties.reduce(into: "") { result, property in
+            for line in property.description {
+                result += "# \(line)\n"
+            }
+            result += "\(property.key): \(property.value)\n"
+        }
     }
 }
 
-extension ArchiveItem.Kind {
-    init?<T: StringProtocol>(_ fileExtension: T) {
-        switch fileExtension {
+extension ArchiveItem.Name {
+    init?<T: StringProtocol>(fileName: T) {
+        guard let name = fileName.split(separator: ".").first else {
+            return nil
+        }
+        self.value = String(name)
+    }
+}
+
+extension ArchiveItem.FileType {
+    init?<T: StringProtocol>(fileName: T) {
+        guard let `extension` = fileName.split(separator: ".").last else {
+            return nil
+        }
+        switch `extension` {
         case "ibtn": self = .ibutton
         case "nfc": self = .nfc
         case "sub": self = .subghz
@@ -138,7 +169,7 @@ extension ArchiveItem.Kind {
         }
     }
 
-    public var fileExtension: String {
+    public var `extension`: String {
         switch self {
         case .ibutton: return "ibtn"
         case .nfc: return "nfc"
@@ -148,7 +179,7 @@ extension ArchiveItem.Kind {
         }
     }
 
-    var fileDirectory: String {
+    var directory: String {
         switch self {
         case .ibutton: return "ibutton"
         case .nfc: return "nfc"
@@ -160,11 +191,38 @@ extension ArchiveItem.Kind {
 }
 
 extension ArchiveItem {
-    fileprivate var fileName: String {
-        "\(name).\(kind.fileExtension)"
-    }
-
     fileprivate var path: Path {
-        .init(components: ["ext", kind.fileDirectory, fileName])
+        .init(components: ["any", fileType.directory, fileName])
+    }
+}
+
+extension Array where Element == ArchiveItem.Property {
+    init?(text: String) {
+        var comments: [String] = []
+        var properties: [ArchiveItem.Property] = []
+
+        for line in text.split(separator: "\n") {
+            guard !line.starts(with: "#") else {
+                let comment = line.dropFirst()
+                comments.append(comment.trimmingCharacters(in: .whitespaces))
+                continue
+            }
+            let description = comments
+            comments.removeAll()
+
+            let parts = line.split(separator: ":", maxSplits: 1)
+            guard parts.count == 2 else {
+                return nil
+            }
+            guard let key = parts.first, let value = parts.last else {
+                return nil
+            }
+            properties.append(.init(
+                key: String(key.trimmingCharacters(in: .whitespaces)),
+                value: String(value.trimmingCharacters(in: .whitespaces)),
+                description: description))
+        }
+
+        self = properties
     }
 }

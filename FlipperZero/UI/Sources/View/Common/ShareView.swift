@@ -30,13 +30,12 @@ func share(_ key: ArchiveItem, shareOption: ShareOption) {
 }
 
 func shareScheme(_ key: ArchiveItem) {
-    guard let data = key.description.data(using: .utf8) else {
+    guard let data = key.content.data(using: .utf8) else {
         print("invalid description")
         return
     }
-    let name = "\(key.name).\(key.kind.fileExtension)"
     let base64String = data.base64EncodedString()
-    let urlString = "flipper://\(name)/\(base64String)"
+    let urlString = "flipper://\(key.fileName)/\(base64String)"
     share([urlString])
 }
 
@@ -48,13 +47,11 @@ func shareFile(_ key: ArchiveItem) {
         return
     }
 
-    let fileURL = publicDirectory
-        .appendingPathComponent(key.name)
-        .appendingPathExtension(key.kind.fileExtension)
+    let fileURL = publicDirectory.appendingPathComponent(key.fileName)
 
     FileManager.default.createFile(
         atPath: fileURL.path,
-        contents: key.description.data(using: .utf8))
+        contents: key.content.data(using: .utf8))
 
     share([fileURL]) {_, _, _, _ in
         try? FileManager.default.removeItem(at: fileURL)

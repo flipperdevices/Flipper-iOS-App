@@ -118,11 +118,11 @@ struct ArchiveListItemView: View {
                 .background(item.color)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(item.name)
+                Text(item.name.value)
                     .fontWeight(.medium)
                     .lineLimit(1)
 
-                Text(item.origin)
+                Text(item.fileType.extension)
                     .fontWeight(.thin)
             }
 

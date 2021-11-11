@@ -3,7 +3,7 @@ import SwiftUI
 
 extension ArchiveItem {
     var icon: Image {
-        switch kind {
+        switch fileType {
         case .ibutton: return .init("ibutton")
         case .nfc: return .init("nfc")
         case .rfid: return .init("rfid")
@@ -15,7 +15,7 @@ extension ArchiveItem {
 
 extension ArchiveItem {
     var color: Color {
-        switch kind {
+        switch fileType {
         case .ibutton: return .init(red: 0.0, green: 0.48, blue: 1.0)
         case .nfc: return .init(red: 0.2, green: 0.78, blue: 0.64)
         case .rfid: return .init(red: 0.35, green: 0.34, blue: 0.84)
@@ -25,7 +25,7 @@ extension ArchiveItem {
     }
 
     var color2: Color {
-        switch kind {
+        switch fileType {
         case .ibutton: return .init(red: 0.34, green: 0.21, blue: 0.63)
         case .nfc: return .init(red: 0.15, green: 0.44, blue: 0.61)
         case .rfid: return .init(red: 0.59, green: 0.34, blue: 0.81)
@@ -72,7 +72,7 @@ extension ArchiveItem {
     }
 
     var actions: [Action] {
-        switch kind {
+        switch fileType {
         case .ibutton: return [emulate, write]
         case .nfc: return [emulate]
         case .rfid: return [emulate, write]
