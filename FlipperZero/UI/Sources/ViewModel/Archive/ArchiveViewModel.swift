@@ -119,21 +119,6 @@ class ArchiveViewModel: ObservableObject {
         nfc.startReader()
     }
 
-    func onCardSwipe(_ width: Double) {
-        switch width {
-        case 10...:
-            if selectedCategoryIndex > 0 {
-                selectedCategoryIndex -= 1
-            }
-        case ...(-10):
-            if selectedCategoryIndex < items.count {
-                selectedCategoryIndex += 1
-            }
-        default:
-            break
-        }
-    }
-
     func shareSelectedItems() {
         if !selectedItems.isEmpty {
             share(selectedItems.map { $0.name })

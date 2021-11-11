@@ -5,6 +5,7 @@ struct ArchiveListView: View {
     var items: [ArchiveItem]
     let isSynchronizing: Bool
     @State var syncLabelOpacity = 0.0
+    @State var blockSelection = false
     @Binding var isSelectItemsMode: Bool
     @Binding var selectedItems: [ArchiveItem]
 
@@ -12,7 +13,6 @@ struct ArchiveListView: View {
 
     enum Action {
         case itemSelected(ArchiveItem)
-        case horizontalDrag(Double)
         case synchronize
     }
 
@@ -50,7 +50,9 @@ struct ArchiveListView: View {
             VStack(spacing: 12) {
                 ForEach(items) { item in
                     Button {
-                        onAction(.itemSelected(item))
+                        if !blockSelection {
+                            onAction(.itemSelected(item))
+                        }
                     } label: {
                         HStack {
                             if isSelectItemsMode {
@@ -66,9 +68,13 @@ struct ArchiveListView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .gesture(
                                     DragGesture()
-                                        .onEnded { value in
-                                            let width = value.translation.width
-                                            onAction(.horizontalDrag(width))
+                                        .onChanged { value in
+                                            let height = abs(value.translation.height)
+                                            let width = abs(value.translation.width)
+                                            blockSelection = width > height
+                                        }
+                                        .onEnded { _ in
+                                            blockSelection = false
                                         }
                                 )
                         }

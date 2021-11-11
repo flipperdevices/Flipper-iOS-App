@@ -33,7 +33,7 @@ struct CarouselView<Content: View, T: Identifiable>: View {
             }
             .padding(.horizontal, spacing / 2)
             .offset(x: (Double(index) * -(proxy.size.width)) + offset)
-            .gesture(
+            .simultaneousGesture(
                 DragGesture()
                     .updating($offset) { value, state, _ in
                         state = value.translation.width

@@ -42,14 +42,7 @@ struct ArchiveView: View {
     func onAction(_ action: ArchiveListView.Action) {
         switch action {
         case .itemSelected(let item): onItemSelected(item: item)
-        case .horizontalDrag(let width): onDragGesture(width)
         case .synchronize: viewModel.synchronize()
-        }
-    }
-
-    func onDragGesture(_ width: Double) {
-        withAnimation {
-            viewModel.onCardSwipe(width)
         }
     }
 
