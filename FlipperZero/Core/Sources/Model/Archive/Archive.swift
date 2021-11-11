@@ -74,10 +74,21 @@ public class Archive: ObservableObject {
         flipperArchive.readAllItems { [weak self] result in
             self?.isSynchronizing = false
             switch result {
-            case .success(let items): self?.items = items
+            case .success(let items): self?.merge(with: items)
             case .failure(let error): print(error)
             }
             completion()
         }
+    }
+
+    private func merge(with items: [ArchiveItem]) {
+        let favorites = self.items.filter { $0.isFavorite }
+        var items = items
+        for favorite in favorites {
+            if let index = items.firstIndex(where: { $0.id == favorite.id }) {
+                items[index].isFavorite = true
+            }
+        }
+        self.items = items
     }
 }
