@@ -62,7 +62,7 @@ struct ArchiveListView: View {
                             .rotationEffect(.degrees(showFavorites ? 0 : 180))
                     }
                     .background(systemBackground.opacity(0.01))
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 32)
                     .onTapGesture {
                         withAnimation {
                             showFavorites.toggle()
@@ -75,15 +75,13 @@ struct ArchiveListView: View {
 
                     Text("All")
                         .font(.system(size: 28, weight: .bold))
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 8)
+                        .padding(.horizontal, 32)
+                        .padding(.vertical, 8)
                 }
 
                 list(items)
             }
             .padding(.bottom, 12)
-            .padding(.leading, 16)
-            .padding(.trailing, 15)
             .background(GeometryReader {
                 Color.clear.preference(
                     key: ViewOffsetKey.self,
@@ -102,13 +100,13 @@ struct ArchiveListView: View {
                     onAction(.itemSelected(item))
                 }
             } label: {
-                HStack {
+                HStack(spacing: 0) {
                     if isSelectItemsMode {
                         Image(systemName: selectedItems.contains(item)
                             ? "checkmark.circle.fill"
                             : "circle"
                         )
-                        .padding(.trailing, 8)
+                        .padding(.trailing, 6)
                     }
                     ArchiveListItemView(item: item)
                         .foregroundColor(.primary)
@@ -127,6 +125,8 @@ struct ArchiveListView: View {
                         )
                 }
             }
+            .padding(.leading, isSelectItemsMode ? 5 : 16)
+            .padding(.trailing, isSelectItemsMode ? 0 : 16)
         }
     }
 
