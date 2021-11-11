@@ -8,7 +8,7 @@ struct ArchiveCategoriesView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             ScrollViewReader { proxy in
-                HStack {
+                HStack(spacing: 10) {
                     ForEach(categories, id: \.self) {
                         ArchiveCategoryItemView(
                             title: $0,
@@ -51,6 +51,7 @@ struct ArchiveCategoryItemView: View {
                 .onTapGesture {
                     onTapGesture(title)
                 }
+                .padding(.horizontal, 6)
             Spacer()
             if isSelected {
                 Color.accentColor
@@ -59,6 +60,5 @@ struct ArchiveCategoryItemView: View {
                     .matchedGeometryEffect(id: "ArchiveTabItem", in: animation)
             }
         }
-        .padding(.horizontal, 7)
     }
 }

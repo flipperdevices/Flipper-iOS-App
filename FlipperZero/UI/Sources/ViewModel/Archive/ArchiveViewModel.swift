@@ -46,7 +46,7 @@ class ArchiveViewModel: ObservableObject {
     @Published var editingItem: ArchiveItem = .none
 
     var categories: [String] = [
-        "Favorites", "RFID 125", "Sub-gHz", "NFC", "iButton", "iRda"
+        "All", "RFID 125", "Sub-GHz", "NFC", "iButton", "Infrared"
     ]
 
     struct Group: Identifiable, Equatable {
