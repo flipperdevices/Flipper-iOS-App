@@ -96,16 +96,11 @@ extension Array where Element == ArchiveItem.Property {
             let description = comments
             comments.removeAll()
 
-            let parts = line.split(separator: ":", maxSplits: 1)
-            guard parts.count == 2 else {
-                return nil
-            }
-            guard let key = parts.first, let value = parts.last else {
-                return nil
-            }
+            let keyValue = line.split(separator: ":", maxSplits: 1)
+            guard keyValue.count == 2 else { return nil }
             properties.append(.init(
-                key: String(key.trimmingCharacters(in: .whitespaces)),
-                value: String(value.trimmingCharacters(in: .whitespaces)),
+                key: String(keyValue[0].trimmingCharacters(in: .whitespaces)),
+                value: String(keyValue[1].trimmingCharacters(in: .whitespaces)),
                 description: description))
         }
 
