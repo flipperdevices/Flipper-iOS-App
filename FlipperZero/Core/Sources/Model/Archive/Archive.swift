@@ -1,12 +1,22 @@
 import Combine
 import Injector
+import Foundation
 
 public class Archive: ObservableObject {
     public static let shared: Archive = .init()
 
     @Inject var storage: ArchiveStorage
 
-    @Published public var isSynchronizing = false
+    var start: Date = .init()
+    @Published public var isSynchronizing = false {
+        didSet {
+            switch isSynchronizing {
+            case true: start = .init()
+            case false: print(Date().timeIntervalSince(start))
+            }
+        }
+    }
+
     @Published public var items: [ArchiveItem] = [] {
         didSet {
             storage.items = items
