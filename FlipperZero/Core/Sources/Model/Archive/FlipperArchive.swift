@@ -27,11 +27,11 @@ public class FlipperArchive {
     }
 
     public func writeKey(
-        _ bytes: [UInt8],
+        _ content: String,
         at path: Path,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
-        rpc.writeFile(at: path, bytes: bytes) { response in
+        rpc.writeFile(at: path, bytes: [UInt8](content.utf8)) { response in
             switch response {
             case .success:
                 completion(.success(()))
@@ -54,7 +54,8 @@ public class FlipperArchive {
                     let content = String(decoding: bytes, as: UTF8.self)
                     if let next = ArchiveItem(
                         fileName: path.components.last ?? "",
-                        content: content
+                        content: content,
+                        status: .synchronizied
                     ) {
                         items.append(next)
                     }

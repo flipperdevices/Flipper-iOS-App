@@ -23,18 +23,25 @@ class ArchiveViewModel: ObservableObject {
     }
 
     var items: [ArchiveItem] {
-        archive.items
-//        archive.items.sorted { _, _ in
+        archive.items.sorted {
 //            switch sortOption {
 //            case .creationDate: return $0.name < $1.name
 //            case .title: return $0.description < $1.description
 //            case .oldestFirst: return $0.kind < $1.kind
 //            case .newestFirst: return $0.origin < $1.origin
 //            }
-//        }
+            $0.date > $1.date
+        }
     }
 
-    @Published var isSynchronizing = false
+    @Published var isSynchronizing = false {
+        willSet {
+            switch newValue {
+            case true: status = .synchronizing
+            case false: status = .init(self.device?.state)
+            }
+        }
+    }
     @Published var selectedCategoryIndex = 0
     @Published var isDeletePresented = false
     @Published var selectedItems: [ArchiveItem] = []
@@ -70,10 +77,7 @@ class ArchiveViewModel: ObservableObject {
 
         nfc.items
             .sink { [weak self] newItems in
-                guard let self = self else { return }
-                if let item = newItems.first, !self.items.contains(item) {
-                    self.archive.append(item)
-                }
+                self?.didFoundNFCTags(newItems)
             }
             .store(in: &disposeBag)
 
@@ -120,6 +124,15 @@ class ArchiveViewModel: ObservableObject {
         nfc.startReader()
     }
 
+    func didFoundNFCTags(_ newItems: [ArchiveItem]) {
+        if let item = newItems.first, !self.items.contains(item) {
+            isSynchronizing = true
+            self.archive.importKey(item) { [weak self] _ in
+                self?.isSynchronizing = false
+            }
+        }
+    }
+
     func shareSelectedItems() {
         if !selectedItems.isEmpty {
             share(selectedItems.map { $0.name })
@@ -146,10 +159,8 @@ class ArchiveViewModel: ObservableObject {
             return
         }
         isSynchronizing = true
-        status = .synchronizing
         archive.syncWithDevice {
             self.isSynchronizing = false
-            self.status = .init(self.device?.state)
         }
     }
 
@@ -165,6 +176,7 @@ extension ArchiveItem {
             id: "",
             name: "",
             fileType: .ibutton,
-            properties: [])
+            properties: [],
+            status: .synchronizied)
     }
 }

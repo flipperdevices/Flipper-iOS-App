@@ -1,9 +1,19 @@
+import Foundation
+
 public struct ArchiveItem: Codable, Equatable, Identifiable {
     public let id: String
     public var name: Name
     public var fileType: FileType
     public var properties: [Property]
     public var isFavorite: Bool
+    public var status: Status
+    public var date: Date
+
+    public enum Status: Codable, Equatable {
+        case imported
+        case synchronizied
+        case synchronizing
+    }
 
     public struct Name: Codable, Equatable {
         public var value: String
@@ -28,13 +38,17 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
         name: Name,
         fileType: FileType,
         properties: [Property],
-        isFavorite: Bool = false
+        isFavorite: Bool = false,
+        status: Status,
+        date: Date = .init()
     ) {
         self.id = id
         self.name = name
         self.fileType = fileType
         self.isFavorite = isFavorite
         self.properties = properties
+        self.status = status
+        self.date = date
     }
 }
 

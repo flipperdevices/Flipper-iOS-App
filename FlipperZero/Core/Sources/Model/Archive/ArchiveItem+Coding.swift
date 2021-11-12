@@ -1,5 +1,5 @@
 extension ArchiveItem {
-    init?(fileName: String, content: String) {
+    init?(fileName: String, content: String, status: Status) {
         guard let name = Name(fileName: fileName) else {
             print("invalid file name: \(fileName)")
             return nil
@@ -20,7 +20,8 @@ extension ArchiveItem {
             name: name,
             fileType: type,
             properties: properties,
-            isFavorite: false)
+            isFavorite: false,
+            status: status)
     }
 
     public var fileName: String {

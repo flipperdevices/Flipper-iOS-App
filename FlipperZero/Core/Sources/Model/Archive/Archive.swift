@@ -52,21 +52,45 @@ public class Archive: ObservableObject {
         }
     }
 
+    public func updateStatus(
+        of item: ArchiveItem,
+        to status: ArchiveItem.Status
+    ) {
+        if let index = items.firstIndex(where: { $0.id == item.id }) {
+            items[index].status = status
+        }
+    }
+
+    public func importKey(
+        _ item: ArchiveItem,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        append(item)
+        let path = Path(components: ["any", item.fileType.directory, item.fileName])
+        isSynchronizing = true
+        updateStatus(of: item, to: .synchronizing)
+        flipperArchive.writeKey(item.content, at: path) { [weak self] result in
+            self?.isSynchronizing = false
+            self?.updateStatus(of: item, to: .synchronizied)
+            completion(result)
+        }
+    }
+
     public func importKey(
         name: String,
         data: [UInt8],
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
         let content = String(decoding: data, as: UTF8.self)
-        guard let item = ArchiveItem(fileName: name, content: content) else {
+        guard let item = ArchiveItem(
+            fileName: name,
+            content: content,
+            status: .imported
+        ) else {
             print("importKey error, invalid data")
             return
         }
-        append(item)
-        let path = Path(components: ["any", item.fileType.directory, name])
-        flipperArchive.writeKey(data, at: path) { result in
-            completion(result)
-        }
+        importKey(item, completion: completion)
     }
 
     public func syncWithDevice(completion: @escaping () -> Void) {

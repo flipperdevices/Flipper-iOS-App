@@ -66,6 +66,8 @@ fileprivate extension ArchiveItem {
             fileType = .nfc
             properties = [.init(key: "id", value: tag.identifier.hexString)]
             isFavorite = false
+            status = .imported
+            date = .init()
         default:
             return nil
         }

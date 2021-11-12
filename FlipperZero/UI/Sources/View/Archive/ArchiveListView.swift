@@ -165,18 +165,21 @@ struct ArchiveListItemView: View {
 
             VStack {
                 Spacer()
-                Image(systemName: randomImage())
+                Image(systemName: image(for: item.status))
                     .font(.system(size: 14))
                     .padding(.trailing, 15)
                     .foregroundColor(.secondary)
-                    .opacity(0)
                 Spacer()
             }
         }
     }
 
-    func randomImage() -> String {
-        ["checkmark", "arrow.triangle.2.circlepath"].randomElement() ?? ""
+    func image(for status: ArchiveItem.Status) -> String {
+        switch status {
+        case .imported: return ""
+        case .synchronizied: return "checkmark"
+        case .synchronizing: return "arrow.triangle.2.circlepath"
+        }
     }
 
     func randomOpacity() -> Double {
