@@ -10,6 +10,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
     public var date: Date
 
     public enum Status: Codable, Equatable {
+        case error
         case imported
         case synchronizied
         case synchronizing
