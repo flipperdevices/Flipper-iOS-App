@@ -9,10 +9,12 @@ class FlipperSession: Session {
 
     var peripheralOutput: PeripheralOutput = .init()
 
-    weak var delegate: PeripheralOutputDelegate? {
+    weak var outputDelegate: PeripheralOutputDelegate? {
         get { peripheralOutput.delegate }
         set { peripheralOutput.delegate = newValue }
     }
+
+    weak var inputDelegate: PeripheralInputDelegate?
 
     @CommandId var nextId: Int
     var queue: Queue = .init()
@@ -80,6 +82,10 @@ class FlipperSession: Session {
             guard let nextResponse = try chunkedResponse.feed(data) else {
                 return
             }
+            guard nextResponse.commandID != 0 else {
+                didReceiveUnbound(nextResponse)
+                return
+            }
             guard let currentCommand = awaitingResponse.first else {
                 print("unexpected response", nextResponse)
                 return
@@ -107,6 +113,11 @@ class FlipperSession: Session {
             $0.load(as: Int32.self).bigEndian
         }
         peripheralOutput.didReceiveBufferSpace(Int(freeSpace))
+    }
+
+    func didReceiveUnbound(_ main: PB_Main) {
+        let frame = ScreenFrame(main)
+        inputDelegate?.onScreenFrame(frame)
     }
 }
 

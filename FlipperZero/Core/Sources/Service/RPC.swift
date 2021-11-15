@@ -90,6 +90,43 @@ public class RPC {
             throw Error.unexpectedResponse(response)
         }
     }
+
+    public func startStreaming(
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        flipper?.send(.remote(true)) { result in
+            switch result {
+            case .success(.ok):
+                completion(.success(()))
+            case .failure(let error):
+                completion(.failure(error))
+            default:
+                completion(.failure(.common(.unknown)))
+            }
+        }
+    }
+
+    public func stopStreaming(
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        flipper?.send(.remote(false)) { result in
+            switch result {
+            case .success(.ok):
+                completion(.success(()))
+            case .failure(let error):
+                completion(.failure(error))
+            default:
+                completion(.failure(.common(.unknown)))
+            }
+        }
+    }
+
+    public func buttonPressed(_ button: ControlButton) {
+        flipper?.send(.button(button)) { result in
+            print(result)
+        }
+
+    }
 }
 
 extension RPC {

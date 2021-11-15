@@ -5,7 +5,8 @@ public enum Priority {
 }
 
 protocol Session: AnyObject {
-    var delegate: PeripheralOutputDelegate? { get set }
+    var outputDelegate: PeripheralOutputDelegate? { get set }
+    var inputDelegate: PeripheralInputDelegate? { get set }
 
     func sendRequest(
         _ request: Request,
@@ -20,4 +21,8 @@ protocol Session: AnyObject {
 
 protocol PeripheralOutputDelegate: AnyObject {
     func send(_ data: Data)
+}
+
+protocol PeripheralInputDelegate: AnyObject {
+    func onScreenFrame(_ frame: ScreenFrame)
 }
