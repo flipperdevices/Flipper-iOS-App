@@ -36,3 +36,7 @@ public struct Path: Equatable {
         return components.removeLast()
     }
 }
+
+extension Path: CustomStringConvertible {
+    public var description: String { string }
+}
