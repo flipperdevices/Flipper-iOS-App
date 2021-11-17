@@ -11,6 +11,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
 
     public enum Status: Codable, Equatable {
         case error
+        case deleted
         case imported
         case synchronizied
         case synchronizing

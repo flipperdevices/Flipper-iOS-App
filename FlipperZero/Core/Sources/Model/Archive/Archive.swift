@@ -35,14 +35,9 @@ public class Archive: ObservableObject {
     }
 
     public func delete(_ item: ArchiveItem) {
-        items.removeAll { $0.id == item.id }
-        flipperArchive.delete(item) { result in
-            switch result {
-            case .success:
-                print("deleted")
-            case .failure(let error):
-                print(error)
-            }
+        updateStatus(of: item, to: .deleted)
+        syncWithDevice {
+            print("sync complete")
         }
     }
 
@@ -95,13 +90,35 @@ public class Archive: ObservableObject {
 
     public func syncWithDevice(completion: @escaping () -> Void) {
         isSynchronizing = true
-        flipperArchive.listAllFiles { [weak self] result in
-            self?.isSynchronizing = false
-            switch result {
-            case .success(let paths):
-                self?.syncFiles(paths, completion: completion)
-            case .failure(let error):
-                print(error)
+
+        syncDeletedItems { [weak self] in
+            self?.flipperArchive.listAllFiles { [weak self] result in
+                self?.isSynchronizing = false
+                switch result {
+                case .success(let paths):
+                    self?.syncFiles(paths, completion: completion)
+                case .failure(let error):
+                    print(error)
+                    completion()
+                }
+            }
+        }
+    }
+
+    private func syncDeletedItems(completion: @escaping () -> Void) {
+        // delete marked as deleted
+        let deleted = items.filter { $0.status == .deleted }
+        for item in deleted {
+            flipperArchive.delete(item) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.items.removeAll { $0.id == item.id }
+                    print("deleted")
+                case .failure(let error):
+                    print(error)
+                }
+            }
+            if item == deleted.last {
                 completion()
             }
         }

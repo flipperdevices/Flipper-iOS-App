@@ -177,6 +177,7 @@ struct ArchiveListItemView: View {
     func image(for status: ArchiveItem.Status) -> String {
         switch status {
         case .error: return "xmark.octagon"
+        case .deleted: return "trash"
         case .imported: return "clock.arrow.2.circlepath"
         case .synchronizied: return "checkmark"
         case .synchronizing: return "arrow.triangle.2.circlepath"
