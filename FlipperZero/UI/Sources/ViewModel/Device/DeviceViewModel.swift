@@ -10,15 +10,14 @@ public class DeviceViewModel: ObservableObject {
     private let archive: Archive = .shared
 
     @Published var device: Peripheral? {
-        didSet { status = .init(device?.state) }
-    }
-    @Published var status: HeaderDeviceStatus = .noDevice {
         didSet {
+            status = .init(device?.state)
             if status == .connected {
                 presentConnectionsSheet = false
             }
         }
     }
+    @Published var status: HeaderDeviceStatus = .noDevice
 
     @Published var presentConnectionsSheet = false {
         willSet {
@@ -61,6 +60,14 @@ public class DeviceViewModel: ObservableObject {
         flipper.peripheral
             .sink { [weak self] in
                 self?.device = $0
+            }
+            .store(in: &disposeBag)
+
+        archive.$isSynchronizing
+            .sink { isSynchronizing in
+                self.status = isSynchronizing
+                    ? .synchronizing
+                    : .init(self.device?.state)
             }
             .store(in: &disposeBag)
     }

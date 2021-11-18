@@ -9,22 +9,39 @@ class ArchiveViewModel: ObservableObject {
     @Inject var pairedDevice: PairedDeviceProtocol
     var disposeBag: DisposeBag = .init()
 
-    @Published var device: Peripheral?
+    @Published var device: Peripheral? {
+        didSet { status = .init(device?.state) }
+    }
+    @Published var status: HeaderDeviceStatus = .noDevice
 
     @Published var archive: Archive = .shared
     @Published var sortOption: SortOption = .title
+    @Published var sheetManager: SheetManager = .shared
+
+    var title: String {
+        device?.name ?? .noDevice
+    }
 
     var items: [ArchiveItem] {
         archive.items.sorted {
-            switch sortOption {
-            case .creationDate: return $0.name < $1.name
-            case .title: return $0.description < $1.description
-            case .oldestFirst: return $0.kind < $1.kind
-            case .newestFirst: return $0.origin < $1.origin
-            }
+//            switch sortOption {
+//            case .creationDate: return $0.name < $1.name
+//            case .title: return $0.description < $1.description
+//            case .oldestFirst: return $0.kind < $1.kind
+//            case .newestFirst: return $0.origin < $1.origin
+//            }
+            $0.date > $1.date
         }
     }
 
+    @Published var isSynchronizing = false {
+        willSet {
+            switch newValue {
+            case true: status = .synchronizing
+            case false: status = .init(self.device?.state)
+            }
+        }
+    }
     @Published var selectedCategoryIndex = 0
     @Published var isDeletePresented = false
     @Published var selectedItems: [ArchiveItem] = []
@@ -33,25 +50,25 @@ class ArchiveViewModel: ObservableObject {
     }
     var onSelectItemsModeChanded: (Bool) -> Void = { _ in }
 
-    @Published var editingItem: ArchiveItem = .demo
+    @Published var editingItem: ArchiveItem = .none
 
     var categories: [String] = [
-        "Favorites", "RFID 125", "Sub-gHz", "NFC", "iButton", "iRda"
+        "All", "RFID 125", "Sub-GHz", "NFC", "iButton", "Infrared"
     ]
 
-    struct Group: Identifiable {
-        var id: ArchiveItem.Kind?
+    struct Group: Identifiable, Equatable {
+        var id: ArchiveItem.FileType?
         var items: [ArchiveItem]
     }
 
     var itemGroups: [Group] {
         [
             .init(id: nil, items: items),
-            .init(id: .rfid, items: items.filter { $0.kind == .rfid }),
-            .init(id: .subghz, items: items.filter { $0.kind == .subghz }),
-            .init(id: .nfc, items: items.filter { $0.kind == .nfc }),
-            .init(id: .ibutton, items: items.filter { $0.kind == .ibutton }),
-            .init(id: .irda, items: items.filter { $0.kind == .irda })
+            .init(id: .rfid, items: items.filter { $0.fileType == .rfid }),
+            .init(id: .subghz, items: items.filter { $0.fileType == .subghz }),
+            .init(id: .nfc, items: items.filter { $0.fileType == .nfc }),
+            .init(id: .ibutton, items: items.filter { $0.fileType == .ibutton }),
+            .init(id: .irda, items: items.filter { $0.fileType == .irda })
         ]
     }
 
@@ -60,16 +77,21 @@ class ArchiveViewModel: ObservableObject {
 
         nfc.items
             .sink { [weak self] newItems in
-                guard let self = self else { return }
-                if let item = newItems.first, !self.items.contains(item) {
-                    self.archive.append(item)
-                }
+                self?.didFoundNFCTags(newItems)
             }
             .store(in: &disposeBag)
 
         pairedDevice.peripheral
             .sink { [weak self] item in
                 self?.device = item
+            }
+            .store(in: &disposeBag)
+
+        archive.$isSynchronizing
+            .sink { isSynchronizing in
+                self.status = isSynchronizing
+                    ? .synchronizing
+                    : .init(self.device?.state)
             }
             .store(in: &disposeBag)
     }
@@ -102,18 +124,10 @@ class ArchiveViewModel: ObservableObject {
         nfc.startReader()
     }
 
-    func onCardSwipe(_ width: Double) {
-        switch width {
-        case 10...:
-            if selectedCategoryIndex > 0 {
-                selectedCategoryIndex -= 1
-            }
-        case ...(-10):
-            if selectedCategoryIndex < items.count {
-                selectedCategoryIndex += 1
-            }
-        default:
-            break
+    func didFoundNFCTags(_ newItems: [ArchiveItem]) {
+        if let item = newItems.first, !self.items.contains(item) {
+            self.archive.importKey(item)
+            synchronize()
         }
     }
 
@@ -124,20 +138,39 @@ class ArchiveViewModel: ObservableObject {
     }
 
     func deleteSelectedItems() {
-        if !selectedItems.isEmpty {
-            isDeletePresented = true
+        switch isSelectItemsMode {
+        case true:
+            selectedItems.forEach(archive.delete)
+            selectedItems.removeAll()
+            withAnimation {
+                isSelectItemsMode = false
+            }
+        case false:
+            archive.delete(editingItem)
+            sheetManager.dismiss()
+            editingItem = .none
         }
+        synchronize()
+    }
+
+    func synchronize() {
+        guard !isSynchronizing else { return }
+        archive.syncWithDevice()
+    }
+
+    func favorite() {
+        editingItem.isFavorite.toggle()
+        archive.favorite(editingItem)
     }
 }
 
 extension ArchiveItem {
-    static var demo: Self {
+    static var none: Self {
         .init(
             id: "",
             name: "",
-            description: "",
-            isFavorite: false,
-            kind: .ibutton,
-            origin: "")
+            fileType: .ibutton,
+            properties: [],
+            status: .synchronizied)
     }
 }

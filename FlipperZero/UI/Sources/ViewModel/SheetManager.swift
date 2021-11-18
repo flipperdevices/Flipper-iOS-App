@@ -18,4 +18,8 @@ class SheetManager: ObservableObject {
         self.content = AnyView(content())
         self.isPresented = true
     }
+
+    func dismiss() {
+        isPresented = false
+    }
 }

@@ -33,7 +33,7 @@ public class RootViewModel: ObservableObject {
     }
 
     var device: BluetoothPeripheral?
-    let achive: Archive = .shared
+    let archive: Archive = .shared
 
     func importKey(_ keyURL: URL) {
         func completion(_ result: Result<Void, Error>) {
@@ -65,10 +65,8 @@ public class RootViewModel: ObservableObject {
             return
         }
 
-        achive.importKey(
-            name: name,
-            data: .init(data),
-            completion: completion)
+        archive.importKey(name: name, data: .init(data))
+        archive.syncWithDevice()
     }
 
     func importFile(
@@ -82,10 +80,8 @@ public class RootViewModel: ObservableObject {
         case .some(let data):
             try? FileManager.default.removeItem(at: url)
             print("importing internal key", name)
-            achive.importKey(
-                name: name,
-                data: .init(data),
-                completion: completion)
+            archive.importKey(name: name, data: .init(data))
+            archive.syncWithDevice()
         // icloud file
         case .none:
             let doc = KeyDocument(fileURL: url)
@@ -95,10 +91,8 @@ public class RootViewModel: ObservableObject {
                     return
                 }
                 print("importing icloud key", name)
-                self?.achive.importKey(
-                    name: name,
-                    data: .init(data),
-                    completion: completion)
+                self?.archive.importKey(name: name, data: .init(data))
+                self?.archive.syncWithDevice()
             }
         }
     }

@@ -33,7 +33,7 @@ public struct DeviceView: View {
                                 firmwareBuild: viewModel.firmwareBuild)
                         }
 
-                        RoundedButton("Read keys from device") {
+                        RoundedButton("Synchronize") {
                             viewModel.sync()
                         }
                         .disabled(viewModel.status == .synchronizing)

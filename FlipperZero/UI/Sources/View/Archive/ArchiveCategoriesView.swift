@@ -8,7 +8,7 @@ struct ArchiveCategoriesView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             ScrollViewReader { proxy in
-                HStack {
+                HStack(spacing: 10) {
                     ForEach(categories, id: \.self) {
                         ArchiveCategoryItemView(
                             title: $0,
@@ -17,10 +17,14 @@ struct ArchiveCategoriesView: View {
                         ) { name in
                             if let index = categories.firstIndex(of: name) {
                                 self.selectedIndex = index
-                                proxy.scrollTo(name, anchor: .trailing)
                             }
                         }
-                        .id($0)
+                        .id(categories.firstIndex(of: $0))
+                    }
+                }
+                .onChange(of: selectedIndex) { _ in
+                    withAnimation {
+                        proxy.scrollTo(selectedIndex, anchor: .center)
                     }
                 }
             }
@@ -47,6 +51,7 @@ struct ArchiveCategoryItemView: View {
                 .onTapGesture {
                     onTapGesture(title)
                 }
+                .padding(.horizontal, 6)
             Spacer()
             if isSelected {
                 Color.accentColor
@@ -55,6 +60,5 @@ struct ArchiveCategoryItemView: View {
                     .matchedGeometryEffect(id: "ArchiveTabItem", in: animation)
             }
         }
-        .padding(.horizontal, 7)
     }
 }

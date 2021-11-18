@@ -3,8 +3,8 @@ import SwiftUI
 
 struct CardSheetView: View {
     @Environment(\.colorScheme) var colorScheme
-    let device: Peripheral?
-    @Binding var item: ArchiveItem
+
+    @StateObject var viewModel: ArchiveViewModel
 
     var sheetBackgroundColor: Color {
         colorScheme == .light
@@ -18,12 +18,18 @@ struct CardSheetView: View {
 
     var isFullScreen: Bool { !focusedField.isEmpty }
 
+    enum Action {
+        case delete
+        case favorite(Bool)
+        case save(ArchiveItem)
+    }
+
     var body: some View {
         VStack {
             if isFullScreen {
                 HeaderView(
-                    title: device?.name ?? .noDevice,
-                    status: .init(device?.state),
+                    title: viewModel.title,
+                    status: viewModel.status,
                     leftView: {
                         Text("Cancel")
                             .font(.system(size: 16))
@@ -48,7 +54,7 @@ struct CardSheetView: View {
                 }
 
                 Card(
-                    item: $item,
+                    item: $viewModel.editingItem,
                     isEditMode: $isEditMode,
                     focusedField: $focusedField
                 )
@@ -57,13 +63,13 @@ struct CardSheetView: View {
                 .padding(.horizontal, 16)
 
                 if !isEditMode {
-                    ActionsForm(actions: item.actions) { id in
+                    ActionsForm(actions: viewModel.editingItem.actions) { id in
                         print("action \(id) selected")
                     }
                 }
 
                 if focusedField.isEmpty {
-                    CardActions(item: item, isEditMode: $isEditMode)
+                    CardActions(viewModel: viewModel, isEditMode: $isEditMode)
                 } else {
                     Spacer()
                 }
@@ -93,7 +99,7 @@ struct Card: View {
         ZStack {
             VStack(alignment: .leading, spacing: 0) {
                 CardHeaderView(
-                    name: $item.name,
+                    name: $item.name.value,
                     image: item.icon,
                     isEditMode: $isEditMode,
                     focusedField: $focusedField
@@ -184,12 +190,11 @@ struct CardDataView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if !item.description.isEmpty {
-                HStack {
-                    Text(item.description)
+            if !item.properties.isEmpty {
+                ForEach(item.properties, id: \.key) { item in
+                    Text("\(item.key): \(item.value)")
                         .font(.system(size: 20).weight(.semibold))
-                    Spacer()
-                }.frame(maxWidth: .infinity)
+                }
             }
         }
     }
@@ -200,12 +205,12 @@ extension ArchiveItem.Action: ActionProtocol {
 }
 
 struct CardActions: View {
-    let item: ArchiveItem
+    @StateObject var viewModel: ArchiveViewModel
     @Binding var isEditMode: Bool
 
-    @State var isSharePresented = false
-    @State var isFavorite = false
-    @State var isDeletePresented = false
+    var isFavorite: Bool {
+        viewModel.editingItem.isFavorite
+    }
 
     var body: some View {
         VStack {
@@ -223,20 +228,10 @@ struct CardActions: View {
                     }
                     Spacer()
                 } else {
-//                    Button {
-//                        // isEditMode = true
-//                    } label: {
-//                        Image(systemName: "square.and.pencil")
-//                    }
-//
-//                    Spacer()
-
-                    // MARK: Share as url
-
                     Button {
-                        share(item, shareOption: .scheme)
+                        // isEditMode = true
                     } label: {
-                        Image(systemName: "square.and.arrow.up")
+                        Image(systemName: "square.and.pencil")
                     }
 
                     Spacer()
@@ -244,9 +239,9 @@ struct CardActions: View {
                     // MARK: Share as file
 
                     Button {
-                        share(item, shareOption: .file)
+                        share(viewModel.editingItem, shareOption: .file)
                     } label: {
-                        Image(systemName: "square.and.arrow.up.fill")
+                        Image(systemName: "square.and.arrow.up")
                     }
 
                     Spacer()
@@ -254,7 +249,7 @@ struct CardActions: View {
                     // MARK: Favorite
 
                     Button {
-                        isFavorite.toggle()
+                        viewModel.favorite()
                     } label: {
                         Image(systemName: isFavorite ? "star.fill" : "star")
                     }
@@ -264,20 +259,9 @@ struct CardActions: View {
                     // MARK: Delete
 
                     Button {
-                        isDeletePresented = true
+                        viewModel.isDeletePresented = true
                     } label: {
                         Image(systemName: "trash")
-                    }
-                    .actionSheet(isPresented: $isDeletePresented) {
-                        .init(
-                            title: Text("You can't undo this action"),
-                            buttons: [
-                                .destructive(Text("Delete")) {
-                                    print("delete")
-                                },
-                                .cancel()
-                            ]
-                        )
                     }
                 }
             }

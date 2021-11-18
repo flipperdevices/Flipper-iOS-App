@@ -3,7 +3,6 @@ import SwiftUI
 
 struct ArchiveView: View {
     @StateObject var viewModel: ArchiveViewModel
-    @EnvironmentObject var sheetManager: SheetManager
 
     var body: some View {
         VStack(spacing: 0) {
@@ -20,21 +19,31 @@ struct ArchiveView: View {
             ) { group in
                 ArchiveListView(
                     items: group.items,
+                    hasFavorites: group == viewModel.itemGroups.first,
+                    isSynchronizing: viewModel.isSynchronizing,
                     isSelectItemsMode: $viewModel.isSelectItemsMode,
                     selectedItems: $viewModel.selectedItems,
-                    itemSelected: onItemSelected,
-                    onDragGesture: onDragGesture)
+                    onAction: onAction)
             }
 
             if viewModel.isSelectItemsMode {
                 tabViewOverlay
             }
         }
+        .actionSheet(isPresented: $viewModel.isDeletePresented) {
+            .init(title: Text("You can't undo this action"), buttons: [
+                .destructive(Text("Delete")) {
+                    viewModel.deleteSelectedItems()
+                },
+                .cancel()
+            ])
+        }
     }
 
-    func onDragGesture(_ value: DragGesture.Value) {
-        withAnimation {
-            viewModel.onCardSwipe(value.translation.width)
+    func onAction(_ action: ArchiveListView.Action) {
+        switch action {
+        case .itemSelected(let item): onItemSelected(item: item)
+        case .synchronize: viewModel.synchronize()
         }
     }
 
@@ -43,10 +52,8 @@ struct ArchiveView: View {
             viewModel.selectItem(item)
         } else {
             viewModel.editingItem = item
-            sheetManager.present {
-                CardSheetView(
-                    device: viewModel.device,
-                    item: $viewModel.editingItem)
+            viewModel.sheetManager.present {
+                CardSheetView(viewModel: viewModel)
             }
         }
     }
@@ -67,16 +74,10 @@ struct ArchiveView: View {
                 Spacer()
 
                 Button {
-                    viewModel.deleteSelectedItems()
+                    viewModel.isDeletePresented = true
                 } label: {
                     Image(systemName: "trash")
                         .font(.system(size: 22))
-                }
-                .actionSheet(isPresented: $viewModel.isDeletePresented) {
-                    .init(title: Text("You can't undo this action"), buttons: [
-                        .destructive(Text("Delete")) { print("delete") },
-                        .cancel()
-                    ])
                 }
             }
             .padding(.top, 12)

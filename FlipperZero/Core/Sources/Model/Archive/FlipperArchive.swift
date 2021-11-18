@@ -9,7 +9,7 @@ public class FlipperArchive {
     public func readAllItems(
         _ completion: @escaping (Result<[ArchiveItem], Error>) -> Void
     ) {
-        listFiles { [weak self] result in
+        listAllFiles { [weak self] result in
             switch result {
             case .success(let files):
                 self?.readFiles(files, completion)
@@ -19,53 +19,11 @@ public class FlipperArchive {
         }
     }
 
-    public func writeKey(
-        _ bytes: [UInt8],
-        at path: Path,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
-        rpc.writeFile(at: path, bytes: bytes) { response in
-            switch response {
-            case .success:
-                completion(.success(()))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
-    }
-
-    private func readFiles(
-        _ paths: [Path],
-        _ completion: @escaping (Result<[ArchiveItem], Error>) -> Void
-    ) {
-        var items: [ArchiveItem] = []
-
-        for path in paths {
-            rpc.readFile(at: path, priority: .background) { result in
-                switch result {
-                case .success(let bytes):
-                    let content = String(decoding: bytes, as: UTF8.self)
-                    if let next = ArchiveItem(
-                        fileName: path.components.last ?? "",
-                        content: content
-                    ) {
-                        items.append(next)
-                    }
-                    if path == paths.last {
-                        completion(.success(items))
-                    }
-                case .failure(let error):
-                    completion(.failure(error))
-                }
-            }
-        }
-    }
-
-    private func listFiles(
+    public func listAllFiles(
         _ completion: @escaping (Result<[Path], Error>) -> Void
     ) {
-        let supportedPaths: [Path] = ArchiveItem.Kind.allCases.map {
-            root.appending($0.fileDirectory)
+        let supportedPaths: [Path] = ArchiveItem.FileType.allCases.map {
+            root.appending($0.directory)
         }
 
         var archiveFiles: [Path] = .init()
@@ -86,6 +44,69 @@ public class FlipperArchive {
             }
         }
     }
+
+    public func readFile(
+        at path: Path,
+        _ completion: @escaping (Result<String, Error>) -> Void
+    ) {
+        rpc.readFile(at: path, priority: .background) { result in
+            switch result {
+            case .success(let bytes):
+                completion(.success(String(decoding: bytes, as: UTF8.self)))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    public func delete(
+        _ item: ArchiveItem,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        rpc.deleteFile(at: item.path, force: false, completion: completion)
+    }
+
+    public func writeKey(
+        _ content: String,
+        at path: Path,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        rpc.writeFile(at: path, bytes: [UInt8](content.utf8)) { response in
+            switch response {
+            case .success:
+                completion(.success(()))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    private func readFiles(
+        _ paths: [Path],
+        _ completion: @escaping (Result<[ArchiveItem], Error>) -> Void
+    ) {
+        var items: [ArchiveItem] = []
+
+        for path in paths {
+            readFile(at: path) { result in
+                switch result {
+                case .success(let content):
+                    if let next = ArchiveItem(
+                        fileName: path.components.last ?? "",
+                        content: content,
+                        status: .synchronizied
+                    ) {
+                        items.append(next)
+                    }
+                    if path == paths.last {
+                        completion(.success(items))
+                    }
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
 }
 
 extension Array where Element == Core.Element {
@@ -95,59 +116,6 @@ extension Array where Element == Core.Element {
                 return nil
             }
             return file.name
-        }
-    }
-}
-
-extension ArchiveItem {
-    init?(fileName: String, content: String) {
-        let name = String(fileName.split(separator: ".").first ?? "")
-        let ext = fileName.split(separator: ".").last ?? ""
-
-        guard let kind = Kind(ext) else {
-            print("unknown extension \(ext)")
-            return nil
-        }
-
-        self = .init(
-            id: fileName,
-            name: name,
-            description: content,
-            isFavorite: false,
-            kind: kind,
-            origin: "flipper")
-    }
-}
-
-extension ArchiveItem.Kind {
-    init?<T: StringProtocol>(_ fileExtension: T) {
-        switch fileExtension {
-        case "ibtn": self = .ibutton
-        case "nfc": self = .nfc
-        case "sub": self = .subghz
-        case "rfid": self = .rfid
-        case "ir": self = .irda
-        default: return nil
-        }
-    }
-
-    public var fileExtension: String {
-        switch self {
-        case .ibutton: return "ibtn"
-        case .nfc: return "nfc"
-        case .subghz: return "sub"
-        case .rfid: return "rfid"
-        case .irda: return "ir"
-        }
-    }
-
-    var fileDirectory: String {
-        switch self {
-        case .ibutton: return "ibutton"
-        case .nfc: return "nfc"
-        case .subghz: return "subghz/saved"
-        case .rfid: return "lfrfid"
-        case .irda: return "irda"
         }
     }
 }

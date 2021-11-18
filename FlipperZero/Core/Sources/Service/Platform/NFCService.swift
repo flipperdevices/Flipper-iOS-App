@@ -62,11 +62,12 @@ fileprivate extension ArchiveItem {
         switch tag {
         case let .miFare(tag):
             id = tag.identifier.hexString
-            name = "Unnamed"
-            description = "ID: " + id
-            isFavorite = true
-            kind = .nfc
-            origin = "Mifare"
+            name = "Mifare"
+            fileType = .nfc
+            properties = [.init(key: "id", value: tag.identifier.hexString)]
+            isFavorite = false
+            status = .imported
+            date = .init()
         default:
             return nil
         }
