@@ -16,6 +16,21 @@ public class RPC {
             .store(in: &disposeBag)
     }
 
+    public func ping() async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            flipper?.send(.ping) { result in
+                switch result {
+                case .success(.ping):
+                    continuation.resume()
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                default:
+                    continuation.resume(throwing: Error.common(.unknown))
+                }
+            }
+        }
+    }
+
     public func listDirectory(
         at path: Path,
         priority: Priority? = nil,

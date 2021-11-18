@@ -16,8 +16,15 @@ struct PingView: View {
                 Spacer()
             }
 
+            HStack {
+                Text("ping: \(viewModel.ping)")
+                Spacer()
+            }
+
             Button("Send ping") {
-                viewModel.sendPing()
+                Task {
+                    await viewModel.sendPing()
+                }
             }
             .padding(.top, 50)
         }

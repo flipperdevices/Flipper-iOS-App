@@ -3,31 +3,29 @@ import Combine
 import Injector
 import Foundation
 
+@MainActor
 class PingViewModel: ObservableObject {
-    @Inject var connector: BluetoothConnector
+    @Published var requestTimestamp: Int = .init()
+    @Published var responseTimestamp: Int = .init()
 
-    @Published var requestTimestamp: String = ""
-    @Published var responseTimestamp: String = ""
-    private var disposeBag: DisposeBag = .init()
-
-    var device: BluetoothPeripheral?
-
-    init() {
-        connector.connectedPeripherals
-            .sink { [weak self] in
-                self?.device = $0.first
-            }
-            .store(in: &disposeBag)
+    var ping: String {
+        let result = responseTimestamp - requestTimestamp
+        return result < 0 ? "" : String("\(result)ms")
     }
 
-    func sendPing() {
-        guard let device = device else {
-            print("no device connected")
-            return
-        }
-        requestTimestamp = .init(Date().timeIntervalSince1970)
-        device.send(.ping) { _ in
-            self.responseTimestamp = .init(Date().timeIntervalSince1970)
+    var rpc: RPC = .shared
+
+    var now: Int { .init(Date().timeIntervalSince1970 * 100) }
+
+    init() {}
+
+    func sendPing() async {
+        do {
+            requestTimestamp = now
+            try await rpc.ping()
+            responseTimestamp = now
+        } catch {
+            print(error)
         }
     }
 }

@@ -37,7 +37,6 @@ opt_in_rules:
  - force_unwrapping
  - function_default_parameter_at_end
  - identical_operands
- - implicit_return
  - implicitly_unwrapped_optional
  - indentation_width
  - joined_default_parameter
