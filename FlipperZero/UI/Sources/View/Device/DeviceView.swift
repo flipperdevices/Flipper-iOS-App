@@ -41,18 +41,19 @@ public struct DeviceView: View {
                         .padding(.bottom, 24)
                     }
                     .background(systemBackground)
+                    .disabled(viewModel.device?.state != .connected)
 
                     ActionsForm(actions: actions) { id in
                         self.action = id
                     }
                     .padding(.top, 20)
+                    .disabled(viewModel.device?.state != .connected)
 
                     NavigationLink("", tag: fileManager.name, selection: $action) {
                         StorageView(viewModel: .init())
                     }
                 }
                 .background(Color.gray.opacity(0.1))
-                .disabled(viewModel.device?.state != .connected)
             }
             .navigationBarHidden(true)
             .sheet(isPresented: $viewModel.presentConnectionsSheet) {
