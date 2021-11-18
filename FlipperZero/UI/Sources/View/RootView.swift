@@ -33,7 +33,9 @@ public struct RootView: View {
         } content: {
             InstructionsView(viewModel: .init($viewModel.presentWelcomeSheet))
         }
-        .onOpenURL(perform: viewModel.importKey)
+        .onOpenURL { url in
+            Task { await viewModel.importKey(url) }
+        }
     }
 }
 

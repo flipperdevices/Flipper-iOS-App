@@ -10,15 +10,11 @@ public protocol BluetoothPeripheral {
 
     var info: SafePublisher<Void> { get }
 
-    func send(
-        _ request: Request,
-        priority: Priority?,
-        continuation: @escaping Continuation
-    )
+    func send(_ request: Request, priority: Priority?) async throws -> Response
 }
 
 public extension BluetoothPeripheral {
-    func send(_ request: Request, continuation: @escaping Continuation) {
-        send(request, priority: nil, continuation: continuation)
+    func send(_ request: Request) async throws -> Response {
+        try await send(request, priority: nil)
     }
 }

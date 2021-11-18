@@ -17,111 +17,75 @@ public class RPC {
     }
 
     public func ping() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            flipper?.send(.ping) { result in
-                switch result {
-                case .success(.ping):
-                    continuation.resume()
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                default:
-                    continuation.resume(throwing: Error.common(.unknown))
-                }
-            }
+        let response = try await flipper?.send(.ping)
+        guard case .ping = response else {
+            throw Error.unexpectedResponse(response)
         }
     }
 
     public func listDirectory(
         at path: Path,
-        priority: Priority? = nil,
-        _ completion: @escaping (Result<[Element], Error>) -> Void
-    ) {
-        flipper?.send(.list(path), priority: priority) { result in
-            switch result {
-            case .success(.list(let items)):
-                completion(.success(items))
-            case .failure(let error):
-                completion(.failure(error))
-            default:
-                completion(.failure(.common(.unknown)))
-            }
+        priority: Priority? = nil
+    ) async throws -> [Element] {
+        let response = try await flipper?.send(
+            .list(path),
+            priority: priority)
+        guard case .list(let items) = response else {
+            throw Error.unexpectedResponse(response)
         }
+        return items
     }
 
     public func createFile(
         at path: Path,
         isDirectory: Bool,
-        priority: Priority? = nil,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
-        flipper?.send(
+        priority: Priority? = nil
+    ) async throws {
+        let response = try await flipper?.send(
             .create(path, isDirectory: isDirectory),
-            priority: priority
-        ) { result in
-            switch result {
-            case .success(.ok):
-                completion(.success(()))
-            case .failure(let error):
-                completion(.failure(error))
-            default:
-                completion(.failure(.common(.unknown)))
-            }
+            priority: priority)
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
         }
     }
 
     public func deleteFile(
         at path: Path,
         force: Bool = false,
-        priority: Priority? = nil,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
-        flipper?.send(
+        priority: Priority? = nil
+    ) async throws {
+        let response = try await flipper?.send(
             .delete(path, isForce: force),
             priority: priority
-        ) { result in
-            switch result {
-            case .success(.ok):
-                completion(.success(()))
-            case .failure(let error):
-                completion(.failure(error))
-            default:
-                completion(.failure(.common(.unknown)))
-            }
+        )
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
         }
     }
 
     public func readFile(
         at path: Path,
-        priority: Priority? = nil,
-        completion: @escaping (Result<[UInt8], Error>) -> Void
-    ) {
-        flipper?.send(.read(path), priority: priority) { result in
-            switch result {
-            case .success(.file(let bytes)):
-                completion(.success(bytes))
-            case .failure(let error):
-                completion(.failure(error))
-            default:
-                completion(.failure(.common(.unknown)))
-            }
+        priority: Priority? = nil
+    ) async throws -> [UInt8] {
+        let response = try await flipper?.send(
+            .read(path),
+            priority: priority)
+        guard case .file(let bytes) = response else {
+            throw Error.unexpectedResponse(response)
         }
+        return bytes
     }
 
     public func writeFile(
         at path: Path,
         bytes: [UInt8],
-        priority: Priority? = nil,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
-        flipper?.send(.write(path, bytes), priority: priority) { result in
-            switch result {
-            case .success(.ok):
-                completion(.success(()))
-            case .failure(let error):
-                completion(.failure(error))
-            default:
-                completion(.failure(.common(.unknown)))
-            }
+        priority: Priority? = nil
+    ) async throws {
+        let response = try await flipper?.send(
+            .write(path, bytes),
+            priority: priority)
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
         }
     }
 }
@@ -130,13 +94,11 @@ extension RPC {
     public func writeFile(
         at path: Path,
         string: String,
-        priority: Priority? = nil,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
-        writeFile(
+        priority: Priority? = nil
+    ) async throws {
+        try await writeFile(
             at: path,
             bytes: .init(string.utf8),
-            priority: priority,
-            completion: completion)
+            priority: priority)
     }
 }

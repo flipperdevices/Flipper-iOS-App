@@ -35,44 +35,38 @@ public class RootViewModel: ObservableObject {
     var device: BluetoothPeripheral?
     let archive: Archive = .shared
 
-    func importKey(_ keyURL: URL) {
-        func completion(_ result: Result<Void, Error>) {
-            switch result {
-            case .success:
-                print("key imported")
-            case .failure(let error):
-                print(error)
-            }
-        }
+    enum Error: String, Swift.Error {
+        case invalidURL = "invalid url"
+        case invalidData = "invalid data"
+        case cantOpenDoc = "error opening doc"
+    }
 
-        switch keyURL.scheme {
-        case "file": importFile(keyURL, completion: completion)
-        case "flipper": importURL(keyURL, completion: completion)
-        default: break
+    func importKey(_ keyURL: URL) async {
+        do {
+            switch keyURL.scheme {
+            case "file": try await importFile(keyURL)
+            case "flipper": try await importURL(keyURL)
+            default: break
+            }
+            print("key imported")
+        } catch {
+            print(error)
         }
     }
 
-    func importURL(
-        _ url: URL,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
+    func importURL(_ url: URL) async throws {
         guard let name = url.host, let content = url.pathComponents.last else {
-            print("invalid url")
-            return
+            throw Error.invalidURL
         }
         guard let data = Data(base64Encoded: content) else {
-            print("invalid data")
-            return
+            throw Error.invalidData
         }
 
         archive.importKey(name: name, data: .init(data))
-        archive.syncWithDevice()
+        await archive.syncWithDevice()
     }
 
-    func importFile(
-        _ url: URL,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
+    func importFile(_ url: URL) async throws {
         let name = url.lastPathComponent
 
         switch try? Data(contentsOf: url) {
@@ -81,19 +75,16 @@ public class RootViewModel: ObservableObject {
             try? FileManager.default.removeItem(at: url)
             print("importing internal key", name)
             archive.importKey(name: name, data: .init(data))
-            archive.syncWithDevice()
+            await archive.syncWithDevice()
         // icloud file
         case .none:
-            let doc = KeyDocument(fileURL: url)
-            doc.open { [weak self] success in
-                guard success, let data = doc.data else {
-                    print("error opening doc")
-                    return
-                }
-                print("importing icloud key", name)
-                self?.archive.importKey(name: name, data: .init(data))
-                self?.archive.syncWithDevice()
+            let doc = await KeyDocument(fileURL: url)
+            guard await doc.open(), let data = await doc.data else {
+                throw Error.cantOpenDoc
             }
+            print("importing icloud key", name)
+            archive.importKey(name: name, data: .init(data))
+            await archive.syncWithDevice()
         }
     }
 }

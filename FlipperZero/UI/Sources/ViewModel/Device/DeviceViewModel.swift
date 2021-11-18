@@ -1,8 +1,9 @@
 import Core
 import Combine
 import Injector
-import struct Foundation.UUID
+import Foundation
 
+@MainActor
 public class DeviceViewModel: ObservableObject {
     @Inject var flipper: PairedDeviceProtocol
     private var disposeBag: DisposeBag = .init()
@@ -58,12 +59,14 @@ public class DeviceViewModel: ObservableObject {
 
     public init() {
         flipper.peripheral
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.device = $0
             }
             .store(in: &disposeBag)
 
         archive.$isSynchronizing
+            .receive(on: DispatchQueue.main)
             .sink { isSynchronizing in
                 self.status = isSynchronizing
                     ? .synchronizing
@@ -73,9 +76,10 @@ public class DeviceViewModel: ObservableObject {
     }
 
     func sync() {
-        status = .synchronizing
-        archive.syncWithDevice { [weak self] in
-            self?.status = .init(self?.device?.state)
+        Task {
+            status = .synchronizing
+            await archive.syncWithDevice()
+            status = .init(device?.state)
         }
     }
 }

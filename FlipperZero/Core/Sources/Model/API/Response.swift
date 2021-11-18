@@ -3,7 +3,7 @@ import SwiftProtobuf
 
 public typealias Continuation = (Result<Response, Error>) -> Void
 
-public enum Response {
+public enum Response: Equatable {
     case ping
     case list([Element])
     case file([UInt8])

@@ -4,6 +4,7 @@ import Injector
 
 import struct Foundation.Date
 
+@MainActor
 class StorageViewModel: ObservableObject {
     @Published var content: Content? {
         didSet {
@@ -55,24 +56,26 @@ class StorageViewModel: ObservableObject {
         if path.isEmpty {
             content = .list(root)
         } else {
-            listDirectory()
+            Task {
+                await listDirectory()
+            }
         }
     }
 
     func enter(directory name: String) {
         path.append(name)
-        listDirectory()
+        Task {
+            await listDirectory()
+        }
     }
 
-    func listDirectory() {
+    func listDirectory() async {
         content = nil
-        rpc.listDirectory(at: path) { result in
-            switch result {
-            case .success(let items):
-                self.content = .list(items)
-            case .failure(let error):
-                self.content = .error(error.description)
-            }
+        do {
+            let items = try await rpc.listDirectory(at: path)
+            self.content = .list(items)
+        } catch {
+            self.content = .error(String(describing: error))
         }
     }
 
@@ -85,14 +88,14 @@ class StorageViewModel: ObservableObject {
     }
 
     func readFile(_ file: File) {
-        content = nil
-        path.append(file.name)
-        rpc.readFile(at: path) { result in
-            switch result {
-            case .success(let bytes):
+        Task {
+            content = nil
+            path.append(file.name)
+            do {
+                let bytes = try await rpc.readFile(at: path)
                 self.content = .file(.init(decoding: bytes, as: UTF8.self))
-            case .failure(let error):
-                self.content = .error(error.description)
+            } catch {
+                self.content = .error(String(describing: error))
             }
         }
     }
@@ -102,15 +105,15 @@ class StorageViewModel: ObservableObject {
     var requestTime: Double?
 
     func save() {
-        let text = text
-        self.content = nil
-        startTime = .init()
-        rpc.writeFile(at: path, string: text) { result in
-            switch result {
-            case .success:
+        Task {
+            let text = text
+            self.content = nil
+            startTime = .init()
+            do {
+                try await rpc.writeFile(at: path, string: text)
                 self.content = .file(text)
-            case .failure(let error):
-                self.content = .error(error.description)
+            } catch {
+                self.content = .error(String(describing: error))
             }
         }
     }
@@ -122,26 +125,28 @@ class StorageViewModel: ObservableObject {
     }
 
     func cancel() {
-        listDirectory()
+        Task {
+            await listDirectory()
+        }
     }
 
     func create() {
-        guard !name.isEmpty else { return }
-        guard case .name(let isDirectory) = content else {
-            return
-        }
+        Task {
+            guard !name.isEmpty else { return }
+            guard case .name(let isDirectory) = content else {
+                return
+            }
 
-        content = nil
+            content = nil
 
-        let path = path.appending(name)
-        name = ""
+            let path = path.appending(name)
+            name = ""
 
-        // swiftlint:disable multiline_arguments opening_brace
-        rpc.createFile(at: path, isDirectory: isDirectory)
-        { result in
-            switch result {
-            case .success: self.listDirectory()
-            case .failure(let error): self.content = .error(error.description)
+            do {
+                try await rpc.createFile(at: path, isDirectory: isDirectory)
+                await listDirectory()
+            } catch {
+                self.content = .error(String(describing: error))
             }
         }
     }
@@ -149,36 +154,36 @@ class StorageViewModel: ObservableObject {
     // Delete
 
     func delete(at index: Int) {
-        guard case .list(var elements) = content else {
-            return
-        }
+        Task {
+            guard case .list(var elements) = content else {
+                return
+            }
 
-        let element = elements.remove(at: index)
-        self.content = .list(elements)
-        let elementPath = path.appending(element.name)
+            let element = elements.remove(at: index)
+            self.content = .list(elements)
+            let elementPath = path.appending(element.name)
 
-        rpc.deleteFile(at: elementPath, force: false) { result in
-            switch result {
-            case .success:
+            do {
+                try await rpc.deleteFile(at: elementPath, force: false)
                 self.content = .list(elements)
-            case .failure(let error) where error == .storage(.notEmpty):
+            } catch let error as Core.Error where error == .storage(.notEmpty){
                 self.content = .forceDelete(elementPath)
-            case .failure(let error):
-                self.content = .error(error.description)
+            } catch {
+                self.content = .error(String(describing: error))
             }
         }
     }
 
     func forceDelete() {
-        guard case .forceDelete(let path) = content else {
-            return
-        }
-        rpc.deleteFile(at: path, force: true) { result in
-            switch result {
-            case .success:
-                self.listDirectory()
-            case .failure(let error):
-                self.content = .error(error.description)
+        Task {
+            guard case .forceDelete(let path) = content else {
+                return
+            }
+            do {
+                try await rpc.deleteFile(at: path, force: true)
+                await listDirectory()
+            } catch {
+                self.content = .error(String(describing: error))
             }
         }
     }

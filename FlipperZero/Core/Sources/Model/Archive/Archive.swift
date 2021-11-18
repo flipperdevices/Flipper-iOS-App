@@ -70,91 +70,62 @@ public class Archive: ObservableObject {
         importKey(item)
     }
 
-    public func syncWithDevice(completion: @escaping () -> Void = {}) {
+    public func syncWithDevice() async {
         guard !isSynchronizing else { return }
+
         isSynchronizing = true
 
-        syncImportedItems { [weak self] in
-            self?.syncDeletedItems { [weak self] in
-                self?.syncDeviceItems {
-                    self?.isSynchronizing = false
-                    completion()
-                }
-            }
-        }
+        await syncImportedItems()
+        await syncDeletedItems()
+        await syncDeviceItems()
+
+        isSynchronizing = false
     }
 
-    private func syncImportedItems(completion: @escaping () -> Void) {
+    private func syncImportedItems() async {
         let imported = items.filter {
             $0.status == .imported || $0.status == .synchronizing
-        }
-
-        guard !imported.isEmpty else {
-            completion()
-            return
         }
 
         for item in imported {
             updateStatus(of: item, to: .synchronizing)
 
             let path = Path(components: ["any", item.fileType.directory, item.fileName])
-            flipperArchive.writeKey(item.content, at: path) { [weak self] result in
-                switch result {
-                case .success:
-                    self?.updateStatus(of: item, to: .synchronizied)
-                case .failure(let error):
-                    self?.updateStatus(of: item, to: .error)
-                    print(error)
-                }
-
-                if item == imported.last {
-                    completion()
-                }
+            do {
+                try await flipperArchive.writeKey(item.content, at: path)
+                updateStatus(of: item, to: .synchronizied)
+            } catch {
+                updateStatus(of: item, to: .error)
+                print(error)
             }
         }
     }
 
-    private func syncDeletedItems(completion: @escaping () -> Void) {
+    private func syncDeletedItems() async {
         // delete marked as deleted
         let deleted = items.filter { $0.status == .deleted }
-        guard !deleted.isEmpty else {
-            completion()
-            return
-        }
         for item in deleted {
-            flipperArchive.delete(item) { [weak self] result in
-                switch result {
-                case .success:
-                    self?.items.removeAll { $0.id == item.id }
-                    print("deleted")
-                case .failure(let error):
-                    print(error)
-                }
-            }
-            if item == deleted.last {
-                completion()
-            }
-        }
-    }
-
-    private func syncDeviceItems(completion: @escaping () -> Void) {
-        flipperArchive.listAllFiles { [weak self] result in
-            switch result {
-            case .success(let paths):
-                self?.syncFiles(paths, completion: completion)
-            case .failure(let error):
+            do {
+                try await flipperArchive.delete(item)
+                items.removeAll { $0.id == item.id }
+                print("deleted")
+            } catch {
                 print(error)
-                completion()
             }
         }
     }
 
-    private func syncFiles(_ paths: [Path], completion: @escaping () -> Void) {
-        removeDeletedOnDevice(paths)
-        guard !paths.isEmpty else {
-            completion()
-            return
+    private func syncDeviceItems() async {
+        do {
+            let paths = try await flipperArchive.listAllFiles()
+            await syncFiles(paths)
+        } catch {
+            print(error)
         }
+    }
+
+    private func syncFiles(_ paths: [Path]) async {
+        removeDeletedOnDevice(paths)
         for path in paths {
             guard let newItem = ArchiveItem(
                 with: path,
@@ -166,22 +137,14 @@ public class Archive: ObservableObject {
             }
             // skip existing
             guard !items.contains( where: { $0.id == newItem.id }) else {
-                if path == paths.last {
-                    completion()
-                }
                 continue
             }
             append(newItem)
-            flipperArchive.readFile(at: path) { [weak self] result in
-                switch result {
-                case .success(let content):
-                    self?.updateItem(id: newItem.id, with: content)
-                case .failure(let error):
-                    print(error)
-                }
-                if path == paths.last {
-                    completion()
-                }
+            do {
+                let content = try await flipperArchive.readFile(at: path)
+                updateItem(id: newItem.id, with: content)
+            } catch {
+                print(error)
             }
         }
     }

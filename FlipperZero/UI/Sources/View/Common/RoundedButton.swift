@@ -3,16 +3,18 @@ import SwiftUI
 struct RoundedButton: View {
     let text: String
     let isDanger: Bool
-    let action: () -> Void
+    let action: @MainActor () -> Void
 
-    init(_ text: String, isDanger: Bool = false, action: @escaping () -> Void) {
+    init(_ text: String, isDanger: Bool = false, action: @escaping @MainActor () -> Void) {
         self.text = text
         self.isDanger = isDanger
         self.action = action
     }
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             Text(text)
                 .fontWeight(.semibold)
                 .padding(14)
