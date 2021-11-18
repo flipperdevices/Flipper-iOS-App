@@ -167,7 +167,6 @@ public class Archive: ObservableObject {
             // skip existing
             guard !items.contains( where: { $0.id == newItem.id }) else {
                 if path == paths.last {
-                    isSynchronizing = false
                     completion()
                 }
                 continue

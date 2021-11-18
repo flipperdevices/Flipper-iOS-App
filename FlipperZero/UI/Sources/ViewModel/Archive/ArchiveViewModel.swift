@@ -154,13 +154,8 @@ class ArchiveViewModel: ObservableObject {
     }
 
     func synchronize() {
-        guard !isSynchronizing else {
-            return
-        }
-        isSynchronizing = true
-        archive.syncWithDevice {
-            self.isSynchronizing = false
-        }
+        guard !isSynchronizing else { return }
+        archive.syncWithDevice()
     }
 
     func favorite() {
