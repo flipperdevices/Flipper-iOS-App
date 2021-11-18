@@ -65,3 +65,9 @@ extension ArchiveItem.Name: ExpressibleByStringLiteral {
         self.value = value
     }
 }
+
+extension ArchiveItem.Name: Comparable {
+    public static func < (lhs: ArchiveItem.Name, rhs: ArchiveItem.Name) -> Bool {
+        lhs.value < rhs.value
+    }
+}
