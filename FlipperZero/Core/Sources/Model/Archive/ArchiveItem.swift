@@ -40,7 +40,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
         name: Name,
         fileType: FileType,
         properties: [Property],
-        isFavorite: Bool = false,
+        isFavorite: Bool,
         status: Status,
         date: Date = .init()
     ) {

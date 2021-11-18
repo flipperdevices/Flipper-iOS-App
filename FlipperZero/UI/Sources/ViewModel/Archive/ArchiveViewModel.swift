@@ -162,6 +162,7 @@ extension ArchiveItem {
             name: "",
             fileType: .ibutton,
             properties: [],
+            isFavorite: false,
             status: .synchronizied)
     }
 }
