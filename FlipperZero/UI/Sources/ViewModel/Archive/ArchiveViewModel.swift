@@ -126,10 +126,8 @@ class ArchiveViewModel: ObservableObject {
 
     func didFoundNFCTags(_ newItems: [ArchiveItem]) {
         if let item = newItems.first, !self.items.contains(item) {
-            isSynchronizing = true
-            self.archive.importKey(item) { [weak self] _ in
-                self?.isSynchronizing = false
-            }
+            self.archive.importKey(item)
+            synchronize()
         }
     }
 
@@ -140,18 +138,19 @@ class ArchiveViewModel: ObservableObject {
     }
 
     func deleteSelectedItems() {
-        switch editingItem {
-        case .none:
+        switch isSelectItemsMode {
+        case true:
             selectedItems.forEach(archive.delete)
             selectedItems.removeAll()
             withAnimation {
                 isSelectItemsMode = false
             }
-        default:
+        case false:
             archive.delete(editingItem)
             sheetManager.dismiss()
             editingItem = .none
         }
+        synchronize()
     }
 
     func synchronize() {

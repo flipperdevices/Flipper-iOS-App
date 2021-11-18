@@ -36,9 +36,6 @@ public class Archive: ObservableObject {
 
     public func delete(_ item: ArchiveItem) {
         updateStatus(of: item, to: .deleted)
-        syncWithDevice {
-            print("sync complete")
-        }
     }
 
     public func favorite(_ item: ArchiveItem) {
@@ -56,26 +53,11 @@ public class Archive: ObservableObject {
         }
     }
 
-    public func importKey(
-        _ item: ArchiveItem,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
+    public func importKey(_ item: ArchiveItem) {
         append(item)
-        let path = Path(components: ["any", item.fileType.directory, item.fileName])
-        isSynchronizing = true
-        updateStatus(of: item, to: .synchronizing)
-        flipperArchive.writeKey(item.content, at: path) { [weak self] result in
-            self?.isSynchronizing = false
-            self?.updateStatus(of: item, to: .synchronizied)
-            completion(result)
-        }
     }
 
-    public func importKey(
-        name: String,
-        data: [UInt8],
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
+    public func importKey(name: String, data: [UInt8]) {
         let content = String(decoding: data, as: UTF8.self)
         guard let item = ArchiveItem(
             fileName: name,
@@ -85,20 +67,47 @@ public class Archive: ObservableObject {
             print("importKey error, invalid data")
             return
         }
-        importKey(item, completion: completion)
+        importKey(item)
     }
 
-    public func syncWithDevice(completion: @escaping () -> Void) {
+    public func syncWithDevice(completion: @escaping () -> Void = {}) {
+        guard !isSynchronizing else { return }
         isSynchronizing = true
 
-        syncDeletedItems { [weak self] in
-            self?.flipperArchive.listAllFiles { [weak self] result in
-                self?.isSynchronizing = false
+        syncImportedItems { [weak self] in
+            self?.syncDeletedItems { [weak self] in
+                self?.syncDeviceItems {
+                    self?.isSynchronizing = false
+                    completion()
+                }
+            }
+        }
+    }
+
+    private func syncImportedItems(completion: @escaping () -> Void) {
+        let imported = items.filter {
+            $0.status == .imported || $0.status == .synchronizing
+        }
+
+        guard !imported.isEmpty else {
+            completion()
+            return
+        }
+
+        for item in imported {
+            updateStatus(of: item, to: .synchronizing)
+
+            let path = Path(components: ["any", item.fileType.directory, item.fileName])
+            flipperArchive.writeKey(item.content, at: path) { [weak self] result in
                 switch result {
-                case .success(let paths):
-                    self?.syncFiles(paths, completion: completion)
+                case .success:
+                    self?.updateStatus(of: item, to: .synchronizied)
                 case .failure(let error):
+                    self?.updateStatus(of: item, to: .error)
                     print(error)
+                }
+
+                if item == imported.last {
                     completion()
                 }
             }
@@ -108,6 +117,10 @@ public class Archive: ObservableObject {
     private func syncDeletedItems(completion: @escaping () -> Void) {
         // delete marked as deleted
         let deleted = items.filter { $0.status == .deleted }
+        guard !deleted.isEmpty else {
+            completion()
+            return
+        }
         for item in deleted {
             flipperArchive.delete(item) { [weak self] result in
                 switch result {
@@ -124,9 +137,24 @@ public class Archive: ObservableObject {
         }
     }
 
+    private func syncDeviceItems(completion: @escaping () -> Void) {
+        flipperArchive.listAllFiles { [weak self] result in
+            switch result {
+            case .success(let paths):
+                self?.syncFiles(paths, completion: completion)
+            case .failure(let error):
+                print(error)
+                completion()
+            }
+        }
+    }
+
     private func syncFiles(_ paths: [Path], completion: @escaping () -> Void) {
-        isSynchronizing = true
         removeDeletedOnDevice(paths)
+        guard !paths.isEmpty else {
+            completion()
+            return
+        }
         for path in paths {
             guard let newItem = ArchiveItem(
                 with: path,
@@ -153,7 +181,6 @@ public class Archive: ObservableObject {
                     print(error)
                 }
                 if path == paths.last {
-                    self?.isSynchronizing = false
                     completion()
                 }
             }
