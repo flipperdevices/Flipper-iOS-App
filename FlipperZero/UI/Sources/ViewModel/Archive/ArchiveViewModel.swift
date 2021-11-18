@@ -33,14 +33,6 @@ class ArchiveViewModel: ObservableObject {
         }
     }
 
-    @Published var isSynchronizing = false {
-        willSet {
-            switch newValue {
-            case true: status = .synchronizing
-            case false: status = .init(self.device?.state)
-            }
-        }
-    }
     @Published var selectedCategoryIndex = 0
     @Published var isDeletePresented = false
     @Published var selectedItems: [ArchiveItem] = []

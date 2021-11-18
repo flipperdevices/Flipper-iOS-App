@@ -20,7 +20,7 @@ struct ArchiveView: View {
                 ArchiveListView(
                     items: group.items,
                     hasFavorites: group == viewModel.itemGroups.first,
-                    isSynchronizing: viewModel.isSynchronizing,
+                    isSynchronizing: viewModel.status == .synchronizing,
                     isSelectItemsMode: $viewModel.isSelectItemsMode,
                     selectedItems: $viewModel.selectedItems,
                     onAction: onAction)
