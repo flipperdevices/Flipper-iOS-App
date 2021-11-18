@@ -17,7 +17,7 @@ public class DeviceViewModel: ObservableObject {
             }
         }
     }
-    @Published var status: HeaderDeviceStatus = .noDevice
+    @Published var status: Status = .noDevice
 
     @Published var presentConnectionsSheet = false {
         willSet {

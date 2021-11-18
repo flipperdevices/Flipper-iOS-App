@@ -4,7 +4,7 @@ import SwiftUI
 struct ArchiveListView: View {
     var items: [ArchiveItem]
     let hasFavorites: Bool
-    let isSynchronizing: Bool
+    let status: Status
     @State var showFavorites = true
     @State var syncLabelOpacity = 0.0
     @State var blockSelection = false
@@ -19,16 +19,16 @@ struct ArchiveListView: View {
     }
 
     init(
+        status: Status,
         items: [ArchiveItem],
         hasFavorites: Bool,
-        isSynchronizing: Bool,
         isSelectItemsMode: Binding<Bool>,
         selectedItems: Binding<[ArchiveItem]>,
         onAction: @escaping (Action) -> Void
     ) {
+        self.status = status
         self.items = items
         self.hasFavorites = hasFavorites
-        self.isSynchronizing = isSynchronizing
         self._isSelectItemsMode = isSelectItemsMode
         self._selectedItems = selectedItems
         self.onAction = onAction
@@ -40,9 +40,9 @@ struct ArchiveListView: View {
                 Spacer()
                 ZStack {
                     Text("Keep pulling to sync with device")
-                        .opacity(isSynchronizing ? 0 : 1)
+                        .opacity(status == .synchronizing ? 0 : 1)
                     Text("Syncing")
-                        .opacity(isSynchronizing ? 1 : 0)
+                        .opacity(status == .synchronizing ? 1 : 0)
                 }
                 Spacer()
             }

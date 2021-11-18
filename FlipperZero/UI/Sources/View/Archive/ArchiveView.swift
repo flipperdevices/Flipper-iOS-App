@@ -18,9 +18,9 @@ struct ArchiveView: View {
                 items: viewModel.itemGroups
             ) { group in
                 ArchiveListView(
+                    status: viewModel.status,
                     items: group.items,
                     hasFavorites: group == viewModel.itemGroups.first,
-                    isSynchronizing: viewModel.status == .synchronizing,
                     isSelectItemsMode: $viewModel.isSelectItemsMode,
                     selectedItems: $viewModel.selectedItems,
                     onAction: onAction)

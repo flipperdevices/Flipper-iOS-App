@@ -5,13 +5,13 @@ import SwiftUI
 
 struct HeaderView<LeftView: View, RightView: View>: View {
     let title: String
-    let status: HeaderDeviceStatus
+    let status: Status
     let leftView: LeftView
     let rightView: RightView
 
     init(
         title: String? = nil,
-        status: HeaderDeviceStatus,
+        status: Status,
         @ViewBuilder leftView: (() -> LeftView),
         @ViewBuilder rightView: (() -> RightView)
     ) {
@@ -44,7 +44,7 @@ struct HeaderDeviceView: View {
     @State private var angle: Int = 0
 
     let name: String
-    var status: HeaderDeviceStatus
+    var status: Status
 
     var isConnecting: Bool {
         status == .connecting
@@ -149,37 +149,6 @@ struct HeaderDeviceView: View {
             if isConnecting {
                 startAnimation()
             }
-        }
-    }
-}
-
-enum HeaderDeviceStatus: CustomStringConvertible {
-    case connecting
-    case connected
-    case disconnected
-    case noDevice
-    case synchronizing
-
-    var description: String {
-        switch self {
-        case .connecting: return "Connecting"
-        case .connected: return "Connected"
-        case .disconnected: return "Disconnected"
-        case .noDevice: return "No device"
-        case .synchronizing: return "Connected"
-        }
-    }
-
-    init(_ state: Peripheral.State?) {
-        guard let state = state else {
-            self = .noDevice
-            return
-        }
-        switch state {
-        case .connected: self = .connected
-        case .connecting: self = .connecting
-        case .disconnected: self = .disconnected
-        case .disconnecting: self = .disconnected
         }
     }
 }

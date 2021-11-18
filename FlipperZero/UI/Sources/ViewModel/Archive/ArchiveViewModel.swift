@@ -12,7 +12,7 @@ class ArchiveViewModel: ObservableObject {
     @Published var device: Peripheral? {
         didSet { status = .init(device?.state) }
     }
-    @Published var status: HeaderDeviceStatus = .noDevice
+    @Published var status: Status = .noDevice
 
     @Published var archive: Archive = .shared
     @Published var sortOption: SortOption = .creationDate

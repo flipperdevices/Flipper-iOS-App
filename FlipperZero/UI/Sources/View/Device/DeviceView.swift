@@ -94,7 +94,7 @@ extension DeviceView {
 }
 
 struct DeviceViewHeader: View {
-    let status: HeaderDeviceStatus
+    let status: Status
     @Binding var displayingConnections: Bool
 
     var body: some View {
