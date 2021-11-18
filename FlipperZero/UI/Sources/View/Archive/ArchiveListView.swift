@@ -40,6 +40,7 @@ struct ArchiveListView: View {
                 Spacer()
                 ZStack {
                     Text("Keep pulling to sync with device")
+                        .opacity(status == .connected ? 1 : 0)
                         .opacity(status == .synchronizing ? 0 : 1)
                     Text("Syncing")
                         .opacity(status == .synchronizing ? 1 : 0)
