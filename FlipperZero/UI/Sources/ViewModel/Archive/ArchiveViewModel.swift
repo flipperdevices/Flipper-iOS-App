@@ -154,7 +154,7 @@ class ArchiveViewModel: ObservableObject {
     }
 
     func synchronize() {
-        guard !isSynchronizing else { return }
+        guard status == .connected else { return }
         archive.syncWithDevice()
     }
 
