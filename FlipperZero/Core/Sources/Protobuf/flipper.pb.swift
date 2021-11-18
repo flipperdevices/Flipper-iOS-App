@@ -77,6 +77,12 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
 
   ///*< Another app is running 
   case errorAppSystemLocked // = 17
+
+  ///*< Virtual Display Errors 
+  case errorVirtualDisplayAlreadyStarted // = 19
+
+  ///*< Virtual Display session can't be stopped when it's not started 
+  case errorVirtualDisplayNotStarted // = 20
   case UNRECOGNIZED(Int)
 
   init() {
@@ -104,6 +110,8 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
     case 16: self = .errorAppCantStart
     case 17: self = .errorAppSystemLocked
     case 18: self = .errorStorageDirNotEmpty
+    case 19: self = .errorVirtualDisplayAlreadyStarted
+    case 20: self = .errorVirtualDisplayNotStarted
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -129,6 +137,8 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
     case .errorAppCantStart: return 16
     case .errorAppSystemLocked: return 17
     case .errorStorageDirNotEmpty: return 18
+    case .errorVirtualDisplayAlreadyStarted: return 19
+    case .errorVirtualDisplayNotStarted: return 20
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -159,6 +169,8 @@ extension PB_CommandStatus: CaseIterable {
     .errorStorageDirNotEmpty,
     .errorAppCantStart,
     .errorAppSystemLocked,
+    .errorVirtualDisplayAlreadyStarted,
+    .errorVirtualDisplayNotStarted,
   ]
 }
 
@@ -230,6 +242,22 @@ struct PB_Main {
       return PBStatus_PingResponse()
     }
     set {content = .pingResponse(newValue)}
+  }
+
+  var storageStatRequest: PBStorage_StatRequest {
+    get {
+      if case .storageStatRequest(let v)? = content {return v}
+      return PBStorage_StatRequest()
+    }
+    set {content = .storageStatRequest(newValue)}
+  }
+
+  var storageStatResponse: PBStorage_StatResponse {
+    get {
+      if case .storageStatResponse(let v)? = content {return v}
+      return PBStorage_StatResponse()
+    }
+    set {content = .storageStatResponse(newValue)}
   }
 
   var storageListRequest: PBStorage_ListRequest {
@@ -304,12 +332,12 @@ struct PB_Main {
     set {content = .storageMd5SumResponse(newValue)}
   }
 
-  var appStart: PBApp_Start {
+  var appStartRequest: PBApp_StartRequest {
     get {
-      if case .appStart(let v)? = content {return v}
-      return PBApp_Start()
+      if case .appStartRequest(let v)? = content {return v}
+      return PBApp_StartRequest()
     }
-    set {content = .appStart(newValue)}
+    set {content = .appStartRequest(newValue)}
   }
 
   var appLockStatusRequest: PBApp_LockStatusRequest {
@@ -328,6 +356,54 @@ struct PB_Main {
     set {content = .appLockStatusResponse(newValue)}
   }
 
+  var guiStartScreenStreamRequest: PBGui_StartScreenStreamRequest {
+    get {
+      if case .guiStartScreenStreamRequest(let v)? = content {return v}
+      return PBGui_StartScreenStreamRequest()
+    }
+    set {content = .guiStartScreenStreamRequest(newValue)}
+  }
+
+  var guiStopScreenStreamRequest: PBGui_StopScreenStreamRequest {
+    get {
+      if case .guiStopScreenStreamRequest(let v)? = content {return v}
+      return PBGui_StopScreenStreamRequest()
+    }
+    set {content = .guiStopScreenStreamRequest(newValue)}
+  }
+
+  var guiScreenFrame: PBGui_ScreenFrame {
+    get {
+      if case .guiScreenFrame(let v)? = content {return v}
+      return PBGui_ScreenFrame()
+    }
+    set {content = .guiScreenFrame(newValue)}
+  }
+
+  var guiSendInputEventRequest: PBGui_SendInputEventRequest {
+    get {
+      if case .guiSendInputEventRequest(let v)? = content {return v}
+      return PBGui_SendInputEventRequest()
+    }
+    set {content = .guiSendInputEventRequest(newValue)}
+  }
+
+  var guiStartVirtualDisplayRequest: PBGui_StartVirtualDisplayRequest {
+    get {
+      if case .guiStartVirtualDisplayRequest(let v)? = content {return v}
+      return PBGui_StartVirtualDisplayRequest()
+    }
+    set {content = .guiStartVirtualDisplayRequest(newValue)}
+  }
+
+  var guiStopVirtualDisplayRequest: PBGui_StopVirtualDisplayRequest {
+    get {
+      if case .guiStopVirtualDisplayRequest(let v)? = content {return v}
+      return PBGui_StopVirtualDisplayRequest()
+    }
+    set {content = .guiStopVirtualDisplayRequest(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Content: Equatable {
@@ -335,6 +411,8 @@ struct PB_Main {
     case stopSession(PB_StopSession)
     case pingRequest(PBStatus_PingRequest)
     case pingResponse(PBStatus_PingResponse)
+    case storageStatRequest(PBStorage_StatRequest)
+    case storageStatResponse(PBStorage_StatResponse)
     case storageListRequest(PBStorage_ListRequest)
     case storageListResponse(PBStorage_ListResponse)
     case storageReadRequest(PBStorage_ReadRequest)
@@ -344,9 +422,15 @@ struct PB_Main {
     case storageMkdirRequest(PBStorage_MkdirRequest)
     case storageMd5SumRequest(PBStorage_Md5sumRequest)
     case storageMd5SumResponse(PBStorage_Md5sumResponse)
-    case appStart(PBApp_Start)
+    case appStartRequest(PBApp_StartRequest)
     case appLockStatusRequest(PBApp_LockStatusRequest)
     case appLockStatusResponse(PBApp_LockStatusResponse)
+    case guiStartScreenStreamRequest(PBGui_StartScreenStreamRequest)
+    case guiStopScreenStreamRequest(PBGui_StopScreenStreamRequest)
+    case guiScreenFrame(PBGui_ScreenFrame)
+    case guiSendInputEventRequest(PBGui_SendInputEventRequest)
+    case guiStartVirtualDisplayRequest(PBGui_StartVirtualDisplayRequest)
+    case guiStopVirtualDisplayRequest(PBGui_StopVirtualDisplayRequest)
 
   #if !swift(>=4.1)
     static func ==(lhs: PB_Main.OneOf_Content, rhs: PB_Main.OneOf_Content) -> Bool {
@@ -368,6 +452,14 @@ struct PB_Main {
       }()
       case (.pingResponse, .pingResponse): return {
         guard case .pingResponse(let l) = lhs, case .pingResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.storageStatRequest, .storageStatRequest): return {
+        guard case .storageStatRequest(let l) = lhs, case .storageStatRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.storageStatResponse, .storageStatResponse): return {
+        guard case .storageStatResponse(let l) = lhs, case .storageStatResponse(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       case (.storageListRequest, .storageListRequest): return {
@@ -406,8 +498,8 @@ struct PB_Main {
         guard case .storageMd5SumResponse(let l) = lhs, case .storageMd5SumResponse(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
-      case (.appStart, .appStart): return {
-        guard case .appStart(let l) = lhs, case .appStart(let r) = rhs else { preconditionFailure() }
+      case (.appStartRequest, .appStartRequest): return {
+        guard case .appStartRequest(let l) = lhs, case .appStartRequest(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       case (.appLockStatusRequest, .appLockStatusRequest): return {
@@ -416,6 +508,30 @@ struct PB_Main {
       }()
       case (.appLockStatusResponse, .appLockStatusResponse): return {
         guard case .appLockStatusResponse(let l) = lhs, case .appLockStatusResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.guiStartScreenStreamRequest, .guiStartScreenStreamRequest): return {
+        guard case .guiStartScreenStreamRequest(let l) = lhs, case .guiStartScreenStreamRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.guiStopScreenStreamRequest, .guiStopScreenStreamRequest): return {
+        guard case .guiStopScreenStreamRequest(let l) = lhs, case .guiStopScreenStreamRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.guiScreenFrame, .guiScreenFrame): return {
+        guard case .guiScreenFrame(let l) = lhs, case .guiScreenFrame(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.guiSendInputEventRequest, .guiSendInputEventRequest): return {
+        guard case .guiSendInputEventRequest(let l) = lhs, case .guiSendInputEventRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.guiStartVirtualDisplayRequest, .guiStartVirtualDisplayRequest): return {
+        guard case .guiStartVirtualDisplayRequest(let l) = lhs, case .guiStartVirtualDisplayRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.guiStopVirtualDisplayRequest, .guiStopVirtualDisplayRequest): return {
+        guard case .guiStopVirtualDisplayRequest(let l) = lhs, case .guiStopVirtualDisplayRequest(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -452,6 +568,8 @@ extension PB_CommandStatus: SwiftProtobuf._ProtoNameProviding {
     16: .same(proto: "ERROR_APP_CANT_START"),
     17: .same(proto: "ERROR_APP_SYSTEM_LOCKED"),
     18: .same(proto: "ERROR_STORAGE_DIR_NOT_EMPTY"),
+    19: .same(proto: "ERROR_VIRTUAL_DISPLAY_ALREADY_STARTED"),
+    20: .same(proto: "ERROR_VIRTUAL_DISPLAY_NOT_STARTED"),
   ]
 }
 
@@ -503,6 +621,8 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     19: .standard(proto: "stop_session"),
     5: .standard(proto: "ping_request"),
     6: .standard(proto: "ping_response"),
+    24: .standard(proto: "storage_stat_request"),
+    25: .standard(proto: "storage_stat_response"),
     7: .standard(proto: "storage_list_request"),
     8: .standard(proto: "storage_list_response"),
     9: .standard(proto: "storage_read_request"),
@@ -512,9 +632,15 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     13: .standard(proto: "storage_mkdir_request"),
     14: .standard(proto: "storage_md5sum_request"),
     15: .standard(proto: "storage_md5sum_response"),
-    16: .standard(proto: "app_start"),
+    16: .standard(proto: "app_start_request"),
     17: .standard(proto: "app_lock_status_request"),
     18: .standard(proto: "app_lock_status_response"),
+    20: .standard(proto: "gui_start_screen_stream_request"),
+    21: .standard(proto: "gui_stop_screen_stream_request"),
+    22: .standard(proto: "gui_screen_frame"),
+    23: .standard(proto: "gui_send_input_event_request"),
+    26: .standard(proto: "gui_start_virtual_display_request"),
+    27: .standard(proto: "gui_stop_virtual_display_request"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -683,16 +809,16 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
         }
       }()
       case 16: try {
-        var v: PBApp_Start?
+        var v: PBApp_StartRequest?
         var hadOneofValue = false
         if let current = self.content {
           hadOneofValue = true
-          if case .appStart(let m) = current {v = m}
+          if case .appStartRequest(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {
           if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.content = .appStart(v)
+          self.content = .appStartRequest(v)
         }
       }()
       case 17: try {
@@ -732,6 +858,110 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
         if let v = v {
           if hadOneofValue {try decoder.handleConflictingOneOf()}
           self.content = .stopSession(v)
+        }
+      }()
+      case 20: try {
+        var v: PBGui_StartScreenStreamRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .guiStartScreenStreamRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .guiStartScreenStreamRequest(v)
+        }
+      }()
+      case 21: try {
+        var v: PBGui_StopScreenStreamRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .guiStopScreenStreamRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .guiStopScreenStreamRequest(v)
+        }
+      }()
+      case 22: try {
+        var v: PBGui_ScreenFrame?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .guiScreenFrame(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .guiScreenFrame(v)
+        }
+      }()
+      case 23: try {
+        var v: PBGui_SendInputEventRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .guiSendInputEventRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .guiSendInputEventRequest(v)
+        }
+      }()
+      case 24: try {
+        var v: PBStorage_StatRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .storageStatRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .storageStatRequest(v)
+        }
+      }()
+      case 25: try {
+        var v: PBStorage_StatResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .storageStatResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .storageStatResponse(v)
+        }
+      }()
+      case 26: try {
+        var v: PBGui_StartVirtualDisplayRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .guiStartVirtualDisplayRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .guiStartVirtualDisplayRequest(v)
+        }
+      }()
+      case 27: try {
+        var v: PBGui_StopVirtualDisplayRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .guiStopVirtualDisplayRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .guiStopVirtualDisplayRequest(v)
         }
       }()
       default: break
@@ -802,8 +1032,8 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
       guard case .storageMd5SumResponse(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
     }()
-    case .appStart?: try {
-      guard case .appStart(let v)? = self.content else { preconditionFailure() }
+    case .appStartRequest?: try {
+      guard case .appStartRequest(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
     }()
     case .appLockStatusRequest?: try {
@@ -817,6 +1047,38 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .stopSession?: try {
       guard case .stopSession(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
+    }()
+    case .guiStartScreenStreamRequest?: try {
+      guard case .guiStartScreenStreamRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 20)
+    }()
+    case .guiStopScreenStreamRequest?: try {
+      guard case .guiStopScreenStreamRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
+    }()
+    case .guiScreenFrame?: try {
+      guard case .guiScreenFrame(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 22)
+    }()
+    case .guiSendInputEventRequest?: try {
+      guard case .guiSendInputEventRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 23)
+    }()
+    case .storageStatRequest?: try {
+      guard case .storageStatRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 24)
+    }()
+    case .storageStatResponse?: try {
+      guard case .storageStatResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 25)
+    }()
+    case .guiStartVirtualDisplayRequest?: try {
+      guard case .guiStartVirtualDisplayRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 26)
+    }()
+    case .guiStopVirtualDisplayRequest?: try {
+      guard case .guiStopVirtualDisplayRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 27)
     }()
     case nil: break
     }

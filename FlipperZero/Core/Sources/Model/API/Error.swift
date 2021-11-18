@@ -2,6 +2,7 @@ public enum Error: Equatable, Swift.Error {
     case common(CommonError)
     case storage(StorageError)
     case application(ApplicationError)
+    case virtualDisplay(VirtualDisplayError)
     case unsupported(Int)
 
     public enum CommonError: Equatable, Swift.Error {
@@ -30,12 +31,17 @@ public enum Error: Equatable, Swift.Error {
         case cantStart
         case systemLocked
     }
+
+    public enum VirtualDisplayError: Equatable, Swift.Error {
+        case alreadyStarted
+        case notStarted
+    }
 }
 
 // MARK: Initializer
 
 extension Error {
-    // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable cyclomatic_complexity function_body_length
     init(_ source: PB_CommandStatus) {
 
         switch source {
@@ -78,6 +84,11 @@ extension Error {
         case .errorAppSystemLocked:
             self = .application(.systemLocked)
 
+        case .errorVirtualDisplayAlreadyStarted:
+            self = .virtualDisplay(.alreadyStarted)
+        case .errorVirtualDisplayNotStarted:
+            self = .virtualDisplay(.notStarted)
+
         case .ok, .UNRECOGNIZED:
             self = .unsupported(source.rawValue)
         }
@@ -89,12 +100,14 @@ extension Error {
 extension Error: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .common(let commonError):
-            return "CommonError: \(commonError)"
-        case .storage(let storageError):
-            return "StorageError: \(storageError)"
-        case .application(let applicationError):
-            return "ApplicationError: \(applicationError)"
+        case .common(let error):
+            return "CommonError: \(error)"
+        case .storage(let error):
+            return "StorageError: \(error)"
+        case .application(let error):
+            return "ApplicationError: \(error)"
+        case .virtualDisplay(let error):
+            return "VirtualDisplayError: \(error)"
         case .unsupported(let code):
             return "Unsupported error code: \(code)"
         }
@@ -154,6 +167,17 @@ extension Error.ApplicationError: CustomStringConvertible {
             return "Can't start app - internal error"
         case .systemLocked:
             return "System locked - another app is running"
+        }
+    }
+}
+
+extension Error.VirtualDisplayError: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .alreadyStarted:
+            return "Virtual Display is already started"
+        case .notStarted:
+            return "Virtual Display is not started"
         }
     }
 }

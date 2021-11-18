@@ -20,7 +20,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct PBApp_Start {
+struct PBApp_StartRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -60,8 +60,8 @@ struct PBApp_LockStatusResponse {
 
 fileprivate let _protobuf_package = "PB_App"
 
-extension PBApp_Start: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Start"
+extension PBApp_StartRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".StartRequest"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "name"),
     2: .same(proto: "args"),
@@ -90,7 +90,7 @@ extension PBApp_Start: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: PBApp_Start, rhs: PBApp_Start) -> Bool {
+  static func ==(lhs: PBApp_StartRequest, rhs: PBApp_StartRequest) -> Bool {
     if lhs.name != rhs.name {return false}
     if lhs.args != rhs.args {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
