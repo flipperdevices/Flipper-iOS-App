@@ -126,7 +126,7 @@ public class Archive: ObservableObject {
 
     private func syncFiles(_ paths: [Path], completion: @escaping () -> Void) {
         isSynchronizing = true
-        removeMissing(paths)
+        removeDeletedOnDevice(paths)
         for path in paths {
             guard let newItem = ArchiveItem(
                 with: path,
@@ -160,9 +160,11 @@ public class Archive: ObservableObject {
         }
     }
 
-    private func removeMissing(_ paths: [Path]) {
+    private func removeDeletedOnDevice(_ paths: [Path]) {
         let ids = paths.map { $0.components.last }
-        self.items.removeAll { !ids.contains($0.id) }
+        self.items.removeAll {
+            $0.status == .synchronizied && !ids.contains($0.id)
+        }
     }
 
     private func updateItem(id: ArchiveItem.ID, with content: String) {
