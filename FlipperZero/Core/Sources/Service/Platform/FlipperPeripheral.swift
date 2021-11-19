@@ -38,10 +38,18 @@ class FlipperPeripheral: BluetoothPeripheral {
 
     func send(
         _ request: Request,
-        priority: Priority?,
-        continuation: @escaping Continuation
-    ) {
-        delegate.send(request, priority: priority, continuation: continuation)
+        priority: Priority?
+    ) async throws -> Response {
+        try await withCheckedThrowingContinuation { continuation in
+            delegate.send(request, priority: priority) { result in
+                switch result {
+                case .success(let response):
+                    continuation.resume(returning: response)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
 }
 

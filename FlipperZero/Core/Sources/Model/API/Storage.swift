@@ -1,6 +1,6 @@
 import struct Foundation.Data
 
-public enum Element {
+public enum Element: Equatable {
     case file(File)
     case directory(Directory)
 
@@ -12,7 +12,7 @@ public enum Element {
     }
 }
 
-public struct File {
+public struct File: Equatable {
     public let name: String
     public let size: Int
     public let data: Data?
@@ -24,7 +24,7 @@ public struct File {
     }
 }
 
-public struct Directory {
+public struct Directory: Equatable {
     public let name: String
 
     public init(name: String) {

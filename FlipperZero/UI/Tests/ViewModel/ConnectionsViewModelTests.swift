@@ -85,9 +85,9 @@ private struct MockPeripheral: BluetoothPeripheral {
 
     func send(
         _ request: Request,
-        priority: Priority?,
-        continuation: @escaping Continuation
-    ) {
+        priority: Priority?
+    ) async throws -> Response {
+        .ok
     }
 }
 

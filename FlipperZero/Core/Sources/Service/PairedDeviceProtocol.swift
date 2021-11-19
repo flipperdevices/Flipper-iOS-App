@@ -3,9 +3,5 @@ public protocol PairedDeviceProtocol {
 
     func disconnect()
 
-    func send(
-        _ request: Request,
-        priority: Priority,
-        continuation: @escaping Continuation
-    )
+    func send(_ request: Request, priority: Priority) async throws -> Response
 }

@@ -3,6 +3,7 @@ import Combine
 import Injector
 import SwiftUI
 
+@MainActor
 class ArchiveViewModel: ObservableObject {
     @Inject var nfc: NFCServiceProtocol
     @Inject var storage: DeviceStorage
@@ -67,18 +68,21 @@ class ArchiveViewModel: ObservableObject {
         self.onSelectItemsModeChanded = onSelectItemsModeChanded
 
         nfc.items
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] newItems in
                 self?.didFoundNFCTags(newItems)
             }
             .store(in: &disposeBag)
 
         pairedDevice.peripheral
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
                 self?.device = item
             }
             .store(in: &disposeBag)
 
         archive.$isSynchronizing
+            .receive(on: DispatchQueue.main)
             .sink { isSynchronizing in
                 self.status = isSynchronizing
                     ? .synchronizing
@@ -146,7 +150,9 @@ class ArchiveViewModel: ObservableObject {
 
     func synchronize() {
         guard status == .connected else { return }
-        archive.syncWithDevice()
+        Task {
+            await archive.syncWithDevice()
+        }
     }
 
     func favorite() {

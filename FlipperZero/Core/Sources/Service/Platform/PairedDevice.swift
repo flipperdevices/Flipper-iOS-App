@@ -80,9 +80,12 @@ class PairedDevice: PairedDeviceProtocol, ObservableObject {
 
     func send(
         _ request: Request,
-        priority: Priority,
-        continuation: @escaping Continuation
-    ) {
-        flipper?.send(request, priority: priority, continuation: continuation)
+        priority: Priority
+    ) async throws -> Response {
+        // FIXME:
+        guard let flipper = flipper else {
+            return .error("disconnected")
+        }
+        return try await flipper.send(request, priority: priority)
     }
 }

@@ -6,22 +6,12 @@ public class FlipperArchive {
 
     private init() {}
 
-    public func readAllItems(
-        _ completion: @escaping (Result<[ArchiveItem], Error>) -> Void
-    ) {
-        listAllFiles { [weak self] result in
-            switch result {
-            case .success(let files):
-                self?.readFiles(files, completion)
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
+    public func readAllItems() async throws -> [ArchiveItem] {
+        let paths = try await listAllFiles()
+        return try await self.readFiles(paths)
     }
 
-    public func listAllFiles(
-        _ completion: @escaping (Result<[Path], Error>) -> Void
-    ) {
+    public func listAllFiles() async throws -> [Path] {
         let supportedPaths: [Path] = ArchiveItem.FileType.allCases.map {
             root.appending($0.directory)
         }
@@ -29,83 +19,44 @@ public class FlipperArchive {
         var archiveFiles: [Path] = .init()
 
         for path in supportedPaths {
-            rpc.listDirectory(at: path, priority: .background) { result in
-                switch result {
-                case .success(let elements):
-                    let filePaths = elements.files.map { path.appending($0) }
-                    archiveFiles.append(contentsOf: filePaths)
-
-                    if path == supportedPaths.last {
-                        completion(.success(archiveFiles))
-                    }
-                case .failure(let error):
-                    completion(.failure(error))
-                }
-            }
+            let elements = try await rpc.listDirectory(
+                at: path,
+                priority: .background)
+            let filePaths = elements.files.map { path.appending($0) }
+            archiveFiles.append(contentsOf: filePaths)
         }
+
+        return archiveFiles
     }
 
-    public func readFile(
-        at path: Path,
-        _ completion: @escaping (Result<String, Error>) -> Void
-    ) {
-        rpc.readFile(at: path, priority: .background) { result in
-            switch result {
-            case .success(let bytes):
-                completion(.success(String(decoding: bytes, as: UTF8.self)))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
+    public func readFile(at path: Path) async throws -> String {
+        let bytes = try await rpc.readFile(at: path, priority: .background)
+        return String(decoding: bytes, as: UTF8.self)
     }
 
-    public func delete(
-        _ item: ArchiveItem,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
-        rpc.deleteFile(at: item.path, force: false, completion: completion)
+    public func delete(_ item: ArchiveItem) async throws {
+        try await rpc.deleteFile(at: item.path, force: false)
     }
 
-    public func writeKey(
-        _ content: String,
-        at path: Path,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
-        rpc.writeFile(at: path, bytes: [UInt8](content.utf8)) { response in
-            switch response {
-            case .success:
-                completion(.success(()))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
+    public func writeKey(_ content: String, at path: Path) async throws {
+        try await rpc.writeFile(at: path, bytes: [UInt8](content.utf8))
     }
 
-    private func readFiles(
-        _ paths: [Path],
-        _ completion: @escaping (Result<[ArchiveItem], Error>) -> Void
-    ) {
+    private func readFiles(_ paths: [Path]) async throws -> [ArchiveItem] {
         var items: [ArchiveItem] = []
 
         for path in paths {
-            readFile(at: path) { result in
-                switch result {
-                case .success(let content):
-                    if let next = ArchiveItem(
-                        fileName: path.components.last ?? "",
-                        content: content,
-                        status: .synchronizied
-                    ) {
-                        items.append(next)
-                    }
-                    if path == paths.last {
-                        completion(.success(items))
-                    }
-                case .failure(let error):
-                    completion(.failure(error))
-                }
+            let content = try await readFile(at: path)
+            if let next = ArchiveItem(
+                fileName: path.components.last ?? "",
+                content: content,
+                status: .synchronizied
+            ) {
+                items.append(next)
             }
         }
+
+        return items
     }
 }
 

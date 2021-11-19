@@ -3,6 +3,7 @@ public enum Error: Equatable, Swift.Error {
     case storage(StorageError)
     case application(ApplicationError)
     case virtualDisplay(VirtualDisplayError)
+    case unexpectedResponse(Response?)
     case unsupported(Int)
 
     public enum CommonError: Equatable, Swift.Error {
@@ -108,6 +109,8 @@ extension Error: CustomStringConvertible {
             return "ApplicationError: \(error)"
         case .virtualDisplay(let error):
             return "VirtualDisplayError: \(error)"
+        case .unexpectedResponse(let response):
+            return "Unexpected response: \(String(describing: response))"
         case .unsupported(let code):
             return "Unsupported error code: \(code)"
         }
