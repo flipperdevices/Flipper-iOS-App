@@ -1,7 +1,7 @@
 import Injector
 import Foundation
 
-// swiftlint:disable multiline_arguments
+// swiftlint:disable nesting
 
 public class RPCStressTest {
     static let shared: RPCStressTest = .init()
@@ -13,8 +13,8 @@ public class RPCStressTest {
     var flipper: BluetoothPeripheral? {
         didSet {
             switch flipper {
-            case .some: sendEvent(.info, message: "device connected")
-            case .none: sendEvent(.error, message: "device disconnected")
+            case .some: log(.info, "device connected")
+            case .none: log(.error, "device disconnected")
             }
         }
     }
@@ -53,29 +53,30 @@ public class RPCStressTest {
         isRunning = true
 
         progressSubject.value = []
-        self.sendEvent(.info, message: "starting stress test")
+        self.log(.info, "starting stress test")
 
-        testStorage()
+        Task {
+            await testStorage()
+        }
     }
 
     public func stop() {
         guard isRunning else { return }
         isRunning = false
 
-        self.sendEvent(.info, message: "stopping stress test")
+        self.log(.info, "stopping stress test")
     }
 
-    func sendEvent(_ kind: Event.Kind, message: String) {
+    func log(_ kind: Event.Kind, _ message: String) {
         progressSubject.value.append(.init(kind: kind, message: message))
     }
 
     var done = false
     let temp = Path(string: "/ext/stress_test")
 
-    func testStorage() {
-        rpc.deleteFile(at: temp) { _ in
-            self.testStorageFile()
-        }
+    func testStorage() async {
+        try? await rpc.deleteFile(at: temp)
+        await testStorageFile()
     }
 
     func randomBuffer() -> [UInt8] {
@@ -86,39 +87,34 @@ public class RPCStressTest {
         return bytes
     }
 
-    func testStorageFile() {
+    func testStorageFile() async {
         let bytes = randomBuffer()
         let path = temp
-        rpc.writeFile(at: path, bytes: bytes, priority: .background) { result in
-            switch result {
-            case .success:
-                self.sendEvent(.debug, message: "did write \(bytes.count) bytes at \(path)")
-            case .failure(let error):
-                self.sendEvent(.error, message: "error wiring at \(path): \(error)")
+
+        do {
+            try await rpc.writeFile(at: path, bytes: bytes, priority: .background)
+            log(.success, "did write \(bytes.count) bytes at \(path)")
+        } catch {
+            log(.error, "error wiring at \(path): \(error)")
+        }
+
+        guard isRunning else { return }
+
+        do {
+            let received = try await rpc.readFile(at: path, priority: .background)
+            log(.debug, "did read \(received.count) bytes from \(path)")
+            switch bytes == received {
+            case true: log(.success, "buffers are equal")
+            case false: log(.error, "buffers are NOT equal")
             }
+        } catch {
+            log(.error, "error reading from \(path): \(error)")
+        }
 
-            guard self.isRunning else {
-                return
-            }
+        guard self.isRunning else { return }
 
-            self.rpc.readFile(at: path, priority: .background) { result in
-                switch result {
-                case .success(let received):
-                    self.sendEvent(.debug, message: "did read \(received.count) bytes from \(path)")
-                    switch bytes == received {
-                    case true: self.sendEvent(.success, message: "buffers are equal")
-                    case false: self.sendEvent(.success, message: "buffers are NOT equal")
-                    }
-                case .failure(let error):
-                    self.sendEvent(.error, message: "error reading from \(path): \(error)")
-                }
-
-                guard self.isRunning else {
-                    return
-                }
-
-                self.testStorageFile()
-            }
+        Task {
+            await testStorageFile()
         }
     }
 }

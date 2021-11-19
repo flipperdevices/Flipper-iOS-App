@@ -19,6 +19,7 @@ class StressTestViewModel: ObservableObject {
 
     init() {
         stressTest.progress
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.events = $0
             }
