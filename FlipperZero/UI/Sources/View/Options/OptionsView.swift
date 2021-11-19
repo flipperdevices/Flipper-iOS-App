@@ -7,6 +7,9 @@ struct OptionsView: View {
                 NavigationLink("Protobuf ping") {
                     PingView(viewModel: .init())
                 }
+                NavigationLink("RPC Stress Test") {
+                    StressTestView(viewModel: .init())
+                }
             }
             .navigationBarHidden(true)
         }
