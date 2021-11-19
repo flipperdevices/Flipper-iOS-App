@@ -29,15 +29,15 @@ class RemoteContolViewModel: ObservableObject {
 
     func startStreaming() {
         print("startStreaming")
-        rpc.startStreaming { result in
-            print(result)
+        Task {
+            try await rpc.startStreaming()
         }
     }
 
     func stopStreaming() {
         print("stopStreaming")
-        rpc.stopStreaming { result in
-            print(result)
+        Task {
+            try await rpc.stopStreaming()
         }
     }
 

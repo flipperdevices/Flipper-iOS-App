@@ -91,41 +91,23 @@ public class RPC {
         }
     }
 
-    public func startStreaming(
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
-        flipper?.send(.remote(true)) { result in
-            switch result {
-            case .success(.ok):
-                completion(.success(()))
-            case .failure(let error):
-                completion(.failure(error))
-            default:
-                completion(.failure(.common(.unknown)))
-            }
+    public func startStreaming() async throws {
+        let response = try await flipper?.send(.remote(true))
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
         }
     }
 
-    public func stopStreaming(
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
-        flipper?.send(.remote(false)) { result in
-            switch result {
-            case .success(.ok):
-                completion(.success(()))
-            case .failure(let error):
-                completion(.failure(error))
-            default:
-                completion(.failure(.common(.unknown)))
-            }
+    public func stopStreaming() async throws {
+        let response = try await flipper?.send(.remote(false))
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
         }
     }
 
-    public func buttonPressed(_ button: ControlButton) {
-        flipper?.send(.button(button)) { result in
-            print(result)
-        }
-
+    public func buttonPressed(_ button: ControlButton) async throws {
+        let result = try await flipper?.send(.button(button))
+        print(result ?? "nil")
     }
 }
 
