@@ -41,7 +41,7 @@ struct HeaderView<LeftView: View, RightView: View>: View {
 }
 
 struct HeaderDeviceView: View {
-    @State private var angle: Int = 0
+    @StateObject var animation: RotationAnimation = .init()
 
     let name: String
     var status: Status
@@ -82,15 +82,23 @@ struct HeaderDeviceView: View {
 
     var body: some View {
         HStack(alignment: .center) {
-            // swiftlint:disable indentation_width
-            Image(systemName: isConnecting || isSynchronizing
-                  ? "arrow.triangle.2.circlepath"
-                  : "checkmark")
-                .font(.system(size: 14))
-                .frame(width: 14, height: 14, alignment: .center)
-                .foregroundColor(leftImageColor)
-                .rotationEffect(.degrees(Double(isConnecting || isSynchronizing ? -angle : 0)))
-                .padding(.leading, 12)
+            ZStack {
+                if isConnecting || isSynchronizing {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.system(size: 14))
+                        .frame(width: 14, height: 14, alignment: .center)
+                        .foregroundColor(arrowsColor)
+                        .rotationEffect(.degrees(Double(-animation.angle)))
+                        .onAppear { animation.start() }
+                        .onDisappear { animation.stop() }
+                } else {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 14))
+                        .frame(width: 14, height: 14, alignment: .center)
+                        .foregroundColor(activeColor)
+                }
+            }
+            .padding(.leading, 12)
 
             Text(name)
                 .font(.system(size: 14, weight: .semibold))
@@ -125,31 +133,44 @@ struct HeaderDeviceView: View {
                 AngularGradient(
                     colors: [inactiveColor, activeColor],
                     center: .center,
-                    angle: .degrees(Double(-angle))
+                    angle: .degrees(Double(-animation.angle))
                 ),
                 lineWidth: 2)
-                    .onAppear {
-                        if isConnecting {
-                            startAnimation()
-                        }
-                    }
     }
 
     var staticBorder: some View {
         RoundedRectangle(cornerRadius: 15)
             .stroke(strokeColor, lineWidth: 2)
     }
+}
 
-    func startAnimation() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
-            if angle == 0 {
-                angle = 360
+class RotationAnimation: ObservableObject {
+    @Published var angle: Int = 0
+    var isAnimating = false
+
+    init() {}
+
+    func start() {
+        isAnimating = true
+        animate()
+    }
+
+    func animate() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            if self.angle == 0 {
+                self.angle = 360
             }
-            angle -= 1
-            if isConnecting {
-                startAnimation()
+            withAnimation {
+                self.angle -= 45
+            }
+            if self.isAnimating {
+                self.animate()
             }
         }
+    }
+
+    func stop() {
+        isAnimating = false
     }
 }
 
