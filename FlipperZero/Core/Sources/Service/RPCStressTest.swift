@@ -96,7 +96,7 @@ public class RPCStressTest {
 
         do {
             try await rpc.writeFile(at: path, bytes: bytes, priority: .background)
-            log(.success, "did write \(bytes.count) bytes at \(path)")
+            log(.debug, "did write \(bytes.count) bytes at \(path)")
         } catch {
             log(.error, "error wiring at \(path): \(error)")
         }
