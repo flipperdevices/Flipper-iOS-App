@@ -1,46 +1,27 @@
 # Flipper-iOS-App [![Discord](https://img.shields.io/discord/740930220399525928.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](http://flipperzero.one/discord)
 
-This is a work-in-progress iOS/watchOS/iPadOS app to rule all the Flipper family.
+This is a work-in-progress iOS 14+ app to rule all the Flipper family.
 
-The app is being written in SwiftUI for iOS/iPadOS 14, watchOS 7 and macOS 11.
+## Features
 
-## Development status
+### Implemented
 
-### A rough roadmap
+1. Bluetooth connection, basic device info
+2. File manager (browse, create, edit, delete)
+2. Sync with device (backup your keys on iPhone)
+3. Key exchange (share/import supported key formats)
+4. Debug features such as ping, stress test, speed test
 
-#### Stage 0
+### Partially implemented (WIP)
 
-1. Bluetooth connections setup. 
-2. Basic data exchange with extensible support of different data types (dumps, plugins, settings, whatever).
-3. Some simple interface for testing.
-4. Shortcuts integration.
+1. UI/Animations
+2. Remote control
+3. Edit archive keys
 
-#### Stage 1
+### Backlog
 
-1. Plugins store.
-2. Flipper basic features support.
-3. Some App Store worthy interface work. Basic iPadOS support.
-
-#### Stage 2
-
-1. Advanced platform features, such as iCloud sync, AirDrop, file browser, widgets etc.
-2. Keyboard&mouse support, iPadOS and macOS interface.
-3. watchOS.
-
-### How to contribute
-
-#### Current status 
-
-Now we're at **stage 0**.
-
-#### First priority tasks
-
-##### Bluetooth
-
-Make BLE interaction work. The challenge here is we don't have any hardware on hand. Protocol is probably protobuf (discussion is ongoing).
-
-##### Shortcuts support
-
-Since Flipper is meant for hackers, users should be able to create interfaces for their Flipper firmware plugins. 
-
-Seems like Shortcuts fit this task, since they don't require App Store review and can be distributed easily. We'll probably need to make an API—a set of Shortcut actions. Community-created shortcuts could leverage this API to exchange messages between their iDevices and Flipper.
+1. Swift Concurrency
+2. Advanced device info
+3. Run apps with arguments
+4. iCloud/FlipperCloud sync
+5. Shortcuts integration
