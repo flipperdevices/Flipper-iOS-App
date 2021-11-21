@@ -52,7 +52,7 @@ public extension Peripheral {
     init(_ source: BluetoothPeripheral) {
         self.id = source.id
         self.name = source.name
-        self.state = .init(source.state)
+        self.state = source.state
 
         self.information = source.services
             .first { $0.uuid == .deviceInformation }
@@ -64,7 +64,7 @@ public extension Peripheral {
     }
 }
 
-fileprivate extension Peripheral.State {
+extension Peripheral.State {
     init(_ source: CBPeripheralState) {
         // swiftlint:disable switch_case_on_newline
         switch source {

@@ -7,8 +7,9 @@ class FlipperPeripheral: BluetoothPeripheral {
 
     var id: UUID
     var name: String
+
+    var state: Peripheral.State { .init(peripheral.state) }
     // TODO: Incapsulate CB objects
-    var state: CBPeripheralState { peripheral.state }
     var services: [CBService] { peripheral.services ?? [] }
 
     init?(_ peripheral: CBPeripheral) {

@@ -4,8 +4,8 @@ import struct Foundation.UUID
 public protocol BluetoothPeripheral {
     var id: UUID { get }
     var name: String { get }
+    var state: Peripheral.State { get }
     // TODO: Incapsulate CB objects
-    var state: CBPeripheralState { get }
     var services: [CBService] { get }
 
     var info: SafePublisher<Void> { get }
