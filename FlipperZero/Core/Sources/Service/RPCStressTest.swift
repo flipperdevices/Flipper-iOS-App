@@ -13,8 +13,11 @@ public class RPCStressTest {
     var flipper: BluetoothPeripheral? {
         didSet {
             switch flipper {
-            case .some: log(.info, "device connected")
-            case .none: log(.error, "device disconnected")
+            case .some(let device):
+                log(.info, "device \(device.state)")
+            case .none:
+                log(.error, "device disconnected")
+                stop()
             }
         }
     }

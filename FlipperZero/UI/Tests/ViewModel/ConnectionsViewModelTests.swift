@@ -78,7 +78,7 @@ class ConnectionsViewModelTests: XCTestCase {
 private struct MockPeripheral: BluetoothPeripheral {
     var id: UUID
     var name: String
-    var state: CBPeripheralState = .disconnected
+    var state: Peripheral.State = .disconnected
     var services: [CBService] = []
 
     var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }

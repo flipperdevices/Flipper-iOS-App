@@ -69,6 +69,9 @@ class BluetoothService: NSObject, BluetoothCentral, BluetoothConnector {
         manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
             manager.connect($0)
             connectedPeripheralsMap[$0.identifier] = .init($0)
+            manager.registerForConnectionEvents(options: [
+                .peripheralUUIDs: [$0.identifier]
+            ])
         }
     }
 
@@ -77,6 +80,23 @@ class BluetoothService: NSObject, BluetoothCentral, BluetoothConnector {
             manager.cancelPeripheralConnection($0)
             // publish disconnecting state for BluetoothConnector subscribers
             connectedPeripheralsMap[$0.identifier] = .init($0)
+            connectedPeripheralsMap[$0.identifier] = nil
+        }
+    }
+
+    func didConnect(_ peripheral: CBPeripheral) {
+        if let device = FlipperPeripheral(peripheral) {
+            connectedPeripheralsMap[peripheral.identifier] = device
+            device.onConnect()
+        }
+    }
+
+    func didDisconnect(_ peripheral: CBPeripheral) {
+        if let device = connectedPeripheralsMap[peripheral.identifier] {
+            // publish disconnected state for BluetoothConnector subscribers
+            connectedPeripheralsMap[peripheral.identifier] = nil
+            device.onDisconnect()
+            connect(to: peripheral.identifier)
         }
     }
 }
@@ -115,23 +135,17 @@ extension BluetoothService {
         _ central: CBCentralManager,
         didConnect peripheral: CBPeripheral
     ) {
-        if let device = FlipperPeripheral(peripheral) {
-            connectedPeripheralsMap[peripheral.identifier] = device
-            device.onConnect()
-        }
+        didConnect(peripheral)
     }
+
+    // FIXME: Not triggered anymore for some reason
 
     func centralManager(
         _ central: CBCentralManager,
         didDisconnectPeripheral peripheral: CBPeripheral,
         error: Error?
     ) {
-        if let device = connectedPeripheralsMap[peripheral.identifier] {
-            // publish disconnected state for BluetoothConnector subscribers
-            connectedPeripheralsMap[peripheral.identifier] = .init(peripheral)
-            device.onDisconnect()
-        }
-        connectedPeripheralsMap[peripheral.identifier] = nil
+        print("didDisconnectPeripheral")
     }
 
     func centralManager(
@@ -139,8 +153,26 @@ extension BluetoothService {
         didFailToConnect peripheral: CBPeripheral,
         error: Error?
     ) {
-        if let device = peripheralsMap[peripheral.identifier] {
-            device.onFailToConnect()
+        print("didFailToConnect")
+    }
+
+    // MARK: Workaround
+
+    func centralManager(
+        _ central: CBCentralManager,
+        connectionEventDidOccur event: CBConnectionEvent,
+        for peripheral: CBPeripheral
+    ) {
+        switch event {
+        case .peerDisconnected:
+            didDisconnect(peripheral)
+        case .peerConnected:
+            // Actual peripheral state is .connecting
+            // Use centralManager didConnect as it has more accurate state
+            // didConnect(peripheral)
+            break
+        default:
+            print("unhandled event: \(event)")
         }
     }
 }
