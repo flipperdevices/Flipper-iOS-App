@@ -3,6 +3,6 @@ class ChunkedRequest {
         // shouldn't throw
         // swiftlint:disable force_try
         let bytes = try! main.serialize()
-        return bytes.chunk(maxCount: Limits.maxBlePacket)
+        return bytes.chunk(maxCount: Limits.maxBLEPacket)
     }
 }

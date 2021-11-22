@@ -18,7 +18,7 @@ class PeripheralOutput {
 
     private func processDataQueue() {
         while freeSpace > 0 && !queue.isEmpty {
-            let size = min(freeSpace, Limits.maxBlePacket)
+            let size = min(freeSpace, Limits.maxBLEPacket)
             let data = queue.prefix(size)
             queue.removeFirst(data.count)
             freeSpace -= data.count
