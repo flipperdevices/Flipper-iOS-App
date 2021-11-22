@@ -69,7 +69,6 @@
   - untyped_error_in_catch
   - unused_declaration
   - unused_import
-  - vertical_parameter_alignment_on_call
   - vertical_whitespace_closing_braces
   - xct_specific_matcher
 

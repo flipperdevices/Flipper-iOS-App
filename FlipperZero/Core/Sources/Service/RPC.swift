@@ -16,11 +16,13 @@ public class RPC {
             .store(in: &disposeBag)
     }
 
-    public func ping() async throws {
-        let response = try await flipper?.send(.ping)
-        guard case .ping = response else {
+    @discardableResult
+    public func ping(_ bytes: [UInt8]) async throws -> [UInt8] {
+        let response = try await flipper?.send(.ping(bytes))
+        guard case .ping(let result) = response else {
             throw Error.unexpectedResponse(response)
         }
+        return result
     }
 
     public func listDirectory(
