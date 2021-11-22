@@ -82,16 +82,8 @@ public class RPCStressTest {
         await testStorageFile()
     }
 
-    func randomBuffer() -> [UInt8] {
-        var bytes = [UInt8]()
-        for _ in 0..<1024 {
-            bytes.append(.random(in: (0 ..< UInt8.max)))
-        }
-        return bytes
-    }
-
     func testStorageFile() async {
-        let bytes = randomBuffer()
+        let bytes: [UInt8] = .random(size: 1024)
         let path = temp
 
         do {
