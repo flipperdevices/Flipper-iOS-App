@@ -10,8 +10,8 @@ class SequencedResponse {
         }
 
         switch main.content {
-        case .pingResponse:
-            try handlePingResponse()
+        case .pingResponse(let response):
+            try handlePingResponse(response)
         case .storageListResponse(let response):
             try handleListResponse(response)
         case .storageReadResponse(let response):
@@ -29,11 +29,13 @@ class SequencedResponse {
         return .success(response)
     }
 
-    func handlePingResponse() throws {
-        guard response == nil else {
+    func handlePingResponse(_ nextResponse: PBStatus_PingResponse) throws {
+        switch response {
+        case .none:
+            self.response = .ping(.init(nextResponse.data))
+        default:
             throw SequencedResponseError.unexpectedResponse
         }
-        response = .ping
     }
 
     func handleListResponse(_ nextResponse: PBStorage_ListResponse) throws {

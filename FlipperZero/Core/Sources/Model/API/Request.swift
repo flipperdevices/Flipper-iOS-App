@@ -1,7 +1,7 @@
 import SwiftProtobuf
 
 public enum Request {
-    case ping
+    case ping([UInt8])
     case list(Path)
     case read(Path)
     case write(Path, [UInt8])
@@ -12,9 +12,11 @@ public enum Request {
 extension Request {
     func serialize() -> PB_Main {
         switch self {
-        case .ping:
+        case .ping(let bytes):
             return .with {
-                $0.pingRequest = .init()
+                $0.pingRequest = .with {
+                    $0.data = .init(bytes)
+                }
             }
         case let .list(path):
             return .with {

@@ -5,25 +5,41 @@ import Foundation
 
 @MainActor
 class PingViewModel: ObservableObject {
+    var rpc: RPC = .shared
+
+    @Published var payloadSize: Double = 1024
     @Published var requestTimestamp: Int = .init()
     @Published var responseTimestamp: Int = .init()
 
-    var ping: String {
-        let result = responseTimestamp - requestTimestamp
-        return result < 0 ? "" : String("\(result)ms")
+    var now: Int {
+        .init(Date().timeIntervalSince1970 * 100)
     }
 
-    var rpc: RPC = .shared
+    var time: Int {
+        guard responseTimestamp > requestTimestamp else { return 0 }
+        return responseTimestamp - requestTimestamp
+    }
 
-    var now: Int { .init(Date().timeIntervalSince1970 * 100) }
+    var bytesPerSecond: Int {
+        guard time > 0 else { return 0 }
+        return Int(Double(sent * 2) * (100.0 / Double(time)))
+    }
 
     init() {}
 
+    var sent: Int = 0
+
     func sendPing() async {
         do {
+            sent = Int(payloadSize)
             requestTimestamp = now
-            try await rpc.ping()
+            let sent: [UInt8] = .random(size: sent)
+            let received = try await rpc.ping(sent)
             responseTimestamp = now
+
+            if received != sent {
+                print("buffers are not equal")
+            }
         } catch {
             print(error)
         }
