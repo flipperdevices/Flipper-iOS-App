@@ -90,6 +90,25 @@ public class RPC {
             throw Error.unexpectedResponse(response)
         }
     }
+
+    public func startStreaming() async throws {
+        let response = try await flipper?.send(.remote(true))
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func stopStreaming() async throws {
+        let response = try await flipper?.send(.remote(false))
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func buttonPressed(_ button: ControlButton) async throws {
+        let result = try await flipper?.send(.button(button))
+        print(result ?? "nil")
+    }
 }
 
 extension RPC {

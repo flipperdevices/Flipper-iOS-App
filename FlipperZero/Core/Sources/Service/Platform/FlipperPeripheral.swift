@@ -37,6 +37,10 @@ class FlipperPeripheral: BluetoothPeripheral {
         delegate.infoSubject.eraseToAnyPublisher()
     }
 
+    var screenFrame: SafePublisher<ScreenFrame> {
+        delegate.screenFrameSubject.eraseToAnyPublisher()
+    }
+
     func send(
         _ request: Request,
         priority: Priority?
@@ -56,7 +60,7 @@ class FlipperPeripheral: BluetoothPeripheral {
 
 // MARK: CBPeripheralDelegate
 
-private class _FlipperPeripheral: NSObject, CBPeripheralDelegate, PeripheralOutputDelegate {
+private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     let peripheral: CBPeripheral
     let session: Session
 
@@ -65,10 +69,12 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate, PeripheralOutp
         self.session = session
         super.init()
         peripheral.delegate = self
-        session.delegate = self
+        session.outputDelegate = self
+        session.inputDelegate = self
     }
 
     fileprivate let infoSubject = SafeSubject<Void>()
+    fileprivate let screenFrameSubject = SafeSubject<ScreenFrame>()
 
     // MARK: Services
 
@@ -136,7 +142,9 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate, PeripheralOutp
             priority: priority,
             continuation: continuation)
     }
+}
 
+extension _FlipperPeripheral: PeripheralOutputDelegate {
     func send(_ data: Data) {
         guard peripheral.state == .connected else {
             print("invalid state")
@@ -147,6 +155,12 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate, PeripheralOutp
             return
         }
         peripheral.writeValue(data, for: tx, type: .withResponse)
+    }
+}
+
+extension _FlipperPeripheral: PeripheralInputDelegate {
+    func onScreenFrame(_ frame: ScreenFrame) {
+        screenFrameSubject.send(frame)
     }
 }
 

@@ -7,6 +7,8 @@ public enum Request {
     case write(Path, [UInt8])
     case create(Path, isDirectory: Bool)
     case delete(Path, isForce: Bool)
+    case remote(Bool)
+    case button(ControlButton)
 }
 
 extension Request {
@@ -54,6 +56,30 @@ extension Request {
                     $0.storageWriteRequest = .with {
                         $0.path = path.string
                         $0.file.data = .init()
+                    }
+                }
+            }
+        case let .remote(start):
+            switch start {
+            case true:
+                return .with {
+                    $0.guiStartScreenStreamRequest = .init()
+                }
+            case false:
+                return .with {
+                    $0.guiStopScreenStreamRequest = .init()
+                }
+            }
+        case let .button(button):
+            return .with {
+                $0.guiSendInputEventRequest = .with {
+                    switch button {
+                    case .up: $0.key = .up
+                    case .down: $0.key = .down
+                    case .left: $0.key = .left
+                    case .right: $0.key = .right
+                    case .enter: $0.key = .ok
+                    case .back: $0.key = .back
                     }
                 }
             }

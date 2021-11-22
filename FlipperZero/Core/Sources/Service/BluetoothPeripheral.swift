@@ -9,6 +9,7 @@ public protocol BluetoothPeripheral {
     var services: [CBService] { get }
 
     var info: SafePublisher<Void> { get }
+    var screenFrame: SafePublisher<ScreenFrame> { get }
 
     func send(_ request: Request, priority: Priority?) async throws -> Response
 }

@@ -52,6 +52,9 @@ public struct DeviceView: View {
                     NavigationLink("", tag: fileManager.name, selection: $action) {
                         StorageView(viewModel: .init())
                     }
+                    NavigationLink("", tag: remoteControl.name, selection: $action) {
+                        RemoteContolView(viewModel: .init())
+                    }
                 }
                 .background(Color.gray.opacity(0.1))
             }
@@ -77,15 +80,18 @@ extension DeviceView {
     }
 
     var actions: [Action] {
-        [runApps, deviceSettings, fileManager]
+        [runApps, remoteControl, fileManager]
     }
 
     var runApps: Action {
         .init(name: "Run Apps", image: .init(systemName: "play.circle"))
     }
 
-    var deviceSettings: Action {
-        .init(name: "Device Settings", image: .init(systemName: "gearshape.circle"))
+    var remoteControl: Action {
+        .init(
+            name: "Remote Control",
+            image: .init(systemName: "appletvremote.gen1")
+        )
     }
 
     var fileManager: Action {

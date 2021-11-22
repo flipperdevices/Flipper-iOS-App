@@ -42,6 +42,7 @@ struct ActionRow<Action: ActionProtocol>: View {
             Spacer()
             action.image
                 .font(.system(size: 22))
+                .frame(width: 22)
         }
         .padding(16)
     }

@@ -5,6 +5,9 @@ class SequencedRequest {
         case let .write(path, bytes)
             where bytes.count > Limits.maxPBStorageFileData:
             return splitWriteRequest(path: path, bytes: bytes)
+        case .button:
+            // TODO:
+            return []
         default:
             return [request.serialize()]
         }
