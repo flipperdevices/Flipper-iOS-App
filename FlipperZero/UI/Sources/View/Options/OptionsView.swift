@@ -10,6 +10,9 @@ struct OptionsView: View {
                 NavigationLink("RPC Stress Test") {
                     StressTestView(viewModel: .init())
                 }
+                NavigationLink("RPC Speed Test") {
+                    RPCSpeedTestView(viewModel: .init())
+                }
             }
             .navigationBarHidden(true)
         }
