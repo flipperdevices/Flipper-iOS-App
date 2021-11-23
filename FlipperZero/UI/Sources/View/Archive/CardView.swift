@@ -46,7 +46,9 @@ struct CardSheetView: View {
                             Text("Done")
                                 .font(.system(size: 16, weight: .semibold))
                         }
+                        .frame(width: 64)
                     })
+                    .padding(.horizontal, 8)
             }
 
             Spacer(minLength: isFullScreen ? 0 : navigationBarHeight)
