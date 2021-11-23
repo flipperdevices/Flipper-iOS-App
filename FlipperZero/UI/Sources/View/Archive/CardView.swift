@@ -167,13 +167,14 @@ struct CardHeaderView: View {
 
     var body: some View {
         HStack {
-            CardTextField(
-                title: "name",
-                text: $name,
-                isEditMode: $isEditMode,
-                focusedField: $focusedField
-            )
-            .font(.system(size: 22).weight(.bold))
+//            CardTextField(
+//                title: "name",
+//                text: $name,
+//                isEditMode: $isEditMode,
+//                focusedField: $focusedField
+//            )
+            Text(name)
+                .font(.system(size: 22).weight(.bold))
 
             Spacer()
 
