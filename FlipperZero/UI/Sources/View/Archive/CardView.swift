@@ -31,11 +31,17 @@ struct CardSheetView: View {
                     title: viewModel.title,
                     status: viewModel.status,
                     leftView: {
-                        Text("Cancel")
-                            .font(.system(size: 16))
+                        Button {
+                            resignFirstResponder()
+                        } label: {
+                            Text("Cancel")
+                                .font(.system(size: 16, weight: .semibold))
+                        }
+                        .frame(width: 64)
                     },
                     rightView: {
                         Button {
+                            resignFirstResponder()
                         } label: {
                             Text("Done")
                                 .font(.system(size: 16, weight: .semibold))
