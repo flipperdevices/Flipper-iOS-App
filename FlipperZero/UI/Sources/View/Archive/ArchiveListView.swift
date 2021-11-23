@@ -185,8 +185,4 @@ struct ArchiveListItemView: View {
         case .synchronizing: return "arrow.triangle.2.circlepath"
         }
     }
-
-    func randomOpacity() -> Double {
-        [true, false, true].randomElement() ?? false ? 1 : 0
-    }
 }
