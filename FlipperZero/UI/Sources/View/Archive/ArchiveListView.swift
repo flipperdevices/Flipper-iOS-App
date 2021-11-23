@@ -166,7 +166,7 @@ struct ArchiveListItemView: View {
 
             VStack {
                 Spacer()
-                Image(systemName: image(for: item.status))
+                Image(systemName: item.status.systemImageName)
                     .font(.system(size: 14))
                     .padding(.trailing, 15)
                     .foregroundColor(.secondary)
@@ -174,9 +174,11 @@ struct ArchiveListItemView: View {
             }
         }
     }
+}
 
-    func image(for status: ArchiveItem.Status) -> String {
-        switch status {
+extension ArchiveItem.Status {
+    var systemImageName: String {
+        switch self {
         case .error: return "xmark.octagon"
         case .deleted: return "trash"
         case .imported: return "clock.arrow.2.circlepath"

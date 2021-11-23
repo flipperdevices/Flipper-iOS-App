@@ -127,7 +127,7 @@ struct Card: View {
 
                 HStack {
                     Spacer()
-                    Image(systemName: "checkmark")
+                    Image(systemName: item.status.systemImageName)
                     Spacer()
                 }
                 .padding(.bottom, 16)
