@@ -16,7 +16,7 @@ protocol Session: AnyObject {
 
     func didReceiveData(_ data: Data)
 
-    func didReceiveFlowControl(_ data: Data)
+    func didReceiveFlowControl(freeSpace: Data, packetSize: Int)
 }
 
 protocol PeripheralOutputDelegate: AnyObject {

@@ -5,13 +5,11 @@ class FlipperSession: Session {
     let sequencedResponse: SequencedResponse = .init()
 
     let sequencedRequest: SequencedRequest = .init()
-    let chunkedRequest: ChunkedRequest = .init()
-
-    var peripheralOutput: PeripheralOutput = .init()
+    var chunkedRequest: ChunkedRequest = .init()
 
     weak var outputDelegate: PeripheralOutputDelegate? {
-        get { peripheralOutput.delegate }
-        set { peripheralOutput.delegate = newValue }
+        get { chunkedRequest.delegate }
+        set { chunkedRequest.delegate = newValue }
     }
 
     weak var inputDelegate: PeripheralInputDelegate?
@@ -67,12 +65,11 @@ class FlipperSession: Session {
     func sendNextRequest() {
         guard let command = queue.dequeue() else { return }
         awaitingResponse.append(command)
-        let requests = sequencedRequest.split(command.request)
-        for var request in requests {
-            request.commandID = .init(command.id)
-            let chunks = chunkedRequest.split(request)
-            peripheralOutput.append(contentsOf: chunks)
+        var requests = sequencedRequest.split(command.request)
+        for index in requests.indices {
+            requests[index].commandID = .init(command.id)
         }
+        chunkedRequest.feed(requests)
     }
 
     func didReceiveData(_ data: Data) {
@@ -108,11 +105,13 @@ class FlipperSession: Session {
         }
     }
 
-    func didReceiveFlowControl(_ data: Data) {
+    func didReceiveFlowControl(freeSpace data: Data, packetSize: Int) {
         let freeSpace = data.withUnsafeBytes {
             $0.load(as: Int32.self).bigEndian
         }
-        peripheralOutput.didReceiveBufferSpace(Int(freeSpace))
+        chunkedRequest.didReceiveFlowControl(
+            freeSpace: Int(freeSpace),
+            packetSize: packetSize)
     }
 
     func didReceiveUnbound(_ main: PB_Main) {

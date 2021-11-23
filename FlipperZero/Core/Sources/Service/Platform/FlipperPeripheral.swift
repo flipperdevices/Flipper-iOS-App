@@ -112,6 +112,10 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
 
     // MARK: Values
 
+    var mtu: Int {
+        peripheral.maximumWriteValueLength(for: .withoutResponse)
+    }
+
     func peripheral(
         _ peripheral: CBPeripheral,
         didUpdateValueFor characteristic: CBCharacteristic,
@@ -125,7 +129,7 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
             }
         case .flowControl:
             if let data = characteristic.value {
-                session.didReceiveFlowControl(data)
+                session.didReceiveFlowControl(freeSpace: data, packetSize: mtu)
             }
         default:
             infoSubject.send()
