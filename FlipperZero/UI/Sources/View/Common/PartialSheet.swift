@@ -34,6 +34,7 @@ struct PartialSheetView: View {
                             }
                             .onEnded { _ in
                                 if sheetManager.offset > 100 {
+                                    resignFirstResponder()
                                     sheetManager.isPresented = false
                                 } else {
                                     sheetManager.isPresented = true
