@@ -159,6 +159,18 @@ class ArchiveViewModel: ObservableObject {
         editingItem.isFavorite.toggle()
         archive.favorite(editingItem)
     }
+
+    func saveChanges() {
+        self.objectWillChange.send()
+        editingItem.status = .modified
+        archive.replace(editingItem)
+    }
+
+    func undoChanges() {
+        if let item = items.first(where: { $0.id == editingItem.id }) {
+            editingItem = item
+        }
+    }
 }
 
 extension ArchiveItem {

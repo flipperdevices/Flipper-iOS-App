@@ -29,7 +29,7 @@ public class Archive: ObservableObject {
         items = storage.items
     }
 
-    public func append(_ item: ArchiveItem) {
+    public func replace(_ item: ArchiveItem) {
         items.removeAll { $0.id == item.id }
         items.append(item)
     }
@@ -54,7 +54,7 @@ public class Archive: ObservableObject {
     }
 
     public func importKey(_ item: ArchiveItem) {
-        append(item)
+        replace(item)
     }
 
     public func importKey(name: String, data: [UInt8]) {
@@ -84,7 +84,10 @@ public class Archive: ObservableObject {
 
     private func syncImportedItems() async {
         let imported = items.filter {
-            $0.status == .imported || $0.status == .synchronizing
+            $0.status == .imported ||
+            // TODO: compare hash
+            $0.status == .modified ||
+            $0.status == .synchronizing
         }
 
         for item in imported {
@@ -139,7 +142,7 @@ public class Archive: ObservableObject {
             guard !items.contains( where: { $0.id == newItem.id }) else {
                 continue
             }
-            append(newItem)
+            replace(newItem)
             do {
                 let content = try await flipperArchive.readFile(at: path)
                 updateItem(id: newItem.id, with: content)

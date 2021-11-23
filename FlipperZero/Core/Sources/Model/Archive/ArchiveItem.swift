@@ -13,6 +13,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
         case error
         case deleted
         case imported
+        case modified
         case synchronizied
         case synchronizing
     }

@@ -32,6 +32,7 @@ struct CardSheetView: View {
                     status: viewModel.status,
                     leftView: {
                         Button {
+                            viewModel.undoChanges()
                             resignFirstResponder()
                         } label: {
                             Text("Cancel")
@@ -41,6 +42,7 @@ struct CardSheetView: View {
                     },
                     rightView: {
                         Button {
+                            viewModel.saveChanges()
                             resignFirstResponder()
                         } label: {
                             Text("Done")
