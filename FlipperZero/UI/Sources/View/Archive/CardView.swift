@@ -229,7 +229,7 @@ struct CardActions: View {
                     Spacer()
                 } else {
                     Button {
-                        // isEditMode = true
+                        isEditMode = true
                     } label: {
                         Image(systemName: "square.and.pencil")
                     }
