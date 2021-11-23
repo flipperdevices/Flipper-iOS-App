@@ -191,6 +191,8 @@ struct CardDivider: View {
     }
 }
 
+// TODO: Add individual view for each filetype
+
 struct CardDataView: View {
     @Binding var item: ArchiveItem
     @Binding var isEditMode: Bool
@@ -200,8 +202,10 @@ struct CardDataView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if !item.properties.isEmpty {
-                ForEach(item.properties, id: \.key) { item in
+            let properties = item.properties
+                .filter { $0.key != "Version" && $0.key != "Filetype" }
+            if !properties.isEmpty {
+                ForEach(properties, id: \.key) { item in
                     Text("\(item.key): \(item.value)")
                         .font(.system(size: 20).weight(.semibold))
                 }
