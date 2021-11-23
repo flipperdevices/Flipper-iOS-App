@@ -11,6 +11,8 @@ public enum Request {
     case button(ControlButton)
 }
 
+// swiftlint:disable function_body_length cyclomatic_complexity
+
 extension Request {
     func serialize() -> PB_Main {
         switch self {
