@@ -206,7 +206,7 @@ struct CardDataView: View {
             if !item.properties.isEmpty {
                 ForEach(0..<item.properties.count, id: \.self) { index in
                     HStack {
-                        Text(item.properties[index].key)
+                        Text("\(item.properties[index].key):")
                             .font(.system(size: 18).weight(.semibold))
                         CardTextField(
                             title: item.properties[index].key,
