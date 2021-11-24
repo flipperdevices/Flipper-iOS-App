@@ -1,7 +1,7 @@
 import Foundation
 
 public struct ArchiveItem: Codable, Equatable, Identifiable {
-    public let id: String
+    public let id: ID
     public var name: Name
     public var fileType: FileType
     public var properties: [Property]
@@ -9,10 +9,23 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
     public var status: Status
     public var date: Date
 
+    public struct ID: Codable, Equatable, Hashable {
+        let value: String?
+
+        public static let none: ID = .init()
+
+        private init() { value = nil }
+
+        init(_ path: Path) {
+            value = path.string
+        }
+    }
+
     public enum Status: Codable, Equatable {
         case error
         case deleted
         case imported
+        case modified
         case synchronizied
         case synchronizing
     }

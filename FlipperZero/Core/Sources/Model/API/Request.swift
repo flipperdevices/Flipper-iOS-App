@@ -7,9 +7,12 @@ public enum Request {
     case write(Path, [UInt8])
     case create(Path, isDirectory: Bool)
     case delete(Path, isForce: Bool)
+    case hash(Path)
     case remote(Bool)
     case button(ControlButton)
 }
+
+// swiftlint:disable function_body_length cyclomatic_complexity
 
 extension Request {
     func serialize() -> PB_Main {
@@ -57,6 +60,12 @@ extension Request {
                         $0.path = path.string
                         $0.file.data = .init()
                     }
+                }
+            }
+        case let .hash(path):
+            return .with {
+                $0.storageMd5SumRequest = .with {
+                    $0.path = path.string
                 }
             }
         case let .remote(start):

@@ -15,8 +15,11 @@ extension ArchiveItem {
             return nil
         }
 
+        // FIXME: move to ID?
+        let path = Path(components: ["ext", type.directory, fileName])
+
         self = .init(
-            id: fileName,
+            id: .init(path),
             name: name,
             fileType: type,
             properties: properties,

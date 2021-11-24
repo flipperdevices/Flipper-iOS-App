@@ -91,6 +91,19 @@ public class RPC {
         }
     }
 
+    public func calculateFileHash(
+        at path: Path,
+        priority: Priority? = nil
+    ) async throws -> String {
+        let response = try await flipper?.send(
+            .hash(path),
+            priority: priority)
+        guard case .hash(let bytes) = response else {
+            throw Error.unexpectedResponse(response)
+        }
+        return bytes
+    }
+
     public func startStreaming() async throws {
         let response = try await flipper?.send(.remote(true))
         guard case .ok = response else {

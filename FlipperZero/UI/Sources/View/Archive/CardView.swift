@@ -31,16 +31,26 @@ struct CardSheetView: View {
                     title: viewModel.title,
                     status: viewModel.status,
                     leftView: {
-                        Text("Cancel")
-                            .font(.system(size: 16))
+                        Button {
+                            viewModel.undoChanges()
+                            resignFirstResponder()
+                        } label: {
+                            Text("Cancel")
+                                .font(.system(size: 16, weight: .semibold))
+                        }
+                        .frame(width: 64)
                     },
                     rightView: {
                         Button {
+                            viewModel.saveChanges()
+                            resignFirstResponder()
                         } label: {
                             Text("Done")
                                 .font(.system(size: 16, weight: .semibold))
                         }
+                        .frame(width: 64)
                     })
+                    .padding(.horizontal, 8)
             }
 
             Spacer(minLength: isFullScreen ? 0 : navigationBarHeight)
@@ -117,7 +127,7 @@ struct Card: View {
 
                 HStack {
                     Spacer()
-                    Image(systemName: "checkmark")
+                    Image(systemName: item.status.systemImageName)
                     Spacer()
                 }
                 .padding(.bottom, 16)
@@ -157,13 +167,14 @@ struct CardHeaderView: View {
 
     var body: some View {
         HStack {
-            CardTextField(
-                title: "name",
-                text: $name,
-                isEditMode: $isEditMode,
-                focusedField: $focusedField
-            )
-            .font(.system(size: 22).weight(.bold))
+//            CardTextField(
+//                title: "name",
+//                text: $name,
+//                isEditMode: $isEditMode,
+//                focusedField: $focusedField
+//            )
+            Text(name)
+                .font(.system(size: 22).weight(.bold))
 
             Spacer()
 
@@ -181,6 +192,8 @@ struct CardDivider: View {
     }
 }
 
+// TODO: Add individual view for each filetype
+
 struct CardDataView: View {
     @Binding var item: ArchiveItem
     @Binding var isEditMode: Bool
@@ -189,13 +202,38 @@ struct CardDataView: View {
     @State var description: String = ""
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: isEditMode ? 8 : 2) {
             if !item.properties.isEmpty {
-                ForEach(item.properties, id: \.key) { item in
-                    Text("\(item.key): \(item.value)")
-                        .font(.system(size: 20).weight(.semibold))
+                ForEach(0..<item.properties.count, id: \.self) { index in
+                    HStack {
+                        Text("\(item.properties[index].key):")
+                            .font(.system(size: 18).weight(.semibold))
+                        CardTextField(
+                            title: item.properties[index].key,
+                            text: $item.properties[safe: index].value,
+                            isEditMode: $isEditMode,
+                            focusedField: $focusedField
+                        )
+                        .font(.system(size: 18).weight(.semibold))
+                    }
                 }
             }
+        }
+    }
+}
+
+// swiftlint:disable opening_brace
+
+extension Binding where
+    Value: MutableCollection,
+    Value: RangeReplaceableCollection,
+    Value.Index == Int
+{
+    subscript(safe index: Value.Index) -> Binding<Value.Element> {
+        Binding<Value.Element> {
+            self.wrappedValue[index]
+        } set: {
+            self.wrappedValue[index] = $0
         }
     }
 }
@@ -229,7 +267,7 @@ struct CardActions: View {
                     Spacer()
                 } else {
                     Button {
-                        // isEditMode = true
+                        isEditMode = true
                     } label: {
                         Image(systemName: "square.and.pencil")
                     }
