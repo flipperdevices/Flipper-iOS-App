@@ -16,6 +16,8 @@ class SequencedResponse {
             try handleListResponse(response)
         case .storageReadResponse(let response):
             try handleReadResponse(response)
+        case .storageMd5SumResponse(let response):
+            try handleHashResponse(response)
         case .empty(let response):
             try handleEmptyResponse(response)
         default:
@@ -62,6 +64,10 @@ class SequencedResponse {
         default:
             throw SequencedResponseError.unexpectedResponse
         }
+    }
+
+    func handleHashResponse(_ nextResponse: PBStorage_Md5sumResponse) throws {
+        self.response = .hash(nextResponse.md5Sum)
     }
 
     func handleEmptyResponse(_ response: PB_Empty) throws {
