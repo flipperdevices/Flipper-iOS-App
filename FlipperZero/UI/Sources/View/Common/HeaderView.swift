@@ -96,6 +96,7 @@ struct HeaderDeviceView: View {
                         .font(.system(size: 14))
                         .frame(width: 14, height: 14, alignment: .center)
                         .foregroundColor(activeColor)
+                        .opacity(isConnected ? 1 : 0)
                 }
             }
             .padding(.leading, 12)
