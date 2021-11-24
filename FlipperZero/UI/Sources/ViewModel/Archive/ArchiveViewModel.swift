@@ -176,7 +176,7 @@ class ArchiveViewModel: ObservableObject {
 extension ArchiveItem {
     static var none: Self {
         .init(
-            id: "",
+            id: .none,
             name: "",
             fileType: .ibutton,
             properties: [],

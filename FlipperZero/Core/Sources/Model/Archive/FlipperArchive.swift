@@ -1,7 +1,7 @@
 public class FlipperArchive {
     public static let shared: FlipperArchive = .init()
 
-    private let root: Path = .init(components: ["any"])
+    private let root: Path = .init(components: ["ext"])
     private let rpc: RPC = .shared
 
     private init() {}
@@ -57,6 +57,21 @@ public class FlipperArchive {
         }
 
         return items
+    }
+
+    func getFileHashes(at paths: [Path]) async throws -> [String] {
+        var items: [String] = []
+
+        for path in paths {
+            let content = try await getFileHash(at: path)
+            items.append(content)
+        }
+
+        return items
+    }
+
+    func getFileHash(at path: Path) async throws -> String {
+        return try await rpc.calculateFileHash(at: path, priority: .background)
     }
 }
 

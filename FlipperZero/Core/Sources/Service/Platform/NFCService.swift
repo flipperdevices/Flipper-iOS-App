@@ -61,8 +61,10 @@ fileprivate extension ArchiveItem {
     init?(_ tag: NFCTag) {
         switch tag {
         case let .miFare(tag):
-            id = tag.identifier.hexString
-            name = "Mifare"
+            // FIXME:
+            let hex = tag.identifier.hexString
+            id = .init(.init(components: ["ext", "nfc", "\(hex).nfc"]))
+            name = .init(value: hex)
             fileType = .nfc
             properties = [.init(key: "id", value: tag.identifier.hexString)]
             isFavorite = false
