@@ -175,6 +175,12 @@ struct DeviceInfoRow: View {
 struct DeviceImageNameModelBattery: View {
     let device: Peripheral
 
+    var flipperImage: String {
+        device.information?.firmwareRevision.value == "7"
+            ? "FlipperBlack"
+            : "FlipperWhite"
+    }
+
     var batteryColor: Color {
         guard let battery = device.battery else {
             return .clear
@@ -189,7 +195,7 @@ struct DeviceImageNameModelBattery: View {
 
     var body: some View {
         HStack {
-            Image("FlipperWhite")
+            Image(flipperImage)
                 .resizable()
                 .scaledToFit()
 
