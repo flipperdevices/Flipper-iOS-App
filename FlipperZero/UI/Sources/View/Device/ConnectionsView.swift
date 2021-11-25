@@ -7,14 +7,20 @@ struct ConnectionsView: View {
         VStack {
             switch self.viewModel.state {
             case .notReady(let reason):
+                Text("Bluetooth access")
+                    .font(.system(size: 32, weight: .bold))
+                    .padding(.top, 66)
+                Spacer()
+                Image("DolphinSign")
                 Text(reason.description)
                     .multilineTextAlignment(.center)
-                    .padding(.all)
+                    .padding(25)
                 if reason == .unauthorized {
                     Button("Open Settings") {
                         viewModel.openApplicationSettings()
                     }
                 }
+                Spacer()
             case .ready:
                 Text("Choose your Flipper")
                     .font(.system(size: 32, weight: .bold))
