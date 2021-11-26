@@ -24,7 +24,7 @@ struct ArchiveCategoriesView: View {
                 }
                 .onChange(of: selectedIndex) { _ in
                     withAnimation {
-                        proxy.scrollTo(selectedIndex, anchor: .center)
+                        proxy.scrollTo(selectedIndex)
                     }
                 }
             }
