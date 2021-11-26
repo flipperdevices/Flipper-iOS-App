@@ -53,7 +53,8 @@ struct ArchiveCategoryItemView: View {
                 }
                 .padding(.horizontal, 6)
             Spacer()
-            if isSelected {
+            // FIXME: couldn't fix underline width within a reasonable time
+            if isSelected, !iOS14 {
                 Color.accentColor
                     .frame(height: 3)
                     .cornerRadius(3, corners: [.topLeft, .topRight])
