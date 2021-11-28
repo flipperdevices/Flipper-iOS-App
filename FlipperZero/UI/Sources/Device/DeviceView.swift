@@ -50,7 +50,7 @@ public struct DeviceView: View {
                     .disabled(viewModel.device?.state != .connected)
 
                     NavigationLink("", tag: fileManager.name, selection: $action) {
-                        StorageView(viewModel: .init())
+                        FileManagerView(viewModel: .init())
                     }
                     NavigationLink("", tag: remoteControl.name, selection: $action) {
                         RemoteContolView(viewModel: .init())

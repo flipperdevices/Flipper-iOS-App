@@ -1,8 +1,8 @@
 import Core
 import SwiftUI
 
-struct StorageView: View {
-    @StateObject var viewModel: StorageViewModel
+struct FileManagerView: View {
+    @StateObject var viewModel: FileManagerViewModel
 
     var body: some View {
         VStack {
