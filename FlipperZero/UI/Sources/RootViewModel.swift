@@ -16,7 +16,7 @@ public class RootViewModel: ObservableObject {
 
     // MARK: Full Application
 
-    @Published var selectedTab: CustomTabView.Tab = .archive
+    @Published var selectedTab: CustomTabView.Tab = .device
     @Published var isTabViewHidden = false
 
     @Inject var connector: BluetoothConnector

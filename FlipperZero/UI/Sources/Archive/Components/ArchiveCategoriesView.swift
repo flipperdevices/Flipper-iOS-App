@@ -24,7 +24,7 @@ struct ArchiveCategoriesView: View {
                 }
                 .onChange(of: selectedIndex) { _ in
                     withAnimation {
-                        proxy.scrollTo(selectedIndex, anchor: .center)
+                        proxy.scrollTo(selectedIndex)
                     }
                 }
             }
@@ -46,14 +46,15 @@ struct ArchiveCategoryItemView: View {
     var body: some View {
         VStack {
             Text(title)
-                .fontWeight(.medium)
+                .font(.system(size: 17, weight: .medium))
                 .foregroundColor(isSelected ? .accentColor : .secondary)
                 .onTapGesture {
                     onTapGesture(title)
                 }
                 .padding(.horizontal, 6)
             Spacer()
-            if isSelected {
+            // FIXME: couldn't fix underline width within a reasonable time
+            if isSelected, !iOS14 {
                 Color.accentColor
                     .frame(height: 3)
                     .cornerRadius(3, corners: [.topLeft, .topRight])

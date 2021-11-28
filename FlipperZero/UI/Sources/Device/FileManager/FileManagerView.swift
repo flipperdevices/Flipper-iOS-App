@@ -1,8 +1,8 @@
 import Core
 import SwiftUI
 
-struct StorageView: View {
-    @StateObject var viewModel: StorageViewModel
+struct FileManagerView: View {
+    @StateObject var viewModel: FileManagerViewModel
 
     var body: some View {
         VStack {
@@ -55,21 +55,34 @@ struct StorageView: View {
         ForEach(elements, id: \.description) {
             switch $0 {
             case .directory(let directory):
-                Button(directory.name) {
-                    viewModel.enter(directory: directory.name)
+                HStack {
+                    Image(systemName: "folder.fill")
+                        .frame(width: 20)
+                    Button(directory.name) {
+                        viewModel.enter(directory: directory.name)
+                    }
+                    .foregroundColor(.primary)
                 }
             case .file(let file):
                 if let data = file.data, !data.isEmpty {
                     Text(String(decoding: data, as: UTF8.self))
                 } else {
-                    if viewModel.canRead(file) {
-                        Button {
-                            viewModel.readFile(file)
-                        } label: {
+                    HStack {
+                        if viewModel.canRead(file) {
+                            Image(systemName: "doc")
+                                .frame(width: 20)
+                            Button {
+                                viewModel.readFile(file)
+                            } label: {
+                                FileRow(file: file)
+                            }
+                            .foregroundColor(.primary)
+                        } else {
+                            Image(systemName: "lock.doc")
+                                .frame(width: 20)
                             FileRow(file: file)
+                                .foregroundColor(.secondary)
                         }
-                    } else {
-                        FileRow(file: file)
                     }
                 }
             }

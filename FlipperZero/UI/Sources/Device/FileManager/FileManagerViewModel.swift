@@ -5,7 +5,7 @@ import Injector
 import struct Foundation.Date
 
 @MainActor
-class StorageViewModel: ObservableObject {
+class FileManagerViewModel: ObservableObject {
     @Published var content: Content? {
         didSet {
             if case .file(let text) = content {

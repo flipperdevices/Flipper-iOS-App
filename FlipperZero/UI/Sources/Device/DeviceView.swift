@@ -50,7 +50,7 @@ public struct DeviceView: View {
                     .disabled(viewModel.device?.state != .connected)
 
                     NavigationLink("", tag: fileManager.name, selection: $action) {
-                        StorageView(viewModel: .init())
+                        FileManagerView(viewModel: .init())
                     }
                     NavigationLink("", tag: remoteControl.name, selection: $action) {
                         RemoteContolView(viewModel: .init())
@@ -175,9 +175,27 @@ struct DeviceInfoRow: View {
 struct DeviceImageNameModelBattery: View {
     let device: Peripheral
 
+    var flipperImage: String {
+        device.information?.firmwareRevision.value == "7"
+            ? "FlipperBlack"
+            : "FlipperWhite"
+    }
+
+    var batteryColor: Color {
+        guard let battery = device.battery else {
+            return .clear
+        }
+        switch battery.decimalValue * 100 {
+        case 0..<20: return .red
+        case 20..<50: return .yellow
+        case 50...100: return .green
+        default: return .clear
+        }
+    }
+
     var body: some View {
         HStack {
-            Image("FlipperWhite")
+            Image(flipperImage)
                 .resizable()
                 .scaledToFit()
 
@@ -189,16 +207,30 @@ struct DeviceImageNameModelBattery: View {
                     .font(.system(size: 18, weight: .light))
                     .foregroundColor(.gray)
 
-                HStack(alignment: .top, spacing: 8) {
-                    Image("Battery")
+                HStack(alignment: .top, spacing: 6) {
+                    if let battery = device.battery {
+                        ZStack(alignment: .topLeading) {
+                            Image("Battery")
+
+                            RoundedRectangle(cornerRadius: 1)
+                                .frame(
+                                    width: 18 * battery.decimalValue,
+                                    height: 7)
+                                .padding(.top, 3)
+                                .padding(.leading, 6)
+                                .foregroundColor(batteryColor)
+                        }
                         .padding(.top, 2)
+                    }
 
                     if let battery = device.battery {
                         Text("\(battery.level.value) %")
                             .font(.system(size: 14, weight: .semibold))
                     }
                 }
+                .frame(height: 21)
             }
+            .padding(.leading, 8)
             .padding(.trailing, 36)
         }
         .frame(maxWidth: .infinity)

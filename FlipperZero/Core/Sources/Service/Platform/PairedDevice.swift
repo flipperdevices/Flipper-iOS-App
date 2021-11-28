@@ -14,8 +14,15 @@ class PairedDevice: PairedDeviceProtocol, ObservableObject {
         didSet {
             if let flipper = flipper {
                 subscribeToUpdates()
-                storage.pairedDevice = .init(flipper)
-                peripheralSubject.value = .init(flipper)
+                // we don't have device info on connect
+                // but we want to save the previous one
+                var peripheral = Peripheral(flipper)
+                if peripheral.information == nil,
+                    let info = peripheralSubject.value?.information {
+                    peripheral.information = info
+                }
+                storage.pairedDevice = peripheral
+                peripheralSubject.value = peripheral
             } else {
                 storage.pairedDevice = nil
                 peripheralSubject.value = nil
