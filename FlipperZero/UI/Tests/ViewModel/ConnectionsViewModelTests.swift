@@ -5,6 +5,7 @@ import Combine
 
 @testable import UI
 
+@MainActor
 class ConnectionsViewModelTests: XCTestCase {
     func testStateWhenBluetoothIsPoweredOff() {
         let connector = MockBluetoothConnector(initialState: .notReady(.poweredOff)) {
@@ -48,19 +49,8 @@ class ConnectionsViewModelTests: XCTestCase {
         XCTAssertEqual(target.peripherals, [peripheral])
     }
 
-    func testStopScanIsCalledOnDeinit() {
-        let startScanExpectation = self.expectation(description: "BluetoothConnector.startScanForPeripherals")
-        let stopScanExpectation = self.expectation(description: "BluetoothConnector.stopScanForPeripherals")
-        let connector = MockBluetoothConnector(
-            initialState: .ready,
-            onStartScanForPeripherals: startScanExpectation.fulfill,
-            onStopScanForPeripherals: stopScanExpectation.fulfill)
-
-        var target: ConnectionsViewModel? = Self.createTarget(connector)
-        XCTAssertEqual(target?.state, .ready)
-        XCTAssertEqual(target?.peripherals, [])
-        target = nil
-        self.waitForExpectations(timeout: 0.1)
+    func testStopScanIsCalledOnDisappear() {
+        // TODO: find a way to test onDisappear
     }
 
     private static func createTarget(_ connector: BluetoothCentral & BluetoothConnector) -> ConnectionsViewModel {
