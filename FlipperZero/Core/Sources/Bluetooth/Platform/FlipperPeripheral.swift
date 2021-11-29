@@ -13,9 +13,13 @@ class FlipperPeripheral: BluetoothPeripheral {
     var id: UUID
     var name: String
 
-    var state: Peripheral.State { .init(peripheral.state) }
-    // TODO: Incapsulate CB objects
-    var services: [CBService] { peripheral.services ?? [] }
+    var state: Peripheral.State {
+        .init(peripheral.state)
+    }
+
+    var services: [Peripheral.Service] {
+        peripheral.services?.map { Peripheral.Service($0) } ?? []
+    }
 
     init?(_ peripheral: CBPeripheral) {
         guard let name = peripheral.name, name.starts(with: "Flipper ") else {
@@ -141,5 +145,36 @@ fileprivate extension CBPeripheral {
             .first { $0.uuid == .serial }?
             .characteristics?
             .first { $0.uuid == .serialWrite }
+    }
+}
+
+extension Peripheral.State {
+    init(_ source: CBPeripheralState) {
+        // swiftlint:disable switch_case_on_newline
+        switch source {
+        case .disconnected: self = .disconnected
+        case .connecting: self = .connecting
+        case .connected: self = .connected
+        case .disconnecting: self = .disconnecting
+        @unknown default: self = .disconnected
+        }
+    }
+}
+
+extension Peripheral.Service {
+    init(_ source: CBService) {
+        self.name = source.uuid.description
+        self.characteristics = source.characteristics?
+            .map(Characteristic.init) ?? []
+    }
+}
+
+extension Peripheral.Service.Characteristic {
+    init(_ source: CBCharacteristic) {
+        self.name = source.uuid.description
+        switch source.value {
+        case let .some(data): self.value = .init(data)
+        case .none: self.value = []
+        }
     }
 }

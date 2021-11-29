@@ -41,23 +41,23 @@ struct DeviceInformationService: View {
 
     var body: some View {
         Section(header: Text("Device Information")) {
-            CharacteristicSectionRow(deviceInformation.manufacturerName)
-            CharacteristicSectionRow(deviceInformation.serialNumber)
-            CharacteristicSectionRow(deviceInformation.firmwareRevision)
-            CharacteristicSectionRow(deviceInformation.softwareRevision)
+            SectionRow(
+                name: "Manufacturer Name",
+                value: deviceInformation.manufacturerName)
+
+            SectionRow(
+                name: "Serial Number",
+                value: deviceInformation.serialNumber)
+
+            SectionRow(
+                name: "Firmware Revision",
+                value: deviceInformation.firmwareRevision)
+
+            SectionRow(
+                name: "Software Revision",
+                value: deviceInformation.softwareRevision)
+
         }
-    }
-}
-
-struct CharacteristicSectionRow: View {
-    let characteristic: Peripheral.Service.Characteristic
-
-    init(_ characteristic: Peripheral.Service.Characteristic) {
-        self.characteristic = characteristic
-    }
-
-    var body: some View {
-        SectionRow(name: characteristic.name, value: characteristic.value)
     }
 }
 

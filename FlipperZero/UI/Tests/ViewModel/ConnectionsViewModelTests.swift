@@ -2,8 +2,6 @@ import XCTest
 import Core
 import Injector
 import Combine
-// TODO: remove
-import CoreBluetooth
 
 @testable import UI
 
@@ -79,7 +77,7 @@ private class MockPeripheral: BluetoothPeripheral {
     var id: UUID
     var name: String = ""
     var state: Peripheral.State = .disconnected
-    var services: [CBService] = []
+    var services: [Peripheral.Service] = []
 
     var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
     weak var delegate: PeripheralDelegate?

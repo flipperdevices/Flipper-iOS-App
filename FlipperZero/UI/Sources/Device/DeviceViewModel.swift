@@ -34,7 +34,6 @@ public class DeviceViewModel: ObservableObject {
 
         let version = info
             .softwareRevision
-            .value
             .split(separator: " ")
             .prefix(2)
             .reversed()
@@ -49,7 +48,6 @@ public class DeviceViewModel: ObservableObject {
 
         let build = info
             .softwareRevision
-            .value
             .split(separator: " ")
             .suffix(1)
             .joined(separator: " ")

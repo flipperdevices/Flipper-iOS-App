@@ -41,12 +41,15 @@ public struct Peripheral: Equatable, Codable, Identifiable {
             public var id: String { name }
 
             public var name: String
-            public var value: String
+            public var value: [UInt8]
         }
     }
 }
 
-import CoreBluetooth
+fileprivate extension String {
+    static var deviceInformation: String { "Device Information" }
+    static var battery: String { "Battery" }
+}
 
 public extension Peripheral {
     init(_ source: BluetoothPeripheral) {
@@ -55,77 +58,51 @@ public extension Peripheral {
         self.state = source.state
 
         self.information = source.services
-            .first { $0.uuid == .deviceInformation }
+            .first { $0.id == .deviceInformation }
             .map(Service.DeviceInformation.init) ?? nil
 
         self.battery = source.services
-            .first { $0.uuid == .battery }
+            .first { $0.id == .battery }
             .map(Service.Battery.init) ?? nil
     }
 }
 
-extension Peripheral.State {
-    init(_ source: CBPeripheralState) {
-        // swiftlint:disable switch_case_on_newline
-        switch source {
-        case .disconnected: self = .disconnected
-        case .connecting: self = .connecting
-        case .connected: self = .connected
-        case .disconnecting: self = .disconnecting
-        @unknown default: self = .disconnected
-        }
-    }
+fileprivate extension String {
+    static var manufacturerName: String { "Manufacturer Name String" }
+    static var serialNumber: String { "Serial Number String" }
+    static var firmwareRevision: String { "Firmware Revision String" }
+    static var softwareRevision: String { "Software Revision String" }
 }
 
 fileprivate extension Peripheral.Service.DeviceInformation {
-    init?(_ source: CBService) {
-        guard source.uuid == .deviceInformation else { return nil }
-        self.init(manufacturerName: "", serialNumber: "", firmwareRevision: "", softwareRevision: "")
-        source.characteristics?.forEach {
-            switch $0.uuid.description.dropLast(" String".count) {
-            case manufacturerName.name: self.manufacturerName.value = parse($0.value)
-            case serialNumber.name: self.serialNumber.value = parse($0.value)
-            case firmwareRevision.name: self.firmwareRevision.value = parse($0.value)
-            case softwareRevision.name: self.softwareRevision.value = parse($0.value)
-            default: return
-            }
-        }
-    }
+    init?(_ service: Peripheral.Service) {
+        guard service.id == .deviceInformation else { return nil }
 
-    private func parse(_ data: Data?) -> String {
-        guard let data = data else { return "" }
-        return String(data: data, encoding: .utf8) ?? ""
+        let manufacturerName = service.characteristics
+            .first { $0.name == .manufacturerName }?.value ?? []
+        let serialNumber = service.characteristics
+            .first { $0.name == .serialNumber }?.value ?? []
+        let firmwareRevision = service.characteristics
+            .first { $0.name == .firmwareRevision }?.value ?? []
+        let softwareRevision = service.characteristics
+            .first { $0.name == .softwareRevision }?.value ?? []
+
+        self.init(
+            manufacturerName: manufacturerName,
+            serialNumber: serialNumber,
+            firmwareRevision: firmwareRevision,
+            softwareRevision: softwareRevision)
     }
 }
 
 fileprivate extension Peripheral.Service.Battery {
-    init?(_ source: CBService) {
+    init?(_ service: Peripheral.Service) {
         guard
-            source.uuid == .battery,
-            let level = source.characteristics?.first,
-            let data = level.value, data.count == 1
+            service.id == .battery,
+            let characteristic = service.characteristics.first
         else {
             return nil
         }
-        self.init(level: Int(data[0]))
-    }
-}
-
-extension Peripheral.Service {
-    init(_ source: CBService) {
-        self.name = source.uuid.description
-        self.characteristics = source.characteristics?.map(Characteristic.init) ?? []
-    }
-}
-
-extension Peripheral.Service.Characteristic {
-    init(_ source: CBCharacteristic) {
-        self.name = source.uuid.description
-        switch source.value {
-        case let .some(data):
-            self.value = String(data: data, encoding: .utf8) ?? ""
-        case .none:
-            self.value = ""
-        }
+        self.init(level: Int(characteristic.value[0]))
     }
 }

@@ -1,28 +1,22 @@
 extension Peripheral.Service {
     public struct DeviceInformation: Equatable, Codable {
-        public var manufacturerName: Characteristic
-        public var serialNumber: Characteristic
-        public var firmwareRevision: Characteristic
-        public var softwareRevision: Characteristic
+        public var manufacturerName: String
+        public var serialNumber: String
+        public var firmwareRevision: String
+        public var softwareRevision: String
+    }
+}
 
-        init(
-            manufacturerName: String,
-            serialNumber: String,
-            firmwareRevision: String,
-            softwareRevision: String
-        ) {
-            self.manufacturerName = .init(
-                name: "Manufacturer Name",
-                value: manufacturerName)
-            self.serialNumber = .init(
-                name: "Serial Number",
-                value: serialNumber)
-            self.firmwareRevision = .init(
-                name: "Firmware Revision",
-                value: firmwareRevision)
-            self.softwareRevision = .init(
-                name: "Software Revision",
-                value: softwareRevision)
-        }
+extension Peripheral.Service.DeviceInformation {
+    init(
+        manufacturerName: [UInt8],
+        serialNumber: [UInt8],
+        firmwareRevision: [UInt8],
+        softwareRevision: [UInt8]
+    ) {
+        self.manufacturerName = .init(decoding: manufacturerName, as: UTF8.self)
+        self.serialNumber = .init(decoding: serialNumber, as: UTF8.self)
+        self.firmwareRevision = .init(decoding: firmwareRevision, as: UTF8.self)
+        self.softwareRevision = .init(decoding: softwareRevision, as: UTF8.self)
     }
 }

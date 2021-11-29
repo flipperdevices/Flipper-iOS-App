@@ -176,7 +176,7 @@ struct DeviceImageNameModelBattery: View {
     let device: Peripheral
 
     var flipperImage: String {
-        device.information?.firmwareRevision.value == "7"
+        device.information?.firmwareRevision == "7"
             ? "FlipperBlack"
             : "FlipperWhite"
     }
@@ -224,7 +224,7 @@ struct DeviceImageNameModelBattery: View {
                     }
 
                     if let battery = device.battery {
-                        Text("\(battery.level.value) %")
+                        Text("\(battery.level) %")
                             .font(.system(size: 14, weight: .semibold))
                     }
                 }
