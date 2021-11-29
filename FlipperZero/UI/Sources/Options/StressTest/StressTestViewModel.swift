@@ -1,8 +1,8 @@
 import Core
 import Combine
-import Injector
 import Foundation
 
+@MainActor
 class StressTestViewModel: ObservableObject {
     var stressTest: RPCStressTest = .init()
     var disposeBag: DisposeBag = .init()

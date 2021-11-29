@@ -39,6 +39,9 @@ struct ConnectionsView: View {
             }
         }
         .padding(.horizontal, 16)
+        .onDisappear {
+            viewModel.stopScan()
+        }
     }
 
     func row(for peripheral: Peripheral) -> some View {

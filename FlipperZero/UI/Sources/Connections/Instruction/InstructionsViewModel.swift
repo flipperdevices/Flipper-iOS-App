@@ -3,6 +3,7 @@ import Combine
 import Injector
 import SwiftUI
 
+@MainActor
 class InstructionsViewModel: ObservableObject {
     @Inject var flipper: PairedDevice
     private var disposeBag: DisposeBag = .init()

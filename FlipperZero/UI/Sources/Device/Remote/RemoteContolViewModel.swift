@@ -1,8 +1,9 @@
 import Core
 import Combine
-import Injector
 import Foundation
 
+// FIXME:
+// @MainActor
 class RemoteContolViewModel: ObservableObject {
     @Published var frame: ScreenFrame = .init()
 
