@@ -1,14 +1,8 @@
 import CoreBluetooth
 
-class FlipperPeripheral: BluetoothPeripheral {
-    // swiftlint:disable weak_delegate
-    private let flipperDelegate: _FlipperPeripheral
-    private var peripheral: CBPeripheral { flipperDelegate.peripheral }
-
-    var delegate: PeripheralDelegate? {
-        get { flipperDelegate.delegate }
-        set { flipperDelegate.delegate = newValue }
-    }
+class FlipperPeripheral: NSObject, BluetoothPeripheral {
+    private var peripheral: CBPeripheral
+    weak var delegate: PeripheralDelegate?
 
     var id: UUID
     var name: String
@@ -21,17 +15,23 @@ class FlipperPeripheral: BluetoothPeripheral {
         peripheral.services?.map { Peripheral.Service($0) } ?? []
     }
 
+    var info: SafePublisher<Void> {
+        infoSubject.eraseToAnyPublisher()
+    }
+
+    fileprivate let infoSubject = SafeSubject<Void>()
+
     init?(_ peripheral: CBPeripheral) {
         guard let name = peripheral.name, name.starts(with: "Flipper ") else {
             return nil
         }
         self.id = peripheral.identifier
         self.name = String(name.dropFirst("Flipper ".count))
-        self.flipperDelegate = .init(peripheral)
+        self.peripheral = peripheral
     }
 
     func onConnect() {
-        flipperDelegate.peripheral.discoverServices(nil)
+        peripheral.discoverServices(nil)
     }
 
     func onDisconnect() {
@@ -42,29 +42,25 @@ class FlipperPeripheral: BluetoothPeripheral {
         // nothing here yet
     }
 
-    var info: SafePublisher<Void> {
-        flipperDelegate.infoSubject.eraseToAnyPublisher()
-    }
-
     func send(_ data: Data) {
-        flipperDelegate.send(data)
+        guard peripheral.state == .connected else {
+            print("invalid state")
+            return
+        }
+        guard let tx = peripheral.serialWrite else {
+            print("no serial service")
+            return
+        }
+        peripheral.writeValue(data, for: tx, type: .withResponse)
     }
 }
 
 // MARK: CBPeripheralDelegate
 
-private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
-    let peripheral: CBPeripheral
-    weak var delegate: PeripheralDelegate?
+// NOTE: if you want to make FlipperPeripheral public,
+//       search for _FlipperPeripheral wrapper in history
 
-    init(_ peripheral: CBPeripheral) {
-        self.peripheral = peripheral
-        super.init()
-        peripheral.delegate = self
-    }
-
-    fileprivate let infoSubject = SafeSubject<Void>()
-    fileprivate let screenFrameSubject = SafeSubject<ScreenFrame>()
+extension FlipperPeripheral: CBPeripheralDelegate {
 
     // MARK: Services
 
@@ -124,18 +120,6 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
         default:
             infoSubject.send()
         }
-    }
-
-    func send(_ data: Data) {
-        guard peripheral.state == .connected else {
-            print("invalid state")
-            return
-        }
-        guard let tx = peripheral.serialWrite else {
-            print("no serial service")
-            return
-        }
-        peripheral.writeValue(data, for: tx, type: .withResponse)
     }
 }
 
