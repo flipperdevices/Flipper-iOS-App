@@ -3,8 +3,9 @@ import Combine
 import Injector
 import SwiftUI
 
+@MainActor
 class InstructionsViewModel: ObservableObject {
-    @Inject var flipper: PairedDeviceProtocol
+    @Inject var flipper: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
     @Published var presentConnectionsSheet = false

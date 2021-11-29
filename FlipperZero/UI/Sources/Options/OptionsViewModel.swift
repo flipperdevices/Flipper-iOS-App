@@ -1,7 +1,7 @@
 import Core
 import Combine
-import Injector
 
+@MainActor
 public class OptionsViewModel: ObservableObject {
     public init() {}
 }

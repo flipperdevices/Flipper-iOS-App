@@ -3,6 +3,7 @@ import Combine
 import Injector
 import struct Foundation.UUID
 
+@MainActor
 class ConnectionsViewModel: ObservableObject {
     @Inject private var central: BluetoothCentral
     @Inject private var connector: BluetoothConnector
@@ -11,12 +12,8 @@ class ConnectionsViewModel: ObservableObject {
     @Published private(set) var state: BluetoothStatus = .notReady(.preparing) {
         didSet {
             switch state {
-            case .ready where oldValue != .ready:
-                central.startScanForPeripherals()
-            case .notReady:
-                peripherals.removeAll()
-            default:
-                break
+            case .ready: startScan()
+            case .notReady: stopScan()
             }
         }
     }
@@ -51,16 +48,21 @@ class ConnectionsViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
+    func startScan() {
+        central.startScanForPeripherals()
+    }
+
+    func stopScan() {
+        central.stopScanForPeripherals()
+        peripherals.removeAll()
+    }
+
     func connect(to uuid: UUID) {
         connector.connect(to: uuid)
     }
 
     func openApplicationSettings() {
         Application.openSettings()
-    }
-
-    deinit {
-        self.central.stopScanForPeripherals()
     }
 }
 

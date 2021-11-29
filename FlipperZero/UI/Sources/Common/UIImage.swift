@@ -26,7 +26,8 @@ extension UIImage {
             bitsPerPixel: 32,
             bytesPerRow: width * MemoryLayout<Pixel>.size,
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue),
+            bitmapInfo: CGBitmapInfo(
+                rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue),
             provider: provider,
             decode: nil,
             shouldInterpolate: true,
