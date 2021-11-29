@@ -20,32 +20,6 @@ class FlipperSession: Session {
         self.peripheral.delegate = self
     }
 
-    struct Queue {
-        private var queue: [Command] = []
-        private var backgroundQueue: [Command] = []
-
-        var count: Int { queue.count + backgroundQueue.count }
-
-        mutating func append(_ command: Command, priority: Priority?) {
-            switch priority {
-            case .none: queue.append(command)
-            case .background: backgroundQueue.append(command)
-            }
-        }
-
-        mutating func dequeue() -> Command? {
-            if !queue.isEmpty { return queue.removeFirst() }
-            if !backgroundQueue.isEmpty { return backgroundQueue.removeFirst() }
-            return nil
-        }
-    }
-
-    struct Command {
-        let id: Int
-        let request: Request
-        let continuation: UnsafeContinuation<Response, Swift.Error>
-    }
-
     func send(
         _ request: Request,
         priority: Priority? = nil
@@ -140,27 +114,5 @@ extension FlipperSession: PeripheralDelegate {
             freeSpace: Int(freeSpace),
             packetSize: packetSize)
         processChunkedRequest()
-    }
-}
-
-@propertyWrapper
-struct CommandId {
-    private var nextId = 1
-
-    let maxId: Int = {
-        let commandIdSize = MemoryLayout.size(ofValue: PB_Main().commandID)
-        return Int(pow(2.0, Double(commandIdSize * 8)) - 1)
-    }()
-
-    var wrappedValue: Int {
-        mutating get {
-            defer {
-                nextId += 1
-                if nextId >= maxId {
-                    nextId = 1
-                }
-            }
-            return nextId
-        }
     }
 }
