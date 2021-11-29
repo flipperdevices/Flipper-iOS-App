@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		498305C32527FEE900B04AFD /* HelvetiPixel.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 498305C12527FEE900B04AFD /* HelvetiPixel.ttf */; };
-		498305C52527FEE900B04AFD /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */; };
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
 		8B7064CC26E27429006CB4A8 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B7064CB26E27429006CB4A8 /* UI */; };
 		8B77A9CD26CAA43300A3DF9F /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B77A9CC26CAA43300A3DF9F /* Core */; };
@@ -36,8 +34,6 @@
 
 /* Begin PBXFileReference section */
 		44A5B59224F05647009EE7FB /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
-		498305C12527FEE900B04AFD /* HelvetiPixel.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HelvetiPixel.ttf; sourceTree = "<group>"; };
-		498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B7064CA26E2732E006CB4A8 /* UI */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UI; sourceTree = "<group>"; };
 		8B77A9C726CAA3BA00A3DF9F /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Core; sourceTree = "<group>"; };
@@ -76,15 +72,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		498305C02527FE9E00B04AFD /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				498305C22527FEE900B04AFD /* Born2bSportyV2.ttf */,
-				498305C12527FEE900B04AFD /* HelvetiPixel.ttf */,
-			);
-			path = Fonts;
 			sourceTree = "<group>";
 		};
 		8B77A9C626CAA3BA00A3DF9F /* Packages */ = {
@@ -170,7 +157,6 @@
 			children = (
 				F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */,
 				F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */,
-				498305C02527FE9E00B04AFD /* Fonts */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -260,9 +246,7 @@
 				8BA57F20273AD21D00A3A33B /* subhz.png in Resources */,
 				8BA57F1F273AD21D00A3A33B /* rfid.png in Resources */,
 				8BA57F21273AD21D00A3A33B /* irda.png in Resources */,
-				498305C52527FEE900B04AFD /* Born2bSportyV2.ttf in Resources */,
 				8BA57F1E273AD21D00A3A33B /* ibutton.png in Resources */,
-				498305C32527FEE900B04AFD /* HelvetiPixel.ttf in Resources */,
 				49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */,
 				8BA57F1D273AD21D00A3A33B /* nfc.png in Resources */,
 				F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */,
