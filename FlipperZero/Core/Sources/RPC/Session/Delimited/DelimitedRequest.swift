@@ -1,4 +1,4 @@
-class SequencedRequest {
+class DelimitedRequest {
     func split(_ request: Request) -> [PB_Main] {
         switch request {
         // the only request at the moment that can exceed the limit

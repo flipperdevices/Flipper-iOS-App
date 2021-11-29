@@ -4,9 +4,9 @@ class FlipperSession: Session {
     let peripheral: BluetoothPeripheral
 
     let chunkedResponse: ChunkedResponse = .init()
-    let sequencedResponse: SequencedResponse = .init()
+    let sequencedResponse: DelimitedResponse = .init()
 
-    let sequencedRequest: SequencedRequest = .init()
+    let sequencedRequest: DelimitedRequest = .init()
     var chunkedRequest: ChunkedRequest = .init()
 
     @CommandId var nextId: Int

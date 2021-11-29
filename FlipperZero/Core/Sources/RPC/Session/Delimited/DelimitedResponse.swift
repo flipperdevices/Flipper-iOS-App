@@ -1,4 +1,4 @@
-class SequencedResponse {
+class DelimitedResponse {
     var response: Response?
 
     func feed(_ main: PB_Main) throws -> Result<Response, Error>? {
