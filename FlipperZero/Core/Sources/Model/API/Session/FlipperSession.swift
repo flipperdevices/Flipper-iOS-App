@@ -1,22 +1,24 @@
 import Foundation
 
 class FlipperSession: Session {
+    let peripheral: BluetoothPeripheral
+
     let chunkedResponse: ChunkedResponse = .init()
     let sequencedResponse: SequencedResponse = .init()
 
     let sequencedRequest: SequencedRequest = .init()
     var chunkedRequest: ChunkedRequest = .init()
 
-    weak var outputDelegate: PeripheralOutputDelegate? {
-        get { chunkedRequest.delegate }
-        set { chunkedRequest.delegate = newValue }
-    }
-
-    weak var inputDelegate: PeripheralInputDelegate?
-
     @CommandId var nextId: Int
     var queue: Queue = .init()
     var awaitingResponse: [Command] = []
+
+    var onScreenFrame: ((ScreenFrame) -> Void)?
+
+    init(peripheral: BluetoothPeripheral) {
+        self.peripheral = peripheral
+        self.peripheral.delegate = self
+    }
 
     struct Queue {
         private var queue: [Command] = []
@@ -41,24 +43,24 @@ class FlipperSession: Session {
     struct Command {
         let id: Int
         let request: Request
-        let continuation: Continuation
+        let continuation: UnsafeContinuation<Response, Swift.Error>
     }
 
-    func sendRequest(
+    func send(
         _ request: Request,
-        priority: Priority? = nil,
-        continuation: @escaping Continuation
-    ) {
-        let command = Command(
-            id: nextId,
-            request: request,
-            continuation: continuation
-        )
+        priority: Priority? = nil
+    ) async throws -> Response {
+        return try await withUnsafeThrowingContinuation { continuation in
+            let command = Command(
+                id: nextId,
+                request: request,
+                continuation: continuation)
 
-        queue.append(command, priority: priority)
+            queue.append(command, priority: priority)
 
-        if awaitingResponse.isEmpty {
-            sendNextRequest()
+            if awaitingResponse.isEmpty {
+                sendNextRequest()
+            }
         }
     }
 
@@ -70,6 +72,26 @@ class FlipperSession: Session {
             requests[index].commandID = .init(command.id)
         }
         chunkedRequest.feed(requests)
+        processChunkedRequest()
+    }
+
+    func processChunkedRequest() {
+        while chunkedRequest.canWrite {
+            let next = chunkedRequest.next()
+            peripheral.send(.init(next))
+        }
+    }
+
+    func didReceiveUnbound(_ main: PB_Main) {
+        onScreenFrame?(.init(main))
+    }
+}
+
+// MARK: PeripheralDelegate
+
+extension FlipperSession: PeripheralDelegate {
+    func send(_ data: Data) {
+        peripheral.send(data)
     }
 
     func didReceiveData(_ data: Data) {
@@ -99,7 +121,12 @@ class FlipperSession: Session {
             let command = awaitingResponse.removeFirst()
             sendNextRequest()
             // handle current response
-            command.continuation(result)
+            switch result {
+            case .success(let response):
+                command.continuation.resume(returning: response)
+            case .failure(let error):
+                command.continuation.resume(throwing: error)
+            }
         } catch {
             print(error)
         }
@@ -112,11 +139,7 @@ class FlipperSession: Session {
         chunkedRequest.didReceiveFlowControl(
             freeSpace: Int(freeSpace),
             packetSize: packetSize)
-    }
-
-    func didReceiveUnbound(_ main: PB_Main) {
-        let frame = ScreenFrame(main)
-        inputDelegate?.onScreenFrame(frame)
+        processChunkedRequest()
     }
 }
 

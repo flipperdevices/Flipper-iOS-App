@@ -123,17 +123,20 @@ struct ConnectionsView_Previews: PreviewProvider {
 }
 
 private class TestConnector: BluetoothCentral, BluetoothConnector {
-    private struct TestPeripheral: BluetoothPeripheral {
+    private class TestPeripheral: BluetoothPeripheral {
         var id: UUID
         var name: String
         var state: Peripheral.State = .disconnected
         var services: [CBService] = []
 
         var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
-        var screenFrame: SafePublisher<ScreenFrame> { Just(.init([])).eraseToAnyPublisher() }
+        weak var delegate: PeripheralDelegate?
 
-        func send(_ request: Request, priority: Priority?) async throws -> Response {
-            .ok
+        func send(_ data: Data) {}
+
+        init(id: UUID, name: String) {
+            self.id = id
+            self.name = name
         }
     }
 

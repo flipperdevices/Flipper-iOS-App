@@ -75,21 +75,22 @@ class ConnectionsViewModelTests: XCTestCase {
     }
 }
 
-private struct MockPeripheral: BluetoothPeripheral {
+private class MockPeripheral: BluetoothPeripheral {
     var id: UUID
-    var name: String
+    var name: String = ""
     var state: Peripheral.State = .disconnected
     var services: [CBService] = []
 
     var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
-    var screenFrame: SafePublisher<ScreenFrame> { Just(.init()).eraseToAnyPublisher() }
+    weak var delegate: PeripheralDelegate?
 
-    func send(
-        _ request: Request,
-        priority: Priority?
-    ) async throws -> Response {
-        .ok
+    init(id: UUID, name: String = "", state: Peripheral.State = .disconnected) {
+        self.id = id
+        self.name = name
+        self.state = state
     }
+
+    func send(_ data: Data) {}
 }
 
 private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {

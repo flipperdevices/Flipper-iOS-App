@@ -5,24 +5,24 @@ public enum Priority {
 }
 
 protocol Session: AnyObject {
-    var outputDelegate: PeripheralOutputDelegate? { get set }
-    var inputDelegate: PeripheralInputDelegate? { get set }
+    var onScreenFrame: ((ScreenFrame) -> Void)? { get set }
 
-    func sendRequest(
+    func send(
         _ request: Request,
-        priority: Priority?,
-        continuation: @escaping Continuation
-    )
-
-    func didReceiveData(_ data: Data)
-
-    func didReceiveFlowControl(freeSpace: Data, packetSize: Int)
+        priority: Priority?
+    ) async throws -> Response
 }
 
-protocol PeripheralOutputDelegate: AnyObject {
+extension Session {
+    func send(
+        _ request: Request
+    ) async throws -> Response {
+        try await send(request, priority: nil)
+    }
+}
+
+public protocol PeripheralDelegate: AnyObject {
     func send(_ data: Data)
-}
-
-protocol PeripheralInputDelegate: AnyObject {
-    func onScreenFrame(_ frame: ScreenFrame)
+    func didReceiveData(_ data: Data)
+    func didReceiveFlowControl(freeSpace: Data, packetSize: Int)
 }

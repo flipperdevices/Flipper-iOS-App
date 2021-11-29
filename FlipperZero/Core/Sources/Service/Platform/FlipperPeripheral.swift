@@ -2,8 +2,13 @@ import CoreBluetooth
 
 class FlipperPeripheral: BluetoothPeripheral {
     // swiftlint:disable weak_delegate
-    private let delegate: _FlipperPeripheral
-    private var peripheral: CBPeripheral { delegate.peripheral }
+    private let flipperDelegate: _FlipperPeripheral
+    private var peripheral: CBPeripheral { flipperDelegate.peripheral }
+
+    var delegate: PeripheralDelegate? {
+        get { flipperDelegate.delegate }
+        set { flipperDelegate.delegate = newValue }
+    }
 
     var id: UUID
     var name: String
@@ -18,11 +23,11 @@ class FlipperPeripheral: BluetoothPeripheral {
         }
         self.id = peripheral.identifier
         self.name = String(name.dropFirst("Flipper ".count))
-        self.delegate = .init(peripheral, FlipperSession())
+        self.flipperDelegate = .init(peripheral)
     }
 
     func onConnect() {
-        delegate.peripheral.discoverServices(nil)
+        flipperDelegate.peripheral.discoverServices(nil)
     }
 
     func onDisconnect() {
@@ -34,27 +39,11 @@ class FlipperPeripheral: BluetoothPeripheral {
     }
 
     var info: SafePublisher<Void> {
-        delegate.infoSubject.eraseToAnyPublisher()
+        flipperDelegate.infoSubject.eraseToAnyPublisher()
     }
 
-    var screenFrame: SafePublisher<ScreenFrame> {
-        delegate.screenFrameSubject.eraseToAnyPublisher()
-    }
-
-    func send(
-        _ request: Request,
-        priority: Priority?
-    ) async throws -> Response {
-        try await withCheckedThrowingContinuation { continuation in
-            delegate.send(request, priority: priority) { result in
-                switch result {
-                case .success(let response):
-                    continuation.resume(returning: response)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+    func send(_ data: Data) {
+        flipperDelegate.send(data)
     }
 }
 
@@ -62,15 +51,12 @@ class FlipperPeripheral: BluetoothPeripheral {
 
 private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
     let peripheral: CBPeripheral
-    let session: Session
+    weak var delegate: PeripheralDelegate?
 
-    init(_ peripheral: CBPeripheral, _ session: Session) {
+    init(_ peripheral: CBPeripheral) {
         self.peripheral = peripheral
-        self.session = session
         super.init()
         peripheral.delegate = self
-        session.outputDelegate = self
-        session.inputDelegate = self
     }
 
     fileprivate let infoSubject = SafeSubject<Void>()
@@ -125,30 +111,17 @@ private class _FlipperPeripheral: NSObject, CBPeripheralDelegate {
         switch characteristic.uuid {
         case .serialRead:
             if let data = characteristic.value {
-                session.didReceiveData(data)
+                delegate?.didReceiveData(data)
             }
         case .flowControl:
             if let data = characteristic.value {
-                session.didReceiveFlowControl(freeSpace: data, packetSize: mtu)
+                delegate?.didReceiveFlowControl(freeSpace: data, packetSize: mtu)
             }
         default:
             infoSubject.send()
         }
     }
 
-    func send(
-        _ request: Request,
-        priority: Priority?,
-        continuation: @escaping Continuation
-    ) {
-        session.sendRequest(
-            request,
-            priority: priority,
-            continuation: continuation)
-    }
-}
-
-extension _FlipperPeripheral: PeripheralOutputDelegate {
     func send(_ data: Data) {
         guard peripheral.state == .connected else {
             print("invalid state")
@@ -159,12 +132,6 @@ extension _FlipperPeripheral: PeripheralOutputDelegate {
             return
         }
         peripheral.writeValue(data, for: tx, type: .withResponse)
-    }
-}
-
-extension _FlipperPeripheral: PeripheralInputDelegate {
-    func onScreenFrame(_ frame: ScreenFrame) {
-        screenFrameSubject.send(frame)
     }
 }
 

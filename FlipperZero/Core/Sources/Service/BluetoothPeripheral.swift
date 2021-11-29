@@ -1,7 +1,7 @@
 import CoreBluetooth
 import struct Foundation.UUID
 
-public protocol BluetoothPeripheral {
+public protocol BluetoothPeripheral: AnyObject {
     var id: UUID { get }
     var name: String { get }
     var state: Peripheral.State { get }
@@ -9,13 +9,7 @@ public protocol BluetoothPeripheral {
     var services: [CBService] { get }
 
     var info: SafePublisher<Void> { get }
-    var screenFrame: SafePublisher<ScreenFrame> { get }
+    var delegate: PeripheralDelegate? { get set }
 
-    func send(_ request: Request, priority: Priority?) async throws -> Response
-}
-
-public extension BluetoothPeripheral {
-    func send(_ request: Request) async throws -> Response {
-        try await send(request, priority: nil)
-    }
+    func send(_ data: Data)
 }
