@@ -2,7 +2,7 @@ import Foundation
 import Collections
 import CoreBluetooth
 
-class BluetoothService: NSObject, BluetoothCentral, BluetoothConnector {
+class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     private let manager: CBCentralManager
 
     private var flipperServiceIDs: [CBUUID] {
@@ -103,7 +103,7 @@ class BluetoothService: NSObject, BluetoothCentral, BluetoothConnector {
 
 // MARK: BluetoothCentral
 
-extension BluetoothService: CBCentralManagerDelegate {
+extension FlipperCentral: CBCentralManagerDelegate {
 
     // MARK: Status changed
 
@@ -128,7 +128,7 @@ extension BluetoothService: CBCentralManagerDelegate {
 
 // MARK: BluetoothConnector
 
-extension BluetoothService {
+extension FlipperCentral {
     // MARK: Connection status changed
 
     func centralManager(

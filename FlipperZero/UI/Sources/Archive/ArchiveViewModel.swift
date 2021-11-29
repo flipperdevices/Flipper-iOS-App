@@ -7,7 +7,7 @@ import SwiftUI
 class ArchiveViewModel: ObservableObject {
     @Inject var nfc: NFCServiceProtocol
     @Inject var storage: DeviceStorage
-    @Inject var pairedDevice: PairedDeviceProtocol
+    @Inject var pairedDevice: PairedDevice
     var disposeBag: DisposeBag = .init()
 
     @Published var device: Peripheral? {

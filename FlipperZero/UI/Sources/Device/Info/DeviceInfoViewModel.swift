@@ -5,7 +5,7 @@ import struct Foundation.UUID
 
 class DeviceInfoViewModel: ObservableObject {
     @Inject var connector: BluetoothConnector
-    @Inject var pairedDevice: PairedDeviceProtocol
+    @Inject var pairedDevice: PairedDevice
     var disposeBag = DisposeBag()
 
     @Published var device: Peripheral?

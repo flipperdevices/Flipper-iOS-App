@@ -1,11 +1,13 @@
-public enum Status: CustomStringConvertible {
+import Core
+
+enum Status: CustomStringConvertible {
     case noDevice
     case connecting
     case connected
     case disconnected
     case synchronizing
 
-    public var description: String {
+    var description: String {
         switch self {
         case .noDevice: return "No device"
         case .connecting: return "Connecting"
@@ -17,7 +19,7 @@ public enum Status: CustomStringConvertible {
 }
 
 extension Status {
-    public init(_ state: Peripheral.State?) {
+    init(_ state: Peripheral.State?) {
         guard let state = state else {
             self = .noDevice
             return

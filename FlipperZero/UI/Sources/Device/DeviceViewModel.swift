@@ -5,7 +5,7 @@ import Foundation
 
 @MainActor
 public class DeviceViewModel: ObservableObject {
-    @Inject var flipper: PairedDeviceProtocol
+    @Inject var flipper: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
     private let archive: Archive = .shared

@@ -2,7 +2,7 @@ import Combine
 import Injector
 import struct Foundation.UUID
 
-class PairedDevice: PairedDeviceProtocol, ObservableObject {
+class PairedFlipper: PairedDevice, ObservableObject {
     @Inject var connector: BluetoothConnector
     @Inject var storage: DeviceStorage
     var disposeBag: DisposeBag = .init()
