@@ -4,9 +4,9 @@ class FlipperSession: Session {
     let peripheral: BluetoothPeripheral
 
     let chunkedResponse: ChunkedResponse = .init()
-    let sequencedResponse: DelimitedResponse = .init()
+    let delimitedResponse: DelimitedResponse = .init()
 
-    let sequencedRequest: DelimitedRequest = .init()
+    let delimitedRequest: DelimitedRequest = .init()
     var chunkedRequest: ChunkedRequest = .init()
 
     @CommandId var nextId: Int
@@ -41,7 +41,7 @@ class FlipperSession: Session {
     func sendNextRequest() {
         guard let command = queue.dequeue() else { return }
         awaitingResponse.append(command)
-        var requests = sequencedRequest.split(command.request)
+        var requests = delimitedRequest.split(command.request)
         for index in requests.indices {
             requests[index].commandID = .init(command.id)
         }
@@ -88,7 +88,7 @@ extension FlipperSession: PeripheralDelegate {
                 return
             }
             // complete PB_Main can be split into multiple messages
-            guard let result = try sequencedResponse.feed(nextResponse) else {
+            guard let result = try delimitedResponse.feed(nextResponse) else {
                 return
             }
             // dequeue and send next command

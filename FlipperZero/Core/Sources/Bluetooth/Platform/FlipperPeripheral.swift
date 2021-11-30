@@ -28,6 +28,8 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
         self.id = peripheral.identifier
         self.name = String(name.dropFirst("Flipper ".count))
         self.peripheral = peripheral
+        super.init()
+        self.peripheral.delegate = self
     }
 
     func onConnect() {

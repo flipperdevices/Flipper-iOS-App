@@ -99,7 +99,8 @@ fileprivate extension Peripheral.Service.Battery {
     init?(_ service: Peripheral.Service) {
         guard
             service.id == .battery,
-            let characteristic = service.characteristics.first
+            let characteristic = service.characteristics.first,
+            !characteristic.value.isEmpty
         else {
             return nil
         }
