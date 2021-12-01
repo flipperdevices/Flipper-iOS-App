@@ -4,10 +4,20 @@ import SwiftUI
 struct RemoteContolView: View {
     @StateObject var viewModel: RemoteContolViewModel
 
+    let width = 128
+    let height = 64
+    let scale = 2
+
     var body: some View {
         VStack {
-            DeviceScreen(pixels: viewModel.frame.pixels)
-                .frame(width: 100, height: 100)
+            DeviceScreen(
+                pixels: viewModel.frame.pixels,
+                width: width,
+                height: height,
+                scale: scale
+            )
+            .padding(2)
+            .border(Color(red: 1, green: 0.51, blue: 0), width: 2)
 
             Spacer()
 
@@ -25,82 +35,104 @@ struct RemoteContolView: View {
 
 struct DeviceScreen: View {
     var pixels: [Bool]
+    var width: Int
+    var height: Int
+    let scale: Int
 
-    let scale: Double = 2
+    var scaledWidth: Int { width * scale }
+    var scaledHeight: Int { height * scale }
 
-    let orage = Pixel(a: 255, r: 190, g: 100, b: 0)
+    let orage = Pixel(a: 255, r: 255, g: 130, b: 0)
     let black = Pixel(a: 255, r: 0, g: 0, b: 0)
 
     var colorPixels: [Pixel] {
-        self.pixels.map { $0 ? black : orage }
+        self.scaledPixels.map { $0 ? black : orage }
     }
 
     var uiImage: UIImage {
-        UIImage(pixels: colorPixels, width: 128, height: 64) ?? .init()
+        UIImage(pixels: colorPixels, width: scaledWidth, height: scaledHeight)
+            ?? .init()
     }
 
     var body: some View {
         Image(uiImage: uiImage)
-            .resizable()
-            .frame(width: 128 * 2, height: 64 * 2)
+    }
+
+    // sucks but works
+    var scaledPixels: [Bool] {
+        let newSize = pixels.count * (scale * scale)
+        var scaled = [Bool](repeating: false, count: newSize)
+        for x in 0..<width {
+            for y in 0..<height {
+                let scaledX = x * scale
+                let scaledY = y * scale
+                for newX in scaledX..<(scaledX + scale) {
+                    for newY in scaledY..<(scaledY + scale) {
+                        scaled[newY * scaledWidth + newX] =
+                            pixels[y * width + x]
+                    }
+                }
+            }
+        }
+        return scaled
     }
 }
 
 struct DeviceControls: View {
-    let scale: Double = 4
-
     var onButton: (InputKey) -> Void
 
+    let scale = 2.0
+
+    var width: Double { 124.0 * scale }
+    var height: Double { 92.0 * scale }
+
     var body: some View {
-        ZStack {
-            Image("full")
-                .scaleEffect(scale)
-
-            GeometryReader { proxy in
-                HStack(alignment: .bottom, spacing: 0) {
-                    VStack {
-                        Spacer()
-                        ControlButtonView()
-                            .onTapGesture { onButton(.left) }
-                        Spacer()
-                    }
-                    .padding(.leading, 4)
-                    .frame(width: proxy.size.width / 4)
-
-                    VStack {
-                        ControlButtonView()
-                            .onTapGesture { onButton(.up) }
-                        ControlButtonView()
-                            .onTapGesture { onButton(.enter) }
-                        ControlButtonView()
-                            .onTapGesture { onButton(.down) }
-                    }
-                    .padding(.bottom, 8)
-                    .frame(width: proxy.size.width / 4)
-
-                    VStack {
-                        Spacer()
-                        ControlButtonView()
-                            .onTapGesture { onButton(.right) }
-                        Spacer()
-                    }
-                    .padding(.trailing, 4)
-                    .frame(width: proxy.size.width / 4)
-
-                    VStack {
-                        Circle()
-                            .foregroundColor(Color.clear)
-                        Spacer()
-                        ControlButtonView()
-                            .onTapGesture { onButton(.back) }
-                    }
-                    .padding(.top, 24)
-                    .padding(.trailing, 8)
-                    .frame(width: proxy.size.width / 4)
-                }
+        HStack(spacing: 0) {
+            VStack {
+                Spacer()
+                ControlButtonView()
+                    .onTapGesture { onButton(.left) }
+                Spacer()
             }
+            .padding(.leading, 4)
+            .frame(width: width / 4)
+
+            VStack {
+                ControlButtonView()
+                    .onTapGesture { onButton(.up) }
+                ControlButtonView()
+                    .onTapGesture { onButton(.enter) }
+                ControlButtonView()
+                    .onTapGesture { onButton(.down) }
+            }
+            .padding(.bottom, 8)
+            .frame(width: width / 4)
+
+            VStack {
+                Spacer()
+                ControlButtonView()
+                    .onTapGesture { onButton(.right) }
+                Spacer()
+            }
+            .padding(.trailing, 4)
+            .frame(width: width / 4)
+
+            VStack {
+                Circle()
+                    .foregroundColor(Color.clear)
+                Spacer()
+                ControlButtonView()
+                    .onTapGesture { onButton(.back) }
+            }
+            .padding(.top, 24)
+            .padding(.trailing, 8)
+            .frame(width: width / 4)
         }
-        .frame(width: 62 * scale, height: 45 * scale)
+        .frame(width: width, height: height)
+        .background(
+            Image("full")
+                .resizable()
+                .scaledToFit())
     }
 }
 
