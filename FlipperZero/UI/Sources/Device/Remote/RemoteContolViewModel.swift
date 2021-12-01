@@ -31,8 +31,11 @@ class RemoteContolViewModel: ObservableObject {
         self.frame = frame
     }
 
-    func onButton(_ button: ControlButton) {
+    func onButton(_ button: InputKey) {
         feedback()
+        Task {
+            try await rpc.pressButton(button)
+        }
     }
 }
 

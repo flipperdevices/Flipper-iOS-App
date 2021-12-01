@@ -49,7 +49,7 @@ struct DeviceScreen: View {
 struct DeviceControls: View {
     let scale: Double = 4
 
-    var onButton: (ControlButton) -> Void
+    var onButton: (InputKey) -> Void
 
     var body: some View {
         ZStack {
