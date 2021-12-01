@@ -9,7 +9,7 @@ public enum Request {
     case delete(Path, isForce: Bool)
     case hash(Path)
     case remote(Bool)
-    case button(ControlButton)
+    case button(InputKey, InputType)
 }
 
 // swiftlint:disable function_body_length cyclomatic_complexity
@@ -79,17 +79,11 @@ extension Request {
                     $0.guiStopScreenStreamRequest = .init()
                 }
             }
-        case let .button(button):
+        case let .button(key, type):
             return .with {
                 $0.guiSendInputEventRequest = .with {
-                    switch button {
-                    case .up: $0.key = .up
-                    case .down: $0.key = .down
-                    case .left: $0.key = .left
-                    case .right: $0.key = .right
-                    case .enter: $0.key = .ok
-                    case .back: $0.key = .back
-                    }
+                    $0.key = .init(key)
+                    $0.type = .init(type)
                 }
             }
         }
@@ -101,5 +95,30 @@ extension PB_Main {
         let stream = OutputByteStream()
         try BinaryDelimited.serialize(message: self, to: stream)
         return stream.bytes
+    }
+}
+
+extension PBGui_InputKey {
+    init(_ source: InputKey) {
+        switch source {
+        case .up: self = .up
+        case .down: self = .down
+        case .left: self = .left
+        case .right: self = .right
+        case .enter: self = .ok
+        case .back: self = .back
+        }
+    }
+}
+
+extension PBGui_InputType {
+    init(_ source: InputType) {
+        switch source {
+        case .press: self = .press
+        case .release: self = .release
+        case .short: self = .short
+        case .long: self = .long
+        case .repeat: self = .repeat
+        }
     }
 }

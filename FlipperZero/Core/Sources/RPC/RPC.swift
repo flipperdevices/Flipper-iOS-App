@@ -127,9 +127,19 @@ public class RPC {
         }
     }
 
-    public func buttonPressed(_ button: ControlButton) async throws {
-        let result = try await session?.send(.button(button))
-        print(result ?? "nil")
+    public func pressButton(_ button: InputKey) async throws {
+        guard try await session?.send(.button(button, .press)) == .ok else {
+            print("press failed")
+            return
+        }
+        guard try await session?.send(.button(button, .short)) == .ok else {
+            print("short failed")
+            return
+        }
+        guard try await session?.send(.button(button, .release)) == .ok else {
+            print("release failed")
+            return
+        }
     }
 }
 
