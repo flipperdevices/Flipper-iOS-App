@@ -4,20 +4,11 @@ import SwiftUI
 struct RemoteContolView: View {
     @StateObject var viewModel: RemoteContolViewModel
 
-    let width = 128
-    let height = 64
-    let scale = 2
-
     var body: some View {
         VStack {
-            DeviceScreen(
-                pixels: viewModel.frame.pixels,
-                width: width,
-                height: height,
-                scale: scale
-            )
-            .padding(2)
-            .border(Color(red: 1, green: 0.51, blue: 0), width: 2)
+            DeviceScreen(pixels: viewModel.frame.pixels)
+                .padding(2)
+                .border(Color(red: 1, green: 0.51, blue: 0), width: 2)
 
             Spacer()
 
@@ -35,12 +26,9 @@ struct RemoteContolView: View {
 
 struct DeviceScreen: View {
     var pixels: [Bool]
-    var width: Int
-    var height: Int
-    let scale: Int
 
-    var scaledWidth: Int { width * scale }
-    var scaledHeight: Int { height * scale }
+    var scaledWidth: Int { .screenWidth * .scale }
+    var scaledHeight: Int { .screenHeight * .scale }
 
     let orage = Pixel(a: 255, r: 255, g: 130, b: 0)
     let black = Pixel(a: 255, r: 0, g: 0, b: 0)
@@ -60,16 +48,16 @@ struct DeviceScreen: View {
 
     // sucks but works
     var scaledPixels: [Bool] {
-        let newSize = pixels.count * (scale * scale)
+        let newSize = pixels.count * (.scale * .scale)
         var scaled = [Bool](repeating: false, count: newSize)
-        for x in 0..<width {
-            for y in 0..<height {
-                let scaledX = x * scale
-                let scaledY = y * scale
-                for newX in scaledX..<(scaledX + scale) {
-                    for newY in scaledY..<(scaledY + scale) {
+        for x in 0..<(.screenWidth) {
+            for y in 0..<(.screenHeight) {
+                let scaledX = x * .scale
+                let scaledY = y * .scale
+                for newX in scaledX..<(scaledX + .scale) {
+                    for newY in scaledY..<(scaledY + .scale) {
                         scaled[newY * scaledWidth + newX] =
-                            pixels[y * width + x]
+                            pixels[y * .screenWidth + x]
                     }
                 }
             }
@@ -81,10 +69,8 @@ struct DeviceScreen: View {
 struct DeviceControls: View {
     var onButton: (InputKey) -> Void
 
-    let scale = 2.0
-
-    var width: Double { 124.0 * scale }
-    var height: Double { 92.0 * scale }
+    var width: Double { Double(.controlsWidth * .scale) }
+    var height: Double { Double(.controlsHeight * .scale) }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -141,4 +127,14 @@ struct ControlButtonView: View {
         Circle()
             .foregroundColor(Color.white.opacity(0.001))
     }
+}
+
+private extension Int {
+    static var screenWidth: Int { 128 }
+    static var screenHeight: Int { 64 }
+
+    static var controlsWidth: Int { 124 }
+    static var controlsHeight: Int { 92 }
+
+    static var scale: Int { 2 }
 }
