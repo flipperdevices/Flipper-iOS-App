@@ -7,45 +7,50 @@ import Combine
 
 @MainActor
 class ConnectionsViewModelTests: XCTestCase {
-    func testStateWhenBluetoothIsPoweredOff() {
+    func testStateWhenBluetoothIsPoweredOff() async {
         let connector = MockBluetoothConnector(initialState: .notReady(.poweredOff)) {
             XCTFail("BluetoothConnector.startScanForPeripherals is called unexpectedly")
         }
 
         let target = Self.createTarget(connector)
+        await Task.yield()
         XCTAssertEqual(target.state, .notReady(.poweredOff))
     }
 
-    func testStateWhenBluetoothIsUnauthorized() {
+    func testStateWhenBluetoothIsUnauthorized() async {
         let connector = MockBluetoothConnector(initialState: .notReady(.unauthorized)) {
             XCTFail("BluetoothConnector.startScanForPeripherals is called unexpectedly")
         }
 
         let target = Self.createTarget(connector)
+        await Task.yield()
         XCTAssertEqual(target.state, .notReady(.unauthorized))
     }
 
-    func testStateWhenBluetoothIsUnsupported() {
+    func testStateWhenBluetoothIsUnsupported() async {
         let connector = MockBluetoothConnector(initialState: .notReady(.unsupported)) {
             XCTFail("BluetoothConnector.startScanForPeripherals is called unexpectedly")
         }
 
         let target = Self.createTarget(connector)
+        await Task.yield()
         XCTAssertEqual(target.state, .notReady(.unsupported))
     }
 
-    func testStateWhileScanningDevices() {
+    func testStateWhileScanningDevices() async {
         let startScanExpectation = self.expectation(description: "BluetoothConnector.startScanForPeripherals")
         let connector = MockBluetoothConnector(onStartScanForPeripherals: startScanExpectation.fulfill)
 
         let target = Self.createTarget(connector)
         XCTAssertEqual(target.state, .notReady(.preparing))
         connector.statusSubject.value = .ready
+        await Task.yield()
         self.waitForExpectations(timeout: 0.1)
         XCTAssertEqual(target.state, .ready)
         let peripheral = Peripheral(id: UUID(), name: "Device 42", state: .disconnected)
         let bluetoothPeripheral = MockPeripheral(id: peripheral.id, name: peripheral.name, state: .disconnected)
         connector.peripheralsSubject.value.append(bluetoothPeripheral)
+        await Task.yield()
         XCTAssertEqual(target.peripherals, [peripheral])
     }
 

@@ -1,7 +1,7 @@
 import Core
 import Combine
 import Inject
-import struct Foundation.UUID
+import Foundation
 
 @MainActor
 class ConnectionsViewModel: ObservableObject {
@@ -22,12 +22,14 @@ class ConnectionsViewModel: ObservableObject {
 
     init() {
         central.status
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.state = $0
             }
             .store(in: &disposeBag)
 
         central.peripherals
+            .receive(on: DispatchQueue.main)
             .filter { !$0.isEmpty }
             .sink { [weak self] in
                 self?.peripherals = $0.map(Peripheral.init)
@@ -35,6 +37,7 @@ class ConnectionsViewModel: ObservableObject {
             .store(in: &disposeBag)
 
         connector.connectedPeripherals
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] connected in
                 guard let self = self else { return }
                 connected.forEach { peripheral in
