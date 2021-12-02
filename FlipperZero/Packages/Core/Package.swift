@@ -14,8 +14,8 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "Injector",
-            path: "../DI"),
+            name: "Inject",
+            path: "../Inject"),
         .package(
             url: "https://github.com/apple/swift-collections.git",
             .upToNextMajor(from: "1.0.0")),
@@ -28,7 +28,7 @@ let package = Package(
         .target(
             name: "Core",
             dependencies: [
-                "Injector",
+                "Inject",
                 "SwiftProtobuf",
                 .product(name: "Collections", package: "swift-collections")
             ],

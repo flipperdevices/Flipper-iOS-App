@@ -1,4 +1,4 @@
-import Injector
+import Inject
 
 public class RPC {
     public static let shared: RPC = .init()

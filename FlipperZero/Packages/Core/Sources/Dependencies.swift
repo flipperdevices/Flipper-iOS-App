@@ -1,4 +1,4 @@
-import Injector
+import Inject
 
 public func registerDependencies() {
     let container = Container.shared

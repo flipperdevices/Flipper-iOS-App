@@ -1,4 +1,4 @@
-import Injector
+import Inject
 import Foundation
 
 // swiftlint:disable nesting

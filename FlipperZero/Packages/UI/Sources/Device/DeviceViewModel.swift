@@ -1,6 +1,6 @@
 import Core
 import Combine
-import Injector
+import Inject
 import Foundation
 
 @MainActor

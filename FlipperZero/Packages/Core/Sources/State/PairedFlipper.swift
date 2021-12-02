@@ -1,5 +1,5 @@
 import Combine
-import Injector
+import Inject
 import struct Foundation.UUID
 
 class PairedFlipper: PairedDevice, ObservableObject {

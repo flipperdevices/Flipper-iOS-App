@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Injector",
+    name: "Inject",
     platforms: [
         .iOS(.v14),
         .macOS(.v11),
@@ -10,16 +10,16 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "Injector",
-            targets: ["Injector"])
+            name: "Inject",
+            targets: ["Inject"])
     ],
     targets: [
         .target(
-            name: "Injector",
+            name: "Inject",
             path: "Sources"),
         .testTarget(
-            name: "InjectorTests",
-            dependencies: ["Injector"],
+            name: "InjectTests",
+            dependencies: ["Inject"],
             path: "Tests")
     ]
 )

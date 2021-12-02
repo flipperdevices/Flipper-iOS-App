@@ -1,6 +1,6 @@
 import XCTest
 import Core
-import Injector
+import Inject
 import Combine
 
 @testable import UI

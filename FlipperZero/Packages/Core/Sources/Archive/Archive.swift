@@ -1,5 +1,5 @@
 import Combine
-import Injector
+import Inject
 import Foundation
 
 public class Archive: ObservableObject {

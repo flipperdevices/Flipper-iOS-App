@@ -104,7 +104,7 @@ struct ConnectButton: View {
 
 import Core
 import Combine
-import Injector
+import Inject
 import CoreBluetooth
 
 struct ConnectionsView_Previews: PreviewProvider {
