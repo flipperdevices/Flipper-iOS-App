@@ -5,16 +5,15 @@ import Combine
 
 @testable import UI
 
-@MainActor
 class ConnectionsViewModelTests: XCTestCase {
     func testStateWhenBluetoothIsPoweredOff() async {
         let connector = MockBluetoothConnector(initialState: .notReady(.poweredOff)) {
             XCTFail("BluetoothConnector.startScanForPeripherals is called unexpectedly")
         }
 
-        let target = Self.createTarget(connector)
-        await Task.yield()
-        XCTAssertEqual(target.state, .notReady(.poweredOff))
+        let target = await Self.createTarget(connector)
+        let state = await target.state
+        XCTAssertEqual(state, .notReady(.poweredOff))
     }
 
     func testStateWhenBluetoothIsUnauthorized() async {
@@ -22,9 +21,9 @@ class ConnectionsViewModelTests: XCTestCase {
             XCTFail("BluetoothConnector.startScanForPeripherals is called unexpectedly")
         }
 
-        let target = Self.createTarget(connector)
-        await Task.yield()
-        XCTAssertEqual(target.state, .notReady(.unauthorized))
+        let target = await Self.createTarget(connector)
+        let state = await target.state
+        XCTAssertEqual(state, .notReady(.unauthorized))
     }
 
     func testStateWhenBluetoothIsUnsupported() async {
@@ -32,39 +31,40 @@ class ConnectionsViewModelTests: XCTestCase {
             XCTFail("BluetoothConnector.startScanForPeripherals is called unexpectedly")
         }
 
-        let target = Self.createTarget(connector)
-        await Task.yield()
-        XCTAssertEqual(target.state, .notReady(.unsupported))
+        let target = await Self.createTarget(connector)
+        let state = await target.state
+        XCTAssertEqual(state, .notReady(.unsupported))
     }
 
     func testStateWhileScanningDevices() async {
         let startScanExpectation = self.expectation(description: "BluetoothConnector.startScanForPeripherals")
         let connector = MockBluetoothConnector(onStartScanForPeripherals: startScanExpectation.fulfill)
 
-        let target = Self.createTarget(connector)
-        XCTAssertEqual(target.state, .notReady(.preparing))
+        let target = await Self.createTarget(connector)
+        var state = await target.state
+        XCTAssertEqual(state, .notReady(.preparing))
         connector.statusSubject.value = .ready
-        await Task.yield()
-        self.waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(target.state, .ready)
+        await self.waitForExpectations(timeout: 0.1)
+        state = await target.state
+        XCTAssertEqual(state, .ready)
         let peripheral = Peripheral(id: UUID(), name: "Device 42", state: .disconnected)
         let bluetoothPeripheral = MockPeripheral(id: peripheral.id, name: peripheral.name, state: .disconnected)
         connector.peripheralsSubject.value.append(bluetoothPeripheral)
-        await Task.yield()
-        XCTAssertEqual(target.peripherals, [peripheral])
+        let peripherals = await target.peripherals
+        XCTAssertEqual(peripherals, [peripheral])
     }
 
     func testStopScanIsCalledOnDisappear() {
         // TODO: find a way to test onDisappear
     }
 
-    private static func createTarget(_ connector: BluetoothCentral & BluetoothConnector) -> ConnectionsViewModel {
+    private static func createTarget(_ connector: BluetoothCentral & BluetoothConnector) async -> ConnectionsViewModel {
         let container = Container.shared
         container.register(instance: connector, as: BluetoothCentral.self)
         container.register(instance: connector, as: BluetoothConnector.self)
         container.register(MockStorage.init, as: DeviceStorage.self)
         container.register(MockStorage.init, as: ArchiveStorage.self)
-        return ConnectionsViewModel()
+        return await ConnectionsViewModel()
     }
 }
 
