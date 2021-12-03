@@ -1,5 +1,3 @@
-import Foundation
-
 @propertyWrapper
 public struct Inject<Service> {
     private var service: Service

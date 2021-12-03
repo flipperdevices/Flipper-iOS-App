@@ -56,7 +56,6 @@ struct DeviceInformationService: View {
             SectionRow(
                 name: "Software Revision",
                 value: deviceInformation.softwareRevision)
-
         }
     }
 }
