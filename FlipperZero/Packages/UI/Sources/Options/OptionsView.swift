@@ -18,9 +18,3 @@ struct OptionsView: View {
         }
     }
 }
-
-struct OptionsView_Previews: PreviewProvider {
-    static var previews: some View {
-        OptionsView()
-    }
-}

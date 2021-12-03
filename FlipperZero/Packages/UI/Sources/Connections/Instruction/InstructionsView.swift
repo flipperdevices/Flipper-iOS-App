@@ -50,11 +50,3 @@ struct InstructionsView: View {
         .edgesIgnoringSafeArea(.top)
     }
 }
-
-struct InstructionsView_Previews: PreviewProvider {
-    static var displayWelcomeScreen: Binding<Bool> = .constant(true)
-
-    static var previews: some View {
-        InstructionsView(viewModel: .init(displayWelcomeScreen))
-    }
-}

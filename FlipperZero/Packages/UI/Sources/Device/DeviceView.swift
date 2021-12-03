@@ -236,9 +236,3 @@ struct DeviceImageNameModelBattery: View {
         .frame(maxWidth: .infinity)
     }
 }
-
-struct DeviceView_Previews: PreviewProvider {
-    static var previews: some View {
-        DeviceView(viewModel: .init())
-    }
-}

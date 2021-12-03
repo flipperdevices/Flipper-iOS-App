@@ -77,9 +77,3 @@ struct SectionRow: View {
         }
     }
 }
-
-struct DeviceInfoView_Previews: PreviewProvider {
-    static var previews: some View {
-        DeviceInfoView(viewModel: .init())
-    }
-}

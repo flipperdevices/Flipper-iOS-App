@@ -88,9 +88,3 @@ struct ArchiveView: View {
         .background(systemBackground)
     }
 }
-
-struct ArchiveView_Previews: PreviewProvider {
-    static var previews: some View {
-        ArchiveView(viewModel: .init())
-    }
-}

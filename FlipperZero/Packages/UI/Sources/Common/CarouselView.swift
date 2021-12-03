@@ -49,9 +49,3 @@ struct CarouselView<Content: View, T: Identifiable>: View {
         .animation(.easeOut, value: offset == 0)
     }
 }
-
-struct CarouselView_Previews: PreviewProvider {
-    static var previews: some View {
-        Text("Preview")
-    }
-}
