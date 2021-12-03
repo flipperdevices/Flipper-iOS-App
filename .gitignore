@@ -39,6 +39,7 @@ playground.xcworkspace
 ### Package management
 ## Swift Package Manager
 .build/
+.swiftpm/
 swiftpm/
 
 ## CocoaPods

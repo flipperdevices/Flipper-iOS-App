@@ -39,9 +39,11 @@
 		8B886F172759BAA500D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/UI/.swiftlint.yml; sourceTree = "<group>"; };
 		8B886F182759BAB900D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Core/Sources/RPC/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
 		8B886F192759BAC600D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Inject/.swiftlint.yml; sourceTree = "<group>"; };
+		8B886F1E2759BC8200D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Mock/.swiftlint.yml; sourceTree = "<group>"; };
 		8B89527827581E7B00E4C336 /* UI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UI; path = Packages/UI; sourceTree = "<group>"; };
 		8B89527927581E8700E4C336 /* Inject */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Inject; path = Packages/Inject; sourceTree = "<group>"; };
 		8B89527A27581E9500E4C336 /* Core */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Core; path = Packages/Core; sourceTree = "<group>"; };
+		8B89527A27581E9600E4C336 /* Mock */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Mock; path = Packages/Mock; sourceTree = "<group>"; };
 		8BA57F18273AD21D00A3A33B /* nfc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nfc.png; sourceTree = "<group>"; };
 		8BA57F19273AD21D00A3A33B /* ibutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ibutton.png; sourceTree = "<group>"; };
 		8BA57F1A273AD21D00A3A33B /* rfid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rfid.png; sourceTree = "<group>"; };
@@ -84,8 +86,17 @@
 				8B89527827581E7B00E4C336 /* UI */,
 				8B89527927581E8700E4C336 /* Inject */,
 				8B89527A27581E9500E4C336 /* Core */,
+				8B89527A27581E9600E4C336 /* Mock */,
 			);
 			name = Packages;
+			sourceTree = "<group>";
+		};
+		8B886F1D2759BC7300D9A682 /* Mock */ = {
+			isa = PBXGroup;
+			children = (
+				8B886F1E2759BC8200D9A682 /* .swiftlint.yml */,
+			);
+			name = Mock;
 			sourceTree = "<group>";
 		};
 		8BA57ED9273AA05900A3A33B /* FileIcons */ = {
@@ -105,6 +116,7 @@
 			children = (
 				8BED613E270B6202009E51E2 /* UI */,
 				8BED613C270B61EE009E51E2 /* Core */,
+				8B886F1D2759BC7300D9A682 /* Mock */,
 				8BED613D270B61F7009E51E2 /* Inject */,
 				8BED6143270B66D8009E51E2 /* perform_lint.sh */,
 			);

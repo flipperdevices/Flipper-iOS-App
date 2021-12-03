@@ -14,12 +14,13 @@ let package = Package(
             targets: ["UI"])
     ],
     dependencies: [
-        .package(name: "Core", path: "../Core")
+        .package(name: "Core", path: "../Core"),
+        .package(name: "Mock", path: "../Mock")
     ],
     targets: [
         .target(
             name: "UI",
-            dependencies: ["Core"],
+            dependencies: ["Core", "Mock"],
             path: "Sources"),
         .testTarget(
             name: "UITests",
