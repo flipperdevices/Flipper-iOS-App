@@ -1,5 +1,4 @@
 import Inject
-@testable import Core
 
 public func registerMockDependencies() {
     let container = Container.shared

@@ -1,6 +1,5 @@
 import UI
 import Core
-import Mock
 import SwiftUI
 
 @main
@@ -9,7 +8,7 @@ struct FlipperZeroApp: App {
         #if !targetEnvironment(simulator)
         Core.registerDependencies()
         #else
-        Mock.registerMockDependencies()
+        Core.registerMockDependencies()
         #endif
     }
 

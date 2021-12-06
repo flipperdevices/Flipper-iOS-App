@@ -1,5 +1,4 @@
 import Foundation
-@testable import Core
 
 class BluetoothPeripheralMock: BluetoothPeripheral {
     var id: UUID

@@ -1,5 +1,3 @@
-@testable import Core
-
 public class DeviceStorageMock: DeviceStorage {
     let storage = JSONStorage<Peripheral>(
         for: Peripheral.self,

@@ -1,4 +1,3 @@
-import Core
 import Combine
 
 public class NFCServiceMock: NFCService {
