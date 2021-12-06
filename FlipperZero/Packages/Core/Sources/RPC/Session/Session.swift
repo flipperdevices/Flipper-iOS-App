@@ -20,9 +20,3 @@ extension Session {
         try await send(request, priority: nil)
     }
 }
-
-public protocol PeripheralDelegate: AnyObject {
-    func send(_ data: Data)
-    func didReceiveData(_ data: Data)
-    func didReceiveFlowControl(freeSpace: Data, packetSize: Int)
-}

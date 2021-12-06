@@ -2,8 +2,6 @@ import Foundation
 @testable import Core
 
 class BluetoothPeripheralMock: BluetoothPeripheral {
-    weak var delegate: PeripheralDelegate?
-
     var id: UUID
     var name: String
 
@@ -25,11 +23,23 @@ class BluetoothPeripheralMock: BluetoothPeripheral {
             ])
     ]
 
+    var maximumWriteValueLength: Int { 512 }
+
     var info: SafePublisher<Void> {
         infoSubject.eraseToAnyPublisher()
     }
 
+    var canWrite: SafePublisher<Void> {
+        canWriteSubject.eraseToAnyPublisher()
+    }
+
+    var received: SafePublisher<Data> {
+        receivedDataSubject.eraseToAnyPublisher()
+    }
+
     fileprivate let infoSubject = SafeSubject<Void>()
+    fileprivate let canWriteSubject = SafeSubject<Void>()
+    fileprivate let receivedDataSubject = SafeSubject<Data>()
 
     init(id: UUID = .init(), name: String = "FlipMock") {
         self.id = id

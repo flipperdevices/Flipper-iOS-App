@@ -2,10 +2,16 @@ import CoreBluetooth
 
 class FlipperPeripheral: NSObject, BluetoothPeripheral {
     private var peripheral: CBPeripheral
-    weak var delegate: PeripheralDelegate?
 
     var id: UUID
     var name: String
+
+    var freeSpace = 0
+
+    var maximumWriteValueLength: Int {
+        min(freeSpace,
+            peripheral.maximumWriteValueLength(for: .withoutResponse))
+    }
 
     var state: Peripheral.State {
         .init(peripheral.state)
@@ -19,7 +25,17 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
         infoSubject.eraseToAnyPublisher()
     }
 
+    var canWrite: SafePublisher<Void> {
+        canWriteSubject.eraseToAnyPublisher()
+    }
+
+    var received: SafePublisher<Data> {
+        receivedDataSubject.eraseToAnyPublisher()
+    }
+
     fileprivate let infoSubject = SafeSubject<Void>()
+    fileprivate let canWriteSubject = SafeSubject<Void>()
+    fileprivate let receivedDataSubject = SafeSubject<Data>()
 
     init?(_ peripheral: CBPeripheral) {
         guard let name = peripheral.name, name.starts(with: "Flipper ") else {
@@ -54,6 +70,7 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
             return
         }
         peripheral.writeValue(data, for: tx, type: .withResponse)
+        freeSpace -= data.count
     }
 }
 
@@ -100,10 +117,6 @@ extension FlipperPeripheral: CBPeripheralDelegate {
 
     // MARK: Values
 
-    var mtu: Int {
-        peripheral.maximumWriteValueLength(for: .withoutResponse)
-    }
-
     func peripheral(
         _ peripheral: CBPeripheral,
         didUpdateValueFor characteristic: CBCharacteristic,
@@ -113,11 +126,14 @@ extension FlipperPeripheral: CBPeripheralDelegate {
         switch characteristic.uuid {
         case .serialRead:
             if let data = characteristic.value {
-                delegate?.didReceiveData(data)
+                receivedDataSubject.send(data)
             }
         case .flowControl:
             if let data = characteristic.value {
-                delegate?.didReceiveFlowControl(freeSpace: data, packetSize: mtu)
+                freeSpace = data.int32Value
+                if freeSpace > 0 {
+                    canWriteSubject.send(())
+                }
             }
         default:
             infoSubject.send()
@@ -162,5 +178,13 @@ extension Peripheral.Service.Characteristic {
         case let .some(data): self.value = .init(data)
         case .none: self.value = []
         }
+    }
+}
+
+extension Data {
+    var int32Value: Int {
+        Int(withUnsafeBytes {
+            $0.load(as: Int32.self).bigEndian
+        })
     }
 }

@@ -15,9 +15,25 @@ class FlipperSession: Session {
 
     var onScreenFrame: ((ScreenFrame) -> Void)?
 
+    var disposeBag = DisposeBag()
+
     init(peripheral: BluetoothPeripheral) {
         self.peripheral = peripheral
-        self.peripheral.delegate = self
+        subscribeToUpdates()
+    }
+
+    func subscribeToUpdates() {
+        peripheral.received
+            .sink { [weak self] in
+                self?.didReceiveData($0)
+            }
+            .store(in: &disposeBag)
+
+        peripheral.canWrite
+            .sink { [weak self] in
+                self?.onCanWrite()
+            }
+            .store(in: &disposeBag)
     }
 
     func send(
@@ -50,8 +66,9 @@ class FlipperSession: Session {
     }
 
     func processChunkedRequest() {
-        while chunkedRequest.canWrite {
-            let next = chunkedRequest.next()
+        while chunkedRequest.hasData && peripheral.maximumWriteValueLength > 0 {
+            let packetSize = peripheral.maximumWriteValueLength
+            let next = chunkedRequest.next(maxSize: packetSize)
             peripheral.send(.init(next))
         }
     }
@@ -61,11 +78,9 @@ class FlipperSession: Session {
     }
 }
 
-// MARK: PeripheralDelegate
-
-extension FlipperSession: PeripheralDelegate {
-    func send(_ data: Data) {
-        peripheral.send(data)
+extension FlipperSession {
+    func onCanWrite() {
+        processChunkedRequest()
     }
 
     func didReceiveData(_ data: Data) {
@@ -104,15 +119,5 @@ extension FlipperSession: PeripheralDelegate {
         } catch {
             print(error)
         }
-    }
-
-    func didReceiveFlowControl(freeSpace data: Data, packetSize: Int) {
-        let freeSpace = data.withUnsafeBytes {
-            $0.load(as: Int32.self).bigEndian
-        }
-        chunkedRequest.didReceiveFlowControl(
-            freeSpace: Int(freeSpace),
-            packetSize: packetSize)
-        processChunkedRequest()
     }
 }
