@@ -121,7 +121,7 @@ class ArchiveViewModel: ObservableObject {
 
     func didFoundNFCTags(_ newItems: [ArchiveItem]) {
         if let item = newItems.first, !self.items.contains(item) {
-            self.archive.importKey(item)
+            archive.importKey(item)
             synchronize()
         }
     }

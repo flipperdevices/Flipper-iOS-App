@@ -1,5 +1,5 @@
 extension ArchiveItem {
-    init?(fileName: String, content: String, status: Status) {
+    public init?(fileName: String, content: String, status: Status) {
         guard let name = Name(fileName: fileName) else {
             print("invalid file name: \(fileName)")
             return nil
@@ -36,7 +36,11 @@ extension ArchiveItem {
             for line in property.description {
                 result += "# \(line)\n"
             }
-            result += "\(property.key): \(property.value)\n"
+            switch fileType {
+            // FIXME: remove after irda moves to fff
+            case .irda: result += "\(property.key):\(property.value)\n"
+            default: result += "\(property.key): \(property.value)\n"
+            }
         }
     }
 }
