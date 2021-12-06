@@ -7,8 +7,11 @@ public protocol BluetoothPeripheral: AnyObject {
     var state: Peripheral.State { get }
     var services: [Peripheral.Service] { get }
 
+    var maximumWriteValueLength: Int { get }
+
     var info: SafePublisher<Void> { get }
-    var delegate: PeripheralDelegate? { get set }
+    var canWrite: SafePublisher<Void> { get }
+    var received: SafePublisher<Data> { get }
 
     func send(_ data: Data)
 }

@@ -74,8 +74,11 @@ private class MockPeripheral: BluetoothPeripheral {
     var state: Peripheral.State = .disconnected
     var services: [Peripheral.Service] = []
 
+    var maximumWriteValueLength: Int { 512 }
+
     var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
-    weak var delegate: PeripheralDelegate?
+    var canWrite: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
+    var received: SafePublisher<Data> { Just(.init()).eraseToAnyPublisher() }
 
     init(id: UUID, name: String = "", state: Peripheral.State = .disconnected) {
         self.id = id
