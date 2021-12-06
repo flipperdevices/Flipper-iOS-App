@@ -61,9 +61,7 @@ public class RootViewModel: ObservableObject {
         guard let data = Data(base64Encoded: content) else {
             throw Error.invalidData
         }
-
-        archive.importKey(name: name, data: .init(data))
-        await archive.syncWithDevice()
+        await importKey(name: name, data: data)
     }
 
     func importFile(_ url: URL) async throws {
@@ -74,8 +72,7 @@ public class RootViewModel: ObservableObject {
         case .some(let data):
             try? FileManager.default.removeItem(at: url)
             print("importing internal key", name)
-            archive.importKey(name: name, data: .init(data))
-            await archive.syncWithDevice()
+            await importKey(name: name, data: data)
         // icloud file
         case .none:
             let doc = await KeyDocument(fileURL: url)
@@ -83,8 +80,23 @@ public class RootViewModel: ObservableObject {
                 throw Error.cantOpenDoc
             }
             print("importing icloud key", name)
-            archive.importKey(name: name, data: .init(data))
-            await archive.syncWithDevice()
+            await importKey(name: name, data: data)
         }
+    }
+
+    func importKey(name: String, data: Data) async {
+        let content = String(decoding: data, as: UTF8.self)
+
+        guard let item = ArchiveItem(
+            fileName: name,
+            content: content,
+            status: .imported
+        ) else {
+            print("importing error, invalid data")
+            return
+        }
+
+        archive.importKey(item)
+        await archive.syncWithDevice()
     }
 }
