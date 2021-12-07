@@ -118,12 +118,38 @@ struct Card: View {
 
                 CardDivider()
 
-                CardDataView(
-                    item: _item,
-                    isEditMode: $isEditMode,
-                    focusedField: $focusedField
-                )
-                .padding(16)
+                switch item.fileType {
+                case .rfid:
+                    RFIDCardView(
+                        item: _item,
+                        isEditMode: $isEditMode,
+                        focusedField: $focusedField
+                    )
+                case .subghz:
+                    SUBGHZCardView(
+                        item: _item,
+                        isEditMode: $isEditMode,
+                        focusedField: $focusedField
+                    )
+                case .nfc:
+                    NFCCardView(
+                        item: _item,
+                        isEditMode: $isEditMode,
+                        focusedField: $focusedField
+                    )
+                case .ibutton:
+                    IButtonCardView(
+                        item: _item,
+                        isEditMode: $isEditMode,
+                        focusedField: $focusedField
+                    )
+                case .irda:
+                    InfraredCardView(
+                        item: _item,
+                        isEditMode: $isEditMode,
+                        focusedField: $focusedField
+                    )
+                }
 
                 HStack {
                     Spacer()
@@ -189,52 +215,6 @@ struct CardDivider: View {
         Color.white
             .frame(height: 1)
             .opacity(0.3)
-    }
-}
-
-// TODO: Add individual view for each filetype
-
-struct CardDataView: View {
-    @Binding var item: ArchiveItem
-    @Binding var isEditMode: Bool
-    @Binding var focusedField: String
-
-    @State var description: String = ""
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: isEditMode ? 8 : 2) {
-            if !item.properties.isEmpty {
-                ForEach(0..<item.properties.count, id: \.self) { index in
-                    HStack {
-                        Text("\(item.properties[index].key):")
-                            .font(.system(size: 18).weight(.semibold))
-                        CardTextField(
-                            title: item.properties[index].key,
-                            text: $item.properties[safe: index].value,
-                            isEditMode: $isEditMode,
-                            focusedField: $focusedField
-                        )
-                        .font(.system(size: 18).weight(.semibold))
-                    }
-                }
-            }
-        }
-    }
-}
-
-// swiftlint:disable opening_brace
-
-extension Binding where
-    Value: MutableCollection,
-    Value: RangeReplaceableCollection,
-    Value.Index == Int
-{
-    subscript(safe index: Value.Index) -> Binding<Value.Element> {
-        Binding<Value.Element> {
-            self.wrappedValue[index]
-        } set: {
-            self.wrappedValue[index] = $0
-        }
     }
 }
 
