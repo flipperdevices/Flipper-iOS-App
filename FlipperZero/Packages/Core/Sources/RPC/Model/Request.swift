@@ -1,5 +1,7 @@
 import SwiftProtobuf
 
+// swiftlint:disable nesting
+
 public enum Request {
     case system(System)
     case storage(Storage)
@@ -7,6 +9,12 @@ public enum Request {
 
     public enum System {
         case ping([UInt8])
+        case reboot(RebootMode)
+
+        public enum RebootMode {
+            case os
+            case dfu
+        }
     }
 
     public enum Storage {
@@ -41,6 +49,12 @@ extension Request.System {
             return .with {
                 $0.systemPingRequest = .with {
                     $0.data = .init(bytes)
+                }
+            }
+        case .reboot(let mode):
+            return .with {
+                $0.systemRebootRequest = .with {
+                    $0.mode = .init(mode)
                 }
             }
         }
@@ -129,6 +143,15 @@ extension PB_Main {
         let stream = OutputByteStream()
         try BinaryDelimited.serialize(message: self, to: stream)
         return stream.bytes
+    }
+}
+
+extension PBSystem_RebootRequest.RebootMode {
+    init(_ source: Request.System.RebootMode) {
+        switch source {
+        case .os: self = .os
+        case .dfu: self = .dfu
+        }
     }
 }
 

@@ -34,6 +34,10 @@ public class RPC {
         return result
     }
 
+    public func reboot(to mode: Request.System.RebootMode) async throws {
+        _ = try await session?.send(.system(.reboot(mode)))
+    }
+
     public func listDirectory(
         at path: Path,
         priority: Priority? = nil
