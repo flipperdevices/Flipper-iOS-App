@@ -1,20 +1,40 @@
 import SwiftProtobuf
 
 public enum Request {
-    case ping([UInt8])
-    case list(Path)
-    case read(Path)
-    case write(Path, [UInt8])
-    case create(Path, isDirectory: Bool)
-    case delete(Path, isForce: Bool)
-    case hash(Path)
-    case remote(Bool)
-    case button(InputKey, InputType)
+    case system(System)
+    case storage(Storage)
+    case gui(GUI)
+
+    public enum System {
+        case ping([UInt8])
+    }
+
+    public enum Storage {
+        case list(Path)
+        case read(Path)
+        case write(Path, [UInt8])
+        case create(Path, isDirectory: Bool)
+        case delete(Path, isForce: Bool)
+        case hash(Path)
+    }
+
+    public enum GUI {
+        case remote(Bool)
+        case button(InputKey, InputType)
+    }
 }
 
-// swiftlint:disable function_body_length cyclomatic_complexity
-
 extension Request {
+    func serialize() -> PB_Main {
+        switch self {
+        case .system(let request): return request.serialize()
+        case .storage(let request): return request.serialize()
+        case .gui(let request): return request.serialize()
+        }
+    }
+}
+
+extension Request.System {
     func serialize() -> PB_Main {
         switch self {
         case .ping(let bytes):
@@ -23,6 +43,13 @@ extension Request {
                     $0.data = .init(bytes)
                 }
             }
+        }
+    }
+}
+
+extension Request.Storage {
+    func serialize() -> PB_Main {
+        switch self {
         case let .list(path):
             return .with {
                 $0.storageListRequest = .with {
@@ -68,6 +95,13 @@ extension Request {
                     $0.path = path.string
                 }
             }
+        }
+    }
+}
+
+extension Request.GUI {
+    func serialize() -> PB_Main {
+        switch self {
         case let .remote(start):
             switch start {
             case true:

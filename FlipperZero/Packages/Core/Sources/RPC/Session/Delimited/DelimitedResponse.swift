@@ -34,7 +34,7 @@ class DelimitedResponse {
     func handlePingResponse(_ nextResponse: PBSystem_PingResponse) throws {
         switch response {
         case .none:
-            self.response = .ping(.init(nextResponse.data))
+            self.response = .system(.ping(.init(nextResponse.data)))
         default:
             throw SequencedResponseError.unexpectedResponse
         }
@@ -45,9 +45,9 @@ class DelimitedResponse {
 
         switch response {
         case .none:
-            self.response = .list(elements)
-        case let .some(.list(current)):
-            self.response = .list(current + elements)
+            self.response = .storage(.list(elements))
+        case let .some(.storage(.list(current))):
+            self.response = .storage(.list(current + elements))
         default:
             throw SequencedResponseError.unexpectedResponse
         }
@@ -58,16 +58,16 @@ class DelimitedResponse {
 
         switch response {
         case .none:
-            self.response = .file(bytes)
-        case let .some(.file(current)):
-            self.response = .file(current + bytes)
+            self.response = .storage(.file(bytes))
+        case let .some(.storage(.file(current))):
+            self.response = .storage(.file(current + bytes))
         default:
             throw SequencedResponseError.unexpectedResponse
         }
     }
 
     func handleHashResponse(_ nextResponse: PBStorage_Md5sumResponse) throws {
-        self.response = .hash(nextResponse.md5Sum)
+        self.response = .storage(.hash(nextResponse.md5Sum))
     }
 
     func handleEmptyResponse(_ response: PB_Empty) throws {

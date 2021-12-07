@@ -27,8 +27,8 @@ public class RPC {
 
     @discardableResult
     public func ping(_ bytes: [UInt8]) async throws -> [UInt8] {
-        let response = try await session?.send(.ping(bytes))
-        guard case .ping(let result) = response else {
+        let response = try await session?.send(.system(.ping(bytes)))
+        guard case .system(.ping(let result)) = response else {
             throw Error.unexpectedResponse(response)
         }
         return result
@@ -39,9 +39,9 @@ public class RPC {
         priority: Priority? = nil
     ) async throws -> [Element] {
         let response = try await session?.send(
-            .list(path),
+            .storage(.list(path)),
             priority: priority)
-        guard case .list(let items) = response else {
+        guard case .storage(.list(let items)) = response else {
             throw Error.unexpectedResponse(response)
         }
         return items
@@ -53,7 +53,7 @@ public class RPC {
         priority: Priority? = nil
     ) async throws {
         let response = try await session?.send(
-            .create(path, isDirectory: isDirectory),
+            .storage(.create(path, isDirectory: isDirectory)),
             priority: priority)
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
@@ -66,7 +66,7 @@ public class RPC {
         priority: Priority? = nil
     ) async throws {
         let response = try await session?.send(
-            .delete(path, isForce: force),
+            .storage(.delete(path, isForce: force)),
             priority: priority
         )
         guard case .ok = response else {
@@ -79,9 +79,9 @@ public class RPC {
         priority: Priority? = nil
     ) async throws -> [UInt8] {
         let response = try await session?.send(
-            .read(path),
+            .storage(.read(path)),
             priority: priority)
-        guard case .file(let bytes) = response else {
+        guard case .storage(.file(let bytes)) = response else {
             throw Error.unexpectedResponse(response)
         }
         return bytes
@@ -93,7 +93,7 @@ public class RPC {
         priority: Priority? = nil
     ) async throws {
         let response = try await session?.send(
-            .write(path, bytes),
+            .storage(.write(path, bytes)),
             priority: priority)
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
@@ -105,38 +105,41 @@ public class RPC {
         priority: Priority? = nil
     ) async throws -> String {
         let response = try await session?.send(
-            .hash(path),
+            .storage(.hash(path)),
             priority: priority)
-        guard case .hash(let bytes) = response else {
+        guard case .storage(.hash(let bytes)) = response else {
             throw Error.unexpectedResponse(response)
         }
         return bytes
     }
 
     public func startStreaming() async throws {
-        let response = try await session?.send(.remote(true))
+        let response = try await session?.send(.gui(.remote(true)))
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
     }
 
     public func stopStreaming() async throws {
-        let response = try await session?.send(.remote(false))
+        let response = try await session?.send(.gui(.remote(false)))
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
     }
 
     public func pressButton(_ button: InputKey) async throws {
-        guard try await session?.send(.button(button, .press)) == .ok else {
+        func inputType(_ type: InputType) -> Request {
+            .gui(.button(button, type))
+        }
+        guard try await session?.send(inputType(.press)) == .ok else {
             print("press failed")
             return
         }
-        guard try await session?.send(.button(button, .short)) == .ok else {
+        guard try await session?.send(inputType(.short)) == .ok else {
             print("short failed")
             return
         }
-        guard try await session?.send(.button(button, .release)) == .ok else {
+        guard try await session?.send(inputType(.release)) == .ok else {
             print("release failed")
             return
         }
