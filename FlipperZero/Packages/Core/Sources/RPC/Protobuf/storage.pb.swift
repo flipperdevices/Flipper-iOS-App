@@ -80,6 +80,32 @@ extension PBStorage_File.FileType: CaseIterable {
 
 #endif  // swift(>=4.2)
 
+struct PBStorage_InfoRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var path: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PBStorage_InfoResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var totalSpace: UInt64 = 0
+
+  var freeSpace: UInt64 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 struct PBStorage_StatRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -243,6 +269,20 @@ struct PBStorage_Md5sumResponse {
   init() {}
 }
 
+struct PBStorage_RenameRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var oldPath: String = String()
+
+  var newPath: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "PB_Storage"
@@ -302,6 +342,76 @@ extension PBStorage_File.FileType: SwiftProtobuf._ProtoNameProviding {
     0: .same(proto: "FILE"),
     1: .same(proto: "DIR"),
   ]
+}
+
+extension PBStorage_InfoRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".InfoRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "path"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.path) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.path.isEmpty {
+      try visitor.visitSingularStringField(value: self.path, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBStorage_InfoRequest, rhs: PBStorage_InfoRequest) -> Bool {
+    if lhs.path != rhs.path {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBStorage_InfoResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".InfoResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "total_space"),
+    2: .standard(proto: "free_space"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.totalSpace) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.freeSpace) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.totalSpace != 0 {
+      try visitor.visitSingularUInt64Field(value: self.totalSpace, fieldNumber: 1)
+    }
+    if self.freeSpace != 0 {
+      try visitor.visitSingularUInt64Field(value: self.freeSpace, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBStorage_InfoResponse, rhs: PBStorage_InfoResponse) -> Bool {
+    if lhs.totalSpace != rhs.totalSpace {return false}
+    if lhs.freeSpace != rhs.freeSpace {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
 }
 
 extension PBStorage_StatRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -675,6 +785,44 @@ extension PBStorage_Md5sumResponse: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
   static func ==(lhs: PBStorage_Md5sumResponse, rhs: PBStorage_Md5sumResponse) -> Bool {
     if lhs.md5Sum != rhs.md5Sum {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBStorage_RenameRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".RenameRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "old_path"),
+    2: .standard(proto: "new_path"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.oldPath) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.newPath) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.oldPath.isEmpty {
+      try visitor.visitSingularStringField(value: self.oldPath, fieldNumber: 1)
+    }
+    if !self.newPath.isEmpty {
+      try visitor.visitSingularStringField(value: self.newPath, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBStorage_RenameRequest, rhs: PBStorage_RenameRequest) -> Bool {
+    if lhs.oldPath != rhs.oldPath {return false}
+    if lhs.newPath != rhs.newPath {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -10,7 +10,7 @@ class DelimitedResponse {
         }
 
         switch main.content {
-        case .pingResponse(let response):
+        case .systemPingResponse(let response):
             try handlePingResponse(response)
         case .storageListResponse(let response):
             try handleListResponse(response)
@@ -31,7 +31,7 @@ class DelimitedResponse {
         return .success(response)
     }
 
-    func handlePingResponse(_ nextResponse: PBStatus_PingResponse) throws {
+    func handlePingResponse(_ nextResponse: PBSystem_PingResponse) throws {
         switch response {
         case .none:
             self.response = .ping(.init(nextResponse.data))

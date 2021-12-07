@@ -19,7 +19,7 @@ extension Request {
         switch self {
         case .ping(let bytes):
             return .with {
-                $0.pingRequest = .with {
+                $0.systemPingRequest = .with {
                     $0.data = .init(bytes)
                 }
             }
