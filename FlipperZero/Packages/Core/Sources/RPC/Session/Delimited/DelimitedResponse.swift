@@ -1,83 +1,52 @@
 class DelimitedResponse {
-    var response: Response?
+    var partialResponse: Response?
 
     func feed(_ main: PB_Main) throws -> Result<Response, Error>? {
-        // always set response to nil on last part
-        defer { if !main.hasNext_p { response = nil } }
+        defer { resetIfNeeded(inspecting: main) }
 
         guard main.commandStatus == .ok else {
             return .failure(.init(main.commandStatus))
         }
 
-        switch main.content {
-        case .systemPingResponse(let response):
-            try handlePingResponse(response)
-        case .storageListResponse(let response):
-            try handleListResponse(response)
-        case .storageReadResponse(let response):
-            try handleReadResponse(response)
-        case .storageMd5SumResponse(let response):
-            try handleHashResponse(response)
-        case .empty(let response):
-            try handleEmptyResponse(response)
-        default:
-            return .failure(.init(main.commandStatus))
+        guard case let .some(content) = main.content else {
+            return .failure(.unexpectedResponse(nil))
         }
 
-        guard main.hasNext_p == false, let response = response else {
-            return nil
-        }
+        let response = Response(decoding: content)
 
-        return .success(response)
-    }
+        do {
+            switch (main.hasNext_p, partialResponse) {
 
-    func handlePingResponse(_ nextResponse: PBSystem_PingResponse) throws {
-        switch response {
-        case .none:
-            self.response = .system(.ping(.init(nextResponse.data)))
-        default:
-            throw SequencedResponseError.unexpectedResponse
+            case (false, .none):
+                return .success(response)
+
+            case (true, .none):
+                partialResponse = response
+                return nil
+
+            case (false, .some(let current)):
+                return .success(try current.merging(with: response))
+
+            case (true, .some(let current)):
+                partialResponse = try current.merging(with: response)
+                return nil
+            }
+        } catch {
+            return .failure(.unexpectedResponse(response))
         }
     }
 
-    func handleListResponse(_ nextResponse: PBStorage_ListResponse) throws {
-        let elements: [Element] = .init(nextResponse.file.map(Element.init))
+    func resetIfNeeded(inspecting main: PB_Main) {
+        var reset = false
 
-        switch response {
-        case .none:
-            self.response = .storage(.list(elements))
-        case let .some(.storage(.list(current))):
-            self.response = .storage(.list(current + elements))
-        default:
-            throw SequencedResponseError.unexpectedResponse
+        // all cases in one place not to
+        // forget resetting partialResponse
+        reset = reset || main.hasNext_p == false
+        reset = reset || main.commandStatus != .ok
+        reset = reset || main.content == nil
+
+        if reset {
+            partialResponse = nil
         }
     }
-
-    func handleReadResponse(_ nextResponse: PBStorage_ReadResponse) throws {
-        let bytes = [UInt8](nextResponse.file.data)
-
-        switch response {
-        case .none:
-            self.response = .storage(.file(bytes))
-        case let .some(.storage(.file(current))):
-            self.response = .storage(.file(current + bytes))
-        default:
-            throw SequencedResponseError.unexpectedResponse
-        }
-    }
-
-    func handleHashResponse(_ nextResponse: PBStorage_Md5sumResponse) throws {
-        self.response = .storage(.hash(nextResponse.md5Sum))
-    }
-
-    func handleEmptyResponse(_ response: PB_Empty) throws {
-        guard self.response == nil else {
-            throw SequencedResponseError.unexpectedResponse
-        }
-        self.response = .ok
-    }
-}
-
-enum SequencedResponseError: Swift.Error {
-    case unexpectedResponse
 }
