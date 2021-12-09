@@ -8,6 +8,7 @@ public enum Request {
     case gui(GUI)
 
     public enum System {
+        case info
         case ping([UInt8])
         case reboot(RebootMode)
 
@@ -45,6 +46,10 @@ extension Request {
 extension Request.System {
     func serialize() -> PB_Main {
         switch self {
+        case .info:
+            return .with {
+                $0.systemDeviceInfoRequest = .init()
+            }
         case .ping(let bytes):
             return .with {
                 $0.systemPingRequest = .with {

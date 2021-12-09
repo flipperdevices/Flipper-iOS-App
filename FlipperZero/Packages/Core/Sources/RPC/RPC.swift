@@ -25,6 +25,14 @@ public class RPC {
             .store(in: &disposeBag)
     }
 
+    public func deviceInfo() async throws -> [String: String] {
+        let response = try await session?.send(.system(.info))
+        guard case .system(.info(let result)) = response else {
+            throw Error.unexpectedResponse(response)
+        }
+        return result
+    }
+
     @discardableResult
     public func ping(_ bytes: [UInt8]) async throws -> [UInt8] {
         let response = try await session?.send(.system(.ping(bytes)))

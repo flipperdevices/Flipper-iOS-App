@@ -9,6 +9,7 @@ public enum Response: Equatable {
 
     public enum System: Equatable {
         case ping([UInt8])
+        case info([String: String])
     }
 
     public enum Storage: Equatable {
@@ -24,6 +25,8 @@ extension Response {
         case .empty(let response):
             self.init(decoding: response)
         case .systemPingResponse(let response):
+            self.init(decoding: response)
+        case .systemDeviceInfoResponse(let response):
             self.init(decoding: response)
         case .storageListResponse(let response):
             self.init(decoding: response)
@@ -42,6 +45,10 @@ extension Response {
 
     init(decoding response: PBSystem_PingResponse) {
         self = .system(.ping(.init(response.data)))
+    }
+
+    init(decoding response: PBSystem_DeviceInfoResponse) {
+        self = .system(.info([response.key: response.value]))
     }
 
     init(decoding response: PBStorage_ListResponse) {
@@ -87,6 +94,9 @@ fileprivate extension Response.System {
 
         case let (.ping(current), .ping(next)):
             self = .ping(current + next)
+
+        case let (.info(current), .info(next)):
+            self = .info(current.merging(next, uniquingKeysWith: { $0 + $1 }))
 
         default:
             throw Error.unexpectedResponse(.system(response))
