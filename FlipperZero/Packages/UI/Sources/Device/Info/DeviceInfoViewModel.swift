@@ -9,6 +9,7 @@ class DeviceInfoViewModel: ObservableObject {
     var disposeBag = DisposeBag()
 
     @Published var device: Peripheral?
+    @Published var deviceInfo: [String: String] = [:]
 
     var name: String {
         device?.name ?? .noDevice
@@ -24,6 +25,12 @@ class DeviceInfoViewModel: ObservableObject {
                 self?.device = device
             }
             .store(in: &disposeBag)
+    }
+
+    func getDeviceInfo() {
+        Task {
+            deviceInfo = try await RPC.shared.deviceInfo()
+        }
     }
 
     func disconnectFlipper() {

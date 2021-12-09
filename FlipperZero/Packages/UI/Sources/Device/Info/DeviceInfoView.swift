@@ -8,13 +8,12 @@ struct DeviceInfoView: View {
     var body: some View {
         VStack {
             Form {
-                Section(header: Text("General")) {
-                    SectionRow(name: "Name", value: viewModel.name)
-                    SectionRow(name: "UUID", value: viewModel.uuid)
-                }
                 if let deviceInformation = viewModel.device?.information {
                     DeviceInformationService(deviceInformation)
                 }
+
+                DeviceInformation(viewModel.deviceInfo)
+
                 Button {
                     viewModel.disconnectFlipper()
                     presentationMode.wrappedValue.dismiss()
@@ -29,6 +28,9 @@ struct DeviceInfoView: View {
             }
         }
         .navigationTitle("Device Info")
+        .onAppear {
+            viewModel.getDeviceInfo()
+        }
     }
 }
 
@@ -40,7 +42,7 @@ struct DeviceInformationService: View {
     }
 
     var body: some View {
-        Section(header: Text("Device Information")) {
+        Section(header: Text("Device Information (GATT)")) {
             SectionRow(
                 name: "Manufacturer Name",
                 value: deviceInformation.manufacturerName)
@@ -56,6 +58,30 @@ struct DeviceInformationService: View {
             SectionRow(
                 name: "Software Revision",
                 value: deviceInformation.softwareRevision)
+        }
+    }
+}
+
+struct DeviceInformation: View {
+    let deviceInformation: [String: String]
+
+    init(_ deviceInformation: [String: String]) {
+        self.deviceInformation = deviceInformation
+    }
+
+    var body: some View {
+        Section(header: Text("Device Information (RPC)")) {
+            if deviceInformation.isEmpty {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+            } else {
+                ForEach([String](deviceInformation.keys), id: \.self) { key in
+                    SectionRow(name: key, value: deviceInformation[key] ?? "")
+                }
+            }
         }
     }
 }

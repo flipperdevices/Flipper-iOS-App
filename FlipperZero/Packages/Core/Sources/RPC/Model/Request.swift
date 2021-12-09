@@ -1,26 +1,80 @@
 import SwiftProtobuf
 
-public enum Request {
-    case ping([UInt8])
-    case list(Path)
-    case read(Path)
-    case write(Path, [UInt8])
-    case create(Path, isDirectory: Bool)
-    case delete(Path, isForce: Bool)
-    case hash(Path)
-    case remote(Bool)
-    case button(InputKey, InputType)
-}
+// swiftlint:disable nesting function_body_length
 
-// swiftlint:disable function_body_length cyclomatic_complexity
+public enum Request {
+    case system(System)
+    case storage(Storage)
+    case gui(GUI)
+
+    public enum System {
+        case info
+        case ping([UInt8])
+        case reboot(RebootMode)
+
+        public enum RebootMode {
+            case os
+            case dfu
+        }
+    }
+
+    public enum Storage {
+        case info(Path)
+        case list(Path)
+        case read(Path)
+        case write(Path, [UInt8])
+        case create(Path, isDirectory: Bool)
+        case delete(Path, isForce: Bool)
+        case move(Path, Path)
+        case hash(Path)
+    }
+
+    public enum GUI {
+        case remote(Bool)
+        case button(InputKey, InputType)
+    }
+}
 
 extension Request {
     func serialize() -> PB_Main {
         switch self {
+        case .system(let request): return request.serialize()
+        case .storage(let request): return request.serialize()
+        case .gui(let request): return request.serialize()
+        }
+    }
+}
+
+extension Request.System {
+    func serialize() -> PB_Main {
+        switch self {
+        case .info:
+            return .with {
+                $0.systemDeviceInfoRequest = .init()
+            }
         case .ping(let bytes):
             return .with {
-                $0.pingRequest = .with {
+                $0.systemPingRequest = .with {
                     $0.data = .init(bytes)
+                }
+            }
+        case .reboot(let mode):
+            return .with {
+                $0.systemRebootRequest = .with {
+                    $0.mode = .init(mode)
+                }
+            }
+        }
+    }
+}
+
+extension Request.Storage {
+    func serialize() -> PB_Main {
+        switch self {
+        case let .info(path):
+            return .with {
+                $0.storageInfoRequest = .with {
+                    $0.path = path.string
                 }
             }
         case let .list(path):
@@ -62,12 +116,26 @@ extension Request {
                     }
                 }
             }
+        case let .move(oldPath, newPath):
+            return .with {
+                $0.storageRenameRequest = .with {
+                    $0.oldPath = oldPath.string
+                    $0.newPath = newPath.string
+                }
+            }
         case let .hash(path):
             return .with {
                 $0.storageMd5SumRequest = .with {
                     $0.path = path.string
                 }
             }
+        }
+    }
+}
+
+extension Request.GUI {
+    func serialize() -> PB_Main {
+        switch self {
         case let .remote(start):
             switch start {
             case true:
@@ -95,6 +163,15 @@ extension PB_Main {
         let stream = OutputByteStream()
         try BinaryDelimited.serialize(message: self, to: stream)
         return stream.bytes
+    }
+}
+
+extension PBSystem_RebootRequest.RebootMode {
+    init(_ source: Request.System.RebootMode) {
+        switch source {
+        case .os: self = .os
+        case .dfu: self = .dfu
+        }
     }
 }
 

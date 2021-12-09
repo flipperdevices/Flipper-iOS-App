@@ -228,20 +228,60 @@ struct PB_Main {
     set {content = .stopSession(newValue)}
   }
 
-  var pingRequest: PBStatus_PingRequest {
+  var systemPingRequest: PBSystem_PingRequest {
     get {
-      if case .pingRequest(let v)? = content {return v}
-      return PBStatus_PingRequest()
+      if case .systemPingRequest(let v)? = content {return v}
+      return PBSystem_PingRequest()
     }
-    set {content = .pingRequest(newValue)}
+    set {content = .systemPingRequest(newValue)}
   }
 
-  var pingResponse: PBStatus_PingResponse {
+  var systemPingResponse: PBSystem_PingResponse {
     get {
-      if case .pingResponse(let v)? = content {return v}
-      return PBStatus_PingResponse()
+      if case .systemPingResponse(let v)? = content {return v}
+      return PBSystem_PingResponse()
     }
-    set {content = .pingResponse(newValue)}
+    set {content = .systemPingResponse(newValue)}
+  }
+
+  var systemRebootRequest: PBSystem_RebootRequest {
+    get {
+      if case .systemRebootRequest(let v)? = content {return v}
+      return PBSystem_RebootRequest()
+    }
+    set {content = .systemRebootRequest(newValue)}
+  }
+
+  var systemDeviceInfoRequest: PBSystem_DeviceInfoRequest {
+    get {
+      if case .systemDeviceInfoRequest(let v)? = content {return v}
+      return PBSystem_DeviceInfoRequest()
+    }
+    set {content = .systemDeviceInfoRequest(newValue)}
+  }
+
+  var systemDeviceInfoResponse: PBSystem_DeviceInfoResponse {
+    get {
+      if case .systemDeviceInfoResponse(let v)? = content {return v}
+      return PBSystem_DeviceInfoResponse()
+    }
+    set {content = .systemDeviceInfoResponse(newValue)}
+  }
+
+  var storageInfoRequest: PBStorage_InfoRequest {
+    get {
+      if case .storageInfoRequest(let v)? = content {return v}
+      return PBStorage_InfoRequest()
+    }
+    set {content = .storageInfoRequest(newValue)}
+  }
+
+  var storageInfoResponse: PBStorage_InfoResponse {
+    get {
+      if case .storageInfoResponse(let v)? = content {return v}
+      return PBStorage_InfoResponse()
+    }
+    set {content = .storageInfoResponse(newValue)}
   }
 
   var storageStatRequest: PBStorage_StatRequest {
@@ -332,6 +372,14 @@ struct PB_Main {
     set {content = .storageMd5SumResponse(newValue)}
   }
 
+  var storageRenameRequest: PBStorage_RenameRequest {
+    get {
+      if case .storageRenameRequest(let v)? = content {return v}
+      return PBStorage_RenameRequest()
+    }
+    set {content = .storageRenameRequest(newValue)}
+  }
+
   var appStartRequest: PBApp_StartRequest {
     get {
       if case .appStartRequest(let v)? = content {return v}
@@ -409,8 +457,13 @@ struct PB_Main {
   enum OneOf_Content: Equatable {
     case empty(PB_Empty)
     case stopSession(PB_StopSession)
-    case pingRequest(PBStatus_PingRequest)
-    case pingResponse(PBStatus_PingResponse)
+    case systemPingRequest(PBSystem_PingRequest)
+    case systemPingResponse(PBSystem_PingResponse)
+    case systemRebootRequest(PBSystem_RebootRequest)
+    case systemDeviceInfoRequest(PBSystem_DeviceInfoRequest)
+    case systemDeviceInfoResponse(PBSystem_DeviceInfoResponse)
+    case storageInfoRequest(PBStorage_InfoRequest)
+    case storageInfoResponse(PBStorage_InfoResponse)
     case storageStatRequest(PBStorage_StatRequest)
     case storageStatResponse(PBStorage_StatResponse)
     case storageListRequest(PBStorage_ListRequest)
@@ -422,6 +475,7 @@ struct PB_Main {
     case storageMkdirRequest(PBStorage_MkdirRequest)
     case storageMd5SumRequest(PBStorage_Md5sumRequest)
     case storageMd5SumResponse(PBStorage_Md5sumResponse)
+    case storageRenameRequest(PBStorage_RenameRequest)
     case appStartRequest(PBApp_StartRequest)
     case appLockStatusRequest(PBApp_LockStatusRequest)
     case appLockStatusResponse(PBApp_LockStatusResponse)
@@ -446,12 +500,32 @@ struct PB_Main {
         guard case .stopSession(let l) = lhs, case .stopSession(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
-      case (.pingRequest, .pingRequest): return {
-        guard case .pingRequest(let l) = lhs, case .pingRequest(let r) = rhs else { preconditionFailure() }
+      case (.systemPingRequest, .systemPingRequest): return {
+        guard case .systemPingRequest(let l) = lhs, case .systemPingRequest(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
-      case (.pingResponse, .pingResponse): return {
-        guard case .pingResponse(let l) = lhs, case .pingResponse(let r) = rhs else { preconditionFailure() }
+      case (.systemPingResponse, .systemPingResponse): return {
+        guard case .systemPingResponse(let l) = lhs, case .systemPingResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemRebootRequest, .systemRebootRequest): return {
+        guard case .systemRebootRequest(let l) = lhs, case .systemRebootRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemDeviceInfoRequest, .systemDeviceInfoRequest): return {
+        guard case .systemDeviceInfoRequest(let l) = lhs, case .systemDeviceInfoRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemDeviceInfoResponse, .systemDeviceInfoResponse): return {
+        guard case .systemDeviceInfoResponse(let l) = lhs, case .systemDeviceInfoResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.storageInfoRequest, .storageInfoRequest): return {
+        guard case .storageInfoRequest(let l) = lhs, case .storageInfoRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.storageInfoResponse, .storageInfoResponse): return {
+        guard case .storageInfoResponse(let l) = lhs, case .storageInfoResponse(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       case (.storageStatRequest, .storageStatRequest): return {
@@ -496,6 +570,10 @@ struct PB_Main {
       }()
       case (.storageMd5SumResponse, .storageMd5SumResponse): return {
         guard case .storageMd5SumResponse(let l) = lhs, case .storageMd5SumResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.storageRenameRequest, .storageRenameRequest): return {
+        guard case .storageRenameRequest(let l) = lhs, case .storageRenameRequest(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       case (.appStartRequest, .appStartRequest): return {
@@ -619,8 +697,13 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     3: .standard(proto: "has_next"),
     4: .same(proto: "empty"),
     19: .standard(proto: "stop_session"),
-    5: .standard(proto: "ping_request"),
-    6: .standard(proto: "ping_response"),
+    5: .standard(proto: "system_ping_request"),
+    6: .standard(proto: "system_ping_response"),
+    31: .standard(proto: "system_reboot_request"),
+    32: .standard(proto: "system_device_info_request"),
+    33: .standard(proto: "system_device_info_response"),
+    28: .standard(proto: "storage_info_request"),
+    29: .standard(proto: "storage_info_response"),
     24: .standard(proto: "storage_stat_request"),
     25: .standard(proto: "storage_stat_response"),
     7: .standard(proto: "storage_list_request"),
@@ -632,6 +715,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     13: .standard(proto: "storage_mkdir_request"),
     14: .standard(proto: "storage_md5sum_request"),
     15: .standard(proto: "storage_md5sum_response"),
+    30: .standard(proto: "storage_rename_request"),
     16: .standard(proto: "app_start_request"),
     17: .standard(proto: "app_lock_status_request"),
     18: .standard(proto: "app_lock_status_response"),
@@ -666,29 +750,29 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
         }
       }()
       case 5: try {
-        var v: PBStatus_PingRequest?
+        var v: PBSystem_PingRequest?
         var hadOneofValue = false
         if let current = self.content {
           hadOneofValue = true
-          if case .pingRequest(let m) = current {v = m}
+          if case .systemPingRequest(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {
           if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.content = .pingRequest(v)
+          self.content = .systemPingRequest(v)
         }
       }()
       case 6: try {
-        var v: PBStatus_PingResponse?
+        var v: PBSystem_PingResponse?
         var hadOneofValue = false
         if let current = self.content {
           hadOneofValue = true
-          if case .pingResponse(let m) = current {v = m}
+          if case .systemPingResponse(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {
           if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.content = .pingResponse(v)
+          self.content = .systemPingResponse(v)
         }
       }()
       case 7: try {
@@ -964,6 +1048,84 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .guiStopVirtualDisplayRequest(v)
         }
       }()
+      case 28: try {
+        var v: PBStorage_InfoRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .storageInfoRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .storageInfoRequest(v)
+        }
+      }()
+      case 29: try {
+        var v: PBStorage_InfoResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .storageInfoResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .storageInfoResponse(v)
+        }
+      }()
+      case 30: try {
+        var v: PBStorage_RenameRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .storageRenameRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .storageRenameRequest(v)
+        }
+      }()
+      case 31: try {
+        var v: PBSystem_RebootRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemRebootRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemRebootRequest(v)
+        }
+      }()
+      case 32: try {
+        var v: PBSystem_DeviceInfoRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemDeviceInfoRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemDeviceInfoRequest(v)
+        }
+      }()
+      case 33: try {
+        var v: PBSystem_DeviceInfoResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemDeviceInfoResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemDeviceInfoResponse(v)
+        }
+      }()
       default: break
       }
     }
@@ -988,12 +1150,12 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
       guard case .empty(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     }()
-    case .pingRequest?: try {
-      guard case .pingRequest(let v)? = self.content else { preconditionFailure() }
+    case .systemPingRequest?: try {
+      guard case .systemPingRequest(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     }()
-    case .pingResponse?: try {
-      guard case .pingResponse(let v)? = self.content else { preconditionFailure() }
+    case .systemPingResponse?: try {
+      guard case .systemPingResponse(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
     }()
     case .storageListRequest?: try {
@@ -1079,6 +1241,30 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .guiStopVirtualDisplayRequest?: try {
       guard case .guiStopVirtualDisplayRequest(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 27)
+    }()
+    case .storageInfoRequest?: try {
+      guard case .storageInfoRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 28)
+    }()
+    case .storageInfoResponse?: try {
+      guard case .storageInfoResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 29)
+    }()
+    case .storageRenameRequest?: try {
+      guard case .storageRenameRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 30)
+    }()
+    case .systemRebootRequest?: try {
+      guard case .systemRebootRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 31)
+    }()
+    case .systemDeviceInfoRequest?: try {
+      guard case .systemDeviceInfoRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 32)
+    }()
+    case .systemDeviceInfoResponse?: try {
+      guard case .systemDeviceInfoResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 33)
     }()
     case nil: break
     }
