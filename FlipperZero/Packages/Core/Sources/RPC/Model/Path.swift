@@ -40,3 +40,9 @@ public struct Path: Equatable, Hashable, Codable {
 extension Path: CustomStringConvertible {
     public var description: String { string }
 }
+
+extension Path: ExpressibleByStringInterpolation {
+    public init(stringLiteral: String) {
+        self.init(string: stringLiteral)
+    }
+}
