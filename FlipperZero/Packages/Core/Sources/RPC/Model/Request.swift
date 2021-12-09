@@ -1,6 +1,6 @@
 import SwiftProtobuf
 
-// swiftlint:disable nesting
+// swiftlint:disable nesting function_body_length
 
 public enum Request {
     case system(System)
@@ -19,6 +19,7 @@ public enum Request {
     }
 
     public enum Storage {
+        case info(Path)
         case list(Path)
         case read(Path)
         case write(Path, [UInt8])
@@ -70,6 +71,12 @@ extension Request.System {
 extension Request.Storage {
     func serialize() -> PB_Main {
         switch self {
+        case let .info(path):
+            return .with {
+                $0.storageInfoRequest = .with {
+                    $0.path = path.string
+                }
+            }
         case let .list(path):
             return .with {
                 $0.storageListRequest = .with {

@@ -1,5 +1,10 @@
 import struct Foundation.Data
 
+public struct StorageSpace: Equatable {
+    public let free: Int
+    public let total: Int
+}
+
 public enum Element: Equatable {
     case file(File)
     case directory(Directory)
@@ -29,6 +34,13 @@ public struct Directory: Equatable {
 
     public init(name: String) {
         self.name = name
+    }
+}
+
+extension StorageSpace {
+    init(_ info: PBStorage_InfoResponse) {
+        self.free = Int(info.freeSpace)
+        self.total = Int(info.totalSpace)
     }
 }
 

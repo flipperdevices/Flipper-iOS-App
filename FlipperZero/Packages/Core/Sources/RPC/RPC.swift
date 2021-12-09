@@ -46,6 +46,19 @@ public class RPC {
         _ = try await session?.send(.system(.reboot(mode)))
     }
 
+    public func getStorageInfo(
+        at path: Path,
+        priority: Priority? = nil
+    ) async throws -> StorageSpace {
+        let response = try await session?.send(
+            .storage(.info(path)),
+            priority: priority)
+        guard case .storage(.info(let result)) = response else {
+            throw Error.unexpectedResponse(response)
+        }
+        return result
+    }
+
     public func listDirectory(
         at path: Path,
         priority: Priority? = nil

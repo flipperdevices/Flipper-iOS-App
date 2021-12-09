@@ -13,6 +13,7 @@ public enum Response: Equatable {
     }
 
     public enum Storage: Equatable {
+        case info(StorageSpace)
         case list([Element])
         case file([UInt8])
         case hash(String)
@@ -22,11 +23,18 @@ public enum Response: Equatable {
 extension Response {
     init(decoding content: PB_Main.OneOf_Content) {
         switch content {
+
         case .empty(let response):
             self.init(decoding: response)
+
+        // System
         case .systemPingResponse(let response):
             self.init(decoding: response)
         case .systemDeviceInfoResponse(let response):
+            self.init(decoding: response)
+
+        // Storage
+        case .storageInfoResponse(let response):
             self.init(decoding: response)
         case .storageListResponse(let response):
             self.init(decoding: response)
@@ -34,6 +42,7 @@ extension Response {
             self.init(decoding: response)
         case .storageMd5SumResponse(let response):
             self.init(decoding: response)
+
         default:
             fatalError("unhandled response")
         }
@@ -49,6 +58,10 @@ extension Response {
 
     init(decoding response: PBSystem_DeviceInfoResponse) {
         self = .system(.info([response.key: response.value]))
+    }
+
+    init(decoding response: PBStorage_InfoResponse) {
+        self = .storage(.info(.init(response)))
     }
 
     init(decoding response: PBStorage_ListResponse) {
