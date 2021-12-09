@@ -112,6 +112,19 @@ public class RPC {
         }
     }
 
+    public func moveFile(
+        from: Path,
+        to: Path,
+        priority: Priority? = nil
+    ) async throws {
+        let response = try await session?.send(
+            .storage(.move(from, to)),
+            priority: priority)
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
     public func calculateFileHash(
         at path: Path,
         priority: Priority? = nil

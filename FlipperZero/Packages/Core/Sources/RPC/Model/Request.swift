@@ -24,6 +24,7 @@ public enum Request {
         case write(Path, [UInt8])
         case create(Path, isDirectory: Bool)
         case delete(Path, isForce: Bool)
+        case move(Path, Path)
         case hash(Path)
     }
 
@@ -106,6 +107,13 @@ extension Request.Storage {
                         $0.path = path.string
                         $0.file.data = .init()
                     }
+                }
+            }
+        case let .move(oldPath, newPath):
+            return .with {
+                $0.storageRenameRequest = .with {
+                    $0.oldPath = oldPath.string
+                    $0.newPath = newPath.string
                 }
             }
         case let .hash(path):
