@@ -16,6 +16,7 @@ class ArchiveViewModel: ObservableObject {
     @Published var status: Status = .noDevice
 
     @Published var archive: Archive = .shared
+    @Published var archiveBin: ArchiveBin = .shared
     @Published var sortOption: SortOption = .creationDate
     @Published var sheetManager: SheetManager = .shared
 

@@ -4,6 +4,7 @@ import Foundation
 
 public class Archive: ObservableObject {
     public static let shared: Archive = .init()
+    @Published public var bin: ArchiveBin = .init()
 
     @Inject var storage: ArchiveStorage
     @Inject var synchronization: SynchronizationProtocol
@@ -42,11 +43,31 @@ public class Archive: ObservableObject {
     }
 
     public func delete(_ item: ArchiveItem) {
-        updateStatus(of: item, to: .deleted)
+        if item.status != .imported {
+            updateStatus(of: item, to: .deleted)
+        } else {
+            bin.add(item)
+            items.removeAll { $0.id == item.id }
+        }
     }
 
     func delete(at path: Path) {
-        items.removeAll { $0.path == path }
+        let deletedItems = self.items.filter { $0.path == path }
+        bin.add(deletedItems)
+        items.removeAll { item in deletedItems.contains { item.id == $0.id } }
+    }
+
+    public func wipe(_ item: ArchiveItem) {
+        bin.items.removeAll { $0.id == item.id }
+    }
+
+    public func restore(_ item: ArchiveItem) {
+        items.removeAll { $0.id == item.id }
+        bin.items.removeAll { $0.id == item.id }
+
+        var item = item
+        item.status = .imported
+        replace(item)
     }
 
     public func favorite(_ item: ArchiveItem) {
@@ -68,6 +89,8 @@ public class Archive: ObservableObject {
         if !items.contains(where: {
             item.id == $0.id && item.content == $0.content
         }) {
+            var item = item
+            item.status = .imported
             replace(item)
         }
     }
@@ -79,6 +102,8 @@ public class Archive: ObservableObject {
 
         do {
             try await synchronization.syncWithDevice()
+            // syncronization ignores deleted files
+            items.removeAll { $0.status == .deleted }
         } catch {
             print("syncronization error", error)
         }

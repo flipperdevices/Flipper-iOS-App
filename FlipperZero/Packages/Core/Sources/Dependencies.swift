@@ -10,6 +10,7 @@ public func registerDependencies() {
     container.register(Synchronization.init, as: SynchronizationProtocol.self, isSingleton: true)
     container.register(JSONDeviceStorage.init, as: DeviceStorage.self, isSingleton: true)
     container.register(JSONArchiveStorage.init, as: ArchiveStorage.self, isSingleton: true)
+    container.register(JSONArchiveBinStorage.init, as: ArchiveBinStorage.self, isSingleton: true)
     container.register(JSONManifestStorage.init, as: ManifestStorage.self, isSingleton: true)
     container.register(IOSNFCService.init, as: NFCService.self)
 }
