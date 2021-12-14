@@ -1,14 +1,6 @@
 class PeripheralArchiveMock: PeripheralArchive {
-    var root: Path {
-        .init(string: "/")
-    }
-
-    var directories: [Path] {
-        []
-    }
-
-    func getFileHash(at path: Path) async throws -> Hash {
-        .init("")
+    func getManifest() async throws -> Manifest {
+        .init(items: [])
     }
 
     func list(at path: Path) async throws -> [Element] {
@@ -19,7 +11,7 @@ class PeripheralArchiveMock: PeripheralArchive {
         nil
     }
 
-    func write(_ item: ArchiveItem, at path: Path) async {
+    func write(_ item: ArchiveItem) async {
     }
 
     func delete(at path: Path) async throws {
