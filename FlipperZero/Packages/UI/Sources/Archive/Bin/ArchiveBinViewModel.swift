@@ -8,6 +8,10 @@ class ArchiveBinViewModel: ObservableObject {
     @Published var archive: Archive = .shared
     @Published var sheetManager: SheetManager = .shared
 
+    var items: [ArchiveItem] {
+        archive.items.filter { $0.status == .deleted }
+    }
+
     @Published var isActionPresented = false
     @Published var isDeletePresented = false
     @Published var selectedItems: [ArchiveItem] = []

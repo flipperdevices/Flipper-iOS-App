@@ -8,7 +8,7 @@ struct ArchiveBinView: View {
         VStack(spacing: 0) {
             ArchiveListView(
                 status: .noDevice,
-                items: viewModel.archive.bin.items,
+                items: viewModel.items,
                 hasFavorites: false,
                 isSelectItemsMode: $viewModel.isSelectItemsMode,
                 selectedItems: $viewModel.selectedItems,

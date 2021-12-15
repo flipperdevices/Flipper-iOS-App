@@ -4,7 +4,6 @@ import Foundation
 
 public class Archive: ObservableObject {
     public static let shared: Archive = .init()
-    @Published public var bin: ArchiveBin = .init()
 
     @Inject var storage: ArchiveStorage
     @Inject var synchronization: SynchronizationProtocol
@@ -43,44 +42,41 @@ public class Archive: ObservableObject {
     }
 
     public func delete(_ item: ArchiveItem) {
-        if item.status != .imported {
-            updateStatus(of: item, to: .deleted)
-        } else {
-            bin.add(item)
-            items.removeAll { $0.id == item.id }
-        }
+        updateStatus(of: item, to: .deleted)
     }
 
     func delete(at path: Path) {
-        let deletedItems = self.items.filter { $0.path == path }
-        bin.add(deletedItems)
-        items.removeAll { item in deletedItems.contains { item.id == $0.id } }
+        if let item = items.first(where: { $0.path == path }) {
+            updateStatus(of: item, to: .deleted)
+        }
     }
 
     public func wipe(_ item: ArchiveItem) {
-        bin.items.removeAll { $0.id == item.id }
+        items.removeAll { $0.id == item.id }
     }
 
     public func restore(_ item: ArchiveItem) {
-        items.removeAll { $0.id == item.id }
-        bin.items.removeAll { $0.id == item.id }
-
-        var item = item
-        item.status = .imported
-        replace(item)
+        let manifest = getManifest()
+        if let exising = manifest[item.path], exising.hash == item.hash {
+            updateStatus(of: item, to: .synchronizied)
+        } else {
+            updateStatus(of: item, to: .imported)
+        }
     }
 
     public func favorite(_ item: ArchiveItem) {
         if let index = items.firstIndex(where: { $0.id == item.id }) {
+            objectWillChange.send()
             items[index].isFavorite.toggle()
         }
     }
 
-    public func updateStatus(
+    func updateStatus(
         of item: ArchiveItem,
         to status: ArchiveItem.Status
     ) {
         if let index = items.firstIndex(where: { $0.id == item.id }) {
+            objectWillChange.send()
             items[index].status = status
         }
     }
@@ -102,23 +98,8 @@ public class Archive: ObservableObject {
 
         do {
             try await synchronization.syncWithDevice()
-            // syncronization ignores deleted files
-            items.removeAll { $0.status == .deleted }
         } catch {
             print("syncronization error", error)
-        }
-    }
-
-    private func updateItem(id: ArchiveItem.ID, with content: String) {
-        if let index = items.firstIndex(where: { $0.id == id }) {
-            guard let properties = [ArchiveItem.Property](text: content) else {
-                items[index].status = .error
-                return
-            }
-            var item = items[index]
-            item.properties = properties
-            item.status = .synchronizied
-            items[index] = item
         }
     }
 }
