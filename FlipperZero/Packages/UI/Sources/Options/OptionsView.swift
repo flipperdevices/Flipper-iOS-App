@@ -21,8 +21,7 @@ struct OptionsView: View {
 
                 Section(header: Text("Archive")) {
                     NavigationLink("Deleted Items") {
-                        ArchiveBinView(viewModel: .init(
-                            onSelectItemsModeChanded: viewModel.hideTabbar))
+                        ArchiveBinView(viewModel: .init())
                     }
                 }
 
