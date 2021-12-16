@@ -46,20 +46,37 @@ public class Archive: ObservableObject {
     }
 
     func delete(at path: Path) {
-        items.removeAll { $0.path == path }
+        if let item = items.first(where: { $0.path == path }) {
+            updateStatus(of: item, to: .deleted)
+        }
+    }
+
+    public func wipe(_ item: ArchiveItem) {
+        items.removeAll { $0.id == item.id }
+    }
+
+    public func restore(_ item: ArchiveItem) {
+        let manifest = getManifest()
+        if let exising = manifest[item.path], exising.hash == item.hash {
+            updateStatus(of: item, to: .synchronizied)
+        } else {
+            updateStatus(of: item, to: .imported)
+        }
     }
 
     public func favorite(_ item: ArchiveItem) {
         if let index = items.firstIndex(where: { $0.id == item.id }) {
+            objectWillChange.send()
             items[index].isFavorite.toggle()
         }
     }
 
-    public func updateStatus(
+    func updateStatus(
         of item: ArchiveItem,
         to status: ArchiveItem.Status
     ) {
         if let index = items.firstIndex(where: { $0.id == item.id }) {
+            objectWillChange.send()
             items[index].status = status
         }
     }
@@ -68,6 +85,8 @@ public class Archive: ObservableObject {
         if !items.contains(where: {
             item.id == $0.id && item.content == $0.content
         }) {
+            var item = item
+            item.status = .imported
             replace(item)
         }
     }
@@ -81,19 +100,6 @@ public class Archive: ObservableObject {
             try await synchronization.syncWithDevice()
         } catch {
             print("syncronization error", error)
-        }
-    }
-
-    private func updateItem(id: ArchiveItem.ID, with content: String) {
-        if let index = items.firstIndex(where: { $0.id == id }) {
-            guard let properties = [ArchiveItem.Property](text: content) else {
-                items[index].status = .error
-                return
-            }
-            var item = items[index]
-            item.properties = properties
-            item.status = .synchronizied
-            items[index] = item
         }
     }
 }

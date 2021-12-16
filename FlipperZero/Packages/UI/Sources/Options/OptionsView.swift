@@ -2,10 +2,12 @@ import Core
 import SwiftUI
 
 struct OptionsView: View {
+    @StateObject var viewModel: OptionsViewModel
+
     var body: some View {
         NavigationView {
-            VStack {
-                List {
+            List {
+                Section(header: Text("Utils")) {
                     NavigationLink("Protobuf ping") {
                         PingView(viewModel: .init())
                     }
@@ -17,12 +19,19 @@ struct OptionsView: View {
                     }
                 }
 
-                Button("Reboot Flipper") {
-                    Task {
-                        try await RPC.shared.reboot(to: .os)
+                Section(header: Text("Archive")) {
+                    NavigationLink("Deleted Items") {
+                        ArchiveBinView(viewModel: .init())
                     }
                 }
-                .padding(.bottom, 100)
+
+                Section(header: Text("Demo")) {
+                    Button("Reboot Flipper") {
+                        Task {
+                            try await RPC.shared.reboot(to: .os)
+                        }
+                    }
+                }
             }
             .navigationBarHidden(true)
         }

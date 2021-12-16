@@ -3,5 +3,9 @@ import Combine
 
 @MainActor
 public class OptionsViewModel: ObservableObject {
-    public init() {}
+    var hideTabbar: (Bool) -> Void = { _ in }
+
+    init(hideTabbar: @escaping (Bool) -> Void = { _ in }) {
+        self.hideTabbar = hideTabbar
+    }
 }

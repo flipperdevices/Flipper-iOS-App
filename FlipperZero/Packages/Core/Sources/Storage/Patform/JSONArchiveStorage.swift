@@ -7,7 +7,7 @@ class JSONArchiveStorage: ArchiveStorage {
     }
 
     init() {
-        storage = .init(for: Peripheral.self, filename: "archive")
+        storage = .init(for: [ArchiveItem].self, filename: "archive")
     }
 
     func read() -> [ArchiveItem] {

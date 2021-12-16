@@ -24,14 +24,16 @@ class ArchiveViewModel: ObservableObject {
     }
 
     var items: [ArchiveItem] {
-        archive.items.sorted {
-            switch sortOption {
-            case .creationDate: return $0.date > $1.date
-            case .title: return $0.name < $1.name
-            case .oldestFirst: return $0.date < $1.date
-            case .newestFirst: return $0.date > $1.date
+        archive.items
+            .filter { $0.status != .deleted }
+            .sorted {
+                switch sortOption {
+                case .creationDate: return $0.date > $1.date
+                case .title: return $0.name < $1.name
+                case .oldestFirst: return $0.date < $1.date
+                case .newestFirst: return $0.date > $1.date
+                }
             }
-        }
     }
 
     @Published var selectedCategoryIndex = 0

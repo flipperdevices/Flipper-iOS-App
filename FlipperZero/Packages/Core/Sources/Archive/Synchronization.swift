@@ -47,7 +47,7 @@ class Synchronization: SynchronizationProtocol {
             print("update on peripheral", path)
             guard let item = archive.items.first(where: { $0.path == path })
             else { return }
-            try await peripheralArchive.write(item, at: path)
+            try await peripheralArchive.write(item)
             archive.updateStatus(of: item, to: .synchronizied)
         }
 
