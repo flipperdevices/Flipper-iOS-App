@@ -85,10 +85,10 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     }
 
     func didConnect(_ peripheral: CBPeripheral) {
-        if let device = FlipperPeripheral(peripheral) {
-            connectedPeripheralsMap[peripheral.identifier] = device
-            device.onConnect()
-        }
+        let identifier = peripheral.identifier
+        let device = connectedPeripheralsMap[identifier] ?? .init(peripheral)
+        connectedPeripheralsMap[identifier] = device
+        device?.onConnect()
     }
 
     func didDisconnect(_ peripheral: CBPeripheral) {
