@@ -78,8 +78,6 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     func disconnect(from identifier: UUID) {
         manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
             manager.cancelPeripheralConnection($0)
-            // publish disconnecting state for BluetoothConnector subscribers
-            connectedPeripheralsMap[$0.identifier] = .init($0)
             connectedPeripheralsMap[$0.identifier] = nil
         }
     }
@@ -93,7 +91,6 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
 
     func didDisconnect(_ peripheral: CBPeripheral) {
         if let device = connectedPeripheralsMap[peripheral.identifier] {
-            // publish disconnected state for BluetoothConnector subscribers
             connectedPeripheralsMap[peripheral.identifier] = nil
             device.onDisconnect()
             connect(to: peripheral.identifier)
