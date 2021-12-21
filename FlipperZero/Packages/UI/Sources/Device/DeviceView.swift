@@ -176,7 +176,7 @@ struct DeviceImageNameModelBattery: View {
     let device: Peripheral
 
     var flipperImage: String {
-        device.information?.firmwareRevision == "7"
+        device.color == .black
             ? "FlipperBlack"
             : "FlipperWhite"
     }

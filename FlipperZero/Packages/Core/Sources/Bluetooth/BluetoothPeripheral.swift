@@ -4,6 +4,7 @@ import struct Foundation.UUID
 public protocol BluetoothPeripheral: AnyObject {
     var id: UUID { get }
     var name: String { get }
+    var color: Peripheral.Color { get }
     var state: Peripheral.State { get }
     var services: [Peripheral.Service] { get }
 

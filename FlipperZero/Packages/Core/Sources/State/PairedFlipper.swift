@@ -14,13 +14,7 @@ class PairedFlipper: PairedDevice, ObservableObject {
         didSet {
             if let flipper = flipper {
                 subscribeToUpdates()
-                // we don't have device info on connect
-                // but we want to save the previous one
-                var peripheral = Peripheral(flipper)
-                if peripheral.information == nil,
-                    let info = peripheralSubject.value?.information {
-                    peripheral.information = info
-                }
+                let peripheral = merge(peripheralSubject.value, flipper)
                 storage.pairedDevice = peripheral
                 peripheralSubject.value = peripheral
             } else {
@@ -42,6 +36,28 @@ class PairedFlipper: PairedDevice, ObservableObject {
         }
 
         saveLastConnectedDeviceOnConnect()
+    }
+
+    func merge(
+        _ peripheral: Peripheral?,
+        _ bluetoothPeripheral: BluetoothPeripheral
+    ) -> Peripheral {
+        var peripheral = Peripheral(bluetoothPeripheral)
+        guard let current = peripheralSubject.value else {
+            return peripheral
+        }
+
+        // we don't have color on connect
+        // so we have to copy initial value
+        peripheral.color = current.color
+
+        // we don't have device info on connect
+        // and we want to keep the existing one
+        if peripheral.information == nil, let info = current.information {
+            peripheral.information = info
+        }
+
+        return peripheral
     }
 
     func reconnectOnBluetoothReady(to uuid: UUID) {
