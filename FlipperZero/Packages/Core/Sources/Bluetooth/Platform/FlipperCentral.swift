@@ -28,6 +28,8 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
         self.peripheralsSubject.eraseToAnyPublisher()
     }
 
+    private var colorService: [UUID: CBUUID] = [:]
+
     private var peripheralsMap: OrderedDictionary<UUID, FlipperPeripheral> = [:] {
         didSet { publishPeripherals() }
     }
@@ -68,7 +70,11 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     func connect(to identifier: UUID) {
         manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
             manager.connect($0)
-            connectedPeripheralsMap[$0.identifier] = .init($0)
+
+            connectedPeripheralsMap[$0.identifier] = .init(
+                peripheral: $0,
+                colorService: colorService[$0.identifier])
+
             manager.registerForConnectionEvents(options: [
                 .peripheralUUIDs: [$0.identifier]
             ])
@@ -78,22 +84,18 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     func disconnect(from identifier: UUID) {
         manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
             manager.cancelPeripheralConnection($0)
-            // publish disconnecting state for BluetoothConnector subscribers
-            connectedPeripheralsMap[$0.identifier] = .init($0)
             connectedPeripheralsMap[$0.identifier] = nil
         }
     }
 
     func didConnect(_ peripheral: CBPeripheral) {
-        if let device = FlipperPeripheral(peripheral) {
-            connectedPeripheralsMap[peripheral.identifier] = device
-            device.onConnect()
-        }
+        assert(connectedPeripheralsMap[peripheral.identifier] != nil)
+        publishConnectedPeripherals()
+        connectedPeripheralsMap[peripheral.identifier]?.onConnect()
     }
 
     func didDisconnect(_ peripheral: CBPeripheral) {
         if let device = connectedPeripheralsMap[peripheral.identifier] {
-            // publish disconnected state for BluetoothConnector subscribers
             connectedPeripheralsMap[peripheral.identifier] = nil
             device.onDisconnect()
             connect(to: peripheral.identifier)
@@ -122,7 +124,12 @@ extension FlipperCentral: CBCentralManagerDelegate {
         advertisementData: [String: Any],
         rssi: NSNumber
     ) {
-        self.peripheralsMap[peripheral.identifier] = .init(peripheral)
+        self.colorService[peripheral.identifier] =
+            (advertisementData["kCBAdvDataServiceUUIDs"] as? [CBUUID])?.first
+
+        self.peripheralsMap[peripheral.identifier] = .init(
+            peripheral: peripheral,
+            colorService: colorService[peripheral.identifier])
     }
 }
 

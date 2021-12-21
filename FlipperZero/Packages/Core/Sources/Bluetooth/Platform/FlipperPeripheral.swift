@@ -5,6 +5,7 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
 
     var id: UUID
     var name: String
+    var color: Peripheral.Color
 
     var freeSpace = 0
 
@@ -37,12 +38,16 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     fileprivate let canWriteSubject = SafeSubject<Void>()
     fileprivate let receivedDataSubject = SafeSubject<Data>()
 
-    init?(_ peripheral: CBPeripheral) {
+    init?(
+        peripheral: CBPeripheral,
+        colorService service: CBUUID? = nil
+    ) {
         guard let name = peripheral.name, name.starts(with: "Flipper ") else {
             return nil
         }
         self.id = peripheral.identifier
         self.name = String(name.dropFirst("Flipper ".count))
+        self.color = .init(service)
         self.peripheral = peripheral
         super.init()
         self.peripheral.delegate = self
@@ -147,6 +152,16 @@ fileprivate extension CBPeripheral {
             .first { $0.uuid == .serial }?
             .characteristics?
             .first { $0.uuid == .serialWrite }
+    }
+}
+
+extension Peripheral.Color {
+    init(_ service: CBUUID?) {
+        switch service {
+        case .some(.flipperZeroBlack): self = .black
+        case .some(.flipperZeroWhite): self = .white
+        default: self = .unknown
+        }
     }
 }
 

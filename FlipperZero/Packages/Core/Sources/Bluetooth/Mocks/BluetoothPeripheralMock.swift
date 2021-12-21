@@ -3,6 +3,7 @@ import Foundation
 class BluetoothPeripheralMock: BluetoothPeripheral {
     var id: UUID
     var name: String
+    var color: Peripheral.Color
 
     var state: Peripheral.State = .disconnected
 
@@ -40,9 +41,14 @@ class BluetoothPeripheralMock: BluetoothPeripheral {
     fileprivate let canWriteSubject = SafeSubject<Void>()
     fileprivate let receivedDataSubject = SafeSubject<Data>()
 
-    init(id: UUID = .init(), name: String = "FlipMock") {
+    init(
+        id: UUID = .init(),
+        name: String = "FlipMock",
+        color: Peripheral.Color = .unknown
+    ) {
         self.id = id
         self.name = name
+        self.color = color
     }
 
     func onConnect() {

@@ -5,19 +5,28 @@ import struct Foundation.UUID
 public struct Peripheral: Equatable, Codable, Identifiable {
     public let id: UUID
     public let name: String
+    public var color: Color
     public var state: State = .disconnected
     public var information: Service.DeviceInformation?
     public var battery: Service.Battery?
 
+    public enum Color: Codable {
+        case unknown
+        case black
+        case white
+    }
+
     public init(
         id: UUID,
         name: String,
+        color: Color,
         state: Peripheral.State = .disconnected,
         information: Service.DeviceInformation? = nil,
         battery: Service.Battery? = nil
     ) {
         self.id = id
         self.name = name
+        self.color = color
         self.state = state
         self.information = information
         self.battery = battery
@@ -55,6 +64,7 @@ public extension Peripheral {
     init(_ source: BluetoothPeripheral) {
         self.id = source.id
         self.name = source.name
+        self.color = source.color
         self.state = source.state
 
         self.information = source.services
