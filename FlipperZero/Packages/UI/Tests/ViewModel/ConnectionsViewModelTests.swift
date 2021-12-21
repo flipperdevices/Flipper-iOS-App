@@ -47,7 +47,7 @@ class ConnectionsViewModelTests: XCTestCase {
         await self.waitForExpectations(timeout: 0.1)
         state = await target.state
         XCTAssertEqual(state, .ready)
-        let peripheral = Peripheral(id: UUID(), name: "Device 42", state: .disconnected)
+        let peripheral = Peripheral(id: UUID(), name: "Device 42", color: .unknown, state: .disconnected)
         let bluetoothPeripheral = MockPeripheral(id: peripheral.id, name: peripheral.name, state: .disconnected)
         connector.peripheralsSubject.value.append(bluetoothPeripheral)
         let peripherals = await target.peripherals
@@ -71,6 +71,7 @@ class ConnectionsViewModelTests: XCTestCase {
 private class MockPeripheral: BluetoothPeripheral {
     var id: UUID
     var name: String = ""
+    var color: Peripheral.Color = .unknown
     var state: Peripheral.State = .disconnected
     var services: [Peripheral.Service] = []
 

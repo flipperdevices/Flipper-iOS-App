@@ -4,8 +4,8 @@ import XCTest
 
 class PeripheralTests: XCTestCase {
     func testEquatable() {
-        let first = Peripheral(id: UUID(), name: "first")
-        let second = Peripheral(id: first.id, name: "second")
+        let first = Peripheral(id: UUID(), name: "first", color: .unknown)
+        let second = Peripheral(id: first.id, name: "second", color: .unknown)
 
         XCTAssertNotEqual(first, second)
     }
