@@ -44,7 +44,7 @@ class ArchiveViewModel: ObservableObject {
     }
     var onSelectItemsModeChanded: (Bool) -> Void = { _ in }
 
-    @Published var editingItem: ArchiveItem = .none
+    @Published var editingItem: EditingItem = .none
 
     var categories: [String] = [
         "All", "RFID 125", "Sub-GHz", "NFC", "iButton", "Infrared"
@@ -143,7 +143,7 @@ class ArchiveViewModel: ObservableObject {
                 isSelectItemsMode = false
             }
         case false:
-            archive.delete(editingItem)
+            archive.delete(editingItem.id)
             sheetManager.dismiss()
             editingItem = .none
         }
@@ -159,18 +159,30 @@ class ArchiveViewModel: ObservableObject {
 
     func favorite() {
         editingItem.isFavorite.toggle()
-        archive.favorite(editingItem)
+        archive.favorite(editingItem.id)
     }
 
     func saveChanges() {
         self.objectWillChange.send()
-        editingItem.status = .modified
-        archive.replace(editingItem)
+        editingItem.value.status = .modified
+
+        guard editingItem.isRenamed else {
+            archive.upsert(editingItem.value)
+            return
+        }
+
+        let name = editingItem.name.filterInvalidCharacters()
+        if archive.items.contains(where: { $0.name.value == name }) {
+            undoChanges()
+        } else {
+            archive.upsert(editingItem.value)
+            archive.rename(editingItem.id, to: name)
+        }
     }
 
     func undoChanges() {
         if let item = items.first(where: { $0.id == editingItem.id }) {
-            editingItem = item
+            editingItem = .init(item)
         }
     }
 }
@@ -178,11 +190,20 @@ class ArchiveViewModel: ObservableObject {
 extension ArchiveItem {
     static var none: Self {
         .init(
-            id: .none,
             name: "",
             fileType: .ibutton,
             properties: [],
             isFavorite: false,
             status: .synchronizied)
+    }
+}
+
+fileprivate extension String {
+    var allowed: [Character] { .init("abcdefghijklmnopqrstuvwxyz1234567890_") }
+
+    func filterInvalidCharacters() -> String {
+        guard !isEmpty else { return "" }
+        let name = lowercased().filter { allowed.contains($0) }
+        return name.prefix(1).uppercased() + name.dropFirst()
     }
 }

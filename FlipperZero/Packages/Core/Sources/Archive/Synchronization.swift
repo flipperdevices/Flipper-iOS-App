@@ -39,7 +39,7 @@ class Synchronization: SynchronizationProtocol {
                 print("invalid item")
                 return
             }
-            archive.replace(item)
+            archive.upsert(item)
             archive.updateStatus(of: item, to: .synchronizied)
         }
 
@@ -53,18 +53,18 @@ class Synchronization: SynchronizationProtocol {
 
         func deleteOnMobile(at path: Path) async throws {
             print("delete on mobile", path)
-            archive.delete(at: path)
+            archive.delete(.init(path: path))
         }
 
         func deleteOnPeripheral(at path: Path) async throws {
             print("delete on peripheral", path)
             try await peripheralArchive.delete(at: path)
-            archive.delete(at: path)
+            archive.delete(.init(path: path))
         }
 
         func keepBoth(at path: Path) async throws {
             print("keep both", path)
-            guard let newItem = archive.duplicate(at: path) else {
+            guard let newItem = archive.duplicate(.init(path: path)) else {
                 return
             }
             try await updateOnPeripheral(at: newItem.path)

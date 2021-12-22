@@ -88,3 +88,9 @@ fileprivate extension ArchiveItem {
         self.init(fileName: fileName, content: content, status: .imported)
     }
 }
+
+extension ArchiveItem {
+    var path: Path {
+        .init(components: ["ext", fileType.directory, fileName])
+    }
+}

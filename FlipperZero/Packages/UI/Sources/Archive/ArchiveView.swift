@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import Combine
 
 struct ArchiveView: View {
     @StateObject var viewModel: ArchiveViewModel
@@ -51,7 +52,7 @@ struct ArchiveView: View {
         if viewModel.isSelectItemsMode {
             viewModel.selectItem(item)
         } else {
-            viewModel.editingItem = item
+            viewModel.editingItem = .init(item)
             viewModel.sheetManager.present {
                 CardSheetView(viewModel: viewModel)
             }
