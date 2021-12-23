@@ -2,8 +2,8 @@ import Foundation
 
 public struct ArchiveItem: Codable, Equatable, Identifiable {
     public let id: ID
-    public var name: Name
-    public var fileType: FileType
+    public let name: Name
+    public let fileType: FileType
     public var properties: [Property]
     public var isFavorite: Bool
     public var status: Status
@@ -16,8 +16,12 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
 
         private init() { value = nil }
 
-        init(_ path: Path) {
-            value = path.string
+        init(name: Name, fileType: FileType) {
+            self.value = "\(name.value).\(fileType.extension)"
+        }
+
+        init(path: Path) {
+            self.value = path.components.last
         }
     }
 
@@ -32,6 +36,10 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
 
     public struct Name: Codable, Equatable {
         public var value: String
+
+        public init(_ value: String) {
+            self.value = value
+        }
     }
 
     public struct Property: Codable, Equatable {
@@ -49,7 +57,6 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
     }
 
     public init(
-        id: ID,
         name: Name,
         fileType: FileType,
         properties: [Property],
@@ -57,13 +64,24 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
         status: Status,
         date: Date = .init()
     ) {
-        self.id = id
+        self.id = .init(name: name, fileType: fileType)
         self.name = name
         self.fileType = fileType
         self.isFavorite = isFavorite
         self.properties = properties
         self.status = status
         self.date = date
+    }
+}
+
+extension ArchiveItem {
+    public func rename(to name: Name) -> ArchiveItem {
+        .init(
+            name: name,
+            fileType: fileType,
+            properties: properties,
+            isFavorite: isFavorite,
+            status: status)
     }
 }
 

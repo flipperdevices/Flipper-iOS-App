@@ -36,7 +36,11 @@ public class Archive: ObservableObject {
         return .init(items: items)
     }
 
-    public func replace(_ item: ArchiveItem) {
+    public func find(_ id: ArchiveItem.ID) -> ArchiveItem? {
+        items.first { $0.id == id }
+    }
+
+    public func upsert(_ item: ArchiveItem) {
         items.removeAll { $0.id == item.id }
         items.append(item)
     }
@@ -45,14 +49,26 @@ public class Archive: ObservableObject {
         updateStatus(of: item, to: .deleted)
     }
 
-    func delete(at path: Path) {
-        if let item = item(at: path) {
+    public func delete(_ id: ArchiveItem.ID) {
+        if let item = find(id) {
             updateStatus(of: item, to: .deleted)
         }
     }
 
     public func wipe(_ item: ArchiveItem) {
         items.removeAll { $0.id == item.id }
+    }
+
+    public func wipe(_ id: ArchiveItem.ID) {
+        items.removeAll { $0.id == id }
+    }
+
+    public func rename(_ id: ArchiveItem.ID, to name: String) {
+        if let item = find(id) {
+            let newItem = item.rename(to: .init(name))
+            items.removeAll { $0.id == item.id }
+            items.append(newItem)
+        }
     }
 
     public func restore(_ item: ArchiveItem) {
@@ -64,46 +80,43 @@ public class Archive: ObservableObject {
         }
     }
 
-    public func duplicate(at path: Path) -> ArchiveItem? {
-        guard let item = item(at: path) else {
+    public func duplicate(_ id: ArchiveItem.ID) -> ArchiveItem? {
+        guard let item = find(id) else {
             return nil
         }
         let newName = "\(item.name.value)_\(Date().timestamp)"
-        guard let newItem = item.rename(to: newName) else {
-            return nil
-        }
+        let newItem = item.rename(to: .init(newName))
         items.append(newItem)
         return newItem
     }
 
-    public func favorite(_ item: ArchiveItem) {
-        if let index = items.firstIndex(where: { $0.id == item.id }) {
+    public func favorite(_ id: ArchiveItem.ID) {
+        if let index = items.firstIndex(where: { $0.id == id }) {
             objectWillChange.send()
             items[index].isFavorite.toggle()
         }
     }
 
-    func item(at path: Path) -> ArchiveItem? {
-        items.first { $0.path == path }
+    func updateStatus(of item: ArchiveItem, to status: ArchiveItem.Status) {
+        updateStatus(of: item.id, to: status)
     }
 
-    func updateStatus(
-        of item: ArchiveItem,
-        to status: ArchiveItem.Status
-    ) {
-        if let index = items.firstIndex(where: { $0.id == item.id }) {
+    func updateStatus(of id: ArchiveItem.ID, to status: ArchiveItem.Status) {
+        if let index = items.firstIndex(where: { $0.id == id }) {
             objectWillChange.send()
             items[index].status = status
         }
     }
 
     public func importKey(_ item: ArchiveItem) {
-        if !items.contains(where: {
-            item.id == $0.id && item.content == $0.content
-        }) {
+        let isExist = items
+            .filter { $0.status != .deleted }
+            .contains { item.id == $0.id && item.content == $0.content }
+
+        if !isExist {
             var item = item
             item.status = .imported
-            replace(item)
+            upsert(item)
         }
     }
 
@@ -120,25 +133,8 @@ public class Archive: ObservableObject {
     }
 }
 
-fileprivate extension ArchiveItem {
-    func rename(to name: String) -> ArchiveItem? {
-        .init(
-            fileName: "\(name).\(fileType.extension)",
-            content: content,
-            status: status)
-    }
-}
-
 fileprivate extension Date {
     var timestamp: Int {
         Int(Date().timeIntervalSince1970)
-    }
-}
-
-// FIXME: Doesn't belong here
-
-extension ArchiveItem {
-    var path: Path {
-        .init(components: ["ext", fileType.directory, fileName])
     }
 }

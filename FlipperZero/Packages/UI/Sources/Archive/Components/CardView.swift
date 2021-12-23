@@ -64,7 +64,8 @@ struct CardSheetView: View {
                 }
 
                 Card(
-                    item: $viewModel.editingItem,
+                    name: $viewModel.editingItem.name,
+                    item: $viewModel.editingItem.value,
                     isEditMode: $isEditMode,
                     focusedField: $focusedField
                 )
@@ -73,7 +74,7 @@ struct CardSheetView: View {
                 .padding(.horizontal, 16)
 
                 if !isEditMode {
-                    ActionsForm(actions: viewModel.editingItem.actions) { id in
+                    ActionsForm(actions: viewModel.editingItem.value.actions) { id in
                         print("action \(id) selected")
                     }
                 }
@@ -87,10 +88,17 @@ struct CardSheetView: View {
             .background(isFullScreen ? systemBackground : sheetBackgroundColor)
             .cornerRadius(isFullScreen ? 0 : 12)
         }
+        // handle keyboard disappear
+        .onChange(of: focusedField) {
+            if $0.isEmpty {
+                viewModel.undoChanges()
+            }
+        }
     }
 }
 
 struct Card: View {
+    @Binding var name: String
     @Binding var item: ArchiveItem
     @Binding var isEditMode: Bool
     @Binding var focusedField: String
@@ -109,7 +117,7 @@ struct Card: View {
         ZStack {
             VStack(alignment: .leading, spacing: 0) {
                 CardHeaderView(
-                    name: $item.name.value,
+                    name: $name,
                     image: item.icon,
                     isEditMode: $isEditMode,
                     focusedField: $focusedField
@@ -193,14 +201,13 @@ struct CardHeaderView: View {
 
     var body: some View {
         HStack {
-            // CardTextField(
-            //     title: "name",
-            //     text: $name,
-            //     isEditMode: $isEditMode,
-            //     focusedField: $focusedField
-            // )
-            Text(name)
-                .font(.system(size: 22).weight(.bold))
+            CardTextField(
+                title: "name",
+                text: $name,
+                isEditMode: $isEditMode,
+                focusedField: $focusedField
+            )
+            .font(.system(size: 22).weight(.bold))
 
             Spacer()
 
@@ -257,7 +264,7 @@ struct CardActions: View {
                     // MARK: Share as file
 
                     Button {
-                        share(viewModel.editingItem, shareOption: .file)
+                        share(viewModel.editingItem.value, shareOption: .file)
                     } label: {
                         Image(systemName: "square.and.arrow.up")
                     }
