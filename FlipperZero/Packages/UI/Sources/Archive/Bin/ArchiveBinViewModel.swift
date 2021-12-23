@@ -5,17 +5,47 @@ import SwiftUI
 
 @MainActor
 class ArchiveBinViewModel: ObservableObject {
+    @Inject var pairedDevice: PairedDevice
     @Published var archive: Archive = .shared
-    @Published var sheetManager: SheetManager = .shared
 
     var items: [ArchiveItem] {
         archive.items.filter { $0.status == .deleted }
     }
 
+    @Published var device: Peripheral? {
+        didSet { status = .init(device?.state) }
+    }
+    @Published var status: Status = .noDevice
+
     @Published var isActionPresented = false
     @Published var selectedItem: ArchiveItem = .none
 
-    init() {}
+    var disposeBag: DisposeBag = .init()
+
+    init() {
+        pairedDevice.peripheral
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] item in
+                self?.device = item
+            }
+            .store(in: &disposeBag)
+
+        archive.$isSynchronizing
+            .receive(on: DispatchQueue.main)
+            .sink { isSynchronizing in
+                self.status = isSynchronizing
+                    ? .synchronizing
+                    : .init(self.device?.state)
+            }
+            .store(in: &disposeBag)
+    }
+
+    func synchronize() {
+        guard status == .connected else { return }
+        Task {
+            await archive.syncWithDevice()
+        }
+    }
 
     func deleteSelectedItems() {
         guard selectedItem != .none else {
@@ -29,5 +59,6 @@ class ArchiveBinViewModel: ObservableObject {
             return
         }
         archive.restore(selectedItem)
+        synchronize()
     }
 }

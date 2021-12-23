@@ -178,6 +178,8 @@ class ArchiveViewModel: ObservableObject {
             archive.upsert(editingItem.value)
             archive.rename(editingItem.id, to: name)
         }
+
+        synchronize()
     }
 
     func undoChanges() {
