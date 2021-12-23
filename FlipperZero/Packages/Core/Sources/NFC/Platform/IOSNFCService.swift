@@ -61,15 +61,14 @@ fileprivate extension ArchiveItem {
     init?(_ tag: NFCTag) {
         switch tag {
         case let .miFare(tag):
-            // FIXME:
-            let hex = tag.identifier.hexString
-            id = .init(.init(components: ["ext", "nfc", "\(hex).nfc"]))
-            name = .init(value: hex)
-            fileType = .nfc
-            properties = [.init(key: "id", value: tag.identifier.hexString)]
-            isFavorite = false
-            status = .imported
-            date = .init()
+            self.init(
+                name: .init("scan_\(Int(Date().timeIntervalSince1970))"),
+                fileType: .nfc,
+                properties: [
+                    .init(key: "UID", value: tag.identifier.hexString)
+                ],
+                isFavorite: false,
+                status: .imported)
         default:
             return nil
         }
