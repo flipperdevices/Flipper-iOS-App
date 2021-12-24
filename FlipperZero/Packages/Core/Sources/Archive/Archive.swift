@@ -46,7 +46,7 @@ public class Archive: ObservableObject {
     }
 
     func delete(at path: Path) {
-        if let item = items.first(where: { $0.path == path }) {
+        if let item = item(at: path) {
             updateStatus(of: item, to: .deleted)
         }
     }
@@ -64,11 +64,27 @@ public class Archive: ObservableObject {
         }
     }
 
+    public func duplicate(at path: Path) -> ArchiveItem? {
+        guard let item = item(at: path) else {
+            return nil
+        }
+        let newName = "\(item.name.value)_\(Date().timestamp)"
+        guard let newItem = item.rename(to: newName) else {
+            return nil
+        }
+        items.append(newItem)
+        return newItem
+    }
+
     public func favorite(_ item: ArchiveItem) {
         if let index = items.firstIndex(where: { $0.id == item.id }) {
             objectWillChange.send()
             items[index].isFavorite.toggle()
         }
+    }
+
+    func item(at path: Path) -> ArchiveItem? {
+        items.first { $0.path == path }
     }
 
     func updateStatus(
@@ -103,6 +119,23 @@ public class Archive: ObservableObject {
         }
     }
 }
+
+fileprivate extension ArchiveItem {
+    func rename(to name: String) -> ArchiveItem? {
+        .init(
+            fileName: "\(name).\(fileType.extension)",
+            content: content,
+            status: status)
+    }
+}
+
+fileprivate extension Date {
+    var timestamp: Int {
+        Int(Date().timeIntervalSince1970)
+    }
+}
+
+// FIXME: Doesn't belong here
 
 extension ArchiveItem {
     var path: Path {

@@ -62,13 +62,22 @@ class Synchronization: SynchronizationProtocol {
             archive.delete(at: path)
         }
 
+        func keepBoth(at path: Path) async throws {
+            print("keep both", path)
+            guard let newItem = archive.duplicate(at: path) else {
+                return
+            }
+            try await updateOnPeripheral(at: newItem.path)
+            try await updateOnMobile(at: path)
+        }
+
         for (path, action) in result {
             switch action {
             case .update(.mobile): try await updateOnMobile(at: path)
             case .delete(.mobile): try await deleteOnMobile(at: path)
             case .update(.peripheral): try await updateOnPeripheral(at: path)
             case .delete(.peripheral): try await deleteOnPeripheral(at: path)
-            case .conflict: print("confilct at", path)
+            case .conflict: try await keepBoth(at: path)
             }
         }
 
