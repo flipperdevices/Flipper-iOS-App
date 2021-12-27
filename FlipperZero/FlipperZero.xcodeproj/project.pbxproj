@@ -15,9 +15,23 @@
 		8BA57F1F273AD21D00A3A33B /* rfid.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1A273AD21D00A3A33B /* rfid.png */; };
 		8BA57F20273AD21D00A3A33B /* subhz.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1B273AD21D00A3A33B /* subhz.png */; };
 		8BA57F21273AD21D00A3A33B /* irda.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1C273AD21D00A3A33B /* irda.png */; };
+		8BCFDDDF277A2405002DA4CD /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BCFDDDE277A2405002DA4CD /* QuickLook.framework */; platformFilter = maccatalyst; };
+		8BCFDDE2277A2405002DA4CD /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE1277A2405002DA4CD /* PreviewViewController.swift */; };
+		8BCFDDE4277A2405002DA4CD /* PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE3277A2405002DA4CD /* PreviewProvider.swift */; };
+		8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8BCFDDE9277A2405002DA4CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0DBFA1524EF2F9600EB2880 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8BCFDDDC277A2405002DA4CD;
+			remoteInfo = KeyPreview;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		44A5B5B624F05FCE009EE7FB /* Embed Frameworks */ = {
@@ -28,6 +42,17 @@
 			files = (
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BCFDDEC277A2405002DA4CD /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -47,6 +72,11 @@
 		8BA57F1A273AD21D00A3A33B /* rfid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rfid.png; sourceTree = "<group>"; };
 		8BA57F1B273AD21D00A3A33B /* subhz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = subhz.png; sourceTree = "<group>"; };
 		8BA57F1C273AD21D00A3A33B /* irda.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = irda.png; sourceTree = "<group>"; };
+		8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = KeyPreview.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		8BCFDDDE277A2405002DA4CD /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
+		8BCFDDE1277A2405002DA4CD /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
+		8BCFDDE3277A2405002DA4CD /* PreviewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewProvider.swift; sourceTree = "<group>"; };
+		8BCFDDE8277A2405002DA4CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8BED6143270B66D8009E51E2 /* perform_lint.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -55,6 +85,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		8BCFDDDA277A2405002DA4CD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8BCFDDDF277A2405002DA4CD /* QuickLook.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F0DBFA1E24EF2F9900EB2880 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -70,6 +108,7 @@
 		44A5B5B124F05FCE009EE7FB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8BCFDDDE277A2405002DA4CD /* QuickLook.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -94,6 +133,16 @@
 				8BA57F1B273AD21D00A3A33B /* subhz.png */,
 			);
 			path = FileIcons;
+			sourceTree = "<group>";
+		};
+		8BCFDDE0277A2405002DA4CD /* KeyPreview */ = {
+			isa = PBXGroup;
+			children = (
+				8BCFDDE1277A2405002DA4CD /* PreviewViewController.swift */,
+				8BCFDDE3277A2405002DA4CD /* PreviewProvider.swift */,
+				8BCFDDE8277A2405002DA4CD /* Info.plist */,
+			);
+			path = KeyPreview;
 			sourceTree = "<group>";
 		};
 		8BED6139270B617B009E51E2 /* SwiftLint */ = {
@@ -147,6 +196,7 @@
 				F0DBFA2324EF2F9900EB2880 /* iOS */,
 				F0DBFA1924EF2F9600EB2880 /* Shared */,
 				8BED6139270B617B009E51E2 /* SwiftLint */,
+				8BCFDDE0277A2405002DA4CD /* KeyPreview */,
 				F0DBFA2224EF2F9900EB2880 /* Products */,
 				44A5B5B124F05FCE009EE7FB /* Frameworks */,
 			);
@@ -165,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */,
+				8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -183,6 +234,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		8BCFDDDC277A2405002DA4CD /* KeyPreview */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8BCFDDEF277A2405002DA4CD /* Build configuration list for PBXNativeTarget "KeyPreview" */;
+			buildPhases = (
+				8BCFDDD9277A2405002DA4CD /* Sources */,
+				8BCFDDDA277A2405002DA4CD /* Frameworks */,
+				8BCFDDDB277A2405002DA4CD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KeyPreview;
+			productName = KeyPreview;
+			productReference = 8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		F0DBFA2024EF2F9900EB2880 /* FlipperZero(iOS) */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(iOS)" */;
@@ -192,10 +260,12 @@
 				F0DBFA1E24EF2F9900EB2880 /* Frameworks */,
 				F0DBFA1F24EF2F9900EB2880 /* Resources */,
 				44A5B5B624F05FCE009EE7FB /* Embed Frameworks */,
+				8BCFDDEC277A2405002DA4CD /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				8BCFDDEA277A2405002DA4CD /* PBXTargetDependency */,
 			);
 			name = "FlipperZero(iOS)";
 			packageProductDependencies = (
@@ -212,9 +282,12 @@
 		F0DBFA1524EF2F9600EB2880 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1200;
+				LastSwiftUpdateCheck = 1320;
 				LastUpgradeCheck = 1200;
 				TargetAttributes = {
+					8BCFDDDC277A2405002DA4CD = {
+						CreatedOnToolsVersion = 13.2;
+					};
 					F0DBFA2024EF2F9900EB2880 = {
 						CreatedOnToolsVersion = 12.0;
 					};
@@ -234,11 +307,19 @@
 			projectRoot = "";
 			targets = (
 				F0DBFA2024EF2F9900EB2880 /* FlipperZero(iOS) */,
+				8BCFDDDC277A2405002DA4CD /* KeyPreview */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		8BCFDDDB277A2405002DA4CD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F0DBFA1F24EF2F9900EB2880 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -277,6 +358,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		8BCFDDD9277A2405002DA4CD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8BCFDDE2277A2405002DA4CD /* PreviewViewController.swift in Sources */,
+				8BCFDDE4277A2405002DA4CD /* PreviewProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F0DBFA1D24EF2F9900EB2880 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -287,7 +377,72 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		8BCFDDEA277A2405002DA4CD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8BCFDDDC277A2405002DA4CD /* KeyPreview */;
+			targetProxy = 8BCFDDE9277A2405002DA4CD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		8BCFDDED277A2405002DA4CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = SXH69675TZ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KeyPreview/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = KeyPreview;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.KeyPreview;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		8BCFDDEE277A2405002DA4CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = SXH69675TZ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KeyPreview/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = KeyPreview;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.KeyPreview;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		F0DBFA4924EF2F9900EB2880 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -408,6 +563,7 @@
 		F0DBFA4C24EF2F9900EB2880 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
@@ -434,6 +590,7 @@
 		F0DBFA4D24EF2F9900EB2880 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = iOS/iOS.entitlements;
@@ -461,6 +618,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8BCFDDEF277A2405002DA4CD /* Build configuration list for PBXNativeTarget "KeyPreview" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8BCFDDED277A2405002DA4CD /* Debug */,
+				8BCFDDEE277A2405002DA4CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F0DBFA1824EF2F9600EB2880 /* Build configuration list for PBXProject "FlipperZero" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
