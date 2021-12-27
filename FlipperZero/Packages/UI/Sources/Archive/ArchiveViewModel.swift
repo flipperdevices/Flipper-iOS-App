@@ -10,14 +10,14 @@ class ArchiveViewModel: ObservableObject {
     @Inject var pairedDevice: PairedDevice
     var disposeBag: DisposeBag = .init()
 
-    @Published var device: Peripheral? {
-        didSet { status = .init(device?.state) }
-    }
+    @Published var device: Peripheral?
     @Published var status: Status = .noDevice
 
-    @Published var archive: Archive = .shared
+    @Published var appState: AppState = .shared
     @Published var sortOption: SortOption = .creationDate
     @Published var sheetManager: SheetManager = .shared
+
+    var archive: Archive { appState.archive }
 
     var title: String {
         device?.name ?? .noDevice
@@ -76,20 +76,14 @@ class ArchiveViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
 
-        pairedDevice.peripheral
+        appState.$device
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] item in
-                self?.device = item
-            }
+            .assign(to: \.device, on: self)
             .store(in: &disposeBag)
 
-        archive.$isSynchronizing
+        appState.$status
             .receive(on: DispatchQueue.main)
-            .sink { isSynchronizing in
-                self.status = isSynchronizing
-                    ? .synchronizing
-                    : .init(self.device?.state)
-            }
+            .assign(to: \.status, on: self)
             .store(in: &disposeBag)
     }
 
@@ -152,9 +146,7 @@ class ArchiveViewModel: ObservableObject {
 
     func synchronize() {
         guard status == .connected else { return }
-        Task {
-            await archive.syncWithDevice()
-        }
+        Task { await appState.syncronize() }
     }
 
     func favorite() {

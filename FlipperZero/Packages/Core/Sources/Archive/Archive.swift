@@ -20,12 +20,16 @@ public class Archive: ObservableObject {
 
     @Published public var items: [ArchiveItem] = [] {
         didSet {
+            deletedItems = items.filter { $0.status == .deleted }
             storage.items = items
         }
     }
 
+    @Published public var deletedItems: [ArchiveItem] = []
+
     private init() {
         items = storage.items
+        deletedItems = items.filter { $0.status == .deleted }
     }
 
     func getManifest() -> Manifest {

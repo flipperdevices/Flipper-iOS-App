@@ -5,16 +5,10 @@ import SwiftUI
 
 @MainActor
 class ArchiveBinViewModel: ObservableObject {
-    @Inject var pairedDevice: PairedDevice
-    @Published var archive: Archive = .shared
+    @Published var appState: AppState = .shared
 
-    var items: [ArchiveItem] {
-        archive.items.filter { $0.status == .deleted }
-    }
+    @Published var deletedItems: [ArchiveItem] = []
 
-    @Published var device: Peripheral? {
-        didSet { status = .init(device?.state) }
-    }
     @Published var status: Status = .noDevice
 
     @Published var isActionPresented = false
@@ -23,42 +17,34 @@ class ArchiveBinViewModel: ObservableObject {
     var disposeBag: DisposeBag = .init()
 
     init() {
-        pairedDevice.peripheral
+        appState.$status
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] item in
-                self?.device = item
-            }
+            .assign(to: \.status, on: self)
             .store(in: &disposeBag)
 
-        archive.$isSynchronizing
+        appState.archive.$deletedItems
             .receive(on: DispatchQueue.main)
-            .sink { isSynchronizing in
-                self.status = isSynchronizing
-                    ? .synchronizing
-                    : .init(self.device?.state)
-            }
+            .assign(to: \.deletedItems, on: self)
             .store(in: &disposeBag)
     }
 
     func synchronize() {
         guard status == .connected else { return }
-        Task {
-            await archive.syncWithDevice()
-        }
+        Task { await appState.syncronize() }
     }
 
     func deleteSelectedItems() {
         guard selectedItem != .none else {
             return
         }
-        archive.wipe(selectedItem)
+        appState.archive.wipe(selectedItem)
     }
 
     func restoreSelectedItems() {
         guard selectedItem != .none else {
             return
         }
-        archive.restore(selectedItem)
+        appState.archive.restore(selectedItem)
         synchronize()
     }
 }
