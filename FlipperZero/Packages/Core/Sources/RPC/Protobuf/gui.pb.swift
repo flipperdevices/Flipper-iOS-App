@@ -189,9 +189,21 @@ struct PBGui_StartVirtualDisplayRequest {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// optional
+  var firstFrame: PBGui_ScreenFrame {
+    get {return _firstFrame ?? PBGui_ScreenFrame()}
+    set {_firstFrame = newValue}
+  }
+  /// Returns true if `firstFrame` has been explicitly set.
+  var hasFirstFrame: Bool {return self._firstFrame != nil}
+  /// Clears the value of `firstFrame`. Subsequent reads from it will return its default value.
+  mutating func clearFirstFrame() {self._firstFrame = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
+
+  fileprivate var _firstFrame: PBGui_ScreenFrame? = nil
 }
 
 struct PBGui_StopVirtualDisplayRequest {
@@ -339,18 +351,35 @@ extension PBGui_SendInputEventRequest: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension PBGui_StartVirtualDisplayRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StartVirtualDisplayRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "first_frame"),
+  ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let _ = try decoder.nextFieldNumber() {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._firstFrame) }()
+      default: break
+      }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._firstFrame {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: PBGui_StartVirtualDisplayRequest, rhs: PBGui_StartVirtualDisplayRequest) -> Bool {
+    if lhs._firstFrame != rhs._firstFrame {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

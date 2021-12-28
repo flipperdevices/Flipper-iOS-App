@@ -268,6 +268,46 @@ struct PB_Main {
     set {content = .systemDeviceInfoResponse(newValue)}
   }
 
+  var systemFactoryResetRequest: PBSystem_FactoryResetRequest {
+    get {
+      if case .systemFactoryResetRequest(let v)? = content {return v}
+      return PBSystem_FactoryResetRequest()
+    }
+    set {content = .systemFactoryResetRequest(newValue)}
+  }
+
+  var systemGetDatetimeRequest: PBSystem_GetDateTimeRequest {
+    get {
+      if case .systemGetDatetimeRequest(let v)? = content {return v}
+      return PBSystem_GetDateTimeRequest()
+    }
+    set {content = .systemGetDatetimeRequest(newValue)}
+  }
+
+  var systemGetDatetimeResponse: PBSystem_GetDateTimeResponse {
+    get {
+      if case .systemGetDatetimeResponse(let v)? = content {return v}
+      return PBSystem_GetDateTimeResponse()
+    }
+    set {content = .systemGetDatetimeResponse(newValue)}
+  }
+
+  var systemSetDatetimeRequest: PBSystem_SetDateTimeRequest {
+    get {
+      if case .systemSetDatetimeRequest(let v)? = content {return v}
+      return PBSystem_SetDateTimeRequest()
+    }
+    set {content = .systemSetDatetimeRequest(newValue)}
+  }
+
+  var systemPlayAudiovisualAlertRequest: PBSystem_PlayAudiovisualAlertRequest {
+    get {
+      if case .systemPlayAudiovisualAlertRequest(let v)? = content {return v}
+      return PBSystem_PlayAudiovisualAlertRequest()
+    }
+    set {content = .systemPlayAudiovisualAlertRequest(newValue)}
+  }
+
   var storageInfoRequest: PBStorage_InfoRequest {
     get {
       if case .storageInfoRequest(let v)? = content {return v}
@@ -462,6 +502,11 @@ struct PB_Main {
     case systemRebootRequest(PBSystem_RebootRequest)
     case systemDeviceInfoRequest(PBSystem_DeviceInfoRequest)
     case systemDeviceInfoResponse(PBSystem_DeviceInfoResponse)
+    case systemFactoryResetRequest(PBSystem_FactoryResetRequest)
+    case systemGetDatetimeRequest(PBSystem_GetDateTimeRequest)
+    case systemGetDatetimeResponse(PBSystem_GetDateTimeResponse)
+    case systemSetDatetimeRequest(PBSystem_SetDateTimeRequest)
+    case systemPlayAudiovisualAlertRequest(PBSystem_PlayAudiovisualAlertRequest)
     case storageInfoRequest(PBStorage_InfoRequest)
     case storageInfoResponse(PBStorage_InfoResponse)
     case storageStatRequest(PBStorage_StatRequest)
@@ -518,6 +563,26 @@ struct PB_Main {
       }()
       case (.systemDeviceInfoResponse, .systemDeviceInfoResponse): return {
         guard case .systemDeviceInfoResponse(let l) = lhs, case .systemDeviceInfoResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemFactoryResetRequest, .systemFactoryResetRequest): return {
+        guard case .systemFactoryResetRequest(let l) = lhs, case .systemFactoryResetRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemGetDatetimeRequest, .systemGetDatetimeRequest): return {
+        guard case .systemGetDatetimeRequest(let l) = lhs, case .systemGetDatetimeRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemGetDatetimeResponse, .systemGetDatetimeResponse): return {
+        guard case .systemGetDatetimeResponse(let l) = lhs, case .systemGetDatetimeResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemSetDatetimeRequest, .systemSetDatetimeRequest): return {
+        guard case .systemSetDatetimeRequest(let l) = lhs, case .systemSetDatetimeRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemPlayAudiovisualAlertRequest, .systemPlayAudiovisualAlertRequest): return {
+        guard case .systemPlayAudiovisualAlertRequest(let l) = lhs, case .systemPlayAudiovisualAlertRequest(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       case (.storageInfoRequest, .storageInfoRequest): return {
@@ -702,6 +767,11 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     31: .standard(proto: "system_reboot_request"),
     32: .standard(proto: "system_device_info_request"),
     33: .standard(proto: "system_device_info_response"),
+    34: .standard(proto: "system_factory_reset_request"),
+    35: .standard(proto: "system_get_datetime_request"),
+    36: .standard(proto: "system_get_datetime_response"),
+    37: .standard(proto: "system_set_datetime_request"),
+    38: .standard(proto: "system_play_audiovisual_alert_request"),
     28: .standard(proto: "storage_info_request"),
     29: .standard(proto: "storage_info_response"),
     24: .standard(proto: "storage_stat_request"),
@@ -1126,6 +1196,71 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .systemDeviceInfoResponse(v)
         }
       }()
+      case 34: try {
+        var v: PBSystem_FactoryResetRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemFactoryResetRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemFactoryResetRequest(v)
+        }
+      }()
+      case 35: try {
+        var v: PBSystem_GetDateTimeRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemGetDatetimeRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemGetDatetimeRequest(v)
+        }
+      }()
+      case 36: try {
+        var v: PBSystem_GetDateTimeResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemGetDatetimeResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemGetDatetimeResponse(v)
+        }
+      }()
+      case 37: try {
+        var v: PBSystem_SetDateTimeRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemSetDatetimeRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemSetDatetimeRequest(v)
+        }
+      }()
+      case 38: try {
+        var v: PBSystem_PlayAudiovisualAlertRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemPlayAudiovisualAlertRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemPlayAudiovisualAlertRequest(v)
+        }
+      }()
       default: break
       }
     }
@@ -1265,6 +1400,26 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .systemDeviceInfoResponse?: try {
       guard case .systemDeviceInfoResponse(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 33)
+    }()
+    case .systemFactoryResetRequest?: try {
+      guard case .systemFactoryResetRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 34)
+    }()
+    case .systemGetDatetimeRequest?: try {
+      guard case .systemGetDatetimeRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 35)
+    }()
+    case .systemGetDatetimeResponse?: try {
+      guard case .systemGetDatetimeResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 36)
+    }()
+    case .systemSetDatetimeRequest?: try {
+      guard case .systemSetDatetimeRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 37)
+    }()
+    case .systemPlayAudiovisualAlertRequest?: try {
+      guard case .systemPlayAudiovisualAlertRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 38)
     }()
     case nil: break
     }

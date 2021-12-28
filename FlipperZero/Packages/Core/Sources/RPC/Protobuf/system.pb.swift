@@ -122,6 +122,109 @@ struct PBSystem_DeviceInfoResponse {
   init() {}
 }
 
+struct PBSystem_FactoryResetRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PBSystem_GetDateTimeRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PBSystem_GetDateTimeResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var datetime: PBSystem_DateTime {
+    get {return _datetime ?? PBSystem_DateTime()}
+    set {_datetime = newValue}
+  }
+  /// Returns true if `datetime` has been explicitly set.
+  var hasDatetime: Bool {return self._datetime != nil}
+  /// Clears the value of `datetime`. Subsequent reads from it will return its default value.
+  mutating func clearDatetime() {self._datetime = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _datetime: PBSystem_DateTime? = nil
+}
+
+struct PBSystem_SetDateTimeRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var datetime: PBSystem_DateTime {
+    get {return _datetime ?? PBSystem_DateTime()}
+    set {_datetime = newValue}
+  }
+  /// Returns true if `datetime` has been explicitly set.
+  var hasDatetime: Bool {return self._datetime != nil}
+  /// Clears the value of `datetime`. Subsequent reads from it will return its default value.
+  mutating func clearDatetime() {self._datetime = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _datetime: PBSystem_DateTime? = nil
+}
+
+struct PBSystem_DateTime {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Time
+  var hour: UInt32 = 0
+
+  ///*< Minute: 0-59 
+  var minute: UInt32 = 0
+
+  ///*< Second: 0-59 
+  var second: UInt32 = 0
+
+  /// Date
+  var day: UInt32 = 0
+
+  ///*< Current month: 1-12 
+  var month: UInt32 = 0
+
+  ///*< Current year: 2000-2099 
+  var year: UInt32 = 0
+
+  ///*< Current weekday: 1-7 
+  var weekday: UInt32 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PBSystem_PlayAudiovisualAlertRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "PB_System"
@@ -281,6 +384,203 @@ extension PBSystem_DeviceInfoResponse: SwiftProtobuf.Message, SwiftProtobuf._Mes
   static func ==(lhs: PBSystem_DeviceInfoResponse, rhs: PBSystem_DeviceInfoResponse) -> Bool {
     if lhs.key != rhs.key {return false}
     if lhs.value != rhs.value {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_FactoryResetRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".FactoryResetRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_FactoryResetRequest, rhs: PBSystem_FactoryResetRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_GetDateTimeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GetDateTimeRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_GetDateTimeRequest, rhs: PBSystem_GetDateTimeRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_GetDateTimeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GetDateTimeResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "datetime"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._datetime) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._datetime {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_GetDateTimeResponse, rhs: PBSystem_GetDateTimeResponse) -> Bool {
+    if lhs._datetime != rhs._datetime {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_SetDateTimeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".SetDateTimeRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "datetime"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._datetime) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._datetime {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_SetDateTimeRequest, rhs: PBSystem_SetDateTimeRequest) -> Bool {
+    if lhs._datetime != rhs._datetime {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_DateTime: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".DateTime"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "hour"),
+    2: .same(proto: "minute"),
+    3: .same(proto: "second"),
+    4: .same(proto: "day"),
+    5: .same(proto: "month"),
+    6: .same(proto: "year"),
+    7: .same(proto: "weekday"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.hour) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.minute) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.second) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.day) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.month) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.year) }()
+      case 7: try { try decoder.decodeSingularUInt32Field(value: &self.weekday) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.hour != 0 {
+      try visitor.visitSingularUInt32Field(value: self.hour, fieldNumber: 1)
+    }
+    if self.minute != 0 {
+      try visitor.visitSingularUInt32Field(value: self.minute, fieldNumber: 2)
+    }
+    if self.second != 0 {
+      try visitor.visitSingularUInt32Field(value: self.second, fieldNumber: 3)
+    }
+    if self.day != 0 {
+      try visitor.visitSingularUInt32Field(value: self.day, fieldNumber: 4)
+    }
+    if self.month != 0 {
+      try visitor.visitSingularUInt32Field(value: self.month, fieldNumber: 5)
+    }
+    if self.year != 0 {
+      try visitor.visitSingularUInt32Field(value: self.year, fieldNumber: 6)
+    }
+    if self.weekday != 0 {
+      try visitor.visitSingularUInt32Field(value: self.weekday, fieldNumber: 7)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_DateTime, rhs: PBSystem_DateTime) -> Bool {
+    if lhs.hour != rhs.hour {return false}
+    if lhs.minute != rhs.minute {return false}
+    if lhs.second != rhs.second {return false}
+    if lhs.day != rhs.day {return false}
+    if lhs.month != rhs.month {return false}
+    if lhs.year != rhs.year {return false}
+    if lhs.weekday != rhs.weekday {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_PlayAudiovisualAlertRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PlayAudiovisualAlertRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_PlayAudiovisualAlertRequest, rhs: PBSystem_PlayAudiovisualAlertRequest) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
