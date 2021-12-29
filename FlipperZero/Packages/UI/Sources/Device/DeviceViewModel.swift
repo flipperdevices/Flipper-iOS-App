@@ -5,25 +5,21 @@ import Foundation
 
 @MainActor
 public class DeviceViewModel: ObservableObject {
-    @Inject var flipper: PairedDevice
+    @Published var appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
-
-    private let archive: Archive = .shared
 
     @Published var device: Peripheral? {
         didSet {
-            status = .init(device?.state)
-            if status == .connected {
+            if device?.state == .connected {
                 presentConnectionsSheet = false
             }
         }
     }
     @Published var status: Status = .noDevice
-
     @Published var presentConnectionsSheet = false {
-        willSet {
-            if newValue == true {
-                flipper.disconnect()
+        didSet {
+            if presentConnectionsSheet == true {
+                appState.disconnect()
             }
         }
     }
@@ -56,28 +52,18 @@ public class DeviceViewModel: ObservableObject {
     }
 
     public init() {
-        flipper.peripheral
+        appState.$device
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.device = $0
-            }
+            .assign(to: \.device, on: self)
             .store(in: &disposeBag)
 
-        archive.$isSynchronizing
+        appState.$status
             .receive(on: DispatchQueue.main)
-            .sink { isSynchronizing in
-                self.status = isSynchronizing
-                    ? .synchronizing
-                    : .init(self.device?.state)
-            }
+            .assign(to: \.status, on: self)
             .store(in: &disposeBag)
     }
 
     func sync() {
-        Task {
-            status = .synchronizing
-            await archive.syncWithDevice()
-            status = .init(device?.state)
-        }
+        Task { await appState.syncronize() }
     }
 }

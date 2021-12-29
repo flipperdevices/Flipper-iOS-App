@@ -1,13 +1,11 @@
-import Core
-
-enum Status: CustomStringConvertible {
+public enum Status: CustomStringConvertible {
     case noDevice
     case connecting
     case connected
     case disconnected
     case synchronizing
 
-    var description: String {
+    public var description: String {
         switch self {
         case .noDevice: return "No device"
         case .connecting: return "Connecting"

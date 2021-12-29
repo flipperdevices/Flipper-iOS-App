@@ -7,7 +7,7 @@ struct ArchiveBinView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                ForEach(viewModel.items) { item in
+                ForEach(viewModel.deletedItems) { item in
                     Button {
                         onItemSelected(item: item)
                     } label: {

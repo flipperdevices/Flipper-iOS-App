@@ -5,29 +5,46 @@ import SwiftUI
 
 @MainActor
 class ArchiveBinViewModel: ObservableObject {
-    @Published var archive: Archive = .shared
-    @Published var sheetManager: SheetManager = .shared
+    @Published var appState: AppState = .shared
 
-    var items: [ArchiveItem] {
-        archive.items.filter { $0.status == .deleted }
-    }
+    @Published var deletedItems: [ArchiveItem] = []
+
+    @Published var status: Status = .noDevice
 
     @Published var isActionPresented = false
     @Published var selectedItem: ArchiveItem = .none
 
-    init() {}
+    var disposeBag: DisposeBag = .init()
+
+    init() {
+        appState.$status
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.status, on: self)
+            .store(in: &disposeBag)
+
+        appState.archive.$deletedItems
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.deletedItems, on: self)
+            .store(in: &disposeBag)
+    }
+
+    func synchronize() {
+        guard status == .connected else { return }
+        Task { await appState.syncronize() }
+    }
 
     func deleteSelectedItems() {
         guard selectedItem != .none else {
             return
         }
-        archive.wipe(selectedItem)
+        appState.archive.wipe(selectedItem)
     }
 
     func restoreSelectedItems() {
         guard selectedItem != .none else {
             return
         }
-        archive.restore(selectedItem)
+        appState.archive.restore(selectedItem)
+        synchronize()
     }
 }
