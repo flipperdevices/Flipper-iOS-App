@@ -9,6 +9,7 @@ public enum Request {
 
     public enum System {
         case info
+        case alert
         case ping([UInt8])
         case reboot(RebootMode)
 
@@ -51,6 +52,10 @@ extension Request.System {
         case .info:
             return .with {
                 $0.systemDeviceInfoRequest = .init()
+            }
+        case .alert:
+            return .with {
+                $0.systemPlayAudiovisualAlertRequest = .init()
             }
         case .ping(let bytes):
             return .with {

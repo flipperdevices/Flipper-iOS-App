@@ -182,6 +182,13 @@ public class RPC {
             return
         }
     }
+
+    public func playAlert() async throws {
+        let response = try await session?.send(.system(.alert))
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
 }
 
 extension RPC {

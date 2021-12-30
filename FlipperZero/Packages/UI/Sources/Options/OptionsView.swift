@@ -25,7 +25,12 @@ struct OptionsView: View {
                     }
                 }
 
-                Section(header: Text("Demo")) {
+                Section(header: Text("Utils")) {
+                    Button("Play Alert") {
+                        Task {
+                            try await RPC.shared.playAlert()
+                        }
+                    }
                     Button("Reboot Flipper") {
                         Task {
                             try await RPC.shared.reboot(to: .os)
