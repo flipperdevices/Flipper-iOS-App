@@ -4,12 +4,11 @@ class PreviewProvider: QLPreviewProvider, QLPreviewingController {
     func providePreview(
         for request: QLFilePreviewRequest
     ) async throws -> QLPreviewReply {
-        let reply = QLPreviewReply(
+        QLPreviewReply(
             dataOfContentType: .plainText,
-            contentSize: CGSize.init(width: 800, height: 800)
-        ) { (replyToUpdate: QLPreviewReply) in
-            return try Data(contentsOf: request.fileURL)
+            contentSize: .init(width: 800, height: 800)
+        ) { (_: QLPreviewReply) in
+            try Data(contentsOf: request.fileURL)
         }
-        return reply
     }
 }
