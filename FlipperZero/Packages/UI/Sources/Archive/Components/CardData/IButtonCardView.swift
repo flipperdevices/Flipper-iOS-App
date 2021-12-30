@@ -7,7 +7,7 @@ struct IButtonCardView: View {
     @Binding var focusedField: String
 
     let flipped: Bool
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("HEX: \(item.key)")
