@@ -146,7 +146,7 @@ class ArchiveViewModel: ObservableObject {
 
     func synchronize() {
         guard status == .connected else { return }
-        Task { await appState.syncronize() }
+        Task { await appState.synchronize() }
     }
 
     func favorite() {

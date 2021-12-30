@@ -64,6 +64,6 @@ public class DeviceViewModel: ObservableObject {
     }
 
     func sync() {
-        Task { await appState.syncronize() }
+        Task { await appState.synchronize() }
     }
 }

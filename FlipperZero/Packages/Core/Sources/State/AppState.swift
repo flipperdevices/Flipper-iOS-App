@@ -38,7 +38,7 @@ public class AppState {
         pairedDevice.disconnect()
     }
 
-    public func syncronize() async {
+    public func synchronize() async {
         Task {
             status = .synchronizing
             await archive.syncWithDevice()
@@ -46,4 +46,3 @@ public class AppState {
         }
     }
 }
-
