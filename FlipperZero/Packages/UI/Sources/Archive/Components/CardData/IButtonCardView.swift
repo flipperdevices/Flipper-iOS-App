@@ -1,16 +1,21 @@
 import Core
 import SwiftUI
 
-struct InfraredCardView: View {
+struct IButtonCardView: View {
     @Binding var item: ArchiveItem
     @Binding var isEditMode: Bool
     @Binding var focusedField: String
 
     let flipped: Bool
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(item.dump)
+            Text("HEX: \(item.key)")
+                .font(.system(size: 18, weight: .bold))
+                .lineLimit(1)
+
+            Text(item.type)
+                .font(.system(size: 16, weight: .medium))
         }
         .padding(.top, 16)
         .padding(.bottom, 4)
@@ -20,14 +25,6 @@ struct InfraredCardView: View {
 }
 
 fileprivate extension ArchiveItem {
-    var dump: String {
-        var result = ""
-        for property in properties {
-            result += property.key
-            result += ":"
-            result += property.value
-            result += "\n"
-        }
-        return result
-    }
+    var key: String { self["Data"] ?? "" }
+    var type: String { self["Key type"] ?? "" }
 }
