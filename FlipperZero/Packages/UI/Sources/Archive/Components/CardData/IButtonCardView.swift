@@ -6,6 +6,8 @@ struct InfraredCardView: View {
     @Binding var isEditMode: Bool
     @Binding var focusedField: String
 
+    let flipped: Bool
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(item.dump)
@@ -13,6 +15,7 @@ struct InfraredCardView: View {
         .padding(.top, 16)
         .padding(.bottom, 4)
         .padding(.horizontal, 16)
+        .opacity(flipped ? 0 : 1)
     }
 }
 
