@@ -25,7 +25,7 @@ struct OptionsView: View {
                     }
                 }
 
-                Section(header: Text("Utils")) {
+                Section(header: Text("Remote")) {
                     Button("Play Alert") {
                         Task {
                             try await RPC.shared.playAlert()
