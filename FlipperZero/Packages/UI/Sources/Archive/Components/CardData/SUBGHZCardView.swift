@@ -6,22 +6,29 @@ struct SUBGHZCardView: View {
     @Binding var isEditMode: Bool
     @Binding var focusedField: String
 
+    let flipped: Bool
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 4) {
-                Text("KEY:")
-                Text(item.isRaw ? "raw data" : item.key)
-                    .lineLimit(1)
-            }
-            .font(.system(size: 18, weight: .bold))
+            if !flipped {
+                HStack(spacing: 4) {
+                    Text("KEY:")
+                    Text(item.isRaw ? "raw data" : item.key)
+                        .lineLimit(1)
+                }
+                .font(.system(size: 18, weight: .bold))
 
-            HStack(spacing: 4) {
-                Text("Frequency:")
-                Text(item.frequency)
-            }
+                HStack(spacing: 4) {
+                    Text("Frequency:")
+                    Text(item.frequency)
+                }
 
-            if !item.isRaw {
-                Text("\(item.proto) \(item.bit) bit")
+                if !item.isRaw {
+                    Text("\(item.proto) \(item.bit) bit")
+                }
+            } else {
+                Text(item.rawData)
+                    .lineLimit(3)
             }
         }
         .font(.system(size: 16, weight: .medium))
@@ -40,4 +47,5 @@ fileprivate extension ArchiveItem {
     var bit: String { self["Bit"] ?? "" }
     var frequency: String { self["Frequency"] ?? "" }
     var proto: String { self["Protocol"] ?? "" }
+    var rawData: String { self["RAW_Data"] ?? "" }
 }
