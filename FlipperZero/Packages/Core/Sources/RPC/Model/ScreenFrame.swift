@@ -1,15 +1,16 @@
 public struct ScreenFrame {
     let bytes: [UInt8]
 
-    var width: Int { 128 }
-    var height: Int { 64 }
+    static var width: Int { 128 }
+    static var height: Int { 64 }
+    static var pixelCount: Int { width * height }
 
     public var pixels: [Bool] {
         var result: [Bool] = []
 
-        for row in 0..<height {
-            for column in 0..<width {
-                let byte = bytes[(row / 8) * width + column]
+        for row in 0..<Self.height {
+            for column in 0..<Self.width {
+                let byte = bytes[(row / 8) * Self.width + column]
                 result.append((byte & (1 << (row & 0b111))) != 0)
             }
         }
@@ -18,19 +19,26 @@ public struct ScreenFrame {
     }
 
     public init() {
-        self.bytes = .init(repeating: 0, count: 1024)
+        self.bytes = .init(repeating: 0, count: Self.pixelCount / 8)
     }
 
-    public init(_ bytes: [UInt8]) {
-        if bytes.isEmpty || bytes.count != 1024 {
-            print("invalid message")
+    public init?(_ bytes: [UInt8]) {
+        guard bytes.count < Self.pixelCount else {
+            print("invalid screen frame bytes")
+            return nil
         }
         self.bytes = bytes
     }
-}
 
-extension ScreenFrame {
-    init(_ main: PB_Main) {
-        self.init([UInt8](main.guiScreenFrame.data))
+    public init?(_ pixels: [Bool]) {
+        if pixels.count != Self.width * Self.height {
+            print("invalid pixels count")
+            return nil
+        }
+        var bytes = [UInt8](repeating: 0, count: Self.pixelCount / 8)
+        for (index, pixel) in pixels.enumerated() where pixel {
+            bytes[index / 8] = bytes[index / 8] | (1 << (index % 8))
+        }
+        self.bytes = bytes
     }
 }

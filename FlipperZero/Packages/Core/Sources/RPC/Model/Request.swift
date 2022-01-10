@@ -31,7 +31,9 @@ public enum Request {
     }
 
     public enum GUI {
-        case remote(Bool)
+        case screenStream(Bool)
+        case virtualDisplay(Bool)
+        case displayFrame(ScreenFrame)
         case button(InputKey, InputType)
     }
 }
@@ -141,7 +143,7 @@ extension Request.Storage {
 extension Request.GUI {
     func serialize() -> PB_Main {
         switch self {
-        case let .remote(start):
+        case let .screenStream(start):
             switch start {
             case true:
                 return .with {
@@ -150,6 +152,23 @@ extension Request.GUI {
             case false:
                 return .with {
                     $0.guiStopScreenStreamRequest = .init()
+                }
+            }
+        case let .virtualDisplay(start):
+            switch start {
+            case true:
+                return .with {
+                    $0.guiStartVirtualDisplayRequest = .init()
+                }
+            case false:
+                return .with {
+                    $0.guiStopVirtualDisplayRequest = .init()
+                }
+            }
+        case let .displayFrame(frame):
+            return .with {
+                $0.guiScreenFrame = .with {
+                    $0.data = .init(frame.bytes)
                 }
             }
         case let .button(key, type):

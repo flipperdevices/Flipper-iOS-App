@@ -152,14 +152,14 @@ public class RPC {
     }
 
     public func startStreaming() async throws {
-        let response = try await session?.send(.gui(.remote(true)))
+        let response = try await session?.send(.gui(.screenStream(true)))
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
     }
 
     public func stopStreaming() async throws {
-        let response = try await session?.send(.gui(.remote(false)))
+        let response = try await session?.send(.gui(.screenStream(false)))
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
@@ -188,6 +188,24 @@ public class RPC {
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
+    }
+
+    public func startVirtualDisplay() async throws {
+        let response = try await session?.send(.gui(.virtualDisplay(true)))
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func stopVirtualDisplay() async throws {
+        let response = try await session?.send(.gui(.virtualDisplay(false)))
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func sendScreenFrame(_ frame: ScreenFrame) async throws {
+        try await session?.sendScreenFrame(frame)
     }
 }
 
