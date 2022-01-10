@@ -74,7 +74,13 @@ class FlipperSession: Session {
     }
 
     func didReceiveUnbound(_ main: PB_Main) {
-        onScreenFrame?(.init(main))
+        guard case let .guiScreenFrame(content) = main.content else {
+            return
+        }
+        guard let frame = ScreenFrame(.init(content.data)) else {
+            return
+        }
+        onScreenFrame?(frame)
     }
 }
 

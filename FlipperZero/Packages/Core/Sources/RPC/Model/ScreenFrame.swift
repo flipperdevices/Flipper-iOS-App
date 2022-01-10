@@ -21,16 +21,11 @@ public struct ScreenFrame {
         self.bytes = .init(repeating: 0, count: 1024)
     }
 
-    public init(_ bytes: [UInt8]) {
-        if bytes.isEmpty || bytes.count != 1024 {
-            print("invalid message")
+    public init?(_ bytes: [UInt8]) {
+        guard bytes.count == 1024 else {
+            print("invalid screen frame bytes")
+            return nil
         }
         self.bytes = bytes
-    }
-}
-
-extension ScreenFrame {
-    init(_ main: PB_Main) {
-        self.init([UInt8](main.guiScreenFrame.data))
     }
 }
