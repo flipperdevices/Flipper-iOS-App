@@ -31,7 +31,7 @@ public enum Request {
     }
 
     public enum GUI {
-        case remote(Bool)
+        case screenStream(Bool)
         case button(InputKey, InputType)
     }
 }
@@ -141,7 +141,7 @@ extension Request.Storage {
 extension Request.GUI {
     func serialize() -> PB_Main {
         switch self {
-        case let .remote(start):
+        case let .screenStream(start):
             switch start {
             case true:
                 return .with {
