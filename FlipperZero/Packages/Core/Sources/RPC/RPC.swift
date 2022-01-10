@@ -189,6 +189,24 @@ public class RPC {
             throw Error.unexpectedResponse(response)
         }
     }
+
+    public func startVirtualDisplay() async throws {
+        let response = try await session?.send(.gui(.virtualDisplay(true)))
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func stopVirtualDisplay() async throws {
+        let response = try await session?.send(.gui(.virtualDisplay(false)))
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func sendScreenFrame(_ frame: ScreenFrame) async throws {
+        try await session?.sendScreenFrame(frame)
+    }
 }
 
 extension RPC {

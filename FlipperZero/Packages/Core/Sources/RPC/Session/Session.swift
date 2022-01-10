@@ -7,6 +7,8 @@ public enum Priority {
 protocol Session: AnyObject {
     var onScreenFrame: ((ScreenFrame) -> Void)? { get set }
 
+    func sendScreenFrame(_ frame: ScreenFrame) async throws
+
     func send(
         _ request: Request,
         priority: Priority?

@@ -36,13 +36,25 @@ class FlipperSession: Session {
             .store(in: &disposeBag)
     }
 
+    func sendScreenFrame(_ frame: ScreenFrame) async throws {
+        _ = try await send(.gui(.displayFrame(frame)), id: 0)
+    }
+
     func send(
         _ request: Request,
         priority: Priority? = nil
     ) async throws -> Response {
-        return try await withUnsafeThrowingContinuation { continuation in
+        try await send(request, id: nextId, priority: priority)
+    }
+
+    func send(
+        _ request: Request,
+        id: Int,
+        priority: Priority? = nil
+    ) async throws -> Response {
+        try await withUnsafeThrowingContinuation { continuation in
             let command = Command(
-                id: nextId,
+                id: id,
                 request: request,
                 continuation: continuation)
 
@@ -56,13 +68,18 @@ class FlipperSession: Session {
 
     func sendNextRequest() {
         guard let command = queue.dequeue() else { return }
-        awaitingResponse.append(command)
+        if command.id != 0 {
+            awaitingResponse.append(command)
+        }
         var requests = delimitedRequest.split(command.request)
         for index in requests.indices {
             requests[index].commandID = .init(command.id)
         }
         chunkedRequest.feed(requests)
         processChunkedRequest()
+        if command.id == 0 {
+            command.continuation.resume(returning: .ok)
+        }
     }
 
     func processChunkedRequest() {
