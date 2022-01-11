@@ -3,6 +3,7 @@ import SwiftUI
 
 struct RemoteContolView: View {
     @StateObject var viewModel: RemoteContolViewModel
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         VStack {
@@ -20,6 +21,14 @@ struct RemoteContolView: View {
         }
         .onDisappear {
             viewModel.stopStreaming()
+        }
+        .onChange(of: scenePhase) { phase in
+            switch phase {
+            case .active: viewModel.startStreaming()
+            case .inactive: viewModel.stopStreaming()
+            case .background: break
+            @unknown default: break
+            }
         }
     }
 }
