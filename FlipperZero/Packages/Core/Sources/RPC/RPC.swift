@@ -55,7 +55,7 @@ public class RPC {
         return result
     }
 
-    public func setDate(_ date: Date) async throws {
+    public func setDate(_ date: Date = .init()) async throws {
         let response = try await session?.send(.system(.setDate(date)))
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
