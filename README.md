@@ -14,14 +14,12 @@ This is a work-in-progress iOS 14+ app to rule all the Flipper family.
 
 ### Partially implemented (WIP)
 
-1. UI/Animations
-2. Remote control
-3. Edit archive keys
+1. Remote control
+2. Edit archive keys
+3. Advanced device info
 
 ### Backlog
 
-1. Swift Concurrency
-2. Advanced device info
-3. Run apps with arguments
-4. iCloud/FlipperCloud sync
-5. Shortcuts integration
+1. Shortcuts integration
+2. Run apps with arguments
+3. iCloud/FlipperCloud sync
