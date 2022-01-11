@@ -1,4 +1,5 @@
 import Inject
+import struct Foundation.Date
 
 public class RPC {
     public static let shared: RPC = .init()
@@ -44,6 +45,21 @@ public class RPC {
 
     public func reboot(to mode: Request.System.RebootMode) async throws {
         _ = try await session?.send(.system(.reboot(mode)))
+    }
+
+    public func getDate() async throws -> Date {
+        let response = try await session?.send(.system(.getDate))
+        guard case .system(.dateTime(let result)) = response else {
+            throw Error.unexpectedResponse(response)
+        }
+        return result
+    }
+
+    public func setDate(_ date: Date = .init()) async throws {
+        let response = try await session?.send(.system(.setDate(date)))
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
     }
 
     public func getStorageInfo(

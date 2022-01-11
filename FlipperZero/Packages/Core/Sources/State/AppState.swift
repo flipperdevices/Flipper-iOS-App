@@ -8,9 +8,18 @@ public class AppState {
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
-    @Published public var status: Status = .noDevice
-    @Published public var archive: Archive = .shared
     @Published public var device: Peripheral?
+    @Published public var archive: Archive = .shared
+    @Published public var status: Status = .noDevice {
+        didSet {
+            if oldValue == .connecting, status == .connected {
+                Task {
+                    await synchronizeDateTime()
+                    await synchronize()
+                }
+            }
+        }
+    }
 
     public init() {
         pairedDevice.peripheral
@@ -39,10 +48,16 @@ public class AppState {
     }
 
     public func synchronize() async {
-        Task {
-            status = .synchronizing
-            await archive.syncWithDevice()
-            status = .init(device?.state)
-        }
+        guard status == .connected else { return }
+        status = .synchronizing
+        await archive.syncWithDevice()
+        status = .init(device?.state)
+    }
+
+    func synchronizeDateTime() async {
+        guard status == .connected else { return }
+        status = .synchronizing
+        try? await RPC.shared.setDate()
+        status = .init(device?.state)
     }
 }

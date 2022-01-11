@@ -10,6 +10,7 @@ public enum Response: Equatable {
     public enum System: Equatable {
         case ping([UInt8])
         case info([String: String])
+        case dateTime(Date)
     }
 
     public enum Storage: Equatable {
@@ -31,6 +32,8 @@ extension Response {
         case .systemPingResponse(let response):
             self.init(decoding: response)
         case .systemDeviceInfoResponse(let response):
+            self.init(decoding: response)
+        case .systemGetDatetimeResponse(let response):
             self.init(decoding: response)
 
         // Storage
@@ -58,6 +61,10 @@ extension Response {
 
     init(decoding response: PBSystem_DeviceInfoResponse) {
         self = .system(.info([response.key: response.value]))
+    }
+
+    init(decoding response: PBSystem_GetDateTimeResponse) {
+        self = .system(.dateTime(.init(response.datetime)))
     }
 
     init(decoding response: PBStorage_InfoResponse) {

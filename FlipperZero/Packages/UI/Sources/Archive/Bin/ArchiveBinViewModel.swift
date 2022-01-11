@@ -29,7 +29,6 @@ class ArchiveBinViewModel: ObservableObject {
     }
 
     func synchronize() {
-        guard status == .connected else { return }
         Task { await appState.synchronize() }
     }
 
