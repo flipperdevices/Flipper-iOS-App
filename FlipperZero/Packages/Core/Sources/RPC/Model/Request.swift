@@ -1,4 +1,5 @@
 import SwiftProtobuf
+import struct Foundation.Date
 
 // swiftlint:disable nesting function_body_length
 
@@ -12,6 +13,8 @@ public enum Request {
         case alert
         case ping([UInt8])
         case reboot(RebootMode)
+        case getDate
+        case setDate(Date)
 
         public enum RebootMode {
             case os
@@ -69,6 +72,16 @@ extension Request.System {
             return .with {
                 $0.systemRebootRequest = .with {
                     $0.mode = .init(mode)
+                }
+            }
+        case .getDate:
+            return .with {
+                $0.systemGetDatetimeRequest = .init()
+            }
+        case .setDate(let date):
+            return .with {
+                $0.systemSetDatetimeRequest = .with {
+                    $0.datetime = date.dateTime
                 }
             }
         }
