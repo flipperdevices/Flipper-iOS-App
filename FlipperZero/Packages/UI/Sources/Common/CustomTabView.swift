@@ -7,7 +7,7 @@ import SwiftUI
 struct CustomTabView: View {
     @Binding var selected: Tab
 
-    enum Tab {
+    enum Tab: String {
         case device
         case archive
         case options
