@@ -7,13 +7,14 @@ class PairedFlipper: PairedDevice, ObservableObject {
     @Inject var storage: DeviceStorage
     var disposeBag: DisposeBag = .init()
 
-    private var isReconnecting = false
     private var peripheralSubject: SafeValueSubject<Peripheral?> = .init(nil)
 
     private var flipper: BluetoothPeripheral? {
         didSet {
             if let flipper = flipper {
-                subscribeToUpdates()
+                if oldValue == nil {
+                    subscribeToUpdates()
+                }
                 let peripheral = merge(peripheralSubject.value, flipper)
                 storage.pairedDevice = peripheral
                 peripheralSubject.value = peripheral
@@ -30,7 +31,6 @@ class PairedFlipper: PairedDevice, ObservableObject {
 
     init() {
         if let pairedDevice = storage.pairedDevice {
-            isReconnecting = true
             peripheralSubject.value = pairedDevice
             reconnectOnBluetoothReady(to: pairedDevice.id)
         }
@@ -76,7 +76,6 @@ class PairedFlipper: PairedDevice, ObservableObject {
             .sink { [weak self] peripherals in
                 guard let self = self else { return }
                 guard let peripheral = peripherals.first else {
-                    if self.isReconnecting { self.isReconnecting = false }
                     return
                 }
                 self.flipper = peripheral
@@ -95,7 +94,7 @@ class PairedFlipper: PairedDevice, ObservableObject {
     }
 
     func disconnect() {
-        if let flipper = flipper {
+        if let flipper = self.flipper {
             connector.disconnect(from: flipper.id)
         }
         self.flipper = nil
