@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 
 public struct RootView: View {
@@ -37,6 +38,9 @@ public struct RootView: View {
         }
         .onOpenURL { url in
             Task { await viewModel.importKey(url) }
+        }
+        .onContinueUserActivity("PlayAlertIntent") { _ in
+            Task { try? await RPC.shared.playAlert() }
         }
     }
 }
