@@ -1,9 +1,15 @@
 import Inject
 import Combine
 import Dispatch
+import SwiftUI
 
 public class AppState {
     public static let shared: AppState = .init()
+
+    public var isFirstLaunch: Bool {
+        get { UserDefaultsStorage.shared.isFirstLaunch }
+        set { UserDefaultsStorage.shared.isFirstLaunch = newValue }
+    }
 
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
@@ -59,5 +65,20 @@ public class AppState {
         status = .synchronizing
         try? await RPC.shared.setDate()
         status = .init(device?.state)
+    }
+
+    // FIXME: Find a better way
+
+    @Inject var archiveStorage: ArchiveStorage
+    @Inject var deviceStorage: DeviceStorage
+    @Inject var manifestStorage: ManifestStorage
+
+    public func reset() {
+        isFirstLaunch = true
+        archiveStorage.items = []
+        deviceStorage.pairedDevice = nil
+        manifestStorage.manifest = nil
+        UserDefaults.standard.removeObject(forKey: "selectedTab")
+        fatalError("This is fine")
     }
 }
