@@ -32,11 +32,7 @@ extension ArchiveItem {
             for line in property.description {
                 result += "# \(line)\n"
             }
-            switch fileType {
-            // FIXME: remove after irda moves to fff
-            case .irda: result += "\(property.key):\(property.value)\n"
-            default: result += "\(property.key): \(property.value)\n"
-            }
+            result += "\(property.key): \(property.value)\n"
         }
     }
 }
