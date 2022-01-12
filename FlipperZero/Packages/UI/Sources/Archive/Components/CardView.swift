@@ -73,12 +73,6 @@ struct CardSheetView: View {
                 .padding(.top, 5)
                 .padding(.horizontal, 16)
 
-                if !isEditMode {
-                    ActionsForm(actions: viewModel.editingItem.value.actions) { id in
-                        print("action \(id) selected")
-                    }
-                }
-
                 if focusedField.isEmpty {
                     CardActions(viewModel: viewModel, isEditMode: $isEditMode)
                 } else {
