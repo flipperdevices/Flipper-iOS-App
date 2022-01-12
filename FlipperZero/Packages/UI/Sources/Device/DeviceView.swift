@@ -80,11 +80,7 @@ extension DeviceView {
     }
 
     var actions: [Action] {
-        [runApps, remoteControl, fileManager]
-    }
-
-    var runApps: Action {
-        .init(name: "Run Apps", image: .init(systemName: "play.circle"))
+        [remoteControl, fileManager]
     }
 
     var remoteControl: Action {
@@ -95,7 +91,9 @@ extension DeviceView {
     }
 
     var fileManager: Action {
-        .init(name: "File manager", image: .init(systemName: "folder.circle"))
+        .init(
+            name: "File manager",
+            image: .init(systemName: "folder.circle"))
     }
 }
 
