@@ -4,14 +4,15 @@ import Inject
 import SwiftUI
 
 public class RootViewModel: ObservableObject {
+    let appState: AppState = .shared
 
     // MARK: First Launch
 
     @Published var presentWelcomeSheet = false
 
     var isFirstLaunch: Bool {
-        get { UserDefaultsStorage.shared.isFirstLaunch }
-        set { UserDefaultsStorage.shared.isFirstLaunch = newValue }
+        get { appState.isFirstLaunch }
+        set { appState.isFirstLaunch = newValue }
     }
 
     // MARK: Full Application

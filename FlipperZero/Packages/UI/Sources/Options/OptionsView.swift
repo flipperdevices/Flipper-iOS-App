@@ -37,6 +37,13 @@ struct OptionsView: View {
                         }
                     }
                 }
+
+                Section(header: Text("Danger")) {
+                    Button("Reset App") {
+                        viewModel.resetApp()
+                    }
+                    .foregroundColor(.red)
+                }
             }
             .navigationBarHidden(true)
         }
