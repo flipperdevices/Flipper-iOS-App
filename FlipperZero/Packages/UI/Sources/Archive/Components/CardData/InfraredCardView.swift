@@ -10,7 +10,38 @@ struct InfraredCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(item.dump)
+            if !flipped {
+                HStack {
+                    Text("Name: \(item.name)")
+                }
+                .font(.system(size: 18, weight: .bold))
+
+                HStack {
+                    Text("Type: \(item.type)")
+                    Spacer()
+                }
+
+                HStack {
+                    Text("Protocol: \(item.proto)")
+                    Spacer()
+                }
+
+                HStack {
+                    Text("Address: \(item.address)")
+                    Spacer()
+                }
+
+                HStack {
+                    Text("Command: \(item.command)")
+                    Spacer()
+                }
+            } else {
+                HStack {
+                    Text("Data: \(item.data)")
+                    Spacer()
+                }
+                .opacity(item.data.isEmpty ? 0 : 1)
+            }
         }
         .padding(.top, 16)
         .padding(.bottom, 4)
@@ -20,14 +51,11 @@ struct InfraredCardView: View {
 }
 
 fileprivate extension ArchiveItem {
-    var dump: String {
-        var result = ""
-        for property in properties {
-            result += property.key
-            result += ":"
-            result += property.value
-            result += "\n"
-        }
-        return result
-    }
+    var name: String { self["name"] ?? "" }
+    var type: String { self["type"] ?? "" }
+    var proto: String { self["protocol"] ?? "" }
+    var address: String { self["address"] ?? "" }
+    var command: String { self["command"] ?? "" }
+
+    var data: String { self["data"] ?? "" }
 }
