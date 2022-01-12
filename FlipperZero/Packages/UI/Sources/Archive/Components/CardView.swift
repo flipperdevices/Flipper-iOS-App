@@ -267,10 +267,6 @@ struct CardDivider: View {
     }
 }
 
-extension ArchiveItem.Action: ActionProtocol {
-    var id: String { name }
-}
-
 struct CardActions: View {
     @StateObject var viewModel: ArchiveViewModel
     @Binding var isEditMode: Bool
