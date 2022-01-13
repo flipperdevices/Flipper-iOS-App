@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F0DBFA2024EF2F9900EB2880"
-               BuildableName = "FlipperZero.app"
-               BlueprintName = "FlipperZero(iOS)"
-               ReferencedContainer = "container:FlipperZero.xcodeproj">
+               BuildableName = "Flipper.app"
+               BlueprintName = "Flipper(iOS)"
+               ReferencedContainer = "container:Flipper.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
             BlueprintIdentifier = "44A5B59724F05E74009EE7FB"
             BuildableName = "Core.framework"
             BlueprintName = "Core"
-            ReferencedContainer = "container:FlipperZero.xcodeproj">
+            ReferencedContainer = "container:Flipper.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
@@ -86,9 +86,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F0DBFA2024EF2F9900EB2880"
-            BuildableName = "FlipperZero.app"
-            BlueprintName = "FlipperZero(iOS)"
-            ReferencedContainer = "container:FlipperZero.xcodeproj">
+            BuildableName = "Flipper.app"
+            BlueprintName = "Flipper(iOS)"
+            ReferencedContainer = "container:Flipper.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -103,9 +103,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F0DBFA2024EF2F9900EB2880"
-            BuildableName = "FlipperZero.app"
-            BlueprintName = "FlipperZero(iOS)"
-            ReferencedContainer = "container:FlipperZero.xcodeproj">
+            BuildableName = "Flipper.app"
+            BlueprintName = "Flipper(iOS)"
+            ReferencedContainer = "container:Flipper.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

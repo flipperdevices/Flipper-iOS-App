@@ -2,10 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSSiriUsageDescription</key>
-	<string>To control Flipper</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Flipper</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -98,6 +98,8 @@
 	<string>Bluetooth is required to connect to your Flipper device</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Bluetooth is required to connect to your Flipper device</string>
+	<key>NSSiriUsageDescription</key>
+	<string>To control Flipper</string>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>PlayAlertIntent</string>

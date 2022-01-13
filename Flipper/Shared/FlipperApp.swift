@@ -3,7 +3,7 @@ import Core
 import SwiftUI
 
 @main
-struct FlipperZeroApp: App {
+struct FlipperApp: App {
     init() {
         #if !targetEnvironment(simulator)
         Core.registerDependencies()
