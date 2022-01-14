@@ -20,7 +20,7 @@
 		8BCFDDE2277A2405002DA4CD /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE1277A2405002DA4CD /* PreviewViewController.swift */; };
 		8BCFDDE4277A2405002DA4CD /* PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE3277A2405002DA4CD /* PreviewProvider.swift */; };
 		8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */; };
+		F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -80,9 +80,9 @@
 		8BCFDDE3277A2405002DA4CD /* PreviewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewProvider.swift; sourceTree = "<group>"; };
 		8BCFDDE8277A2405002DA4CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8BED6143270B66D8009E51E2 /* perform_lint.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
-		F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperZeroApp.swift; sourceTree = "<group>"; };
+		F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipperZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0DBFA2124EF2F9900EB2880 /* Flipper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flipper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0DBFA2424EF2F9900EB2880 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -207,7 +207,7 @@
 		F0DBFA1924EF2F9600EB2880 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				F0DBFA1A24EF2F9600EB2880 /* FlipperZeroApp.swift */,
+				F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */,
 				F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */,
 			);
 			path = Shared;
@@ -216,7 +216,7 @@
 		F0DBFA2224EF2F9900EB2880 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */,
+				F0DBFA2124EF2F9900EB2880 /* Flipper.app */,
 				8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */,
 			);
 			name = Products;
@@ -254,9 +254,9 @@
 			productReference = 8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		F0DBFA2024EF2F9900EB2880 /* FlipperZero(iOS) */ = {
+		F0DBFA2024EF2F9900EB2880 /* Flipper(iOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(iOS)" */;
+			buildConfigurationList = F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "Flipper(iOS)" */;
 			buildPhases = (
 				49CE8F942525E73200B9CBE4 /* Check code with SwiftLint */,
 				F0DBFA1D24EF2F9900EB2880 /* Sources */,
@@ -270,13 +270,13 @@
 			dependencies = (
 				8BCFDDEA277A2405002DA4CD /* PBXTargetDependency */,
 			);
-			name = "FlipperZero(iOS)";
+			name = "Flipper(iOS)";
 			packageProductDependencies = (
 				8B77A9CC26CAA43300A3DF9F /* Core */,
 				8B7064CB26E27429006CB4A8 /* UI */,
 			);
-			productName = "FlipperZero (iOS)";
-			productReference = F0DBFA2124EF2F9900EB2880 /* FlipperZero.app */;
+			productName = "Flipper (iOS)";
+			productReference = F0DBFA2124EF2F9900EB2880 /* Flipper.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -296,7 +296,7 @@
 					};
 				};
 			};
-			buildConfigurationList = F0DBFA1824EF2F9600EB2880 /* Build configuration list for PBXProject "FlipperZero" */;
+			buildConfigurationList = F0DBFA1824EF2F9600EB2880 /* Build configuration list for PBXProject "Flipper" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -309,7 +309,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F0DBFA2024EF2F9900EB2880 /* FlipperZero(iOS) */,
+				F0DBFA2024EF2F9900EB2880 /* Flipper(iOS) */,
 				8BCFDDDC277A2405002DA4CD /* KeyPreview */,
 			);
 		};
@@ -375,7 +375,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BCB0168278F135C00DA66F5 /* Intents.intentdefinition in Sources */,
-				F0DBFA4324EF2F9900EB2880 /* FlipperZeroApp.swift in Sources */,
+				F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,7 +582,7 @@
 				);
 				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main;
-				PRODUCT_NAME = FlipperZero;
+				PRODUCT_NAME = Flipper;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SUPPORTS_MACCATALYST = NO;
@@ -609,7 +609,7 @@
 				);
 				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main;
-				PRODUCT_NAME = FlipperZero;
+				PRODUCT_NAME = Flipper;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SUPPORTS_MACCATALYST = NO;
@@ -631,7 +631,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F0DBFA1824EF2F9600EB2880 /* Build configuration list for PBXProject "FlipperZero" */ = {
+		F0DBFA1824EF2F9600EB2880 /* Build configuration list for PBXProject "Flipper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F0DBFA4924EF2F9900EB2880 /* Debug */,
@@ -640,7 +640,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "FlipperZero(iOS)" */ = {
+		F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "Flipper(iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F0DBFA4C24EF2F9900EB2880 /* Debug */,

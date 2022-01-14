@@ -25,6 +25,6 @@ jobs:
       - name: Xcode version selection
         run: sudo xcode-select -s /Applications/Xcode_13.2.app
       - name: Build and Test
-        run: xcodebuild test -project ./FlipperZero/FlipperZero.xcodeproj -scheme 'FlipperZero(iOS)' -destination 'platform=iOS Simulator,name=iPhone 13,OS=15.2' -enableCodeCoverage YES build test
+        run: xcodebuild test -project ./Flipper/Flipper.xcodeproj -scheme 'Flipper(iOS)' -destination 'platform=iOS Simulator,name=iPhone 13,OS=15.2' -enableCodeCoverage YES build test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
