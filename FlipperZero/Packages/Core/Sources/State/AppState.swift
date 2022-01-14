@@ -79,6 +79,6 @@ public class AppState {
         deviceStorage.pairedDevice = nil
         manifestStorage.manifest = nil
         UserDefaults.standard.removeObject(forKey: "selectedTab")
-        fatalError("This is fine")
+        exit(0)
     }
 }
