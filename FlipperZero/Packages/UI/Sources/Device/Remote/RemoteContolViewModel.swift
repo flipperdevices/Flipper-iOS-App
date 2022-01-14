@@ -2,8 +2,7 @@ import Core
 import Combine
 import Foundation
 
-// FIXME:
-// @MainActor
+@MainActor
 class RemoteContolViewModel: ObservableObject {
     @Published var frame: ScreenFrame = .init()
 

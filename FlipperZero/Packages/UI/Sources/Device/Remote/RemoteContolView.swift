@@ -76,7 +76,7 @@ struct DeviceScreen: View {
 }
 
 struct DeviceControls: View {
-    var onButton: (InputKey) -> Void
+    var onButton: @MainActor (InputKey) -> Void
 
     var width: Double { Double(.controlsWidth * .scale) }
     var height: Double { Double(.controlsHeight * .scale) }
