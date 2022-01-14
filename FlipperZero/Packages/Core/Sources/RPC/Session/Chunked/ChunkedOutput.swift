@@ -1,6 +1,6 @@
 import struct Foundation.Data
 
-class ChunkedRequest {
+class ChunkedOutput {
     private var queue: Data = .init()
 
     var hasData: Bool {

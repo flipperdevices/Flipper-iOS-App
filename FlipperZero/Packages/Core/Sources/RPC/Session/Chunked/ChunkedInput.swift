@@ -1,6 +1,6 @@
 import Foundation
 
-class ChunkedResponse {
+class ChunkedInput {
     var length: Int?
     var data: Data = .init()
 
@@ -33,7 +33,7 @@ class ChunkedResponse {
 
         while true {
             guard !data.isEmpty else {
-                throw ChunkedResponseError.insufficientData
+                throw ChunkedInputError.insufficientData
             }
             let c = data.removeFirst()
             value |= Int(c & 0x7f) << shift
@@ -42,13 +42,13 @@ class ChunkedResponse {
             }
             shift += 7
             if shift > 63 {
-                throw ChunkedResponseError.malformedProtobuf
+                throw ChunkedInputError.malformedProtobuf
             }
         }
     }
 }
 
-enum ChunkedResponseError: Swift.Error {
+enum ChunkedInputError: Swift.Error {
     case malformedProtobuf
     case insufficientData
 }

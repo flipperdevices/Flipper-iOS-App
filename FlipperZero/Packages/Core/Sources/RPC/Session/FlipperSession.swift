@@ -3,11 +3,11 @@ import Foundation
 class FlipperSession: Session {
     let peripheral: BluetoothPeripheral
 
-    let chunkedResponse: ChunkedResponse = .init()
+    let chunkedInput: ChunkedInput = .init()
     let delimitedResponse: DelimitedResponse = .init()
 
     let delimitedRequest: DelimitedRequest = .init()
-    var chunkedRequest: ChunkedRequest = .init()
+    var chunkedOutput: ChunkedOutput = .init()
 
     @CommandId var nextId: Int
     var queue: Queue = .init()
@@ -64,32 +64,33 @@ class FlipperSession: Session {
             queue.append(command, priority: priority)
 
             if awaitingResponse.isEmpty {
-                sendNextRequest()
+                sendNextCommand()
             }
         }
     }
 
-    func sendNextRequest() {
+    func sendNextCommand() {
         guard let command = queue.dequeue() else { return }
         switch command.content {
         case .message(let message):
-            chunkedRequest.feed([message.serialize()])
+            chunkedOutput.feed([message.serialize()])
             command.continuation.resume(returning: .ok)
+            processChunkedOutput()
         case .request(let request):
             awaitingResponse.append(command)
             var requests = delimitedRequest.split(request)
             for index in requests.indices {
                 requests[index].commandID = .init(command.id)
             }
-            chunkedRequest.feed(requests)
-            processChunkedRequest()
+            chunkedOutput.feed(requests)
+            processChunkedOutput()
         }
     }
 
-    func processChunkedRequest() {
-        while chunkedRequest.hasData && peripheral.maximumWriteValueLength > 0 {
+    func processChunkedOutput() {
+        while chunkedOutput.hasData && peripheral.maximumWriteValueLength > 0 {
             let packetSize = peripheral.maximumWriteValueLength
-            let next = chunkedRequest.next(maxSize: packetSize)
+            let next = chunkedOutput.next(maxSize: packetSize)
             peripheral.send(.init(next))
         }
     }
@@ -97,35 +98,35 @@ class FlipperSession: Session {
 
 extension FlipperSession {
     func onCanWrite() {
-        processChunkedRequest()
+        processChunkedOutput()
     }
 
     func didReceiveData(_ data: Data) {
         do {
             // single PB_Main can be split into ble chunks;
             // returns nil if data.count < main.size
-            guard let nextResponse = try chunkedResponse.feed(data) else {
+            guard let nextCommand = try chunkedInput.feed(data) else {
                 return
             }
-            guard nextResponse.commandID != 0 else {
-                onMessage?(.init(decoding: nextResponse))
+            guard nextCommand.commandID != 0 else {
+                onMessage?(.init(decoding: nextCommand))
                 return
             }
             guard let currentCommand = awaitingResponse.first else {
-                print("unexpected response", nextResponse)
+                print("unexpected response", nextCommand)
                 return
             }
-            guard nextResponse.commandID == currentCommand.id else {
-                print("invalid id \(nextResponse.commandID)")
+            guard nextCommand.commandID == currentCommand.id else {
+                print("invalid id \(nextCommand.commandID)")
                 return
             }
             // complete PB_Main can be split into multiple messages
-            guard let result = try delimitedResponse.feed(nextResponse) else {
+            guard let result = try delimitedResponse.feed(nextCommand) else {
                 return
             }
             // dequeue and send next command
             let command = awaitingResponse.removeFirst()
-            sendNextRequest()
+            sendNextCommand()
             // handle current response
             switch result {
             case .success(let response):
