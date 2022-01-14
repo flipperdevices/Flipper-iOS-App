@@ -22,6 +22,10 @@ public class RPC {
                     return
                 }
                 self?.session = FlipperSession(peripheral: peripheral)
+                self?.session?.onDecodeError = {
+                    self?.connector.disconnect(from: peripheral.id)
+                    self?.connector.connect(to: peripheral.id)
+                }
             }
             .store(in: &disposeBag)
     }

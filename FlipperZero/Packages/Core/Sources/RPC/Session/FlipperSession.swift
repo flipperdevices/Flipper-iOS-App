@@ -13,6 +13,7 @@ class FlipperSession: Session {
     var queue: Queue = .init()
     var awaitingResponse: [Command] = []
 
+    var onDecodeError: (() -> Void)?
     var onScreenFrame: ((ScreenFrame) -> Void)?
 
     var disposeBag = DisposeBag()
@@ -91,6 +92,10 @@ class FlipperSession: Session {
     }
 
     func didReceiveUnbound(_ main: PB_Main) {
+        guard main.commandStatus != .errorDecode else {
+            onDecodeError?()
+            return
+        }
         guard case let .guiScreenFrame(content) = main.content else {
             return
         }
