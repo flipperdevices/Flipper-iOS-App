@@ -5,10 +5,12 @@ public enum Priority {
 }
 
 protocol Session: AnyObject {
-    var onDecodeError: (() -> Void)? { get set }
-    var onScreenFrame: ((ScreenFrame) -> Void)? { get set }
+    var onMessage: ((Message) -> Void)? { get set }
 
-    func sendScreenFrame(_ frame: ScreenFrame) async throws
+    func send(
+        _ message: Message,
+        priority: Priority?
+    ) async throws
 
     func send(
         _ request: Request,
@@ -21,5 +23,11 @@ extension Session {
         _ request: Request
     ) async throws -> Response {
         try await send(request, priority: nil)
+    }
+
+    func send(
+        _ message: Message
+    ) async throws {
+        try await send(message, priority: nil)
     }
 }

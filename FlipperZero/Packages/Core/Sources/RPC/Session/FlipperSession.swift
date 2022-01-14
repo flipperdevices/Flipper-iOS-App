@@ -13,8 +13,7 @@ class FlipperSession: Session {
     var queue: Queue = .init()
     var awaitingResponse: [Command] = []
 
-    var onDecodeError: (() -> Void)?
-    var onScreenFrame: ((ScreenFrame) -> Void)?
+    var onMessage: ((Message) -> Void)?
 
     var disposeBag = DisposeBag()
 
@@ -37,26 +36,29 @@ class FlipperSession: Session {
             .store(in: &disposeBag)
     }
 
-    func sendScreenFrame(_ frame: ScreenFrame) async throws {
-        _ = try await send(.gui(.displayFrame(frame)), id: 0)
+    func send(
+        _ message: Message,
+        priority: Priority?
+    ) async throws {
+        _ = try await send(.message(message), id: 0, priority: priority)
     }
 
     func send(
         _ request: Request,
         priority: Priority? = nil
     ) async throws -> Response {
-        try await send(request, id: nextId, priority: priority)
+        try await send(.request(request), id: nextId, priority: priority)
     }
 
-    func send(
-        _ request: Request,
+    private func send(
+        _ content: Command.Content,
         id: Int,
         priority: Priority? = nil
     ) async throws -> Response {
         try await withUnsafeThrowingContinuation { continuation in
             let command = Command(
                 id: id,
-                request: request,
+                content: content,
                 continuation: continuation)
 
             queue.append(command, priority: priority)
@@ -69,17 +71,18 @@ class FlipperSession: Session {
 
     func sendNextRequest() {
         guard let command = queue.dequeue() else { return }
-        if command.id != 0 {
-            awaitingResponse.append(command)
-        }
-        var requests = delimitedRequest.split(command.request)
-        for index in requests.indices {
-            requests[index].commandID = .init(command.id)
-        }
-        chunkedRequest.feed(requests)
-        processChunkedRequest()
-        if command.id == 0 {
+        switch command.content {
+        case .message(let message):
+            chunkedRequest.feed([message.serialize()])
             command.continuation.resume(returning: .ok)
+        case .request(let request):
+            awaitingResponse.append(command)
+            var requests = delimitedRequest.split(request)
+            for index in requests.indices {
+                requests[index].commandID = .init(command.id)
+            }
+            chunkedRequest.feed(requests)
+            processChunkedRequest()
         }
     }
 
@@ -89,20 +92,6 @@ class FlipperSession: Session {
             let next = chunkedRequest.next(maxSize: packetSize)
             peripheral.send(.init(next))
         }
-    }
-
-    func didReceiveUnbound(_ main: PB_Main) {
-        guard main.commandStatus != .errorDecode else {
-            onDecodeError?()
-            return
-        }
-        guard case let .guiScreenFrame(content) = main.content else {
-            return
-        }
-        guard let frame = ScreenFrame(.init(content.data)) else {
-            return
-        }
-        onScreenFrame?(frame)
     }
 }
 
@@ -119,7 +108,7 @@ extension FlipperSession {
                 return
             }
             guard nextResponse.commandID != 0 else {
-                didReceiveUnbound(nextResponse)
+                onMessage?(.init(decoding: nextResponse))
                 return
             }
             guard let currentCommand = awaitingResponse.first else {

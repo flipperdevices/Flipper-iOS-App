@@ -1,10 +1,17 @@
 import func Foundation.pow
 
+// swiftlint:disable nesting
+
 extension FlipperSession {
     struct Command {
         let id: Int
-        let request: Request
+        let content: Content
         let continuation: UnsafeContinuation<Response, Swift.Error>
+
+        enum Content {
+            case request(Request)
+            case message(Message)
+        }
     }
 
     struct Queue {

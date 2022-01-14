@@ -4,32 +4,52 @@ import struct Foundation.Date
 public class RPC {
     public static let shared: RPC = .init()
 
+    @Inject private var connector: BluetoothConnector
+    private var disposeBag: DisposeBag = .init()
+
     private var session: Session?
-
-    @Inject var connector: BluetoothConnector
-    var disposeBag: DisposeBag = .init()
-
-    public var onScreenFrame: ((ScreenFrame) -> Void)? {
-        get { session?.onScreenFrame }
-        set { session?.onScreenFrame = newValue }
+    private var peripheral: BluetoothPeripheral? {
+        didSet { self.updateSession() }
     }
+    private var onScreenFrame: ((ScreenFrame) -> Void)?
 
     private init() {
         connector.connectedPeripherals
             .sink { [weak self] peripherals in
-                guard let peripheral = peripherals.first else {
-                    self?.session = nil
-                    return
-                }
-                self?.session = FlipperSession(peripheral: peripheral)
-                self?.session?.onDecodeError = {
-                    self?.connector.disconnect(from: peripheral.id)
-                    self?.connector.connect(to: peripheral.id)
-                }
+                self?.peripheral = peripherals.first
             }
             .store(in: &disposeBag)
     }
 
+    private func updateSession() {
+        guard let peripheral = peripheral else {
+            self.session = nil
+            return
+        }
+        self.session = FlipperSession(peripheral: peripheral)
+        self.session?.onMessage = self.onMessage
+    }
+
+    private func onMessage(_ message: Message) {
+        switch message {
+        case .decodeError:
+            onDecodeError()
+        case .screenFrame(let screenFrame):
+            onScreenFrame?(screenFrame)
+        }
+    }
+
+    private func onDecodeError() {
+        if let peripheral = peripheral {
+            connector.disconnect(from: peripheral.id)
+            connector.connect(to: peripheral.id)
+        }
+    }
+}
+
+// MARK: Public methods
+
+extension RPC {
     public func deviceInfo() async throws -> [String: String] {
         let response = try await session?.send(.system(.info))
         guard case .system(.info(let result)) = response else {
@@ -185,6 +205,10 @@ public class RPC {
         }
     }
 
+    public func onScreenFrame(_ body: @escaping (ScreenFrame) -> Void) {
+        self.onScreenFrame = body
+    }
+
     public func pressButton(_ button: InputKey) async throws {
         func inputType(_ type: InputType) -> Request {
             .gui(.button(button, type))
@@ -224,8 +248,11 @@ public class RPC {
         }
     }
 
-    public func sendScreenFrame(_ frame: ScreenFrame) async throws {
-        try await session?.sendScreenFrame(frame)
+    public func sendScreenFrame(
+        _ frame: ScreenFrame,
+        priority: Priority? = nil
+    ) async throws {
+        try await session?.send(.screenFrame(frame), priority: priority)
     }
 }
 
