@@ -36,7 +36,6 @@ public enum Request {
     public enum GUI {
         case screenStream(Bool)
         case virtualDisplay(Bool)
-        case displayFrame(ScreenFrame)
         case button(InputKey, InputType)
     }
 }
@@ -176,12 +175,6 @@ extension Request.GUI {
             case false:
                 return .with {
                     $0.guiStopVirtualDisplayRequest = .init()
-                }
-            }
-        case let .displayFrame(frame):
-            return .with {
-                $0.guiScreenFrame = .with {
-                    $0.data = .init(frame.bytes)
                 }
             }
         case let .button(key, type):

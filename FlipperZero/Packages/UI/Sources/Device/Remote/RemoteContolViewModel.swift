@@ -10,7 +10,9 @@ class RemoteContolViewModel: ObservableObject {
     let rpc: RPC = .shared
 
     init() {
-        rpc.onScreenFrame = self.onScreenFrame
+        rpc.onScreenFrame { [weak self] in
+            self?.frame = $0
+        }
     }
 
     func startStreaming() {
@@ -25,10 +27,6 @@ class RemoteContolViewModel: ObservableObject {
         Task {
             try await rpc.stopStreaming()
         }
-    }
-
-    func onScreenFrame(_ frame: ScreenFrame) {
-        self.frame = frame
     }
 
     func onButton(_ button: InputKey) {
