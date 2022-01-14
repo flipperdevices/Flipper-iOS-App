@@ -2,7 +2,7 @@ import Core
 import Combine
 
 @MainActor
-public class OptionsViewModel: ObservableObject {
+class OptionsViewModel: ObservableObject {
     let appState: AppState = .shared
 
     var hideTabbar: (Bool) -> Void = { _ in }

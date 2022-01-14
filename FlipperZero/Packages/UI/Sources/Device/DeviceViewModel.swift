@@ -4,7 +4,7 @@ import Inject
 import Foundation
 
 @MainActor
-public class DeviceViewModel: ObservableObject {
+class DeviceViewModel: ObservableObject {
     @Published var appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
@@ -51,7 +51,7 @@ public class DeviceViewModel: ObservableObject {
         return .init(build)
     }
 
-    public init() {
+    init() {
         appState.$device
             .receive(on: DispatchQueue.main)
             .assign(to: \.device, on: self)

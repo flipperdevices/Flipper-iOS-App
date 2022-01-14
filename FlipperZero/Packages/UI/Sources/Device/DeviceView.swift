@@ -1,11 +1,11 @@
 import Core
 import SwiftUI
 
-public struct DeviceView: View {
+struct DeviceView: View {
     @StateObject var viewModel: DeviceViewModel
     @State private var action: String?
 
-    public var body: some View {
+    var body: some View {
         NavigationView {
             VStack {
                 DeviceViewHeader(
