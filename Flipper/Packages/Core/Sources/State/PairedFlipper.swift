@@ -101,10 +101,20 @@ class PairedFlipper: PairedDevice, ObservableObject {
             .store(in: &disposeBag)
     }
 
+    func connect() {
+        if let flipper = self.flipper {
+            connector.connect(to: flipper.id)
+        }
+    }
+
     func disconnect() {
         if let flipper = self.flipper {
             connector.disconnect(from: flipper.id)
         }
+    }
+
+    func forget() {
+        disconnect()
         self.flipper = nil
     }
 }

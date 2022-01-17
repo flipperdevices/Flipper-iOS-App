@@ -18,19 +18,7 @@ public class AppState {
     @Published public var capabilities: Capabilities?
     @Published public var archive: Archive = .shared
     @Published public var status: Status = .noDevice {
-        didSet {
-            if oldValue == .connecting, status == .disconnected {
-                self.status = .pairingIssue
-                return
-            }
-
-            if oldValue == .connecting, status == .connected {
-                Task {
-                    await synchronizeDateTime()
-                    await synchronize()
-                }
-            }
-        }
+        didSet { onStatusChanged(oldValue: oldValue) }
     }
 
     public init() {
@@ -53,12 +41,54 @@ public class AppState {
             .store(in: &disposeBag)
     }
 
+    // MARK: Status
+
+    var connectAttemptCount = 0
+    let connectAttemptCountMax = 3
+
+    func onStatusChanged(oldValue: Status) {
+        guard oldValue == .connecting else {
+            return
+        }
+        switch status {
+        case .connected: didConnect()
+        case .disconnected: didFailPairing()
+        default: break
+        }
+    }
+
+    func didConnect() {
+        connectAttemptCount = 0
+        Task {
+            await synchronizeDateTime()
+            await synchronize()
+        }
+    }
+
+    func didFailPairing() {
+        guard connectAttemptCount >= connectAttemptCountMax else {
+            connectAttemptCount += 1
+            connect()
+            return
+        }
+        self.status = .pairingIssue
+    }
+
+    // MARK: Connection
+
     public func connect() {
+        pairedDevice.connect()
     }
 
     public func disconnect() {
         pairedDevice.disconnect()
     }
+
+    public func forgetDevice() {
+        pairedDevice.forget()
+    }
+
+    // MARK: Synchronization
 
     public func synchronize() async {
         guard status == .connected else { return }
@@ -73,6 +103,8 @@ public class AppState {
         try? await RPC.shared.setDate()
         status = .init(device?.state)
     }
+
+    // MARK: App Reset
 
     // FIXME: Find a better way
 
