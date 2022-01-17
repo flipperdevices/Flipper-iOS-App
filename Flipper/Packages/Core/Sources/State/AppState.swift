@@ -19,6 +19,11 @@ public class AppState {
     @Published public var archive: Archive = .shared
     @Published public var status: Status = .noDevice {
         didSet {
+            if oldValue == .connecting, status == .disconnected {
+                self.status = .pairingIssue
+                return
+            }
+
             if oldValue == .connecting, status == .connected {
                 Task {
                     await synchronizeDateTime()
