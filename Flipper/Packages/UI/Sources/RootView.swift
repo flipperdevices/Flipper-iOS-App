@@ -17,10 +17,8 @@ public struct RootView: View {
                     viewModel.isTabViewHidden = isEditing
                 })
                 .opacity(viewModel.selectedTab == .archive ? 1 : 0)
-                OptionsView(viewModel: .init { isEditing in
-                    viewModel.isTabViewHidden = isEditing
-                })
-                .opacity(viewModel.selectedTab == .options ? 1 : 0)
+                OptionsView(viewModel: .init())
+                    .opacity(viewModel.selectedTab == .options ? 1 : 0)
             }
 
             if !viewModel.isTabViewHidden {
