@@ -78,6 +78,22 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
             manager.registerForConnectionEvents(options: [
                 .peripheralUUIDs: [$0.identifier]
             ])
+
+            catchPairingIssue(for: identifier)
+        }
+    }
+
+    func catchPairingIssue(for identifier: UUID) {
+        Task {
+            guard let peripheral = connectedPeripheralsMap[identifier] else {
+                return
+            }
+            while peripheral.state == .connecting {
+                try await Task.sleep(nanoseconds: 10 * 1_000_000)
+            }
+            if peripheral.state == .disconnected {
+                didFailPairing(peripheral)
+            }
         }
     }
 
@@ -100,6 +116,10 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
             device.onDisconnect()
             connect(to: peripheral.identifier)
         }
+    }
+
+    func didFailPairing(_ peripheral: FlipperPeripheral) {
+        connectedPeripheralsMap[peripheral.id] = nil
     }
 }
 
@@ -136,6 +156,7 @@ extension FlipperCentral: CBCentralManagerDelegate {
 // MARK: BluetoothConnector
 
 extension FlipperCentral {
+
     // MARK: Connection status changed
 
     func centralManager(

@@ -4,6 +4,7 @@ public enum Status: CustomStringConvertible {
     case connected
     case disconnected
     case synchronizing
+    case pairingIssue
 
     public var description: String {
         switch self {
@@ -12,6 +13,7 @@ public enum Status: CustomStringConvertible {
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"
         case .synchronizing: return "Connected"
+        case .pairingIssue: return "Pairing Issue"
         }
     }
 }

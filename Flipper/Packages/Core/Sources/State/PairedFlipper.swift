@@ -11,17 +11,10 @@ class PairedFlipper: PairedDevice, ObservableObject {
 
     private var flipper: BluetoothPeripheral? {
         didSet {
-            if let flipper = flipper {
-                if oldValue == nil {
-                    subscribeToUpdates()
-                }
-                let peripheral = merge(peripheralSubject.value, flipper)
-                storage.pairedDevice = peripheral
-                peripheralSubject.value = peripheral
-            } else {
-                storage.pairedDevice = nil
-                peripheralSubject.value = nil
+            if oldValue == nil, flipper != nil {
+                subscribeToUpdates()
             }
+            flipperDidChange()
         }
     }
 
@@ -36,6 +29,17 @@ class PairedFlipper: PairedDevice, ObservableObject {
         }
 
         saveLastConnectedDeviceOnConnect()
+    }
+
+    func flipperDidChange() {
+        if let flipper = flipper {
+            let peripheral = merge(peripheralSubject.value, flipper)
+            storage.pairedDevice = peripheral
+            peripheralSubject.value = peripheral
+        } else {
+            storage.pairedDevice = nil
+            peripheralSubject.value = nil
+        }
     }
 
     func merge(
@@ -76,6 +80,10 @@ class PairedFlipper: PairedDevice, ObservableObject {
             .sink { [weak self] peripherals in
                 guard let self = self else { return }
                 guard let peripheral = peripherals.first else {
+                    // NOTE: Pairing issue
+                    if self.flipper?.state == .disconnected {
+                        self.flipperDidChange()
+                    }
                     return
                 }
                 self.flipper = peripheral
@@ -93,10 +101,20 @@ class PairedFlipper: PairedDevice, ObservableObject {
             .store(in: &disposeBag)
     }
 
+    func connect() {
+        if let flipper = self.flipper {
+            connector.connect(to: flipper.id)
+        }
+    }
+
     func disconnect() {
         if let flipper = self.flipper {
             connector.disconnect(from: flipper.id)
         }
+    }
+
+    func forget() {
+        disconnect()
         self.flipper = nil
     }
 }
