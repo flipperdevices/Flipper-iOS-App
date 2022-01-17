@@ -119,6 +119,7 @@ struct HeaderDeviceView: View {
             }
         }
         .frame(height: 30)
+        .background(Color.secondary.opacity(0.1).cornerRadius(15))
         .overlay(border)
     }
 
