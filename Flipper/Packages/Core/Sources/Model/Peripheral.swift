@@ -55,6 +55,34 @@ public struct Peripheral: Equatable, Codable, Identifiable {
     }
 }
 
+extension Peripheral {
+    private var versionString: Substring? {
+        information?.softwareRevision.split(separator: " ").dropFirst().first
+    }
+
+    public var protobufVersion: ProtobufVersion {
+        guard let version = versionString else {
+            return .v0
+        }
+        guard version != "dev" else {
+            return .v1
+        }
+        let parts = version.split(separator: ".")
+        guard parts.count == 3,
+            let major = Int(parts[0]),
+            let minor = Int(parts[1]),
+            let patch = Int(parts[2])
+        else {
+            return .v0
+        }
+        print("\(major).\(minor).\(patch)")
+        switch minor {
+        case ..<45: return .v0
+        default: return .v1
+        }
+    }
+}
+
 fileprivate extension String {
     static var deviceInformation: String { "Device Information" }
     static var battery: String { "Battery" }

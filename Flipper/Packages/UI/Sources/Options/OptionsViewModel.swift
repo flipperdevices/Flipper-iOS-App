@@ -1,14 +1,20 @@
 import Core
 import Combine
+import Foundation
 
 @MainActor
 class OptionsViewModel: ObservableObject {
     let appState: AppState = .shared
+    private var disposeBag: DisposeBag = .init()
 
-    var hideTabbar: (Bool) -> Void = { _ in }
+    @Published var canPlayAlert = false
 
-    init(hideTabbar: @escaping (Bool) -> Void = { _ in }) {
-        self.hideTabbar = hideTabbar
+    init() {
+        appState.$capabilities
+            .receive(on: DispatchQueue.main)
+            .compactMap(\.?.canPlayAlert)
+            .assign(to: \.canPlayAlert, on: self)
+            .store(in: &disposeBag)
     }
 
     func resetApp() {

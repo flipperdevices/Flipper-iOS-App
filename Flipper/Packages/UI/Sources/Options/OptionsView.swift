@@ -26,9 +26,11 @@ struct OptionsView: View {
                 }
 
                 Section(header: Text("Remote")) {
-                    Button("Play Alert") {
-                        Task {
-                            try await RPC.shared.playAlert()
+                    if viewModel.canPlayAlert {
+                        Button("Play Alert") {
+                            Task {
+                                try await RPC.shared.playAlert()
+                            }
                         }
                     }
                     Button("Reboot Flipper") {

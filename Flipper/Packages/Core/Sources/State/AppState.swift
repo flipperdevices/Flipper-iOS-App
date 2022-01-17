@@ -15,6 +15,7 @@ public class AppState {
     private var disposeBag: DisposeBag = .init()
 
     @Published public var device: Peripheral?
+    @Published public var capabilities: Capabilities?
     @Published public var archive: Archive = .shared
     @Published public var status: Status = .noDevice {
         didSet {
@@ -33,6 +34,7 @@ public class AppState {
             .sink { [weak self] device in
                 self?.device = device
                 self?.status = .init(device?.state)
+                self?.capabilities = .init(device?.protobufVersion)
             }
             .store(in: &disposeBag)
 
