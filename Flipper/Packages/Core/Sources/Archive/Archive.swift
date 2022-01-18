@@ -8,16 +8,6 @@ public class Archive: ObservableObject {
     @Inject var storage: ArchiveStorage
     @Inject var synchronization: SynchronizationProtocol
 
-    var start: Date = .init()
-    @Published public var isSynchronizing = false {
-        didSet {
-            switch isSynchronizing {
-            case true: start = .init()
-            case false: print(Date().timeIntervalSince(start))
-            }
-        }
-    }
-
     @Published public var items: [ArchiveItem] = [] {
         didSet {
             deletedItems = items.filter { $0.status == .deleted }
@@ -125,10 +115,6 @@ public class Archive: ObservableObject {
     }
 
     public func syncWithDevice() async {
-        guard !isSynchronizing else { return }
-        isSynchronizing = true
-        defer { isSynchronizing = false }
-
         do {
             try await synchronization.syncWithDevice()
         } catch {
