@@ -47,13 +47,18 @@ public class AppState {
     let connectAttemptCountMax = 3
 
     func onStatusChanged(oldValue: Status) {
-        guard oldValue == .connecting else {
-            return
-        }
-        switch status {
-        case .connected: didConnect()
-        case .disconnected: didFailPairing()
-        default: break
+        switch oldValue {
+        case .connecting:
+            switch status {
+            case .connected: didConnect()
+            case .disconnected: didFailPairing()
+            default: break
+            }
+        default:
+            switch status {
+            case .disconnected: connect()
+            default: break
+            }
         }
     }
 
