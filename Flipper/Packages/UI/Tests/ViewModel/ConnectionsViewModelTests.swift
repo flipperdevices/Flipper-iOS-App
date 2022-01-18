@@ -75,6 +75,7 @@ private class MockPeripheral: BluetoothPeripheral {
     var state: Peripheral.State = .disconnected
     var services: [Peripheral.Service] = []
 
+    var isPairingFailed: Bool { false }
     var maximumWriteValueLength: Int { 512 }
 
     var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }

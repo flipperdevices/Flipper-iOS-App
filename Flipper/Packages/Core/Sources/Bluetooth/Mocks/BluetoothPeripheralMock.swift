@@ -23,6 +23,7 @@ class BluetoothPeripheralMock: BluetoothPeripheral {
             ])
     ]
 
+    var isPairingFailed: Bool { false }
     var maximumWriteValueLength: Int { 512 }
 
     var info: SafePublisher<Void> {

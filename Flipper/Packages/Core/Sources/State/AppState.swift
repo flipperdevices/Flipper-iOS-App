@@ -51,8 +51,8 @@ public class AppState {
         // MARK: Default
         case .connecting where newValue == .connected: didConnect()
         case .connecting where newValue == .disconnected: didFailToConnect()
-        case .connected where newValue == .disconnected: connect()
-        case .synchronizing where newValue == .disconnected: connect()
+        case .connected where newValue == .disconnected: didDisconnect()
+        case .synchronizing where newValue == .disconnected: didDisconnect()
         default: status = .init(newValue)
         }
     }
@@ -65,6 +65,14 @@ public class AppState {
             await synchronizeDateTime()
             await synchronize()
         }
+    }
+
+    func didDisconnect() {
+        status = .disconnected
+        guard !pairedDevice.isPairingFailed else {
+            return
+        }
+        connect()
     }
 
     func didFailToConnect() {

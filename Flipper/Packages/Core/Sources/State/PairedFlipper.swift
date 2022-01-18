@@ -18,6 +18,8 @@ class PairedFlipper: PairedDevice, ObservableObject {
         }
     }
 
+    var isPairingFailed: Bool { flipper?.isPairingFailed ?? false }
+
     var peripheral: SafePublisher<Peripheral?> {
         peripheralSubject.eraseToAnyPublisher()
     }
