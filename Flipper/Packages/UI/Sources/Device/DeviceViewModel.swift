@@ -52,11 +52,17 @@ class DeviceViewModel: ObservableObject {
     }
 
     var internalSpace: String {
-        device?.storage?.internal?.description ?? ""
+        guard let device = device else { return .noDevice }
+        guard let storage = device.storage else { return .unknown }
+
+        return storage.internal?.description ?? ""
     }
 
     var externalSpace: String {
-        device?.storage?.external?.description ?? ""
+        guard let device = device else { return .noDevice }
+        guard let storage = device.storage else { return .unknown }
+
+        return storage.external?.description ?? ""
     }
 
     init() {
