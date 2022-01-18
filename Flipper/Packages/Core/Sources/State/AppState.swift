@@ -1,7 +1,7 @@
 import Inject
 import Combine
 import Dispatch
-import SwiftUI
+import Foundation
 
 public class AppState {
     public static let shared: AppState = .init()
@@ -47,19 +47,25 @@ public class AppState {
     let connectAttemptCountMax = 3
 
     func onStatusChanged(oldValue: Status) {
-        guard oldValue == .connecting else {
-            return
-        }
-        switch status {
-        case .connected: didConnect()
-        case .disconnected: didFailPairing()
-        default: break
+        switch oldValue {
+        case .connecting:
+            switch status {
+            case .connected: didConnect()
+            case .disconnected: didFailPairing()
+            default: break
+            }
+        default:
+            switch status {
+            case .disconnected: connect()
+            default: break
+            }
         }
     }
 
     func didConnect() {
         connectAttemptCount = 0
         Task {
+            await getStorageInfo()
             await synchronizeDateTime()
             await synchronize()
         }
@@ -102,6 +108,17 @@ public class AppState {
         status = .synchronizing
         try? await RPC.shared.setDate()
         status = .init(device?.state)
+    }
+
+    func getStorageInfo() async {
+        var storage = device?.storage ?? .init()
+        if let intSpace = try? await RPC.shared.getStorageInfo(at: "/int") {
+            storage.internal = intSpace
+        }
+        if let extSpace = try? await RPC.shared.getStorageInfo(at: "/ext") {
+            storage.external = extSpace
+        }
+        device?.storage = storage
     }
 
     // MARK: App Reset

@@ -1,11 +1,11 @@
 import Core
 import Combine
 import Inject
-import struct Foundation.UUID
+import Foundation
 
 @MainActor
 class DeviceInfoViewModel: ObservableObject {
-    @Inject var pairedDevice: PairedDevice
+    let appState: AppState = .shared
     var disposeBag = DisposeBag()
 
     @Published var device: Peripheral?
@@ -20,10 +20,9 @@ class DeviceInfoViewModel: ObservableObject {
     }
 
     init() {
-        pairedDevice.peripheral
-            .sink { [weak self] device in
-                self?.device = device
-            }
+        appState.$device
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.device, on: self)
             .store(in: &disposeBag)
     }
 
@@ -34,6 +33,6 @@ class DeviceInfoViewModel: ObservableObject {
     }
 
     func disconnectFlipper() {
-        pairedDevice.disconnect()
+        appState.forgetDevice()
     }
 }

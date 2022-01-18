@@ -114,7 +114,6 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
         if let device = connectedPeripheralsMap[peripheral.identifier] {
             connectedPeripheralsMap[peripheral.identifier] = nil
             device.onDisconnect()
-            connect(to: peripheral.identifier)
         }
     }
 

@@ -9,6 +9,7 @@ public struct Peripheral: Equatable, Codable, Identifiable {
     public var state: State = .disconnected
     public var information: Service.DeviceInformation?
     public var battery: Service.Battery?
+    public var storage: StorageInfo?
 
     public enum Color: Codable {
         case unknown
@@ -52,6 +53,11 @@ public struct Peripheral: Equatable, Codable, Identifiable {
             public var name: String
             public var value: [UInt8]
         }
+    }
+
+    public struct StorageInfo: Equatable, Codable {
+        public var `internal`: StorageSpace?
+        public var external: StorageSpace?
     }
 }
 
