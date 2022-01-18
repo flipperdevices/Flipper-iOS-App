@@ -65,6 +65,7 @@ public class AppState {
     func didConnect() {
         connectAttemptCount = 0
         Task {
+            await getStorageInfo()
             await synchronizeDateTime()
             await synchronize()
         }
@@ -107,6 +108,17 @@ public class AppState {
         status = .synchronizing
         try? await RPC.shared.setDate()
         status = .init(device?.state)
+    }
+
+    func getStorageInfo() async {
+        var storage = device?.storage ?? .init()
+        if let intSpace = try? await RPC.shared.getStorageInfo(at: "/int") {
+            storage.internal = intSpace
+        }
+        if let extSpace = try? await RPC.shared.getStorageInfo(at: "/ext") {
+            storage.external = extSpace
+        }
+        device?.storage = storage
     }
 
     // MARK: App Reset

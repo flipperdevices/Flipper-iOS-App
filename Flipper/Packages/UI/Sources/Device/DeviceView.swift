@@ -30,7 +30,9 @@ struct DeviceView: View {
                         } label: {
                             DeviceInfoPreview(
                                 firmwareVersion: viewModel.firmwareVersion,
-                                firmwareBuild: viewModel.firmwareBuild)
+                                firmwareBuild: viewModel.firmwareBuild,
+                                internalSpace: viewModel.internalSpace,
+                                externalSpace: viewModel.externalSpace)
                         }
 
                         RoundedButton("Synchronize") {
@@ -130,6 +132,8 @@ struct DeviceViewHeader: View {
 struct DeviceInfoPreview: View {
     let firmwareVersion: String
     let firmwareBuild: String
+    let internalSpace: String
+    let externalSpace: String
 
     var body: some View {
         VStack {
@@ -141,9 +145,21 @@ struct DeviceInfoPreview: View {
             }
 
             VStack {
-                DeviceInfoRow(name: "Firmware Version", value: firmwareVersion)
+                DeviceInfoRow(
+                    name: "Firmware Version",
+                    value: firmwareVersion)
                 Divider()
-                DeviceInfoRow(name: "Firmware Build", value: firmwareBuild)
+                DeviceInfoRow(
+                    name: "Firmware Build",
+                    value: firmwareBuild)
+                Divider()
+                DeviceInfoRow(
+                    name: "Internal Flash Free/Total",
+                    value: internalSpace)
+                Divider()
+                DeviceInfoRow(
+                    name: "SD Card Free/Total",
+                    value: externalSpace)
                 Divider()
             }
             .padding(.vertical, 12)

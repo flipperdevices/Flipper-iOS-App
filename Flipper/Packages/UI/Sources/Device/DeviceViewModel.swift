@@ -51,6 +51,14 @@ class DeviceViewModel: ObservableObject {
         return .init(build)
     }
 
+    var internalSpace: String {
+        device?.storage?.internal?.description ?? ""
+    }
+
+    var externalSpace: String {
+        device?.storage?.external?.description ?? ""
+    }
+
     init() {
         appState.$device
             .receive(on: DispatchQueue.main)
@@ -65,5 +73,18 @@ class DeviceViewModel: ObservableObject {
 
     func sync() {
         Task { await appState.synchronize() }
+    }
+}
+
+extension StorageSpace: CustomStringConvertible {
+    public var description: String {
+        "\(free.hr) / \(total.hr)"
+    }
+}
+
+extension Int {
+    var hr: String {
+        let formatter = ByteCountFormatter()
+        return formatter.string(fromByteCount: Int64(self))
     }
 }
