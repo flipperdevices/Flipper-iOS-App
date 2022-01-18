@@ -1,7 +1,7 @@
 import Inject
 import Combine
 import Dispatch
-import SwiftUI
+import Foundation
 
 public class AppState {
     public static let shared: AppState = .init()

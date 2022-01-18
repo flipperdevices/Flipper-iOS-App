@@ -19,7 +19,7 @@ class DeviceViewModel: ObservableObject {
     @Published var presentConnectionsSheet = false {
         didSet {
             if presentConnectionsSheet == true {
-                appState.disconnect()
+                appState.forgetDevice()
             }
         }
     }

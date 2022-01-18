@@ -5,7 +5,7 @@ import SwiftUI
 
 @MainActor
 class InstructionsViewModel: ObservableObject {
-    @Inject var flipper: PairedDevice
+    private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
     @Published var presentConnectionsSheet = false
@@ -16,12 +16,12 @@ class InstructionsViewModel: ObservableObject {
     init(_ presentWelcomeSheet: Binding<Bool>) {
         _presentWelcomeSheet = presentWelcomeSheet
 
-        flipper.peripheral
+        appState.$status
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                guard let self = self else { return }
-                if $0?.state == .connected {
-                    self.presentConnectionsSheet = false
-                    self.presentWelcomeSheet = false
+                if $0 == .connected {
+                    self?.presentConnectionsSheet = false
+                    self?.presentWelcomeSheet = false
                 }
             }
             .store(in: &disposeBag)
