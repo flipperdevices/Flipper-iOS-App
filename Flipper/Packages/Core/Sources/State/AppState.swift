@@ -18,7 +18,7 @@ public class AppState {
     @Published public var capabilities: Capabilities?
     @Published public var archive: Archive = .shared
     @Published public var status: Status = .noDevice {
-        didSet { onStatusChanged(oldValue: oldValue) }
+        didSet { measureSyncTime() }
     }
 
     public init() {
@@ -26,17 +26,8 @@ public class AppState {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] device in
                 self?.device = device
-                self?.status = .init(device?.state)
                 self?.capabilities = .init(device?.protobufVersion)
-            }
-            .store(in: &disposeBag)
-
-        archive.$isSynchronizing
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isSynchronizing in
-                self?.status = isSynchronizing
-                    ? .synchronizing
-                    : .init(self?.device?.state)
+                self?.updateState(device?.state)
             }
             .store(in: &disposeBag)
     }
@@ -46,23 +37,28 @@ public class AppState {
     var connectAttemptCount = 0
     let connectAttemptCountMax = 3
 
-    func onStatusChanged(oldValue: Status) {
-        switch oldValue {
-        case .connecting:
-            switch status {
-            case .connected: didConnect()
-            case .disconnected: didFailPairing()
-            default: break
-            }
-        default:
-            switch status {
-            case .disconnected: connect()
-            default: break
-            }
+    func updateState(_ newValue: Peripheral.State?) {
+        guard let newValue = newValue else {
+            status = .noDevice
+            return
+        }
+        switch status {
+        // MARK: Pairing
+        case .pairing where device?.battery != nil: didConnect()
+        case .noDevice where newValue == .connecting: status = .preParing
+        case .preParing where newValue == .connected: status = .pairing
+        case .preParing where newValue == .disconnected: didFailToConnect()
+        // MARK: Default
+        case .connecting where newValue == .connected: didConnect()
+        case .connecting where newValue == .disconnected: didFailToConnect()
+        case .connected where newValue == .disconnected: didDisconnect()
+        case .synchronizing where newValue == .disconnected: didDisconnect()
+        default: status = .init(newValue)
         }
     }
 
     func didConnect() {
+        status = .connected
         connectAttemptCount = 0
         Task {
             await getStorageInfo()
@@ -71,13 +67,22 @@ public class AppState {
         }
     }
 
-    func didFailPairing() {
+    func didDisconnect() {
+        status = .disconnected
+        guard !pairedDevice.isPairingFailed else {
+            return
+        }
+        connect()
+    }
+
+    func didFailToConnect() {
+        status = .disconnected
         guard connectAttemptCount >= connectAttemptCountMax else {
             connectAttemptCount += 1
             connect()
             return
         }
-        self.status = .pairingIssue
+        status = .pairingIssue
     }
 
     // MARK: Connection
@@ -119,6 +124,23 @@ public class AppState {
             storage.external = extSpace
         }
         device?.storage = storage
+    }
+
+    // MARK: Debug
+
+    var start: Date?
+
+    func measureSyncTime() {
+        switch status {
+        case .synchronizing:
+            start = .init()
+        case .connected where start != nil:
+            // swiftlint:disable force_unwrapping
+            print(Date().timeIntervalSince(start!))
+            start = nil
+        default:
+            break
+        }
     }
 
     // MARK: App Reset

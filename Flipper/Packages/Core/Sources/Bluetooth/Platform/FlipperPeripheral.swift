@@ -7,6 +7,8 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     var name: String
     var color: Peripheral.Color
 
+    var isPairingFailed = false
+
     var freeSpace = 0
 
     var maximumWriteValueLength: Int {
@@ -54,11 +56,21 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     }
 
     func onConnect() {
+        isPairingFailed = false
         peripheral.discoverServices(nil)
     }
 
     func onDisconnect() {
         // nothing here yet
+    }
+
+    func onError(_ error: CBATTError?) {
+        guard let error = error else {
+            return
+        }
+        if error.code == .insufficientEncryption {
+            isPairingFailed = true
+        }
     }
 
     func onFailToConnect() {
@@ -128,6 +140,10 @@ extension FlipperPeripheral: CBPeripheralDelegate {
         error: Swift.Error?
     ) {
         assert(peripheral === self.peripheral)
+        guard error == nil else {
+            onError(error as? CBATTError)
+            return
+        }
         switch characteristic.uuid {
         case .serialRead:
             if let data = characteristic.value {

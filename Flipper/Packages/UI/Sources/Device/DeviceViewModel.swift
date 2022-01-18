@@ -10,7 +10,7 @@ class DeviceViewModel: ObservableObject {
 
     @Published var device: Peripheral? {
         didSet {
-            if device?.state == .connected {
+            if appState.status == .connected {
                 presentConnectionsSheet = false
             }
         }
