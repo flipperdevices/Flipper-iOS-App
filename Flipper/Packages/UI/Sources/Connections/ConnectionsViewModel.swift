@@ -39,16 +39,17 @@ class ConnectionsViewModel: ObservableObject {
         connector.connectedPeripherals
             .receive(on: DispatchQueue.main)
             .sink { [weak self] connected in
-                guard let self = self else { return }
-                connected.forEach { peripheral in
-                    if let index = self.peripherals.firstIndex(
-                        where: { $0.id == peripheral.id }
-                    ) {
-                        self.peripherals[index] = .init(peripheral)
-                    }
-                }
+                connected.forEach { self?.update($0) }
             }
             .store(in: &disposeBag)
+    }
+
+    func update(_ peripheral: BluetoothPeripheral) {
+        if let index = peripherals.firstIndex(
+            where: { $0.id == peripheral.id }
+        ) {
+            self.peripherals[index] = .init(peripheral)
+        }
     }
 
     func startScan() {
