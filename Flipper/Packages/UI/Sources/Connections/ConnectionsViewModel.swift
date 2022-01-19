@@ -31,9 +31,7 @@ class ConnectionsViewModel: ObservableObject {
     init() {
         central.status
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.state = $0
-            }
+            .assign(to: \.state, on: self)
             .store(in: &disposeBag)
 
         central.peripherals
