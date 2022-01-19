@@ -9,6 +9,7 @@ class ConnectionsViewModel: ObservableObject {
 
     @Inject private var central: BluetoothCentral
     @Inject private var connector: BluetoothConnector
+    @Inject private var pairedDevice: PairedDevice
     private var disposeBag = DisposeBag()
 
     @Published private(set) var state: BluetoothStatus = .notReady(.preparing) {
@@ -49,15 +50,13 @@ class ConnectionsViewModel: ObservableObject {
                 self?.updatePeripherals()
             }
             .store(in: &disposeBag)
-
-        appState.$status
-            .receive(on: DispatchQueue.main)
-            .map { $0 == .pairingIssue }
-            .assign(to: \.isPairingIssue, on: self)
-            .store(in: &disposeBag)
     }
 
     func updatePeripherals() {
+        if appState.status == .pairingIssue {
+            isPairingIssue = true
+            pairedDevice.forget()
+        }
         peripherals = bluetoothPeripherals.map(Peripheral.init)
     }
 

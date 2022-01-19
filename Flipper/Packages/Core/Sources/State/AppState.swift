@@ -48,6 +48,7 @@ public class AppState {
         case .noDevice where newValue == .connecting: status = .preParing
         case .preParing where newValue == .connected: status = .pairing
         case .preParing where newValue == .disconnected: didFailToConnect()
+        case _ where pairedDevice.isPairingFailed: pairedDevice.forget()
         // MARK: Default
         case .connecting where newValue == .connected: didConnect()
         case .connecting where newValue == .disconnected: didFailToConnect()
