@@ -18,10 +18,14 @@ class ConnectionsViewModel: ObservableObject {
         }
     }
 
-    @Published private(set) var peripherals: [Peripheral] = []
+    @Published var peripherals: [Peripheral] = []
+
+    private var bluetoothPeripherals: [BluetoothPeripheral] = [] {
+        didSet { updatePeripherals() }
+    }
 
     var isConnecting: Bool {
-        peripherals.contains { $0.state != .disconnected }
+        bluetoothPeripherals.contains { $0.state != .disconnected }
     }
 
     init() {
@@ -35,25 +39,19 @@ class ConnectionsViewModel: ObservableObject {
         central.peripherals
             .receive(on: DispatchQueue.main)
             .filter { !$0.isEmpty }
-            .sink { [weak self] in
-                self?.peripherals = $0.map(Peripheral.init)
-            }
+            .assign(to: \.bluetoothPeripherals, on: self)
             .store(in: &disposeBag)
 
         connector.connectedPeripherals
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] connected in
-                connected.forEach { self?.update($0) }
+            .sink { [weak self] _ in
+                self?.updatePeripherals()
             }
             .store(in: &disposeBag)
     }
 
-    func update(_ peripheral: BluetoothPeripheral) {
-        if let index = peripherals.firstIndex(
-            where: { $0.id == peripheral.id }
-        ) {
-            self.peripherals[index] = .init(peripheral)
-        }
+    func updatePeripherals() {
+        peripherals = bluetoothPeripherals.map(Peripheral.init)
     }
 
     func startScan() {
