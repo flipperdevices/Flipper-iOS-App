@@ -43,6 +43,9 @@ struct ConnectionsView: View {
         .onDisappear {
             viewModel.stopScan()
         }
+        .alert(isPresented: $viewModel.isPairingIssue) {
+            PairingIssue.alert
+        }
     }
 
     func row(for peripheral: Peripheral) -> some View {

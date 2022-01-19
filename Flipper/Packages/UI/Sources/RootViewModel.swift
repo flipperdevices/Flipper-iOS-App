@@ -19,7 +19,6 @@ public class RootViewModel: ObservableObject {
 
     @AppStorage("selectedTab") var selectedTab: CustomTabView.Tab = .device
     @Published var isTabViewHidden = false
-    @Published var isPairingIssue = false
 
     @Inject var connector: BluetoothConnector
     private var disposeBag: DisposeBag = .init()
@@ -31,12 +30,6 @@ public class RootViewModel: ObservableObject {
             .sink { [weak self] in
                 self?.device = $0.first
             }
-            .store(in: &disposeBag)
-
-        appState.$status
-            .receive(on: DispatchQueue.main)
-            .map { $0 == .pairingIssue }
-            .assign(to: \.isPairingIssue, on: self)
             .store(in: &disposeBag)
     }
 

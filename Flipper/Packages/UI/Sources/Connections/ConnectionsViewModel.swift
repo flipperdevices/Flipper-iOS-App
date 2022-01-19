@@ -5,6 +5,8 @@ import Foundation
 
 @MainActor
 class ConnectionsViewModel: ObservableObject {
+    let appState: AppState = .shared
+
     @Inject private var central: BluetoothCentral
     @Inject private var connector: BluetoothConnector
     private var disposeBag = DisposeBag()
@@ -19,6 +21,7 @@ class ConnectionsViewModel: ObservableObject {
     }
 
     @Published var peripherals: [Peripheral] = []
+    @Published var isPairingIssue = false
 
     private var bluetoothPeripherals: [BluetoothPeripheral] = [] {
         didSet { updatePeripherals() }
@@ -45,6 +48,12 @@ class ConnectionsViewModel: ObservableObject {
             .sink { [weak self] _ in
                 self?.updatePeripherals()
             }
+            .store(in: &disposeBag)
+
+        appState.$status
+            .receive(on: DispatchQueue.main)
+            .map { $0 == .pairingIssue }
+            .assign(to: \.isPairingIssue, on: self)
             .store(in: &disposeBag)
     }
 
