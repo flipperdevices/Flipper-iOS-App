@@ -69,6 +69,7 @@ struct ConnectionsView: View {
                             viewModel.connect(to: peripheral.id)
                         }
                     }
+                    .disabled(viewModel.isConnecting)
                 }
             }
             .padding(.horizontal, 14)

@@ -20,6 +20,10 @@ class ConnectionsViewModel: ObservableObject {
 
     @Published private(set) var peripherals: [Peripheral] = []
 
+    var isConnecting: Bool {
+        peripherals.contains { $0.state != .disconnected }
+    }
+
     init() {
         central.status
             .receive(on: DispatchQueue.main)
