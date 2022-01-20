@@ -15,4 +15,8 @@ class NamedLogsViewModel: ObservableObject {
         self.name = name
         self.messages = loggerStorage.read(name)
     }
+
+    func share() {
+        shareLogs(name: name, messages: messages)
+    }
 }

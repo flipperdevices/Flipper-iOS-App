@@ -11,5 +11,10 @@ struct NamedLogsView: View {
         }
         .navigationTitle(viewModel.name)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarItems(trailing: Button {
+            viewModel.share()
+        } label: {
+            Image(systemName: "square.and.arrow.up")
+        })
     }
 }
