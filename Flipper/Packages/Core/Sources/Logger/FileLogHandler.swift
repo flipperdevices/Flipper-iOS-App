@@ -1,5 +1,6 @@
 import Logging
 import Inject
+import Foundation
 
 // swiftlint:disable function_parameter_count
 
@@ -18,6 +19,16 @@ struct FileLogHandler: LogHandler {
         set { self.metadata[metadataKey] = newValue }
     }
 
+    private let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .medium
+        return formatter
+    }()
+
+    var time: String {
+        formatter.string(from: .init())
+    }
+
     func log(
         level: Logger.Level,
         message: Logger.Message,
@@ -30,6 +41,6 @@ struct FileLogHandler: LogHandler {
         #if DEBUG
         print(message)
         #endif
-        storage.write("\(message)")
+        storage.write("[\(time)] \(message)")
     }
 }
