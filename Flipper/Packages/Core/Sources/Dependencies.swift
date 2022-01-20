@@ -1,7 +1,12 @@
 import Inject
+import Logging
 
 public func registerDependencies() {
     let container = Container.shared
+
+    LoggingSystem.bootstrap(FileLogHandler.factory)
+    container.register(JSONLoggerStorage.init, as: LoggerStorage.self, isSingleton: true)
+
     let central = FlipperCentral()
     container.register(instance: central, as: BluetoothCentral.self)
     container.register(instance: central, as: BluetoothConnector.self)

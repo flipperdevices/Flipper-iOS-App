@@ -17,6 +17,9 @@ struct OptionsView: View {
                     NavigationLink("Speed Test") {
                         SpeedTestView(viewModel: .init())
                     }
+                    NavigationLink("Logs") {
+                        LogsView(viewModel: .init())
+                    }
                 }
 
                 Section(header: Text("Archive")) {
