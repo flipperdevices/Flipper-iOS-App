@@ -1,9 +1,9 @@
 import XCTest
-import Core
 import Inject
 import Combine
 
 @testable import UI
+@testable import Core
 
 class ConnectionsViewModelTests: XCTestCase {
     func testStateWhenBluetoothIsPoweredOff() async {
@@ -58,12 +58,16 @@ class ConnectionsViewModelTests: XCTestCase {
         // TODO: find a way to test onDisappear
     }
 
+    // TODO: Move to generalized mocks
     private static func createTarget(_ connector: BluetoothCentral & BluetoothConnector) async -> ConnectionsViewModel {
         let container = Container.shared
         container.register(instance: connector, as: BluetoothCentral.self)
         container.register(instance: connector, as: BluetoothConnector.self)
-        container.register(MockStorage.init, as: DeviceStorage.self)
-        container.register(MockStorage.init, as: ArchiveStorage.self)
+        container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
+        container.register(SynchronizationMock.init, as: SynchronizationProtocol.self, isSingleton: true)
+        container.register(DeviceStorageMock.init, as: DeviceStorage.self, isSingleton: true)
+        container.register(ArchiveStorageMock.init, as: ArchiveStorage.self, isSingleton: true)
+        container.register(ManifestStorageMock.init, as: ManifestStorage.self, isSingleton: true)
         return await ConnectionsViewModel()
     }
 }
