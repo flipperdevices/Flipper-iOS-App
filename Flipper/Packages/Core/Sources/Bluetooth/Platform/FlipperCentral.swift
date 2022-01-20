@@ -1,8 +1,11 @@
-import Foundation
-import Collections
 import CoreBluetooth
+import Collections
+import Foundation
+import Logging
 
 class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
+    private let logger = Logger(label: "central")
+
     private let manager: CBCentralManager
 
     private var flipperServiceIDs: [CBUUID] {
@@ -172,7 +175,7 @@ extension FlipperCentral {
         didDisconnectPeripheral peripheral: CBPeripheral,
         error: Error?
     ) {
-        print("didDisconnectPeripheral")
+        logger.info("did disconnect peripheral")
     }
 
     func centralManager(
@@ -180,7 +183,7 @@ extension FlipperCentral {
         didFailToConnect peripheral: CBPeripheral,
         error: Error?
     ) {
-        print("didFailToConnect")
+        logger.info("did fail to connect")
     }
 
     // MARK: Workaround
@@ -199,7 +202,7 @@ extension FlipperCentral {
             // didConnect(peripheral)
             break
         default:
-            print("unhandled event: \(event)")
+            logger.critical("unhandled event: \(event)")
         }
     }
 }

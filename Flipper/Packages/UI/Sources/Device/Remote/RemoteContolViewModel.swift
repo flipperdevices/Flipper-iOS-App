@@ -1,12 +1,14 @@
 import Core
 import Combine
+import Logging
 import Foundation
 
 @MainActor
 class RemoteContolViewModel: ObservableObject {
-    @Published var frame: ScreenFrame = .init()
+    private let logger = Logger(label: "remote")
+    private let rpc: RPC = .shared
 
-    let rpc: RPC = .shared
+    @Published var frame: ScreenFrame = .init()
 
     init() {
         rpc.onScreenFrame { [weak self] in
@@ -15,20 +17,21 @@ class RemoteContolViewModel: ObservableObject {
     }
 
     func startStreaming() {
-        print("startStreaming")
+        logger.info("start streaming")
         Task {
             try await rpc.startStreaming()
         }
     }
 
     func stopStreaming() {
-        print("stopStreaming")
+        logger.info("stop streaming")
         Task {
             try await rpc.stopStreaming()
         }
     }
 
     func onButton(_ button: InputKey) {
+        logger.info("\(button) button pressed")
         feedback()
         Task {
             try await rpc.pressButton(button)

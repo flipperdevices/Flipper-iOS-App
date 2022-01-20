@@ -1,7 +1,10 @@
 import Inject
+import Logging
 import struct Foundation.Date
 
 public class RPC {
+    private let logger = Logger(label: "rpc")
+
     public static let shared: RPC = .init()
 
     @Inject private var connector: BluetoothConnector
@@ -214,15 +217,15 @@ extension RPC {
             .gui(.button(button, type))
         }
         guard try await session?.send(inputType(.press)) == .ok else {
-            print("press failed")
+            logger.error("sending press type failed")
             return
         }
         guard try await session?.send(inputType(.short)) == .ok else {
-            print("short failed")
+            logger.error("sending short type failed")
             return
         }
         guard try await session?.send(inputType(.release)) == .ok else {
-            print("release failed")
+            logger.error("sending release type failed")
             return
         }
     }

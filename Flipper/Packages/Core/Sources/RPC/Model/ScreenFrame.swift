@@ -1,4 +1,8 @@
+import Logging
+
 public struct ScreenFrame {
+    private let logger = Logger(label: "screenframe")
+
     let bytes: [UInt8]
 
     static var width: Int { 128 }
@@ -24,7 +28,7 @@ public struct ScreenFrame {
 
     public init?(_ bytes: [UInt8]) {
         guard bytes.count < Self.pixelCount else {
-            print("invalid screen frame bytes")
+            logger.error("invalid screen frame bytes")
             return nil
         }
         self.bytes = bytes
@@ -32,7 +36,7 @@ public struct ScreenFrame {
 
     public init?(_ pixels: [Bool]) {
         if pixels.count != Self.width * Self.height {
-            print("invalid pixels count")
+            logger.error("invalid pixel count")
             return nil
         }
         var bytes = [UInt8](repeating: 0, count: Self.pixelCount / 8)

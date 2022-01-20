@@ -75,13 +75,10 @@ extension Peripheral {
         }
         let parts = version.split(separator: ".")
         guard parts.count == 3,
-            let major = Int(parts[0]),
-            let minor = Int(parts[1]),
-            let patch = Int(parts[2])
+            let minor = Int(parts[1])
         else {
             return .v0
         }
-        print("\(major).\(minor).\(patch)")
         switch minor {
         case ..<45: return .v0
         default: return .v1

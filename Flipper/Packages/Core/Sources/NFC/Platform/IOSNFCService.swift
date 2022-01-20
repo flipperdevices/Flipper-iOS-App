@@ -1,6 +1,9 @@
 import CoreNFC
+import Logging
 
 class IOSNFCService: NSObject, NFCService {
+    private let logger = Logger(label: "nfc")
+
     var session: NFCTagReaderSession?
 
     private let itemsSubject = SafeValueSubject([ArchiveItem]())
@@ -40,7 +43,7 @@ extension IOSNFCService: NFCTagReaderSessionDelegate {
     }
 
     func dump(_ tag: NFCTag) {
-        print(tag)
+        logger.info("\(tag)")
     }
 }
 

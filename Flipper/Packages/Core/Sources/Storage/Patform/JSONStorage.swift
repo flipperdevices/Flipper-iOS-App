@@ -1,6 +1,9 @@
 import Foundation
+import Logging
 
 class JSONStorage<T: Codable> {
+    private let logger = Logger(label: "jsonstorage")
+
     let filename: String
 
     init<T>(for type: T.Type, filename: String) {
@@ -14,7 +17,7 @@ class JSONStorage<T: Codable> {
             let data = try Data(contentsOf: location)
             return try JSONDecoder().decode(T.self, from: data)
         } catch {
-            print("JSONStorage read error:", error)
+            logger.critical("read error: \(error)")
             return nil
         }
     }
@@ -24,7 +27,7 @@ class JSONStorage<T: Codable> {
             let data = try JSONEncoder().encode(objects)
             try data.write(to: getDataLocation())
         } catch {
-            print("JSONDeviceStorage write error:", error)
+            logger.critical("write error: \(error)")
         }
     }
 
@@ -34,7 +37,7 @@ class JSONStorage<T: Codable> {
             guard location.isExists else { return }
             try FileManager.default.removeItem(at: location)
         } catch {
-            print("JSONDeviceStorage delete error:", error)
+            logger.critical("delete error: \(error)")
         }
     }
 

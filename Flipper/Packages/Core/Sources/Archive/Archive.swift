@@ -1,9 +1,11 @@
 import Combine
 import Inject
+import Logging
 import Foundation
 
 public class Archive: ObservableObject {
     public static let shared: Archive = .init()
+    private let logger = Logger(label: "archive")
 
     @Inject var storage: ArchiveStorage
     @Inject var synchronization: SynchronizationProtocol
@@ -118,7 +120,7 @@ public class Archive: ObservableObject {
         do {
             try await synchronization.syncWithDevice()
         } catch {
-            print("syncronization error", error)
+            logger.critical("syncronization error: \(error)")
         }
     }
 }

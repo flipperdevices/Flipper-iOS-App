@@ -1,4 +1,5 @@
 import Core
+import Logging
 import SwiftUI
 
 func share(
@@ -31,7 +32,7 @@ func share(_ key: ArchiveItem, shareOption: ShareOption) {
 
 func shareScheme(_ key: ArchiveItem) {
     guard let data = key.content.data(using: .utf8) else {
-        print("invalid description")
+        Logger(label: "share").error("invalid description")
         return
     }
     let base64String = data.base64EncodedString()

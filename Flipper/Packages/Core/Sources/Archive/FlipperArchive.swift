@@ -1,13 +1,12 @@
 class FlipperArchive: PeripheralArchive {
     private let root: Path = .init(components: ["ext"])
+    private let rpc: RPC = .shared
 
     private var directories: [Path] {
         ArchiveItem.FileType.allCases.map {
             root.appending($0.directory)
         }
     }
-
-    private let rpc: RPC = .shared
 
     init() {}
 

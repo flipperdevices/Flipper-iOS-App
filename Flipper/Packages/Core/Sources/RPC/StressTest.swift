@@ -10,7 +10,6 @@ public class StressTest {
     @Inject var connector: BluetoothConnector
     var disposeBag: DisposeBag = .init()
 
-    let rpc: RPC = .shared
     var flipper: BluetoothPeripheral? {
         didSet {
             switch flipper {
