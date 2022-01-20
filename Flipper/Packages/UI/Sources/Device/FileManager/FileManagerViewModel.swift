@@ -6,6 +6,8 @@ import struct Foundation.Date
 
 @MainActor
 class FileManagerViewModel: ObservableObject {
+    private let rpc: RPC = .shared
+
     @Published var content: Content? {
         didSet {
             if case .file(let text) = content {
@@ -39,8 +41,6 @@ class FileManagerViewModel: ObservableObject {
                 // swiftlint:disable force_unwrapping
                 : path.string + " - \(requestTime!.kindaRounded)s"
     }
-
-    private let rpc: RPC = .shared
 
     init() {
         content = .list(root)

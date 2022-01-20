@@ -1,10 +1,12 @@
 import Core
 import Combine
+import Logging
 import Foundation
 
 @MainActor
 class PingViewModel: ObservableObject {
-    var rpc: RPC = .shared
+    private let logger = Logger(label: "ping")
+    private let rpc: RPC = .shared
 
     @Published var payloadSize: Double = 1024
     @Published var requestTimestamp: Int = .init()
@@ -37,10 +39,10 @@ class PingViewModel: ObservableObject {
             responseTimestamp = now
 
             if received != sent {
-                print("buffers are not equal")
+                logger.error("buffers are not equal")
             }
         } catch {
-            print(error)
+            logger.critical("\(error)")
         }
     }
 }

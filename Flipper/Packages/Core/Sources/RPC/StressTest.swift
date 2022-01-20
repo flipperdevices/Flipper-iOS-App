@@ -3,13 +3,13 @@ import Foundation
 
 // swiftlint:disable nesting
 
-public class RPCStressTest {
-    static let shared: RPCStressTest = .init()
+public class StressTest {
+    static let shared: StressTest = .init()
+    private let rpc: RPC = .shared
 
     @Inject var connector: BluetoothConnector
     var disposeBag: DisposeBag = .init()
 
-    let rpc: RPC = .shared
     var flipper: BluetoothPeripheral? {
         didSet {
             switch flipper {

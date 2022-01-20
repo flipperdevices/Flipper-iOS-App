@@ -1,10 +1,12 @@
 import Core
 import Combine
+import Logging
 import struct Foundation.Date
 
 @MainActor
-class RPCSpeedTestViewModel: ObservableObject {
-    let rpc: RPC = .shared
+class SpeedTestViewModel: ObservableObject {
+    private let logger = Logger(label: "speedtest")
+    private let rpc: RPC = .shared
 
     let defaultPacketSize = 444
     let maximumPacketSize = 1024
@@ -34,11 +36,11 @@ class RPCSpeedTestViewModel: ObservableObject {
                 bps = Int(Double(sent.count + received.count) * (1.0 / time))
 
                 guard sent == received else {
-                    print("buffers are not equal")
+                    logger.error("buffers are not equal")
                     return
                 }
             } catch {
-                print(error)
+                logger.critical("\(error)")
                 try await Task.sleep(nanoseconds: 1_000_000)
             }
         }

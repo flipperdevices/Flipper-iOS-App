@@ -1,8 +1,11 @@
 import Inject
+import Logging
 
 // swiftlint:disable nesting cyclomatic_complexity
 
 class Synchronization: SynchronizationProtocol {
+    private let logger = Logger(label: "synchronization")
+
     enum ItemStatus: Equatable {
         case deleted
         case modified(Hash)
@@ -34,9 +37,9 @@ class Synchronization: SynchronizationProtocol {
         // sync changes
 
         func updateOnMobile(at path: Path) async throws {
-            print("update on mobile", path)
+            logger.info("update on mobile \(path)")
             guard let item = try await peripheralArchive.read(at: path) else {
-                print("invalid item")
+                logger.error("invalid item at \(path)")
                 return
             }
             archive.upsert(item)
@@ -44,7 +47,7 @@ class Synchronization: SynchronizationProtocol {
         }
 
         func updateOnPeripheral(at path: Path) async throws {
-            print("update on peripheral", path)
+            logger.info("update on peripheral \(path)")
             guard let item = archive.items.first(where: { $0.path == path })
             else { return }
             try await peripheralArchive.write(item)
@@ -52,18 +55,18 @@ class Synchronization: SynchronizationProtocol {
         }
 
         func deleteOnMobile(at path: Path) async throws {
-            print("delete on mobile", path)
+            logger.info("delete on mobile \(path)")
             archive.delete(.init(path: path))
         }
 
         func deleteOnPeripheral(at path: Path) async throws {
-            print("delete on peripheral", path)
+            logger.info("delete on peripheral \(path)")
             try await peripheralArchive.delete(at: path)
             archive.delete(.init(path: path))
         }
 
         func keepBoth(at path: Path) async throws {
-            print("keep both", path)
+            logger.info("keep both \(path)")
             guard let newItem = archive.duplicate(.init(path: path)) else {
                 return
             }

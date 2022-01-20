@@ -1,17 +1,21 @@
+import Logging
+
 extension ArchiveItem {
     public init?(fileName: String, content: String, status: Status) {
+        let logger = Logger(label: "archiveitem")
+
         guard let name = Name(fileName: fileName) else {
-            print("invalid file name: \(fileName)")
+            logger.error("invalid file name: \(fileName)")
             return nil
         }
 
         guard let type = FileType(fileName: fileName) else {
-            print("invalid file type: \(fileName)")
+            logger.error("invalid file type: \(fileName)")
             return nil
         }
 
         guard let properties = [Property](text: content) else {
-            print("invalid content: \(content)")
+            logger.error("invalid content: \(content)")
             return nil
         }
 

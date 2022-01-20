@@ -1,6 +1,9 @@
 import Foundation
+import Logging
 
 class FlipperSession: Session {
+    private let logger = Logger(label: "session")
+
     let peripheral: BluetoothPeripheral
 
     let chunkedInput: ChunkedInput = .init()
@@ -113,11 +116,11 @@ extension FlipperSession {
                 return
             }
             guard let currentCommand = awaitingResponse.first else {
-                print("unexpected response", nextCommand)
+                logger.critical("unexpected response: \(nextCommand)")
                 return
             }
             guard nextCommand.commandID == currentCommand.id else {
-                print("invalid id \(nextCommand.commandID)")
+                logger.critical("invalid id: \(nextCommand.commandID)")
                 return
             }
             // complete PB_Main can be split into multiple messages
@@ -135,7 +138,7 @@ extension FlipperSession {
                 command.continuation.resume(throwing: error)
             }
         } catch {
-            print(error)
+            logger.critical("\(error)")
         }
     }
 }

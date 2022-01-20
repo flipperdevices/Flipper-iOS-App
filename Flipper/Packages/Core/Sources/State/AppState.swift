@@ -1,10 +1,12 @@
 import Inject
+import Logging
 import Combine
 import Dispatch
 import Foundation
 
 public class AppState {
     public static let shared: AppState = .init()
+    private let logger = Logger(label: "appstate")
 
     public var isFirstLaunch: Bool {
         get { UserDefaultsStorage.shared.isFirstLaunch }
@@ -18,7 +20,11 @@ public class AppState {
     @Published public var capabilities: Capabilities?
     @Published public var archive: Archive = .shared
     @Published public var status: Status = .noDevice {
-        didSet { measureSyncTime() }
+        didSet {
+            if oldValue != status {
+                logger.info("status update: \(status)")
+            }
+        }
     }
 
     public init() {
@@ -106,14 +112,18 @@ public class AppState {
     public func synchronize() async {
         guard status == .connected else { return }
         status = .synchronizing
-        await archive.syncWithDevice()
+        await measure("syncing archive") {
+            await archive.syncWithDevice()
+        }
         status = .init(device?.state)
     }
 
     func synchronizeDateTime() async {
         guard status == .connected else { return }
         status = .synchronizing
-        try? await RPC.shared.setDate()
+        await measure("setting datetime") {
+            try? await RPC.shared.setDate()
+        }
         status = .init(device?.state)
     }
 
@@ -130,19 +140,11 @@ public class AppState {
 
     // MARK: Debug
 
-    var start: Date?
-
-    func measureSyncTime() {
-        switch status {
-        case .synchronizing:
-            start = .init()
-        case .connected where start != nil:
-            // swiftlint:disable force_unwrapping
-            print(Date().timeIntervalSince(start!))
-            start = nil
-        default:
-            break
-        }
+    func measure(_ label: String, _ task: () async -> Void) async {
+        let start = Date()
+        await task()
+        let time = (Date().timeIntervalSince(start) * 1000).rounded() / 1000
+        logger.info("\(label): \(time)s")
     }
 
     // MARK: App Reset

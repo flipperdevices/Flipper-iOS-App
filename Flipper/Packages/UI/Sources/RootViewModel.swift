@@ -1,9 +1,12 @@
 import Core
 import Combine
 import Inject
+import Logging
 import SwiftUI
 
 public class RootViewModel: ObservableObject {
+    private let logger = Logger(label: "root")
+
     let appState: AppState = .shared
 
     // MARK: First Launch
@@ -49,9 +52,9 @@ public class RootViewModel: ObservableObject {
             case "flipper": try await importURL(keyURL)
             default: break
             }
-            print("key imported")
+            logger.info("key imported")
         } catch {
-            print(error)
+            logger.critical("\(error)")
         }
     }
 
@@ -72,7 +75,7 @@ public class RootViewModel: ObservableObject {
         // internal file
         case .some(let data):
             try? FileManager.default.removeItem(at: url)
-            print("importing internal key", name)
+            logger.debug("importing internal key: \(name)")
             await importKey(name: name, data: data)
         // icloud file
         case .none:
@@ -80,7 +83,7 @@ public class RootViewModel: ObservableObject {
             guard await doc.open(), let data = await doc.data else {
                 throw Error.cantOpenDoc
             }
-            print("importing icloud key", name)
+            logger.debug("importing icloud key: \(name)")
             await importKey(name: name, data: data)
         }
     }
@@ -93,7 +96,7 @@ public class RootViewModel: ObservableObject {
             content: content,
             status: .imported
         ) else {
-            print("importing error, invalid data")
+            logger.error("importing error, invalid data")
             return
         }
 

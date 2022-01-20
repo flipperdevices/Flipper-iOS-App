@@ -1,4 +1,5 @@
 import Core
+import Logging
 import SwiftUI
 
 func share(
@@ -31,7 +32,7 @@ func share(_ key: ArchiveItem, shareOption: ShareOption) {
 
 func shareScheme(_ key: ArchiveItem) {
     guard let data = key.content.data(using: .utf8) else {
-        print("invalid description")
+        Logger(label: "share").error("invalid description")
         return
     }
     let base64String = data.base64EncodedString()
@@ -52,6 +53,24 @@ func shareFile(_ key: ArchiveItem) {
     FileManager.default.createFile(
         atPath: fileURL.path,
         contents: key.content.data(using: .utf8))
+
+    share([fileURL]) {_, _, _, _ in
+        try? FileManager.default.removeItem(at: fileURL)
+    }
+}
+
+func shareLogs(name: String, messages: [String]) {
+    let urls = FileManager.default.urls(
+        for: .cachesDirectory, in: .userDomainMask)
+
+    guard let publicDirectory = urls.first else {
+        return
+    }
+
+    let fileURL = publicDirectory.appendingPathComponent("\(name).txt")
+    let data = messages.joined(separator: "\n").data(using: .utf8)
+
+    FileManager.default.createFile(atPath: fileURL.path, contents: data)
 
     share([fileURL]) {_, _, _, _ in
         try? FileManager.default.removeItem(at: fileURL)

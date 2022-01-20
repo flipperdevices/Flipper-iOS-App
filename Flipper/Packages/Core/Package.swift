@@ -22,7 +22,10 @@ let package = Package(
         .package(
             name: "SwiftProtobuf",
             url: "https://github.com/apple/swift-protobuf.git",
-            from: "1.18.0")
+            from: "1.18.0"),
+        .package(
+            url: "https://github.com/apple/swift-log.git",
+            from: "1.4.2")
     ],
     targets: [
         .target(
@@ -30,7 +33,8 @@ let package = Package(
             dependencies: [
                 "Inject",
                 "SwiftProtobuf",
-                .product(name: "Collections", package: "swift-collections")
+                .product(name: "Collections", package: "swift-collections"),
+                .product(name: "Logging", package: "swift-log")
             ],
             path: "Sources"),
         .testTarget(

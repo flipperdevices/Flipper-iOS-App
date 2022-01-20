@@ -1,6 +1,9 @@
 import CoreBluetooth
+import Logging
 
 class FlipperPeripheral: NSObject, BluetoothPeripheral {
+    private let logger = Logger(label: "peripheral")
+
     private var peripheral: CBPeripheral
 
     var id: UUID
@@ -79,11 +82,11 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
 
     func send(_ data: Data) {
         guard peripheral.state == .connected else {
-            print("invalid state")
+            logger.error("invalid state")
             return
         }
         guard let tx = peripheral.serialWrite else {
-            print("no serial service")
+            logger.critical("no serial service")
             return
         }
         peripheral.writeValue(data, for: tx, type: .withResponse)
