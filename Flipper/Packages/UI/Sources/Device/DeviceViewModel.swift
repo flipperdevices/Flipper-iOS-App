@@ -8,6 +8,8 @@ class DeviceViewModel: ObservableObject {
     @Published var appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
+    @Published var isPairingIssue = false
+
     @Published var device: Peripheral? {
         didSet {
             if appState.status == .connected {
@@ -15,7 +17,11 @@ class DeviceViewModel: ObservableObject {
             }
         }
     }
-    @Published var status: Status = .noDevice
+    @Published var status: Status = .noDevice {
+        didSet {
+            isPairingIssue = status == .pairingIssue && !presentConnectionsSheet
+        }
+    }
     @Published var presentConnectionsSheet = false {
         didSet {
             if presentConnectionsSheet == true {

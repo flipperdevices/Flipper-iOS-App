@@ -25,13 +25,6 @@ public struct RootView: View {
                 CustomTabView(selected: $viewModel.selectedTab)
             }
         }
-        .alert(isPresented: $viewModel.isPairingIssue) {
-            Alert(
-                title: .init("Pairing Issue"),
-                message: .init(
-                    "Forget your device in bluetooth " +
-                    "settings and restart the app"))
-        }
         .addPartialSheet()
         .edgesIgnoringSafeArea(.bottom)
         .opacity(viewModel.isFirstLaunch ? 0 : 1)

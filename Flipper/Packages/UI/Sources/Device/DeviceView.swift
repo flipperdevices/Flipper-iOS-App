@@ -69,6 +69,9 @@ struct DeviceView: View {
                 }
                 .padding(.bottom, onMac ? 140 : 16)
             }
+            .alert(isPresented: $viewModel.isPairingIssue) {
+                PairingIssue.alert
+            }
         }
     }
 }
