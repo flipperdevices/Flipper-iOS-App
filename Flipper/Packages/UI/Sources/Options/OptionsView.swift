@@ -31,21 +31,22 @@ struct OptionsView: View {
                 Section(header: Text("Remote")) {
                     if viewModel.canPlayAlert {
                         Button("Play Alert") {
-                            Task {
-                                try await RPC.shared.playAlert()
-                            }
+                            viewModel.playAlert()
                         }
                     }
                     Button("Reboot Flipper") {
-                        Task {
-                            try await RPC.shared.reboot(to: .os)
-                        }
+                        viewModel.rebootFlipper()
                     }
                 }
 
                 Section(header: Text("Danger")) {
                     Button("Reset App") {
                         viewModel.resetApp()
+                    }
+                    .foregroundColor(.red)
+
+                    Button("Unpair Flipper") {
+                        viewModel.unpairFlipper()
                     }
                     .foregroundColor(.red)
                 }

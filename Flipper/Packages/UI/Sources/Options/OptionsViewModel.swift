@@ -4,7 +4,8 @@ import Foundation
 
 @MainActor
 class OptionsViewModel: ObservableObject {
-    let appState: AppState = .shared
+    private let rpc: RPC = .shared
+    private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
     @Published var canPlayAlert = false
@@ -17,7 +18,26 @@ class OptionsViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
+    func playAlert() {
+        Task {
+            try await rpc.playAlert()
+        }
+    }
+
+    func rebootFlipper() {
+        Task {
+            try await rpc.reboot(to: .os)
+        }
+    }
+
     func resetApp() {
         appState.reset()
+    }
+
+    func unpairFlipper() {
+        Task {
+            try await rpc.deleteFile(at: .init(string: "/int/bt.keys"))
+            try await rpc.reboot(to: .os)
+        }
     }
 }
