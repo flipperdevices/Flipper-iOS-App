@@ -29,12 +29,12 @@ struct StressTestView: View {
             }
             .padding(.vertical, 20)
         }
-        .navigationTitle("RPC Stress Test")
+        .navigationTitle("Stress Test")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-extension RPCStressTest.Event {
+extension StressTest.Event {
     var color: Color {
         switch kind {
         case .info: return .primary

@@ -8,14 +8,14 @@ struct OptionsView: View {
         NavigationView {
             List {
                 Section(header: Text("Utils")) {
-                    NavigationLink("Protobuf ping") {
+                    NavigationLink("Ping") {
                         PingView(viewModel: .init())
                     }
-                    NavigationLink("RPC Stress Test") {
+                    NavigationLink("Stress Test") {
                         StressTestView(viewModel: .init())
                     }
-                    NavigationLink("RPC Speed Test") {
-                        RPCSpeedTestView(viewModel: .init())
+                    NavigationLink("Speed Test") {
+                        SpeedTestView(viewModel: .init())
                     }
                 }
 

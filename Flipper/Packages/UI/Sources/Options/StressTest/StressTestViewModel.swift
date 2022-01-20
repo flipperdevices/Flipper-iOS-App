@@ -4,10 +4,10 @@ import Foundation
 
 @MainActor
 class StressTestViewModel: ObservableObject {
-    var stressTest: RPCStressTest = .init()
+    var stressTest: StressTest = .init()
     var disposeBag: DisposeBag = .init()
 
-    @Published var events: [RPCStressTest.Event] = []
+    @Published var events: [StressTest.Event] = []
 
     var successCount: Int {
         events.filter { $0.kind == .success }.count
@@ -35,7 +35,7 @@ class StressTestViewModel: ObservableObject {
     }
 }
 
-extension RPCStressTest.Event: CustomStringConvertible {
+extension StressTest.Event: CustomStringConvertible {
     public var description: String {
         "[\(self.kind)] \(self.message)"
     }

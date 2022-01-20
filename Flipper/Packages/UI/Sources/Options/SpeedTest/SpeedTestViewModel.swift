@@ -3,8 +3,9 @@ import Combine
 import struct Foundation.Date
 
 @MainActor
-class RPCSpeedTestViewModel: ObservableObject {
-    let rpc: RPC = .shared
+class SpeedTestViewModel: ObservableObject {
+    private let logger = Logger(label: "speedtest")
+    private let rpc: RPC = .shared
 
     let defaultPacketSize = 444
     let maximumPacketSize = 1024

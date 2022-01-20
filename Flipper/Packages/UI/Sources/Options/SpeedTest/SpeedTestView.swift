@@ -2,8 +2,8 @@ import SwiftUI
 
 // swiftlint:disable vertical_parameter_alignment_on_call
 
-struct RPCSpeedTestView: View {
-    @StateObject var viewModel: RPCSpeedTestViewModel
+struct SpeedTestView: View {
+    @StateObject var viewModel: SpeedTestViewModel
 
     var body: some View {
         VStack {

@@ -50,7 +50,7 @@ struct PingView: View {
                 }
             }
         }
-        .navigationTitle("Protobuf ping")
+        .navigationTitle("Ping")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
