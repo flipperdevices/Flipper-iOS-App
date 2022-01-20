@@ -1,6 +1,4 @@
 class JSONManifestStorage: ManifestStorage {
-    static let shared: JSONManifestStorage = .init()
-
     let jsonStorage = JSONStorage<Manifest>(
         for: Manifest.self,
         filename: "manifest.json")
