@@ -149,18 +149,10 @@ public class AppState {
 
     // MARK: App Reset
 
-    // FIXME: Find a better way
-
-    @Inject var archiveStorage: ArchiveStorage
-    @Inject var deviceStorage: DeviceStorage
-    @Inject var manifestStorage: ManifestStorage
-
     public func reset() {
-        isFirstLaunch = true
-        archiveStorage.items = []
-        deviceStorage.pairedDevice = nil
-        manifestStorage.manifest = nil
-        UserDefaults.standard.removeObject(forKey: "selectedTab")
+        UserDefaultsStorage.shared.reset()
+        pairedDevice.forget()
+        archive.reset()
         exit(0)
     }
 }
