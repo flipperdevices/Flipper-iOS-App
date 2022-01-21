@@ -16,26 +16,23 @@ public class AppState {
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
-    @Published public var device: Peripheral?
+    @Published public var device: Peripheral? {
+        didSet { onDeviceUpdated() }
+    }
     @Published public var capabilities: Capabilities?
     @Published public var archive: Archive = .shared
-    @Published public var status: Status = .noDevice {
-        didSet {
-            if oldValue != status {
-                logger.info("status update: \(status)")
-            }
-        }
-    }
+    @Published public var status: Status = .noDevice
 
     public init() {
         pairedDevice.peripheral
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] device in
-                self?.device = device
-                self?.capabilities = .init(device?.protobufVersion)
-                self?.updateState(device?.state)
-            }
+            .assign(to: \.device, on: self)
             .store(in: &disposeBag)
+    }
+
+    func onDeviceUpdated() {
+        capabilities = .init(device?.protobufVersion)
+        updateState(device?.state)
     }
 
     // MARK: Status
@@ -68,6 +65,7 @@ public class AppState {
     func didConnect() {
         status = .connected
         connectAttemptCount = 0
+        logger.info("connected")
         Task {
             await getStorageInfo()
             await synchronizeDateTime()
@@ -78,19 +76,23 @@ public class AppState {
     func didDisconnect() {
         status = .disconnected
         guard !pairedDevice.isPairingFailed else {
+            logger.debug("disconnected: invalid pincode or canceled")
             return
         }
+        logger.debug("disconnected: trying to reconnect")
         connect()
     }
 
     func didFailToConnect() {
         status = .disconnected
         guard connectAttemptCount >= connectAttemptCountMax else {
+            logger.debug("failed to connect: trying again")
             connectAttemptCount += 1
             connect()
             return
         }
         status = .pairingIssue
+        logger.debug("failed to connect: pairing issue")
     }
 
     // MARK: Connection
