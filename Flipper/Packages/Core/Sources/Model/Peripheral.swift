@@ -70,8 +70,8 @@ extension Peripheral {
         guard let version = versionString else {
             return .v0
         }
-        guard version != "dev" else {
-            return .v1
+        guard version != "dev" && !version.contains("/") else {
+            return ProtobufVersion.allCases.last.unsafelyUnwrapped
         }
         let parts = version.split(separator: ".")
         guard parts.count == 3,
