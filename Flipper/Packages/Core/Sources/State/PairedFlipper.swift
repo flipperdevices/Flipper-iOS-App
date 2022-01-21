@@ -7,41 +7,71 @@ class PairedFlipper: PairedDevice, ObservableObject {
     @Inject var storage: DeviceStorage
     var disposeBag: DisposeBag = .init()
 
-    private var peripheralSubject: SafeValueSubject<Peripheral?> = .init(nil)
-
-    private var flipper: BluetoothPeripheral? {
-        didSet {
-            if oldValue == nil, flipper != nil {
-                subscribeToUpdates()
-            }
-            flipperDidChange()
-        }
-    }
-
-    var isPairingFailed: Bool { flipper?.isPairingFailed ?? false }
-
     var peripheral: SafePublisher<Peripheral?> {
         peripheralSubject.eraseToAnyPublisher()
     }
+    private var peripheralSubject: SafeValueSubject<Peripheral?>
+
+    private var infoBag: AnyCancellable?
+    private var flipper: BluetoothPeripheral? {
+        didSet { flipperDidChange() }
+    }
+    var isPairingFailed: Bool {
+        flipper?.isPairingFailed ?? false
+    }
 
     init() {
-        if let pairedDevice = storage.pairedDevice {
-            peripheralSubject.value = pairedDevice
-            reconnectOnBluetoothReady(to: pairedDevice.id)
-        }
+        peripheralSubject = .init(nil)
+        peripheralSubject.value = storage.pairedDevice
 
-        saveLastConnectedDeviceOnConnect()
+        connector.status
+            .filter { $0 == .ready }
+            .sink { [weak self] _ in
+                self?.onBluetoothReady()
+            }
+            .store(in: &disposeBag)
+
+        connector.connectedPeripherals
+            .sink { [weak self] peripherals in
+                self?.onConnectedPeripherals(peripherals)
+            }
+            .store(in: &disposeBag)
+    }
+
+    func onBluetoothReady() {
+        if let peripheral = peripheralSubject.value {
+            connector.connect(to: peripheral.id)
+        }
+    }
+
+    func onConnectedPeripherals(_ peripherals: [BluetoothPeripheral]) {
+        guard let peripheral = peripherals.first else {
+            // don't forget device but update state
+            if self.flipper?.state == .disconnected {
+                self.flipperDidChange()
+            }
+            return
+        }
+        flipper = peripheral
     }
 
     func flipperDidChange() {
         if let flipper = flipper {
-            let peripheral = merge(peripheralSubject.value, flipper)
-            storage.pairedDevice = peripheral
-            peripheralSubject.value = peripheral
+            peripheralSubject.value = merge(peripheralSubject.value, flipper)
+            storage.pairedDevice = peripheralSubject.value
+            subscribeToUpdates()
         } else {
-            storage.pairedDevice = nil
             peripheralSubject.value = nil
+            storage.pairedDevice = nil
+            infoBag = nil
         }
+    }
+
+    func subscribeToUpdates() {
+        infoBag = flipper?.info
+            .sink { [weak self] in
+                self?.flipperDidChange()
+            }
     }
 
     func merge(
@@ -66,43 +96,6 @@ class PairedFlipper: PairedDevice, ObservableObject {
         return peripheral
     }
 
-    func reconnectOnBluetoothReady(to uuid: UUID) {
-        connector.status
-            .sink { [weak self] status in
-                if status == .ready {
-                    self?.connector.connect(to: uuid)
-                }
-            }
-            .store(in: &disposeBag)
-    }
-
-    func saveLastConnectedDeviceOnConnect() {
-        connector
-            .connectedPeripherals
-            .sink { [weak self] peripherals in
-                guard let self = self else { return }
-                guard let peripheral = peripherals.first else {
-                    // NOTE: Pairing issue
-                    if self.flipper?.state == .disconnected {
-                        self.flipperDidChange()
-                    }
-                    return
-                }
-                self.flipper = peripheral
-            }
-            .store(in: &disposeBag)
-    }
-
-    func subscribeToUpdates() {
-        flipper?.info
-            .sink { [weak self] in
-                if let flipper = self?.flipper {
-                    self?.flipper = flipper
-                }
-            }
-            .store(in: &disposeBag)
-    }
-
     func connect() {
         if let flipper = self.flipper {
             connector.connect(to: flipper.id)
@@ -117,6 +110,6 @@ class PairedFlipper: PairedDevice, ObservableObject {
 
     func forget() {
         disconnect()
-        self.flipper = nil
+        flipper = nil
     }
 }

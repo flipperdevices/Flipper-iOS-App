@@ -125,6 +125,13 @@ public class Archive: ObservableObject {
     }
 }
 
+extension Archive {
+    func reset() {
+        items = []
+        synchronization.reset()
+    }
+}
+
 fileprivate extension Date {
     var timestamp: Int {
         Int(Date().timeIntervalSince1970)

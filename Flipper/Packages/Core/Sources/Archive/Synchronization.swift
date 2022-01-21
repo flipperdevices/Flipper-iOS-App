@@ -146,6 +146,10 @@ class Synchronization: SynchronizationProtocol {
 
         return result
     }
+
+    func reset() {
+        manifestStorage.manifest = nil
+    }
 }
 
 // MARK: Manifest changes
