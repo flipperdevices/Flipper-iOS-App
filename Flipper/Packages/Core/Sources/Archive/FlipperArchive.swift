@@ -78,18 +78,3 @@ extension Array where Element == Core.Element {
         }
     }
 }
-
-fileprivate extension ArchiveItem {
-    init?(at path: Path, content: String) {
-        guard let fileName = path.components.last else {
-            return nil
-        }
-        self.init(fileName: fileName, content: content, status: .imported)
-    }
-}
-
-extension ArchiveItem {
-    var path: Path {
-        .init(components: ["ext", fileType.directory, fileName])
-    }
-}
