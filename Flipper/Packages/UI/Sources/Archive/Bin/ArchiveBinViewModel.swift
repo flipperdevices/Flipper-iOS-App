@@ -36,14 +36,17 @@ class ArchiveBinViewModel: ObservableObject {
         guard selectedItem != .none else {
             return
         }
-        appState.archive.wipe(selectedItem)
+        appState.archive.wipe(selectedItem.id)
     }
 
     func restoreSelectedItems() {
-        guard selectedItem != .none else {
+        let selected = selectedItem
+        guard selected != .none else {
             return
         }
-        appState.archive.restore(selectedItem)
-        synchronize()
+        Task {
+            try await appState.archive.restore(selected)
+            synchronize()
+        }
     }
 }

@@ -9,6 +9,9 @@ class Synchronization: SynchronizationProtocol {
     @Inject private var peripheralArchive: PeripheralArchiveProtocol
     @Inject private var mobileArchive: MobileArchiveProtocol
 
+    private var eventsSubject: SafeSubject<Event> = .init()
+    var events: SafePublisher<Event> { eventsSubject.eraseToAnyPublisher() }
+
     func syncWithDevice() async throws {
         let lastManifest = manifestStorage.manifest ?? .init(items: [])
 
@@ -39,31 +42,34 @@ class Synchronization: SynchronizationProtocol {
 
     private func updateOnMobile(_ id: ArchiveItem.ID) async throws {
         logger.info("update on mobile \(id)")
-        guard var item = try await peripheralArchive.read(id) else {
-            logger.error("invalid item \(id)")
+        guard let item = try await peripheralArchive.read(id) else {
+            logger.error("failed to read key from peripheral \(id)")
             return
         }
-        item.status = .synchronizied
         try await mobileArchive.upsert(item)
+        eventsSubject.send(.imported(id))
     }
 
     private func updateOnPeripheral(_ id: ArchiveItem.ID) async throws {
         logger.info("update on peripheral \(id)")
-        guard var item = try await mobileArchive.read(id) else { return }
-        item.status = .synchronizied
+        guard let item = try await mobileArchive.read(id) else {
+            logger.error("failed to read key from mobile \(id)")
+            return
+        }
         try await peripheralArchive.upsert(item)
-        try await mobileArchive.upsert(item)
+        eventsSubject.send(.exported(item.id))
     }
 
     private func deleteOnMobile(_ id: ArchiveItem.ID) async throws {
         logger.info("delete on mobile \(id)")
         try await mobileArchive.delete(id)
+        eventsSubject.send(.deleted(id))
     }
 
     private func deleteOnPeripheral(_ id: ArchiveItem.ID) async throws {
         logger.info("delete on peripheral \(id)")
         try await peripheralArchive.delete(id)
-        try await mobileArchive.delete(id)
+        eventsSubject.send(.deleted(id))
     }
 
     private func keepBoth(_ id: ArchiveItem.ID) async throws {
@@ -71,14 +77,19 @@ class Synchronization: SynchronizationProtocol {
         guard let newItem = try await duplicate(id) else {
             return
         }
+
         try await updateOnPeripheral(newItem.id)
+        eventsSubject.send(.exported(newItem.id))
+
         try await updateOnMobile(id)
+        eventsSubject.send(.imported(id))
     }
 
     private func duplicate(_ id: ArchiveItem.ID) async throws -> ArchiveItem? {
         guard let item = try await mobileArchive.read(id) else {
             return nil
         }
+        // TODO: Implement human readable copy name
         let timestamp = Int(Date().timeIntervalSince1970)
         let newName = "\(item.name.value)_\(timestamp)"
         let newItem = item.rename(to: .init(newName))

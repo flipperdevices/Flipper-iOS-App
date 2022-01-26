@@ -115,8 +115,10 @@ class ArchiveViewModel: ObservableObject {
 
     func didFoundNFCTags(_ newItems: [ArchiveItem]) {
         if let item = newItems.first, !self.items.contains(item) {
-            archive.importKey(item)
-            synchronize()
+            Task {
+                try await archive.importKey(item)
+                synchronize()
+            }
         }
     }
 
@@ -127,19 +129,23 @@ class ArchiveViewModel: ObservableObject {
     }
 
     func deleteSelectedItems() {
-        switch isSelectItemsMode {
-        case true:
-            selectedItems.forEach(archive.delete)
-            selectedItems.removeAll()
-            withAnimation {
-                isSelectItemsMode = false
+        Task {
+            switch isSelectItemsMode {
+            case true:
+                for item in selectedItems {
+                    try await archive.delete(item.id)
+                }
+                selectedItems.removeAll()
+                withAnimation {
+                    isSelectItemsMode = false
+                }
+            case false:
+                try await archive.delete(editingItem.id)
+                sheetManager.dismiss()
+                editingItem = .none
             }
-        case false:
-            archive.delete(editingItem.id)
-            sheetManager.dismiss()
-            editingItem = .none
+            synchronize()
         }
-        synchronize()
     }
 
     func synchronize() {
@@ -152,23 +158,25 @@ class ArchiveViewModel: ObservableObject {
     }
 
     func saveChanges() {
-        self.objectWillChange.send()
-        editingItem.value.status = .modified
+        Task {
+            self.objectWillChange.send()
+            editingItem.value.status = .modified
 
-        guard editingItem.isRenamed else {
-            archive.upsert(editingItem.value)
-            return
+            guard editingItem.isRenamed else {
+                try await archive.upsert(editingItem.value)
+                return
+            }
+
+            let name = editingItem.name.filterInvalidCharacters()
+            if archive.items.contains(where: { $0.name.value == name }) {
+                undoChanges()
+            } else {
+                try await archive.upsert(editingItem.value)
+                archive.rename(editingItem.id, to: name)
+            }
+
+            synchronize()
         }
-
-        let name = editingItem.name.filterInvalidCharacters()
-        if archive.items.contains(where: { $0.name.value == name }) {
-            undoChanges()
-        } else {
-            archive.upsert(editingItem.value)
-            archive.rename(editingItem.id, to: name)
-        }
-
-        synchronize()
     }
 
     func undoChanges() {

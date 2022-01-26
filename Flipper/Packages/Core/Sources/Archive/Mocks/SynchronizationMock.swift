@@ -1,4 +1,9 @@
+import Combine
+
 class SynchronizationMock: SynchronizationProtocol {
-    func syncWithDevice() async throws {
+    var events: AnyPublisher<Synchronization.Event, Never> {
+        Just(.deleted(.init(path: "/"))).eraseToAnyPublisher()
     }
+
+    func syncWithDevice() async throws {}
 }
