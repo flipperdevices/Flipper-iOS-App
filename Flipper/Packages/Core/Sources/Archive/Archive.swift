@@ -7,8 +7,9 @@ public class Archive: ObservableObject {
     public static let shared: Archive = .init()
     private let logger = Logger(label: "archive")
 
-    @Inject var mobileArchive: MobileArchiveProtocol
-    @Inject var synchronization: SynchronizationProtocol
+    @Inject private var mobileArchive: MobileArchiveProtocol
+    @Inject private var deletedArchive: DeletedArchiveProtocol
+    @Inject private var synchronization: SynchronizationProtocol
 
     @Published public var items: [ArchiveItem] = []
     @Published public var deletedItems: [ArchiveItem] = []
@@ -30,17 +31,34 @@ public class Archive: ObservableObject {
     func load() {
         isSyncronizing = true
         Task {
-            var items = [ArchiveItem]()
-            for next in try await mobileArchive.manifest.items {
-                guard let item = try await mobileArchive.read(next.id) else {
-                    logger.error("invalid item \(next.id)")
-                    continue
-                }
-                items.append(item)
-            }
-            self.items = items
+            items = try await loadArchive()
+            deletedItems = try await loadDeleted()
             isSyncronizing = false
         }
+    }
+
+    func loadArchive() async throws -> [ArchiveItem] {
+        var items = [ArchiveItem]()
+        for next in try await mobileArchive.manifest.items {
+            guard let item = try await mobileArchive.read(next.id) else {
+                logger.error("invalid archive item \(next.id)")
+                continue
+            }
+            items.append(item)
+        }
+        return items
+    }
+
+    func loadDeleted() async throws -> [ArchiveItem] {
+        var items = [ArchiveItem]()
+        for next in try await deletedArchive.manifest.items {
+            guard let item = try await deletedArchive.read(next.id) else {
+                logger.error("invalid deleted item \(next.id)")
+                continue
+            }
+            items.append(item)
+        }
+        return items
     }
 
     func onSyncEvent(_ event: Synchronization.Event) {
@@ -75,8 +93,11 @@ extension Archive {
 
     public func delete(_ id: ArchiveItem.ID) async throws {
         if let item = get(id) {
-            try await mobileArchive.delete(id)
+            try await deletedArchive.upsert(item)
             deletedItems.append(item)
+
+            try await mobileArchive.delete(id)
+            items.removeAll { $0.id == id }
         }
     }
 }
@@ -87,10 +108,12 @@ extension Archive {
         deletedItems.removeAll { $0.id == id }
     }
 
-    public func rename(_ id: ArchiveItem.ID, to name: String) {
+    public func rename(_ id: ArchiveItem.ID, to name: String) async throws {
         if let item = get(id) {
             let newItem = item.rename(to: .init(name))
+            try await mobileArchive.delete(id)
             items.removeAll { $0.id == item.id }
+            try await mobileArchive.upsert(newItem)
             items.append(newItem)
         }
     }
@@ -104,6 +127,8 @@ extension Archive {
         }
         try await mobileArchive.upsert(item)
         items.append(item)
+
+        try await deletedArchive.delete(item.id)
         deletedItems.removeAll { $0.id == item.id }
     }
 

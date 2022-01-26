@@ -8,3 +8,4 @@ protocol ArchiveProtocol {
 
 protocol PeripheralArchiveProtocol: ArchiveProtocol {}
 protocol MobileArchiveProtocol: ArchiveProtocol {}
+protocol DeletedArchiveProtocol: ArchiveProtocol {}

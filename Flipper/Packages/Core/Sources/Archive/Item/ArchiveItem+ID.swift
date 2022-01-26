@@ -25,3 +25,7 @@ extension ArchiveItem.ID {
         "\(name).\(fileType.extension)"
     }
 }
+
+extension ArchiveItem.ID: CustomStringConvertible {
+    public var description: String { fileName }
+}

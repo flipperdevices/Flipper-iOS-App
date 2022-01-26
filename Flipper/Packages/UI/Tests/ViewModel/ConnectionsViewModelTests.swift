@@ -64,6 +64,7 @@ class ConnectionsViewModelTests: XCTestCase {
         container.register(instance: connector, as: BluetoothCentral.self)
         container.register(instance: connector, as: BluetoothConnector.self)
         container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
+        container.register(DeletedArchiveMock.init, as: DeletedArchiveProtocol.self, isSingleton: true)
         container.register(MobileArchiveMock.init, as: MobileArchiveProtocol.self, isSingleton: true)
         container.register(SynchronizationMock.init, as: SynchronizationProtocol.self, isSingleton: true)
         container.register(DeviceStorageMock.init, as: DeviceStorage.self, isSingleton: true)

@@ -172,7 +172,7 @@ class ArchiveViewModel: ObservableObject {
                 undoChanges()
             } else {
                 try await archive.upsert(editingItem.value)
-                archive.rename(editingItem.id, to: name)
+                try await archive.rename(editingItem.id, to: name)
             }
 
             synchronize()
