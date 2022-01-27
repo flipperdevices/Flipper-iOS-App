@@ -84,9 +84,9 @@ private class MockPeripheral: BluetoothPeripheral {
     var isPairingFailed: Bool { false }
     var maximumWriteValueLength: Int { 512 }
 
-    var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
-    var canWrite: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
-    var received: SafePublisher<Data> { Just(.init()).eraseToAnyPublisher() }
+    var info: SafePublisher<Void> { Empty().eraseToAnyPublisher() }
+    var canWrite: SafePublisher<Void> { Empty().eraseToAnyPublisher() }
+    var received: SafePublisher<Data> { Empty().eraseToAnyPublisher() }
 
     init(id: UUID, name: String = "", state: Peripheral.State = .disconnected) {
         self.id = id

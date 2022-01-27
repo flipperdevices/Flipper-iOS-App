@@ -13,6 +13,7 @@ public func registerMockDependencies() {
     container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
     container.register(PeripheralArchiveMock.init, as: PeripheralArchiveProtocol.self, isSingleton: true)
     container.register(MobileArchiveMock.init, as: MobileArchiveProtocol.self, isSingleton: true)
+    container.register(DeletedArchive.init, as: DeletedArchiveProtocol.self, isSingleton: true)
     container.register(SynchronizationMock.init, as: SynchronizationProtocol.self, isSingleton: true)
     container.register(DeviceStorageMock.init, as: DeviceStorage.self, isSingleton: true)
     container.register(ArchiveStorageMock.init, as: ArchiveStorage.self, isSingleton: true)
