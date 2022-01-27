@@ -183,7 +183,7 @@ extension ArchiveItem.Status {
         case .deleted: return "trash"
         case .imported: return "clock.arrow.2.circlepath"
         case .modified: return "clock.arrow.2.circlepath"
-        case .synchronizied: return "checkmark"
+        case .synchronized: return "checkmark"
         case .synchronizing: return "arrow.triangle.2.circlepath"
         }
     }

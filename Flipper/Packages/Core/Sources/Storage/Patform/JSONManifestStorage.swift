@@ -3,12 +3,9 @@ class JSONManifestStorage: ManifestStorage {
         for: Manifest.self,
         filename: "manifest.json")
 
-    var manifest: Manifest? {
-        get {
-            jsonStorage.read()
-        }
-        set {
-            if let manifest = newValue {
+    lazy var manifest: Manifest? = { jsonStorage.read() }() {
+        didSet {
+            if let manifest = manifest {
                 jsonStorage.write(manifest)
             } else {
                 jsonStorage.delete()

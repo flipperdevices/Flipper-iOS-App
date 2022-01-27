@@ -93,8 +93,7 @@ public class RootViewModel: ObservableObject {
 
         guard let item = ArchiveItem(
             fileName: name,
-            content: content,
-            status: .imported
+            content: content
         ) else {
             logger.error("importing error, invalid data")
             return

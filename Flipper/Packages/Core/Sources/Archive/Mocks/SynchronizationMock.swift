@@ -5,5 +5,6 @@ class SynchronizationMock: SynchronizationProtocol {
         Empty().eraseToAnyPublisher()
     }
 
-    func syncWithDevice() async throws {}
+    func syncWithDevice() {}
+    func status(for item: ArchiveItem) -> ArchiveItem.Status { .synchronized }
 }

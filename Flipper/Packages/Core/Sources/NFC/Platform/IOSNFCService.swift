@@ -69,9 +69,7 @@ fileprivate extension ArchiveItem {
                 fileType: .nfc,
                 properties: [
                     .init(key: "UID", value: tag.identifier.hexString)
-                ],
-                isFavorite: false,
-                status: .imported)
+                ])
         default:
             return nil
         }

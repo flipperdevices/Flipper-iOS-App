@@ -15,8 +15,7 @@ class FlipperArchive: PeripheralArchiveProtocol {
             priority: .background)
         return .init(
             fileName: id.fileName,
-            content: .init(decoding: bytes, as: UTF8.self),
-            status: .imported)
+            content: .init(decoding: bytes, as: UTF8.self))
     }
 
     func upsert(_ item: ArchiveItem) async throws {

@@ -40,10 +40,11 @@ public class Archive: ObservableObject {
     func loadArchive() async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
         for next in try await mobileArchive.manifest.items {
-            guard let item = try await mobileArchive.read(next.id) else {
+            guard var item = try await mobileArchive.read(next.id) else {
                 logger.error("invalid archive item \(next.id)")
                 continue
             }
+            item.status = try await synchronization.status(for: item)
             items.append(item)
         }
         return items
@@ -66,12 +67,12 @@ public class Archive: ObservableObject {
             switch event {
             case .imported(let id):
                 if var item = try await mobileArchive.read(id) {
-                    item.status = .synchronizied
+                    item.status = .synchronized
                     items.append(item)
                 }
             case .exported(let id):
                 if let index = items.firstIndex(where: { $0.id == id }) {
-                    items[index].status = .synchronizied
+                    items[index].status = .synchronized
                 }
             case .deleted(let id):
                 items.removeAll { $0.id == id }
@@ -92,7 +93,8 @@ extension Archive {
     }
 
     public func delete(_ id: ArchiveItem.ID) async throws {
-        if let item = get(id) {
+        if var item = get(id) {
+            item.status = .deleted
             try await deletedArchive.upsert(item)
             deletedItems.append(item)
 
@@ -125,6 +127,8 @@ extension Archive {
             logger.error("alredy exists")
             return
         }
+        var item = item
+        item.status = try await synchronization.status(for: item)
         try await mobileArchive.upsert(item)
         items.append(item)
 
@@ -142,13 +146,7 @@ extension Archive {
 
 extension Archive {
     public func importKey(_ item: ArchiveItem) async throws {
-        let isExist = items
-            .filter { $0.status != .deleted }
-            .contains { item.id == $0.id && item.content == $0.content }
-
-        if !isExist {
-            var item = item
-            item.status = .imported
+        if !items.contains(where: { item.id == $0.id }) {
             try await upsert(item)
         }
     }

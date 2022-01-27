@@ -97,3 +97,13 @@ class Synchronization: SynchronizationProtocol {
         return newItem
     }
 }
+
+extension Synchronization {
+    func status(for item: ArchiveItem) -> ArchiveItem.Status {
+        let items = manifestStorage.manifest?.items ?? []
+        guard let last = items.first(where: { $0.id == item.id }) else {
+            return .imported
+        }
+        return last.hash == item.hash ? .synchronized : .modified
+    }
+}

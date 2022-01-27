@@ -16,7 +16,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
         case deleted
         case imported
         case modified
-        case synchronizied
+        case synchronized
         case synchronizing
     }
 
@@ -24,8 +24,8 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
         name: Name,
         fileType: FileType,
         properties: [Property],
-        isFavorite: Bool,
-        status: Status,
+        isFavorite: Bool = false,
+        status: Status = .imported,
         date: Date = .init()
     ) {
         self.name = name
@@ -38,7 +38,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
 }
 
 extension ArchiveItem {
-    public init?(fileName: String, content: String, status: Status) {
+    public init?(fileName: String, content: String) {
         let logger = Logger(label: "archiveitem")
 
         guard let name = Name(fileName: fileName) else {
@@ -59,9 +59,7 @@ extension ArchiveItem {
         self = .init(
             name: name,
             fileType: type,
-            properties: properties,
-            isFavorite: false,
-            status: status)
+            properties: properties)
     }
 
     var path: Path {
@@ -78,8 +76,6 @@ extension ArchiveItem {
         .init(
             name: name,
             fileType: fileType,
-            properties: properties,
-            isFavorite: isFavorite,
-            status: status)
+            properties: properties)
     }
 }
