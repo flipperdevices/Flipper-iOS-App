@@ -152,9 +152,6 @@ public class AppState {
     // MARK: App Reset
 
     public func reset() {
-        UserDefaultsStorage.shared.reset()
-        pairedDevice.forget()
-        archive.reset()
-        exit(0)
+        AppReset().reset()
     }
 }

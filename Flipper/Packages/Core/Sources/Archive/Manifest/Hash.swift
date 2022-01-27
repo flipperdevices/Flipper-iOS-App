@@ -1,3 +1,6 @@
+import CryptoKit
+import Foundation
+
 public struct Hash: Equatable, Codable {
     let value: String
 
@@ -13,9 +16,6 @@ extension ArchiveItem {
         .init(content.md5)
     }
 }
-
-import CryptoKit
-import Foundation
 
 extension String {
     var md5: String {

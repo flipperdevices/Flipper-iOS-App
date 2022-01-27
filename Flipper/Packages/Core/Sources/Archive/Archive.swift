@@ -1,89 +1,139 @@
-import Combine
 import Inject
 import Logging
+import Combine
 import Foundation
 
 public class Archive: ObservableObject {
     public static let shared: Archive = .init()
     private let logger = Logger(label: "archive")
 
-    @Inject var storage: ArchiveStorage
-    @Inject var synchronization: SynchronizationProtocol
+    @Inject private var mobileArchive: MobileArchiveProtocol
+    @Inject private var deletedArchive: DeletedArchiveProtocol
+    @Inject private var synchronization: SynchronizationProtocol
 
-    @Published public var items: [ArchiveItem] = [] {
-        didSet {
-            deletedItems = items.filter { $0.status == .deleted }
-            storage.items = items
-        }
-    }
-
+    @Published public var items: [ArchiveItem] = []
     @Published public var deletedItems: [ArchiveItem] = []
 
+    @Published public var isSyncronizing = false
+
+    private var disposeBag: DisposeBag = .init()
+
     private init() {
-        items = storage.items
-        deletedItems = items.filter { $0.status == .deleted }
+        synchronization.events
+            .sink { [weak self] in
+                self?.onSyncEvent($0)
+            }
+            .store(in: &disposeBag)
+
+        load()
     }
 
-    func getManifest() -> Manifest {
-        var items = [Manifest.Item]()
-        for item in self.items.filter({ $0.status != .deleted }) {
-            items.append(.init(path: item.path, hash: item.hash))
+    func load() {
+        isSyncronizing = true
+        Task {
+            items = try await loadArchive()
+            deletedItems = try await loadDeleted()
+            isSyncronizing = false
         }
-        return .init(items: items)
     }
 
-    public func find(_ id: ArchiveItem.ID) -> ArchiveItem? {
+    func loadArchive() async throws -> [ArchiveItem] {
+        var items = [ArchiveItem]()
+        for next in try await mobileArchive.manifest.items {
+            guard var item = try await mobileArchive.read(next.id) else {
+                logger.error("invalid archive item \(next.id)")
+                continue
+            }
+            item.status = try await synchronization.status(for: item)
+            items.append(item)
+        }
+        return items
+    }
+
+    func loadDeleted() async throws -> [ArchiveItem] {
+        var items = [ArchiveItem]()
+        for next in try await deletedArchive.manifest.items {
+            guard let item = try await deletedArchive.read(next.id) else {
+                logger.error("invalid deleted item \(next.id)")
+                continue
+            }
+            items.append(item)
+        }
+        return items
+    }
+
+    func onSyncEvent(_ event: Synchronization.Event) {
+        Task {
+            switch event {
+            case .imported(let id):
+                if var item = try await mobileArchive.read(id) {
+                    item.status = .synchronized
+                    items.append(item)
+                }
+            case .exported(let id):
+                if let index = items.firstIndex(where: { $0.id == id }) {
+                    items[index].status = .synchronized
+                }
+            case .deleted(let id):
+                items.removeAll { $0.id == id }
+            }
+        }
+    }
+}
+
+extension Archive {
+    public func get(_ id: ArchiveItem.ID) -> ArchiveItem? {
         items.first { $0.id == id }
     }
 
-    public func upsert(_ item: ArchiveItem) {
+    public func upsert(_ item: ArchiveItem) async throws {
+        try await mobileArchive.upsert(item)
         items.removeAll { $0.id == item.id }
         items.append(item)
     }
 
-    public func delete(_ item: ArchiveItem) {
-        updateStatus(of: item, to: .deleted)
-    }
+    public func delete(_ id: ArchiveItem.ID) async throws {
+        if var item = get(id) {
+            item.status = .deleted
+            try await deletedArchive.upsert(item)
+            deletedItems.append(item)
 
-    public func delete(_ id: ArchiveItem.ID) {
-        if let item = find(id) {
-            updateStatus(of: item, to: .deleted)
+            try await mobileArchive.delete(id)
+            items.removeAll { $0.id == id }
         }
     }
+}
 
-    public func wipe(_ item: ArchiveItem) {
-        items.removeAll { $0.id == item.id }
+extension Archive {
+    public func wipe(_ id: ArchiveItem.ID) async throws {
+        try await deletedArchive.delete(id)
+        deletedItems.removeAll { $0.id == id }
     }
 
-    public func wipe(_ id: ArchiveItem.ID) {
-        items.removeAll { $0.id == id }
-    }
-
-    public func rename(_ id: ArchiveItem.ID, to name: String) {
-        if let item = find(id) {
+    public func rename(_ id: ArchiveItem.ID, to name: String) async throws {
+        if let item = get(id) {
             let newItem = item.rename(to: .init(name))
+            try await mobileArchive.delete(id)
             items.removeAll { $0.id == item.id }
+            try await mobileArchive.upsert(newItem)
             items.append(newItem)
         }
     }
 
-    public func restore(_ item: ArchiveItem) {
-        let manifest = getManifest()
-        if let exising = manifest[item.path], exising.hash == item.hash {
-            updateStatus(of: item, to: .synchronizied)
-        } else {
-            updateStatus(of: item, to: .imported)
+    public func restore(_ item: ArchiveItem) async throws {
+        let manifest = try await mobileArchive.manifest
+        // TODO: resolve conflicts
+        guard manifest[item.id] == nil else {
+            logger.error("alredy exists")
+            return
         }
-    }
+        var item = item
+        item.status = try await synchronization.status(for: item)
+        try await mobileArchive.upsert(item)
+        items.append(item)
 
-    public func duplicate(_ id: ArchiveItem.ID) -> ArchiveItem? {
-        guard let item = find(id) else {
-            return nil
-        }
-        let newName = "\(item.name.value)_\(Date().timestamp)"
-        let newItem = item.rename(to: .init(newName))
-        items.append(newItem)
-        return newItem
+        try await deletedArchive.delete(item.id)
+        deletedItems.removeAll { $0.id == item.id }
     }
 
     public func favorite(_ id: ArchiveItem.ID) {
@@ -92,48 +142,23 @@ public class Archive: ObservableObject {
             items[index].isFavorite.toggle()
         }
     }
+}
 
-    func updateStatus(of item: ArchiveItem, to status: ArchiveItem.Status) {
-        updateStatus(of: item.id, to: status)
-    }
-
-    func updateStatus(of id: ArchiveItem.ID, to status: ArchiveItem.Status) {
-        if let index = items.firstIndex(where: { $0.id == id }) {
-            objectWillChange.send()
-            items[index].status = status
-        }
-    }
-
-    public func importKey(_ item: ArchiveItem) {
-        let isExist = items
-            .filter { $0.status != .deleted }
-            .contains { item.id == $0.id && item.content == $0.content }
-
-        if !isExist {
-            var item = item
-            item.status = .imported
-            upsert(item)
-        }
-    }
-
-    public func syncWithDevice() async {
-        do {
-            try await synchronization.syncWithDevice()
-        } catch {
-            logger.critical("syncronization error: \(error)")
+extension Archive {
+    public func importKey(_ item: ArchiveItem) async throws {
+        if !items.contains(where: { item.id == $0.id }) {
+            try await upsert(item)
         }
     }
 }
 
 extension Archive {
-    func reset() {
-        items = []
-        synchronization.reset()
-    }
-}
-
-fileprivate extension Date {
-    var timestamp: Int {
-        Int(Date().timeIntervalSince1970)
+    public func syncWithDevice() async {
+        guard !isSyncronizing else { return }
+        do {
+            try await synchronization.syncWithDevice()
+        } catch {
+            logger.critical("syncronization error: \(error)")
+        }
     }
 }

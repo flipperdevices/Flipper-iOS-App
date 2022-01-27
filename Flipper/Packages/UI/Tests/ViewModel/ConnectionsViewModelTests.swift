@@ -64,6 +64,8 @@ class ConnectionsViewModelTests: XCTestCase {
         container.register(instance: connector, as: BluetoothCentral.self)
         container.register(instance: connector, as: BluetoothConnector.self)
         container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
+        container.register(DeletedArchiveMock.init, as: DeletedArchiveProtocol.self, isSingleton: true)
+        container.register(MobileArchiveMock.init, as: MobileArchiveProtocol.self, isSingleton: true)
         container.register(SynchronizationMock.init, as: SynchronizationProtocol.self, isSingleton: true)
         container.register(DeviceStorageMock.init, as: DeviceStorage.self, isSingleton: true)
         container.register(ArchiveStorageMock.init, as: ArchiveStorage.self, isSingleton: true)
@@ -82,9 +84,9 @@ private class MockPeripheral: BluetoothPeripheral {
     var isPairingFailed: Bool { false }
     var maximumWriteValueLength: Int { 512 }
 
-    var info: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
-    var canWrite: SafePublisher<Void> { Just(()).eraseToAnyPublisher() }
-    var received: SafePublisher<Data> { Just(.init()).eraseToAnyPublisher() }
+    var info: SafePublisher<Void> { Empty().eraseToAnyPublisher() }
+    var canWrite: SafePublisher<Void> { Empty().eraseToAnyPublisher() }
+    var received: SafePublisher<Data> { Empty().eraseToAnyPublisher() }
 
     init(id: UUID, name: String = "", state: Peripheral.State = .disconnected) {
         self.id = id

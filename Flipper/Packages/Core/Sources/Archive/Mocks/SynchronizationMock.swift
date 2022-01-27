@@ -1,7 +1,10 @@
+import Combine
+
 class SynchronizationMock: SynchronizationProtocol {
-    func syncWithDevice() async throws {
+    var events: AnyPublisher<Synchronization.Event, Never> {
+        Empty().eraseToAnyPublisher()
     }
 
-    func reset() {
-    }
+    func syncWithDevice() {}
+    func status(for item: ArchiveItem) -> ArchiveItem.Status { .synchronized }
 }

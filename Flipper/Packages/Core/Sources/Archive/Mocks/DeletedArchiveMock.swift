@@ -1,4 +1,4 @@
-class PeripheralArchiveMock: PeripheralArchiveProtocol {
+class DeletedArchiveMock: DeletedArchiveProtocol {
     var manifest: Manifest { .init(items: []) }
 
     func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem? {
