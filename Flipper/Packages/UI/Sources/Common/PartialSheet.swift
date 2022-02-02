@@ -7,7 +7,7 @@ struct PartialSheetView: View {
         systemBackground.opacity(sheetManager.isPresented ? 0.5 : 0)
     }
 
-    var animation: Animation {
+    var animation: SwiftUI.Animation {
         .interpolatingSpring(stiffness: 300.0, damping: 30.0, initialVelocity: 10.0)
     }
 

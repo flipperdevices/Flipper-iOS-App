@@ -14,12 +14,21 @@ let package = Package(
             targets: ["UI"])
     ],
     dependencies: [
-        .package(name: "Core", path: "../Core")
+        .package(
+            name: "Core",
+            path: "../Core"),
+        .package(
+            name: "Lottie",
+            url: "https://github.com/airbnb/lottie-ios.git",
+            from: "3.3.0")
     ],
     targets: [
         .target(
             name: "UI",
-            dependencies: ["Core"],
+            dependencies: [
+                "Core",
+                "Lottie"
+            ],
             path: "Sources"),
         .testTarget(
             name: "UITests",
