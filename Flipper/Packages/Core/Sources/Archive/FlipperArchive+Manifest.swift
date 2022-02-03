@@ -20,12 +20,6 @@ extension FlipperArchive {
         }
     }
 
-    private var directories: [Path] {
-        ArchiveItem.FileType.allCases.map {
-            root.appending($0.location)
-        }
-    }
-
     private func createDirectories() async throws {
         let list = try await rpc.listDirectory(at: root).map { $0.name }
 
@@ -43,10 +37,15 @@ extension FlipperArchive {
     private func listAllFiles() async throws -> [Path] {
         var result: [Path] = .init()
 
-        for path in directories {
-            result.append(contentsOf: try await list(at: path).files.map {
-                path.appending($0)
-            })
+        for type in ArchiveItem.FileType.allCases {
+            let path = root.appending(type.location)
+
+            let files = try await list(at: path)
+                .files
+                .filter { $0.hasSuffix(type.extension) }
+                .map { path.appending($0) }
+
+            result.append(contentsOf: files)
         }
 
         return result
