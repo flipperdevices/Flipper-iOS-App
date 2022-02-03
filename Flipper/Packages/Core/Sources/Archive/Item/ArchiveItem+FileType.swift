@@ -39,7 +39,7 @@ extension ArchiveItem.FileType {
         switch self {
         case .ibutton: return "ibutton"
         case .nfc: return "nfc"
-        case .subghz: return "subghz/saved"
+        case .subghz: return "subghz"
         case .rfid: return "lfrfid"
         case .irda: return "irda"
         }
