@@ -20,6 +20,9 @@ struct OptionsView: View {
                     NavigationLink("Logs") {
                         LogsView(viewModel: .init())
                     }
+                    Button("Migrate Sub-GHz keys") {
+                        viewModel.migrateSubGHz()
+                    }
                 }
 
                 Section(header: Text("Archive")) {

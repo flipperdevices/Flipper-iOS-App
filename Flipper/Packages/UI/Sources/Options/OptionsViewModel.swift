@@ -18,6 +18,20 @@ class OptionsViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
+    func migrateSubGHz() {
+        Task {
+            for file in try await rpc.listDirectory(at: "/ext/subghz/saved") {
+                guard case .file(let file) = file else {
+                    continue
+                }
+                try await rpc.moveFile(
+                    from: "/ext/subghz/saved/\(file.name)",
+                    to: "/ext/subghz/\(file.name)")
+            }
+            try await rpc.deleteFile(at: "/ext/subghz/saved")
+        }
+    }
+
     func playAlert() {
         Task {
             try await rpc.playAlert()
