@@ -9,6 +9,8 @@ extension FlipperArchive {
         get async throws {
             var items = [Manifest.Item]()
 
+            try await createDirectories()
+
             for path in try await listAllFiles() {
                 let hash = try await getFileHash(at: path)
                 items.append(.init(id: .init(path: path), hash: hash))
@@ -25,15 +27,21 @@ extension FlipperArchive {
     }
 
     private func createDirectories() async throws {
-        for directory in directories {
-            try await rpc.createFile(at: directory, isDirectory: true)
+        let list = try await rpc.listDirectory(at: root).map { $0.name }
+
+        let missing = ArchiveItem.FileType.allCases.filter {
+            !list.contains($0.location)
+        }.map {
+            root.appending($0.location)
+        }
+
+        for path in missing {
+            try await rpc.createFile(at: path, isDirectory: true)
         }
     }
 
     private func listAllFiles() async throws -> [Path] {
         var result: [Path] = .init()
-
-        // try await createDirectories()
 
         for path in directories {
             result.append(contentsOf: try await list(at: path).files.map {
