@@ -75,7 +75,10 @@ public class Archive: ObservableObject {
                     items[index].status = .synchronized
                 }
             case .deleted(let id):
-                items.removeAll { $0.id == id }
+                if let index = items.firstIndex(where: { $0.id == id }) {
+                    try await backup(items[index])
+                    items.removeAll { $0.id == id }
+                }
             }
         }
     }
@@ -93,11 +96,8 @@ extension Archive {
     }
 
     public func delete(_ id: ArchiveItem.ID) async throws {
-        if var item = get(id) {
-            item.status = .deleted
-            try await deletedArchive.upsert(item)
-            deletedItems.append(item)
-
+        if let item = get(id) {
+            try await backup(item)
             try await mobileArchive.delete(id)
             items.removeAll { $0.id == id }
         }
@@ -118,6 +118,13 @@ extension Archive {
             try await mobileArchive.upsert(newItem)
             items.append(newItem)
         }
+    }
+
+    func backup(_ item: ArchiveItem) async throws {
+        var item = item
+        item.status = .deleted
+        try await deletedArchive.upsert(item)
+        deletedItems.append(item)
     }
 
     public func restore(_ item: ArchiveItem) async throws {
