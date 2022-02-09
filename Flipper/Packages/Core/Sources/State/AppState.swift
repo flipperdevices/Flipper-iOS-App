@@ -8,9 +8,8 @@ public class AppState {
     public static let shared: AppState = .init()
     private let logger = Logger(label: "appstate")
 
-    public var isFirstLaunch: Bool {
-        get { UserDefaultsStorage.shared.isFirstLaunch }
-        set { UserDefaultsStorage.shared.isFirstLaunch = newValue }
+    @Published public var isFirstLaunch: Bool {
+        didSet { UserDefaultsStorage.shared.isFirstLaunch = isFirstLaunch }
     }
 
     @Inject private var pairedDevice: PairedDevice
@@ -24,6 +23,8 @@ public class AppState {
     @Published public var status: Status = .noDevice
 
     public init() {
+        isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
+
         pairedDevice.peripheral
             .receive(on: DispatchQueue.main)
             .assign(to: \.device, on: self)

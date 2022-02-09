@@ -3,6 +3,7 @@ import Combine
 import Inject
 import Logging
 import Foundation
+import SwiftUI
 
 public class RootViewModel: ObservableObject {
     private let logger = Logger(label: "root")
@@ -10,14 +11,49 @@ public class RootViewModel: ObservableObject {
     let appState: AppState = .shared
     let sharing: Sharing = .shared
 
-    @Published var presentWelcomeView = false
+    var disposeBag: DisposeBag = .init()
 
-    var isFirstLaunch: Bool {
-        appState.isFirstLaunch
-    }
+    @Published var isFirstLaunch: Bool
 
     public init() {
-        presentWelcomeView = isFirstLaunch
+        isFirstLaunch = appState.isFirstLaunch
+
+        appState.$status
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                if $0 == .connected {
+                    self.appState.isFirstLaunch = false
+                    self.hideWelcomeScreen()
+                }
+            }
+            .store(in: &disposeBag)
+
+        appState.$isFirstLaunch
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isFirstLaunch in
+                guard let self = self else {
+                    return
+                }
+                if self.isFirstLaunch != isFirstLaunch {
+                    isFirstLaunch
+                        ? self.showWelcomeScreen()
+                        : self.hideWelcomeScreen()
+                }
+            }
+            .store(in: &disposeBag)
+    }
+
+    func showWelcomeScreen() {
+        isFirstLaunch = true
+    }
+
+    func hideWelcomeScreen() {
+        withAnimation {
+            self.isFirstLaunch = false
+        }
     }
 
     func onOpenURL(_ url: URL) async {
