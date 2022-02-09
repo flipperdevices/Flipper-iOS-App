@@ -59,7 +59,7 @@ class ConnectionsViewModelTests: XCTestCase {
     }
 
     // TODO: Move to generalized mocks
-    private static func createTarget(_ connector: BluetoothCentral & BluetoothConnector) async -> ConnectionsViewModel {
+    private static func createTarget(_ connector: BluetoothCentral & BluetoothConnector) async -> ConnectionViewModel {
         let container = Container.shared
         container.register(instance: connector, as: BluetoothCentral.self)
         container.register(instance: connector, as: BluetoothConnector.self)
@@ -70,7 +70,7 @@ class ConnectionsViewModelTests: XCTestCase {
         container.register(DeviceStorageMock.init, as: DeviceStorage.self, isSingleton: true)
         container.register(ArchiveStorageMock.init, as: ArchiveStorage.self, isSingleton: true)
         container.register(ManifestStorageMock.init, as: ManifestStorage.self, isSingleton: true)
-        return await ConnectionsViewModel()
+        return await ConnectionViewModel()
     }
 }
 

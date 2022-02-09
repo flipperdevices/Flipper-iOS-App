@@ -10,4 +10,12 @@ public enum Application {
         }
         #endif
     }
+
+    public static func openSystemSettings() {
+        #if os(iOS)
+        if let settings = URL(string: "App-Prefs:root=") {
+            UIApplication.shared.open(settings, options: [:], completionHandler: nil)
+        }
+        #endif
+    }
 }

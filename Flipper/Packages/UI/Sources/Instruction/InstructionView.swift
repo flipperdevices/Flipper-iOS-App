@@ -30,7 +30,7 @@ struct InstructionView: View {
             Spacer()
 
             NavigationLink {
-                ConnectionsView(viewModel: .init())
+                ConnectionView(viewModel: .init())
                     .customBackground(backgroundColor)
             } label: {
                 Text("Connect")

@@ -49,6 +49,7 @@ public class AppState {
         switch status {
         // MARK: Pairing
         case .pairing where device?.battery != nil: didConnect()
+        case .pairing where newValue == .disconnected: didDisconnect()
         case .noDevice where newValue == .connecting: status = .preParing
         case .preParing where newValue == .connected: status = .pairing
         case .preParing where newValue == .disconnected: didFailToConnect()
@@ -74,11 +75,12 @@ public class AppState {
     }
 
     func didDisconnect() {
-        status = .disconnected
         guard !pairedDevice.isPairingFailed else {
+            status = .failed
             logger.debug("disconnected: invalid pincode or canceled")
             return
         }
+        status = .disconnected
         logger.debug("disconnected: trying to reconnect")
         connect()
     }

@@ -4,7 +4,7 @@ import Inject
 import Foundation
 
 @MainActor
-class ConnectionsViewModel: ObservableObject {
+class ConnectionViewModel: ObservableObject {
     let appState: AppState = .shared
 
     @Inject private var central: BluetoothCentral
@@ -21,8 +21,22 @@ class ConnectionsViewModel: ObservableObject {
         }
     }
 
+    @Published var showHelpSheet = false
+
+    var scanTimer: Timer?
+    let scanTimoutInSecons = 30.0
+    @Published var isScanTimeout = false
+
+    var uuid: UUID?
+    @Published var isCanceledOrInvalidPin = false {
+        didSet { pairedDevice.forget() }
+    }
+
+    @Published var isPairingIssue = false {
+        didSet { pairedDevice.forget() }
+    }
+
     @Published var peripherals: [Peripheral] = []
-    @Published var isPairingIssue = false
 
     private var bluetoothPeripherals: [BluetoothPeripheral] = [] {
         didSet { updatePeripherals() }
@@ -50,46 +64,71 @@ class ConnectionsViewModel: ObservableObject {
                 self?.updatePeripherals()
             }
             .store(in: &disposeBag)
+
+        appState.$status
+            .receive(on: DispatchQueue.main)
+            .map { $0 == .pairingIssue }
+            .filter { $0 == true }
+            .assign(to: \.isPairingIssue, on: self)
+            .store(in: &disposeBag)
+
+        appState.$status
+            .receive(on: DispatchQueue.main)
+            .map { $0 == .failed }
+            .filter { $0 == true }
+            .assign(to: \.isCanceledOrInvalidPin, on: self)
+            .store(in: &disposeBag)
+    }
+
+    func retry() {
+        if let uuid = uuid {
+            connect(to: uuid)
+        }
+    }
+
+    func skipConnection() {
+        pairedDevice.forget()
+        appState.isFirstLaunch = false
     }
 
     func updatePeripherals() {
-        if appState.status == .pairingIssue {
-            isPairingIssue = true
-            pairedDevice.forget()
-        }
         peripherals = bluetoothPeripherals.map(Peripheral.init)
     }
 
     func startScan() {
         central.startScanForPeripherals()
+        startScanTimer()
     }
 
     func stopScan() {
         central.stopScanForPeripherals()
         peripherals.removeAll()
+        stopScanTimer()
     }
 
     func connect(to uuid: UUID) {
+        self.uuid = uuid
         connector.connect(to: uuid)
     }
 
-    func openApplicationSettings() {
-        Application.openSettings()
-    }
-}
+    // MARK: Scan timeout
 
-extension BluetoothStatus.NotReadyReason: CustomStringConvertible {
-    // TODO: support localizations here
-    public var description: String {
-        switch self {
-        case .poweredOff:
-            return "Bluetooth is powered off"
-        case .preparing:
-            return "Bluetooth is not ready"
-        case .unauthorized:
-            return "The application is not authorized to use Bluetooth"
-        case .unsupported:
-            return "Bluetooth is not supported on this device"
+    func startScanTimer() {
+        isScanTimeout = false
+        scanTimer = .scheduledTimer(
+            withTimeInterval: scanTimoutInSecons,
+            repeats: false
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            if self.peripherals.isEmpty {
+                self.stopScan()
+                self.isScanTimeout = true
+            }
         }
+    }
+
+    func stopScanTimer() {
+        scanTimer?.invalidate()
+        scanTimer = nil
     }
 }

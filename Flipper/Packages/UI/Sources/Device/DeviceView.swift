@@ -62,7 +62,7 @@ struct DeviceView: View {
             }
             .navigationBarHidden(true)
             .sheet(isPresented: $viewModel.presentConnectionsSheet) {
-                ConnectionsView(viewModel: .init())
+                ConnectionView(viewModel: .init())
                 Spacer()
                 Button("Skip connection") {
                     viewModel.presentConnectionsSheet = false
