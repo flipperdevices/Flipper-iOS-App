@@ -5,3 +5,12 @@ extension View {
         .init(UIColor.systemBackground)
     }
 }
+
+extension View {
+    func customBackground(_ color: Color) -> some View {
+        ZStack {
+            color.edgesIgnoringSafeArea(.all)
+            self
+        }
+    }
+}
