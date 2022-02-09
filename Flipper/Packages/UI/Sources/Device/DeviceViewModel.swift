@@ -10,24 +10,9 @@ class DeviceViewModel: ObservableObject {
 
     @Published var isPairingIssue = false
 
-    @Published var device: Peripheral? {
-        didSet {
-            if appState.status == .connected {
-                presentConnectionsSheet = false
-            }
-        }
-    }
+    @Published var device: Peripheral?
     @Published var status: Status = .noDevice {
-        didSet {
-            isPairingIssue = status == .pairingIssue && !presentConnectionsSheet
-        }
-    }
-    @Published var presentConnectionsSheet = false {
-        didSet {
-            if presentConnectionsSheet == true {
-                appState.forgetDevice()
-            }
-        }
+        didSet { isPairingIssue = status == .pairingIssue }
     }
 
     var firmwareVersion: String {
@@ -81,6 +66,11 @@ class DeviceViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .assign(to: \.status, on: self)
             .store(in: &disposeBag)
+    }
+
+    func showWelcomeScreen() {
+        appState.forgetDevice()
+        appState.isFirstLaunch = true
     }
 
     func sync() {
