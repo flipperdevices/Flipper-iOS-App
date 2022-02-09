@@ -4,7 +4,7 @@ enum PairingIssue {
     static let title = "Pairing Issue"
     static let message =
         "Forget your device in bluetooth " +
-        "settings and restart the app"
+        "settings and try again"
 
     static var alert: Alert {
         .init(
