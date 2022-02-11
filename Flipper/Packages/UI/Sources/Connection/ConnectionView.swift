@@ -40,7 +40,21 @@ struct ConnectionView: View {
                         ProgressView()
                     }
                     .opacity(viewModel.isScanTimeout ? 0 : 1)
+                
+                    // TODO: Replace with new API on iOS15
+                    HStack(content: {})
+                        .alert(isPresented: $viewModel.isPairingIssue) {
+                            PairingIssue.alert
+                        }
+                    HStack(content: {})
+                        .alert(isPresented: $viewModel.isCanceledOrInvalidPin) {
+                            PairingCanceledOrIncorrectPin.alert {
+                                viewModel.retry()
+                            }
+                        }
+
                     Spacer()
+
                     Button {
                         viewModel.showHelpSheet = true
                     } label: {
@@ -92,14 +106,6 @@ struct ConnectionView: View {
         .sheet(isPresented: $viewModel.showHelpSheet) {
             HelpView()
                 .customBackground(backgroundColor)
-        }
-        .alert(isPresented: $viewModel.isPairingIssue) {
-            PairingIssue.alert
-        }
-        .alert(isPresented: $viewModel.isCanceledOrInvalidPin) {
-            PairingCanceledOrIncorrectPin.alert {
-                viewModel.retry()
-            }
         }
         .onAppear {
             UINavigationBar.appearance().tintColor = .label
