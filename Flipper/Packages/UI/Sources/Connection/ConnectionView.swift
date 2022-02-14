@@ -40,16 +40,23 @@ struct ConnectionView: View {
                         ProgressView()
                     }
                     .opacity(viewModel.isScanTimeout ? 0 : 1)
-                
+
                     // TODO: Replace with new API on iOS15
                     HStack(content: {})
                         .alert(isPresented: $viewModel.isPairingIssue) {
                             PairingIssue.alert
                         }
                     HStack(content: {})
+                        .alert(isPresented: $viewModel.isConnectTimeout) {
+                            ConnectTimeoutIssue.alert {
+                                viewModel.stopScan()
+                                viewModel.startScan()
+                            }
+                        }
+                    HStack(content: {})
                         .alert(isPresented: $viewModel.isCanceledOrInvalidPin) {
-                            PairingCanceledOrIncorrectPin.alert {
-                                viewModel.retry()
+                            PairingCanceledOrIncorrectPinIssue.alert {
+                                viewModel.reconnect()
                             }
                         }
 

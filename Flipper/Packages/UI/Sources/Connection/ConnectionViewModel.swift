@@ -27,6 +27,10 @@ class ConnectionViewModel: ObservableObject {
     let scanTimoutInSecons = 30.0
     @Published var isScanTimeout = false
 
+    var connectTimer: Timer?
+    let connectTimoutInSecons = 30.0
+    @Published var isConnectTimeout = false
+
     var uuid: UUID?
     @Published var isCanceledOrInvalidPin = false {
         didSet { pairedDevice.forget() }
@@ -80,7 +84,7 @@ class ConnectionViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
-    func retry() {
+    func reconnect() {
         if let uuid = uuid {
             connect(to: uuid)
         }
@@ -104,11 +108,13 @@ class ConnectionViewModel: ObservableObject {
         central.stopScanForPeripherals()
         peripherals.removeAll()
         stopScanTimer()
+        stopConnectTimer()
     }
 
     func connect(to uuid: UUID) {
         self.uuid = uuid
         connector.connect(to: uuid)
+        startConnectTimer()
     }
 
     // MARK: Scan timeout
@@ -130,5 +136,26 @@ class ConnectionViewModel: ObservableObject {
     func stopScanTimer() {
         scanTimer?.invalidate()
         scanTimer = nil
+    }
+
+    // MARK: Connect timout
+
+    func startConnectTimer() {
+        isConnectTimeout = false
+        connectTimer = .scheduledTimer(
+            withTimeInterval: connectTimoutInSecons,
+            repeats: false
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            if self.isConnecting, let uuid = self.uuid {
+                self.connector.disconnect(from: uuid)
+                self.isConnectTimeout = true
+            }
+        }
+    }
+
+    func stopConnectTimer() {
+        connectTimer?.invalidate()
+        connectTimer = nil
     }
 }
