@@ -49,7 +49,7 @@ struct DeviceView: View {
                         self.action = id
                     }
                     .padding(.top, 20)
-                    .disabled(viewModel.device?.state != .connected)
+                    .disabled(viewModel.appState.status != .connected)
 
                     NavigationLink("", tag: fileManager.name, selection: $action) {
                         FileManagerView(viewModel: .init())
