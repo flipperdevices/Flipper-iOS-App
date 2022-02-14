@@ -62,7 +62,7 @@ struct DeviceView: View {
             }
             .navigationBarHidden(true)
             .alert(isPresented: $viewModel.isPairingIssue) {
-                PairingIssue.alert
+                .pairingIssue
             }
         }
     }

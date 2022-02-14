@@ -41,24 +41,7 @@ struct ConnectionView: View {
                     }
                     .opacity(viewModel.isScanTimeout ? 0 : 1)
 
-                    // TODO: Replace with new API on iOS15
-                    HStack(content: {})
-                        .alert(isPresented: $viewModel.isPairingIssue) {
-                            PairingIssue.alert
-                        }
-                    HStack(content: {})
-                        .alert(isPresented: $viewModel.isConnectTimeout) {
-                            ConnectTimeoutIssue.alert {
-                                viewModel.stopScan()
-                                viewModel.startScan()
-                            }
-                        }
-                    HStack(content: {})
-                        .alert(isPresented: $viewModel.isCanceledOrInvalidPin) {
-                            PairingCanceledOrIncorrectPinIssue.alert {
-                                viewModel.reconnect()
-                            }
-                        }
+                    alertsHack()
 
                     Spacer()
 
@@ -163,6 +146,29 @@ struct ConnectionView: View {
         .frame(height: 64)
         .cornerRadius(10)
         .shadow(color: cardShadowColor, radius: 16, x: 0, y: 4)
+    }
+
+    // TODO: Replace with new API on iOS15
+    func alertsHack() -> some View {
+        HStack {
+            Spacer()
+                .alert(isPresented: $viewModel.isPairingIssue) {
+                    .pairingIssue
+                }
+            Spacer()
+                .alert(isPresented: $viewModel.isConnectTimeout) {
+                    .connectionTimeout {
+                        viewModel.stopScan()
+                        viewModel.startScan()
+                    }
+                }
+            Spacer()
+                .alert(isPresented: $viewModel.isCanceledOrInvalidPin) {
+                    .canceledOrIncorrectPin {
+                        viewModel.reconnect()
+                    }
+                }
+        }
     }
 }
 
