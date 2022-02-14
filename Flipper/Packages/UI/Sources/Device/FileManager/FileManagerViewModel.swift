@@ -25,49 +25,42 @@ class FileManagerViewModel: ObservableObject {
     enum Content {
         case list([Element])
         case file(String)
-        case name(isDirectory: Bool)
+        case create(isDirectory: Bool)
         case forceDelete(Path)
         case error(String)
     }
 
-    var root: [Element] = [.directory("int"), .directory("ext")]
-    var path: Path = .init()
-
-    var title: String {
-        path.isEmpty
-            ? "Storage browser"
-            : requestTime == nil
-                ? path.string
-                // swiftlint:disable force_unwrapping
-                : path.string + " - \(requestTime!.kindaRounded)s"
+    enum PathMode {
+        case list
+        case edit
+        case error
     }
 
-    init() {
-        content = .list(root)
+    let path: Path
+    let mode: PathMode
+
+    var title: String {
+        path.string
+    }
+
+    convenience init() {
+        self.init(path: .init(string: "/"), mode: .list)
+    }
+
+    init(path: Path, mode: PathMode) {
+        self.path = path
+        self.mode = mode
+    }
+
+    func update() async {
+        switch self.mode {
+        case .list: await listDirectory()
+        case .edit: await readFile()
+        default: break
+        }
     }
 
     // MARK: Directory
-
-    func moveUp() {
-        guard !path.isEmpty else {
-            return
-        }
-        path.removeLastComponent()
-        if path.isEmpty {
-            content = .list(root)
-        } else {
-            Task {
-                await listDirectory()
-            }
-        }
-    }
-
-    func enter(directory name: String) {
-        path.append(name)
-        Task {
-            await listDirectory()
-        }
-    }
 
     func listDirectory() async {
         content = nil
@@ -87,28 +80,19 @@ class FileManagerViewModel: ObservableObject {
         }
     }
 
-    func readFile(_ file: File) {
-        Task {
-            content = nil
-            path.append(file.name)
-            do {
-                let bytes = try await rpc.readFile(at: path)
-                self.content = .file(.init(decoding: bytes, as: UTF8.self))
-            } catch {
-                self.content = .error(String(describing: error))
-            }
+    func readFile() async {
+        do {
+            let bytes = try await rpc.readFile(at: path)
+            self.content = .file(.init(decoding: bytes, as: UTF8.self))
+        } catch {
+            self.content = .error(String(describing: error))
         }
     }
-
-    // Temporary
-    var startTime: Date = .init()
-    var requestTime: Double?
 
     func save() {
         Task {
             let text = text
             self.content = nil
-            startTime = .init()
             do {
                 try await rpc.writeFile(at: path, string: text)
                 self.content = .file(text)
@@ -121,7 +105,7 @@ class FileManagerViewModel: ObservableObject {
     // Create
 
     func newElement(isDirectory: Bool) {
-        content = .name(isDirectory: isDirectory)
+        content = .create(isDirectory: isDirectory)
     }
 
     func cancel() {
@@ -133,7 +117,7 @@ class FileManagerViewModel: ObservableObject {
     func create() {
         Task {
             guard !name.isEmpty else { return }
-            guard case .name(let isDirectory) = content else {
+            guard case .create(let isDirectory) = content else {
                 return
             }
 
@@ -186,11 +170,5 @@ class FileManagerViewModel: ObservableObject {
                 self.content = .error(String(describing: error))
             }
         }
-    }
-}
-
-extension Double {
-    var kindaRounded: Double {
-        (self * 100).rounded() / 100
     }
 }

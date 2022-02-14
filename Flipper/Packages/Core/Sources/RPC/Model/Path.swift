@@ -14,7 +14,10 @@ public struct Path: Equatable, Hashable, Codable {
     }
 
     public var string: String {
-        components.reduce(into: "") {
+        guard !components.isEmpty else {
+            return "/"
+        }
+        return components.reduce(into: "") {
             $0.append("/" + $1)
         }
     }

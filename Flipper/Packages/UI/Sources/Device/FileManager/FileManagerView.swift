@@ -3,13 +3,14 @@ import SwiftUI
 
 struct FileManagerView: View {
     @StateObject var viewModel: FileManagerViewModel
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         VStack {
             switch viewModel.content {
             case .list(let elements): listView(with: elements)
             case .file: editorView()
-            case .name: nameView()
+            case .create: createView()
             case .error(let error): Text(error)
             case .forceDelete: forceDeleteView()
             case .none: ProgressView()
@@ -36,13 +37,18 @@ struct FileManagerView: View {
                 }
             }
         }
+        .onAppear {
+            Task {
+                await viewModel.update()
+            }
+        }
     }
 
     func listView(with elements: [Element]) -> some View {
         List {
             if !viewModel.path.isEmpty {
                 Button("..") {
-                    viewModel.moveUp()
+                    presentationMode.wrappedValue.dismiss()
                 }
             }
             if !elements.isEmpty {
@@ -58,8 +64,11 @@ struct FileManagerView: View {
                 HStack {
                     Image(systemName: "folder.fill")
                         .frame(width: 20)
-                    Button(directory.name) {
-                        viewModel.enter(directory: directory.name)
+
+                    NavigationLink(directory.name) {
+                        FileManagerView(viewModel: .init(
+                            path: viewModel.path.appending(directory.name),
+                            mode: .list))
                     }
                     .foregroundColor(.primary)
                 }
@@ -71,8 +80,10 @@ struct FileManagerView: View {
                         if viewModel.canRead(file) {
                             Image(systemName: "doc")
                                 .frame(width: 20)
-                            Button {
-                                viewModel.readFile(file)
+                            NavigationLink {
+                                FileManagerView(viewModel: .init(
+                                    path: viewModel.path.appending(file.name),
+                                    mode: .edit))
                             } label: {
                                 FileRow(file: file)
                             }
@@ -105,7 +116,7 @@ struct FileManagerView: View {
 
             HStack {
                 RoundedButton("Close") {
-                    viewModel.moveUp()
+                    presentationMode.wrappedValue.dismiss()
                 }
 
                 RoundedButton("Save") {
@@ -116,7 +127,7 @@ struct FileManagerView: View {
         .padding(.bottom, 16)
     }
 
-    func nameView() -> some View {
+    func createView() -> some View {
         VStack {
             TextField("Name", text: $viewModel.name)
                 .padding()
