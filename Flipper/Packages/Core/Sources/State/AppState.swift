@@ -8,9 +8,8 @@ public class AppState {
     public static let shared: AppState = .init()
     private let logger = Logger(label: "appstate")
 
-    public var isFirstLaunch: Bool {
-        get { UserDefaultsStorage.shared.isFirstLaunch }
-        set { UserDefaultsStorage.shared.isFirstLaunch = newValue }
+    @Published public var isFirstLaunch: Bool {
+        didSet { UserDefaultsStorage.shared.isFirstLaunch = isFirstLaunch }
     }
 
     @Inject private var pairedDevice: PairedDevice
@@ -24,6 +23,8 @@ public class AppState {
     @Published public var status: Status = .noDevice
 
     public init() {
+        isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
+
         pairedDevice.peripheral
             .receive(on: DispatchQueue.main)
             .assign(to: \.device, on: self)
@@ -49,6 +50,7 @@ public class AppState {
         switch status {
         // MARK: Pairing
         case .pairing where device?.battery != nil: didConnect()
+        case .pairing where newValue == .disconnected: didDisconnect()
         case .noDevice where newValue == .connecting: status = .preParing
         case .preParing where newValue == .connected: status = .pairing
         case .preParing where newValue == .disconnected: didFailToConnect()
@@ -74,11 +76,12 @@ public class AppState {
     }
 
     func didDisconnect() {
-        status = .disconnected
         guard !pairedDevice.isPairingFailed else {
+            status = .failed
             logger.debug("disconnected: invalid pincode or canceled")
             return
         }
+        status = .disconnected
         logger.debug("disconnected: trying to reconnect")
         connect()
     }

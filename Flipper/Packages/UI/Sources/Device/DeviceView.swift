@@ -8,9 +8,9 @@ struct DeviceView: View {
     var body: some View {
         NavigationView {
             VStack {
-                DeviceViewHeader(
-                    status: viewModel.status,
-                    displayingConnections: $viewModel.presentConnectionsSheet)
+                DeviceViewHeader(status: viewModel.status) {
+                    viewModel.showWelcomeScreen()
+                }
 
                 ScrollView {
                     VStack {
@@ -61,16 +61,8 @@ struct DeviceView: View {
                 .background(Color.gray.opacity(0.1))
             }
             .navigationBarHidden(true)
-            .sheet(isPresented: $viewModel.presentConnectionsSheet) {
-                ConnectionsView(viewModel: .init())
-                Spacer()
-                Button("Skip connection") {
-                    viewModel.presentConnectionsSheet = false
-                }
-                .padding(.bottom, onMac ? 140 : 16)
-            }
             .alert(isPresented: $viewModel.isPairingIssue) {
-                PairingIssue.alert
+                .pairingIssue
             }
         }
     }
@@ -104,21 +96,22 @@ extension DeviceView {
 
 struct DeviceViewHeader: View {
     let status: Status
-    @Binding var displayingConnections: Bool
+    let action: @MainActor () -> Void
 
     var body: some View {
         HeaderView(
             status: status,
             leftView: {
                 Button {
-                    displayingConnections = true
+                    action()
                 } label: {
                     Image("BluetoothOn")
+                        .renderingMode(.template)
                         .headerImageStyle()
                         .frame(width: 20, height: 20)
                         .overlay(
                             Circle()
-                                .stroke(.blue, lineWidth: 1.5)
+                                .stroke(Color.accentColor, lineWidth: 1.8)
                         )
                 }
                 .padding(.leading, 5)

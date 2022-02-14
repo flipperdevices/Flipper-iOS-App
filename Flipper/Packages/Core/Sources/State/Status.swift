@@ -7,6 +7,7 @@ public enum Status: CustomStringConvertible {
     case pairingIssue
     case preParing
     case pairing
+    case failed
 
     public var description: String {
         switch self {
@@ -18,6 +19,7 @@ public enum Status: CustomStringConvertible {
         case .pairingIssue: return "Pairing Issue"
         case .preParing: return "PreParing"
         case .pairing: return "Pairing"
+        case .failed: return "Failed"
         }
     }
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina5_9" orientation="portrait" appearance="dark"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20034" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20017"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -14,21 +14,31 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" userInteractionEnabled="NO" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Flipper" translatesAutoresizingMaskIntoConstraints="NO" id="L59-vF-nT9">
-                                <rect key="frame" x="42" y="144" width="291" height="524"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="FlipperFace" translatesAutoresizingMaskIntoConstraints="NO" id="L59-vF-nT9">
+                                <rect key="frame" x="58.5" y="199.5" width="297" height="297"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="By Flipper Devices" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TR3-K0-h71">
+                                <rect key="frame" x="131" y="800" width="152" height="22"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                <color key="textColor" systemColor="secondaryLabelColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Furippa" translatesAutoresizingMaskIntoConstraints="NO" id="2cN-6z-P1S">
+                                <rect key="frame" x="135.5" y="734" width="143" height="30"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="L59-vF-nT9" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="5UL-JD-tFQ"/>
-                            <constraint firstItem="L59-vF-nT9" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" constant="42" id="D8s-rJ-znx"/>
-                            <constraint firstItem="L59-vF-nT9" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="NdC-Wy-XBc"/>
-                            <constraint firstItem="L59-vF-nT9" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" constant="144" id="ZBU-CJ-yOJ"/>
-                            <constraint firstAttribute="bottom" secondItem="L59-vF-nT9" secondAttribute="bottom" constant="144" id="tUZ-xR-8HT"/>
+                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="bottom" secondItem="TR3-K0-h71" secondAttribute="bottom" constant="40" id="1No-oh-Ttu"/>
+                            <constraint firstItem="2cN-6z-P1S" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="EW9-Ri-w0S"/>
+                            <constraint firstItem="L59-vF-nT9" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-100" id="WSk-OA-Akd"/>
+                            <constraint firstItem="TR3-K0-h71" firstAttribute="centerX" secondItem="L59-vF-nT9" secondAttribute="centerX" id="ddt-Nm-F02"/>
+                            <constraint firstItem="L59-vF-nT9" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="n8E-WJ-1YB"/>
+                            <constraint firstItem="TR3-K0-h71" firstAttribute="top" secondItem="2cN-6z-P1S" secondAttribute="bottom" constant="36" id="vj7-mX-eDg"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -38,7 +48,11 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Flipper" width="116" height="10"/>
+        <image name="FlipperFace" width="297" height="297"/>
+        <image name="Furippa" width="143" height="30"/>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -95,9 +95,9 @@
 	<key>NFCReaderUsageDescription</key>
 	<string>NFC is required to read tags</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Bluetooth is required to connect to your Flipper device</string>
+	<string>This will allow Flipper app to conect to your Flipper Device</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Bluetooth is required to connect to your Flipper device</string>
+	<string>This will allow Flipper app to conect to your Flipper Device</string>
 	<key>NSSiriUsageDescription</key>
 	<string>To control Flipper</string>
 	<key>NSUserActivityTypes</key>

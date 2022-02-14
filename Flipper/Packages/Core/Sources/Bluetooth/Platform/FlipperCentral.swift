@@ -6,16 +6,18 @@ import Logging
 class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     private let logger = Logger(label: "central")
 
-    private let manager: CBCentralManager
+    private lazy var manager: CBCentralManager = {
+        let manager = CBCentralManager()
+        manager.delegate = self
+        return manager
+    }()
 
     private var flipperServiceIDs: [CBUUID] {
         [.flipperZerof6, .flipperZeroBlack, .flipperZeroWhite]
     }
 
     override init() {
-        self.manager = CBCentralManager()
         super.init()
-        self.manager.delegate = self
     }
 
     // MARK: BluetoothCentral
