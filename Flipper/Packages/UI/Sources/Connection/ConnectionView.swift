@@ -25,7 +25,7 @@ struct ConnectionView: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             switch self.viewModel.state {
             case .notReady(let reason):
                 if reason == .unauthorized {
@@ -34,7 +34,7 @@ struct ConnectionView: View {
                     BluetoothOffView()
                 }
             case .ready:
-                HStack {
+                HStack(spacing: 0) {
                     HStack(spacing: 8) {
                         Text("Searching")
                         ProgressView()
@@ -85,6 +85,7 @@ struct ConnectionView: View {
                         }
                     } else {
                         ConnectPlaceholderView()
+                            .padding(.bottom, 77)
                     }
                 } else {
                     VStack(spacing: 14) {
@@ -124,25 +125,29 @@ struct ConnectionView: View {
     }
 
     func row(for peripheral: Peripheral) -> some View {
-        HStack {
-            HStack(spacing: 14) {
+        HStack(spacing: 0) {
+            HStack(spacing: 0) {
                 VStack(spacing: 6) {
                     Image("DeviceConnect")
                     Text("Flipper Zero")
                         .font(.system(size: 10, weight: .medium))
                         .foregroundColor(.black30)
                 }
+                .padding(.horizontal, 14)
 
                 Divider()
 
                 Text(peripheral.name)
+                    .lineLimit(1)
                     .font(.system(size: 14, weight: .medium))
+                    .padding(.leading, 14)
 
-                Spacer()
+                Spacer(minLength: 0)
 
                 switch peripheral.state {
                 case .connecting, .connected:
                     ProgressView()
+                        .padding(.trailing, 14)
                 default:
                     ConnectButton("Connect") {
                         if peripheral.state != .connected {
@@ -150,9 +155,9 @@ struct ConnectionView: View {
                         }
                     }
                     .disabled(viewModel.isConnecting)
+                    .padding(.trailing, 14)
                 }
             }
-            .padding(.horizontal, 14)
         }
         .background(cardBackgroundColor)
         .frame(height: 64)
@@ -178,7 +183,6 @@ struct ConnectPlaceholderView: View {
                 .foregroundColor(.black40)
             Spacer()
         }
-        .padding(.bottom, 170)
     }
 }
 
@@ -196,9 +200,9 @@ struct ConnectButton: View {
     var body: some View {
         Button(action: action) {
             Text(text)
-                .frame(height: 36, alignment: .center)
+                .lineLimit(1)
+                .frame(width: 89, height: 36, alignment: .center)
                 .font(.system(size: 12, weight: .bold))
-                .padding(.horizontal, 20)
                 .background(Color.accentColor)
                 .foregroundColor(Color.white)
                 .cornerRadius(18)

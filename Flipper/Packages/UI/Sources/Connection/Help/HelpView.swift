@@ -22,48 +22,50 @@ struct HelpView: View {
                 .padding(.top, 16)
                 .padding(.bottom, 20)
 
-            VStack(alignment: .leading, spacing: 24) {
-                HelpPoint(
-                    number: "1",
-                    text: "Check the correct name of your Flipper",
-                    linkLabel: "How to know the name of Flipper",
-                    linkURL: "https://docs.flipperzero.one")
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    HelpPoint(
+                        number: "1",
+                        text: "Check the correct name of your Flipper",
+                        linkLabel: "How to know the name of Flipper",
+                        linkURL: "https://docs.flipperzero.one")
 
-                HelpPoint(
-                    number: "2",
-                    text: "Make sure Bluetooth on your Flipper is turned On.",
-                    linkLabel: "How to turn On Bluetooth on Flipper",
-                    linkURL: "https://docs.flipperzero.one")
+                    HelpPoint(
+                        number: "2",
+                        text: "Make sure Bluetooth on your Flipper is turned On.",
+                        linkLabel: "How to turn On Bluetooth on Flipper",
+                        linkURL: "https://docs.flipperzero.one")
 
-                HelpPoint(
-                    number: "3",
-                    text: "Check Bluetooth connection on your phone.",
-                    linkLabel: "Go to Bluetooth settings",
-                    linkURL: "https://docs.flipperzero.one")
+                    HelpPoint(
+                        number: "3",
+                        text: "Check Bluetooth connection on your phone.",
+                        linkLabel: "Go to Bluetooth settings",
+                        linkURL: "https://docs.flipperzero.one")
 
-                HelpPoint(
-                    number: "4",
-                    text: "Disconnect your Flipper from other apps and devices.",
-                    linkLabel: nil,
-                    linkURL: nil)
+                    HelpPoint(
+                        number: "4",
+                        text: "Disconnect your Flipper from other apps and devices.",
+                        linkLabel: nil,
+                        linkURL: nil)
 
-                HelpPoint(
-                    number: "5",
-                    text: "Install the latest firmware version on Flipper. It’s important to update regularly.",
-                    linkLabel: "Install here",
-                    linkURL: "https://docs.flipperzero.one")
+                    HelpPoint(
+                        number: "5",
+                        text: "Install the latest firmware version on Flipper. It’s important to update regularly.",
+                        linkLabel: "Install here",
+                        linkURL: "https://docs.flipperzero.one")
 
-                HelpPoint(
-                    number: "6",
-                    text: "Check that you have the latest version of the Flipper App installed.",
-                    linkLabel: "Go to App Store",
-                    linkURL: "https://docs.flipperzero.one")
+                    HelpPoint(
+                        number: "6",
+                        text: "Check that you have the latest version of the Flipper App installed.",
+                        linkLabel: "Go to App Store",
+                        linkURL: "https://docs.flipperzero.one")
 
-                HelpPoint(
-                    number: "7",
-                    text: "Try to reboot your Flipper.",
-                    linkLabel: "How to reboot Flipper",
-                    linkURL: "https://docs.flipperzero.one")
+                    HelpPoint(
+                        number: "7",
+                        text: "Try to reboot your Flipper.",
+                        linkLabel: "How to reboot Flipper",
+                        linkURL: "https://docs.flipperzero.one")
+                }
             }
             .padding(.leading, 14)
             .padding(.trailing, 12)

@@ -9,7 +9,7 @@ struct InstructionView: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             Text(
                 """
                 Turn On Bluetooth on
@@ -19,13 +19,15 @@ struct InstructionView: View {
                 .multilineTextAlignment(.center)
                 .padding(.top, 48)
 
-            Image("BluetoothSettings")
-                .resizable()
-                .scaledToFit()
-                .padding(.top, 48)
+            Spacer()
 
-            Image("Breadcrumbs")
-                .padding(.top, 8)
+            VStack(spacing: 8) {
+                Image("BluetoothSettings")
+                    .resizable()
+                    .scaledToFit()
+
+                Image("Breadcrumbs")
+            }
 
             Spacer()
 
