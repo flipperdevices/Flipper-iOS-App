@@ -71,9 +71,11 @@ struct ConnectionView: View {
                             .padding(.bottom, 77)
                     }
                 } else {
-                    VStack(spacing: 14) {
-                        ForEach(viewModel.peripherals) { peripheral in
-                            row(for: peripheral)
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 14) {
+                            ForEach(viewModel.peripherals) { peripheral in
+                                row(for: peripheral)
+                            }
                         }
                     }
                 }
