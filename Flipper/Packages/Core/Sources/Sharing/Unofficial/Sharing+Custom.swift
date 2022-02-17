@@ -11,3 +11,9 @@ extension Sharing {
         try await importKey(name: name, data: data)
     }
 }
+
+func shareCustom(_ key: ArchiveItem) {
+    let base64String = Data(key.content.utf8).base64EncodedString()
+    let urlString = "flipper://\(key.fileName)/\(base64String)"
+    share([urlString])
+}

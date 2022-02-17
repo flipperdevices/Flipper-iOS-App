@@ -30,6 +30,10 @@ public class Sharing {
     }
 }
 
+public func share(_ key: ArchiveItem) {
+
+}
+
 // MARK: Helper for importing File / Custom Scheme
 
 extension Sharing {

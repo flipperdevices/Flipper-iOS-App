@@ -124,7 +124,7 @@ class ArchiveViewModel: ObservableObject {
 
     func shareSelectedItems() {
         if !selectedItems.isEmpty {
-            share(selectedItems.map { $0.name })
+            // sharing multiple files is not supported atm
         }
     }
 
