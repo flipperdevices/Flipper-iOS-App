@@ -42,20 +42,14 @@ class Synchronization: SynchronizationProtocol {
 
     private func updateOnMobile(_ id: ArchiveItem.ID) async throws {
         logger.info("update on mobile \(id)")
-        guard let item = try await peripheralArchive.read(id) else {
-            logger.error("failed to read key from peripheral \(id)")
-            return
-        }
+        let item = try await peripheralArchive.read(id)
         try await mobileArchive.upsert(item)
         eventsSubject.send(.imported(id))
     }
 
     private func updateOnPeripheral(_ id: ArchiveItem.ID) async throws {
         logger.info("update on peripheral \(id)")
-        guard let item = try await mobileArchive.read(id) else {
-            logger.error("failed to read key from mobile \(id)")
-            return
-        }
+        let item = try await mobileArchive.read(id)
         try await peripheralArchive.upsert(item)
         eventsSubject.send(.exported(item.id))
     }
@@ -86,9 +80,7 @@ class Synchronization: SynchronizationProtocol {
     }
 
     private func duplicate(_ id: ArchiveItem.ID) async throws -> ArchiveItem? {
-        guard let item = try await mobileArchive.read(id) else {
-            return nil
-        }
+        let item = try await mobileArchive.read(id)
         // TODO: Implement human readable copy name
         let timestamp = Int(Date().timeIntervalSince1970)
         let newName = "\(item.name.value)_\(timestamp)"

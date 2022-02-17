@@ -11,9 +11,9 @@ extension ArchiveItem {
 }
 
 extension ArchiveItem.FileType {
-    init?<T: StringProtocol>(fileName: T) {
-        guard let `extension` = fileName.split(separator: ".").last else {
-            return nil
+    init<T: StringProtocol>(filename: T) throws {
+        guard let `extension` = filename.split(separator: ".").last else {
+            throw ArchiveItem.Error.invalidType
         }
         switch `extension` {
         case "ibtn": self = .ibutton
@@ -21,7 +21,7 @@ extension ArchiveItem.FileType {
         case "sub": self = .subghz
         case "rfid": self = .rfid
         case "ir": self = .irda
-        default: return nil
+        default: throw ArchiveItem.Error.invalidType
         }
     }
 

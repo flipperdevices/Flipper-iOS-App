@@ -1,19 +1,27 @@
 import Foundation
 
-extension Sharing {
-    func importCustom(_ url: URL) async throws {
-        guard let name = url.host, let content = url.pathComponents.last else {
+class CustomImporter: Importer {
+    enum Error: String, Swift.Error {
+        case invalidURL = "invalid url"
+        case invalidData = "invalid data"
+    }
+
+    func importKey(from url: URL) async throws -> ArchiveItem {
+        guard
+            let filename = url.host,
+            let content = url.pathComponents.last
+        else {
             throw Error.invalidURL
         }
         guard let data = Data(base64Encoded: content) else {
             throw Error.invalidData
         }
-        try await importKey(name: name, data: data)
+        return try .init(filename: filename, data: data)
     }
 }
 
-func shareCustom(_ key: ArchiveItem) {
+private func shareCustom(_ key: ArchiveItem) {
     let base64String = Data(key.content.utf8).base64EncodedString()
-    let urlString = "flipper://\(key.fileName)/\(base64String)"
+    let urlString = "flipper://\(key.filename)/\(base64String)"
     share([urlString])
 }

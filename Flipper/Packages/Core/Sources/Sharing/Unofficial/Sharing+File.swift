@@ -1,8 +1,36 @@
 import UIKit
+import Logging
 import Foundation
 
-extension Sharing {
-    class KeyDocument: UIDocument {
+class FileImporter: Importer {
+    let logger = Logger(label: "file-importer")
+
+    enum Error: String, Swift.Error {
+        case cantOpenDoc = "error opening doc"
+    }
+
+    @MainActor
+    func importKey(from url: URL) async throws -> ArchiveItem {
+        switch try? Data(contentsOf: url) {
+        case .some: return try await importLocalKey(from: url)
+        case .none: return try await importCloudKey(from: url)
+        }
+    }
+}
+
+extension FileImporter {
+    func importLocalKey(from url: URL) async throws -> ArchiveItem {
+        let filename = url.lastPathComponent
+        logger.debug("importing internal key: \(filename)")
+
+        let data = try Data(contentsOf: url)
+        try FileManager.default.removeItem(at: url)
+        return try .init(filename: filename, data: data)
+    }
+}
+
+extension FileImporter {
+    private class KeyDocument: UIDocument {
         var data: Data?
 
         override func load(
@@ -13,26 +41,20 @@ extension Sharing {
         }
     }
 
-    func importFile(_ url: URL) async throws {
-        let name = url.lastPathComponent
+    @MainActor
+    func importCloudKey(from url: URL) async throws -> ArchiveItem {
+        let filename = url.lastPathComponent
+        logger.debug("importing icloud key: \(filename)")
 
-        switch try? Data(contentsOf: url) {
-        // internal file
-        case .some(let data):
-            try FileManager.default.removeItem(at: url)
-            logger.debug("importing internal key: \(name)")
-            try await importKey(name: name, data: data)
-        // icloud file
-        case .none:
-            let doc = await KeyDocument(fileURL: url)
-            guard await doc.open(), let data = await doc.data else {
-                throw Error.cantOpenDoc
-            }
-            logger.debug("importing icloud key: \(name)")
-            try await importKey(name: name, data: data)
+        let doc = KeyDocument(fileURL: url)
+        guard await doc.open(), let data = doc.data else {
+            throw Error.cantOpenDoc
         }
+        return try .init(filename: filename, data: data)
     }
 }
+
+// MARK: Sharing
 
 func shareFile(_ key: ArchiveItem) {
     let urls = FileManager.default.urls(
@@ -42,7 +64,7 @@ func shareFile(_ key: ArchiveItem) {
         return
     }
 
-    let fileURL = publicDirectory.appendingPathComponent(key.fileName)
+    let fileURL = publicDirectory.appendingPathComponent(key.filename)
 
     FileManager.default.createFile(
         atPath: fileURL.path,

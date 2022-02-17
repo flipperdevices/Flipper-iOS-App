@@ -1,24 +1,29 @@
+import Logging
 import Foundation
 
-extension Sharing {
-    func importWeb(_ url: URL) async throws {
+class WebImporter: Importer {
+    enum Error: Swift.Error {
+        case invalidURLFragment
+        case invalidQueryEncoding
+        case invalidProperties
+        case invalidPathKey
+        case invalidPath
+    }
+
+    func importKey(from url: URL) async throws -> ArchiveItem {
         guard let encodedQuery = url.fragment else {
-            logger.error("invalid url fragment")
-            return
+            throw Error.invalidURLFragment
         }
         guard let query = encodedQuery.removingPercentEncoding else {
-            logger.error("invalid query encoding")
-            return
+            throw Error.invalidQueryEncoding
         }
         guard let properties = [ArchiveItem.Property](queryString: query) else {
-            logger.error("invalid properties")
-            return
+            throw Error.invalidProperties
         }
         guard let path = properties.first, path.key == "path" else {
-            logger.error("invalid path key")
-            return
+            throw Error.invalidPathKey
         }
-        try await importKey(
+        return try await importKey(
             path: .init(string: path.value),
             properties: .init(properties[1...]))
     }
@@ -26,27 +31,15 @@ extension Sharing {
     private func importKey(
         path: Path,
         properties: [ArchiveItem.Property]
-    ) async throws {
-        guard let fileName = path.components.last else {
-            logger.error("invalid path: \(path)")
-            return
+    ) async throws -> ArchiveItem {
+        guard let filename = path.components.last else {
+            throw Error.invalidPath
         }
-        guard let name = ArchiveItem.Name(fileName: fileName) else {
-            logger.error("invalid file name: \(fileName)")
-            return
-        }
-        guard let type = ArchiveItem.FileType(fileName: fileName) else {
-            logger.error("invalid file type: \(fileName)")
-            return
-        }
-        try await appState.importKey(.init(
-            name: name,
-            fileType: type,
-            properties: properties))
+        return try .init(filename: filename, properties: properties)
     }
 }
 
-public func shareWeb(_ key: ArchiveItem) {
+public func shareWeb(_ key: ArchiveItem) throws {
     let baseURL = "https://dev.flpr.app/s#"
 
     var query: String? {
@@ -55,8 +48,7 @@ public func shareWeb(_ key: ArchiveItem) {
     }
 
     guard let query = query else {
-        print("can't encode key")
-        return
+        throw Sharing.Error.encodingError
     }
 
     share([baseURL + query])
@@ -79,5 +71,19 @@ fileprivate extension Array where Element == ArchiveItem.Property {
         }
 
         self = properties
+    }
+}
+
+// MARK: CustomStringConvertible
+
+extension WebImporter.Error: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .invalidURLFragment: return "invalid url fragment"
+        case .invalidQueryEncoding: return "invalid query encoding"
+        case .invalidProperties: return "invalid properties"
+        case .invalidPathKey: return "invalid path key"
+        case .invalidPath: return "invalid path"
+        }
     }
 }

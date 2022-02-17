@@ -36,7 +36,7 @@ struct CardActions: View {
                     // MARK: Share as file
 
                     Button {
-                        share(viewModel.editingItem.value)
+                        viewModel.shareSelected()
                     } label: {
                         Image(systemName: "square.and.arrow.up")
                     }

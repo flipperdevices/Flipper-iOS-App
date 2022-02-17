@@ -38,35 +38,36 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
 }
 
 extension ArchiveItem {
-    public init?(fileName: String, content: String) {
-        let logger = Logger(label: "archiveitem")
+    enum Error: Swift.Error {
+        case invalidName
+        case invalidType
+        case invalidContent
+    }
 
-        guard let name = Name(fileName: fileName) else {
-            logger.error("invalid file name: \(fileName)")
-            return nil
-        }
+    init(filename: String, data: Data) throws {
+        let content = String(decoding: data, as: UTF8.self)
+        try self.init(filename: filename, content: content)
+    }
 
-        guard let type = FileType(fileName: fileName) else {
-            logger.error("invalid file type: \(fileName)")
-            return nil
-        }
-
+    init(filename: String, content: String) throws {
         guard let properties = [Property](content: content) else {
-            logger.error("invalid content: \(content)")
-            return nil
+            throw Error.invalidContent
         }
+        self = try .init(filename: filename, properties: properties)
+    }
 
-        self = .init(
-            name: name,
-            fileType: type,
+    init(filename: String, properties: [Property]) throws {
+        self.init(
+            name: try .init(filename: filename),
+            fileType: try .init(filename: filename),
             properties: properties)
     }
 
     var path: Path {
-        .init(components: [fileType.location, fileName])
+        .init(components: [fileType.location, filename])
     }
 
-    public var fileName: String {
+    var filename: String {
         "\(name).\(fileType.extension)"
     }
 }

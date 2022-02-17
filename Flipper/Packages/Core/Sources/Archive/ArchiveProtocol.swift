@@ -1,7 +1,7 @@
 protocol ArchiveProtocol {
     var manifest: Manifest { get async throws }
 
-    func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem?
+    func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem
     func upsert(_ item: ArchiveItem) async throws
     func delete(_ id: ArchiveItem.ID) async throws
 }

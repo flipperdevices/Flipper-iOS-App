@@ -9,7 +9,6 @@ public class RootViewModel: ObservableObject {
     private let logger = Logger(label: "root")
 
     let appState: AppState = .shared
-    let sharing: Sharing = .shared
 
     var disposeBag: DisposeBag = .init()
 
@@ -57,6 +56,6 @@ public class RootViewModel: ObservableObject {
     }
 
     func onOpenURL(_ url: URL) async {
-        await sharing.importKey(url)
+        await appState.onOpenURL(url)
     }
 }

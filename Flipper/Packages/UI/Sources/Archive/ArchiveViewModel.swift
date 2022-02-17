@@ -1,10 +1,13 @@
 import Core
 import Combine
 import Inject
+import Logging
 import SwiftUI
 
 @MainActor
 class ArchiveViewModel: ObservableObject {
+    private let logger = Logger(label: "archive-view-model")
+
     @Inject var nfc: NFCService
     var disposeBag: DisposeBag = .init()
 
@@ -182,6 +185,10 @@ class ArchiveViewModel: ObservableObject {
         if let item = items.first(where: { $0.id == editingItem.id }) {
             editingItem = .init(item)
         }
+    }
+
+    func shareSelected() {
+        share(editingItem.value)
     }
 }
 

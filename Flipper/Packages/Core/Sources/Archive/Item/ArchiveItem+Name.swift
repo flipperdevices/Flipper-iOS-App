@@ -9,9 +9,9 @@ extension ArchiveItem {
 }
 
 extension ArchiveItem.Name {
-    init?<T: StringProtocol>(fileName: T) {
-        guard let name = fileName.split(separator: ".").first else {
-            return nil
+    init<T: StringProtocol>(filename: T) throws {
+        guard let name = filename.split(separator: ".").first else {
+            throw ArchiveItem.Error.invalidName
         }
         self.value = String(name)
     }
