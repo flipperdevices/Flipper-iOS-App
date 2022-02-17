@@ -20,7 +20,7 @@ class FlipperArchive: PeripheralArchiveProtocol {
 
     func upsert(_ item: ArchiveItem) async throws {
         try await rpc.writeFile(
-            at: item.path,
+            at: item.id.path,
             bytes: .init(item.content.utf8),
             priority: .background)
     }

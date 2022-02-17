@@ -19,6 +19,7 @@ public class Sharing {
     public func importKey(_ keyURL: URL) async {
         do {
             switch keyURL.scheme {
+            case "https": try await importWeb(keyURL)
             case "file": try await importFile(keyURL)
             case "flipper": try await importCustom(keyURL)
             default: break
@@ -31,7 +32,7 @@ public class Sharing {
 }
 
 public func share(_ key: ArchiveItem) {
-
+    shareWeb(key)
 }
 
 // MARK: Helper for importing File / Custom Scheme

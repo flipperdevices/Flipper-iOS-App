@@ -18,6 +18,7 @@ extension ArchiveItem {
 
 extension ArchiveItem.ID {
     var path: Path {
+        // FIXME: Use relative path as ID, move root dir to RPC
         .init(components: ["ext", fileType.location, fileName])
     }
 
