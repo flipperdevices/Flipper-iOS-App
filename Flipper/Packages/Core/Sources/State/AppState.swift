@@ -143,6 +143,13 @@ public class AppState {
         device?.storage = storage
     }
 
+    // MARK: Sharing
+
+    public func importKey(_ item: ArchiveItem) async throws {
+        try await archive.importKey(item)
+        await synchronize()
+    }
+
     // MARK: Debug
 
     func measure(_ label: String, _ task: () async -> Void) async {

@@ -152,7 +152,7 @@ extension Archive {
 }
 
 extension Archive {
-    public func importKey(_ item: ArchiveItem) async throws {
+    func importKey(_ item: ArchiveItem) async throws {
         if !items.contains(where: { item.id == $0.id }) {
             try await upsert(item)
         }
@@ -160,7 +160,7 @@ extension Archive {
 }
 
 extension Archive {
-    public func syncWithDevice() async {
+    func syncWithDevice() async {
         guard !isSyncronizing else { return }
         do {
             try await synchronization.syncWithDevice()
