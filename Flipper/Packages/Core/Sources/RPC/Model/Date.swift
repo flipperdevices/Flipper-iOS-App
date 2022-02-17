@@ -11,8 +11,13 @@ extension Date {
             $0.minute = component(.minute)
             $0.second = component(.second)
 
-            $0.weekday = component(.weekday)
+            $0.weekday = weekday()
         }
+    }
+
+    private func weekday() -> UInt32 {
+        let weekday = Calendar.current.component(.weekday, from: self)
+        return .init((weekday + 7 - Calendar.current.firstWeekday) % 7 + 1)
     }
 
     private func component(_ component: Calendar.Component) -> UInt32 {
