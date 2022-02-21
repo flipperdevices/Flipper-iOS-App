@@ -14,7 +14,7 @@ class WebImporter: Importer {
         guard let encodedQuery = url.fragment else {
             throw Error.invalidURLFragment
         }
-        guard let query = encodedQuery.removingPercentEncoding else {
+        guard let query = KeyCoder.decode(query: encodedQuery) else {
             throw Error.invalidQueryEncoding
         }
         guard let properties = [ArchiveItem.Property](queryString: query) else {
@@ -43,8 +43,8 @@ public func shareWeb(_ key: ArchiveItem) throws {
     let baseURL = "https://dev.flpr.app/s#"
 
     var query: String? {
-        "path=\(key.path)&\(key.properties.queryString)"
-            .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+        let path = "path=\(key.path.string.dropFirst())"
+        return KeyCoder.encode(query: "\(path)&\(key.properties.queryString)")
     }
 
     guard let query = query else {
