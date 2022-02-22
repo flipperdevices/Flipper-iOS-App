@@ -34,6 +34,12 @@ extension Color {
     }
 }
 
+extension Color {
+    static var keyYellow: Color {
+        .init(red: 1.0, green: 0.96, blue: 0.58)
+    }
+}
+
 extension UIColor {
     static var accentColor: UIColor {
         .init(red: 0.35, green: 0.62, blue: 1.0, alpha: 1)
