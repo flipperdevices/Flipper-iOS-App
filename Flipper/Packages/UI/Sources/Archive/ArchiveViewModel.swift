@@ -16,7 +16,6 @@ class ArchiveViewModel: ObservableObject {
 
     @Published var appState: AppState = .shared
     @Published var sortOption: SortOption = .creationDate
-    @Published var sheetManager: SheetManager = .shared
 
     var archive: Archive { appState.archive }
     var title: String { device?.name ?? .noDevice }
@@ -144,7 +143,6 @@ class ArchiveViewModel: ObservableObject {
                 }
             case false:
                 try await archive.delete(editingItem.id)
-                sheetManager.dismiss()
                 editingItem = .none
             }
             synchronize()

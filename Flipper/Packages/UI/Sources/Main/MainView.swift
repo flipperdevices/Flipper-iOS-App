@@ -20,7 +20,6 @@ struct MainView: View {
                 CustomTabView(selected: $viewModel.selectedTab)
             }
         }
-        .addPartialSheet()
         .edgesIgnoringSafeArea(.bottom)
     }
 }
