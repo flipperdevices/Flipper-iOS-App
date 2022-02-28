@@ -4,8 +4,9 @@
 <dict>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:dev.flpr.app</string>
+		<string>applinks:flpr.app</string>
 		<string>applinks:link.flpr.app</string>
+		<string>applinks:dev.flpr.app</string>
 	</array>
 	<key>com.apple.developer.nfc.readersession.formats</key>
 	<array>

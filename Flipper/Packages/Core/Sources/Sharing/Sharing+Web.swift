@@ -40,7 +40,7 @@ class WebImporter: Importer {
 }
 
 public func shareWeb(_ key: ArchiveItem) throws {
-    let baseURL = "https://dev.flpr.app/s#"
+    let baseURL = "https://flpr.app/s#"
 
     var query: String? {
         let path = "path=\(key.path.string.dropFirst())"
