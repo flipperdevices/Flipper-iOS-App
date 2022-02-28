@@ -23,5 +23,6 @@ struct ArchiveView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
         }
+        .navigationBarColors(foreground: .primary, background: .orange)
     }
 }
