@@ -143,6 +143,23 @@ public class AppState {
         device?.storage = storage
     }
 
+    // MARK: Sharing
+
+    public func onOpenURL(_ url: URL) async {
+        do {
+            let item = try await Sharing.importKey(from: url)
+            try await importKey(item)
+            logger.info("key imported")
+        } catch {
+            logger.error("\(error)")
+        }
+    }
+
+    public func importKey(_ item: ArchiveItem) async throws {
+        try await archive.importKey(item)
+        await synchronize()
+    }
+
     // MARK: Debug
 
     func measure(_ label: String, _ task: () async -> Void) async {

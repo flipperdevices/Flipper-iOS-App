@@ -9,18 +9,18 @@ class FlipperArchive: PeripheralArchiveProtocol {
         }
     }
 
-    func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem? {
+    func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem {
         let bytes = try await rpc.readFile(
             at: id.path,
             priority: .background)
-        return .init(
-            fileName: id.fileName,
+        return try .init(
+            filename: id.filename,
             content: .init(decoding: bytes, as: UTF8.self))
     }
 
     func upsert(_ item: ArchiveItem) async throws {
         try await rpc.writeFile(
-            at: item.path,
+            at: item.id.path,
             bytes: .init(item.content.utf8),
             priority: .background)
     }

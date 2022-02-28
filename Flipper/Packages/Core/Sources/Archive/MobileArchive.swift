@@ -21,8 +21,11 @@ class MobileArchive: MobileArchiveProtocol {
         }
     }
 
-    func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem? {
-        items[id]
+    func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem {
+        guard let item = items[id] else {
+            fatalError("unreachable: invalid id")
+        }
+        return item
     }
 
     func upsert(_ item: ArchiveItem) async throws {

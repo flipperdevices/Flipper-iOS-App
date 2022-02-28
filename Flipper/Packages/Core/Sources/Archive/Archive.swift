@@ -40,10 +40,7 @@ public class Archive: ObservableObject {
     func loadArchive() async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
         for next in try await mobileArchive.manifest.items {
-            guard var item = try await mobileArchive.read(next.id) else {
-                logger.error("invalid archive item \(next.id)")
-                continue
-            }
+            var item = try await mobileArchive.read(next.id)
             item.status = try await synchronization.status(for: item)
             items.append(item)
         }
@@ -53,10 +50,7 @@ public class Archive: ObservableObject {
     func loadDeleted() async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
         for next in try await deletedArchive.manifest.items {
-            guard let item = try await deletedArchive.read(next.id) else {
-                logger.error("invalid deleted item \(next.id)")
-                continue
-            }
+            let item = try await deletedArchive.read(next.id)
             items.append(item)
         }
         return items
@@ -66,10 +60,9 @@ public class Archive: ObservableObject {
         Task {
             switch event {
             case .imported(let id):
-                if var item = try await mobileArchive.read(id) {
-                    item.status = .synchronized
-                    items.append(item)
-                }
+                var item = try await mobileArchive.read(id)
+                item.status = .synchronized
+                items.append(item)
             case .exported(let id):
                 if let index = items.firstIndex(where: { $0.id == id }) {
                     items[index].status = .synchronized
@@ -152,7 +145,7 @@ extension Archive {
 }
 
 extension Archive {
-    public func importKey(_ item: ArchiveItem) async throws {
+    func importKey(_ item: ArchiveItem) async throws {
         if !items.contains(where: { item.id == $0.id }) {
             try await upsert(item)
         }
@@ -160,7 +153,7 @@ extension Archive {
 }
 
 extension Archive {
-    public func syncWithDevice() async {
+    func syncWithDevice() async {
         guard !isSyncronizing else { return }
         do {
             try await synchronization.syncWithDevice()

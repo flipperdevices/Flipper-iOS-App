@@ -13,7 +13,8 @@ extension FlipperArchive {
 
             for path in try await listAllFiles() {
                 let hash = try await getFileHash(at: path)
-                items.append(.init(id: .init(path: path), hash: hash))
+                let id = try ArchiveItem.ID(path: path)
+                items.append(.init(id: id, hash: hash))
             }
 
             return .init(items: items)

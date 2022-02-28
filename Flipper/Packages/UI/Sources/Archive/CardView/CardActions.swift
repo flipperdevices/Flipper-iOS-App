@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 
 struct CardActions: View {
@@ -35,7 +36,7 @@ struct CardActions: View {
                     // MARK: Share as file
 
                     Button {
-                        share(viewModel.editingItem.value, shareOption: .file)
+                        viewModel.shareSelected()
                     } label: {
                         Image(systemName: "square.and.arrow.up")
                     }
