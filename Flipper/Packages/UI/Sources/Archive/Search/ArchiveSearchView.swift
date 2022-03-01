@@ -28,9 +28,9 @@ struct ArchiveSearchView: View {
             .padding(.vertical, 14)
             .padding(.horizontal, 16)
 
-            ScrollView {
-            }
-            .background(backgroundColor)
+            NothingFoundView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(backgroundColor)
         }
     }
 }
