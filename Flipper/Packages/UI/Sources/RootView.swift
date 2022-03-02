@@ -16,10 +16,8 @@ public struct RootView: View {
     public var body: some View {
         ZStack {
             if viewModel.isFirstLaunch {
-                NavigationView {
-                    InstructionView(viewModel: .init())
-                        .customBackground(backgroundColor)
-                }
+                InstructionView(viewModel: .init())
+                    .customBackground(backgroundColor)
             } else {
                 MainView(viewModel: .init())
             }
