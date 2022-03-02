@@ -3,11 +3,6 @@ import SwiftUI
 
 public struct RootView: View {
     @ObservedObject var viewModel: RootViewModel
-    @Environment(\.colorScheme) var colorScheme
-
-    var backgroundColor: Color {
-        colorScheme == .dark ? .backgroundDark : .backgroundLight
-    }
 
     public init(viewModel: RootViewModel) {
         self.viewModel = viewModel
@@ -16,8 +11,7 @@ public struct RootView: View {
     public var body: some View {
         ZStack {
             if viewModel.isFirstLaunch {
-                InstructionView(viewModel: .init())
-                    .customBackground(backgroundColor)
+                WelcomeView(viewModel: .init())
             } else {
                 MainView(viewModel: .init())
             }
