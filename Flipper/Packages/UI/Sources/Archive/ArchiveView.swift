@@ -31,7 +31,9 @@ struct ArchiveView: View {
             .fullScreenCover(isPresented: $showSearchView) {
                 ArchiveSearchView()
             }
+            .navigationTitle("")
         }
+        .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .orange)
     }
 }

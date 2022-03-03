@@ -100,13 +100,10 @@ struct ConnectionView: View {
             HelpView()
                 .customBackground(backgroundColor)
         }
-        .onAppear {
-            UINavigationBar.appearance().tintColor = .label
-        }
         .onDisappear {
-            UINavigationBar.appearance().tintColor = .accentColor
             viewModel.stopScan()
         }
+        .navigationBarColors(foreground: .primary, background: backgroundColor)
     }
 
     func row(for peripheral: Peripheral) -> some View {

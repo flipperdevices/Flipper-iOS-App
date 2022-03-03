@@ -3,18 +3,19 @@ import SwiftUI
 struct NavigationBarModifier: ViewModifier {
     let backgroundColor: UIColor?
 
-    init(tintColor: UIColor?, backgroundColor: UIColor?) {
+    init(foregroundColor: UIColor?, backgroundColor: UIColor?) {
         self.backgroundColor = backgroundColor
+        let foregroundColor = foregroundColor ?? .white
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundColor = backgroundColor
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        appearance.titleTextAttributes[.foregroundColor] = foregroundColor
+        appearance.largeTitleTextAttributes[.foregroundColor] = foregroundColor
 
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().compactAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
-        UINavigationBar.appearance().tintColor = tintColor
+        UINavigationBar.appearance().tintColor = foregroundColor
     }
 
     func body(content: Content) -> some View {
@@ -38,7 +39,7 @@ extension View {
         background: Color?
     ) -> some View {
         self.modifier(NavigationBarModifier(
-            tintColor: .init(foreground ?? .primary),
+            foregroundColor: .init(foreground ?? .primary),
             backgroundColor: .init(background ?? .clear)))
     }
 }
