@@ -91,6 +91,11 @@ struct ConnectionView: View {
         .navigationBarTitleDisplayMode(.inline)
         .padding(.horizontal, 16)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                BackButton {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }
             ToolbarItem(placement: .principal) {
                 Text("Connect your Flipper")
                     .font(.system(size: 22, weight: .bold))
@@ -103,6 +108,7 @@ struct ConnectionView: View {
         .onDisappear {
             viewModel.stopScan()
         }
+        .navigationBarBackButtonHidden(true)
         .navigationBarColors(foreground: .primary, background: backgroundColor)
     }
 
