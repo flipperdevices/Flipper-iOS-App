@@ -4,14 +4,20 @@ import Combine
 
 struct ArchiveView: View {
     @StateObject var viewModel: ArchiveViewModel
+    @Environment(\.colorScheme) var colorScheme
     @State var showSearchView = false
+
+    var backgroundColor: Color {
+        colorScheme == .dark ? .backgroundDark : .backgroundLight
+    }
 
     var body: some View {
         NavigationView {
-            VStack {
-                Text("Content")
+            ScrollView {
+                CategoryCard()
+                    .padding(14)
             }
-            .edgesIgnoringSafeArea(.top)
+            .background(backgroundColor)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text("Archive")
