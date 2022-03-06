@@ -45,3 +45,23 @@ extension UIColor {
         .init(red: 0.35, green: 0.62, blue: 1.0, alpha: 1)
     }
 }
+
+extension EnvironmentValues {
+    var secondaryBackgroundColor: Color {
+        colorScheme == .dark
+            ? .secondaryBackgroundDark
+            : .secondaryBackgroundLight
+    }
+
+    var backgroundColor: Color {
+        colorScheme == .dark
+            ? .backgroundDark
+            : .backgroundLight
+    }
+
+    var shadowColor: Color {
+        colorScheme == .dark
+            ? .shadowDark
+            : .shadowLight
+    }
+}

@@ -3,13 +3,7 @@ import SwiftUI
 struct ImportView: View {
     @StateObject var viewModel: ImportViewModel
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.colorScheme) var colorScheme
-
-    var backgroundColor: Color {
-        colorScheme == .dark
-            ? .backgroundDark
-            : .backgroundLight
-    }
+    @Environment(\.backgroundColor) var backgroundColor
 
     var body: some View {
         VStack(spacing: 0) {

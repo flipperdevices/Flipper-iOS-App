@@ -2,11 +2,7 @@ import SwiftUI
 
 struct InstructionView: View {
     @StateObject var viewModel: InstructionViewModel
-    @Environment(\.colorScheme) var colorScheme
-
-    var backgroundColor: Color {
-        colorScheme == .dark ? .backgroundDark : .backgroundLight
-    }
+    @Environment(\.backgroundColor) var backgroundColor
 
     var body: some View {
         VStack(spacing: 0) {

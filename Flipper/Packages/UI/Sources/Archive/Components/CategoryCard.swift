@@ -1,19 +1,8 @@
 import SwiftUI
 
 struct CategoryCard: View {
-    @Environment(\.colorScheme) var colorScheme
-
-    var backgroundColor: Color {
-        colorScheme == .dark
-            ? .secondaryBackgroundDark
-            : .secondaryBackgroundLight
-    }
-
-    var shadowColor: Color {
-        colorScheme == .dark
-            ? .shadowDark
-            : .shadowLight
-    }
+    @Environment(\.secondaryBackgroundColor) var backgroundColor
+    @Environment(\.shadowColor) var shadowColor
 
     var body: some View {
         VStack(spacing: 0) {

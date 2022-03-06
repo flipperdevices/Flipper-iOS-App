@@ -4,12 +4,8 @@ import Combine
 
 struct ArchiveView: View {
     @StateObject var viewModel: ArchiveViewModel
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.backgroundColor) var backgroundColor
     @State var showSearchView = false
-
-    var backgroundColor: Color {
-        colorScheme == .dark ? .backgroundDark : .backgroundLight
-    }
 
     var body: some View {
         NavigationView {

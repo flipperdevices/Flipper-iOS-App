@@ -2,11 +2,7 @@ import SwiftUI
 
 struct WelcomeView: View {
     @StateObject var viewModel: WelcomeViewModel
-    @Environment(\.colorScheme) var colorScheme
-
-    var backgroundColor: Color {
-        colorScheme == .dark ? .backgroundDark : .backgroundLight
-    }
+    @Environment(\.backgroundColor) var backgroundColor
 
     var body: some View {
         NavigationView {

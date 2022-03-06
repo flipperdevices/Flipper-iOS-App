@@ -1,15 +1,9 @@
 import SwiftUI
 
 struct ArchiveSearchView: View {
-    @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.backgroundColor) var backgroundColor
     @State var predicate = ""
-
-    var backgroundColor: Color {
-        colorScheme == .dark
-            ? .backgroundDark
-            : .backgroundLight
-    }
 
     var body: some View {
         VStack(spacing: 0) {

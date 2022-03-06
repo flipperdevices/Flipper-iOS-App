@@ -4,25 +4,9 @@ import SwiftUI
 struct ConnectionView: View {
     @StateObject var viewModel: ConnectionViewModel
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.colorScheme) var colorScheme
-
-    var backgroundColor: Color {
-        colorScheme == .dark
-            ? .backgroundDark
-            : .backgroundLight
-    }
-
-    var cardBackgroundColor: Color {
-        colorScheme == .dark
-            ? .secondaryBackgroundDark
-            : .secondaryBackgroundLight
-    }
-
-    var cardShadowColor: Color {
-        colorScheme == .dark
-            ? .shadowDark
-            : .shadowLight
-    }
+    @Environment(\.backgroundColor) var backgroundColor
+    @Environment(\.secondaryBackgroundColor) var secondaryBackgroundColor
+    @Environment(\.shadowColor) var shadowColor
 
     var body: some View {
         VStack(spacing: 0) {
@@ -147,10 +131,10 @@ struct ConnectionView: View {
                 }
             }
         }
-        .background(cardBackgroundColor)
+        .background(secondaryBackgroundColor)
         .frame(height: 64)
         .cornerRadius(10)
-        .shadow(color: cardShadowColor, radius: 16, x: 0, y: 4)
+        .shadow(color: shadowColor, radius: 16, x: 0, y: 4)
     }
 
     // TODO: Replace with new API on iOS15
