@@ -9,7 +9,7 @@ struct CategoryCard: View {
             CategoryLink(image: .init("subhz"), name: "Sub-GHz", count: 1)
             CategoryLink(image: .init("rfid"), name: "RFID 125", count: 12)
             CategoryLink(image: .init("nfc"), name: "NFC", count: 3)
-            CategoryLink(image: .init("irda"), name: "Infrared", count: 0)
+            CategoryLink(image: .init("infrared"), name: "Infrared", count: 0)
             CategoryLink(image: .init("ibutton"), name: "iButton", count: 8)
             Divider()
                 .padding(.top, 2)

@@ -38,7 +38,7 @@ struct CardDataView: View {
                 focusedField: $focusedField,
                 flipped: flipped
             )
-        case .irda:
+        case .infrared:
             InfraredCardView(
                 item: _item,
                 isEditMode: $isEditMode,

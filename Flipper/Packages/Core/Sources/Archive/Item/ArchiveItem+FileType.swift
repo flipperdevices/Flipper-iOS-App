@@ -6,7 +6,7 @@ extension ArchiveItem {
         case nfc
         case rfid
         case subghz
-        case irda
+        case infrared
     }
 }
 
@@ -20,7 +20,7 @@ extension ArchiveItem.FileType {
         case "nfc": self = .nfc
         case "sub": self = .subghz
         case "rfid": self = .rfid
-        case "ir": self = .irda
+        case "ir": self = .infrared
         default: throw ArchiveItem.Error.invalidType
         }
     }
@@ -31,7 +31,7 @@ extension ArchiveItem.FileType {
         case .nfc: return "nfc"
         case .subghz: return "sub"
         case .rfid: return "rfid"
-        case .irda: return "ir"
+        case .infrared: return "ir"
         }
     }
 
@@ -41,7 +41,7 @@ extension ArchiveItem.FileType {
         case .nfc: return "nfc"
         case .subghz: return "subghz"
         case .rfid: return "lfrfid"
-        case .irda: return "irda"
+        case .infrared: return "infrared"
         }
     }
 }

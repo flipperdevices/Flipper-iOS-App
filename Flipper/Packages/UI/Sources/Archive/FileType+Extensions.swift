@@ -8,7 +8,7 @@ extension ArchiveItem.FileType {
         case .subghz: return "Sub-GHz"
         case .nfc: return "NFC"
         case .ibutton: return "iButton"
-        case .irda: return "Infrared"
+        case .infrared: return "Infrared"
         }
     }
 
@@ -18,7 +18,7 @@ extension ArchiveItem.FileType {
         case .nfc: return .init("nfc")
         case .rfid: return .init("rfid")
         case .subghz: return .init("subhz")
-        case .irda: return .init("irda")
+        case .infrared: return .init("infrared")
         }
     }
 
@@ -28,7 +28,7 @@ extension ArchiveItem.FileType {
         case .nfc: return .init(red: 0.6, green: 0.81, blue: 1.0)
         case .rfid: return .init(red: 1.0, green: 0.96, blue: 0.58)
         case .subghz: return .init(red: 0.65, green: 0.96, blue: 0.75)
-        case .irda: return .init(red: 1.0, green: 0.57, blue: 0.55)
+        case .infrared: return .init(red: 1.0, green: 0.57, blue: 0.55)
         }
     }
 }

@@ -47,7 +47,7 @@ class ArchiveViewModel: ObservableObject {
             .init(id: .subghz, items: items.filter { $0.fileType == .subghz }),
             .init(id: .nfc, items: items.filter { $0.fileType == .nfc }),
             .init(id: .ibutton, items: items.filter { $0.fileType == .ibutton }),
-            .init(id: .irda, items: items.filter { $0.fileType == .irda })
+            .init(id: .infrared, items: items.filter { $0.fileType == .infrared })
         ]
     }
 
