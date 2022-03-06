@@ -18,11 +18,11 @@ extension Color {
     }
 
     static var backgroundDark: Color {
-        .black
+        .init(UIColor.systemBackground)
     }
 
     static var secondaryBackgroundDark: Color {
-        .init(red: 0.05, green: 0.05, blue: 0.05)
+        .init(UIColor.secondarySystemBackground)
     }
 
     static var shadowLight: Color {
