@@ -145,13 +145,13 @@ struct ArchiveListItemView: View {
 
     var body: some View {
         HStack(spacing: 15) {
-            item.icon
+            item.fileType.icon
                 .resizable()
                 .frame(width: 23, height: 23)
                 .scaledToFit()
                 .padding(.horizontal, 17)
                 .padding(.vertical, 22)
-                .background(item.color)
+                .background(item.fileType.color)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(item.name.value)

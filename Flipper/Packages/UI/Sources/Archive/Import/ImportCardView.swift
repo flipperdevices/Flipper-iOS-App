@@ -10,19 +10,7 @@ struct ImportCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                HStack(spacing: 0) {
-                    item.icon
-                        .renderingMode(.template)
-                        .padding(8)
-
-                    Text(item.kind)
-                        .font(.system(size: 14, weight: .medium))
-                        .padding(.trailing, 12)
-                }
-                .foregroundColor(.black)
-                .background(Color.keyYellow)
-                .cornerRadius(18, corners: [.bottomRight])
-
+                FileTypeView(item.fileType)
                 Spacer()
             }
 
@@ -77,17 +65,5 @@ struct ImportCardView: View {
 extension ArchiveItem {
     var description: String {
         ""
-    }
-}
-
-extension ArchiveItem {
-    var kind: String {
-        switch self.fileType {
-        case .rfid: return "RFID 125"
-        case .subghz: return "Sub-GHz"
-        case .nfc: return "NFC"
-        case .ibutton: return "iButton"
-        case .irda: return "Infrared"
-        }
     }
 }
