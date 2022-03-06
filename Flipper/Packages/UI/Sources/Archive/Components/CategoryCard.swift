@@ -1,9 +1,6 @@
 import SwiftUI
 
 struct CategoryCard: View {
-    @Environment(\.secondaryBackgroundColor) var backgroundColor
-    @Environment(\.shadowColor) var shadowColor
-
     var body: some View {
         VStack(spacing: 0) {
             CategoryLink(image: .init("subhz"), name: "Sub-GHz", count: 1)
@@ -16,9 +13,9 @@ struct CategoryCard: View {
                 .padding(.bottom, 1)
             CategoryLink(image: nil, name: "Deleted", count: 7)
         }
-        .background(backgroundColor)
+        .background(Color.groupedBackground)
         .cornerRadius(10)
-        .shadow(color: shadowColor, radius: 16, x: 0, y: 4)
+        .shadow(color: .shadow, radius: 16, x: 0, y: 4)
     }
 }
 

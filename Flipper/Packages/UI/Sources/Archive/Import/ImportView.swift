@@ -3,7 +3,6 @@ import SwiftUI
 struct ImportView: View {
     @StateObject var viewModel: ImportViewModel
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.backgroundColor) var backgroundColor
 
     var body: some View {
         VStack(spacing: 0) {
@@ -44,7 +43,7 @@ struct ImportView: View {
 
             Spacer()
         }
-        .background(backgroundColor)
+        .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
         .onDisappear {
             viewModel.cancel()

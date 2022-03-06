@@ -4,9 +4,6 @@ import SwiftUI
 struct ConnectionView: View {
     @StateObject var viewModel: ConnectionViewModel
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.backgroundColor) var backgroundColor
-    @Environment(\.secondaryBackgroundColor) var secondaryBackgroundColor
-    @Environment(\.shadowColor) var shadowColor
 
     var body: some View {
         VStack(spacing: 0) {
@@ -74,6 +71,7 @@ struct ConnectionView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .padding(.horizontal, 16)
+        .background(Color.background)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 BackButton {
@@ -87,13 +85,13 @@ struct ConnectionView: View {
         }
         .sheet(isPresented: $viewModel.showHelpSheet) {
             HelpView()
-                .customBackground(backgroundColor)
+                .customBackground(Color.background)
         }
         .onDisappear {
             viewModel.stopScan()
         }
         .navigationBarBackButtonHidden(true)
-        .navigationBarColors(foreground: .primary, background: backgroundColor)
+        .navigationBarColors(foreground: .primary, background: Color.background)
     }
 
     func row(for peripheral: Peripheral) -> some View {
@@ -131,10 +129,10 @@ struct ConnectionView: View {
                 }
             }
         }
-        .background(secondaryBackgroundColor)
+        .background(Color.groupedBackground)
         .frame(height: 64)
         .cornerRadius(10)
-        .shadow(color: shadowColor, radius: 16, x: 0, y: 4)
+        .shadow(color: .shadow, radius: 16, x: 0, y: 4)
     }
 
     // TODO: Replace with new API on iOS15

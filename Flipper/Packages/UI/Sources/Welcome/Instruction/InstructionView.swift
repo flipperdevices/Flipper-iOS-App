@@ -2,7 +2,6 @@ import SwiftUI
 
 struct InstructionView: View {
     @StateObject var viewModel: InstructionViewModel
-    @Environment(\.backgroundColor) var backgroundColor
 
     var body: some View {
         VStack(spacing: 0) {
@@ -29,7 +28,7 @@ struct InstructionView: View {
 
             NavigationLink {
                 ConnectionView(viewModel: .init())
-                    .customBackground(backgroundColor)
+                    .customBackground(Color.background)
             } label: {
                 Text("Connect")
                     .frame(height: 51)

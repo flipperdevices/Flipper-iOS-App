@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ArchiveSearchView: View {
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.backgroundColor) var backgroundColor
     @State var predicate = ""
 
     var body: some View {
@@ -24,7 +23,7 @@ struct ArchiveSearchView: View {
 
             NothingFoundView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(backgroundColor)
+                .background(Color.background)
         }
     }
 }

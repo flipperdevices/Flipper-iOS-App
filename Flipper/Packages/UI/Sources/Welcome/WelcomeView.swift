@@ -2,12 +2,11 @@ import SwiftUI
 
 struct WelcomeView: View {
     @StateObject var viewModel: WelcomeViewModel
-    @Environment(\.backgroundColor) var backgroundColor
 
     var body: some View {
         NavigationView {
             InstructionView(viewModel: .init())
-                .customBackground(backgroundColor)
+                .customBackground(Color.background)
                 .navigationTitle("")
                 .navigationBarHidden(true)
         }

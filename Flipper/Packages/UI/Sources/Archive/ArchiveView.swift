@@ -4,7 +4,6 @@ import Combine
 
 struct ArchiveView: View {
     @StateObject var viewModel: ArchiveViewModel
-    @Environment(\.backgroundColor) var backgroundColor
     @State var showSearchView = false
 
     var body: some View {
@@ -13,6 +12,7 @@ struct ArchiveView: View {
                 CategoryCard()
                     .padding(14)
             }
+            .background(Color.background)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text("Archive")

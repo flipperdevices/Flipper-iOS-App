@@ -4,9 +4,6 @@ import Core
 struct ImportCardView: View {
     let item: ArchiveItem
 
-    @Environment(\.secondaryBackgroundColor) var backgroundColor
-    @Environment(\.shadowColor) var shadowColor
-
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
@@ -56,9 +53,9 @@ struct ImportCardView: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 18)
         }
-        .background(backgroundColor)
+        .background(Color.groupedBackground)
         .cornerRadius(16)
-        .shadow(color: shadowColor, radius: 16, x: 0, y: 4)
+        .shadow(color: .shadow, radius: 16, x: 0, y: 4)
     }
 }
 
