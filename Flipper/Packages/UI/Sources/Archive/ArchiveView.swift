@@ -13,7 +13,6 @@ struct ArchiveView: View {
                 CategoryCard()
                     .padding(14)
             }
-            .background(backgroundColor)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text("Archive")

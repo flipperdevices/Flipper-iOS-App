@@ -9,20 +9,16 @@ extension Color {
         .init(red: 0.57, green: 0.57, blue: 0.57)
     }
 
-    static var backgroundLight: Color {
-        .init(red: 0.98, green: 0.98, blue: 0.98)
-    }
-
-    static var secondaryBackgroundLight: Color {
-        .white
-    }
-
-    static var backgroundDark: Color {
+    var background: Color {
         .init(UIColor.systemBackground)
     }
 
-    static var secondaryBackgroundDark: Color {
-        .init(UIColor.secondarySystemBackground)
+    static var background: Color {
+        .init(UIColor.systemBackground)
+    }
+
+    static var groupedBackground: Color {
+        .init(UIColor.secondarySystemGroupedBackground)
     }
 
     static var shadowLight: Color {
@@ -47,18 +43,6 @@ extension UIColor {
 }
 
 extension EnvironmentValues {
-    var secondaryBackgroundColor: Color {
-        colorScheme == .dark
-            ? .secondaryBackgroundDark
-            : .secondaryBackgroundLight
-    }
-
-    var backgroundColor: Color {
-        colorScheme == .dark
-            ? .backgroundDark
-            : .backgroundLight
-    }
-
     var shadowColor: Color {
         colorScheme == .dark
             ? .shadowDark
