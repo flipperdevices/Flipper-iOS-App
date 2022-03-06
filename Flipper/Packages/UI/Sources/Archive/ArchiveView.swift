@@ -11,6 +11,10 @@ struct ArchiveView: View {
             ScrollView {
                 CategoryCard()
                     .padding(14)
+
+                ArchiveCompactList(name: "All", items: viewModel.items)
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 14)
             }
             .background(Color.background)
             .toolbar {
