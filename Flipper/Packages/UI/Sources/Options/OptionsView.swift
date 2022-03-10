@@ -25,12 +25,6 @@ struct OptionsView: View {
                     }
                 }
 
-                Section(header: Text("Archive")) {
-                    NavigationLink("Deleted Items") {
-                        ArchiveBinView(viewModel: .init())
-                    }
-                }
-
                 Section(header: Text("Remote")) {
                     if viewModel.canPlayAlert {
                         Button("Play Alert") {
