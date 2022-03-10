@@ -12,7 +12,7 @@ struct CategoryCard: View {
                 CategoryLink(
                     image: key.icon,
                     name: key.name,
-                    count: groups[key]?.count ?? 0)
+                    items: groups[key] ?? [])
             }
 
             Divider()
@@ -22,11 +22,25 @@ struct CategoryCard: View {
             CategoryLink(
                 image: nil,
                 name: "Deleted",
-                count: deleted.count)
+                items: deleted)
         }
         .background(Color.groupedBackground)
         .cornerRadius(10)
         .shadow(color: .shadow, radius: 16, x: 0, y: 4)
+    }
+}
+
+struct CategoryLink: View {
+    let image: Image?
+    let name: String
+    let items: [ArchiveItem]
+
+    var body: some View {
+        NavigationLink {
+            CategoryView(name: name, items: items)
+        } label: {
+            CategoryRow(image: image, name: name, count: items.count)
+        }
     }
 }
 
@@ -60,19 +74,5 @@ struct CategoryRow: View {
         }
         .padding(.horizontal, 12)
         .frame(height: 44, alignment: .center)
-    }
-}
-
-struct CategoryLink: View {
-    let image: Image?
-    let name: String
-    let count: Int
-
-    var body: some View {
-        NavigationLink {
-            CategoryView(name: name)
-        } label: {
-            CategoryRow(image: image, name: name, count: count)
-        }
     }
 }
