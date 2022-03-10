@@ -4,7 +4,7 @@ struct MainView: View {
     @StateObject var viewModel: MainViewModel
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             ZStack {
                 DeviceView(viewModel: .init())
                     .opacity(viewModel.selectedTab == .device ? 1 : 0)
