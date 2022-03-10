@@ -8,10 +8,8 @@ struct MainView: View {
             ZStack {
                 DeviceView(viewModel: .init())
                     .opacity(viewModel.selectedTab == .device ? 1 : 0)
-                ArchiveView(viewModel: .init { isEditing in
-                    viewModel.isTabViewHidden = isEditing
-                })
-                .opacity(viewModel.selectedTab == .archive ? 1 : 0)
+                ArchiveView(viewModel: .init())
+                    .opacity(viewModel.selectedTab == .archive ? 1 : 0)
                 OptionsView(viewModel: .init())
                     .opacity(viewModel.selectedTab == .options ? 1 : 0)
             }

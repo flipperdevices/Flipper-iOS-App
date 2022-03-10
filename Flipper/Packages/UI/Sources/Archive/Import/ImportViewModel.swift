@@ -16,3 +16,12 @@ class ImportViewModel: ObservableObject {
     func cancel() {
     }
 }
+
+extension ArchiveItem {
+    static var none: Self {
+        .init(
+            name: "",
+            fileType: .ibutton,
+            properties: [])
+    }
+}
