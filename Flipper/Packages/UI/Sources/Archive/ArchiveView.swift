@@ -9,8 +9,11 @@ struct ArchiveView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                CategoryCard()
-                    .padding(14)
+                CategoryCard(
+                    groups: viewModel.groups,
+                    deleted: viewModel.deleted
+                )
+                .padding(14)
 
                 ArchiveCompactList(name: "All", items: viewModel.items)
                     .padding(.horizontal, 14)

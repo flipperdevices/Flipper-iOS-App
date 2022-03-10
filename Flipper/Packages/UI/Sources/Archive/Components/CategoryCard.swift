@@ -1,17 +1,28 @@
+import Core
 import SwiftUI
+import OrderedCollections
 
 struct CategoryCard: View {
+    let groups: OrderedDictionary<ArchiveItem.FileType, [ArchiveItem]>
+    let deleted: [ArchiveItem]
+
     var body: some View {
         VStack(spacing: 0) {
-            CategoryLink(image: .init("subhz"), name: "Sub-GHz", count: 1)
-            CategoryLink(image: .init("rfid"), name: "RFID 125", count: 12)
-            CategoryLink(image: .init("nfc"), name: "NFC", count: 3)
-            CategoryLink(image: .init("infrared"), name: "Infrared", count: 0)
-            CategoryLink(image: .init("ibutton"), name: "iButton", count: 8)
+            ForEach(groups.keys, id: \.self) { key in
+                CategoryLink(
+                    image: key.icon,
+                    name: key.name,
+                    count: groups[key]?.count ?? 0)
+            }
+
             Divider()
                 .padding(.top, 2)
                 .padding(.bottom, 1)
-            CategoryLink(image: nil, name: "Deleted", count: 7)
+
+            CategoryLink(
+                image: nil,
+                name: "Deleted",
+                count: deleted.count)
         }
         .background(Color.groupedBackground)
         .cornerRadius(10)

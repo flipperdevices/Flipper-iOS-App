@@ -2,6 +2,7 @@ import Core
 import Combine
 import Inject
 import SwiftUI
+import OrderedCollections
 
 @MainActor
 class ArchiveViewModel: ObservableObject {
@@ -15,20 +16,18 @@ class ArchiveViewModel: ObservableObject {
         "Sub-GHz", "RFID 125", "NFC", "Infrared", "iButton"
     ]
 
-    struct Group: Identifiable, Equatable {
-        var id: ArchiveItem.FileType?
-        var items: [ArchiveItem]
+    var groups: OrderedDictionary<ArchiveItem.FileType, [ArchiveItem]> {
+        [
+            .subghz: items.filter { $0.fileType == .subghz },
+            .rfid: items.filter { $0.fileType == .rfid },
+            .nfc: items.filter { $0.fileType == .nfc },
+            .infrared: items.filter { $0.fileType == .infrared },
+            .ibutton: items.filter { $0.fileType == .ibutton }
+        ]
     }
 
-    var itemGroups: [Group] {
-        [
-            .init(id: nil, items: items),
-            .init(id: .rfid, items: items.filter { $0.fileType == .rfid }),
-            .init(id: .subghz, items: items.filter { $0.fileType == .subghz }),
-            .init(id: .nfc, items: items.filter { $0.fileType == .nfc }),
-            .init(id: .ibutton, items: items.filter { $0.fileType == .ibutton }),
-            .init(id: .infrared, items: items.filter { $0.fileType == .infrared })
-        ]
+    var deleted: [ArchiveItem] {
+        archive.deletedItems
     }
 
     init() {
