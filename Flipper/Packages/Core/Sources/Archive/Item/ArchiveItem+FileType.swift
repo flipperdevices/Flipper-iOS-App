@@ -2,11 +2,11 @@ import Logging
 
 extension ArchiveItem {
     public enum FileType: Hashable, Comparable, CaseIterable, Codable {
-        case ibutton
-        case nfc
-        case rfid
         case subghz
+        case rfid
+        case nfc
         case infrared
+        case ibutton
     }
 }
 
@@ -16,32 +16,32 @@ extension ArchiveItem.FileType {
             throw ArchiveItem.Error.invalidType
         }
         switch `extension` {
-        case "ibtn": self = .ibutton
-        case "nfc": self = .nfc
         case "sub": self = .subghz
         case "rfid": self = .rfid
+        case "nfc": self = .nfc
         case "ir": self = .infrared
+        case "ibtn": self = .ibutton
         default: throw ArchiveItem.Error.invalidType
         }
     }
 
     public var `extension`: String {
         switch self {
-        case .ibutton: return "ibtn"
-        case .nfc: return "nfc"
-        case .subghz: return "sub"
         case .rfid: return "rfid"
+        case .subghz: return "sub"
+        case .nfc: return "nfc"
         case .infrared: return "ir"
+        case .ibutton: return "ibtn"
         }
     }
 
     var location: String {
         switch self {
-        case .ibutton: return "ibutton"
-        case .nfc: return "nfc"
-        case .subghz: return "subghz"
         case .rfid: return "lfrfid"
+        case .subghz: return "subghz"
+        case .nfc: return "nfc"
         case .infrared: return "infrared"
+        case .ibutton: return "ibutton"
         }
     }
 }
