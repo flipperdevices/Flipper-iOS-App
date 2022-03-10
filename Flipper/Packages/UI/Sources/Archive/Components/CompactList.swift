@@ -1,7 +1,7 @@
 import Core
 import SwiftUI
 
-struct ArchiveCompactList: View {
+struct CompactList: View {
     let name: String
     let items: [ArchiveItem]
 

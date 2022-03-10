@@ -15,7 +15,7 @@ struct ArchiveView: View {
                 )
                 .padding(14)
 
-                ArchiveCompactList(name: "All", items: viewModel.items)
+                CompactList(name: "All", items: viewModel.items)
                     .padding(.horizontal, 14)
                     .padding(.bottom, 14)
             }
@@ -37,7 +37,7 @@ struct ArchiveView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .fullScreenCover(isPresented: $showSearchView) {
-                ArchiveSearchView()
+                ArchiveSearchView(viewModel: .init())
             }
             .navigationTitle("")
         }
