@@ -24,7 +24,7 @@ struct ArchiveSearchView: View {
             if viewModel.filteredItems.isEmpty {
                 NothingFoundView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.background)
+                    .customBackground(.background)
                     .onTapGesture {
                         resignFirstResponder()
                     }
@@ -33,6 +33,7 @@ struct ArchiveSearchView: View {
                     CategoryList(items: viewModel.filteredItems)
                         .padding(14)
                 }
+                .customBackground(.background)
             }
         }
     }
