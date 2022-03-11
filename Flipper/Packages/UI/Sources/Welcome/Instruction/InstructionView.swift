@@ -36,9 +36,9 @@ struct InstructionView: View {
                     .foregroundColor(.white)
                     .background(Color.accentColor)
                     .font(.system(size: 16, weight: .bold))
-                    .cornerRadius(25.5)
-                    .padding(.horizontal, 18)
+                    .cornerRadius(30)
             }
+            .padding(.horizontal, 18)
 
             VStack(spacing: 8) {
                 Text("By pressing Connect, you agree with our")

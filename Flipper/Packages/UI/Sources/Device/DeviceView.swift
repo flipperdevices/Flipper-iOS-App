@@ -35,7 +35,7 @@ struct DeviceView: View {
                                 externalSpace: viewModel.externalSpace)
                         }
 
-                        RoundedButton("Synchronize") {
+                        ObsoleteRoundedButton("Synchronize") {
                             viewModel.sync()
                         }
                         .disabled(viewModel.status == .synchronizing)

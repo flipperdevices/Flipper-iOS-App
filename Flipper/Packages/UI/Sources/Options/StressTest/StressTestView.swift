@@ -19,11 +19,11 @@ struct StressTestView: View {
             }
 
             HStack {
-                RoundedButton("Start") {
+                ObsoleteRoundedButton("Start") {
                     viewModel.start()
                 }
 
-                RoundedButton("Stop") {
+                ObsoleteRoundedButton("Stop") {
                     viewModel.stop()
                 }
             }

@@ -21,16 +21,8 @@ struct BluetoothOffView: View {
             .font(.system(size: 14, weight: .medium))
             .foregroundColor(.black40)
 
-            Button {
+            RoundedButton("Go to Settings") {
                 Application.openSystemSettings()
-            } label: {
-                Text("Go to Settings")
-                    .frame(height: 44)
-                    .padding(.horizontal, 38)
-                    .foregroundColor(.white)
-                    .background(Color.accentColor)
-                    .font(.system(size: 14, weight: .bold))
-                    .cornerRadius(22)
             }
             .padding(.top, 12)
 

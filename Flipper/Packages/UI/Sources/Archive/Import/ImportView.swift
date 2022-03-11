@@ -27,17 +27,9 @@ struct ImportView: View {
                 .padding(.top, 14)
                 .padding(.horizontal, 24)
 
-            Button {
+            RoundedButton("Save") {
                 viewModel.save()
                 presentationMode.wrappedValue.dismiss()
-            } label: {
-                Text("Save")
-                    .frame(height: 41)
-                    .padding(.horizontal, 38)
-                    .foregroundColor(.white)
-                    .background(Color.accentColor)
-                    .font(.system(size: 14, weight: .bold))
-                    .cornerRadius(30)
             }
             .padding(.top, 18)
 
