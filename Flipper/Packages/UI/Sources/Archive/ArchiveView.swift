@@ -4,7 +4,6 @@ import Combine
 
 struct ArchiveView: View {
     @StateObject var viewModel: ArchiveViewModel
-    @State var showSearchView = false
 
     var body: some View {
         NavigationView {
@@ -27,7 +26,7 @@ struct ArchiveView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        showSearchView = true
+                        viewModel.showSearchView = true
                     } label: {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 18, weight: .bold))
@@ -36,7 +35,7 @@ struct ArchiveView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .fullScreenCover(isPresented: $showSearchView) {
+            .fullScreenCover(isPresented: $viewModel.showSearchView) {
                 ArchiveSearchView(viewModel: .init())
             }
             .navigationTitle("")

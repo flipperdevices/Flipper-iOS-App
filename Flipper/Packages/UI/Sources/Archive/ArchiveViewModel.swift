@@ -9,6 +9,8 @@ class ArchiveViewModel: ObservableObject {
     @Published var appState: AppState = .shared
     @Published var items: [ArchiveItem] = []
 
+    @Published var showSearchView = false
+
     var archive: Archive { appState.archive }
     var disposeBag: DisposeBag = .init()
 
