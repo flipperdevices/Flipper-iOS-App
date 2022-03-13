@@ -4,6 +4,7 @@ import SwiftUI
 struct CompactList: View {
     let name: String
     let items: [ArchiveItem]
+    let onItemSelected: (ArchiveItem) -> Void
 
     let columns = [
         GridItem(.flexible(minimum: 0, maximum: .infinity)),
@@ -20,7 +21,12 @@ struct CompactList: View {
 
             LazyVGrid(columns: columns) {
                 ForEach(items) { item in
-                    CompactItem(item: item)
+                    Button {
+                        onItemSelected(item)
+                    } label: {
+                        CompactItem(item: item)
+                    }
+                    .foregroundColor(.primary)
                 }
             }
         }

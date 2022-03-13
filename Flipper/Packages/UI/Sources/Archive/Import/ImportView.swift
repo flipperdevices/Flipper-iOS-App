@@ -23,7 +23,7 @@ struct ImportView: View {
             .padding(.top, 17)
             .padding(.bottom, 6)
 
-            ImportCardView(item: viewModel.item)
+            CardView(item: viewModel.item)
                 .padding(.top, 14)
                 .padding(.horizontal, 24)
 

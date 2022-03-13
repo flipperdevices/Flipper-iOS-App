@@ -14,9 +14,11 @@ struct ArchiveView: View {
                 )
                 .padding(14)
 
-                CompactList(name: "All", items: viewModel.items)
-                    .padding(.horizontal, 14)
-                    .padding(.bottom, 14)
+                CompactList(name: "All", items: viewModel.items) { item in
+                    viewModel.onItemSelected(item: item)
+                }
+                .padding(.horizontal, 14)
+                .padding(.bottom, 14)
             }
             .background(Color.background)
             .toolbar {
@@ -35,6 +37,9 @@ struct ArchiveView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $viewModel.showInfoView) {
+                InfoView(viewModel: .init(item: viewModel.selectedItem))
+            }
             .fullScreenCover(isPresented: $viewModel.showSearchView) {
                 ArchiveSearchView(viewModel: .init())
             }

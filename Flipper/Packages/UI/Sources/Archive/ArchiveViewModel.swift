@@ -9,6 +9,8 @@ class ArchiveViewModel: ObservableObject {
     @Published var appState: AppState = .shared
     @Published var items: [ArchiveItem] = []
 
+    var selectedItem: ArchiveItem?
+    @Published var showInfoView = false
     @Published var showSearchView = false
 
     var archive: Archive { appState.archive }
@@ -37,5 +39,10 @@ class ArchiveViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .assign(to: \.items, on: self)
             .store(in: &disposeBag)
+    }
+
+    func onItemSelected(item: ArchiveItem) {
+        selectedItem = item
+        showInfoView = true
     }
 }

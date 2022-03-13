@@ -8,13 +8,21 @@ import OrderedCollections
 class ArchiveSearchViewModel: ObservableObject {
     let appState: AppState = .shared
 
-    @Published var predicate = ""
-
     var filteredItems: [ArchiveItem] {
         appState.archive.items.filter {
             $0.name.value.lowercased().contains(predicate.lowercased())
         }
     }
 
+    @Published var predicate = ""
+
+    var selectedItem: ArchiveItem?
+    @Published var showInfoView = false
+
     init() {}
+
+    func onItemSelected(item: ArchiveItem) {
+        selectedItem = item
+        showInfoView = true
+    }
 }

@@ -37,7 +37,7 @@ struct CategoryLink: View {
 
     var body: some View {
         NavigationLink {
-            CategoryView(name: name, items: items)
+            CategoryView(viewModel: .init(name: name, items: items))
         } label: {
             CategoryRow(image: image, name: name, count: items.count)
         }

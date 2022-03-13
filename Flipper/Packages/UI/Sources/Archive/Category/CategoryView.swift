@@ -2,15 +2,15 @@ import Core
 import SwiftUI
 
 struct CategoryView: View {
+    @StateObject var viewModel: CategoryViewModel
     @Environment(\.presentationMode) var presentationMode
-
-    let name: String
-    let items: [ArchiveItem]
 
     var body: some View {
         ScrollView {
-            CategoryList(items: items)
-                .padding(14)
+            CategoryList(items: viewModel.items) { item in
+                viewModel.onItemSelected(item: item)
+            }
+            .padding(14)
         }
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
@@ -21,9 +21,12 @@ struct CategoryView: View {
                 }
             }
             ToolbarItem(placement: .navigationBarLeading) {
-                Text(name)
+                Text(viewModel.name)
                     .font(.system(size: 20, weight: .bold))
             }
+        }
+        .sheet(isPresented: $viewModel.showInfoView) {
+            InfoView(viewModel: .init(item: viewModel.selectedItem))
         }
     }
 }

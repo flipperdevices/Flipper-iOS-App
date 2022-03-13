@@ -30,11 +30,16 @@ struct ArchiveSearchView: View {
                     }
             } else {
                 ScrollView {
-                    CategoryList(items: viewModel.filteredItems)
-                        .padding(14)
+                    CategoryList(items: viewModel.filteredItems) { item in
+                        viewModel.onItemSelected(item: item)
+                    }
+                    .padding(14)
                 }
                 .customBackground(.background)
             }
+        }
+        .sheet(isPresented: $viewModel.showInfoView) {
+            InfoView(viewModel: .init(item: viewModel.selectedItem))
         }
     }
 }
