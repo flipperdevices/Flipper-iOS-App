@@ -1,6 +1,10 @@
 import SwiftUI
 
 extension Color {
+    static var black8: Color {
+        .init(red: 0.87, green: 0.87, blue: 0.87)
+    }
+
     static var black12: Color {
         .init(red: 0.84, green: 0.84, blue: 0.84)
     }

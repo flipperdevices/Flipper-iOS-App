@@ -1,19 +1,33 @@
-import Combine
 import Core
+import Combine
+import SwiftUI
 
 class ImportViewModel: ObservableObject {
+    let backup: ArchiveItem
+    @Published var item: ArchiveItem
+    @Published var isEditMode = false
+
     let appState: AppState = .shared
 
-    @Published var item: ArchiveItem
-
-    init() {
-        self.item = .none
+    init(item: ArchiveItem?) {
+        self.item = item ?? .none
+        self.backup = item ?? .none
     }
 
-    func save() {
+    func add() -> Bool {
+        true
     }
 
-    func cancel() {
+    func edit() {
+        isEditMode = true
+    }
+
+    func saveChanges() {
+        isEditMode = false
+    }
+
+    func undoChanges() {
+        isEditMode = false
     }
 }
 

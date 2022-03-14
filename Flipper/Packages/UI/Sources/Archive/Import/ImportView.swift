@@ -6,39 +6,46 @@ struct ImportView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Spacer()
-                Text("Add Key")
-                    .font(.system(size: 18, weight: .bold))
-                Spacer()
-                Button {
+            if viewModel.isEditMode {
+                SheetEditHeader(
+                    "Edit Key",
+                    onSave: viewModel.saveChanges,
+                    onCancel: viewModel.undoChanges
+                )
+            } else {
+                SheetHeader("Add Key") {
                     presentationMode.wrappedValue.dismiss()
-                } label: {
-                    Image(systemName: "xmark")
                 }
-                .font(.system(size: 20, weight: .medium))
-                .foregroundColor(.primary)
             }
-            .padding(.horizontal, 18)
-            .padding(.top, 17)
-            .padding(.bottom, 6)
 
-            CardView(item: viewModel.item)
-                .padding(.top, 14)
-                .padding(.horizontal, 24)
+            CardView(
+                item: $viewModel.item,
+                isEditing: viewModel.isEditMode,
+                kind: .imported
+            )
+            .padding(.top, 14)
+            .padding(.horizontal, 24)
 
-            RoundedButton("Save") {
-                viewModel.save()
-                presentationMode.wrappedValue.dismiss()
+            HStack {
+                Button("Edit") {
+                    viewModel.edit()
+                }
+                .foregroundColor(.black30)
+                .font(.system(size: 14, weight: .bold))
+                Spacer()
+                RoundedButton("Add") {
+                    if viewModel.add() {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
             }
             .padding(.top, 18)
+            .padding(.horizontal, 60)
+            .opacity(viewModel.isEditMode ? 0 : 1)
 
             Spacer()
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
-        .onDisappear {
-            viewModel.cancel()
-        }
     }
 }

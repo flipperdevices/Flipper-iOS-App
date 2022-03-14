@@ -18,9 +18,13 @@ struct InfoView: View {
                 }
             }
 
-            CardView(item: viewModel.item, kind: .inspecting)
-                .padding(.top, 14)
-                .padding(.horizontal, 24)
+            CardView(
+                item: $viewModel.item,
+                isEditing: viewModel.isEditMode,
+                kind: .existing
+            )
+            .padding(.top, 14)
+            .padding(.horizontal, 24)
 
             VStack(alignment: .leading, spacing: 20) {
                 InfoButton(image: .init("edit"), title: "Edit") {

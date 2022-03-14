@@ -23,8 +23,8 @@ struct CategoryItem: View {
                     .lineLimit(1)
                     .font(.system(size: 14, weight: .medium))
 
-                if !item.description.isEmpty {
-                    Text(item.description)
+                if !item.note.isEmpty {
+                    Text(item.note)
                         .lineLimit(1)
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.black30)
