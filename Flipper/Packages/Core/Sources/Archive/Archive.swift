@@ -18,6 +18,10 @@ public class Archive: ObservableObject {
 
     private var disposeBag: DisposeBag = .init()
 
+    public enum Error: String, Swift.Error {
+        case alredyExists
+    }
+
     private init() {
         synchronization.events
             .sink { [weak self] in
@@ -103,9 +107,12 @@ extension Archive {
         deletedItems.removeAll { $0.id == id }
     }
 
-    public func rename(_ id: ArchiveItem.ID, to name: String) async throws {
+    public func rename(_ id: ArchiveItem.ID, to name: ArchiveItem.Name) async throws {
         if let item = get(id) {
-            let newItem = item.rename(to: .init(name))
+            let newItem = item.rename(to: name)
+            guard get(newItem.id) == nil else {
+                throw Error.alredyExists
+            }
             try await mobileArchive.delete(id)
             items.removeAll { $0.id == item.id }
             try await mobileArchive.upsert(newItem)
@@ -159,6 +166,15 @@ extension Archive {
             try await synchronization.syncWithDevice()
         } catch {
             logger.critical("syncronization error: \(error)")
+        }
+    }
+}
+
+extension Archive.Error: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .alredyExists:
+            return "The name is already taken. Please choose a different name."
         }
     }
 }

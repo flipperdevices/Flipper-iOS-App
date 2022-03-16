@@ -46,6 +46,9 @@ struct InfoView: View {
 
             Spacer()
         }
+        .alert(isPresented: $viewModel.isError) {
+            Alert(title: Text(viewModel.error))
+        }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
     }
