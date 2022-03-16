@@ -142,13 +142,6 @@ extension Archive {
         try await deletedArchive.delete(item.id)
         deletedItems.removeAll { $0.id == item.id }
     }
-
-    public func favorite(_ id: ArchiveItem.ID) {
-        if let index = items.firstIndex(where: { $0.id == id }) {
-            objectWillChange.send()
-            items[index].isFavorite.toggle()
-        }
-    }
 }
 
 extension Archive {

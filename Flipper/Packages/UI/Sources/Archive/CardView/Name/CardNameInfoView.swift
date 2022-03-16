@@ -13,10 +13,14 @@ extension CardView {
                         .font(.system(size: 16, weight: .bold))
                         .lineLimit(1)
 
-                    Image(systemName: item.isFavorite ? "star.fill" : "star")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(.yellow)
-                        .opacity(kind == .existing ? 1 : 0)
+                    Button {
+                        item.isFavorite.toggle()
+                    } label: {
+                        Image(systemName: item.isFavorite ? "star.fill" : "star")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(.yellow)
+                            .opacity(kind == .existing ? 1 : 0)
+                    }
                 }
 
                 if item.note.isEmpty {

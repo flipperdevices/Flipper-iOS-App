@@ -12,10 +12,26 @@ class InfoViewModel: ObservableObject {
 
     let appState: AppState = .shared
     var dismissPublisher = PassthroughSubject<Void, Never>()
+    var disposeBag = DisposeBag()
 
     init(item: ArchiveItem?) {
         self.item = item ?? .none
         self.backup = item ?? .none
+        watchIsFavorite()
+    }
+
+    func watchIsFavorite() {
+        $item
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                guard !self.isEditMode else { return }
+                guard self.backup.isFavorite != self.item.isFavorite else {
+                    return
+                }
+                self.saveChanges()
+            }
+            .store(in: &disposeBag)
     }
 
     func edit() {
