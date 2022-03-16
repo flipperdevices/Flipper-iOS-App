@@ -14,8 +14,33 @@ struct ArchiveView: View {
                 )
                 .padding(14)
 
-                CompactList(name: "All", items: viewModel.items) { item in
-                    viewModel.onItemSelected(item: item)
+                if !viewModel.favoriteItems.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Favorites")
+                                .font(.system(size: 16, weight: .bold))
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.yellow)
+                        }
+
+                        CompactList(items: viewModel.favoriteItems) { item in
+                            viewModel.onItemSelected(item: item)
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 14)
+                }
+
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("All")
+                            .font(.system(size: 16, weight: .bold))
+                    }
+
+                    CompactList(items: viewModel.sortedItems) { item in
+                        viewModel.onItemSelected(item: item)
+                    }
                 }
                 .padding(.horizontal, 14)
                 .padding(.bottom, 14)

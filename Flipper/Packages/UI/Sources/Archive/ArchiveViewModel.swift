@@ -11,6 +11,14 @@ class ArchiveViewModel: ObservableObject {
     @Published var appState: AppState = .shared
     @Published var items: [ArchiveItem] = []
 
+    var sortedItems: [ArchiveItem] {
+        items.sorted { $0.name < $1.name }
+    }
+
+    var favoriteItems: [ArchiveItem] {
+        items.filter { $0.isFavorite }
+    }
+
     var selectedItem: ArchiveItem?
     @Published var showInfoView = false
     @Published var showSearchView = false
