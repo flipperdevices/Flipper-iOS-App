@@ -13,5 +13,11 @@ func share(
         .windows
         .first?
         .rootViewController?
+        .dismiss(animated: true)
+
+    UIApplication.shared
+        .windows
+        .first?
+        .rootViewController?
         .present(activityContoller, animated: true, completion: nil)
 }

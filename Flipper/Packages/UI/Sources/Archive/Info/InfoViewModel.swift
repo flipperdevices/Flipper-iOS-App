@@ -11,6 +11,7 @@ class InfoViewModel: ObservableObject {
     var error = ""
 
     let appState: AppState = .shared
+    var dismissPublisher = PassthroughSubject<Void, Never>()
 
     init(item: ArchiveItem?) {
         self.item = item ?? .none
@@ -24,9 +25,15 @@ class InfoViewModel: ObservableObject {
     }
 
     func share() {
+        Core.share(item)
     }
 
     func delete() {
+        Task {
+            try await appState.archive.delete(item.id)
+            await appState.synchronize()
+        }
+        dismiss()
     }
 
     func saveChanges() {
@@ -53,5 +60,9 @@ class InfoViewModel: ObservableObject {
     func showError(_ error: Swift.Error) {
         self.error = String(describing: error)
         self.isError = true
+    }
+
+    func dismiss() {
+        dismissPublisher.send(())
     }
 }

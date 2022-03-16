@@ -14,7 +14,7 @@ struct InfoView: View {
                 )
             } else {
                 SheetHeader("Key Info") {
-                    presentationMode.wrappedValue.dismiss()
+                    viewModel.dismiss()
                 }
             }
 
@@ -48,6 +48,9 @@ struct InfoView: View {
         }
         .alert(isPresented: $viewModel.isError) {
             Alert(title: Text(viewModel.error))
+        }
+        .onReceive(viewModel.dismissPublisher) {
+            presentationMode.wrappedValue.dismiss()
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
