@@ -40,6 +40,9 @@ struct ArchiveView: View {
             .sheet(isPresented: $viewModel.showInfoView) {
                 InfoView(viewModel: .init(item: viewModel.selectedItem))
             }
+            .sheet(isPresented: $viewModel.hasImportedItem) {
+                ImportView(viewModel: .init(item: viewModel.importedItem))
+            }
             .fullScreenCover(isPresented: $viewModel.showSearchView) {
                 ArchiveSearchView(viewModel: .init())
             }

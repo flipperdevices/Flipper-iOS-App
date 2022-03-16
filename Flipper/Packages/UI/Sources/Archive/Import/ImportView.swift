@@ -14,7 +14,7 @@ struct ImportView: View {
                 )
             } else {
                 SheetHeader("Add Key") {
-                    presentationMode.wrappedValue.dismiss()
+                    viewModel.dismiss()
                 }
             }
 
@@ -34,9 +34,7 @@ struct ImportView: View {
                 .font(.system(size: 14, weight: .bold))
                 Spacer()
                 RoundedButton("Add") {
-                    if viewModel.add() {
-                        presentationMode.wrappedValue.dismiss()
-                    }
+                    viewModel.add()
                 }
             }
             .padding(.top, 18)
@@ -44,6 +42,12 @@ struct ImportView: View {
             .opacity(viewModel.isEditMode ? 0 : 1)
 
             Spacer()
+        }
+        .alert(isPresented: $viewModel.isError) {
+            Alert(title: Text(viewModel.error))
+        }
+        .onReceive(viewModel.dismissPublisher) {
+            presentationMode.wrappedValue.dismiss()
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)

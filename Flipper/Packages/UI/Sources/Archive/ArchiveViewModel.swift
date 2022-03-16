@@ -6,12 +6,19 @@ import OrderedCollections
 
 @MainActor
 class ArchiveViewModel: ObservableObject {
+    @Environment(\.presentationMode) var presentationMode
+
     @Published var appState: AppState = .shared
     @Published var items: [ArchiveItem] = []
 
     var selectedItem: ArchiveItem?
     @Published var showInfoView = false
     @Published var showSearchView = false
+    @Published var hasImportedItem = false
+
+    var importedItem: ArchiveItem? {
+        appState.imported.removeFirst()
+    }
 
     var archive: Archive { appState.archive }
     var disposeBag: DisposeBag = .init()
@@ -38,6 +45,12 @@ class ArchiveViewModel: ObservableObject {
         archive.$items
             .receive(on: DispatchQueue.main)
             .assign(to: \.items, on: self)
+            .store(in: &disposeBag)
+
+        appState.$imported
+            .map { !$0.isEmpty }
+            .filter { $0 == true }
+            .assign(to: \.hasImportedItem, on: self)
             .store(in: &disposeBag)
     }
 
