@@ -30,13 +30,9 @@ struct DeviceInfoHeader: View {
     let device: Peripheral
 
     var flipperImage: String {
-        #if DEBUG
         device.color == .black
             ? "FlipperBlack"
             : "FlipperWhite"
-        #else
-        "FlipperWhite"
-        #endif
     }
 
     var batteryColor: Color {
