@@ -2,6 +2,7 @@ import Core
 import Combine
 import Dispatch
 
+@MainActor
 class CategoryDeletedViewModel: ObservableObject {
     @Published var items: [ArchiveItem] = []
     var selectedItem: ArchiveItem?

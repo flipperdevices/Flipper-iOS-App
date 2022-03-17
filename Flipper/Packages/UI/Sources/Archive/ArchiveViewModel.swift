@@ -7,8 +7,8 @@ import OrderedCollections
 @MainActor
 class ArchiveViewModel: ObservableObject {
     @Environment(\.presentationMode) var presentationMode
+    let appState: AppState = .shared
 
-    @Published var appState: AppState = .shared
     @Published var items: [ArchiveItem] = []
     @Published var deleted: [ArchiveItem] = []
 
@@ -32,17 +32,13 @@ class ArchiveViewModel: ObservableObject {
     var archive: Archive { appState.archive }
     var disposeBag: DisposeBag = .init()
 
-    var categories: [String] = [
-        "Sub-GHz", "RFID 125", "NFC", "Infrared", "iButton"
-    ]
-
-    var groups: OrderedDictionary<ArchiveItem.FileType, [ArchiveItem]> {
+    var groups: OrderedDictionary<ArchiveItem.FileType, Int> {
         [
-            .subghz: items.filter { $0.fileType == .subghz },
-            .rfid: items.filter { $0.fileType == .rfid },
-            .nfc: items.filter { $0.fileType == .nfc },
-            .infrared: items.filter { $0.fileType == .infrared },
-            .ibutton: items.filter { $0.fileType == .ibutton }
+            .subghz: items.filter { $0.fileType == .subghz }.count,
+            .rfid: items.filter { $0.fileType == .rfid }.count,
+            .nfc: items.filter { $0.fileType == .nfc }.count,
+            .infrared: items.filter { $0.fileType == .infrared }.count,
+            .ibutton: items.filter { $0.fileType == .ibutton }.count
         ]
     }
 

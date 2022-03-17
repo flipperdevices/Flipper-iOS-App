@@ -3,16 +3,15 @@ import SwiftUI
 import OrderedCollections
 
 struct CategoryCard: View {
-    let groups: OrderedDictionary<ArchiveItem.FileType, [ArchiveItem]>
-    let deleted: [ArchiveItem]
+    let groups: OrderedDictionary<ArchiveItem.FileType, Int>
+    let deletedCount: Int
 
     var body: some View {
         VStack(spacing: 0) {
             ForEach(groups.keys, id: \.self) { key in
                 CategoryLink(
-                    image: key.icon,
-                    name: key.name,
-                    items: groups[key] ?? [])
+                    fileType: key,
+                    count: groups[key] ?? 0)
             }
 
             Divider()
@@ -20,8 +19,7 @@ struct CategoryCard: View {
                 .padding(.bottom, 1)
 
             CategoryDeletedLink(
-                name: "Deleted",
-                items: deleted)
+                count: deletedCount)
         }
         .background(Color.groupedBackground)
         .cornerRadius(10)
@@ -30,28 +28,31 @@ struct CategoryCard: View {
 }
 
 struct CategoryLink: View {
-    let image: Image?
-    let name: String
-    let items: [ArchiveItem]
+    let fileType: ArchiveItem.FileType
+    let count: Int
 
     var body: some View {
         NavigationLink {
-            CategoryView(viewModel: .init(name: name, items: items))
+            CategoryView(viewModel: .init(
+                name: fileType.name,
+                fileType: fileType))
         } label: {
-            CategoryRow(image: image, name: name, count: items.count)
+            CategoryRow(
+                image: fileType.icon,
+                name: fileType.name,
+                count: count)
         }
     }
 }
 
 struct CategoryDeletedLink: View {
-    let name: String
-    let items: [ArchiveItem]
+    let count: Int
 
     var body: some View {
         NavigationLink {
             CategoryDeletedView(viewModel: .init())
         } label: {
-            CategoryRow(image: nil, name: "Deleted", count: items.count)
+            CategoryRow(image: nil, name: "Deleted", count: count)
         }
     }
 }

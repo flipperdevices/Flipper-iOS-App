@@ -10,7 +10,7 @@ struct ArchiveView: View {
             ScrollView {
                 CategoryCard(
                     groups: viewModel.groups,
-                    deleted: viewModel.deleted
+                    deletedCount: viewModel.deleted.count
                 )
                 .padding(14)
 
