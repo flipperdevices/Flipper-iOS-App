@@ -131,6 +131,7 @@ extension Archive {
         var item = item
         item.status = .deleted
         try await deletedArchive.upsert(item)
+        deletedItems.removeAll { $0.id == item.id }
         deletedItems.append(item)
     }
 
