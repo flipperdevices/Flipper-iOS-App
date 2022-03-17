@@ -7,242 +7,60 @@ struct DeviceView: View {
 
     var body: some View {
         NavigationView {
-            VStack {
-                DeviceViewHeader(status: viewModel.status) {
-                    viewModel.showWelcomeScreen()
-                }
+            VStack(spacing: 0) {
+                DeviceHeader(device: viewModel.device)
 
                 ScrollView {
                     VStack {
-                        if let device = viewModel.device {
-                            DeviceImageNameModelBattery(device: device)
-                                .padding(.vertical, 26)
-                                .padding(.horizontal, 15)
-                        } else {
-                            Text("Connect your Flipper")
-                                .font(.system(size: 26))
-                                .padding(.vertical, 50)
-                                .multilineTextAlignment(.center)
-                        }
-
                         NavigationLink {
                             DeviceInfoView(viewModel: .init())
                         } label: {
-                            DeviceInfoPreview(
+                            DeviceInfoSection(
                                 firmwareVersion: viewModel.firmwareVersion,
                                 firmwareBuild: viewModel.firmwareBuild,
                                 internalSpace: viewModel.internalSpace,
-                                externalSpace: viewModel.externalSpace)
+                                externalSpace: viewModel.externalSpace
+                            )
                         }
+                        .disabled(viewModel.device?.state != .connected)
 
-                        ObsoleteRoundedButton("Synchronize") {
-                            viewModel.sync()
+                        VStack(spacing: 14) {
+                            DeviceActionButton(
+                                image: "Sync",
+                                title: "Synchronize"
+                            ) {
+                                viewModel.sync()
+                            }
+                            .disabled(viewModel.status == .synchronizing)
+                            .disabled(viewModel.device?.state != .connected)
+
+                            if viewModel.device == nil {
+                                DeviceActionButton(
+                                    image: "BluetoothOn",
+                                    title: "Connect Flipper"
+                                ) {
+                                    viewModel.showWelcomeScreen()
+                                }
+                            } else {
+                                DeviceActionButton(
+                                    image: "Forget",
+                                    title: "Forget Flipper"
+                                ) {
+                                    viewModel.showWelcomeScreen()
+                                }
+                                .foregroundColor(.red)
+                            }
                         }
-                        .disabled(viewModel.status == .synchronizing)
-                        .padding(.top, 12)
-                        .padding(.bottom, 24)
-                    }
-                    .background(systemBackground)
-                    .disabled(viewModel.device?.state != .connected)
-
-                    ActionsForm(actions: actions) { id in
-                        self.action = id
-                    }
-                    .padding(.top, 20)
-                    .disabled(viewModel.appState.status != .connected)
-
-                    NavigationLink("", tag: fileManager.name, selection: $action) {
-                        FileManagerView(viewModel: .init())
-                    }
-                    NavigationLink("", tag: remoteControl.name, selection: $action) {
-                        RemoteContolView(viewModel: .init())
+                        .padding(.horizontal, 14)
                     }
                 }
-                .background(Color.gray.opacity(0.1))
+                .background(Color.background)
             }
             .navigationBarHidden(true)
             .alert(isPresented: $viewModel.isPairingIssue) {
                 .pairingIssue
             }
+            .navigationBarColors(foreground: .primary, background: .header)
         }
-    }
-}
-
-extension DeviceView {
-    struct Action: ActionProtocol {
-        var id: String { name }
-
-        let name: String
-        let image: Image
-    }
-
-    var actions: [Action] {
-        [remoteControl, fileManager]
-    }
-
-    var remoteControl: Action {
-        .init(
-            name: "Remote Control",
-            image: .init(systemName: "appletvremote.gen1")
-        )
-    }
-
-    var fileManager: Action {
-        .init(
-            name: "File manager",
-            image: .init(systemName: "folder.circle"))
-    }
-}
-
-struct DeviceViewHeader: View {
-    let status: Status
-    let action: @MainActor () -> Void
-
-    var body: some View {
-        HeaderView(
-            status: status,
-            leftView: {
-                Button {
-                    action()
-                } label: {
-                    Image("BluetoothOn")
-                        .renderingMode(.template)
-                        .headerImageStyle()
-                        .frame(width: 20, height: 20)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.accentColor, lineWidth: 1.8)
-                        )
-                }
-                .padding(.leading, 5)
-            },
-            rightView: {
-                Image(systemName: "gamecontroller")
-                    .headerImageStyle()
-                    .frame(width: 20, height: 20)
-                    .opacity(0)
-            })
-    }
-}
-
-struct DeviceInfoPreview: View {
-    let firmwareVersion: String
-    let firmwareBuild: String
-    let internalSpace: String
-    let externalSpace: String
-
-    var body: some View {
-        VStack {
-            HStack {
-                Text("Device Info")
-                    .font(.system(size: 20, weight: .semibold))
-                Spacer()
-                Image(systemName: "chevron.right")
-            }
-
-            VStack {
-                DeviceInfoRow(
-                    name: "Firmware Version",
-                    value: firmwareVersion)
-                Divider()
-                DeviceInfoRow(
-                    name: "Firmware Build",
-                    value: firmwareBuild)
-                Divider()
-                DeviceInfoRow(
-                    name: "Internal Flash Free/Total",
-                    value: internalSpace)
-                Divider()
-                DeviceInfoRow(
-                    name: "SD Card Free/Total",
-                    value: externalSpace)
-                Divider()
-            }
-            .padding(.vertical, 12)
-        }
-        .padding(.horizontal, 16)
-        .foregroundColor(.primary)
-    }
-}
-
-struct DeviceInfoRow: View {
-    let name: String
-    let value: String?
-
-    var body: some View {
-        HStack {
-            Text("\(name)")
-                .font(.system(size: 16, weight: .light))
-                .foregroundColor(.secondary)
-            Spacer()
-            Text("\(value ?? .unknown.lowercased())")
-                .font(.system(size: 16, weight: .light))
-                .multilineTextAlignment(.trailing)
-        }
-    }
-}
-
-struct DeviceImageNameModelBattery: View {
-    let device: Peripheral
-
-    var flipperImage: String {
-        device.color == .black
-            ? "FlipperBlack"
-            : "FlipperWhite"
-    }
-
-    var batteryColor: Color {
-        guard let battery = device.battery else {
-            return .clear
-        }
-        switch battery.decimalValue * 100 {
-        case 0..<20: return .red
-        case 20..<50: return .yellow
-        case 50...100: return .green
-        default: return .clear
-        }
-    }
-
-    var body: some View {
-        HStack {
-            Image(flipperImage)
-                .resizable()
-                .scaledToFit()
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text(device.name)
-                    .font(.system(size: 22, weight: .semibold))
-
-                Text("Flipper Zero")
-                    .font(.system(size: 18, weight: .light))
-                    .foregroundColor(.gray)
-
-                HStack(alignment: .top, spacing: 6) {
-                    if let battery = device.battery {
-                        ZStack(alignment: .topLeading) {
-                            Image("Battery")
-
-                            RoundedRectangle(cornerRadius: 1)
-                                .frame(
-                                    width: 18 * battery.decimalValue,
-                                    height: 7)
-                                .padding(.top, 3)
-                                .padding(.leading, 6)
-                                .foregroundColor(batteryColor)
-                        }
-                        .padding(.top, 2)
-                    }
-
-                    if let battery = device.battery {
-                        Text("\(battery.level) %")
-                            .font(.system(size: 14, weight: .semibold))
-                    }
-                }
-                .frame(height: 21)
-            }
-            .padding(.leading, 8)
-            .padding(.trailing, 36)
-        }
-        .frame(maxWidth: .infinity)
     }
 }

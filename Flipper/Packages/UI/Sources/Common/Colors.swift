@@ -13,6 +13,10 @@ extension Color {
         .init(red: 0.84, green: 0.84, blue: 0.84)
     }
 
+    static var black16: Color {
+        .init(red: 0.80, green: 0.80, blue: 0.80)
+    }
+
     static var black30: Color {
         .init(red: 0.67, green: 0.67, blue: 0.67)
     }

@@ -31,8 +31,4 @@ class DeviceInfoViewModel: ObservableObject {
             deviceInfo = try await RPC.shared.deviceInfo()
         }
     }
-
-    func disconnectFlipper() {
-        appState.forgetDevice()
-    }
 }
