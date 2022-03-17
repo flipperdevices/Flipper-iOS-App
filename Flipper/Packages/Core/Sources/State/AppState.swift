@@ -124,6 +124,11 @@ public class AppState {
             await archive.syncWithDevice()
         }
         status = .synchronized
+        Task {
+            try await Task.sleep(nanoseconds: 3_000 * 1_000_000)
+            guard status == .synchronized else { return }
+            status = .init(device?.state)
+        }
     }
 
     func synchronizeDateTime() async {
