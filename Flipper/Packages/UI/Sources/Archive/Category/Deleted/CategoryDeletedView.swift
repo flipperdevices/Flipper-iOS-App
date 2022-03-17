@@ -11,6 +11,11 @@ struct CategoryDeletedView: View {
 
     var body: some View {
         ZStack {
+            Text("No deleted keys")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(.black40)
+                .opacity(viewModel.items.isEmpty ? 1 : 0)
+
             ScrollView {
                 CategoryList(items: viewModel.items) { item in
                     viewModel.onItemSelected(item: item)

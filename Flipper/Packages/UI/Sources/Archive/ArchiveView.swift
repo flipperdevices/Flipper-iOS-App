@@ -32,18 +32,20 @@ struct ArchiveView: View {
                     .padding(.bottom, 14)
                 }
 
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("All")
-                            .font(.system(size: 16, weight: .bold))
-                    }
+                if !viewModel.items.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("All")
+                                .font(.system(size: 16, weight: .bold))
+                        }
 
-                    CompactList(items: viewModel.sortedItems) { item in
-                        viewModel.onItemSelected(item: item)
+                        CompactList(items: viewModel.sortedItems) { item in
+                            viewModel.onItemSelected(item: item)
+                        }
                     }
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 14)
                 }
-                .padding(.horizontal, 14)
-                .padding(.bottom, 14)
             }
             .background(Color.background)
             .toolbar {

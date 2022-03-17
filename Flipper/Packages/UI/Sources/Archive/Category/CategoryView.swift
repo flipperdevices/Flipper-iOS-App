@@ -6,11 +6,18 @@ struct CategoryView: View {
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
-        ScrollView {
-            CategoryList(items: viewModel.items) { item in
-                viewModel.onItemSelected(item: item)
+        ZStack {
+            Text("You have no keys yet")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(.black40)
+                .opacity(viewModel.items.isEmpty ? 1 : 0)
+
+            ScrollView {
+                CategoryList(items: viewModel.items) { item in
+                    viewModel.onItemSelected(item: item)
+                }
+                .padding(14)
             }
-            .padding(14)
         }
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
