@@ -36,7 +36,7 @@ struct DeviceView: View {
 
                             if viewModel.device == nil {
                                 DeviceActionButton(
-                                    image: "BluetoothOn",
+                                    image: "Connect",
                                     title: "Connect Flipper"
                                 ) {
                                     viewModel.showWelcomeScreen()
