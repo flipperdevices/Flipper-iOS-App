@@ -19,8 +19,10 @@ extension CardView {
                     Button {
                         item.isFavorite.toggle()
                     } label: {
-                        Image(systemName: isFavorite ? "star.fill" : "star")
-                            .font(.system(size: 18, weight: .medium))
+                        Image(isFavorite ? "StarFilled" : "Star")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 24, height: 24)
                             .foregroundColor(.yellow)
                             .opacity(kind == .existing ? 1 : 0)
                     }

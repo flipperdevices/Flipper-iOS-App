@@ -19,8 +19,10 @@ struct ArchiveView: View {
                         HStack {
                             Text("Favorites")
                                 .font(.system(size: 16, weight: .bold))
-                            Image(systemName: "star.fill")
-                                .font(.system(size: 16, weight: .medium))
+                            Image("StarFilled")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 20, height: 20)
                                 .foregroundColor(.yellow)
                         }
 
