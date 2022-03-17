@@ -76,6 +76,6 @@ struct ArchiveView: View {
             .navigationTitle("")
         }
         .navigationViewStyle(.stack)
-        .navigationBarColors(foreground: .primary, background: .orange)
+        .navigationBarColors(foreground: .primary, background: .header)
     }
 }

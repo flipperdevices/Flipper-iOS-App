@@ -39,8 +39,8 @@ extension Color {
 }
 
 extension Color {
-    static var keyYellow: Color {
-        .init(red: 1.0, green: 0.96, blue: 0.58)
+    static var header: Color {
+        .init(red: 1.0, green: 0.51, blue: 0.00)
     }
 }
 
