@@ -22,7 +22,7 @@ public class AppState {
     @Published public var archive: Archive = .shared
     @Published public var status: Status = .noDevice
 
-    @Published public var imported: [ArchiveItem] = []
+    @Published public var importQueue: [ArchiveItem] = []
 
     public init() {
         isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
@@ -151,16 +151,22 @@ public class AppState {
     public func onOpenURL(_ url: URL) async {
         do {
             let item = try await Sharing.importKey(from: url)
-            imported = [item]
+            importQueue = [item]
             logger.info("key url opened")
         } catch {
             logger.error("\(error)")
         }
     }
 
+    public var imported: SafePublisher<ArchiveItem> {
+        importedSubject.eraseToAnyPublisher()
+    }
+    private let importedSubject = SafeSubject<ArchiveItem>()
+
     public func importKey(_ item: ArchiveItem) async throws {
         try await archive.importKey(item)
         logger.info("key imported")
+        importedSubject.send(item)
         await synchronize()
     }
 

@@ -26,7 +26,7 @@ class ArchiveViewModel: ObservableObject {
     @Published var hasImportedItem = false
 
     var importedItem: ArchiveItem? {
-        appState.imported.removeFirst()
+        appState.importQueue.removeFirst()
     }
 
     var archive: Archive { appState.archive }
@@ -53,7 +53,7 @@ class ArchiveViewModel: ObservableObject {
             .assign(to: \.deleted, on: self)
             .store(in: &disposeBag)
 
-        appState.$imported
+        appState.$importQueue
             .map { !$0.isEmpty }
             .filter { $0 == true }
             .assign(to: \.hasImportedItem, on: self)
