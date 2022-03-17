@@ -115,8 +115,8 @@ extension TabView {
     }
 
     var deviceImageName: String {
-        var name = "flipper_status_"
-        name += selected == .device ? "field_" : "line_"
+        var name = "device_"
+        name += selected == .device ? "filled_" : "line_"
 
         switch status {
         case .noDevice: name += "no_device"
