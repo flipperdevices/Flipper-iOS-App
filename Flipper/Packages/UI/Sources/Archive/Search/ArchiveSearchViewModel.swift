@@ -11,6 +11,7 @@ class ArchiveSearchViewModel: ObservableObject {
     var filteredItems: [ArchiveItem] {
         appState.archive.items.filter {
             $0.name.value.lowercased().contains(predicate.lowercased())
+            || $0.note.lowercased().contains(predicate.lowercased())
         }
     }
 
