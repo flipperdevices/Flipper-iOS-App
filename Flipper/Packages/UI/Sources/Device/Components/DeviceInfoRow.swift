@@ -10,7 +10,7 @@ struct DeviceInfoRow: View {
                 .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.black30)
             Spacer()
-            Text("\(value ?? .unknown.lowercased())")
+            Text("\(value ?? "unknown")")
                 .font(.system(size: 14, weight: .regular))
                 .multilineTextAlignment(.trailing)
         }

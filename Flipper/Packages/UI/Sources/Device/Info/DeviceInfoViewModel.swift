@@ -11,14 +11,6 @@ class DeviceInfoViewModel: ObservableObject {
     @Published var device: Peripheral?
     @Published var deviceInfo: [String: String] = [:]
 
-    var name: String {
-        device?.name ?? .noDevice
-    }
-
-    var uuid: String {
-        device?.id.uuidString ?? .noDevice
-    }
-
     init() {
         appState.$device
             .receive(on: DispatchQueue.main)
