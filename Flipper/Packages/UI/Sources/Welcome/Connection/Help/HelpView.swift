@@ -28,19 +28,19 @@ struct HelpView: View {
                         number: "1",
                         text: "Check the correct name of your Flipper",
                         linkLabel: "How to know the name of Flipper",
-                        linkURL: "https://docs.flipperzero.one")
+                        linkURL: .helpToKnowName)
 
                     HelpPoint(
                         number: "2",
                         text: "Make sure Bluetooth on your Flipper is turned On.",
                         linkLabel: "How to turn On Bluetooth on Flipper",
-                        linkURL: "https://docs.flipperzero.one")
+                        linkURL: .helpToTurnOnBluetooth)
 
                     HelpPoint(
                         number: "3",
                         text: "Check Bluetooth connection on your phone.",
                         linkLabel: "Go to Bluetooth settings",
-                        linkURL: "https://docs.flipperzero.one")
+                        linkURL: .systemSettings)
 
                     HelpPoint(
                         number: "4",
@@ -52,19 +52,19 @@ struct HelpView: View {
                         number: "5",
                         text: "Install the latest firmware version on Flipper. It’s important to update regularly.",
                         linkLabel: "Install here",
-                        linkURL: "https://docs.flipperzero.one")
+                        linkURL: .helpToInstallFirmware)
 
                     HelpPoint(
                         number: "6",
                         text: "Check that you have the latest version of the Flipper App installed.",
                         linkLabel: "Go to App Store",
-                        linkURL: "https://docs.flipperzero.one")
+                        linkURL: .appStore)
 
                     HelpPoint(
                         number: "7",
                         text: "Try to reboot your Flipper.",
                         linkLabel: "How to reboot Flipper",
-                        linkURL: "https://docs.flipperzero.one")
+                        linkURL: .helpToReboot)
                 }
             }
             .padding(.leading, 14)
@@ -79,7 +79,7 @@ struct HelpPoint: View {
     let number: String
     let text: String
     let linkLabel: String?
-    let linkURL: String?
+    let linkURL: URL?
 
     var body: some View {
         HStack(alignment: .top, spacing: 6) {
@@ -90,7 +90,7 @@ struct HelpPoint: View {
                 Text(text)
                 if let linkLabel = linkLabel, let linkURL = linkURL {
                     Button {
-                        print("open url \(linkURL)")
+                        UIApplication.shared.open(linkURL)
                     } label: {
                         Text(linkLabel)
                             .underline()
