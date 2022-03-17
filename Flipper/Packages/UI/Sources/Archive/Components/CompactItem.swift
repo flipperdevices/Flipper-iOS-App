@@ -9,7 +9,7 @@ struct CompactItem: View {
             HStack(alignment: .top, spacing: 0) {
                 FileTypeView(item.fileType)
                 Spacer()
-                Image("synced")
+                item.status.image
                     .padding([.top, .trailing], 8)
             }
 

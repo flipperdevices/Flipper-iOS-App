@@ -53,6 +53,12 @@ class InfoViewModel: ObservableObject {
     }
 
     func saveChanges() {
+        guard item != backup else {
+            withAnimation {
+                isEditMode = false
+            }
+            return
+        }
         Task {
             do {
                 if backup.name != item.name {
@@ -60,9 +66,16 @@ class InfoViewModel: ObservableObject {
                 }
                 try await appState.archive.upsert(item)
                 backup = item
-                isEditMode = false
+                withAnimation {
+                    isEditMode = false
+                    item.status = .synchronizing
+                }
                 await appState.synchronize()
+                withAnimation {
+                    item.status = .synchronized
+                }
             } catch {
+                item.status = .error
                 showError(error)
             }
         }
@@ -70,7 +83,9 @@ class InfoViewModel: ObservableObject {
 
     func undoChanges() {
         item = backup
-        isEditMode = false
+        withAnimation {
+            isEditMode = false
+        }
     }
 
     func showError(_ error: Swift.Error) {

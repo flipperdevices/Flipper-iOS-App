@@ -19,7 +19,7 @@ struct TabView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top) {
                 TabViewItem(
-                    image: deviceImageName,
+                    image: deviceImage,
                     name: deviceTabName,
                     isSelected: selected == .device
                 ) {
@@ -30,7 +30,7 @@ struct TabView: View {
                 Spacer()
 
                 TabViewItem(
-                    image: archiveImageName,
+                    image: .init(Image(archiveImageName)),
                     name: "Archive",
                     isSelected: selected == .archive
                 ) {
@@ -41,7 +41,7 @@ struct TabView: View {
                 Spacer()
 
                 TabViewItem(
-                    image: optionsImageName,
+                    image: .init(Image(optionsImageName)),
                     name: "Options",
                     isSelected: selected == .options
                 ) {
@@ -103,6 +103,17 @@ extension TabView {
 }
 
 extension TabView {
+    var deviceImage: AnyView {
+        switch status {
+        case .connecting, .synchronizing:
+            return .init(
+                Animation(deviceImageName + "_animated")
+                    .frame(width: 42, height: 24))
+        default:
+            return .init(Image(deviceImageName))
+        }
+    }
+
     var deviceImageName: String {
         var name = "flipper_status_"
         name += selected == .device ? "field_" : "line_"

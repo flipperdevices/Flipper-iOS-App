@@ -18,7 +18,7 @@ struct CategoryItem: View {
                     .foregroundColor(.black12)
                     .font(.system(size: 12, weight: .medium))
                 Spacer()
-                Image("synced")
+                item.status.image
                     .padding([.top, .trailing], 8)
                     .opacity(isDeleted ? 0 : 1)
             }
