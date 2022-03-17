@@ -21,6 +21,10 @@ extension Color {
         .init(red: 0.57, green: 0.57, blue: 0.57)
     }
 
+    static var black80: Color {
+        .init(red: 0.48, green: 0.48, blue: 0.48)
+    }
+
     static var background: Color {
         .init(UIColor.systemGroupedBackground)
     }

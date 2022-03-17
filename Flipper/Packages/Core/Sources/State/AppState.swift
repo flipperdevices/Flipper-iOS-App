@@ -117,12 +117,13 @@ public class AppState {
     // MARK: Synchronization
 
     public func synchronize() async {
-        guard status == .connected else { return }
+        guard device?.state == .connected else { return }
+        guard status != .synchronizing else { return }
         status = .synchronizing
         await measure("syncing archive") {
             await archive.syncWithDevice()
         }
-        status = .init(device?.state)
+        status = .synchronized
     }
 
     func synchronizeDateTime() async {

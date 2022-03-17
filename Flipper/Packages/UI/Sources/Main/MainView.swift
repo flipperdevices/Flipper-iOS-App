@@ -14,9 +14,9 @@ struct MainView: View {
                     .opacity(viewModel.selectedTab == .options ? 1 : 0)
             }
 
-            if !viewModel.isTabViewHidden {
-                CustomTabView(selected: $viewModel.selectedTab)
-            }
+            TabView(
+                selected: $viewModel.selectedTab,
+                status: viewModel.status)
         }
         .edgesIgnoringSafeArea(.bottom)
     }

@@ -4,6 +4,7 @@ public enum Status: CustomStringConvertible {
     case connected
     case disconnected
     case synchronizing
+    case synchronized
     case pairingIssue
     case preParing
     case pairing
@@ -16,6 +17,7 @@ public enum Status: CustomStringConvertible {
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"
         case .synchronizing: return "Syncing"
+        case .synchronized: return "Synced"
         case .pairingIssue: return "Pairing Issue"
         case .preParing: return "PreParing"
         case .pairing: return "Pairing"
