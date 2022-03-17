@@ -107,6 +107,13 @@ extension Archive {
         deletedItems.removeAll { $0.id == id }
     }
 
+    public func wipeAll() async throws {
+        for item in deletedItems {
+            try await deletedArchive.delete(item.id)
+        }
+        deletedItems.removeAll()
+    }
+
     public func rename(_ id: ArchiveItem.ID, to name: ArchiveItem.Name) async throws {
         if let item = get(id) {
             let newItem = item.rename(to: name)

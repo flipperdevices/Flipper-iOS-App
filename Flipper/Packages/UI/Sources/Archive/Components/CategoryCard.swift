@@ -19,8 +19,7 @@ struct CategoryCard: View {
                 .padding(.top, 2)
                 .padding(.bottom, 1)
 
-            CategoryLink(
-                image: nil,
+            CategoryDeletedLink(
                 name: "Deleted",
                 items: deleted)
         }
@@ -40,6 +39,19 @@ struct CategoryLink: View {
             CategoryView(viewModel: .init(name: name, items: items))
         } label: {
             CategoryRow(image: image, name: name, count: items.count)
+        }
+    }
+}
+
+struct CategoryDeletedLink: View {
+    let name: String
+    let items: [ArchiveItem]
+
+    var body: some View {
+        NavigationLink {
+            CategoryDeletedView(viewModel: .init())
+        } label: {
+            CategoryRow(image: nil, name: "Deleted", count: items.count)
         }
     }
 }

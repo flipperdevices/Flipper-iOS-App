@@ -6,6 +6,9 @@ extension CardView {
         @Binding var item: ArchiveItem
         let kind: Kind
 
+        var isFavorite: Bool { item.isFavorite }
+        var isDeleted: Bool { item.status == .deleted }
+
         var body: some View {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 8) {
@@ -16,11 +19,12 @@ extension CardView {
                     Button {
                         item.isFavorite.toggle()
                     } label: {
-                        Image(systemName: item.isFavorite ? "star.fill" : "star")
+                        Image(systemName: isFavorite ? "star.fill" : "star")
                             .font(.system(size: 18, weight: .medium))
                             .foregroundColor(.yellow)
                             .opacity(kind == .existing ? 1 : 0)
                     }
+                    .opacity(isDeleted ? 0 : 1)
                 }
 
                 if item.note.isEmpty {

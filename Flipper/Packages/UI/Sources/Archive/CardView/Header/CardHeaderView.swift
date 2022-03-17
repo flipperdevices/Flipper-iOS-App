@@ -7,9 +7,15 @@ extension CardView {
         let kind: Kind
         let isEditing: Bool
 
+        var isDeleted: Bool {
+            item.status == .deleted
+        }
+
         var body: some View {
             HStack(alignment: .top, spacing: 0) {
-                FileTypeView(item.fileType)
+                FileTypeView(
+                    item.fileType,
+                    isDeleted: isDeleted)
                 Spacer()
                 VStack(spacing: 2) {
                     Image("synced")
@@ -18,7 +24,7 @@ extension CardView {
                         .foregroundColor(.accentColor)
                 }
                 .padding([.top, .trailing], 6)
-                .opacity(kind == .existing && !isEditing ? 1 : 0)
+                .opacity(kind == .existing && !isEditing && !isDeleted ? 1 : 0)
             }
         }
     }

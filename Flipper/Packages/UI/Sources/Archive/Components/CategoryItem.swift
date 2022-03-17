@@ -4,10 +4,14 @@ import SwiftUI
 struct CategoryItem: View {
     let item: ArchiveItem
 
+    var isDeleted: Bool {
+        item.status == .deleted
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: 0) {
-                FileTypeView(item.fileType)
+                FileTypeView(item.fileType, isDeleted: isDeleted)
                 Text(item.type)
                     .padding(.top, 14)
                     .padding(.leading, 14)
@@ -16,6 +20,7 @@ struct CategoryItem: View {
                 Spacer()
                 Image("synced")
                     .padding([.top, .trailing], 8)
+                    .opacity(isDeleted ? 0 : 1)
             }
 
             VStack(alignment: .leading, spacing: 6) {

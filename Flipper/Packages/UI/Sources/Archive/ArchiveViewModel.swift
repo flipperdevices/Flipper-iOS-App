@@ -10,6 +10,7 @@ class ArchiveViewModel: ObservableObject {
 
     @Published var appState: AppState = .shared
     @Published var items: [ArchiveItem] = []
+    @Published var deleted: [ArchiveItem] = []
 
     var sortedItems: [ArchiveItem] {
         items.sorted { $0.name < $1.name }
@@ -45,14 +46,15 @@ class ArchiveViewModel: ObservableObject {
         ]
     }
 
-    var deleted: [ArchiveItem] {
-        archive.deletedItems
-    }
-
     init() {
         archive.$items
             .receive(on: DispatchQueue.main)
             .assign(to: \.items, on: self)
+            .store(in: &disposeBag)
+
+        archive.$deletedItems
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.deleted, on: self)
             .store(in: &disposeBag)
 
         appState.$imported
