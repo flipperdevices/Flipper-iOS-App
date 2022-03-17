@@ -50,6 +50,7 @@ struct PingView: View {
                 }
             }
         }
+        .padding(14)
         .navigationTitle("Ping")
         .navigationBarTitleDisplayMode(.inline)
     }

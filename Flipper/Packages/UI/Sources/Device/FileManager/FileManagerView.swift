@@ -34,6 +34,7 @@ struct FileManagerView: View {
                     }
                 } label: {
                     Image(systemName: "plus")
+                        .foregroundColor(.primary)
                 }
             }
         }
@@ -50,6 +51,7 @@ struct FileManagerView: View {
                 Button("..") {
                     presentationMode.wrappedValue.dismiss()
                 }
+                .foregroundColor(.primary)
             }
             if !elements.isEmpty {
                 list(with: elements)

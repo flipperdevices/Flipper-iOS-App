@@ -8,28 +8,14 @@ class OptionsViewModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
-    @Published var canPlayAlert = false
+    @Published var supported = false
 
     init() {
         appState.$capabilities
             .receive(on: DispatchQueue.main)
             .compactMap(\.?.canPlayAlert)
-            .assign(to: \.canPlayAlert, on: self)
+            .assign(to: \.supported, on: self)
             .store(in: &disposeBag)
-    }
-
-    func migrateSubGHz() {
-        Task {
-            for file in try await rpc.listDirectory(at: "/ext/subghz/saved") {
-                guard case .file(let file) = file else {
-                    continue
-                }
-                try await rpc.moveFile(
-                    from: "/ext/subghz/saved/\(file.name)",
-                    to: "/ext/subghz/\(file.name)")
-            }
-            try await rpc.deleteFile(at: "/ext/subghz/saved")
-        }
     }
 
     func playAlert() {

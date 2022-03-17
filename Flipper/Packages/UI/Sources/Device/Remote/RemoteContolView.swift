@@ -7,6 +7,8 @@ struct RemoteContolView: View {
 
     var body: some View {
         VStack {
+            Spacer()
+
             DeviceScreen(pixels: viewModel.frame.pixels)
                 .padding(2)
                 .border(Color(red: 1, green: 0.51, blue: 0), width: 2)
@@ -16,6 +18,9 @@ struct RemoteContolView: View {
             DeviceControls(onButton: viewModel.onButton)
                 .padding(.bottom, 50)
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .frame(maxWidth: .infinity)
+        .background(Color.background)
         .onAppear {
             viewModel.startStreaming()
         }
