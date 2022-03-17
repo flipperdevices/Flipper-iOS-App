@@ -52,6 +52,7 @@ struct DeviceView: View {
                             }
                         }
                         .padding(.horizontal, 14)
+                        .padding(.bottom, 14)
                     }
                 }
                 .background(Color.background)

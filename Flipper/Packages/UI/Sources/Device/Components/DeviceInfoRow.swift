@@ -8,6 +8,7 @@ struct DeviceInfoRow: View {
         HStack {
             Text("\(name)")
                 .font(.system(size: 14, weight: .medium))
+                .multilineTextAlignment(.leading)
                 .foregroundColor(.black30)
             Spacer()
             Text("\(value ?? "unknown")")

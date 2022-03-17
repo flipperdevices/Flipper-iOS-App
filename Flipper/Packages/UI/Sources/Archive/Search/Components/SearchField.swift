@@ -12,11 +12,13 @@ struct SearchField: View {
 
             ZStack(alignment: .leading) {
                 Text(placeholder)
+                    .lineLimit(1)
                     .font(.system(size: 17))
                     .opacity(predicate.isEmpty ? 1 : 0)
                     .foregroundColor(.gray)
 
                 TextField("", text: _predicate)
+                    .lineLimit(1)
                     .font(.system(size: 17))
                     .padding(.trailing, 6)
                     .padding(.vertical, 7)
