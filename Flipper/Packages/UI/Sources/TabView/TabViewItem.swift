@@ -8,10 +8,16 @@ struct TabViewItem: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            image
-            Text(name)
-                .font(.system(size: 10, weight: .bold))
-                .padding(.top, 4)
+            VStack(spacing: 4) {
+                image
+                    .padding(.top, 6)
+                Text(name)
+                    .font(.system(size: 10, weight: .bold))
+                    .padding(.bottom, 4)
+                    .padding(.horizontal, 12)
+            }
+            .background(isSelected ? Color.black4 : Color.clear)
+            .cornerRadius(8)
         }
         .frame(width: 80, height: 46)
         .onTapGesture {
