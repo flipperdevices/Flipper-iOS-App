@@ -66,6 +66,7 @@ public class Archive: ObservableObject {
             case .imported(let id):
                 var item = try await mobileArchive.read(id)
                 item.status = .synchronized
+                items.removeAll { $0.id == item.id }
                 items.append(item)
             case .exported(let id):
                 if let index = items.firstIndex(where: { $0.id == id }) {
