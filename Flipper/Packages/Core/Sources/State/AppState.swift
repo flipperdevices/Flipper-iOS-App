@@ -22,6 +22,8 @@ public class AppState {
     @Published public var archive: Archive = .shared
     @Published public var status: Status = .noDevice
 
+    @Published public var importQueue: [ArchiveItem] = []
+
     public init() {
         isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
 
@@ -115,12 +117,18 @@ public class AppState {
     // MARK: Synchronization
 
     public func synchronize() async {
-        guard status == .connected else { return }
+        guard device?.state == .connected else { return }
+        guard status != .synchronizing else { return }
         status = .synchronizing
         await measure("syncing archive") {
             await archive.syncWithDevice()
         }
-        status = .init(device?.state)
+        status = .synchronized
+        Task {
+            try await Task.sleep(nanoseconds: 3_000 * 1_000_000)
+            guard status == .synchronized else { return }
+            status = .init(device?.state)
+        }
     }
 
     func synchronizeDateTime() async {
@@ -148,15 +156,22 @@ public class AppState {
     public func onOpenURL(_ url: URL) async {
         do {
             let item = try await Sharing.importKey(from: url)
-            try await importKey(item)
-            logger.info("key imported")
+            importQueue = [item]
+            logger.info("key url opened")
         } catch {
             logger.error("\(error)")
         }
     }
 
+    public var imported: SafePublisher<ArchiveItem> {
+        importedSubject.eraseToAnyPublisher()
+    }
+    private let importedSubject = SafeSubject<ArchiveItem>()
+
     public func importKey(_ item: ArchiveItem) async throws {
         try await archive.importKey(item)
+        logger.info("key imported")
+        importedSubject.send(item)
         await synchronize()
     }
 

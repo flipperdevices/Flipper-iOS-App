@@ -10,7 +10,7 @@ public class ArchiveStorageMock: ArchiveStorage {
             properties: [.init(key: "key", value: "value")]),
         .init(
             name: .init("Demo 3"),
-            fileType: .irda,
+            fileType: .infrared,
             properties: [.init(key: "key", value: "value")]),
         .init(
             name: .init("Demo 4"),

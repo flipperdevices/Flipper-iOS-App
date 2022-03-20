@@ -18,6 +18,10 @@ public class Archive: ObservableObject {
 
     private var disposeBag: DisposeBag = .init()
 
+    public enum Error: String, Swift.Error {
+        case alredyExists
+    }
+
     private init() {
         synchronization.events
             .sink { [weak self] in
@@ -62,6 +66,7 @@ public class Archive: ObservableObject {
             case .imported(let id):
                 var item = try await mobileArchive.read(id)
                 item.status = .synchronized
+                items.removeAll { $0.id == item.id }
                 items.append(item)
             case .exported(let id):
                 if let index = items.firstIndex(where: { $0.id == id }) {
@@ -103,9 +108,19 @@ extension Archive {
         deletedItems.removeAll { $0.id == id }
     }
 
-    public func rename(_ id: ArchiveItem.ID, to name: String) async throws {
+    public func wipeAll() async throws {
+        for item in deletedItems {
+            try await deletedArchive.delete(item.id)
+        }
+        deletedItems.removeAll()
+    }
+
+    public func rename(_ id: ArchiveItem.ID, to name: ArchiveItem.Name) async throws {
         if let item = get(id) {
-            let newItem = item.rename(to: .init(name))
+            let newItem = item.rename(to: name)
+            guard get(newItem.id) == nil else {
+                throw Error.alredyExists
+            }
             try await mobileArchive.delete(id)
             items.removeAll { $0.id == item.id }
             try await mobileArchive.upsert(newItem)
@@ -117,6 +132,7 @@ extension Archive {
         var item = item
         item.status = .deleted
         try await deletedArchive.upsert(item)
+        deletedItems.removeAll { $0.id == item.id }
         deletedItems.append(item)
     }
 
@@ -135,13 +151,6 @@ extension Archive {
         try await deletedArchive.delete(item.id)
         deletedItems.removeAll { $0.id == item.id }
     }
-
-    public func favorite(_ id: ArchiveItem.ID) {
-        if let index = items.firstIndex(where: { $0.id == id }) {
-            objectWillChange.send()
-            items[index].isFavorite.toggle()
-        }
-    }
 }
 
 extension Archive {
@@ -159,6 +168,15 @@ extension Archive {
             try await synchronization.syncWithDevice()
         } catch {
             logger.critical("syncronization error: \(error)")
+        }
+    }
+}
+
+extension Archive.Error: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .alredyExists:
+            return "The name is already taken. Please choose a different name."
         }
     }
 }

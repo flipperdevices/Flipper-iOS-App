@@ -4,7 +4,7 @@ import Foundation
 public struct ArchiveItem: Codable, Equatable, Identifiable {
     public var id: ID { .init(name: name, fileType: fileType) }
 
-    public let name: Name
+    public var name: Name
     public let fileType: FileType
     public var properties: [Property]
     public var isFavorite: Bool

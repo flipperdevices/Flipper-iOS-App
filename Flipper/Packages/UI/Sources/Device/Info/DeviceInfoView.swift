@@ -13,18 +13,6 @@ struct DeviceInfoView: View {
                 }
 
                 DeviceInformation(viewModel.deviceInfo)
-
-                Button {
-                    viewModel.disconnectFlipper()
-                    presentationMode.wrappedValue.dismiss()
-                } label: {
-                    HStack {
-                        Spacer()
-                        Text("Disconnect Flipper")
-                        Spacer()
-                    }
-                    .disabled(viewModel.device?.state != .connected)
-                }
             }
         }
         .navigationTitle("Device Info")
@@ -93,12 +81,12 @@ struct SectionRow: View {
     var body: some View {
         HStack {
             Text("\(name)")
-                .font(.system(size: 16, weight: .light))
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.black30)
             Spacer()
             Text("\(value)")
-                .font(.system(size: 16, weight: .light))
+                .font(.system(size: 14, weight: .regular))
                 .multilineTextAlignment(.trailing)
-                .foregroundColor(.secondary)
         }
     }
 }

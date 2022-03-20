@@ -1,6 +1,22 @@
 import SwiftUI
 
 extension Color {
+    static var black4: Color {
+        .init(red: 0.91, green: 0.91, blue: 0.91)
+    }
+
+    static var black8: Color {
+        .init(red: 0.87, green: 0.87, blue: 0.87)
+    }
+
+    static var black12: Color {
+        .init(red: 0.84, green: 0.84, blue: 0.84)
+    }
+
+    static var black16: Color {
+        .init(red: 0.80, green: 0.80, blue: 0.80)
+    }
+
     static var black30: Color {
         .init(red: 0.67, green: 0.67, blue: 0.67)
     }
@@ -9,28 +25,26 @@ extension Color {
         .init(red: 0.57, green: 0.57, blue: 0.57)
     }
 
-    static var backgroundLight: Color {
-        .init(red: 0.98, green: 0.98, blue: 0.98)
+    static var black80: Color {
+        .init(red: 0.48, green: 0.48, blue: 0.48)
     }
 
-    static var secondaryBackgroundLight: Color {
-        .white
+    static var background: Color {
+        .init(UIColor.systemGroupedBackground)
     }
 
-    static var backgroundDark: Color {
-        .black
+    static var groupedBackground: Color {
+        .init(UIColor.secondarySystemGroupedBackground)
     }
 
-    static var secondaryBackgroundDark: Color {
-        .init(red: 0.05, green: 0.05, blue: 0.05)
+    static var shadow: Color {
+        .init(UIColor.clear)
     }
+}
 
-    static var shadowLight: Color {
-        .init(red: 0.8, green: 0.8, blue: 0.8, opacity: 0.25)
-    }
-
-    static var shadowDark: Color {
-        .init(red: 0.07, green: 0.07, blue: 0.07, opacity: 1)
+extension Color {
+    static var header: Color {
+        .init(red: 1.0, green: 0.51, blue: 0.00)
     }
 }
 

@@ -20,27 +20,24 @@ struct OptionsView: View {
                     NavigationLink("Logs") {
                         LogsView(viewModel: .init())
                     }
-                    Button("Migrate Sub-GHz keys") {
-                        viewModel.migrateSubGHz()
-                    }
                 }
-
-                Section(header: Text("Archive")) {
-                    NavigationLink("Deleted Items") {
-                        ArchiveBinView(viewModel: .init())
-                    }
-                }
+                .disabled(!viewModel.supported)
 
                 Section(header: Text("Remote")) {
-                    if viewModel.canPlayAlert {
-                        Button("Play Alert") {
-                            viewModel.playAlert()
-                        }
+                    NavigationLink("Screen Streaming") {
+                        RemoteContolView(viewModel: .init())
+                    }
+                    NavigationLink("File Manager") {
+                        FileManagerView(viewModel: .init())
+                    }
+                    Button("Play Alert") {
+                        viewModel.playAlert()
                     }
                     Button("Reboot Flipper") {
                         viewModel.rebootFlipper()
                     }
                 }
+                .disabled(!viewModel.supported)
 
                 Section(header: Text("Danger")) {
                     Button("Reset App") {
@@ -53,8 +50,17 @@ struct OptionsView: View {
                     }
                     .foregroundColor(.red)
                 }
+                .disabled(!viewModel.supported)
             }
-            .navigationBarHidden(true)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Text("Options")
+                        .font(.system(size: 20, weight: .bold))
+                }
+            }
         }
+        .navigationViewStyle(.stack)
+        .navigationBarColors(foreground: .primary, background: .header)
     }
 }

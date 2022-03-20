@@ -6,86 +6,78 @@ struct ArchiveView: View {
     @StateObject var viewModel: ArchiveViewModel
 
     var body: some View {
-        VStack(spacing: 0) {
-            ArchiveHeaderView(
-                viewModel: viewModel)
-            ArchiveCategoriesView(
-                categories: viewModel.categories,
-                selectedIndex: $viewModel.selectedCategoryIndex)
-            Divider()
-            CarouselView(
-                spacing: 0,
-                index: $viewModel.selectedCategoryIndex,
-                items: viewModel.itemGroups
-            ) { group in
-                ArchiveListView(
-                    status: viewModel.status,
-                    items: group.items,
-                    hasFavorites: group == viewModel.itemGroups.first,
-                    isSelectItemsMode: $viewModel.isSelectItemsMode,
-                    selectedItems: $viewModel.selectedItems,
-                    onAction: onAction)
-            }
+        NavigationView {
+            ScrollView {
+                CategoryCard(
+                    groups: viewModel.groups,
+                    deletedCount: viewModel.deleted.count
+                )
+                .padding(14)
 
-            if viewModel.isSelectItemsMode {
-                tabViewOverlay
-            }
-        }
-        .actionSheet(isPresented: $viewModel.isDeletePresented) {
-            .init(title: Text("You can't undo this action"), buttons: [
-                .destructive(Text("Delete")) {
-                    viewModel.deleteSelectedItems()
-                },
-                .cancel()
-            ])
-        }
-    }
+                if !viewModel.favoriteItems.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Favorites")
+                                .font(.system(size: 16, weight: .bold))
+                            Image("StarFilled")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 20, height: 20)
+                                .foregroundColor(.yellow)
+                        }
 
-    func onAction(_ action: ArchiveListView.Action) {
-        switch action {
-        case .itemSelected(let item): onItemSelected(item: item)
-        case .synchronize: viewModel.synchronize()
-        }
-    }
-
-    func onItemSelected(item: ArchiveItem) {
-        if viewModel.isSelectItemsMode {
-            viewModel.selectItem(item)
-        } else {
-            viewModel.editingItem = .init(item)
-            viewModel.sheetManager.present {
-                CardSheetView(viewModel: viewModel)
-            }
-        }
-    }
-
-    var tabViewOverlay: some View {
-        VStack {
-            HStack(alignment: .center) {
-                Button {
-                    viewModel.shareSelectedItems()
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
-                        .font(.system(size: 22))
+                        CompactList(items: viewModel.favoriteItems) { item in
+                            viewModel.onItemSelected(item: item)
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 14)
                 }
 
-                Spacer()
-                Text("Chosen \(viewModel.selectedItems.count) objects")
-                    .font(.system(size: 17, weight: .semibold))
-                Spacer()
+                if !viewModel.items.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("All")
+                                .font(.system(size: 16, weight: .bold))
+                        }
 
-                Button {
-                    viewModel.isDeletePresented = true
-                } label: {
-                    Image(systemName: "trash")
-                        .font(.system(size: 22))
+                        CompactList(items: viewModel.sortedItems) { item in
+                            viewModel.onItemSelected(item: item)
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 14)
                 }
             }
-            .padding(.top, 12)
-            .padding(.bottom, bottomSafeArea)
-            .padding(.horizontal, 22)
+            .background(Color.background)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Text("Archive")
+                        .font(.system(size: 20, weight: .bold))
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        viewModel.showSearchView = true
+                    } label: {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 18, weight: .bold))
+                    }
+                    .foregroundColor(.primary)
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $viewModel.showInfoView) {
+                InfoView(viewModel: .init(item: viewModel.selectedItem))
+            }
+            .sheet(isPresented: $viewModel.hasImportedItem) {
+                ImportView(viewModel: .init(item: viewModel.importedItem))
+            }
+            .fullScreenCover(isPresented: $viewModel.showSearchView) {
+                ArchiveSearchView(viewModel: .init())
+            }
+            .navigationTitle("")
         }
-        .frame(height: tabViewHeight + bottomSafeArea + 8, alignment: .top)
-        .background(systemBackground)
+        .navigationViewStyle(.stack)
+        .navigationBarColors(foreground: .primary, background: .header)
     }
 }

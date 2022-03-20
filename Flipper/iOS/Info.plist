@@ -146,7 +146,7 @@
 			<string>Infrared Key</string>
 			<key>UTTypeIconFiles</key>
 			<array>
-				<string>irda.png</string>
+				<string>infrared.png</string>
 			</array>
 			<key>UTTypeIdentifier</key>
 			<string>com.flipperdevices.ir</string>

@@ -35,6 +35,7 @@ struct SpeedTestView: View {
             }
             .padding(.bottom, 50)
         }
+        .padding(14)
         .navigationTitle("Speed Test")
         .navigationBarTitleDisplayMode(.inline)
     }

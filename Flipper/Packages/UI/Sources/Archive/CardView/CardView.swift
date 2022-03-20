@@ -2,87 +2,69 @@ import Core
 import SwiftUI
 
 struct CardView: View {
-    @Binding var name: String
+    @State var focusedField: String = ""
     @Binding var item: ArchiveItem
-    @Binding var isEditMode: Bool
-    @Binding var focusedField: String
+    let isEditing: Bool
+    let kind: Kind
 
-    @State var flipped = false
-    @State var cardRotation = 0.0
-    @State var contentRotation = 0.0
+    enum Kind {
+        case existing
+        case imported
+    }
 
-    var gradient: LinearGradient {
-        .init(
-            colors: [
-                item.color,
-                item.color2
-            ],
-            startPoint: .top,
-            endPoint: .bottom)
+    init(item: Binding<ArchiveItem>, isEditing: Bool, kind: Kind) {
+        self._item = item
+        self.isEditing = isEditing
+        self.kind = kind
     }
 
     var body: some View {
-        ZStack {
-            VStack(alignment: .leading, spacing: 0) {
-                CardHeaderView(
-                    name: $name,
-                    image: item.icon,
-                    isEditMode: $isEditMode,
-                    focusedField: $focusedField,
-                    flipped: flipped
-                )
-                .padding(16)
-                .opacity(flipped ? 0.4 : 1)
+        VStack(alignment: .leading, spacing: 0) {
+            CardHeaderView(
+                item: item,
+                kind: kind,
+                isEditing: isEditing)
 
-                CardDivider()
+            CardNameView(
+                item: $item,
+                kind: kind,
+                isEditing: isEditing,
+                focusedField: $focusedField
+            )
+            .padding(.top, 21)
+            .padding(.horizontal, 12)
 
-                CardDataView(
-                    item: _item,
-                    isEditMode: $isEditMode,
-                    focusedField: $focusedField,
-                    flipped: flipped
-                )
-                .rotation3DEffect(
-                    .degrees(contentRotation), axis: (x: 0, y: 1, z: 0))
+            Divider()
+                .frame(height: 1)
+                .background(Color.black12)
+                .padding(.top, 18)
 
-                HStack {
-                    Spacer()
-                    Image(systemName: item.status.systemImageName)
-                        .opacity(flipped ? 0.3 : 1)
-                    Spacer()
-                }
-                .padding(16)
-            }
+            CardDataView(
+                item: $item,
+                isEditing: isEditing,
+                focusedField: $focusedField
+            )
+            .padding(.horizontal, 12)
+            .padding(.vertical, 18)
         }
-        .background(gradient)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .padding(.bottom, 16)
-        .rotation3DEffect(.degrees(cardRotation), axis: (x: 0, y: 1, z: 0))
-        .simultaneousGesture(DragGesture()
-            .onChanged { value in
-                let width = value.translation.width
-                if width < 0 && cardRotation > -180 {
-                    cardRotation = max(value.translation.width, -180)
-                } else if width > 0 && cardRotation < 0 {
-                    cardRotation = min(0, value.translation.width - 180)
-                }
-                flipped = cardRotation < -90
-                contentRotation = cardRotation < -90 ? -180 : 0
-            }
-            .onEnded { _ in
-                if cardRotation < -90 {
-                    cardRotation = -180
-                } else {
-                    cardRotation = 0
-                }
-            })
+        .background(Color.groupedBackground)
+        .cornerRadius(16)
+        .shadow(color: .shadow, radius: 16, x: 0, y: 4)
     }
 }
 
-struct CardDivider: View {
-    var body: some View {
-        Color.white
-            .frame(height: 1)
-            .opacity(0.3)
+extension ArchiveItem {
+    var note: String {
+        get {
+            properties.first?.description.joined(separator: "\n") ?? ""
+        }
+        set {
+            guard !properties.isEmpty else {
+                return
+            }
+            properties[0].description = newValue
+                .split(separator: "\n")
+                .map { String($0) }
+        }
     }
 }
