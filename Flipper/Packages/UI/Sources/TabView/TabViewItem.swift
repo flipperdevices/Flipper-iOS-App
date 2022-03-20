@@ -19,7 +19,8 @@ struct TabViewItem: View {
             .background(isSelected ? Color.black4 : Color.clear)
             .cornerRadius(8)
         }
-        .frame(width: 80, height: 46)
+        .frame(maxWidth: .infinity)
+        .frame(height: 46)
         .onTapGesture {
             onItemSelected()
         }
