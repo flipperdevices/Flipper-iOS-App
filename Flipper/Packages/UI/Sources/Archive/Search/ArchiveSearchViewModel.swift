@@ -9,9 +9,12 @@ class ArchiveSearchViewModel: ObservableObject {
     let appState: AppState = .shared
 
     var filteredItems: [ArchiveItem] {
-        appState.archive.items.filter {
-            $0.name.value.lowercased().contains(predicate.lowercased())
-            || $0.note.lowercased().contains(predicate.lowercased())
+        guard !predicate.isEmpty else {
+            return appState.archive.items
+        }
+        return appState.archive.items.filter {
+            $0.name.value.lowercased().contains(predicate.lowercased()) ||
+            $0.note.lowercased().contains(predicate.lowercased())
         }
     }
 
