@@ -15,6 +15,10 @@ class DeviceViewModel: ObservableObject {
         didSet { isPairingIssue = status == .pairingIssue }
     }
 
+    var isUnsupportedVersion: Bool {
+        protobufVersion.isEmpty
+    }
+
     var protobufVersion: String {
         device?.information?.protobufRevision ?? ""
     }
@@ -27,9 +31,9 @@ class DeviceViewModel: ObservableObject {
         let version = info
             .softwareRevision
             .split(separator: " ")
-            .prefix(2)
-            .reversed()
-            .joined(separator: " ")
+            .dropFirst()
+            .prefix(1)
+            .joined()
 
         return .init(version)
     }

@@ -12,6 +12,12 @@ struct DeviceView: View {
 
                 ScrollView {
                     VStack {
+                        if viewModel.isUnsupportedVersion {
+                            UnsupportedDeviceSection()
+                                .padding(.top, 14)
+                                .padding(.horizontal, 14)
+                        }
+
                         NavigationLink {
                             DeviceInfoView(viewModel: .init())
                         } label: {
