@@ -16,7 +16,7 @@ public class AppState {
     private var disposeBag: DisposeBag = .init()
 
     @Published public var device: Peripheral? {
-        didSet { onDeviceUpdated() }
+        didSet { updateState(device?.state) }
     }
     @Published public var capabilities: Capabilities?
     @Published public var archive: Archive = .shared
@@ -31,11 +31,6 @@ public class AppState {
             .receive(on: DispatchQueue.main)
             .assign(to: \.device, on: self)
             .store(in: &disposeBag)
-    }
-
-    func onDeviceUpdated() {
-        capabilities = .init(device?.protobufVersion)
-        updateState(device?.state)
     }
 
     // MARK: Status

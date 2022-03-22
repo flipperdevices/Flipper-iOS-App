@@ -1,6 +1,7 @@
 import class CoreBluetooth.CBUUID
 
 extension CBUUID {
+    // advertised services
     static var flipperZerof6: CBUUID { .init(string: "3080") }
     static var flipperZeroBlack: CBUUID { .init(string: "3081") }
     static var flipperZeroWhite: CBUUID { .init(string: "3082") }
@@ -12,6 +13,7 @@ extension CBUUID {
     static var serialNumber: CBUUID { .init(string: "2A25") }
     static var firmwareRevision: CBUUID { .init(string: "2A26") }
     static var softwareRevision: CBUUID { .init(string: "2A28") }
+    static var protobufRevision: CBUUID { .init(string: "03f6666d-ae5e-47c8-8e1a-5d873eb5a933") }
 
     // service
     static var battery: CBUUID { .init(string: "180F") }

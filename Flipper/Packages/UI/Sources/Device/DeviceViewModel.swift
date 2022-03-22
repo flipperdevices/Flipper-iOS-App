@@ -15,9 +15,14 @@ class DeviceViewModel: ObservableObject {
         didSet { isPairingIssue = status == .pairingIssue }
     }
 
+    var protobufVersion: String {
+        device?.information?.protobufRevision ?? ""
+    }
+
     var firmwareVersion: String {
-        guard let device = device else { return .noDevice }
-        guard let info = device.information else { return .unknown }
+        guard let info = device?.information else {
+            return ""
+        }
 
         let version = info
             .softwareRevision
@@ -30,8 +35,9 @@ class DeviceViewModel: ObservableObject {
     }
 
     var firmwareBuild: String {
-        guard let device = device else { return .noDevice }
-        guard let info = device.information else { return .unknown }
+        guard let info = device?.information else {
+            return ""
+        }
 
         let build = info
             .softwareRevision
@@ -43,17 +49,11 @@ class DeviceViewModel: ObservableObject {
     }
 
     var internalSpace: String {
-        guard let device = device else { return .noDevice }
-        guard let storage = device.storage else { return .unknown }
-
-        return storage.internal?.description ?? ""
+        device?.storage?.internal?.description ?? ""
     }
 
     var externalSpace: String {
-        guard let device = device else { return .noDevice }
-        guard let storage = device.storage else { return .unknown }
-
-        return storage.external?.description ?? ""
+        device?.storage?.external?.description ?? ""
     }
 
     init() {

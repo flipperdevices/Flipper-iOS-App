@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DeviceInfoSection: View {
+    let protobufVersion: String
     let firmwareVersion: String
     let firmwareBuild: String
     let internalSpace: String
@@ -16,6 +17,12 @@ struct DeviceInfoSection: View {
             .padding(.top, 12)
 
             VStack {
+                if !protobufVersion.isEmpty {
+                    DeviceInfoRow(
+                        name: "Protobuf Version",
+                        value: protobufVersion)
+                    Divider()
+                }
                 DeviceInfoRow(
                     name: "Firmware Version",
                     value: firmwareVersion)
@@ -23,14 +30,16 @@ struct DeviceInfoSection: View {
                 DeviceInfoRow(
                     name: "Firmware Build",
                     value: firmwareBuild)
-                Divider()
-                DeviceInfoRow(
-                    name: "Internal Flash (Free/Total)",
-                    value: internalSpace)
-                Divider()
-                DeviceInfoRow(
-                    name: "SD Card (Free/Total)",
-                    value: externalSpace)
+                if !protobufVersion.isEmpty {
+                    Divider()
+                    DeviceInfoRow(
+                        name: "Internal Flash (Free/Total)",
+                        value: internalSpace)
+                    Divider()
+                    DeviceInfoRow(
+                        name: "SD Card (Free/Total)",
+                        value: externalSpace)
+                }
 
                 HStack {
                     Text("Full info")

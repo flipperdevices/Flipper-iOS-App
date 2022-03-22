@@ -8,13 +8,20 @@ class OptionsViewModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
-    @Published var supported = false
+    @Published var isConnected = false
+    @Published var hasOTASupport = false
 
     init() {
+        appState.$device
+            .receive(on: DispatchQueue.main)
+            .map { $0?.state == .connected }
+            .assign(to: \.isConnected, on: self)
+            .store(in: &disposeBag)
+
         appState.$capabilities
             .receive(on: DispatchQueue.main)
-            .compactMap(\.?.canPlayAlert)
-            .assign(to: \.supported, on: self)
+            .compactMap(\.?.hasOTASupport)
+            .assign(to: \.hasOTASupport, on: self)
             .store(in: &disposeBag)
     }
 

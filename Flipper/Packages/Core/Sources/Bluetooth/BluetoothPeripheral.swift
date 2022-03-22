@@ -9,6 +9,9 @@ public protocol BluetoothPeripheral: AnyObject {
     var services: [Peripheral.Service] { get }
 
     var isPairingFailed: Bool { get }
+    var hasProtobufVersion: Bool { get }
+    var didDiscoverDeviceInformation: Bool { get }
+
     var maximumWriteValueLength: Int { get }
 
     var info: SafePublisher<Void> { get }

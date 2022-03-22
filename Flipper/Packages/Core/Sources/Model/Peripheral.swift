@@ -61,31 +61,6 @@ public struct Peripheral: Equatable, Codable, Identifiable {
     }
 }
 
-extension Peripheral {
-    private var versionString: Substring? {
-        information?.softwareRevision.split(separator: " ").dropFirst().first
-    }
-
-    public var protobufVersion: ProtobufVersion {
-        guard let version = versionString else {
-            return .v0
-        }
-        guard version != "dev" && !version.contains("/") else {
-            return ProtobufVersion.allCases.last.unsafelyUnwrapped
-        }
-        let parts = version.split(separator: ".")
-        guard parts.count == 3,
-            let minor = Int(parts[1])
-        else {
-            return .v0
-        }
-        switch minor {
-        case ..<45: return .v0
-        default: return .v1
-        }
-    }
-}
-
 fileprivate extension String {
     static var deviceInformation: String { "Device Information" }
     static var battery: String { "Battery" }
@@ -113,6 +88,7 @@ fileprivate extension String {
     static var serialNumber: String { "Serial Number String" }
     static var firmwareRevision: String { "Firmware Revision String" }
     static var softwareRevision: String { "Software Revision String" }
+    static var protobufUUID: String { "03F6666D-AE5E-47C8-8E1A-5D873EB5A933" }
 }
 
 fileprivate extension Peripheral.Service.DeviceInformation {
@@ -127,12 +103,15 @@ fileprivate extension Peripheral.Service.DeviceInformation {
             .first { $0.name == .firmwareRevision }?.value ?? []
         let softwareRevision = service.characteristics
             .first { $0.name == .softwareRevision }?.value ?? []
+        let protobufRevision = service.characteristics
+            .first { $0.name == .protobufUUID }?.value ?? []
 
         self.init(
             manufacturerName: manufacturerName,
             serialNumber: serialNumber,
             firmwareRevision: firmwareRevision,
-            softwareRevision: softwareRevision)
+            softwareRevision: softwareRevision,
+            protobufRevision: protobufRevision)
     }
 }
 

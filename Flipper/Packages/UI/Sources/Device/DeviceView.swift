@@ -16,6 +16,7 @@ struct DeviceView: View {
                             DeviceInfoView(viewModel: .init())
                         } label: {
                             DeviceInfoSection(
+                                protobufVersion: viewModel.protobufVersion,
                                 firmwareVersion: viewModel.firmwareVersion,
                                 firmwareBuild: viewModel.firmwareBuild,
                                 internalSpace: viewModel.internalSpace,

@@ -11,17 +11,19 @@ struct OptionsView: View {
                     NavigationLink("Ping") {
                         PingView(viewModel: .init())
                     }
+                    .disabled(!viewModel.isConnected)
                     NavigationLink("Stress Test") {
                         StressTestView(viewModel: .init())
                     }
+                    .disabled(!viewModel.isConnected)
                     NavigationLink("Speed Test") {
                         SpeedTestView(viewModel: .init())
                     }
+                    .disabled(!viewModel.isConnected)
                     NavigationLink("Logs") {
                         LogsView(viewModel: .init())
                     }
                 }
-                .disabled(!viewModel.supported)
 
                 Section(header: Text("Remote")) {
                     NavigationLink("Screen Streaming") {
@@ -33,11 +35,13 @@ struct OptionsView: View {
                     Button("Play Alert") {
                         viewModel.playAlert()
                     }
+                    .foregroundColor(viewModel.isConnected ? .accentColor : .gray)
                     Button("Reboot Flipper") {
                         viewModel.rebootFlipper()
                     }
+                    .foregroundColor(viewModel.isConnected ? .accentColor : .gray)
                 }
-                .disabled(!viewModel.supported)
+                .disabled(!viewModel.isConnected)
 
                 Section(header: Text("Danger")) {
                     Button("Reset App") {
@@ -48,9 +52,9 @@ struct OptionsView: View {
                     Button("Unpair Flipper") {
                         viewModel.unpairFlipper()
                     }
-                    .foregroundColor(.red)
+                    .foregroundColor(viewModel.isConnected ? .red : .gray)
+                    .disabled(!viewModel.isConnected)
                 }
-                .disabled(!viewModel.supported)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct DeviceInfoRow: View {
     let name: String
-    let value: String?
+    let value: String
 
     var body: some View {
         HStack {
@@ -11,9 +11,13 @@ struct DeviceInfoRow: View {
                 .multilineTextAlignment(.leading)
                 .foregroundColor(.black30)
             Spacer()
-            Text("\(value ?? "unknown")")
-                .font(.system(size: 14, weight: .regular))
-                .multilineTextAlignment(.trailing)
+            if !value.isEmpty {
+                Text("\(value)")
+                    .font(.system(size: 14, weight: .regular))
+                    .multilineTextAlignment(.trailing)
+            } else {
+                ProgressView()
+            }
         }
     }
 }
