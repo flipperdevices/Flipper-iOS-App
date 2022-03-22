@@ -43,14 +43,17 @@ public class AppState {
             status = .noDevice
             return
         }
+        guard !pairedDevice.isPairingFailed else {
+            pairedDevice.forget()
+            return
+        }
         switch status {
         // MARK: Pairing
-        case .pairing where device?.battery != nil: didConnect()
-        case .pairing where newValue == .disconnected: didDisconnect()
         case .noDevice where newValue == .connecting: status = .preParing
         case .preParing where newValue == .connected: status = .pairing
         case .preParing where newValue == .disconnected: didFailToConnect()
-        case _ where pairedDevice.isPairingFailed: pairedDevice.forget()
+        case .pairing where newValue == .disconnected: didDisconnect()
+        case .pairing where device?.battery != nil: didConnect()
         // MARK: Default
         case .connecting where newValue == .connected: didConnect()
         case .connecting where newValue == .disconnected: didFailToConnect()
