@@ -10,6 +10,14 @@ extension Alert {
                 "settings and try again"))
     }
 
+    static var unsupportedDeviceIssue: Alert {
+        .init(
+            title: .init(
+                "Update Flipper Firmware from PC"),
+            message: .init(
+                "Our app doesn’t support installed firmware version"))
+    }
+
     static func connectionTimeout(retry: @escaping () -> Void) -> Alert {
         .init(
             title: .init(

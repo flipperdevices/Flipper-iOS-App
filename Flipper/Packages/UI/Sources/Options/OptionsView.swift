@@ -11,15 +11,15 @@ struct OptionsView: View {
                     NavigationLink("Ping") {
                         PingView(viewModel: .init())
                     }
-                    .disabled(!viewModel.isConnected)
+                    .disabled(!viewModel.isOnline)
                     NavigationLink("Stress Test") {
                         StressTestView(viewModel: .init())
                     }
-                    .disabled(!viewModel.isConnected)
+                    .disabled(!viewModel.isOnline)
                     NavigationLink("Speed Test") {
                         SpeedTestView(viewModel: .init())
                     }
-                    .disabled(!viewModel.isConnected)
+                    .disabled(!viewModel.isOnline)
                     NavigationLink("Logs") {
                         LogsView(viewModel: .init())
                     }
@@ -35,13 +35,13 @@ struct OptionsView: View {
                     Button("Play Alert") {
                         viewModel.playAlert()
                     }
-                    .foregroundColor(viewModel.isConnected ? .accentColor : .gray)
+                    .foregroundColor(viewModel.isOnline ? .accentColor : .gray)
                     Button("Reboot Flipper") {
                         viewModel.rebootFlipper()
                     }
-                    .foregroundColor(viewModel.isConnected ? .accentColor : .gray)
+                    .foregroundColor(viewModel.isOnline ? .accentColor : .gray)
                 }
-                .disabled(!viewModel.isConnected)
+                .disabled(!viewModel.isOnline)
 
                 Section(header: Text("Danger")) {
                     Button("Reset App") {
@@ -52,8 +52,8 @@ struct OptionsView: View {
                     Button("Unpair Flipper") {
                         viewModel.unpairFlipper()
                     }
-                    .foregroundColor(viewModel.isConnected ? .red : .gray)
-                    .disabled(!viewModel.isConnected)
+                    .foregroundColor(viewModel.isOnline ? .red : .gray)
+                    .disabled(!viewModel.isOnline)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)

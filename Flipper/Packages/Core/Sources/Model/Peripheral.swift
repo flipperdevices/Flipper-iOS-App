@@ -11,6 +11,8 @@ public struct Peripheral: Equatable, Codable, Identifiable {
     public var battery: Service.Battery?
     public var storage: StorageInfo?
 
+    public var isUnsupported = false
+
     public enum Color: Codable {
         case unknown
         case black
@@ -80,6 +82,8 @@ public extension Peripheral {
         self.battery = source.services
             .first { $0.id == .battery }
             .map(Service.Battery.init) ?? nil
+
+        self.isUnsupported = !source.hasProtobufVersion
     }
 }
 

@@ -8,19 +8,25 @@ class DeviceViewModel: ObservableObject {
     @Published var appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
-    @Published var isPairingIssue = false
+    @Published var showPairingIssueAlert = false
+    @Published var showUnsupportedVersionAlert = false
 
     @Published var device: Peripheral?
     @Published var status: Status = .noDevice {
-        didSet { isPairingIssue = status == .pairingIssue }
+        didSet {
+            switch status {
+            case .pairingIssue: showPairingIssueAlert = true
+            case .unsupportedDevice: showUnsupportedVersionAlert = true
+            default: break
+            }
+        }
     }
 
-    var isUnsupportedVersion: Bool {
-        protobufVersion.isEmpty
-    }
-
-    var protobufVersion: String {
-        device?.information?.protobufRevision ?? ""
+    var protobufVersion: String? {
+        guard device?.isUnsupported == false else {
+            return nil
+        }
+        return device?.information?.protobufRevision ?? "-"
     }
 
     var firmwareVersion: String {
@@ -52,12 +58,18 @@ class DeviceViewModel: ObservableObject {
         return .init(build)
     }
 
-    var internalSpace: String {
-        device?.storage?.internal?.description ?? ""
+    var internalSpace: String? {
+        guard device?.isUnsupported == false else {
+            return nil
+        }
+        return device?.storage?.internal?.description ?? ""
     }
 
-    var externalSpace: String {
-        device?.storage?.external?.description ?? ""
+    var externalSpace: String? {
+        guard device?.isUnsupported == false else {
+            return nil
+        }
+        return device?.storage?.external?.description ?? ""
     }
 
     init() {

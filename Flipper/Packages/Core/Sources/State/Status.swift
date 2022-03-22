@@ -1,5 +1,6 @@
 public enum Status: CustomStringConvertible {
     case noDevice
+    case unsupportedDevice
     case connecting
     case connected
     case disconnected
@@ -10,9 +11,17 @@ public enum Status: CustomStringConvertible {
     case pairing
     case failed
 
+    public var isOnline: Bool {
+        switch self {
+        case .connected, .synchronized, .synchronizing: return true
+        default: return false
+        }
+    }
+
     public var description: String {
         switch self {
         case .noDevice: return "No device"
+        case .unsupportedDevice: return "Unsupported"
         case .connecting: return "Connecting"
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"

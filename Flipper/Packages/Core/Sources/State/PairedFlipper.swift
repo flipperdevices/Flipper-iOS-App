@@ -87,12 +87,6 @@ class PairedFlipper: PairedDevice, ObservableObject {
         // so we have to copy initial value
         peripheral.color = current.color
 
-        // we don't have device info on connect
-        // and we want to keep the existing one
-        if peripheral.information == nil, let info = current.information {
-            peripheral.information = info
-        }
-
         return peripheral
     }
 

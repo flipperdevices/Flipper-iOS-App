@@ -18,7 +18,6 @@ public class AppState {
     @Published public var device: Peripheral? {
         didSet { updateState(device?.state) }
     }
-    @Published public var capabilities: Capabilities?
     @Published public var archive: Archive = .shared
     @Published public var status: Status = .noDevice
 
@@ -57,6 +56,7 @@ public class AppState {
         case .connecting where newValue == .disconnected: didFailToConnect()
         case .connected where newValue == .disconnected: didDisconnect()
         case .synchronizing where newValue == .disconnected: didDisconnect()
+        case .unsupportedDevice where newValue == .connected: break
         default: status = .init(newValue)
         }
     }
@@ -65,11 +65,35 @@ public class AppState {
         status = .connected
         connectAttemptCount = 0
         logger.info("connected")
+
         Task {
+            try await waitForDeviceInformation()
+            guard validateFirmwareVersion() else {
+                return
+            }
             await getStorageInfo()
             await synchronizeDateTime()
             await synchronize()
         }
+    }
+
+    func waitForDeviceInformation() async throws {
+        while true {
+            try await Task.sleep(nanoseconds: 100 * 1_000_000)
+            if device?.battery != nil {
+                return
+            }
+        }
+    }
+
+    func validateFirmwareVersion() -> Bool {
+        guard device?.isUnsupported == false else {
+            logger.error("unsupported firmware version")
+            status = .unsupportedDevice
+            disconnect()
+            return false
+        }
+        return true
     }
 
     func didDisconnect() {
@@ -113,6 +137,7 @@ public class AppState {
 
     public func synchronize() async {
         guard device?.state == .connected else { return }
+        guard status != .unsupportedDevice else { return }
         guard status != .synchronizing else { return }
         status = .synchronizing
         await measure("syncing archive") {

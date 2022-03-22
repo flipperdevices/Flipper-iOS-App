@@ -12,34 +12,39 @@ struct DeviceView: View {
 
                 ScrollView {
                     VStack {
-                        if viewModel.isUnsupportedVersion {
+                        if viewModel.status == .unsupportedDevice {
                             UnsupportedDeviceSection()
                                 .padding(.top, 14)
                                 .padding(.horizontal, 14)
                         }
 
-                        NavigationLink {
-                            DeviceInfoView(viewModel: .init())
-                        } label: {
-                            DeviceInfoSection(
-                                protobufVersion: viewModel.protobufVersion,
-                                firmwareVersion: viewModel.firmwareVersion,
-                                firmwareBuild: viewModel.firmwareBuild,
-                                internalSpace: viewModel.internalSpace,
-                                externalSpace: viewModel.externalSpace
-                            )
+                        if viewModel.status != .noDevice {
+                            NavigationLink {
+                                DeviceInfoView(viewModel: .init())
+                            } label: {
+                                DeviceInfoSection(
+                                    protobufVersion: viewModel.protobufVersion,
+                                    firmwareVersion: viewModel.firmwareVersion,
+                                    firmwareBuild: viewModel.firmwareBuild,
+                                    internalSpace: viewModel.internalSpace,
+                                    externalSpace: viewModel.externalSpace
+                                )
+                                .padding(.top, 14)
+                                .padding(.horizontal, 14)
+                            }
+                            .disabled(!viewModel.status.isOnline)
                         }
-                        .disabled(viewModel.device?.state != .connected)
 
                         VStack(spacing: 14) {
-                            DeviceActionButton(
-                                image: "Sync",
-                                title: "Synchronize"
-                            ) {
-                                viewModel.sync()
+                            if viewModel.status != .noDevice {
+                                DeviceActionButton(
+                                    image: "Sync",
+                                    title: "Synchronize"
+                                ) {
+                                    viewModel.sync()
+                                }
+                                .disabled(viewModel.status != .connected)
                             }
-                            .disabled(viewModel.status == .synchronizing)
-                            .disabled(viewModel.device?.state != .connected)
 
                             if viewModel.device == nil {
                                 DeviceActionButton(
@@ -58,16 +63,26 @@ struct DeviceView: View {
                                 .foregroundColor(.red)
                             }
                         }
+                        .padding(.vertical, 24)
                         .padding(.horizontal, 14)
-                        .padding(.bottom, 14)
+
+                        Color.clear.alert(
+                            isPresented: $viewModel.showPairingIssueAlert
+                        ) {
+                            .pairingIssue
+                        }
+
+                        Color.clear.alert(
+                            isPresented: $viewModel.showUnsupportedVersionAlert
+                        ) {
+                            .unsupportedDeviceIssue
+                        }
                     }
                 }
                 .background(Color.background)
             }
+            .navigationViewStyle(.stack)
             .navigationBarHidden(true)
-            .alert(isPresented: $viewModel.isPairingIssue) {
-                .pairingIssue
-            }
             .navigationBarColors(foreground: .primary, background: .header)
         }
     }
