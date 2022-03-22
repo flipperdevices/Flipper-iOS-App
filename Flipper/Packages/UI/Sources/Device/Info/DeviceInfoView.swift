@@ -62,17 +62,16 @@ struct DeviceInformation: View {
     }
 
     var body: some View {
-        Section(header: Text("Device Information (RPC)")) {
-            if deviceInformation.isEmpty {
-                HStack {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
-                }
-            } else {
-                ForEach([String](deviceInformation.keys), id: \.self) { key in
-                    SectionRow(name: key, value: deviceInformation[key] ?? "")
-                }
+        Section {
+            ForEach([String](deviceInformation.keys), id: \.self) { key in
+                SectionRow(name: key, value: deviceInformation[key] ?? "")
+            }
+        } header: {
+            HStack(spacing: 8) {
+                Text("Device Information (RPC)")
+                ProgressView()
+                    .opacity(deviceInformation.isEmpty ? 1 : 0)
+                Spacer()
             }
         }
     }
