@@ -13,12 +13,14 @@ struct UnsupportedDeviceSection: View {
                 Image("Update")
                     .padding(.top, 18)
 
-                Text("Update your Flipper using qFlipper")
+                Text("Update Flipper Firmware from PC")
                     .font(.system(size: 14, weight: .medium))
+                    .multilineTextAlignment(.center)
                     .padding(.top, 12)
 
-                Text("Our app doesn’t support this firmware version")
+                Text("Our app doesn’t support installed firmware version")
                     .font(.system(size: 14, weight: .medium))
+                    .multilineTextAlignment(.center)
                     .foregroundColor(.black40)
                     .padding(.top, 8)
 
