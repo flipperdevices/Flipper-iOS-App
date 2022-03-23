@@ -26,7 +26,7 @@ struct DeletedInfoView: View {
                 InfoButton(image: .init("delete"), title: "Delete Permanently") {
                     viewModel.delete()
                 }
-                .foregroundColor(.red)
+                .foregroundColor(.sRed)
             }
             .padding(.top, 24)
             .padding(.horizontal, 24)

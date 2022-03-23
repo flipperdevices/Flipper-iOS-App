@@ -60,7 +60,7 @@ struct DeviceView: View {
                                 ) {
                                     viewModel.showWelcomeScreen()
                                 }
-                                .foregroundColor(.red)
+                                .foregroundColor(.sRed)
                             }
                         }
                         .padding(.vertical, 24)
@@ -83,7 +83,7 @@ struct DeviceView: View {
             }
             .navigationViewStyle(.stack)
             .navigationBarHidden(true)
-            .navigationBarColors(foreground: .primary, background: .header)
+            .navigationBarColors(foreground: .primary, background: .a1)
         }
     }
 }

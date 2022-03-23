@@ -23,7 +23,7 @@ struct ArchiveView: View {
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: 20, height: 20)
-                                .foregroundColor(.yellow)
+                                .foregroundColor(.sYellow)
                         }
 
                         CompactList(items: viewModel.favoriteItems) { item in
@@ -78,6 +78,6 @@ struct ArchiveView: View {
             .navigationTitle("")
         }
         .navigationViewStyle(.stack)
-        .navigationBarColors(foreground: .primary, background: .header)
+        .navigationBarColors(foreground: .primary, background: .a1)
     }
 }

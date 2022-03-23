@@ -23,7 +23,7 @@ extension CardView {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 24, height: 24)
-                            .foregroundColor(.yellow)
+                            .foregroundColor(.sYellow)
                             .opacity(kind == .existing ? 1 : 0)
                     }
                     .opacity(isDeleted ? 0 : 1)
