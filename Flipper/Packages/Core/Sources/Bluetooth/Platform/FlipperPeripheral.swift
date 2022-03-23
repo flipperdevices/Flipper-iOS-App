@@ -5,12 +5,15 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     private let logger = Logger(label: "peripheral")
 
     private var peripheral: CBPeripheral
+    private var serialWrite: CBCharacteristic?
 
     var id: UUID
     var name: String
     var color: Peripheral.Color
 
     var isPairingFailed = false
+    var hasProtobufVersion = false
+    var didDiscoverDeviceInformation = false
 
     var freeSpace = 0
 
@@ -81,15 +84,15 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     }
 
     func send(_ data: Data) {
-        guard peripheral.state == .connected else {
+        guard state == .connected else {
             logger.error("invalid state")
             return
         }
-        guard let tx = peripheral.serialWrite else {
+        guard let serialWrite = serialWrite else {
             logger.critical("no serial service")
             return
         }
-        peripheral.writeValue(data, for: tx, type: .withResponse)
+        peripheral.writeValue(data, for: serialWrite, type: .withResponse)
         freeSpace -= data.count
     }
 }
@@ -119,20 +122,54 @@ extension FlipperPeripheral: CBPeripheralDelegate {
         didDiscoverCharacteristicsFor service: CBService,
         error: Swift.Error?
     ) {
-        service.characteristics?.forEach { characteristic in
-            // subscribe to rx updates
-            if characteristic.properties.contains(.indicate) {
-                peripheral.setNotifyValue(true, for: characteristic)
-            }
-            // subscibe to value updates
-            if characteristic.properties.contains(.notify) {
-                peripheral.setNotifyValue(true, for: characteristic)
-            }
-            if service.uuid != .serial || characteristic.uuid == .flowControl {
-                // read current value
-                peripheral.readValue(for: characteristic)
-            }
+        guard let characteristics = service.characteristics else {
+            logger.critical("service \(service.uuid) has no characteristics")
+            return
         }
+        switch service.uuid {
+        case .deviceInformation: didDiscoverDeviceInformation(characteristics)
+        case .battery: didDiscoverBattery(characteristics)
+        case .serial: didDiscoverSerial(characteristics)
+        default: logger.debug("unknown service discovered")
+        }
+    }
+
+    func didDiscoverDeviceInformation(_ characteristics: [CBCharacteristic]) {
+        didDiscoverDeviceInformation = true
+        hasProtobufVersion = characteristics.contains {
+            $0.uuid == .protobufRevision
+        }
+        characteristics.forEach { characteristic in
+            peripheral.readValue(for: characteristic)
+        }
+    }
+
+    func didDiscoverBattery(_ characteristics: [CBCharacteristic]) {
+        guard let batteryLevel = characteristics.batteryLevel else {
+            logger.critical("invalid battery service")
+            return
+        }
+        peripheral.setNotifyValue(true, for: batteryLevel)
+        peripheral.readValue(for: batteryLevel)
+    }
+
+    func didDiscoverSerial(_ characteristics: [CBCharacteristic]) {
+        guard let serialRead = characteristics.serialRead else {
+            logger.critical("invalid serial read service")
+            return
+        }
+        guard let serialWrite = characteristics.serialWrite else {
+            logger.critical("invalid serial write service")
+            return
+        }
+        guard let flowControl = characteristics.flowControl else {
+            logger.critical("invalid flow control service")
+            return
+        }
+        peripheral.setNotifyValue(true, for: serialRead)
+        peripheral.setNotifyValue(true, for: flowControl)
+        peripheral.readValue(for: flowControl)
+        self.serialWrite = serialWrite
     }
 
     // MARK: Values
@@ -142,35 +179,40 @@ extension FlipperPeripheral: CBPeripheralDelegate {
         didUpdateValueFor characteristic: CBCharacteristic,
         error: Swift.Error?
     ) {
-        assert(peripheral === self.peripheral)
         guard error == nil else {
             onError(error as? CBATTError)
             return
         }
         switch characteristic.uuid {
-        case .serialRead:
-            if let data = characteristic.value {
-                receivedDataSubject.send(data)
-            }
-        case .flowControl:
-            if let data = characteristic.value {
-                freeSpace = data.int32Value
-                if freeSpace > 0 {
-                    canWriteSubject.send(())
-                }
-            }
-        default:
-            infoSubject.send()
+        case .serialRead: didUpdateSerialRead(characteristic)
+        case .flowControl: didUpdateFlowControl(characteristic)
+        default: didUpdateDeviceInformation(characteristic)
         }
     }
-}
 
-fileprivate extension CBPeripheral {
-    var serialWrite: CBCharacteristic? {
-        services?
-            .first { $0.uuid == .serial }?
-            .characteristics?
-            .first { $0.uuid == .serialWrite }
+    func didUpdateSerialRead(_ characteristic: CBCharacteristic) {
+        guard let data = characteristic.value else {
+            logger.critical("invalid serial read data")
+            return
+        }
+        receivedDataSubject.send(data)
+    }
+
+    func didUpdateFlowControl(_ characteristic: CBCharacteristic) {
+        guard let freeSpace = characteristic.value?.int32Value else {
+            logger.critical("invalid flow control data")
+            return
+        }
+        self.freeSpace = freeSpace
+        guard freeSpace > 0 else {
+            logger.info("flow control value is 0")
+            return
+        }
+        canWriteSubject.send(())
+    }
+
+    func didUpdateDeviceInformation(_ characteristic: CBCharacteristic) {
+        infoSubject.send()
     }
 }
 

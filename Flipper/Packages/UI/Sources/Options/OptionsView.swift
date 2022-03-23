@@ -11,17 +11,19 @@ struct OptionsView: View {
                     NavigationLink("Ping") {
                         PingView(viewModel: .init())
                     }
+                    .disabled(!viewModel.isOnline)
                     NavigationLink("Stress Test") {
                         StressTestView(viewModel: .init())
                     }
+                    .disabled(!viewModel.isOnline)
                     NavigationLink("Speed Test") {
                         SpeedTestView(viewModel: .init())
                     }
+                    .disabled(!viewModel.isOnline)
                     NavigationLink("Logs") {
                         LogsView(viewModel: .init())
                     }
                 }
-                .disabled(!viewModel.supported)
 
                 Section(header: Text("Remote")) {
                     NavigationLink("Screen Streaming") {
@@ -33,11 +35,13 @@ struct OptionsView: View {
                     Button("Play Alert") {
                         viewModel.playAlert()
                     }
+                    .foregroundColor(viewModel.isOnline ? .accentColor : .gray)
                     Button("Reboot Flipper") {
                         viewModel.rebootFlipper()
                     }
+                    .foregroundColor(viewModel.isOnline ? .accentColor : .gray)
                 }
-                .disabled(!viewModel.supported)
+                .disabled(!viewModel.isOnline)
 
                 Section(header: Text("Danger")) {
                     Button("Reset App") {
@@ -48,9 +52,9 @@ struct OptionsView: View {
                     Button("Unpair Flipper") {
                         viewModel.unpairFlipper()
                     }
-                    .foregroundColor(.red)
+                    .foregroundColor(viewModel.isOnline ? .red : .gray)
+                    .disabled(!viewModel.isOnline)
                 }
-                .disabled(!viewModel.supported)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

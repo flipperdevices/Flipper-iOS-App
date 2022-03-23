@@ -1,17 +1,19 @@
 public struct Capabilities {
     private let protobufVersion: ProtobufVersion
 
-    public var canPlayAlert: Bool {
+    public var hasOTASupport: Bool {
         switch protobufVersion {
-        case .v1: return true
         default: return false
         }
     }
 
-    init?(_ protobufVersion: ProtobufVersion?) {
-        guard let protobufVersion = protobufVersion else {
-            return nil
-        }
+    init(_ protobufVersion: ProtobufVersion) {
         self.protobufVersion = protobufVersion
+    }
+}
+
+extension Peripheral {
+    var capatibilities: Capabilities {
+        .init(.v0_2)
     }
 }

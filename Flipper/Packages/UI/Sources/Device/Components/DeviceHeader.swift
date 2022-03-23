@@ -12,17 +12,30 @@ struct DeviceHeader: View {
                     .padding(.bottom, 12)
                     .padding(.horizontal, 14)
             } else {
-                Image("FlipperWhite")
-                    .resizable()
+                NoDeviceHeader()
                     .padding(.top, 4)
                     .padding(.bottom, 12)
                     .padding(.horizontal, 14)
-                    .scaledToFit()
             }
         }
         .frame(height: 116)
         .frame(maxWidth: .infinity)
         .background(Color.header)
+    }
+}
+
+struct NoDeviceHeader: View {
+    var body: some View {
+        HStack(spacing: 18) {
+            Image("FlipperNoDevice")
+                .resizable()
+                .scaledToFit()
+
+            VStack(alignment: .center, spacing: 6) {
+                Text("No Device")
+                    .font(.system(size: 16, weight: .bold))
+            }
+        }
     }
 }
 

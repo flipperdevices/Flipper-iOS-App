@@ -8,13 +8,13 @@ class OptionsViewModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
-    @Published var supported = false
+    @Published var isOnline = false
 
     init() {
-        appState.$capabilities
+        appState.$status
             .receive(on: DispatchQueue.main)
-            .compactMap(\.?.canPlayAlert)
-            .assign(to: \.supported, on: self)
+            .map(\.isOnline)
+            .assign(to: \.isOnline, on: self)
             .store(in: &disposeBag)
     }
 

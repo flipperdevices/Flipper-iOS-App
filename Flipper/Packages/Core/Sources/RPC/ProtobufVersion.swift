@@ -1,4 +1,3 @@
 public enum ProtobufVersion: CaseIterable {
-    case v0
-    case v1
+    case v0_2
 }

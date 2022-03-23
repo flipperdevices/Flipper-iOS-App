@@ -23,7 +23,7 @@ public class RootViewModel: ObservableObject {
                 guard let self = self else {
                     return
                 }
-                if $0 == .connected {
+                if $0 == .connected || $0 == .unsupportedDevice {
                     self.appState.isFirstLaunch = false
                     self.hideWelcomeScreen()
                 }

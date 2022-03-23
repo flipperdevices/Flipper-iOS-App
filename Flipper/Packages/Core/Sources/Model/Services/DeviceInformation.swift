@@ -4,6 +4,7 @@ extension Peripheral.Service {
         public var serialNumber: String
         public var firmwareRevision: String
         public var softwareRevision: String
+        public var protobufRevision: String
     }
 }
 
@@ -12,11 +13,13 @@ extension Peripheral.Service.DeviceInformation {
         manufacturerName: [UInt8],
         serialNumber: [UInt8],
         firmwareRevision: [UInt8],
-        softwareRevision: [UInt8]
+        softwareRevision: [UInt8],
+        protobufRevision: [UInt8]
     ) {
         self.manufacturerName = .init(decoding: manufacturerName, as: UTF8.self)
         self.serialNumber = .init(decoding: serialNumber, as: UTF8.self)
         self.firmwareRevision = .init(decoding: firmwareRevision, as: UTF8.self)
         self.softwareRevision = .init(decoding: softwareRevision, as: UTF8.self)
+        self.protobufRevision = .init(decoding: protobufRevision, as: UTF8.self)
     }
 }

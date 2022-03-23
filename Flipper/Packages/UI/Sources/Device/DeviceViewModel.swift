@@ -8,30 +8,46 @@ class DeviceViewModel: ObservableObject {
     @Published var appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
-    @Published var isPairingIssue = false
+    @Published var showPairingIssueAlert = false
+    @Published var showUnsupportedVersionAlert = false
 
     @Published var device: Peripheral?
     @Published var status: Status = .noDevice {
-        didSet { isPairingIssue = status == .pairingIssue }
+        didSet {
+            switch status {
+            case .pairingIssue: showPairingIssueAlert = true
+            case .unsupportedDevice: showUnsupportedVersionAlert = true
+            default: break
+            }
+        }
+    }
+
+    var protobufVersion: String? {
+        guard device?.isUnsupported == false else {
+            return nil
+        }
+        return device?.information?.protobufRevision ?? "-"
     }
 
     var firmwareVersion: String {
-        guard let device = device else { return .noDevice }
-        guard let info = device.information else { return .unknown }
+        guard let info = device?.information else {
+            return ""
+        }
 
         let version = info
             .softwareRevision
             .split(separator: " ")
-            .prefix(2)
-            .reversed()
-            .joined(separator: " ")
+            .dropFirst()
+            .prefix(1)
+            .joined()
 
         return .init(version)
     }
 
     var firmwareBuild: String {
-        guard let device = device else { return .noDevice }
-        guard let info = device.information else { return .unknown }
+        guard let info = device?.information else {
+            return ""
+        }
 
         let build = info
             .softwareRevision
@@ -42,18 +58,18 @@ class DeviceViewModel: ObservableObject {
         return .init(build)
     }
 
-    var internalSpace: String {
-        guard let device = device else { return .noDevice }
-        guard let storage = device.storage else { return .unknown }
-
-        return storage.internal?.description ?? ""
+    var internalSpace: String? {
+        guard device?.isUnsupported == false else {
+            return nil
+        }
+        return device?.storage?.internal?.description ?? ""
     }
 
-    var externalSpace: String {
-        guard let device = device else { return .noDevice }
-        guard let storage = device.storage else { return .unknown }
-
-        return storage.external?.description ?? ""
+    var externalSpace: String? {
+        guard device?.isUnsupported == false else {
+            return nil
+        }
+        return device?.storage?.external?.description ?? ""
     }
 
     init() {
