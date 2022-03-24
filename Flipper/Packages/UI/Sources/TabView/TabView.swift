@@ -82,7 +82,7 @@ extension TabView {
         }
         switch status {
         case .noDevice: return .black40
-        case .unsupportedDevice: return .black40
+        case .unsupportedDevice: return .sRed
         case .connecting: return .a2
         case .connected: return .a2
         case .disconnected: return .black40
@@ -122,7 +122,7 @@ extension TabView {
 
         switch status {
         case .noDevice: name += "no_device"
-        case .unsupportedDevice: name += "no_device"
+        case .unsupportedDevice: name += "unsupported"
         case .connecting: name += "connecting"
         case .connected: name += "connected"
         case .disconnected: name += "disconnected"
