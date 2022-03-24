@@ -42,7 +42,10 @@ class Synchronization: SynchronizationProtocol {
 
     private func updateOnMobile(_ id: ArchiveItem.ID) async throws {
         logger.info("update on mobile \(id)")
-        let item = try await peripheralArchive.read(id)
+        var item = try await peripheralArchive.read(id)
+        if try await mobileArchive.manifest[id] != nil {
+            item.note = try await mobileArchive.read(id).note
+        }
         try await mobileArchive.upsert(item)
         eventsSubject.send(.imported(id))
     }
