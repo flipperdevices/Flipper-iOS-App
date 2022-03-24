@@ -38,7 +38,7 @@ extension CardView {
                     Text(item.note)
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.black30)
-                        .lineLimit(1)
+                        .lineLimit(3)
                 }
             }
         }
