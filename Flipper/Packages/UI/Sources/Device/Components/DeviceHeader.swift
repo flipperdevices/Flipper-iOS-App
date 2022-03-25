@@ -20,7 +20,7 @@ struct DeviceHeader: View {
         }
         .frame(height: 116)
         .frame(maxWidth: .infinity)
-        .background(Color.header)
+        .background(Color.a1)
     }
 }
 
@@ -53,9 +53,9 @@ struct DeviceInfoHeader: View {
             return .clear
         }
         switch battery.decimalValue * 100 {
-        case 0..<20: return .red
-        case 20..<50: return .yellow
-        case 50...100: return .green
+        case 0..<20: return .sRed
+        case 20..<50: return .sYellow
+        case 50...100: return .sGreen
         default: return .clear
         }
     }

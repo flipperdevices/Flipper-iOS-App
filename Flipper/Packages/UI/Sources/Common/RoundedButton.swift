@@ -43,7 +43,7 @@ struct ObsoleteRoundedButton: View {
                 .fontWeight(.semibold)
                 .padding(14)
                 .frame(maxWidth: .infinity)
-                .background(isDanger ? Color.red : Color.accentColor)
+                .background(isDanger ? Color.sRed : Color.a2)
                 .foregroundColor(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }

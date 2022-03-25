@@ -39,8 +39,8 @@ extension StressTest.Event {
         switch kind {
         case .info: return .primary
         case .debug: return .secondary
-        case .success: return .green
-        case .error: return .red
+        case .success: return .sGreen
+        case .error: return .sRed
         }
     }
 }

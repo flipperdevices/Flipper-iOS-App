@@ -24,11 +24,11 @@ extension ArchiveItem.FileType {
 
     var color: Color {
         switch self {
-        case .subghz: return .init(red: 0.65, green: 0.96, blue: 0.75)
-        case .rfid: return .init(red: 1.0, green: 0.96, blue: 0.58)
-        case .nfc: return .init(red: 0.6, green: 0.81, blue: 1.0)
-        case .infrared: return .init(red: 1.0, green: 0.57, blue: 0.55)
-        case .ibutton: return .init(red: 0.88, green: 0.73, blue: 0.65)
+        case .subghz: return .subGHz
+        case .rfid: return .rfid125
+        case .nfc: return .nfc
+        case .infrared: return .infrared
+        case .ibutton: return .iButton
         }
     }
 }

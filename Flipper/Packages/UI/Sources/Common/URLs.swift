@@ -27,17 +27,17 @@ extension URL {
     }
 
     static var privacyPolicyURL: URL {
-        .init(string: "https://docs.flipperzero.one/legal/privacy-policy")!
+        .init(string: "https://flipp.dev/flipper-app-privacy-policy")!
     }
 
     // MARK: Help
 
     static var helpToKnowName: URL {
-        .init(string: "https://docs.flipperzero.one/basics/flipper-name")!
+        .init(string: "https://docs.flipperzero.one/basics/control/dolphin#yj-flipper-name")!
     }
 
     static var helpToTurnOnBluetooth: URL {
-        .init(string: "https://docs.flipperzero.one/basics/bluetooth")!
+        .init(string: "https://docs.flipperzero.one/basics/control/bluetooth#n3-turn-on-bluetooth")!
     }
 
     static var helpToInstallFirmware: URL {

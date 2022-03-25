@@ -23,7 +23,7 @@ extension CardView {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 24, height: 24)
-                            .foregroundColor(.yellow)
+                            .foregroundColor(.sYellow)
                             .opacity(kind == .existing ? 1 : 0)
                     }
                     .opacity(isDeleted ? 0 : 1)
@@ -38,7 +38,7 @@ extension CardView {
                     Text(item.note)
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.black30)
-                        .lineLimit(1)
+                        .lineLimit(3)
                 }
             }
         }

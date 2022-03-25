@@ -9,6 +9,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
     public var properties: [Property]
     public var isFavorite: Bool
     public var status: Status
+    public var note: String
     public var date: Date
 
     public enum Status: Codable, Equatable {
@@ -26,6 +27,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
         properties: [Property],
         isFavorite: Bool = false,
         status: Status = .imported,
+        note: String = "",
         date: Date = .init()
     ) {
         self.name = name
@@ -33,6 +35,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
         self.isFavorite = isFavorite
         self.properties = properties
         self.status = status
+        self.note = note
         self.date = date
     }
 }

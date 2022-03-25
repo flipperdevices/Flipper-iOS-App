@@ -52,19 +52,3 @@ struct CardView: View {
         .shadow(color: .shadow, radius: 16, x: 0, y: 4)
     }
 }
-
-extension ArchiveItem {
-    var note: String {
-        get {
-            properties.first?.description.joined(separator: "\n") ?? ""
-        }
-        set {
-            guard !properties.isEmpty else {
-                return
-            }
-            properties[0].description = newValue
-                .split(separator: "\n")
-                .map { String($0) }
-        }
-    }
-}

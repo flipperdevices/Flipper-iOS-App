@@ -47,12 +47,12 @@ struct OptionsView: View {
                     Button("Reset App") {
                         viewModel.resetApp()
                     }
-                    .foregroundColor(.red)
+                    .foregroundColor(.sRed)
 
                     Button("Unpair Flipper") {
                         viewModel.unpairFlipper()
                     }
-                    .foregroundColor(viewModel.isOnline ? .red : .gray)
+                    .foregroundColor(viewModel.isOnline ? .sRed : .gray)
                     .disabled(!viewModel.isOnline)
                 }
             }
@@ -65,6 +65,6 @@ struct OptionsView: View {
             }
         }
         .navigationViewStyle(.stack)
-        .navigationBarColors(foreground: .primary, background: .header)
+        .navigationBarColors(foreground: .primary, background: .a1)
     }
 }
