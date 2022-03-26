@@ -19,5 +19,4 @@ public func registerMockDependencies() {
     container.register(ArchiveStorageMock.init, as: ArchiveStorage.self, isSingleton: true)
     container.register(DeletedStorageMock.init, as: DeletedStorage.self, isSingleton: true)
     container.register(ManifestStorageMock.init, as: ManifestStorage.self, isSingleton: true)
-    container.register(NFCServiceMock.init, as: NFCService.self)
 }
