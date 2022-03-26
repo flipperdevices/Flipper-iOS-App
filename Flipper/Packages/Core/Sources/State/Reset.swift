@@ -11,7 +11,7 @@ class AppReset {
         UserDefaultsStorage.shared.reset()
         archiveStorage.items = []
         deletedStorage.items = []
-        deviceStorage.pairedDevice = nil
+        deviceStorage.flipper = nil
         manifestStorage.manifest = nil
         exit(0)
     }

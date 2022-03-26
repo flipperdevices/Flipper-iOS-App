@@ -8,6 +8,6 @@ protocol ArchiveProtocol {
     func delete(_ id: ArchiveItem.ID) async throws
 }
 
-protocol PeripheralArchiveProtocol: ArchiveProtocol {}
+protocol FlipperArchiveProtocol: ArchiveProtocol {}
 protocol MobileArchiveProtocol: ArchiveProtocol {}
 protocol DeletedArchiveProtocol: ArchiveProtocol {}

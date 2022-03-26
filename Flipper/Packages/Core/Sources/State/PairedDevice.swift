@@ -1,5 +1,5 @@
 public protocol PairedDevice {
-    var peripheral: SafePublisher<Peripheral?> { get }
+    var flipper: SafePublisher<Flipper?> { get }
     var isPairingFailed: Bool { get }
 
     func connect()

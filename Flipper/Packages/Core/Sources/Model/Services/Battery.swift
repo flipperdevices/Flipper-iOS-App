@@ -1,4 +1,4 @@
-extension Peripheral {
+extension Flipper {
     public struct Battery: Equatable, Codable {
         public let level: Int
 

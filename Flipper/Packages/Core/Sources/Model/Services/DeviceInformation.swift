@@ -1,4 +1,4 @@
-extension Peripheral {
+extension Flipper {
     public struct DeviceInformation: Equatable, Codable {
         public var manufacturerName: String
         public var serialNumber: String
@@ -8,7 +8,7 @@ extension Peripheral {
     }
 }
 
-extension Peripheral.DeviceInformation {
+extension Flipper.DeviceInformation {
     init(
         manufacturerName: [UInt8],
         serialNumber: [UInt8],

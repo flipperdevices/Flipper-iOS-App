@@ -13,7 +13,7 @@ public func registerDependencies() {
     container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
     container.register(MobileArchive.init, as: MobileArchiveProtocol.self, isSingleton: true)
     container.register(DeletedArchive.init, as: DeletedArchiveProtocol.self, isSingleton: true)
-    container.register(FlipperArchive.init, as: PeripheralArchiveProtocol.self, isSingleton: true)
+    container.register(FlipperArchive.init, as: FlipperArchiveProtocol.self, isSingleton: true)
     container.register(Sync.init, as: SyncProtocol.self, isSingleton: true)
     container.register(JSONDeviceStorage.init, as: DeviceStorage.self, isSingleton: true)
     container.register(JSONArchiveStorage.init, as: ArchiveStorage.self, isSingleton: true)

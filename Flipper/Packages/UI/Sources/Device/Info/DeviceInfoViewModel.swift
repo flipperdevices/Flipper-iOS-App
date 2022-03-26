@@ -9,13 +9,13 @@ class DeviceInfoViewModel: ObservableObject {
     let appState: AppState = .shared
     var disposeBag = DisposeBag()
 
-    @Published var device: Peripheral?
+    @Published var flipper: Flipper?
     @Published var deviceInfo: [String: String] = [:]
 
     init() {
-        appState.$device
+        appState.$flipper
             .receive(on: DispatchQueue.main)
-            .assign(to: \.device, on: self)
+            .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)
     }
 

@@ -9,7 +9,7 @@ extension Sync {
 
         enum Target {
             case mobile
-            case peripheral
+            case flipper
         }
     }
 }
@@ -19,38 +19,38 @@ extension Sync {
 extension Sync {
     func resolveActions(
         mobileChanges: [Path: ItemStatus],
-        peripheralChanges: [Path: ItemStatus]
+        flipperChanges: [Path: ItemStatus]
     ) -> [Path: Action] {
         var result: [Path: Action] = [:]
 
-        for id in Set(mobileChanges.keys).union(peripheralChanges.keys) {
+        for id in Set(mobileChanges.keys).union(flipperChanges.keys) {
             let mobileItemState = mobileChanges[id]
-            let peripheralItemState = peripheralChanges[id]
+            let flipperItemState = flipperChanges[id]
 
             // ignore identical changes
-            guard mobileItemState != peripheralItemState else {
+            guard mobileItemState != flipperItemState else {
                 continue
             }
 
-            switch (mobileItemState, peripheralItemState) {
+            switch (mobileItemState, flipperItemState) {
             // changes on mobile
             case let (.some(change), .none):
                 switch change {
-                case .modified: result[id] = .update(.peripheral)
-                case .deleted: result[id] = .delete(.peripheral)
+                case .modified: result[id] = .update(.flipper)
+                case .deleted: result[id] = .delete(.flipper)
                 }
-            // changes on peripheral
+            // changes on flipper
             case let (.none, .some(change)):
                 switch change {
                 case .modified: result[id] = .update(.mobile)
                 case .deleted: result[id] = .delete(.mobile)
                 }
             // changes on both devices
-            case let (.some(mobileChange), .some(peripheralChange)):
-                switch (mobileChange, peripheralChange) {
+            case let (.some(mobileChange), .some(flipperChange)):
+                switch (mobileChange, flipperChange) {
                 // modifications override deletions
                 case (.deleted, .modified): result[id] = .update(.mobile)
-                case (.modified, .deleted): result[id] = .update(.peripheral)
+                case (.modified, .deleted): result[id] = .update(.flipper)
                 // possible conflicts
                 case (.modified, .modified): result[id] = .conflict
                 default: fatalError("unreachable")
@@ -80,7 +80,7 @@ extension Sync.Action.Target: CustomStringConvertible {
     public var description: String {
         switch self {
         case .mobile: return "mobile"
-        case .peripheral: return "peripheral"
+        case .flipper: return "flipper"
         }
     }
 }

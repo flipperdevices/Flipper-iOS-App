@@ -15,8 +15,8 @@ public class AppState {
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
-    @Published public var device: Peripheral? {
-        didSet { updateState(device?.state) }
+    @Published public var flipper: Flipper? {
+        didSet { updateState(flipper?.state) }
     }
     @Published public var archive: Archive = .shared
     @Published public var status: Status = .noDevice
@@ -26,9 +26,9 @@ public class AppState {
     public init() {
         isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
 
-        pairedDevice.peripheral
+        pairedDevice.flipper
             .receive(on: DispatchQueue.main)
-            .assign(to: \.device, on: self)
+            .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)
     }
 
@@ -53,7 +53,7 @@ public class AppState {
         case .preParing where newValue == .connected: status = .pairing
         case .preParing where newValue == .disconnected: didFailToConnect()
         case .pairing where newValue == .disconnected: didDisconnect()
-        case .pairing where device?.battery != nil: didConnect()
+        case .pairing where flipper?.battery != nil: didConnect()
         // MARK: Default
         case .connecting where newValue == .connected: didConnect()
         case .connecting where newValue == .disconnected: didFailToConnect()
@@ -83,14 +83,14 @@ public class AppState {
     func waitForDeviceInformation() async throws {
         while true {
             try await Task.sleep(nanoseconds: 100 * 1_000_000)
-            if device?.battery != nil {
+            if flipper?.battery != nil {
                 return
             }
         }
     }
 
     func validateFirmwareVersion() -> Bool {
-        guard device?.isUnsupported == false else {
+        guard flipper?.isUnsupported == false else {
             logger.error("unsupported firmware version")
             status = .unsupportedDevice
             disconnect()
@@ -139,7 +139,7 @@ public class AppState {
     // MARK: Synchronization
 
     public func synchronize() async {
-        guard device?.state == .connected else { return }
+        guard flipper?.state == .connected else { return }
         guard status != .unsupportedDevice else { return }
         guard status != .synchronizing else { return }
         status = .synchronizing
@@ -150,7 +150,7 @@ public class AppState {
         Task {
             try await Task.sleep(nanoseconds: 3_000 * 1_000_000)
             guard status == .synchronized else { return }
-            status = .init(device?.state)
+            status = .init(flipper?.state)
         }
     }
 
@@ -160,18 +160,18 @@ public class AppState {
         await measure("setting datetime") {
             try? await RPC.shared.setDate()
         }
-        status = .init(device?.state)
+        status = .init(flipper?.state)
     }
 
     func getStorageInfo() async {
-        var storage = device?.storage ?? .init()
+        var storage = flipper?.storage ?? .init()
         if let intSpace = try? await RPC.shared.getStorageInfo(at: "/int") {
             storage.internal = intSpace
         }
         if let extSpace = try? await RPC.shared.getStorageInfo(at: "/ext") {
             storage.external = extSpace
         }
-        device?.storage = storage
+        flipper?.storage = storage
     }
 
     // MARK: Sharing

@@ -2,12 +2,12 @@ import Core
 import SwiftUI
 
 struct DeviceHeader: View {
-    var device: Peripheral?
+    var device: Flipper?
 
     var body: some View {
         VStack {
             if let device = device {
-                DeviceInfoHeader(device: device)
+                DeviceInfoHeader(flipper: device)
                     .padding(.top, 4)
                     .padding(.bottom, 12)
                     .padding(.horizontal, 14)
@@ -40,16 +40,16 @@ struct NoDeviceHeader: View {
 }
 
 struct DeviceInfoHeader: View {
-    let device: Peripheral
+    let flipper: Flipper
 
     var flipperImage: String {
-        device.color == .black
+        flipper.color == .black
             ? "FlipperBlack"
             : "FlipperWhite"
     }
 
     var batteryColor: Color {
-        guard let battery = device.battery else {
+        guard let battery = flipper.battery else {
             return .clear
         }
         switch battery.decimalValue * 100 {
@@ -67,14 +67,14 @@ struct DeviceInfoHeader: View {
                 .scaledToFit()
 
             VStack(alignment: .center, spacing: 6) {
-                Text(device.name)
+                Text(flipper.name)
                     .font(.system(size: 16, weight: .bold))
 
                 Text("Flipper Zero")
                     .font(.system(size: 12, weight: .medium))
 
                 HStack(alignment: .top, spacing: 5.5) {
-                    if let battery = device.battery {
+                    if let battery = flipper.battery {
                         ZStack(alignment: .topLeading) {
                             Image("Battery")
 
@@ -88,9 +88,9 @@ struct DeviceInfoHeader: View {
                         }
                     }
 
-                    Text("\(device.battery?.level ?? 0)%")
+                    Text("\(flipper.battery?.level ?? 0)%")
                         .font(.system(size: 12, weight: .medium))
-                        .opacity(device.battery == nil ? 0 : 1)
+                        .opacity(flipper.battery == nil ? 0 : 1)
                 }
                 .padding(.top, 3)
             }

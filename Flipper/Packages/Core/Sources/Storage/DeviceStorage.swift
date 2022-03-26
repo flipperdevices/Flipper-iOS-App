@@ -1,3 +1,3 @@
 public protocol DeviceStorage {
-    var pairedDevice: Peripheral? { get set }
+    var flipper: Flipper? { get set }
 }

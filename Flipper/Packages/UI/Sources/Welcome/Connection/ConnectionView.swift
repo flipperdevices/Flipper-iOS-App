@@ -42,7 +42,7 @@ struct ConnectionView: View {
                 .padding(.bottom, 32)
                 .padding(.top, 74)
 
-                if viewModel.peripherals.isEmpty {
+                if viewModel.flippers.isEmpty {
                     if viewModel.isScanTimeout {
                         ScanTimeoutView {
                             viewModel.startScan()
@@ -54,8 +54,8 @@ struct ConnectionView: View {
                 } else {
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 14) {
-                            ForEach(viewModel.peripherals) { peripheral in
-                                row(for: peripheral)
+                            ForEach(viewModel.flippers) { flipper in
+                                row(for: flipper)
                             }
                         }
                     }
@@ -94,7 +94,7 @@ struct ConnectionView: View {
         .navigationBarColors(foreground: .primary, background: Color.background)
     }
 
-    func row(for peripheral: Peripheral) -> some View {
+    func row(for flipper: Flipper) -> some View {
         HStack(spacing: 0) {
             HStack(spacing: 0) {
                 VStack(spacing: 6) {
@@ -107,21 +107,21 @@ struct ConnectionView: View {
 
                 Divider()
 
-                Text(peripheral.name)
+                Text(flipper.name)
                     .lineLimit(1)
                     .font(.system(size: 14, weight: .medium))
                     .padding(.leading, 14)
 
                 Spacer(minLength: 0)
 
-                switch peripheral.state {
+                switch flipper.state {
                 case .connecting, .connected:
                     ProgressView()
                         .padding(.trailing, 14)
                 default:
                     ConnectButton("Connect") {
-                        if peripheral.state != .connected {
-                            viewModel.connect(to: peripheral.id)
+                        if flipper.state != .connected {
+                            viewModel.connect(to: flipper.id)
                         }
                     }
                     .disabled(viewModel.isConnecting)

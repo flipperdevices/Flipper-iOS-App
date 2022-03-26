@@ -41,10 +41,10 @@ class ConnectionViewModel: ObservableObject {
         didSet { pairedDevice.forget() }
     }
 
-    @Published var peripherals: [Peripheral] = []
+    @Published var flippers: [Flipper] = []
 
     private var bluetoothPeripherals: [BluetoothPeripheral] = [] {
-        didSet { updatePeripherals() }
+        didSet { updateFlippers() }
     }
 
     var isConnecting: Bool {
@@ -66,7 +66,7 @@ class ConnectionViewModel: ObservableObject {
         connector.connected
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.updatePeripherals()
+                self?.updateFlippers()
             }
             .store(in: &disposeBag)
 
@@ -96,8 +96,8 @@ class ConnectionViewModel: ObservableObject {
         appState.isFirstLaunch = false
     }
 
-    func updatePeripherals() {
-        peripherals = bluetoothPeripherals.map(Peripheral.init)
+    func updateFlippers() {
+        flippers = bluetoothPeripherals.map(Flipper.init)
     }
 
     func startScan() {
@@ -107,7 +107,7 @@ class ConnectionViewModel: ObservableObject {
 
     func stopScan() {
         central.stopScanForPeripherals()
-        peripherals.removeAll()
+        flippers.removeAll()
         stopScanTimer()
         stopConnectTimer()
     }
@@ -127,7 +127,7 @@ class ConnectionViewModel: ObservableObject {
             repeats: false
         ) { [weak self] _ in
             guard let self = self else { return }
-            if self.peripherals.isEmpty {
+            if self.flippers.isEmpty {
                 self.stopScan()
                 self.isScanTimeout = true
             }

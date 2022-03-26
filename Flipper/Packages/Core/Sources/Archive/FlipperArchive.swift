@@ -1,6 +1,6 @@
 import Bluetooth
 
-class FlipperArchive: PeripheralArchiveProtocol {
+class FlipperArchive: FlipperArchiveProtocol {
     let rpc: RPC = .shared
 
     init() {}

@@ -48,11 +48,11 @@ class ConnectionsViewModelTests: XCTestCase {
         await self.waitForExpectations(timeout: 0.1)
         state = await target.state
         XCTAssertEqual(state, .ready)
-        let peripheral = Peripheral(id: UUID(), name: "Device 42", color: .unknown, state: .disconnected)
-        let bluetoothPeripheral = MockPeripheral(id: peripheral.id, name: peripheral.name, state: .disconnected)
+        let flipper = Flipper(id: UUID(), name: "Device 42", color: .unknown, state: .disconnected)
+        let bluetoothPeripheral = MockPeripheral(id: flipper.id, name: flipper.name, state: .disconnected)
         connector.peripheralsSubject.value.append(bluetoothPeripheral)
-        let peripherals = await target.peripherals
-        XCTAssertEqual(peripherals, [peripheral])
+        let flippers = await target.flippers
+        XCTAssertEqual(flippers, [flipper])
     }
 
     func testStopScanIsCalledOnDisappear() {
@@ -155,7 +155,7 @@ private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {
 }
 
 private class MockStorage: DeviceStorage, ArchiveStorage {
-    var pairedDevice: Peripheral? {
+    var flipper: Flipper? {
         get { nil }
         set { _ = newValue }
     }

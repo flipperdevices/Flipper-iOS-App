@@ -11,11 +11,11 @@ public class StressTest {
     @Inject var connector: BluetoothConnector
     var disposeBag: DisposeBag = .init()
 
-    var flipper: BluetoothPeripheral? {
+    var peripheral: BluetoothPeripheral? {
         didSet {
-            switch flipper {
-            case .some(let device):
-                log(.info, "device \(device.state)")
+            switch peripheral {
+            case .some(let peripheral):
+                log(.info, "device \(peripheral.state)")
             case .none:
                 log(.error, "device disconnected")
                 stop()
@@ -45,7 +45,7 @@ public class StressTest {
     public init() {
         connector.connected
             .map { $0.first }
-            .assign(to: \.flipper, on: self)
+            .assign(to: \.peripheral, on: self)
             .store(in: &disposeBag)
     }
 

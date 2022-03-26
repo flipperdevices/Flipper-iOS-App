@@ -6,7 +6,7 @@ class Sync: SyncProtocol {
     private let logger = Logger(label: "synchronization")
 
     @Inject private var manifestStorage: ManifestStorage
-    @Inject private var peripheralArchive: PeripheralArchiveProtocol
+    @Inject private var flipperArchive: FlipperArchiveProtocol
     @Inject private var mobileArchive: MobileArchiveProtocol
 
     private var eventsSubject: SafeSubject<Event> = .init()
@@ -19,21 +19,21 @@ class Sync: SyncProtocol {
             .manifest
             .changesSince(lastManifest)
 
-        let peripheralChanges = try await peripheralArchive
+        let flipperChanges = try await flipperArchive
             .manifest
             .changesSince(lastManifest)
 
         let actions = resolveActions(
             mobileChanges: mobileChanges,
-            peripheralChanges: peripheralChanges)
+            flipperChanges: flipperChanges)
 
         for (path, action) in actions {
             let id: ArchiveItem.ID = .init(path: path)
             switch action {
             case .update(.mobile): try await updateOnMobile(id)
             case .delete(.mobile): try await deleteOnMobile(id)
-            case .update(.peripheral): try await updateOnPeripheral(id)
-            case .delete(.peripheral): try await deleteOnPeripheral(id)
+            case .update(.flipper): try await updateOnFlipper(id)
+            case .delete(.flipper): try await deleteOnFlipper(id)
             case .conflict: try await keepBoth(id)
             }
         }
@@ -43,7 +43,7 @@ class Sync: SyncProtocol {
 
     private func updateOnMobile(_ id: ArchiveItem.ID) async throws {
         logger.info("update on mobile \(id)")
-        var item = try await peripheralArchive.read(id)
+        var item = try await flipperArchive.read(id)
         if try await mobileArchive.manifest[id.path] != nil {
             item.note = try await mobileArchive.read(id).note
         }
@@ -51,10 +51,10 @@ class Sync: SyncProtocol {
         eventsSubject.send(.imported(id))
     }
 
-    private func updateOnPeripheral(_ id: ArchiveItem.ID) async throws {
-        logger.info("update on peripheral \(id)")
+    private func updateOnFlipper(_ id: ArchiveItem.ID) async throws {
+        logger.info("update on flipper \(id)")
         let item = try await mobileArchive.read(id)
-        try await peripheralArchive.upsert(item)
+        try await flipperArchive.upsert(item)
         eventsSubject.send(.exported(item.id))
     }
 
@@ -64,9 +64,9 @@ class Sync: SyncProtocol {
         eventsSubject.send(.deleted(id))
     }
 
-    private func deleteOnPeripheral(_ id: ArchiveItem.ID) async throws {
-        logger.info("delete on peripheral \(id)")
-        try await peripheralArchive.delete(id)
+    private func deleteOnFlipper(_ id: ArchiveItem.ID) async throws {
+        logger.info("delete on flipper \(id)")
+        try await flipperArchive.delete(id)
         eventsSubject.send(.deleted(id))
     }
 
@@ -76,7 +76,7 @@ class Sync: SyncProtocol {
             return
         }
 
-        try await updateOnPeripheral(newItem.id)
+        try await updateOnFlipper(newItem.id)
         eventsSubject.send(.exported(newItem.id))
 
         try await updateOnMobile(id)

@@ -1,6 +1,6 @@
 import Bluetooth
 
-class PeripheralArchiveMock: PeripheralArchiveProtocol {
+class FlipperArchiveMock: FlipperArchiveProtocol {
     var manifest: Manifest { .init([:]) }
 
     func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem {

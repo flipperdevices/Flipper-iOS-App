@@ -12,7 +12,7 @@ class DeviceViewModel: ObservableObject {
     @Published var showPairingIssueAlert = false
     @Published var showUnsupportedVersionAlert = false
 
-    @Published var device: Peripheral?
+    @Published var flipper: Flipper?
     @Published var status: Status = .noDevice {
         didSet {
             switch status {
@@ -24,14 +24,14 @@ class DeviceViewModel: ObservableObject {
     }
 
     var protobufVersion: String? {
-        guard device?.isUnsupported == false else {
+        guard flipper?.isUnsupported == false else {
             return nil
         }
-        return device?.information?.protobufRevision ?? "-"
+        return flipper?.information?.protobufRevision ?? "-"
     }
 
     var firmwareVersion: String {
-        guard let info = device?.information else {
+        guard let info = flipper?.information else {
             return ""
         }
 
@@ -46,7 +46,7 @@ class DeviceViewModel: ObservableObject {
     }
 
     var firmwareBuild: String {
-        guard let info = device?.information else {
+        guard let info = flipper?.information else {
             return ""
         }
 
@@ -60,23 +60,23 @@ class DeviceViewModel: ObservableObject {
     }
 
     var internalSpace: String? {
-        guard device?.isUnsupported == false else {
+        guard flipper?.isUnsupported == false else {
             return nil
         }
-        return device?.storage?.internal?.description ?? ""
+        return flipper?.storage?.internal?.description ?? ""
     }
 
     var externalSpace: String? {
-        guard device?.isUnsupported == false else {
+        guard flipper?.isUnsupported == false else {
             return nil
         }
-        return device?.storage?.external?.description ?? ""
+        return flipper?.storage?.external?.description ?? ""
     }
 
     init() {
-        appState.$device
+        appState.$flipper
             .receive(on: DispatchQueue.main)
-            .assign(to: \.device, on: self)
+            .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)
 
         appState.$status

@@ -1,22 +1,22 @@
 class JSONDeviceStorage: DeviceStorage {
-    let storage: JSONStorage<Peripheral>
+    let storage: JSONStorage<Flipper>
 
-    var pairedDevice: Peripheral? {
+    var flipper: Flipper? {
         get { read() }
         set { write(newValue) }
     }
 
     init() {
-        storage = .init(for: Peripheral.self, filename: "paired_device")
+        storage = .init(for: Flipper.self, filename: "paired_device")
     }
 
-    func read() -> Peripheral? {
+    func read() -> Flipper? {
         storage.read()
     }
 
-    func write(_ peripheral: Peripheral?) {
-        if let peripheral = peripheral {
-            storage.write(peripheral)
+    func write(_ flipper: Flipper?) {
+        if let flipper = flipper {
+            storage.write(flipper)
         } else {
             storage.delete()
         }

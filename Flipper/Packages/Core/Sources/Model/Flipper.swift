@@ -2,7 +2,7 @@ import Bluetooth
 
 import struct Foundation.UUID
 
-public struct Peripheral: Equatable, Codable, Identifiable {
+public struct Flipper: Equatable, Codable, Identifiable {
     public let id: UUID
     public let name: String
     public var color: FlipperColor
@@ -40,7 +40,7 @@ fileprivate extension String {
     static var battery: String { "Battery" }
 }
 
-public extension Peripheral {
+public extension Flipper {
     init(_ source: BluetoothPeripheral) {
         self.id = source.id
         self.name = source.name
@@ -67,7 +67,7 @@ fileprivate extension String {
     static var protobufUUID: String { "03F6666D-AE5E-47C8-8E1A-5D873EB5A933" }
 }
 
-fileprivate extension Peripheral.DeviceInformation {
+fileprivate extension Flipper.DeviceInformation {
     init?(_ service: FlipperService) {
         guard service.id == .deviceInformation else { return nil }
 
@@ -91,7 +91,7 @@ fileprivate extension Peripheral.DeviceInformation {
     }
 }
 
-fileprivate extension Peripheral.Battery {
+fileprivate extension Flipper.Battery {
     init?(_ service: FlipperService) {
         guard
             service.id == .battery,
