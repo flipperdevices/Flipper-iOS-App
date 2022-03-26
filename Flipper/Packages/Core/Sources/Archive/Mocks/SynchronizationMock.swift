@@ -1,7 +1,7 @@
 import Combine
 
-class SynchronizationMock: SynchronizationProtocol {
-    var events: AnyPublisher<Synchronization.Event, Never> {
+class SyncMock: SyncProtocol {
+    var events: AnyPublisher<Sync.Event, Never> {
         Empty().eraseToAnyPublisher()
     }
 

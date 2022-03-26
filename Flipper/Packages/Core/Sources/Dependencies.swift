@@ -14,7 +14,7 @@ public func registerDependencies() {
     container.register(MobileArchive.init, as: MobileArchiveProtocol.self, isSingleton: true)
     container.register(DeletedArchive.init, as: DeletedArchiveProtocol.self, isSingleton: true)
     container.register(FlipperArchive.init, as: PeripheralArchiveProtocol.self, isSingleton: true)
-    container.register(Synchronization.init, as: SynchronizationProtocol.self, isSingleton: true)
+    container.register(Sync.init, as: SyncProtocol.self, isSingleton: true)
     container.register(JSONDeviceStorage.init, as: DeviceStorage.self, isSingleton: true)
     container.register(JSONArchiveStorage.init, as: ArchiveStorage.self, isSingleton: true)
     container.register(JSONDeletedStorage.init, as: DeletedStorage.self, isSingleton: true)

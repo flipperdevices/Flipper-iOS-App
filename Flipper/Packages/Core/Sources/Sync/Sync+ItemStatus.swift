@@ -1,6 +1,6 @@
 import Bluetooth
 
-extension Synchronization {
+extension Sync {
     enum ItemStatus: Equatable {
         case deleted
         case modified(Hash)
@@ -12,8 +12,8 @@ extension Synchronization {
 extension Manifest {
     func changesSince(
         _ manifest: Manifest
-    ) -> [Path: Synchronization.ItemStatus] {
-        var result: [Path: Synchronization.ItemStatus] = [:]
+    ) -> [Path: Sync.ItemStatus] {
+        var result: [Path: Sync.ItemStatus] = [:]
 
         let paths = Set(self.paths)
             .union(manifest.paths)
@@ -45,7 +45,7 @@ extension Manifest {
 
 // MARK: CustomStringConvertible
 
-extension Synchronization.ItemStatus: CustomStringConvertible {
+extension Sync.ItemStatus: CustomStringConvertible {
     public var description: String {
         switch self {
         case .deleted: return "deleted"

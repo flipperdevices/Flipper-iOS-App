@@ -2,7 +2,7 @@ import Inject
 import Logging
 import Foundation
 
-class Synchronization: SynchronizationProtocol {
+class Sync: SyncProtocol {
     private let logger = Logger(label: "synchronization")
 
     @Inject private var manifestStorage: ManifestStorage
@@ -94,7 +94,7 @@ class Synchronization: SynchronizationProtocol {
     }
 }
 
-extension Synchronization {
+extension Sync {
     func status(for item: ArchiveItem) -> ArchiveItem.Status {
         guard let hash = manifestStorage.manifest?[item.path] else {
             return .imported

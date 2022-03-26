@@ -9,7 +9,7 @@ public class Archive: ObservableObject {
 
     @Inject private var mobileArchive: MobileArchiveProtocol
     @Inject private var deletedArchive: DeletedArchiveProtocol
-    @Inject private var synchronization: SynchronizationProtocol
+    @Inject private var sync: SyncProtocol
 
     @Published public var items: [ArchiveItem] = []
     @Published public var deletedItems: [ArchiveItem] = []
@@ -23,7 +23,7 @@ public class Archive: ObservableObject {
     }
 
     private init() {
-        synchronization.events
+        sync.events
             .sink { [weak self] in
                 self?.onSyncEvent($0)
             }
@@ -45,7 +45,7 @@ public class Archive: ObservableObject {
         var items = [ArchiveItem]()
         for path in try await mobileArchive.manifest.paths {
             var item = try await mobileArchive.read(.init(path: path))
-            item.status = try await synchronization.status(for: item)
+            item.status = try await sync.status(for: item)
             items.append(item)
         }
         return items
@@ -60,7 +60,7 @@ public class Archive: ObservableObject {
         return items
     }
 
-    func onSyncEvent(_ event: Synchronization.Event) {
+    func onSyncEvent(_ event: Sync.Event) {
         Task {
             switch event {
             case .imported(let id):
@@ -144,7 +144,7 @@ extension Archive {
             return
         }
         var item = item
-        item.status = try await synchronization.status(for: item)
+        item.status = try await sync.status(for: item)
         try await mobileArchive.upsert(item)
         items.append(item)
 
@@ -165,7 +165,7 @@ extension Archive {
     func syncWithDevice() async {
         guard !isSyncronizing else { return }
         do {
-            try await synchronization.syncWithDevice()
+            try await sync.syncWithDevice()
         } catch {
             logger.critical("syncronization error: \(error)")
         }

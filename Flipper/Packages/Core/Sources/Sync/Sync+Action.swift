@@ -1,7 +1,7 @@
 import Bluetooth
 // swiftlint:disable nesting cyclomatic_complexity
 
-extension Synchronization {
+extension Sync {
     enum Action {
         case update(Target)
         case delete(Target)
@@ -16,7 +16,7 @@ extension Synchronization {
 
 // MARK: Planning
 
-extension Synchronization {
+extension Sync {
     func resolveActions(
         mobileChanges: [Path: ItemStatus],
         peripheralChanges: [Path: ItemStatus]
@@ -66,7 +66,7 @@ extension Synchronization {
 
 // MARK: CustomStringConvertible
 
-extension Synchronization.Action: CustomStringConvertible {
+extension Sync.Action: CustomStringConvertible {
     public var description: String {
         switch self {
         case .update(let target): return "update: \(target)"
@@ -76,7 +76,7 @@ extension Synchronization.Action: CustomStringConvertible {
     }
 }
 
-extension Synchronization.Action.Target: CustomStringConvertible {
+extension Sync.Action.Target: CustomStringConvertible {
     public var description: String {
         switch self {
         case .mobile: return "mobile"
