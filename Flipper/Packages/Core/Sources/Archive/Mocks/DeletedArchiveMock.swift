@@ -1,5 +1,7 @@
+import Bluetooth
+
 class DeletedArchiveMock: DeletedArchiveProtocol {
-    var manifest: Manifest { .init(items: []) }
+    var manifest: Manifest { .init([:]) }
 
     func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem {
         fatalError("not implemented")

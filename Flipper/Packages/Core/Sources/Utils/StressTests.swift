@@ -1,5 +1,6 @@
 import Inject
 import Foundation
+import Bluetooth
 
 // swiftlint:disable nesting
 
@@ -42,10 +43,9 @@ public class StressTest {
     }
 
     public init() {
-        connector.connectedPeripherals
-            .sink { [weak self] in
-                self?.flipper = $0.first
-            }
+        connector.connected
+            .map { $0.first }
+            .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)
     }
 

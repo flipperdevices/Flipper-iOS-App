@@ -1,5 +1,6 @@
 import Inject
 import Logging
+import Bluetooth
 
 public func registerDependencies() {
     let container = Container.shared
@@ -7,9 +8,8 @@ public func registerDependencies() {
     LoggingSystem.bootstrap(FileLogHandler.factory)
     container.register(JSONLoggerStorage.init, as: LoggerStorage.self, isSingleton: true)
 
-    let central = FlipperCentral()
-    container.register(instance: central, as: BluetoothCentral.self)
-    container.register(instance: central, as: BluetoothConnector.self)
+    Bluetooth.registerDependencies()
+
     container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
     container.register(MobileArchive.init, as: MobileArchiveProtocol.self, isSingleton: true)
     container.register(DeletedArchive.init, as: DeletedArchiveProtocol.self, isSingleton: true)

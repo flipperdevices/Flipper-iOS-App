@@ -1,4 +1,4 @@
-extension Peripheral.Service {
+extension Peripheral {
     public struct DeviceInformation: Equatable, Codable {
         public var manufacturerName: String
         public var serialNumber: String
@@ -8,7 +8,7 @@ extension Peripheral.Service {
     }
 }
 
-extension Peripheral.Service.DeviceInformation {
+extension Peripheral.DeviceInformation {
     init(
         manufacturerName: [UInt8],
         serialNumber: [UInt8],

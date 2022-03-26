@@ -1,3 +1,4 @@
+import Bluetooth
 // swiftlint:disable nesting cyclomatic_complexity
 
 extension Synchronization {
@@ -17,10 +18,10 @@ extension Synchronization {
 
 extension Synchronization {
     func resolveActions(
-        mobileChanges: [ArchiveItem.ID: ItemStatus],
-        peripheralChanges: [ArchiveItem.ID: ItemStatus]
-    ) -> [ArchiveItem.ID: Action] {
-        var result: [ArchiveItem.ID: Action] = [:]
+        mobileChanges: [Path: ItemStatus],
+        peripheralChanges: [Path: ItemStatus]
+    ) -> [Path: Action] {
+        var result: [Path: Action] = [:]
 
         for id in Set(mobileChanges.keys).union(peripheralChanges.keys) {
             let mobileItemState = mobileChanges[id]

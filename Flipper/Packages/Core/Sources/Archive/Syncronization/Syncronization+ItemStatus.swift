@@ -1,3 +1,5 @@
+import Bluetooth
+
 extension Synchronization {
     enum ItemStatus: Equatable {
         case deleted
@@ -10,11 +12,11 @@ extension Synchronization {
 extension Manifest {
     func changesSince(
         _ manifest: Manifest
-    ) -> [ArchiveItem.ID: Synchronization.ItemStatus] {
-        var result: [ArchiveItem.ID: Synchronization.ItemStatus] = [:]
+    ) -> [Path: Synchronization.ItemStatus] {
+        var result: [Path: Synchronization.ItemStatus] = [:]
 
-        let paths = Set(self.items.map { $0.id })
-            .union(manifest.items.map { $0.id })
+        let paths = Set(self.paths)
+            .union(manifest.paths)
 
         for path in paths {
             let newItem = self[path]
@@ -28,10 +30,10 @@ extension Manifest {
             switch (newItem, savedItem) {
             case (nil, .some):
                 result[path] = .deleted
-            case let (.some(item), nil):
-                result[path] = .modified(item.hash)
-            case let (.some(item), .some):
-                result[path] = .modified(item.hash)
+            case let (.some(hash), nil):
+                result[path] = .modified(hash)
+            case let (.some(hash), .some):
+                result[path] = .modified(hash)
             default:
                 fatalError("unreachable")
             }

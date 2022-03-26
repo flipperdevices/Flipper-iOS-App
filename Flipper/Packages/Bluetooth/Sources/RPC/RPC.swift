@@ -1,4 +1,5 @@
 import Inject
+import Combine
 import Logging
 import struct Foundation.Date
 
@@ -8,7 +9,7 @@ public class RPC {
     public static let shared: RPC = .init()
 
     @Inject private var connector: BluetoothConnector
-    private var disposeBag: DisposeBag = .init()
+    private var subscriptions = [AnyCancellable]()
 
     private var session: Session?
     private var peripheral: BluetoothPeripheral? {
@@ -17,11 +18,10 @@ public class RPC {
     private var onScreenFrame: ((ScreenFrame) -> Void)?
 
     private init() {
-        connector.connectedPeripherals
-            .sink { [weak self] peripherals in
-                self?.peripheral = peripherals.first
-            }
-            .store(in: &disposeBag)
+        connector.connected
+            .map { $0.first }
+            .assign(to: \.peripheral, on: self)
+            .store(in: &subscriptions)
     }
 
     private func updateSession() {

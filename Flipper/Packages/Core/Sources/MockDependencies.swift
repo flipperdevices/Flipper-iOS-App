@@ -1,5 +1,6 @@
 import Inject
 import Logging
+import Bluetooth
 
 public func registerMockDependencies() {
     let container = Container.shared
@@ -7,9 +8,8 @@ public func registerMockDependencies() {
     LoggingSystem.bootstrap(FileLogHandler.factory)
     container.register(LoggerStorageMock.init, as: LoggerStorage.self, isSingleton: true)
 
-    let central = BluetoothCentralMock(status: .notReady(.preparing))
-    container.register(instance: central, as: BluetoothCentral.self)
-    container.register(instance: central, as: BluetoothConnector.self)
+    Bluetooth.registerMockDependencies()
+
     container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
     container.register(MobileArchiveMock.init, as: MobileArchiveProtocol.self, isSingleton: true)
     container.register(DeletedArchiveMock.init, as: DeletedArchiveProtocol.self, isSingleton: true)

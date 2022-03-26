@@ -2,23 +2,20 @@
 import PackageDescription
 
 let package = Package(
-    name: "Core",
+    name: "Bluetooth",
     platforms: [
         .iOS(.v14),
         .macOS(.v11)
     ],
     products: [
         .library(
-            name: "Core",
-            targets: ["Core"])
+            name: "Bluetooth",
+            targets: ["Bluetooth"])
     ],
     dependencies: [
         .package(
             name: "Inject",
             path: "../Inject"),
-        .package(
-            name: "Bluetooth",
-            path: "../Bluetooth"),
         .package(
             url: "https://github.com/apple/swift-collections.git",
             .upToNextMajor(from: "1.0.0")),
@@ -32,18 +29,17 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "Core",
+            name: "Bluetooth",
             dependencies: [
                 "Inject",
-                "Bluetooth",
                 "SwiftProtobuf",
                 .product(name: "Collections", package: "swift-collections"),
                 .product(name: "Logging", package: "swift-log")
             ],
             path: "Sources"),
         .testTarget(
-            name: "CoreTests",
-            dependencies: ["Core"],
+            name: "BluetoothTests",
+            dependencies: ["Bluetooth"],
             path: "Tests")
     ]
 )

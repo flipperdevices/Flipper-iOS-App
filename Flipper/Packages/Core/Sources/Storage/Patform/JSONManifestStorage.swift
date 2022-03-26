@@ -1,3 +1,5 @@
+import Bluetooth
+
 class JSONManifestStorage: ManifestStorage {
     let jsonStorage = JSONStorage<Manifest>(
         for: Manifest.self,

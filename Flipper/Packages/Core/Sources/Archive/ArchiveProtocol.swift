@@ -1,3 +1,5 @@
+import Bluetooth
+
 protocol ArchiveProtocol {
     var manifest: Manifest { get async throws }
 

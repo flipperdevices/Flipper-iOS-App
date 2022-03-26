@@ -1,3 +1,5 @@
+import Bluetooth
+
 class FlipperArchive: PeripheralArchiveProtocol {
     let rpc: RPC = .shared
 
@@ -5,7 +7,7 @@ class FlipperArchive: PeripheralArchiveProtocol {
 
     var manifest: Manifest {
         get async throws {
-            try await _manifest
+            try await rpc.manifest
         }
     }
 
@@ -14,7 +16,7 @@ class FlipperArchive: PeripheralArchiveProtocol {
             at: id.path,
             priority: .background)
         return try .init(
-            filename: id.filename,
+            path: id.path,
             content: .init(decoding: bytes, as: UTF8.self))
     }
 

@@ -1,3 +1,5 @@
+import Bluetooth
+
 public enum Status: CustomStringConvertible {
     case noDevice
     case unsupportedDevice
@@ -36,7 +38,7 @@ public enum Status: CustomStringConvertible {
 }
 
 extension Status {
-    init(_ state: Peripheral.State?) {
+    init(_ state: FlipperState?) {
         guard let state = state else {
             self = .noDevice
             return

@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import Bluetooth
 
 struct RemoteContolView: View {
     @StateObject var viewModel: RemoteContolViewModel

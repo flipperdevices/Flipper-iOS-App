@@ -1,7 +1,8 @@
 import Core
 import Combine
-import Logging
+import Bluetooth
 import Foundation
+import Logging
 
 @MainActor
 class RemoteContolViewModel: ObservableObject {

@@ -2,43 +2,41 @@
 
 // TODO: use manifest api when available
 
-extension FlipperArchive {
+extension RPC {
     private var root: Path { .init(components: ["ext"]) }
 
-    var _manifest: Manifest {
+    public var manifest: Manifest {
         get async throws {
-            var items = [Manifest.Item]()
+            var items = [Path: Hash]()
 
             try await createDirectories()
 
             for path in try await listAllFiles() {
-                let hash = try await getFileHash(at: path)
-                let id = try ArchiveItem.ID(path: path)
-                items.append(.init(id: id, hash: hash))
+                items[path] = try await getFileHash(at: path)
             }
 
-            return .init(items: items)
+            return .init(items)
         }
     }
 
     private func createDirectories() async throws {
-        let list = try await rpc.listDirectory(at: root).map { $0.name }
+        let list = try await listDirectory(at: root).map { $0.name }
 
-        let missing = ArchiveItem.FileType.allCases.filter {
+        let missing = FileType.allCases.filter {
             !list.contains($0.location)
         }.map {
             root.appending($0.location)
         }
 
         for path in missing {
-            try await rpc.createFile(at: path, isDirectory: true)
+            try await createFile(at: path, isDirectory: true)
         }
     }
 
     private func listAllFiles() async throws -> [Path] {
         var result: [Path] = .init()
 
-        for type in ArchiveItem.FileType.allCases {
+        for type in FileType.allCases {
             let path = root.appending(type.location)
 
             let files = try await list(at: path)
@@ -53,19 +51,19 @@ extension FlipperArchive {
     }
 
     private func list(at path: Path) async throws -> [Element] {
-        try await rpc.listDirectory(
+        try await listDirectory(
             at: path,
             priority: .background)
     }
 
     private func getFileHash(at path: Path) async throws -> Hash {
-        .init(try await rpc.calculateFileHash(at: path, priority: .background))
+        .init(try await calculateFileHash(at: path, priority: .background))
     }
 }
 
 // MARK: Filter
 
-fileprivate extension Array where Element == Core.Element {
+fileprivate extension Array where Element == Bluetooth.Element {
     var files: [String] {
         self.compactMap {
             guard case .file(let file) = $0 else {

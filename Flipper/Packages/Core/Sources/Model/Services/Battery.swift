@@ -1,4 +1,4 @@
-extension Peripheral.Service {
+extension Peripheral {
     public struct Battery: Equatable, Codable {
         public let level: Int
 

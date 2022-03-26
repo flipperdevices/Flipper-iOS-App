@@ -1,4 +1,5 @@
 import CoreBluetooth
+import Combine
 import Logging
 
 class FlipperPeripheral: NSObject, BluetoothPeripheral {
@@ -9,7 +10,7 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
 
     var id: UUID
     var name: String
-    var color: Peripheral.Color
+    var color: FlipperColor
 
     var isPairingFailed = false
     var hasProtobufVersion = false
@@ -22,29 +23,29 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
             peripheral.maximumWriteValueLength(for: .withoutResponse))
     }
 
-    var state: Peripheral.State {
+    var state: FlipperState {
         .init(peripheral.state)
     }
 
-    var services: [Peripheral.Service] {
-        peripheral.services?.map { Peripheral.Service($0) } ?? []
+    var services: [FlipperService] {
+        peripheral.services?.map { FlipperService($0) } ?? []
     }
 
-    var info: SafePublisher<Void> {
+    var info: AnyPublisher<Void, Never> {
         infoSubject.eraseToAnyPublisher()
     }
 
-    var canWrite: SafePublisher<Void> {
+    var canWrite: AnyPublisher<Void, Never> {
         canWriteSubject.eraseToAnyPublisher()
     }
 
-    var received: SafePublisher<Data> {
+    var received: AnyPublisher<Data, Never> {
         receivedDataSubject.eraseToAnyPublisher()
     }
 
-    fileprivate let infoSubject = SafeSubject<Void>()
-    fileprivate let canWriteSubject = SafeSubject<Void>()
-    fileprivate let receivedDataSubject = SafeSubject<Data>()
+    fileprivate let infoSubject = PassthroughSubject<Void, Never>()
+    fileprivate let canWriteSubject = PassthroughSubject<Void, Never>()
+    fileprivate let receivedDataSubject = PassthroughSubject<Data, Never>()
 
     init?(
         peripheral: CBPeripheral,
@@ -70,11 +71,8 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
         // nothing here yet
     }
 
-    func onError(_ error: CBATTError?) {
-        guard let error = error else {
-            return
-        }
-        if error.code == .insufficientEncryption {
+    func onError(_ error: Swift.Error) {
+        if (error as? CBATTError)?.code == .insufficientEncryption {
             isPairingFailed = true
         }
     }
@@ -180,7 +178,7 @@ extension FlipperPeripheral: CBPeripheralDelegate {
         error: Swift.Error?
     ) {
         guard error == nil else {
-            onError(error as? CBATTError)
+            onError(error.unsafelyUnwrapped)
             return
         }
         switch characteristic.uuid {
@@ -216,7 +214,7 @@ extension FlipperPeripheral: CBPeripheralDelegate {
     }
 }
 
-extension Peripheral.Color {
+extension FlipperColor {
     init(_ service: CBUUID?) {
         switch service {
         case .some(.flipperZeroBlack): self = .black
@@ -226,7 +224,7 @@ extension Peripheral.Color {
     }
 }
 
-extension Peripheral.State {
+extension FlipperState {
     init(_ source: CBPeripheralState) {
         // swiftlint:disable switch_case_on_newline
         switch source {
@@ -239,7 +237,7 @@ extension Peripheral.State {
     }
 }
 
-extension Peripheral.Service {
+extension FlipperService {
     init(_ source: CBService) {
         self.name = source.uuid.description
         self.characteristics = source.characteristics?
@@ -247,7 +245,7 @@ extension Peripheral.Service {
     }
 }
 
-extension Peripheral.Service.Characteristic {
+extension FlipperService.Characteristic {
     init(_ source: CBCharacteristic) {
         self.name = source.uuid.description
         switch source.value {

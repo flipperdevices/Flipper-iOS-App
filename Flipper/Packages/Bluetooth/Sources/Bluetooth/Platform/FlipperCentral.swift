@@ -1,7 +1,9 @@
+import Combine
 import CoreBluetooth
 import Collections
 import Foundation
 import Logging
+import UIKit
 
 class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     private let logger = Logger(label: "central")
@@ -20,66 +22,56 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
         super.init()
     }
 
+    var colorService: [UUID: CBUUID] = [:]
+
     // MARK: BluetoothCentral
 
-    private let statusSubject = SafeValueSubject(BluetoothStatus.notReady(.preparing))
-    private let peripheralsSubject = SafeValueSubject([BluetoothPeripheral]())
-
     var status: SafePublisher<BluetoothStatus> {
-        self.statusSubject.eraseToAnyPublisher()
+        _status.eraseToAnyPublisher()
     }
+    let _status: SafeValueSubject<BluetoothStatus> = {
+        .init(.notReady(.preparing))
+    }()
 
-    var peripherals: SafePublisher<[BluetoothPeripheral]> {
-        self.peripheralsSubject.eraseToAnyPublisher()
+    var discovered: SafePublisher<[BluetoothPeripheral]> {
+        _discovered.eraseToAnyPublisher()
     }
-
-    private var colorService: [UUID: CBUUID] = [:]
-
-    private var peripheralsMap: OrderedDictionary<UUID, FlipperPeripheral> = [:] {
-        didSet { publishPeripherals() }
-    }
-
-    private func publishPeripherals() {
-        peripheralsSubject.value = [FlipperPeripheral](peripheralsMap.values)
-    }
+    let _discovered: SafeValueSubject<[BluetoothPeripheral]> =  {
+        .init([])
+    }()
 
     func startScanForPeripherals() {
-        if self.statusSubject.value == .ready {
+        if _status.value == .ready {
             self.manager.scanForPeripherals(withServices: flipperServiceIDs)
         }
     }
 
     func stopScanForPeripherals() {
-        if self.manager.isScanning {
-            self.peripheralsMap.removeAll()
-            self.manager.stopScan()
+        if manager.isScanning {
+            _discovered.value.removeAll()
+            manager.stopScan()
         }
     }
 
     // MARK: BluetoothConnector
 
-    private let connectedPeripheralsSubject = SafeValueSubject([BluetoothPeripheral]())
-
-    var connectedPeripherals: SafePublisher<[BluetoothPeripheral]> {
-        self.connectedPeripheralsSubject.eraseToAnyPublisher()
+    var connected: SafePublisher<[BluetoothPeripheral]> {
+        _connected.eraseToAnyPublisher()
     }
-
-    private var connectedPeripheralsMap = [UUID: FlipperPeripheral]() {
-        didSet { publishConnectedPeripherals() }
-    }
-
-    private func publishConnectedPeripherals() {
-        connectedPeripheralsSubject.value = [FlipperPeripheral](connectedPeripheralsMap.values)
-    }
+    let _connected: SafeValueSubject<[BluetoothPeripheral]> = {
+        .init([])
+    }()
 
     func connect(to identifier: UUID) {
         manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
-            manager.connect($0)
-
-            connectedPeripheralsMap[$0.identifier] = .init(
+            guard let peripheral = FlipperPeripheral(
                 peripheral: $0,
-                colorService: colorService[$0.identifier])
-
+                colorService: colorService[$0.identifier]
+            ) else {
+                return
+            }
+            manager.connect($0)
+            _connected[$0.identifier] = peripheral
             manager.registerForConnectionEvents(options: [
                 .peripheralUUIDs: [$0.identifier]
             ])
@@ -90,7 +82,7 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
 
     func catchPairingIssue(for identifier: UUID) {
         Task {
-            guard let peripheral = connectedPeripheralsMap[identifier] else {
+            guard let peripheral = _connected[identifier] else {
                 return
             }
             while peripheral.state == .connecting {
@@ -105,25 +97,25 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     func disconnect(from identifier: UUID) {
         manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
             manager.cancelPeripheralConnection($0)
-            connectedPeripheralsMap[$0.identifier] = nil
+            _connected[$0.identifier] = nil
         }
     }
 
     func didConnect(_ peripheral: CBPeripheral) {
-        assert(connectedPeripheralsMap[peripheral.identifier] != nil)
-        publishConnectedPeripherals()
-        connectedPeripheralsMap[peripheral.identifier]?.onConnect()
+        assert(_connected[peripheral.identifier] != nil)
+        _connected.send(_connected.value)
+        _connected[peripheral.identifier]?.onConnect()
     }
 
     func didDisconnect(_ peripheral: CBPeripheral) {
-        if let device = connectedPeripheralsMap[peripheral.identifier] {
-            connectedPeripheralsMap[peripheral.identifier] = nil
+        if let device = _connected[peripheral.identifier] {
+            _connected[peripheral.identifier] = nil
             device.onDisconnect()
         }
     }
 
-    func didFailPairing(_ peripheral: FlipperPeripheral) {
-        connectedPeripheralsMap[peripheral.id] = nil
+    func didFailPairing(_ peripheral: BluetoothPeripheral) {
+        _connected[peripheral.id] = nil
     }
 }
 
@@ -135,9 +127,9 @@ extension FlipperCentral: CBCentralManagerDelegate {
 
     func centralManagerDidUpdateState(_ manager: CBCentralManager) {
         if manager.state != .poweredOn {
-            self.peripheralsMap.removeAll()
+            _discovered.value.removeAll()
         }
-        self.statusSubject.value = .init(manager.state)
+        _status.value = .init(manager.state)
     }
 
     // MARK: Did discover
@@ -151,7 +143,7 @@ extension FlipperCentral: CBCentralManagerDelegate {
         self.colorService[peripheral.identifier] =
             (advertisementData["kCBAdvDataServiceUUIDs"] as? [CBUUID])?.first
 
-        self.peripheralsMap[peripheral.identifier] = .init(
+        _discovered[peripheral.identifier] = FlipperPeripheral(
             peripheral: peripheral,
             colorService: colorService[peripheral.identifier])
     }
@@ -225,5 +217,33 @@ fileprivate extension BluetoothStatus {
         @unknown default:
             self = .notReady(.unsupported)
         }
+    }
+}
+
+extension Array where Element == BluetoothPeripheral {
+    subscript(_ id: UUID) -> Element? {
+        get {
+            first { $0.id == id }
+        }
+        set {
+            if let index = firstIndex(where: { $0.id == id }) {
+                if let newValue = newValue {
+                    self[index] = newValue
+                } else {
+                    remove(at: index)
+                }
+            } else {
+                if let newValue = newValue {
+                    append(newValue)
+                }
+            }
+        }
+    }
+}
+
+extension SafeValueSubject where Output == [BluetoothPeripheral] {
+    subscript(_ id: UUID) -> Output.Element? {
+        get { self.value[id] }
+        set { self.value[id] = newValue }
     }
 }

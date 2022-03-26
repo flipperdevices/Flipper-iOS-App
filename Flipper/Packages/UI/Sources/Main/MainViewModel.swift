@@ -1,6 +1,7 @@
 import Core
-import Combine
 import Inject
+import Bluetooth
+import Combine
 import SwiftUI
 
 class MainViewModel: ObservableObject {

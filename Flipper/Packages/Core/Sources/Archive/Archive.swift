@@ -43,8 +43,8 @@ public class Archive: ObservableObject {
 
     func loadArchive() async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
-        for next in try await mobileArchive.manifest.items {
-            var item = try await mobileArchive.read(next.id)
+        for path in try await mobileArchive.manifest.paths {
+            var item = try await mobileArchive.read(.init(path: path))
             item.status = try await synchronization.status(for: item)
             items.append(item)
         }
@@ -53,8 +53,8 @@ public class Archive: ObservableObject {
 
     func loadDeleted() async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
-        for next in try await deletedArchive.manifest.items {
-            let item = try await deletedArchive.read(next.id)
+        for path in try await deletedArchive.manifest.paths {
+            let item = try await deletedArchive.read(.init(path: path))
             items.append(item)
         }
         return items
@@ -139,7 +139,7 @@ extension Archive {
     public func restore(_ item: ArchiveItem) async throws {
         let manifest = try await mobileArchive.manifest
         // TODO: resolve conflicts
-        guard manifest[item.id] == nil else {
+        guard manifest[item.path] == nil else {
             logger.error("alredy exists")
             return
         }

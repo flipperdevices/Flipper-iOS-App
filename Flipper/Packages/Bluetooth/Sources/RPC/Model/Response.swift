@@ -1,4 +1,4 @@
-import UIKit
+import Foundation
 import SwiftProtobuf
 
 public enum Response: Equatable {

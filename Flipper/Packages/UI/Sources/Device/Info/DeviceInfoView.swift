@@ -23,9 +23,9 @@ struct DeviceInfoView: View {
 }
 
 struct DeviceInformationService: View {
-    let deviceInformation: Peripheral.Service.DeviceInformation
+    let deviceInformation: Peripheral.DeviceInformation
 
-    init(_ deviceInformation: Peripheral.Service.DeviceInformation) {
+    init(_ deviceInformation: Peripheral.DeviceInformation) {
         self.deviceInformation = deviceInformation
     }
 

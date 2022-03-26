@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import Bluetooth
 
 public struct RootView: View {
     @ObservedObject var viewModel: RootViewModel

@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import Logging
 
@@ -18,7 +19,7 @@ class FlipperSession: Session {
 
     var onMessage: ((Message) -> Void)?
 
-    var disposeBag = DisposeBag()
+    var subscriptions = [AnyCancellable]()
 
     init(peripheral: BluetoothPeripheral) {
         self.peripheral = peripheral
@@ -30,13 +31,13 @@ class FlipperSession: Session {
             .sink { [weak self] in
                 self?.didReceiveData($0)
             }
-            .store(in: &disposeBag)
+            .store(in: &subscriptions)
 
         peripheral.canWrite
             .sink { [weak self] in
                 self?.onCanWrite()
             }
-            .store(in: &disposeBag)
+            .store(in: &subscriptions)
     }
 
     func send(

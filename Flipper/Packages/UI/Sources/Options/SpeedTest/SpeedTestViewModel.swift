@@ -1,6 +1,7 @@
 import Core
 import Combine
 import Logging
+import Bluetooth
 import struct Foundation.Date
 
 @MainActor

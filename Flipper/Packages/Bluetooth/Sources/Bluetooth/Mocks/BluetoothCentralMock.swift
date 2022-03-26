@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import Collections
 
@@ -11,14 +12,16 @@ class BluetoothCentralMock: BluetoothCentral, BluetoothConnector {
 
     // MARK: BluetoothCentral
 
-    private let statusSubject = SafeValueSubject(BluetoothStatus.ready)
-    private let peripheralsSubject = SafeValueSubject([BluetoothPeripheral]())
+    private let statusSubject: CurrentValueSubject<BluetoothStatus, Never> =
+        .init(BluetoothStatus.ready)
+    private let peripheralsSubject: CurrentValueSubject<[BluetoothPeripheral], Never> =
+        .init([BluetoothPeripheral]())
 
-    var status: SafePublisher<BluetoothStatus> {
+    var status: AnyPublisher<BluetoothStatus, Never> {
         self.statusSubject.eraseToAnyPublisher()
     }
 
-    var peripherals: SafePublisher<[BluetoothPeripheral]> {
+    var discovered: AnyPublisher<[BluetoothPeripheral], Never> {
         self.peripheralsSubject.eraseToAnyPublisher()
     }
 
@@ -53,9 +56,10 @@ class BluetoothCentralMock: BluetoothCentral, BluetoothConnector {
 
     // MARK: BluetoothConnector
 
-    private let connectedPeripheralsSubject = SafeValueSubject([BluetoothPeripheral]())
+    private let connectedPeripheralsSubject: CurrentValueSubject<[BluetoothPeripheral], Never>
+        = .init([])
 
-    var connectedPeripherals: SafePublisher<[BluetoothPeripheral]> {
+    var connected: AnyPublisher<[BluetoothPeripheral], Never> {
         self.connectedPeripheralsSubject.eraseToAnyPublisher()
     }
 

@@ -13,7 +13,7 @@ class Synchronization: SynchronizationProtocol {
     var events: SafePublisher<Event> { eventsSubject.eraseToAnyPublisher() }
 
     func syncWithDevice() async throws {
-        let lastManifest = manifestStorage.manifest ?? .init(items: [])
+        let lastManifest = manifestStorage.manifest ?? .init([:])
 
         let mobileChanges = try await mobileArchive
             .manifest
@@ -27,7 +27,8 @@ class Synchronization: SynchronizationProtocol {
             mobileChanges: mobileChanges,
             peripheralChanges: peripheralChanges)
 
-        for (id, action) in actions {
+        for (path, action) in actions {
+            let id: ArchiveItem.ID = .init(path: path)
             switch action {
             case .update(.mobile): try await updateOnMobile(id)
             case .delete(.mobile): try await deleteOnMobile(id)
@@ -43,7 +44,7 @@ class Synchronization: SynchronizationProtocol {
     private func updateOnMobile(_ id: ArchiveItem.ID) async throws {
         logger.info("update on mobile \(id)")
         var item = try await peripheralArchive.read(id)
-        if try await mobileArchive.manifest[id] != nil {
+        if try await mobileArchive.manifest[id.path] != nil {
             item.note = try await mobileArchive.read(id).note
         }
         try await mobileArchive.upsert(item)
@@ -95,10 +96,9 @@ class Synchronization: SynchronizationProtocol {
 
 extension Synchronization {
     func status(for item: ArchiveItem) -> ArchiveItem.Status {
-        let items = manifestStorage.manifest?.items ?? []
-        guard let last = items.first(where: { $0.id == item.id }) else {
+        guard let hash = manifestStorage.manifest?[item.path] else {
             return .imported
         }
-        return last.hash == item.hash ? .synchronized : .modified
+        return hash == item.hash ? .synchronized : .modified
     }
 }

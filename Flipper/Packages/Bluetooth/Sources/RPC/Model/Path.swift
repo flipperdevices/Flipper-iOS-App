@@ -5,6 +5,10 @@ public struct Path: Equatable, Hashable, Codable {
         components.isEmpty
     }
 
+    public var lastComponent: String? {
+        components.last
+    }
+
     public init(string: String) {
         self.components = string.split(separator: "/").map(String.init)
     }

@@ -1,6 +1,7 @@
 import Core
-import Combine
 import Inject
+import Combine
+import Bluetooth
 import Foundation
 
 @MainActor

@@ -1,7 +1,8 @@
 import Core
-import Combine
 import Inject
+import Bluetooth
 import Foundation
+import Combine
 
 @MainActor
 class DeviceViewModel: ObservableObject {

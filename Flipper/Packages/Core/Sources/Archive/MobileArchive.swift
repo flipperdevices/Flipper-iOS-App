@@ -1,4 +1,5 @@
 import Inject
+import Bluetooth
 
 class MobileArchive: MobileArchiveProtocol {
     @Inject var storage: ArchiveStorage
@@ -10,9 +11,11 @@ class MobileArchive: MobileArchiveProtocol {
     }
 
     var manifest: Manifest {
-        .init(items: items.values.map {
-            .init(id: $0.id, hash: $0.hash)
-        })
+        var items: [Path: Hash] = [:]
+        for item in self.items.values {
+            items[item.path] = item.hash
+        }
+        return .init(items)
     }
 
     init() {

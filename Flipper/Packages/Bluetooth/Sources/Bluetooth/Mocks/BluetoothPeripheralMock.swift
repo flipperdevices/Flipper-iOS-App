@@ -1,13 +1,14 @@
+import Combine
 import Foundation
 
 class BluetoothPeripheralMock: BluetoothPeripheral {
     var id: UUID
     var name: String
-    var color: Peripheral.Color
+    var color: FlipperColor
 
-    var state: Peripheral.State = .disconnected
+    var state: FlipperState = .disconnected
 
-    var services: [Peripheral.Service] = [
+    var services: [FlipperService] = [
         .init(
             name: .deviceInformation,
             characteristics: [
@@ -28,26 +29,26 @@ class BluetoothPeripheralMock: BluetoothPeripheral {
     var didDiscoverDeviceInformation: Bool { true }
     var maximumWriteValueLength: Int { 512 }
 
-    var info: SafePublisher<Void> {
+    var info: AnyPublisher<Void, Never> {
         infoSubject.eraseToAnyPublisher()
     }
 
-    var canWrite: SafePublisher<Void> {
+    var canWrite: AnyPublisher<Void, Never> {
         canWriteSubject.eraseToAnyPublisher()
     }
 
-    var received: SafePublisher<Data> {
+    var received: AnyPublisher<Data, Never> {
         receivedDataSubject.eraseToAnyPublisher()
     }
 
-    fileprivate let infoSubject = SafeSubject<Void>()
-    fileprivate let canWriteSubject = SafeSubject<Void>()
-    fileprivate let receivedDataSubject = SafeSubject<Data>()
+    fileprivate let infoSubject = PassthroughSubject<Void, Never>()
+    fileprivate let canWriteSubject = PassthroughSubject<Void, Never>()
+    fileprivate let receivedDataSubject = PassthroughSubject<Data, Never>()
 
     init(
         id: UUID = .init(),
         name: String = "FlipMock",
-        color: Peripheral.Color = .unknown
+        color: FlipperColor = .unknown
     ) {
         self.id = id
         self.name = name
@@ -62,8 +63,8 @@ class BluetoothPeripheralMock: BluetoothPeripheral {
         print("on disconnect")
     }
 
-    func onFailToConnect() {
-        print("on fail to connect")
+    func onError(_ error: Swift.Error) {
+        print("on error", error)
     }
 
     func send(_ data: Data) {

@@ -2,6 +2,7 @@ import Core
 import Combine
 import Inject
 import Foundation
+import Bluetooth
 
 @MainActor
 class ConnectionViewModel: ObservableObject {
@@ -56,13 +57,13 @@ class ConnectionViewModel: ObservableObject {
             .assign(to: \.state, on: self)
             .store(in: &disposeBag)
 
-        central.peripherals
+        central.discovered
             .receive(on: DispatchQueue.main)
             .filter { !$0.isEmpty }
             .assign(to: \.bluetoothPeripherals, on: self)
             .store(in: &disposeBag)
 
-        connector.connectedPeripherals
+        connector.connected
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.updatePeripherals()

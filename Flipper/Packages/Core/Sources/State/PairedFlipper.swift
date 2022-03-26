@@ -1,5 +1,7 @@
-import Combine
 import Inject
+import Bluetooth
+import Combine
+
 import struct Foundation.UUID
 
 class PairedFlipper: PairedDevice, ObservableObject {
@@ -31,7 +33,7 @@ class PairedFlipper: PairedDevice, ObservableObject {
             }
             .store(in: &disposeBag)
 
-        connector.connectedPeripherals
+        connector.connected
             .sink { [weak self] peripherals in
                 self?.onConnectedPeripherals(peripherals)
             }

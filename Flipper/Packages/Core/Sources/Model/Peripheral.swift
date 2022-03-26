@@ -1,31 +1,25 @@
-import struct Foundation.UUID
+import Bluetooth
 
-// FIXME: this is actually UI model, move there
+import struct Foundation.UUID
 
 public struct Peripheral: Equatable, Codable, Identifiable {
     public let id: UUID
     public let name: String
-    public var color: Color
-    public var state: State = .disconnected
-    public var information: Service.DeviceInformation?
-    public var battery: Service.Battery?
+    public var color: FlipperColor
+    public var state: FlipperState = .disconnected
+    public var information: DeviceInformation?
+    public var battery: Battery?
     public var storage: StorageInfo?
 
     public var isUnsupported = false
 
-    public enum Color: Codable {
-        case unknown
-        case black
-        case white
-    }
-
     public init(
         id: UUID,
         name: String,
-        color: Color,
-        state: Peripheral.State = .disconnected,
-        information: Service.DeviceInformation? = nil,
-        battery: Service.Battery? = nil
+        color: FlipperColor,
+        state: FlipperState = .disconnected,
+        information: DeviceInformation? = nil,
+        battery: Battery? = nil
     ) {
         self.id = id
         self.name = name
@@ -33,28 +27,6 @@ public struct Peripheral: Equatable, Codable, Identifiable {
         self.state = state
         self.information = information
         self.battery = battery
-    }
-
-    public enum State: Equatable, Codable {
-        case disconnected
-        case connecting
-        case connected
-        case disconnecting
-    }
-
-    public struct Service: Equatable, Codable, Identifiable {
-        public var id: String { name }
-
-        public var name: String
-        public var characteristics: [Characteristic] = []
-
-        // swiftlint:disable nesting
-        public struct Characteristic: Equatable, Codable, Identifiable {
-            public var id: String { name }
-
-            public var name: String
-            public var value: [UInt8]
-        }
     }
 
     public struct StorageInfo: Equatable, Codable {
@@ -77,11 +49,11 @@ public extension Peripheral {
 
         self.information = source.services
             .first { $0.id == .deviceInformation }
-            .map(Service.DeviceInformation.init) ?? nil
+            .map(DeviceInformation.init) ?? nil
 
         self.battery = source.services
             .first { $0.id == .battery }
-            .map(Service.Battery.init) ?? nil
+            .map(Battery.init) ?? nil
 
         self.isUnsupported = !source.hasProtobufVersion
     }
@@ -95,8 +67,8 @@ fileprivate extension String {
     static var protobufUUID: String { "03F6666D-AE5E-47C8-8E1A-5D873EB5A933" }
 }
 
-fileprivate extension Peripheral.Service.DeviceInformation {
-    init?(_ service: Peripheral.Service) {
+fileprivate extension Peripheral.DeviceInformation {
+    init?(_ service: FlipperService) {
         guard service.id == .deviceInformation else { return nil }
 
         let manufacturerName = service.characteristics
@@ -119,8 +91,8 @@ fileprivate extension Peripheral.Service.DeviceInformation {
     }
 }
 
-fileprivate extension Peripheral.Service.Battery {
-    init?(_ service: Peripheral.Service) {
+fileprivate extension Peripheral.Battery {
+    init?(_ service: FlipperService) {
         guard
             service.id == .battery,
             let characteristic = service.characteristics.first,

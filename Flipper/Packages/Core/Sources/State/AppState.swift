@@ -1,8 +1,8 @@
 import Inject
-import Logging
-import Combine
-import Dispatch
+import Bluetooth
 import Foundation
+import Combine
+import Logging
 
 public class AppState {
     public static let shared: AppState = .init()
@@ -38,7 +38,7 @@ public class AppState {
     let connectAttemptCountMax = 3
 
     // swiftlint:disable cyclomatic_complexity
-    func updateState(_ newValue: Peripheral.State?) {
+    func updateState(_ newValue: FlipperState?) {
         guard let newValue = newValue else {
             status = .noDevice
             return

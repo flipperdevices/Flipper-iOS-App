@@ -1,6 +1,7 @@
-import XCTest
 import Inject
+import Bluetooth
 import Combine
+import XCTest
 
 @testable import UI
 @testable import Core
@@ -77,9 +78,9 @@ class ConnectionsViewModelTests: XCTestCase {
 private class MockPeripheral: BluetoothPeripheral {
     var id: UUID
     var name: String = ""
-    var color: Peripheral.Color = .unknown
-    var state: Peripheral.State = .disconnected
-    var services: [Peripheral.Service] = []
+    var color: FlipperColor = .unknown
+    var state: FlipperState = .disconnected
+    var services: [FlipperService] = []
 
     var isPairingFailed: Bool { false }
     var hasProtobufVersion: Bool { true }
@@ -90,11 +91,15 @@ private class MockPeripheral: BluetoothPeripheral {
     var canWrite: SafePublisher<Void> { Empty().eraseToAnyPublisher() }
     var received: SafePublisher<Data> { Empty().eraseToAnyPublisher() }
 
-    init(id: UUID, name: String = "", state: Peripheral.State = .disconnected) {
+    init(id: UUID, name: String = "", state: FlipperState = .disconnected) {
         self.id = id
         self.name = name
         self.state = state
     }
+
+    func onConnect() {}
+    func onDisconnect() {}
+    func onError(_ error: Swift.Error) {}
 
     func send(_ data: Data) {}
 }
@@ -121,11 +126,11 @@ private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {
         self.connectedPeripheralsSubject = SafeValueSubject(connectedPeripherals)
     }
 
-    var peripherals: SafePublisher<[BluetoothPeripheral]> {
+    var discovered: SafePublisher<[BluetoothPeripheral]> {
         self.peripheralsSubject.eraseToAnyPublisher()
     }
 
-    var connectedPeripherals: SafePublisher<[BluetoothPeripheral]> {
+    var connected: SafePublisher<[BluetoothPeripheral]> {
         self.connectedPeripheralsSubject.eraseToAnyPublisher()
     }
 
