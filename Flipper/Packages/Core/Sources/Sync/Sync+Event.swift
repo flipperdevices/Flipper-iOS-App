@@ -1,7 +1,9 @@
+import Bluetooth
+
 extension Sync {
     enum Event {
-        case imported(ArchiveItem.ID)
-        case exported(ArchiveItem.ID)
-        case deleted(ArchiveItem.ID)
+        case imported(Path)
+        case exported(Path)
+        case deleted(Path)
     }
 }

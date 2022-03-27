@@ -11,25 +11,23 @@ class FlipperArchive: FlipperArchiveProtocol {
         }
     }
 
-    func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem {
+    func read(_ path: Path) async throws -> String {
         let bytes = try await rpc.readFile(
-            at: id.path,
+            at: path,
             priority: .background)
-        return try .init(
-            path: id.path,
-            content: .init(decoding: bytes, as: UTF8.self))
+        return .init(decoding: bytes, as: UTF8.self)
     }
 
-    func upsert(_ item: ArchiveItem) async throws {
+    func upsert(_ content: String, at path: Path) async throws {
         try await rpc.writeFile(
-            at: item.id.path,
-            bytes: .init(item.content.utf8),
+            at: path,
+            bytes: .init(content.utf8),
             priority: .background)
     }
 
-    func delete(_ id: ArchiveItem.ID) async throws {
+    func delete(_ path: Path) async throws {
         try await rpc.deleteFile(
-            at: id.path,
+            at: path,
             force: false,
             priority: .background)
     }

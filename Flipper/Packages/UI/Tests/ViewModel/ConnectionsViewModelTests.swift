@@ -153,15 +153,3 @@ private class MockBluetoothConnector: BluetoothCentral, BluetoothConnector {
     func disconnect(from uuid: UUID) {
     }
 }
-
-private class MockStorage: DeviceStorage, ArchiveStorage {
-    var flipper: Flipper? {
-        get { nil }
-        set { _ = newValue }
-    }
-
-    var items: [ArchiveItem] {
-        get { [] }
-        set { _ = newValue }
-    }
-}

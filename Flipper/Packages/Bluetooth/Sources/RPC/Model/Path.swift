@@ -9,6 +9,10 @@ public struct Path: Equatable, Hashable, Codable {
         components.last
     }
 
+    public var removingLastComponent: Path {
+        .init(components: components.dropLast())
+    }
+
     public init(string: String) {
         self.components = string.split(separator: "/").map(String.init)
     }

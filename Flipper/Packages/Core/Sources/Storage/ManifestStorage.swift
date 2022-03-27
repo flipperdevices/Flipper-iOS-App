@@ -5,4 +5,5 @@ protocol ManifestStorage {
 }
 
 protocol MobileManifestStorage: ManifestStorage {}
+protocol DeletedManifestStorage: ManifestStorage {}
 protocol SyncedManifestStorage: ManifestStorage {}

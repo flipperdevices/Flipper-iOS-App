@@ -73,7 +73,7 @@ extension ArchiveItem {
             properties: properties)
     }
 
-    var path: Path {
+    public var path: Path {
         .init(components: ["ext", fileType.location, filename])
     }
 

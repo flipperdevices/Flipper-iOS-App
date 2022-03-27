@@ -1,6 +1,7 @@
 import Inject
-import Logging
+import Bluetooth
 import Foundation
+import Logging
 
 class Sync: SyncProtocol {
     private let logger = Logger(label: "synchronization")
@@ -28,69 +29,77 @@ class Sync: SyncProtocol {
             flipperChanges: flipperChanges)
 
         for (path, action) in actions {
-            let id: ArchiveItem.ID = .init(path: path)
             switch action {
-            case .update(.mobile): try await updateOnMobile(id)
-            case .delete(.mobile): try await deleteOnMobile(id)
-            case .update(.flipper): try await updateOnFlipper(id)
-            case .delete(.flipper): try await deleteOnFlipper(id)
-            case .conflict: try await keepBoth(id)
+            case .update(.mobile): try await updateOnMobile(path)
+            case .delete(.mobile): try await deleteOnMobile(path)
+            case .update(.flipper): try await updateOnFlipper(path)
+            case .delete(.flipper): try await deleteOnFlipper(path)
+            case .conflict: try await keepBoth(path)
             }
         }
 
         manifestStorage.manifest = try await mobileArchive.manifest
     }
 
-    private func updateOnMobile(_ id: ArchiveItem.ID) async throws {
-        logger.info("update on mobile \(id)")
-        var item = try await flipperArchive.read(id)
-        if try await mobileArchive.manifest[id.path] != nil {
-            item.note = try await mobileArchive.read(id).note
-        }
-        try await mobileArchive.upsert(item)
-        eventsSubject.send(.imported(id))
+    private func updateOnMobile(_ path: Path) async throws {
+        logger.info("update on mobile \(path)")
+        let content = try await flipperArchive.read(path)
+        try await mobileArchive.upsert(content, at: path)
+        eventsSubject.send(.imported(path))
     }
 
-    private func updateOnFlipper(_ id: ArchiveItem.ID) async throws {
-        logger.info("update on flipper \(id)")
-        let item = try await mobileArchive.read(id)
-        try await flipperArchive.upsert(item)
-        eventsSubject.send(.exported(item.id))
+    private func updateOnFlipper(_ path: Path) async throws {
+        logger.info("update on flipper \(path)")
+        let content = try await mobileArchive.read(path)
+        try await flipperArchive.upsert(content, at: path)
+        eventsSubject.send(.exported(path))
     }
 
-    private func deleteOnMobile(_ id: ArchiveItem.ID) async throws {
-        logger.info("delete on mobile \(id)")
-        try await mobileArchive.delete(id)
-        eventsSubject.send(.deleted(id))
+    private func deleteOnMobile(_ path: Path) async throws {
+        logger.info("delete on mobile \(path)")
+        try await mobileArchive.delete(path)
+        eventsSubject.send(.deleted(path))
     }
 
-    private func deleteOnFlipper(_ id: ArchiveItem.ID) async throws {
-        logger.info("delete on flipper \(id)")
-        try await flipperArchive.delete(id)
-        eventsSubject.send(.deleted(id))
+    private func deleteOnFlipper(_ path: Path) async throws {
+        logger.info("delete on flipper \(path)")
+        try await flipperArchive.delete(path)
+        eventsSubject.send(.deleted(path))
     }
 
-    private func keepBoth(_ id: ArchiveItem.ID) async throws {
-        logger.info("keep both \(id)")
-        guard let newItem = try await duplicate(id) else {
+    private func keepBoth(_ path: Path) async throws {
+        logger.info("keep both \(path)")
+        guard let newPath = try await duplicate(path) else {
             return
         }
 
-        try await updateOnFlipper(newItem.id)
-        eventsSubject.send(.exported(newItem.id))
+        try await updateOnFlipper(newPath)
+        eventsSubject.send(.exported(newPath))
 
-        try await updateOnMobile(id)
-        eventsSubject.send(.imported(id))
+        try await updateOnMobile(path)
+        eventsSubject.send(.imported(path))
     }
 
-    private func duplicate(_ id: ArchiveItem.ID) async throws -> ArchiveItem? {
-        let item = try await mobileArchive.read(id)
+    // FIXME: refactor
+    private func duplicate(_ path: Path) async throws -> Path? {
+        guard let filename = path.lastComponent else {
+            return nil
+        }
+        let components = filename.split(separator: ".")
+        guard components.count >= 2 else {
+            return nil
+        }
+        let name = components.dropLast().joined(separator: ".")
+        let type = components.last.unsafelyUnwrapped
         // TODO: Implement human readable copy name
         let timestamp = Int(Date().timeIntervalSince1970)
-        let newName = "\(item.name.value)_\(timestamp)"
-        let newItem = item.rename(to: .init(newName))
-        try await mobileArchive.upsert(newItem)
-        return newItem
+        let newFilename = "\(name)_\(timestamp).\(type)"
+        let newPath = path.removingLastComponent.appending(newFilename)
+
+        let content = try await mobileArchive.read(path)
+        try await mobileArchive.upsert(content, at: newPath)
+
+        return newPath
     }
 }
 

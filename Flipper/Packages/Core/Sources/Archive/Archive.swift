@@ -1,7 +1,8 @@
 import Inject
-import Logging
 import Combine
 import Foundation
+import Bluetooth
+import Logging
 
 public class Archive: ObservableObject {
     public static let shared: Archive = .init()
@@ -44,7 +45,8 @@ public class Archive: ObservableObject {
     func loadArchive() async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
         for path in try await mobileArchive.manifest.paths {
-            var item = try await mobileArchive.read(.init(path: path))
+            let content = try await mobileArchive.read(path)
+            var item = try ArchiveItem(path: path, content: content)
             item.status = try await sync.status(for: item)
             items.append(item)
         }
@@ -54,7 +56,8 @@ public class Archive: ObservableObject {
     func loadDeleted() async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
         for path in try await deletedArchive.manifest.paths {
-            let item = try await deletedArchive.read(.init(path: path))
+            let content = try await deletedArchive.read(path)
+            let item = try ArchiveItem(path: path, content: content)
             items.append(item)
         }
         return items
@@ -63,19 +66,20 @@ public class Archive: ObservableObject {
     func onSyncEvent(_ event: Sync.Event) {
         Task {
             switch event {
-            case .imported(let id):
-                var item = try await mobileArchive.read(id)
+            case .imported(let path):
+                let content = try await mobileArchive.read(path)
+                var item = try ArchiveItem(path: path, content: content)
                 item.status = .synchronized
-                items.removeAll { $0.id == item.id }
+                items.removeAll { $0.path == path }
                 items.append(item)
-            case .exported(let id):
-                if let index = items.firstIndex(where: { $0.id == id }) {
+            case .exported(let path):
+                if let index = items.firstIndex(where: { $0.path == path }) {
                     items[index].status = .synchronized
                 }
-            case .deleted(let id):
-                if let index = items.firstIndex(where: { $0.id == id }) {
+            case .deleted(let path):
+                if let index = items.firstIndex(where: { $0.path == path }) {
                     try await backup(items[index])
-                    items.removeAll { $0.id == id }
+                    items.removeAll { $0.path == path }
                 }
             }
         }
@@ -88,29 +92,29 @@ extension Archive {
     }
 
     public func upsert(_ item: ArchiveItem) async throws {
-        try await mobileArchive.upsert(item)
-        items.removeAll { $0.id == item.id }
+        try await mobileArchive.upsert(item.content, at: item.path)
+        items.removeAll { $0.path == item.path }
         items.append(item)
     }
 
     public func delete(_ id: ArchiveItem.ID) async throws {
         if let item = get(id) {
             try await backup(item)
-            try await mobileArchive.delete(id)
-            items.removeAll { $0.id == id }
+            try await mobileArchive.delete(item.path)
+            items.removeAll { $0.path == item.path }
         }
     }
 }
 
 extension Archive {
-    public func wipe(_ id: ArchiveItem.ID) async throws {
-        try await deletedArchive.delete(id)
-        deletedItems.removeAll { $0.id == id }
+    public func wipe(_ path: Path) async throws {
+        try await deletedArchive.delete(path)
+        deletedItems.removeAll { $0.path == path }
     }
 
     public func wipeAll() async throws {
         for item in deletedItems {
-            try await deletedArchive.delete(item.id)
+            try await deletedArchive.delete(item.path)
         }
         deletedItems.removeAll()
     }
@@ -121,18 +125,16 @@ extension Archive {
             guard get(newItem.id) == nil else {
                 throw Error.alredyExists
             }
-            try await mobileArchive.delete(id)
-            items.removeAll { $0.id == item.id }
-            try await mobileArchive.upsert(newItem)
+            try await mobileArchive.delete(item.path)
+            items.removeAll { $0.path == item.path }
+            try await mobileArchive.upsert(newItem.content, at: newItem.path)
             items.append(newItem)
         }
     }
 
     func backup(_ item: ArchiveItem) async throws {
-        var item = item
-        item.status = .deleted
-        try await deletedArchive.upsert(item)
-        deletedItems.removeAll { $0.id == item.id }
+        try await deletedArchive.upsert(item.content, at: item.path)
+        deletedItems.removeAll { $0.path == item.path }
         deletedItems.append(item)
     }
 
@@ -145,17 +147,17 @@ extension Archive {
         }
         var item = item
         item.status = try await sync.status(for: item)
-        try await mobileArchive.upsert(item)
+        try await mobileArchive.upsert(item.content, at: item.path)
         items.append(item)
 
-        try await deletedArchive.delete(item.id)
-        deletedItems.removeAll { $0.id == item.id }
+        try await deletedArchive.delete(item.path)
+        deletedItems.removeAll { $0.path == item.path }
     }
 }
 
 extension Archive {
     func importKey(_ item: ArchiveItem) async throws {
-        if !items.contains(where: { item.id == $0.id }) {
+        if !items.contains(where: { item.path == $0.path }) {
             try await upsert(item)
         }
     }

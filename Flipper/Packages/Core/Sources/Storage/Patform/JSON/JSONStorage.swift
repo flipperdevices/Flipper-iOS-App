@@ -54,9 +54,3 @@ class JSONStorage<T: Codable> {
         return paths[0].appendingPathComponent(filename)
     }
 }
-
-extension URL {
-    var isExists: Bool {
-        FileManager.default.fileExists(atPath: path)
-    }
-}
