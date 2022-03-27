@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 extension Sync {
     enum ItemStatus: Equatable {

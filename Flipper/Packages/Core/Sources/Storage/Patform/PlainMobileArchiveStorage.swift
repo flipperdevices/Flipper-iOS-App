@@ -1,5 +1,5 @@
 import Inject
-import Bluetooth
+import Peripheral
 import Foundation
 
 class PlainMobileArchiveStorage: MobileArchiveStorage {
@@ -14,11 +14,13 @@ class PlainMobileArchiveStorage: MobileArchiveStorage {
 
     func upsert(_ content: String, at path: Path) async throws {
         let path = makePath(for: path)
+        print("upsert", path)
         try storage.write(content: content, to: path)
     }
 
     func delete(_ path: Path) async throws {
         let path = makePath(for: path)
+        print("delete", path)
         try storage.delete(path)
     }
 

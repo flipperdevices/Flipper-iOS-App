@@ -1,6 +1,6 @@
 import Inject
 import Foundation
-import Bluetooth
+import Peripheral
 
 // swiftlint:disable nesting
 

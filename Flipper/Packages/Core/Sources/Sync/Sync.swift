@@ -1,5 +1,5 @@
 import Inject
-import Bluetooth
+import Peripheral
 import Foundation
 import Logging
 

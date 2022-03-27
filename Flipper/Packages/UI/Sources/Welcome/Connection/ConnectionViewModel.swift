@@ -2,7 +2,7 @@ import Core
 import Combine
 import Inject
 import Foundation
-import Bluetooth
+import Peripheral
 
 @MainActor
 class ConnectionViewModel: ObservableObject {

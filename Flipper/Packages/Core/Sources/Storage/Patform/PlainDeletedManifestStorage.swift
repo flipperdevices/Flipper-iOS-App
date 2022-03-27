@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 class PlainDeletedManifestStorage: DeletedManifestStorage {
     let storage: PlainManifestStorage = .init()

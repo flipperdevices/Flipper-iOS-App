@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 class DeletedArchiveMock: DeletedArchiveProtocol {
     var manifest: Manifest { .init([:]) }

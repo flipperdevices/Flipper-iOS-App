@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 extension ArchiveItem {
     public struct ID: Codable, Equatable, Hashable {

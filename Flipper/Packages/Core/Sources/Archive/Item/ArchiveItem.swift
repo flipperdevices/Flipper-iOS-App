@@ -1,5 +1,5 @@
 import Logging
-import Bluetooth
+import Peripheral
 import Foundation
 
 public struct ArchiveItem: Codable, Equatable, Identifiable {

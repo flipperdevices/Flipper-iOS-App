@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 class PlainSyncedManifestStorage: SyncedManifestStorage {
     let storage: PlainManifestStorage = .init()

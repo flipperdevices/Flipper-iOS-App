@@ -1,6 +1,6 @@
 import Core
 import Inject
-import Bluetooth
+import Peripheral
 import Combine
 import SwiftUI
 

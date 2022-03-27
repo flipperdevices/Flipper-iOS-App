@@ -1,7 +1,7 @@
 import Core
 import Inject
 import Combine
-import Bluetooth
+import Peripheral
 import Foundation
 
 @MainActor

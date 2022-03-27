@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 public class ArchiveStorageMock: MobileArchiveStorage, DeletedArchiveStorage {
     public var manifest: Manifest { .init([:]) }

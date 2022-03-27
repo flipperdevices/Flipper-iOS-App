@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 class FlipperArchiveMock: FlipperArchiveProtocol {
     var manifest: Manifest { .init([:]) }

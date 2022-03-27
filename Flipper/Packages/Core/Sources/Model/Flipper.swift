@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 import struct Foundation.UUID
 

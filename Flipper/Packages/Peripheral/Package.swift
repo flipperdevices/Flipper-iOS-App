@@ -2,15 +2,15 @@
 import PackageDescription
 
 let package = Package(
-    name: "Bluetooth",
+    name: "Peripheral",
     platforms: [
         .iOS(.v14),
         .macOS(.v11)
     ],
     products: [
         .library(
-            name: "Bluetooth",
-            targets: ["Bluetooth"])
+            name: "Peripheral",
+            targets: ["Peripheral"])
     ],
     dependencies: [
         .package(
@@ -29,7 +29,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "Bluetooth",
+            name: "Peripheral",
             dependencies: [
                 "Inject",
                 "SwiftProtobuf",
@@ -38,8 +38,8 @@ let package = Package(
             ],
             path: "Sources"),
         .testTarget(
-            name: "BluetoothTests",
-            dependencies: ["Bluetooth"],
+            name: "PeripheralTests",
+            dependencies: ["Peripheral"],
             path: "Tests")
     ]
 )

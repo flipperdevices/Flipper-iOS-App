@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 import Foundation
 
 class FileStorage {

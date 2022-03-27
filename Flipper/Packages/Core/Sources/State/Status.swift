@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 public enum Status: CustomStringConvertible {
     case noDevice

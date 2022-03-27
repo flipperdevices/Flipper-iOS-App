@@ -1,6 +1,6 @@
 import Core
 import SwiftUI
-import Bluetooth
+import Peripheral
 
 struct FileManagerView: View {
     @StateObject var viewModel: FileManagerViewModel

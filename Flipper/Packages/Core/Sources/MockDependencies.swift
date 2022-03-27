@@ -1,6 +1,6 @@
 import Inject
 import Logging
-import Bluetooth
+import Peripheral
 
 public func registerMockDependencies() {
     let container = Container.shared
@@ -8,7 +8,7 @@ public func registerMockDependencies() {
     LoggingSystem.bootstrap(FileLogHandler.factory)
     container.register(LoggerStorageMock.init, as: LoggerStorage.self, isSingleton: true)
 
-    Bluetooth.registerMockDependencies()
+    Peripheral.registerMockDependencies()
 
     // device
     container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)

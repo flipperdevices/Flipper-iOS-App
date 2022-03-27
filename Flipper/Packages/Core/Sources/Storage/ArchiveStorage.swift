@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 public protocol ArchiveStorage {
     func get(_ path: Path) async throws -> String

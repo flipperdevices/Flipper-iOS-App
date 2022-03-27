@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 // swiftlint:disable nesting cyclomatic_complexity
 
 extension Sync {

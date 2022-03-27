@@ -1,5 +1,5 @@
 import Inject
-import Bluetooth
+import Peripheral
 
 class DeletedArchive: DeletedArchiveProtocol {
     @Inject var storage: DeletedArchiveStorage

@@ -1,6 +1,6 @@
 import Core
 import Inject
-import Bluetooth
+import Peripheral
 import Combine
 
 import struct Foundation.Date
@@ -151,7 +151,7 @@ class FileManagerViewModel: ObservableObject {
             do {
                 try await rpc.deleteFile(at: elementPath, force: false)
                 self.content = .list(elements)
-            } catch let error as Bluetooth.Error where error == .storage(.notEmpty) {
+            } catch let error as Peripheral.Error where error == .storage(.notEmpty) {
                 self.content = .forceDelete(elementPath)
             } catch {
                 self.content = .error(String(describing: error))

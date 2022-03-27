@@ -1,6 +1,6 @@
 import Core
 import SwiftUI
-import Bluetooth
+import Peripheral
 
 public struct RootView: View {
     @ObservedObject var viewModel: RootViewModel

@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 class MobileArchiveMock: MobileArchiveProtocol {
     var manifest: Manifest { .init([:]) }

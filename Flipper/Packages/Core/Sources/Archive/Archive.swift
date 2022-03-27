@@ -1,7 +1,7 @@
 import Inject
 import Combine
 import Foundation
-import Bluetooth
+import Peripheral
 import Logging
 
 public class Archive: ObservableObject {

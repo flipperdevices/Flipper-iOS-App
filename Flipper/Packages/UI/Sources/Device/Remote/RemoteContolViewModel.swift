@@ -1,6 +1,6 @@
 import Core
 import Combine
-import Bluetooth
+import Peripheral
 import Foundation
 import Logging
 

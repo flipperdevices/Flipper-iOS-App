@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 class FlipperArchive: FlipperArchiveProtocol {
     let rpc: RPC = .shared

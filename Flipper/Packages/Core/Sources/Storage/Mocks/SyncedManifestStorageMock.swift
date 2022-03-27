@@ -1,4 +1,4 @@
-import Bluetooth
+import Peripheral
 
 class SyncedManifestStorageMock: SyncedManifestStorage {
     var manifest: Manifest?

@@ -63,7 +63,7 @@ extension RPC {
 
 // MARK: Filter
 
-fileprivate extension Array where Element == Bluetooth.Element {
+fileprivate extension Array where Element == Peripheral.Element {
     var files: [String] {
         self.compactMap {
             guard case .file(let file) = $0 else {
