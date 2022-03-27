@@ -10,6 +10,7 @@ public struct Manifest: Codable {
     }
 
     public subscript(_ path: Path) -> Hash? {
-        return items[path]
+        get { items[path] }
+        set { items[path] = newValue }
     }
 }

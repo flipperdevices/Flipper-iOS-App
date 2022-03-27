@@ -18,5 +18,6 @@ public func registerMockDependencies() {
     container.register(DeviceStorageMock.init, as: DeviceStorage.self, isSingleton: true)
     container.register(ArchiveStorageMock.init, as: ArchiveStorage.self, isSingleton: true)
     container.register(DeletedStorageMock.init, as: DeletedStorage.self, isSingleton: true)
-    container.register(ManifestStorageMock.init, as: ManifestStorage.self, isSingleton: true)
+    container.register(MobileManifestStorageMock.init, as: MobileManifestStorage.self, isSingleton: true)
+    container.register(SyncedManifestStorageMock.init, as: SyncedManifestStorage.self, isSingleton: true)
 }

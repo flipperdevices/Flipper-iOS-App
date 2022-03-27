@@ -18,5 +18,6 @@ public func registerDependencies() {
     container.register(JSONDeviceStorage.init, as: DeviceStorage.self, isSingleton: true)
     container.register(JSONArchiveStorage.init, as: ArchiveStorage.self, isSingleton: true)
     container.register(JSONDeletedStorage.init, as: DeletedStorage.self, isSingleton: true)
-    container.register(JSONManifestStorage.init, as: ManifestStorage.self, isSingleton: true)
+    container.register(PlainMobileManifestStorage.init, as: MobileManifestStorage.self, isSingleton: true)
+    container.register(PlainSyncedManifestStorage.init, as: SyncedManifestStorage.self, isSingleton: true)
 }

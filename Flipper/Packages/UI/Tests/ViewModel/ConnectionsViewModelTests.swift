@@ -70,7 +70,7 @@ class ConnectionsViewModelTests: XCTestCase {
         container.register(SyncMock.init, as: SyncProtocol.self, isSingleton: true)
         container.register(DeviceStorageMock.init, as: DeviceStorage.self, isSingleton: true)
         container.register(ArchiveStorageMock.init, as: ArchiveStorage.self, isSingleton: true)
-        container.register(ManifestStorageMock.init, as: ManifestStorage.self, isSingleton: true)
+        container.register(SyncedManifestStorageMock.init, as: SyncedManifestStorage.self, isSingleton: true)
         return await ConnectionViewModel()
     }
 }

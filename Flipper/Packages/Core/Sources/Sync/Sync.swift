@@ -5,7 +5,7 @@ import Foundation
 class Sync: SyncProtocol {
     private let logger = Logger(label: "synchronization")
 
-    @Inject private var manifestStorage: ManifestStorage
+    @Inject private var manifestStorage: SyncedManifestStorage
     @Inject private var flipperArchive: FlipperArchiveProtocol
     @Inject private var mobileArchive: MobileArchiveProtocol
 
