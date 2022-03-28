@@ -13,7 +13,7 @@ class DeviceViewModel: ObservableObject {
     @Published var showUnsupportedVersionAlert = false
 
     @Published var flipper: Flipper?
-    @Published var status: Status = .noDevice {
+    @Published var status: DeviceStatus = .noDevice {
         didSet {
             switch status {
             case .pairingIssue: showPairingIssueAlert = true

@@ -1,6 +1,6 @@
 import Peripheral
 
-public enum Status: CustomStringConvertible {
+public enum DeviceStatus: CustomStringConvertible {
     case noDevice
     case unsupportedDevice
     case connecting
@@ -37,7 +37,7 @@ public enum Status: CustomStringConvertible {
     }
 }
 
-extension Status {
+extension DeviceStatus {
     init(_ state: FlipperState?) {
         guard let state = state else {
             self = .noDevice

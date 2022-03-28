@@ -19,7 +19,7 @@ public class AppState {
         didSet { updateState(flipper?.state) }
     }
     @Published public var archive: Archive = .shared
-    @Published public var status: Status = .noDevice
+    @Published public var status: DeviceStatus = .noDevice
 
     @Published public var importQueue: [ArchiveItem] = []
 
