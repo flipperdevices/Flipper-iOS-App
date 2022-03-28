@@ -8,9 +8,11 @@ public class Archive: ObservableObject {
     public static let shared: Archive = .init()
     private let logger = Logger(label: "archive")
 
+    @Inject private var sync: SyncProtocol
+
     @Inject private var mobileArchive: MobileArchiveProtocol
     @Inject private var deletedArchive: DeletedArchiveProtocol
-    @Inject private var sync: SyncProtocol
+    @Inject private var manifestStorage: SyncedManifestStorage
 
     @Published public var items: [ArchiveItem] = []
     @Published public var deletedItems: [ArchiveItem] = []
@@ -47,7 +49,7 @@ public class Archive: ObservableObject {
         for path in try await mobileArchive.manifest.paths {
             let content = try await mobileArchive.read(path)
             var item = try ArchiveItem(path: path, content: content)
-            item.status = try await sync.status(for: item)
+            item.status = status(for: item)
             items.append(item)
         }
         return items
@@ -66,6 +68,10 @@ public class Archive: ObservableObject {
     func onSyncEvent(_ event: Sync.Event) {
         Task {
             switch event {
+            case .syncing(let path):
+                if let index = items.firstIndex(where: { $0.path == path }) {
+                    items[index].status = .synchronizing
+                }
             case .imported(let path):
                 let content = try await mobileArchive.read(path)
                 var item = try ArchiveItem(path: path, content: content)
@@ -94,6 +100,8 @@ extension Archive {
     public func upsert(_ item: ArchiveItem) async throws {
         try await mobileArchive.upsert(item.content, at: item.path)
         items.removeAll { $0.path == item.path }
+        var item = item
+        item.status = status(for: item)
         items.append(item)
     }
 
@@ -146,12 +154,21 @@ extension Archive {
             return
         }
         var item = item
-        item.status = try await sync.status(for: item)
+        item.status = status(for: item)
         try await mobileArchive.upsert(item.content, at: item.path)
         items.append(item)
 
         try await deletedArchive.delete(item.path)
         deletedItems.removeAll { $0.path == item.path }
+    }
+}
+
+extension Archive {
+    public func status(for item: ArchiveItem) -> ArchiveItem.Status {
+        guard let hash = manifestStorage.manifest?[item.path] else {
+            return .imported
+        }
+        return hash == item.hash ? .synchronized : .modified
     }
 }
 

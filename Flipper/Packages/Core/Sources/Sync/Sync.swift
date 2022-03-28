@@ -43,6 +43,7 @@ class Sync: SyncProtocol {
 
     private func updateOnMobile(_ path: Path) async throws {
         logger.info("update on mobile \(path)")
+        eventsSubject.send(.syncing(path))
         let content = try await flipperArchive.read(path)
         try await mobileArchive.upsert(content, at: path)
         eventsSubject.send(.imported(path))
@@ -50,6 +51,7 @@ class Sync: SyncProtocol {
 
     private func updateOnFlipper(_ path: Path) async throws {
         logger.info("update on flipper \(path)")
+        eventsSubject.send(.syncing(path))
         let content = try await mobileArchive.read(path)
         try await flipperArchive.upsert(content, at: path)
         eventsSubject.send(.exported(path))
@@ -57,12 +59,14 @@ class Sync: SyncProtocol {
 
     private func deleteOnMobile(_ path: Path) async throws {
         logger.info("delete on mobile \(path)")
+        eventsSubject.send(.syncing(path))
         try await mobileArchive.delete(path)
         eventsSubject.send(.deleted(path))
     }
 
     private func deleteOnFlipper(_ path: Path) async throws {
         logger.info("delete on flipper \(path)")
+        eventsSubject.send(.syncing(path))
         try await flipperArchive.delete(path)
         eventsSubject.send(.deleted(path))
     }
@@ -73,9 +77,11 @@ class Sync: SyncProtocol {
             return
         }
 
+        eventsSubject.send(.syncing(newPath))
         try await updateOnFlipper(newPath)
         eventsSubject.send(.exported(newPath))
 
+        eventsSubject.send(.syncing(path))
         try await updateOnMobile(path)
         eventsSubject.send(.imported(path))
     }
@@ -100,14 +106,5 @@ class Sync: SyncProtocol {
         try await mobileArchive.upsert(content, at: newPath)
 
         return newPath
-    }
-}
-
-extension Sync {
-    func status(for item: ArchiveItem) -> ArchiveItem.Status {
-        guard let hash = manifestStorage.manifest?[item.path] else {
-            return .imported
-        }
-        return hash == item.hash ? .synchronized : .modified
     }
 }

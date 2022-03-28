@@ -68,11 +68,11 @@ class InfoViewModel: ObservableObject {
                 backup = item
                 withAnimation {
                     isEditMode = false
-                    item.status = .synchronizing
                 }
+                item.status = .synchronizing
                 await appState.synchronize()
                 withAnimation {
-                    item.status = .synchronized
+                    item.status = appState.archive.status(for: item)
                 }
             } catch {
                 item.status = .error
