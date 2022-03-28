@@ -10,6 +10,7 @@ public class Archive: ObservableObject {
 
     @Inject var archiveSync: ArchiveSyncProtocol
 
+    @Inject var mobileFavorites: MobileFavoritesProtocol
     @Inject var mobileArchive: MobileArchiveProtocol
     @Inject var deletedArchive: DeletedArchiveProtocol
     @Inject var manifestStorage: SyncedManifestStorage
@@ -46,10 +47,12 @@ public class Archive: ObservableObject {
 
     func loadArchive() async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
+        let favorites = try await mobileFavorites.read()
         for path in try await mobileArchive.manifest.paths {
             let content = try await mobileArchive.read(path)
             var item = try ArchiveItem(path: path, content: content)
             item.status = status(for: item)
+            item.isFavorite = favorites.contains(item.path)
             items.append(item)
         }
         return items
@@ -85,6 +88,16 @@ extension Archive {
             try await mobileArchive.delete(item.path)
             items.removeAll { $0.path == item.path }
         }
+    }
+
+    public func toggleFavorite(_ path: Path) async throws {
+        guard let index = items.firstIndex(where: { $0.path == path }) else {
+            return
+        }
+        var favorites = try await mobileFavorites.read()
+        favorites.toggle(path)
+        try await mobileFavorites.write(favorites)
+        items[index].isFavorite = favorites.contains(path)
     }
 }
 

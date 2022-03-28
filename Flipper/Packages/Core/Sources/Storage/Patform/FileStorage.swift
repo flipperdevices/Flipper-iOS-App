@@ -11,6 +11,10 @@ class FileStorage {
 
     init() {}
 
+    func isExists(_ path: Path) -> Bool {
+        makeURL(for: path).isExists
+    }
+
     func makeDirectory(for path: Path) throws {
         let subdirectory = path.removingLastComponent
         let directory = baseURL.appendingPathComponent(subdirectory.string)

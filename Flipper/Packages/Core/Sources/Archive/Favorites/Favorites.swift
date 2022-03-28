@@ -11,9 +11,24 @@ public struct Favorites: Codable {
         self.items = items
     }
 
+    func contains(_ path: Path) -> Bool {
+        items.contains(path)
+    }
+
+    mutating func toggle(_ path: Path) {
+        switch contains(path) {
+        case true: delete(path)
+        case false: insert(path)
+        }
+    }
+
+    private mutating func insert(_ path: Path) {
+        items.append(path)
+    }
+
     mutating func upsert(_ path: Path) {
         delete(path)
-        items.append(path)
+        insert(path)
     }
 
     mutating func delete(_ path: Path) {

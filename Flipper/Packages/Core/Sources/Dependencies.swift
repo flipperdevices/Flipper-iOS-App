@@ -25,8 +25,8 @@ public func registerDependencies() {
     container.register(PlainDeletedManifestStorage.init, as: DeletedManifestStorage.self, isSingleton: true)
     container.register(PlainSyncedManifestStorage.init, as: SyncedManifestStorage.self, isSingleton: true)
     // favorites
-    container.register(PlainMobileFavoritesStorage.init, as: MobileFavoritesStorage.self, isSingleton: true)
-    container.register(PlainSyncedFavoritesStorage.init, as: SyncedFavoritesStorage.self, isSingleton: true)
+    container.register(MobileFavorites.init, as: MobileFavoritesProtocol.self, isSingleton: true)
+    container.register(SyncedFavorites.init, as: SyncedFavoritesProtocol.self, isSingleton: true)
     // sync
     container.register(ArchiveSync.init, as: ArchiveSyncProtocol.self, isSingleton: true)
 }

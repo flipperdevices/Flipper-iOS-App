@@ -24,14 +24,17 @@ class InfoViewModel: ObservableObject {
         $item
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                guard let self = self else { return }
-                guard !self.isEditMode else { return }
-                guard self.backup.isFavorite != self.item.isFavorite else {
-                    return
-                }
-                self.saveChanges()
+                self?.toggleFavorite()
             }
             .store(in: &disposeBag)
+    }
+
+    func toggleFavorite() {
+        guard backup.isFavorite != item.isFavorite else { return }
+        guard !isEditMode else { return }
+        Task {
+            try await appState.archive.toggleFavorite(item.path)
+        }
     }
 
     func edit() {
