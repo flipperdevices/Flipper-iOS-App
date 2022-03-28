@@ -9,6 +9,7 @@ public class Archive: ObservableObject {
     let logger = Logger(label: "archive")
 
     @Inject var archiveSync: ArchiveSyncProtocol
+    @Inject var favoritesSync: FavoritesSyncProtocol
 
     @Inject var mobileFavorites: MobileFavoritesProtocol
     @Inject var mobileArchive: MobileArchiveProtocol
@@ -98,6 +99,7 @@ extension Archive {
         favorites.toggle(path)
         try await mobileFavorites.write(favorites)
         items[index].isFavorite = favorites.contains(path)
+        try await favoritesSync.run()
     }
 }
 

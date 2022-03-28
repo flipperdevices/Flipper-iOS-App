@@ -5,8 +5,19 @@ extension Archive {
         guard !isSyncronizing else { return }
         do {
             try await archiveSync.run()
+            try await favoritesSync.run()
+            try await updateFavoriteItems()
         } catch {
             logger.critical("syncronization error: \(error)")
+        }
+    }
+
+    func updateFavoriteItems() async throws {
+        let favorites = try await mobileFavorites.read()
+        items = items.map {
+            var item = $0
+            item.isFavorite = favorites.contains($0.path)
+            return item
         }
     }
 
