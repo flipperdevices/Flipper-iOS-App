@@ -7,7 +7,7 @@ public struct Manifest: Codable {
         items.keys
     }
 
-    public init(_ items: [Path: Hash]) {
+    public init(_ items: [Path: Hash] = [:]) {
         self.items = items
     }
 

@@ -4,7 +4,7 @@ class PlainManifestStorage {
     let storage: FileStorage = .init()
 
     func read(_ path: Path) throws -> Manifest {
-        var manifest: Manifest = .init([:])
+        var manifest: Manifest = .init()
         guard let content = try? storage.read(path) else {
             return manifest
         }

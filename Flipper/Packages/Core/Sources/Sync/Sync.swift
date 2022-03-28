@@ -14,7 +14,7 @@ class Sync: SyncProtocol {
     var events: SafePublisher<Event> { eventsSubject.eraseToAnyPublisher() }
 
     func syncWithDevice() async throws {
-        let lastManifest = manifestStorage.manifest ?? .init([:])
+        let lastManifest = manifestStorage.manifest ?? .init()
 
         let mobileChanges = try await mobileArchive
             .manifest

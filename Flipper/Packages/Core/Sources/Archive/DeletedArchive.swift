@@ -6,7 +6,7 @@ class DeletedArchive: DeletedArchiveProtocol {
     @Inject var manifestStorage: DeletedManifestStorage
 
     var manifest: Manifest {
-        get { manifestStorage.manifest ?? .init([:]) }
+        get { manifestStorage.manifest ?? .init() }
         set { manifestStorage.manifest = newValue }
     }
 

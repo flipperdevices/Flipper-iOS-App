@@ -1,7 +1,7 @@
 import Peripheral
 
 class MobileArchiveMock: MobileArchiveProtocol {
-    var manifest: Manifest { .init([:]) }
+    var manifest: Manifest { .init() }
 
     func read(_ path: Path) async throws -> String {
         fatalError("not implemented")

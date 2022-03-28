@@ -1,7 +1,7 @@
 import Peripheral
 
 public class ArchiveStorageMock: MobileArchiveStorage, DeletedArchiveStorage {
-    public var manifest: Manifest { .init([:]) }
+    public var manifest: Manifest { .init() }
 
     public func get(_ path: Path) async throws -> String {
         fatalError("not implemented")

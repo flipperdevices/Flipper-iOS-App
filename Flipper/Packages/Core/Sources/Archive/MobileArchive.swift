@@ -6,7 +6,7 @@ class MobileArchive: MobileArchiveProtocol {
     @Inject var manifestStorage: MobileManifestStorage
 
     var manifest: Manifest {
-        get { manifestStorage.manifest ?? .init([:]) }
+        get { manifestStorage.manifest ?? .init() }
         set { manifestStorage.manifest = newValue }
     }
 
