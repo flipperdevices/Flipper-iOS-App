@@ -3,8 +3,8 @@ import Peripheral
 import Foundation
 import Logging
 
-class Sync: SyncProtocol {
-    private let logger = Logger(label: "synchronization")
+class ArchiveSync: ArchiveSyncProtocol {
+    private let logger = Logger(label: "archive_synchronization")
 
     @Inject private var manifestStorage: SyncedManifestStorage
     @Inject private var flipperArchive: FlipperArchiveProtocol
@@ -13,7 +13,7 @@ class Sync: SyncProtocol {
     private var eventsSubject: SafeSubject<Event> = .init()
     var events: SafePublisher<Event> { eventsSubject.eraseToAnyPublisher() }
 
-    func syncWithDevice() async throws {
+    func run() async throws {
         let lastManifest = manifestStorage.manifest ?? .init()
 
         let mobileChanges = try await mobileArchive

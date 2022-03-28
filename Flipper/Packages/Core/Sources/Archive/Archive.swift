@@ -6,13 +6,13 @@ import Logging
 
 public class Archive: ObservableObject {
     public static let shared: Archive = .init()
-    private let logger = Logger(label: "archive")
+    let logger = Logger(label: "archive")
 
-    @Inject private var sync: SyncProtocol
+    @Inject var archiveSync: ArchiveSyncProtocol
 
-    @Inject private var mobileArchive: MobileArchiveProtocol
-    @Inject private var deletedArchive: DeletedArchiveProtocol
-    @Inject private var manifestStorage: SyncedManifestStorage
+    @Inject var mobileArchive: MobileArchiveProtocol
+    @Inject var deletedArchive: DeletedArchiveProtocol
+    @Inject var manifestStorage: SyncedManifestStorage
 
     @Published public var items: [ArchiveItem] = []
     @Published public var deletedItems: [ArchiveItem] = []
@@ -26,7 +26,7 @@ public class Archive: ObservableObject {
     }
 
     private init() {
-        sync.events
+        archiveSync.events
             .sink { [weak self] in
                 self?.onSyncEvent($0)
             }
@@ -63,32 +63,6 @@ public class Archive: ObservableObject {
             items.append(item)
         }
         return items
-    }
-
-    func onSyncEvent(_ event: Sync.Event) {
-        Task {
-            switch event {
-            case .syncing(let path):
-                if let index = items.firstIndex(where: { $0.path == path }) {
-                    items[index].status = .synchronizing
-                }
-            case .imported(let path):
-                let content = try await mobileArchive.read(path)
-                var item = try ArchiveItem(path: path, content: content)
-                item.status = .synchronized
-                items.removeAll { $0.path == path }
-                items.append(item)
-            case .exported(let path):
-                if let index = items.firstIndex(where: { $0.path == path }) {
-                    items[index].status = .synchronized
-                }
-            case .deleted(let path):
-                if let index = items.firstIndex(where: { $0.path == path }) {
-                    try await backup(items[index])
-                    items.removeAll { $0.path == path }
-                }
-            }
-        }
     }
 }
 
@@ -176,17 +150,6 @@ extension Archive {
     func importKey(_ item: ArchiveItem) async throws {
         if !items.contains(where: { item.path == $0.path }) {
             try await upsert(item)
-        }
-    }
-}
-
-extension Archive {
-    func syncWithDevice() async {
-        guard !isSyncronizing else { return }
-        do {
-            try await sync.syncWithDevice()
-        } catch {
-            logger.critical("syncronization error: \(error)")
         }
     }
 }

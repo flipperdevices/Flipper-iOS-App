@@ -1,7 +1,7 @@
 import Peripheral
 // swiftlint:disable nesting cyclomatic_complexity
 
-extension Sync {
+extension ArchiveSync {
     enum Action {
         case update(Target)
         case delete(Target)
@@ -16,7 +16,7 @@ extension Sync {
 
 // MARK: Planning
 
-extension Sync {
+extension ArchiveSync {
     func resolveActions(
         mobileChanges: [Path: ItemStatus],
         flipperChanges: [Path: ItemStatus]
@@ -66,7 +66,7 @@ extension Sync {
 
 // MARK: CustomStringConvertible
 
-extension Sync.Action: CustomStringConvertible {
+extension ArchiveSync.Action: CustomStringConvertible {
     public var description: String {
         switch self {
         case .update(let target): return "update: \(target)"
@@ -76,7 +76,7 @@ extension Sync.Action: CustomStringConvertible {
     }
 }
 
-extension Sync.Action.Target: CustomStringConvertible {
+extension ArchiveSync.Action.Target: CustomStringConvertible {
     public var description: String {
         switch self {
         case .mobile: return "mobile"

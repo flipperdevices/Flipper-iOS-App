@@ -1,6 +1,6 @@
 import Peripheral
 
-extension Sync {
+extension ArchiveSync {
     enum ItemStatus: Equatable {
         case deleted
         case modified(Hash)
@@ -12,8 +12,8 @@ extension Sync {
 extension Manifest {
     func changesSince(
         _ manifest: Manifest
-    ) -> [Path: Sync.ItemStatus] {
-        var result: [Path: Sync.ItemStatus] = [:]
+    ) -> [Path: ArchiveSync.ItemStatus] {
+        var result: [Path: ArchiveSync.ItemStatus] = [:]
 
         let paths = Set(self.paths)
             .union(manifest.paths)
@@ -45,7 +45,7 @@ extension Manifest {
 
 // MARK: CustomStringConvertible
 
-extension Sync.ItemStatus: CustomStringConvertible {
+extension ArchiveSync.ItemStatus: CustomStringConvertible {
     public var description: String {
         switch self {
         case .deleted: return "deleted"

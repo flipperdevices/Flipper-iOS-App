@@ -1,6 +1,6 @@
 import Peripheral
 
-extension Sync {
+extension ArchiveSync {
     enum Event {
         case syncing(Path)
         case imported(Path)

@@ -28,5 +28,5 @@ public func registerDependencies() {
     container.register(PlainMobileFavoritesStorage.init, as: MobileFavoritesStorage.self, isSingleton: true)
     container.register(PlainSyncedFavoritesStorage.init, as: SyncedFavoritesStorage.self, isSingleton: true)
     // sync
-    container.register(Sync.init, as: SyncProtocol.self, isSingleton: true)
+    container.register(ArchiveSync.init, as: ArchiveSyncProtocol.self, isSingleton: true)
 }

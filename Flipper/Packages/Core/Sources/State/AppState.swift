@@ -144,7 +144,7 @@ public class AppState {
         guard status != .synchronizing else { return }
         status = .synchronizing
         await measure("syncing archive") {
-            await archive.syncWithDevice()
+            await archive.synchronize()
         }
         status = .synchronized
         Task {

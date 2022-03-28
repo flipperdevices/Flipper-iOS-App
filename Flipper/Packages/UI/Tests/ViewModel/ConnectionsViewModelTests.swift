@@ -67,7 +67,7 @@ class ConnectionsViewModelTests: XCTestCase {
         container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
         container.register(DeletedArchiveMock.init, as: DeletedArchiveProtocol.self, isSingleton: true)
         container.register(MobileArchiveMock.init, as: MobileArchiveProtocol.self, isSingleton: true)
-        container.register(SyncMock.init, as: SyncProtocol.self, isSingleton: true)
+        container.register(ArchiveSyncMock.init, as: ArchiveSyncProtocol.self, isSingleton: true)
         container.register(DeviceStorageMock.init, as: DeviceStorage.self, isSingleton: true)
         container.register(ArchiveStorageMock.init, as: ArchiveStorage.self, isSingleton: true)
         container.register(SyncedManifestStorageMock.init, as: SyncedManifestStorage.self, isSingleton: true)
