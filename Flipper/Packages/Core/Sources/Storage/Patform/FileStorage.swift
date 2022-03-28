@@ -30,7 +30,7 @@ class FileStorage {
         return try .init(contentsOf: url)
     }
 
-    func write(content: String, to path: Path) throws {
+    func write(_ content: String, at path: Path) throws {
         try makeDirectory(for: path)
         let url = makeURL(for: path)
         try content.write(to: url, atomically: true, encoding: .utf8)

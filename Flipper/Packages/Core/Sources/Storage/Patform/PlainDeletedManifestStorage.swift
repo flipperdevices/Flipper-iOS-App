@@ -1,7 +1,7 @@
 import Peripheral
 
 class PlainDeletedManifestStorage: DeletedManifestStorage {
-    let storage: PlainManifestStorage = .init()
+    let storage: FileStorage = .init()
     let filename = "deleted_manifest.txt"
     var manifestPath: Path { .init(string: filename) }
 
@@ -13,7 +13,7 @@ class PlainDeletedManifestStorage: DeletedManifestStorage {
             if let manifest = newValue {
                 try? storage.write(manifest, at: manifestPath)
             } else {
-                try? storage.storage.delete(manifestPath)
+                try? storage.delete(manifestPath)
             }
         }
     }

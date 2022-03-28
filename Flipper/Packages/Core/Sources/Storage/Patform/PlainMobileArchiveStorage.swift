@@ -15,7 +15,7 @@ class PlainMobileArchiveStorage: MobileArchiveStorage {
     func upsert(_ content: String, at path: Path) async throws {
         let path = makePath(for: path)
         print("upsert", path)
-        try storage.write(content: content, to: path)
+        try storage.write(content, at: path)
     }
 
     func delete(_ path: Path) async throws {
