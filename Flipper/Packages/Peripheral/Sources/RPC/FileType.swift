@@ -31,7 +31,7 @@ extension FileType {
         }
     }
 
-    var location: String {
+    public var location: String {
         switch self {
         case .rfid: return "lfrfid"
         case .subghz: return "subghz"

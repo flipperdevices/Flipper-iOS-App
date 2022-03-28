@@ -1,5 +1,3 @@
-import Peripheral
-
 protocol ManifestStorage {
     var manifest: Manifest? { get set }
 }

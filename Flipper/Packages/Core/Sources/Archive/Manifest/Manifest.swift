@@ -1,3 +1,5 @@
+import Peripheral
+
 public struct Manifest: Codable {
     var items: [Path: Hash]
 

@@ -1,3 +1,4 @@
+import Peripheral
 // MARK: Manifest shims
 
 // TODO: use manifest api when available
