@@ -1,4 +1,5 @@
 import Peripheral
+import Foundation
 
 class MobileArchiveMock: MobileArchiveProtocol {
     var manifest: Manifest { .init() }
@@ -11,5 +12,9 @@ class MobileArchiveMock: MobileArchiveProtocol {
     }
 
     func delete(_ path: Path) async throws {
+    }
+
+    func compress() -> URL? {
+        nil
     }
 }

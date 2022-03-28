@@ -1,4 +1,5 @@
 import Peripheral
+import Foundation
 
 public class ArchiveStorageMock: MobileArchiveStorage, DeletedArchiveStorage {
     public var manifest: Manifest { .init() }
@@ -11,5 +12,9 @@ public class ArchiveStorageMock: MobileArchiveStorage, DeletedArchiveStorage {
     }
 
     public func delete(_ path: Path) async throws {
+    }
+
+    public func compress() -> URL? {
+        nil
     }
 }

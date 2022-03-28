@@ -1,4 +1,5 @@
 import Peripheral
+import Foundation
 
 public protocol ArchiveStorage {
     func get(_ path: Path) async throws -> String
@@ -6,5 +7,7 @@ public protocol ArchiveStorage {
     func delete(_ path: Path) async throws
 }
 
-public protocol MobileArchiveStorage: ArchiveStorage {}
+public protocol MobileArchiveStorage: ArchiveStorage {
+    func compress() -> URL?
+}
 public protocol DeletedArchiveStorage: ArchiveStorage {}

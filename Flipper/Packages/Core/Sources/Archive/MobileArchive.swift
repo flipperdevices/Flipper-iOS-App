@@ -1,5 +1,6 @@
 import Inject
 import Peripheral
+import Foundation
 
 class MobileArchive: MobileArchiveProtocol {
     @Inject var storage: MobileArchiveStorage
@@ -24,5 +25,9 @@ class MobileArchive: MobileArchiveProtocol {
     func delete(_ path: Path) async throws {
         try await storage.delete(path)
         manifest[path] = nil
+    }
+
+    func compress() -> URL? {
+        storage.compress()
     }
 }

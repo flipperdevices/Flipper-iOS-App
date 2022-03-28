@@ -4,6 +4,7 @@ import Foundation
 
 class PlainMobileArchiveStorage: MobileArchiveStorage {
     let storage: FileStorage = .init()
+    private let directory = "mobile"
 
     init() {}
 
@@ -14,17 +15,19 @@ class PlainMobileArchiveStorage: MobileArchiveStorage {
 
     func upsert(_ content: String, at path: Path) async throws {
         let path = makePath(for: path)
-        print("upsert", path)
         try storage.write(content, at: path)
     }
 
     func delete(_ path: Path) async throws {
         let path = makePath(for: path)
-        print("delete", path)
         try storage.delete(path)
     }
 
     private func makePath(for path: Path) -> Path {
-        .init(string: "/mobile/\(path.string)")
+        .init(string: "/\(directory)/\(path.string)")
+    }
+
+    func compress() -> URL? {
+        storage.archive(directory, to: "archive.zip")
     }
 }

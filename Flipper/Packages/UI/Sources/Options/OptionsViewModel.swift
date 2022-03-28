@@ -41,4 +41,8 @@ class OptionsViewModel: ObservableObject {
             try await rpc.reboot(to: .os)
         }
     }
+
+    func backupKeys() {
+        appState.archive.backupKeys()
+    }
 }

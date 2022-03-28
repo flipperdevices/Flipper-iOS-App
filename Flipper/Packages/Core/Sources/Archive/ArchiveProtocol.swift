@@ -1,4 +1,5 @@
 import Peripheral
+import Foundation
 
 protocol ArchiveProtocol {
     var manifest: Manifest { get async throws }
@@ -9,5 +10,7 @@ protocol ArchiveProtocol {
 }
 
 protocol FlipperArchiveProtocol: ArchiveProtocol {}
-protocol MobileArchiveProtocol: ArchiveProtocol {}
+protocol MobileArchiveProtocol: ArchiveProtocol {
+    func compress() -> URL?
+}
 protocol DeletedArchiveProtocol: ArchiveProtocol {}

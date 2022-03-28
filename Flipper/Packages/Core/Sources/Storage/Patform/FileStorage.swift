@@ -56,6 +56,37 @@ class FileStorage {
             try FileManager.default.removeItem(at: url)
         }
     }
+
+    func archive(
+        _ directory: String = "",
+        to archive: String = "archive.zip"
+    ) -> URL? {
+        var result: URL?
+        var error: NSError?
+
+        let sourceURL = baseURL.appendingPathComponent(directory)
+
+        NSFileCoordinator().coordinate(
+            readingItemAt: sourceURL,
+            options: [.forUploading],
+            error: &error
+        ) {
+            result = try? moveToTemp($0)
+        }
+
+        func moveToTemp(_ archiveURL: URL) throws -> URL {
+            let tempURL = try FileManager.default.url(
+                for: .itemReplacementDirectory,
+                in: .userDomainMask,
+                appropriateFor: archiveURL,
+                create: true
+            ).appendingPathComponent(archive)
+            try FileManager.default.moveItem(at: archiveURL, to: tempURL)
+            return tempURL
+        }
+
+        return result
+    }
 }
 
 extension URL {
