@@ -13,8 +13,8 @@ public struct Path: Equatable, Hashable, Codable {
         .init(components: components.dropLast())
     }
 
-    public init(string: String) {
-        self.components = string.split(separator: "/").map(String.init)
+    public init<T: StringProtocol>(string: T) {
+        self.components = String(string).split(separator: "/").map(String.init)
     }
 
     public init(components: [String] = []) {
