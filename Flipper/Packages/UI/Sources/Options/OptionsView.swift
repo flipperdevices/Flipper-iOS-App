@@ -35,10 +35,6 @@ struct OptionsView: View {
                     NavigationLink("File Manager") {
                         FileManagerView(viewModel: .init())
                     }
-                    Button("Play Alert") {
-                        viewModel.playAlert()
-                    }
-                    .foregroundColor(viewModel.isOnline ? .accentColor : .gray)
                     Button("Reboot Flipper") {
                         viewModel.rebootFlipper()
                     }

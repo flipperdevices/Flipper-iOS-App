@@ -19,12 +19,6 @@ class OptionsViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
-    func playAlert() {
-        Task {
-            try await rpc.playAlert()
-        }
-    }
-
     func rebootFlipper() {
         Task {
             try await rpc.reboot(to: .os)

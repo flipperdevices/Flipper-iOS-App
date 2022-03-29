@@ -11,7 +11,7 @@ struct DeviceView: View {
                 DeviceHeader(device: viewModel.flipper)
 
                 ScrollView {
-                    VStack {
+                    VStack(spacing: 0) {
                         if viewModel.status == .unsupportedDevice {
                             UnsupportedDeviceSection()
                                 .padding(.top, 14)
@@ -33,13 +33,23 @@ struct DeviceView: View {
                         }
                         .disabled(!viewModel.status.isOnline)
 
-                        VStack(spacing: 14) {
+                        VStack(spacing: 12) {
                             if viewModel.status != .noDevice {
                                 DeviceActionButton(
                                     image: "Sync",
                                     title: "Synchronize"
                                 ) {
                                     viewModel.sync()
+                                }
+                                .disabled(viewModel.status != .connected)
+                            }
+
+                            if viewModel.status != .noDevice {
+                                DeviceActionButton(
+                                    image: "Alert",
+                                    title: "Play Alert"
+                                ) {
+                                    viewModel.playAlert()
                                 }
                                 .disabled(viewModel.status != .connected)
                             }
@@ -51,6 +61,7 @@ struct DeviceView: View {
                                 ) {
                                     viewModel.showWelcomeScreen()
                                 }
+                                .padding(.top, 12)
                             } else {
                                 DeviceActionButton(
                                     image: "Forget",
@@ -59,6 +70,7 @@ struct DeviceView: View {
                                     viewModel.showWelcomeScreen()
                                 }
                                 .foregroundColor(.sRed)
+                                .padding(.top, 12)
                             }
                         }
                         .padding(.vertical, 24)

@@ -6,7 +6,8 @@ import Combine
 
 @MainActor
 class DeviceViewModel: ObservableObject {
-    @Published var appState: AppState = .shared
+    private let rpc: RPC = .shared
+    private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
     @Published var showPairingIssueAlert = false
@@ -87,6 +88,12 @@ class DeviceViewModel: ObservableObject {
 
     func sync() {
         Task { await appState.synchronize() }
+    }
+
+    func playAlert() {
+        Task {
+            try await rpc.playAlert()
+        }
     }
 }
 
