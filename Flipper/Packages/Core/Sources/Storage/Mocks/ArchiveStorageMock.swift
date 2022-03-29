@@ -1,7 +1,7 @@
 import Peripheral
 import Foundation
 
-public class ArchiveStorageMock: MobileArchiveStorage, DeletedArchiveStorage {
+public class ArchiveStorageMock: MobileArchiveStorage {
     public var manifest: Manifest { .init() }
 
     public func get(_ path: Path) async throws -> String {
@@ -18,3 +18,15 @@ public class ArchiveStorageMock: MobileArchiveStorage, DeletedArchiveStorage {
         nil
     }
 }
+
+class DeletedManifestStorageMock: DeletedManifestStorage {
+    var manifest: Manifest?
+}
+class MobileManifestStorageMock: MobileManifestStorage {
+    var manifest: Manifest?
+}
+class SyncedManifestStorageMock: SyncedManifestStorage {
+    var manifest: Manifest?
+}
+
+class DeletedStorageMock: ArchiveStorageMock, DeletedArchiveStorage {}
