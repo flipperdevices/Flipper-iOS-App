@@ -52,10 +52,10 @@ struct DeviceInfoHeader: View {
         guard let battery = flipper.battery else {
             return .clear
         }
-        switch battery.decimalValue * 100 {
-        case 0..<20: return .sRed
-        case 20..<50: return .sYellow
-        case 50...100: return .sGreen
+        switch Int(battery.decimalValue * 100) {
+        case ...15: return .sRed
+        case 16...40: return .sYellow
+        case 41...: return .sGreen
         default: return .clear
         }
     }
