@@ -42,6 +42,7 @@ class FileStorage {
 
     func delete(_ path: Path) throws {
         let url = makeURL(for: path)
+        guard url.isExists else { return }
         try FileManager.default.removeItem(at: url)
     }
 
