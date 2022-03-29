@@ -5,6 +5,10 @@ import SwiftUI
 @main
 struct FlipperApp: App {
     init() {
+        #if !DEBUG
+        Core.migration()
+        #endif
+
         #if !targetEnvironment(simulator)
         Core.registerDependencies()
         #else
