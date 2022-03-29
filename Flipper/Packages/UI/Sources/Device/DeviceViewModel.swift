@@ -23,17 +23,15 @@ class DeviceViewModel: ObservableObject {
         }
     }
 
-    var protobufVersion: String? {
-        guard flipper?.isUnsupported == false else {
-            return nil
-        }
-        return flipper?.information?.protobufRevision ?? "-"
+    var protobufVersion: String {
+        guard status != .unsupportedDevice else { return "—" }
+        guard status != .noDevice, status != .disconnected else { return "—" }
+        return flipper?.information?.protobufRevision ?? ""
     }
 
     var firmwareVersion: String {
-        guard let info = flipper?.information else {
-            return ""
-        }
+        guard status != .noDevice, status != .disconnected else { return "—" }
+        guard let info = flipper?.information else { return "" }
 
         let version = info
             .softwareRevision
@@ -46,9 +44,8 @@ class DeviceViewModel: ObservableObject {
     }
 
     var firmwareBuild: String {
-        guard let info = flipper?.information else {
-            return ""
-        }
+        guard status != .noDevice, status != .disconnected else { return "—" }
+        guard let info = flipper?.information else { return "" }
 
         let build = info
             .softwareRevision
@@ -59,17 +56,15 @@ class DeviceViewModel: ObservableObject {
         return .init(build)
     }
 
-    var internalSpace: String? {
-        guard flipper?.isUnsupported == false else {
-            return nil
-        }
+    var internalSpace: String {
+        guard status != .unsupportedDevice else { return "—" }
+        guard status != .noDevice, status != .disconnected else { return "—" }
         return flipper?.storage?.internal?.description ?? ""
     }
 
-    var externalSpace: String? {
-        guard flipper?.isUnsupported == false else {
-            return nil
-        }
+    var externalSpace: String {
+        guard status != .unsupportedDevice else { return "—" }
+        guard status != .noDevice, status != .disconnected else { return "—" }
         return flipper?.storage?.external?.description ?? ""
     }
 

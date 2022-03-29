@@ -18,22 +18,20 @@ struct DeviceView: View {
                                 .padding(.horizontal, 14)
                         }
 
-                        if viewModel.status != .noDevice {
-                            NavigationLink {
-                                DeviceInfoView(viewModel: .init())
-                            } label: {
-                                DeviceInfoSection(
-                                    protobufVersion: viewModel.protobufVersion,
-                                    firmwareVersion: viewModel.firmwareVersion,
-                                    firmwareBuild: viewModel.firmwareBuild,
-                                    internalSpace: viewModel.internalSpace,
-                                    externalSpace: viewModel.externalSpace
-                                )
-                                .padding(.top, 14)
-                                .padding(.horizontal, 14)
-                            }
-                            .disabled(!viewModel.status.isOnline)
+                        NavigationLink {
+                            DeviceInfoView(viewModel: .init())
+                        } label: {
+                            DeviceInfoSection(
+                                protobufVersion: viewModel.protobufVersion,
+                                firmwareVersion: viewModel.firmwareVersion,
+                                firmwareBuild: viewModel.firmwareBuild,
+                                internalSpace: viewModel.internalSpace,
+                                externalSpace: viewModel.externalSpace
+                            )
+                            .padding(.top, 14)
+                            .padding(.horizontal, 14)
                         }
+                        .disabled(!viewModel.status.isOnline)
 
                         VStack(spacing: 14) {
                             if viewModel.status != .noDevice {
