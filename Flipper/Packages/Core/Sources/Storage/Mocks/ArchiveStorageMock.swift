@@ -30,3 +30,4 @@ class SyncedManifestStorageMock: SyncedManifestStorage {
 }
 
 class DeletedStorageMock: ArchiveStorageMock, DeletedArchiveStorage {}
+class NotesStorageMock: ArchiveStorageMock, MobileNotesStorage {}

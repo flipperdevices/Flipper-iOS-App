@@ -13,6 +13,7 @@ public class Archive: ObservableObject {
 
     @Inject var mobileFavorites: MobileFavoritesProtocol
     @Inject var mobileArchive: MobileArchiveProtocol
+    @Inject var mobileNotes: MobileNotesStorage
     @Inject var deletedArchive: DeletedArchiveProtocol
     @Inject var manifestStorage: SyncedManifestStorage
 
@@ -54,6 +55,7 @@ public class Archive: ObservableObject {
             var item = try ArchiveItem(path: path, content: content)
             item.status = status(for: item)
             item.isFavorite = favorites.contains(item.path)
+            item.note = (try? await mobileNotes.get(item.path)) ?? ""
             items.append(item)
         }
         return items
@@ -77,6 +79,7 @@ extension Archive {
 
     public func upsert(_ item: ArchiveItem) async throws {
         try await mobileArchive.upsert(item.content, at: item.path)
+        try await mobileNotes.upsert(item.note, at: item.path)
         items.removeAll { $0.path == item.path }
         var item = item
         item.status = status(for: item)
@@ -84,9 +87,11 @@ extension Archive {
     }
 
     public func delete(_ id: ArchiveItem.ID) async throws {
-        if let item = get(id) {
+        if var item = get(id) {
+            item.note = ""
             try await backup(item)
             try await mobileArchive.delete(item.path)
+            try await mobileNotes.delete(item.path)
             items.removeAll { $0.path == item.path }
         }
     }
@@ -123,8 +128,10 @@ extension Archive {
                 throw Error.alredyExists
             }
             try await mobileArchive.delete(item.path)
+            try await mobileNotes.delete(item.path)
             items.removeAll { $0.path == item.path }
             try await mobileArchive.upsert(newItem.content, at: newItem.path)
+            try await mobileNotes.upsert(newItem.content, at: newItem.path)
             items.append(newItem)
         }
     }

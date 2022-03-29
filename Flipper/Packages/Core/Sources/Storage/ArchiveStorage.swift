@@ -10,4 +10,5 @@ public protocol ArchiveStorage {
 public protocol MobileArchiveStorage: ArchiveStorage {
     func compress() -> URL?
 }
+public protocol MobileNotesStorage: ArchiveStorage {}
 public protocol DeletedArchiveStorage: ArchiveStorage {}
