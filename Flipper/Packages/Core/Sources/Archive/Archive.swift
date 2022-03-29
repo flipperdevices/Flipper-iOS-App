@@ -65,7 +65,8 @@ public class Archive: ObservableObject {
         var items = [ArchiveItem]()
         for path in try await deletedArchive.manifest.paths {
             let content = try await deletedArchive.read(path)
-            let item = try ArchiveItem(path: path, content: content)
+            var item = try ArchiveItem(path: path, content: content)
+            item.status = .deleted
             items.append(item)
         }
         return items
@@ -146,6 +147,8 @@ extension Archive {
     }
 
     func backup(_ item: ArchiveItem) async throws {
+        var item = item
+        item.status = .deleted
         try await deletedArchive.upsert(item.content, at: item.path)
         deletedItems.removeAll { $0.path == item.path }
         deletedItems.append(item)
