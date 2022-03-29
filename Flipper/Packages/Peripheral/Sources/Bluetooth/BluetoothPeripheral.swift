@@ -26,7 +26,7 @@ public protocol BluetoothPeripheral: AnyObject {
     func send(_ data: Data)
 }
 
-public enum FlipperColor: Equatable, Codable {
+public enum FlipperColor: String, Equatable, Codable {
     case unknown
     case black
     case white
