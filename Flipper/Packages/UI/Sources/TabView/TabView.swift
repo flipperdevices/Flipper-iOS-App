@@ -83,14 +83,14 @@ extension TabView {
         switch status {
         case .noDevice: return .black40
         case .unsupportedDevice: return .sRed
-        case .connecting: return .a2
+        case .connecting: return .black40
         case .connected: return .a2
         case .disconnected: return .black40
         case .synchronizing: return .a2
         case .synchronized: return .a2
         case .pairingIssue: return .sRed
-        case .preParing: return .a2
-        case .pairing: return .a2
+        case .preParing: return .black40
+        case .pairing: return .black40
         case .failed: return .sRed
         }
     }
