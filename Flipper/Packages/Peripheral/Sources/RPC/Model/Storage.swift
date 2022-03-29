@@ -3,6 +3,8 @@ import struct Foundation.Data
 public struct StorageSpace: Equatable, Codable {
     public let free: Int
     public let total: Int
+
+    public var used: Int { total - free }
 }
 
 public enum Element: Equatable {

@@ -31,12 +31,12 @@ struct DeviceInfoSection: View {
 
                 Divider()
                 DeviceInfoRow(
-                    name: "Internal Flash (Free/Total)",
+                    name: "Internal Flash (Used/Total)",
                     value: internalSpace)
 
                 Divider()
                 DeviceInfoRow(
-                    name: "SD Card (Free/Total)",
+                    name: "SD Card (Used/Total)",
                     value: externalSpace)
 
                 HStack {

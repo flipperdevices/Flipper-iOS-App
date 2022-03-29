@@ -104,7 +104,7 @@ extension String {
 
 extension StorageSpace: CustomStringConvertible {
     public var description: String {
-        "\(free.hr) / \(total.hr)"
+        "\(used.hr) / \(total.hr)"
     }
 }
 
