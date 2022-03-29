@@ -1,11 +1,16 @@
+import Peripheral
+import Foundation
+
 protocol ArchiveProtocol {
     var manifest: Manifest { get async throws }
 
-    func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem
-    func upsert(_ item: ArchiveItem) async throws
-    func delete(_ id: ArchiveItem.ID) async throws
+    func read(_ path: Path) async throws -> String
+    func upsert(_ content: String, at path: Path) async throws
+    func delete(_ path: Path) async throws
 }
 
-protocol PeripheralArchiveProtocol: ArchiveProtocol {}
-protocol MobileArchiveProtocol: ArchiveProtocol {}
+protocol FlipperArchiveProtocol: ArchiveProtocol {}
+protocol MobileArchiveProtocol: ArchiveProtocol {
+    func compress() -> URL?
+}
 protocol DeletedArchiveProtocol: ArchiveProtocol {}

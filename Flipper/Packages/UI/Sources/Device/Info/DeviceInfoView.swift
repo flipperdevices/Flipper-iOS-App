@@ -8,7 +8,7 @@ struct DeviceInfoView: View {
     var body: some View {
         VStack {
             Form {
-                if let deviceInformation = viewModel.device?.information {
+                if let deviceInformation = viewModel.flipper?.information {
                     DeviceInformationService(deviceInformation)
                 }
 
@@ -23,9 +23,9 @@ struct DeviceInfoView: View {
 }
 
 struct DeviceInformationService: View {
-    let deviceInformation: Peripheral.Service.DeviceInformation
+    let deviceInformation: Flipper.DeviceInformation
 
-    init(_ deviceInformation: Peripheral.Service.DeviceInformation) {
+    init(_ deviceInformation: Flipper.DeviceInformation) {
         self.deviceInformation = deviceInformation
     }
 

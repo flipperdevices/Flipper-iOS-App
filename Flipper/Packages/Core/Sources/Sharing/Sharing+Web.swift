@@ -1,5 +1,6 @@
-import Logging
+import Peripheral
 import Foundation
+import Logging
 
 class WebImporter: Importer {
     enum Error: Swift.Error {
@@ -32,7 +33,7 @@ class WebImporter: Importer {
         path: Path,
         properties: [ArchiveItem.Property]
     ) async throws -> ArchiveItem {
-        guard let filename = path.components.last else {
+        guard let filename = path.lastComponent else {
             throw Error.invalidPath
         }
         return try .init(filename: filename, properties: properties)

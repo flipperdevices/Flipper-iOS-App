@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import Peripheral
 
 struct FileManagerView: View {
     @StateObject var viewModel: FileManagerViewModel

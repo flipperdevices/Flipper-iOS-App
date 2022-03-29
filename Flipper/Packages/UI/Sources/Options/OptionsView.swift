@@ -23,6 +23,9 @@ struct OptionsView: View {
                     NavigationLink("Logs") {
                         LogsView(viewModel: .init())
                     }
+                    Button("Backup Keys") {
+                        viewModel.backupKeys()
+                    }
                 }
 
                 Section(header: Text("Remote")) {

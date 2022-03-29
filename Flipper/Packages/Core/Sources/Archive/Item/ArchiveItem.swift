@@ -1,8 +1,11 @@
 import Logging
+import Peripheral
 import Foundation
 
 public struct ArchiveItem: Codable, Equatable, Identifiable {
-    public var id: ID { .init(name: name, fileType: fileType) }
+    public var id: ID {
+        .init(path: path)
+    }
 
     public var name: Name
     public let fileType: FileType
@@ -52,6 +55,10 @@ extension ArchiveItem {
         try self.init(filename: filename, content: content)
     }
 
+    init(path: Path, content: String) throws {
+        try self.init(filename: path.lastComponent!, content: content)
+    }
+
     init(filename: String, content: String) throws {
         guard let properties = [Property](content: content) else {
             throw Error.invalidContent
@@ -66,8 +73,8 @@ extension ArchiveItem {
             properties: properties)
     }
 
-    var path: Path {
-        .init(components: [fileType.location, filename])
+    public var path: Path {
+        .init(components: ["ext", fileType.location, filename])
     }
 
     var filename: String {

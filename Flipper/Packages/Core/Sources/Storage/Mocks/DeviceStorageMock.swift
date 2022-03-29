@@ -1,9 +1,9 @@
 public class DeviceStorageMock: DeviceStorage {
-    let storage = JSONStorage<Peripheral>(
-        for: Peripheral.self,
+    let storage = JSONStorage<Flipper>(
+        for: Flipper.self,
         filename: "periperal.json")
 
-    public var pairedDevice: Peripheral? {
+    public var flipper: Flipper? {
         get {
             storage.read()
         }

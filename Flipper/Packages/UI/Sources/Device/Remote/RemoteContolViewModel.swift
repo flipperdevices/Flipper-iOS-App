@@ -1,7 +1,8 @@
 import Core
 import Combine
-import Logging
+import Peripheral
 import Foundation
+import Logging
 
 @MainActor
 class RemoteContolViewModel: ObservableObject {
@@ -30,11 +31,16 @@ class RemoteContolViewModel: ObservableObject {
         }
     }
 
+    var isBusy = false
+
     func onButton(_ button: InputKey) {
+        guard !isBusy else { return }
+        isBusy = true
         logger.info("\(button) button pressed")
         feedback()
         Task {
             try await rpc.pressButton(button)
+            isBusy = false
         }
     }
 }
@@ -42,6 +48,6 @@ class RemoteContolViewModel: ObservableObject {
 import SwiftUI
 
 func feedback() {
-    let impactMed = UIImpactFeedbackGenerator(style: .medium)
+    let impactMed = UIImpactFeedbackGenerator(style: .heavy)
     impactMed.impactOccurred()
 }

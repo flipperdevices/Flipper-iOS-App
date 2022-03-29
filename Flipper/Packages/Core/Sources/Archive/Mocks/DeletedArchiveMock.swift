@@ -1,13 +1,15 @@
-class DeletedArchiveMock: DeletedArchiveProtocol {
-    var manifest: Manifest { .init(items: []) }
+import Peripheral
 
-    func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem {
+class DeletedArchiveMock: DeletedArchiveProtocol {
+    var manifest: Manifest { .init() }
+
+    func read(_ path: Path) async throws -> String {
         fatalError("not implemented")
     }
 
-    func upsert(_ item: ArchiveItem) async throws {
+    func upsert(_ content: String, at path: Path) async throws {
     }
 
-    func delete(_ id: ArchiveItem.ID) async throws {
+    func delete(_ path: Path) async throws {
     }
 }

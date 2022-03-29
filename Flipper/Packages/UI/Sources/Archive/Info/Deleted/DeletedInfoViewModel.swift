@@ -30,7 +30,7 @@ class DeletedInfoViewModel: ObservableObject {
 
     func delete() {
         Task {
-            try await appState.archive.wipe(item.id)
+            try await appState.archive.wipe(item.path)
         }
         dismiss()
     }

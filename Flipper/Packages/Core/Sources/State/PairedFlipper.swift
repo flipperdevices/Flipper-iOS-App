@@ -1,5 +1,7 @@
-import Combine
 import Inject
+import Peripheral
+import Combine
+
 import struct Foundation.UUID
 
 class PairedFlipper: PairedDevice, ObservableObject {
@@ -7,22 +9,22 @@ class PairedFlipper: PairedDevice, ObservableObject {
     @Inject var storage: DeviceStorage
     var disposeBag: DisposeBag = .init()
 
-    var peripheral: SafePublisher<Peripheral?> {
-        peripheralSubject.eraseToAnyPublisher()
+    var flipper: SafePublisher<Flipper?> {
+        flipperSubject.eraseToAnyPublisher()
     }
-    private var peripheralSubject: SafeValueSubject<Peripheral?>
+    private var flipperSubject: SafeValueSubject<Flipper?>
 
     private var infoBag: AnyCancellable?
-    private var flipper: BluetoothPeripheral? {
+    private var bluetoothPeripheral: BluetoothPeripheral? {
         didSet { flipperDidChange() }
     }
     var isPairingFailed: Bool {
-        flipper?.isPairingFailed ?? false
+        bluetoothPeripheral?.isPairingFailed ?? false
     }
 
     init() {
-        peripheralSubject = .init(nil)
-        peripheralSubject.value = storage.pairedDevice
+        flipperSubject = .init(nil)
+        flipperSubject.value = storage.flipper
 
         connector.status
             .filter { $0 == .ready }
@@ -31,7 +33,7 @@ class PairedFlipper: PairedDevice, ObservableObject {
             }
             .store(in: &disposeBag)
 
-        connector.connectedPeripherals
+        connector.connected
             .sink { [weak self] peripherals in
                 self?.onConnectedPeripherals(peripherals)
             }
@@ -39,71 +41,66 @@ class PairedFlipper: PairedDevice, ObservableObject {
     }
 
     func onBluetoothReady() {
-        if let peripheral = peripheralSubject.value {
-            connector.connect(to: peripheral.id)
+        if let flipper = flipperSubject.value {
+            connector.connect(to: flipper.id)
         }
     }
 
     func onConnectedPeripherals(_ peripherals: [BluetoothPeripheral]) {
         guard let peripheral = peripherals.first else {
             // don't forget device but update state
-            if self.flipper?.state == .disconnected {
-                self.flipperDidChange()
+            if bluetoothPeripheral?.state == .disconnected {
+                flipperDidChange()
             }
             return
         }
-        flipper = peripheral
+        bluetoothPeripheral = peripheral
     }
 
     func flipperDidChange() {
-        if let flipper = flipper {
-            peripheralSubject.value = merge(peripheralSubject.value, flipper)
-            storage.pairedDevice = peripheralSubject.value
+        if let peripheral = bluetoothPeripheral {
+            flipperSubject.value = merge(peripheral)
+            storage.flipper = flipperSubject.value
             subscribeToUpdates()
         } else {
-            peripheralSubject.value = nil
-            storage.pairedDevice = nil
+            flipperSubject.value = nil
+            storage.flipper = nil
             infoBag = nil
         }
     }
 
     func subscribeToUpdates() {
-        infoBag = flipper?.info
+        infoBag = bluetoothPeripheral?.info
             .sink { [weak self] in
                 self?.flipperDidChange()
             }
     }
 
-    func merge(
-        _ peripheral: Peripheral?,
-        _ bluetoothPeripheral: BluetoothPeripheral
-    ) -> Peripheral {
-        var peripheral = Peripheral(bluetoothPeripheral)
-        guard let current = peripheralSubject.value else {
-            return peripheral
+    func merge(_ bluetoothPeripheral: BluetoothPeripheral) -> Flipper {
+        var flipper = Flipper(bluetoothPeripheral)
+        guard let current = flipperSubject.value else {
+            return flipper
         }
-
         // we don't have color on connect
         // so we have to copy initial value
-        peripheral.color = current.color
-
-        return peripheral
+        flipper.color = current.color
+        return flipper
     }
 
     func connect() {
-        if let flipper = self.flipper {
-            connector.connect(to: flipper.id)
+        if let peripheral = bluetoothPeripheral {
+            connector.connect(to: peripheral.id)
         }
     }
 
     func disconnect() {
-        if let flipper = self.flipper {
-            connector.disconnect(from: flipper.id)
+        if let peripheral = bluetoothPeripheral {
+            connector.disconnect(from: peripheral.id)
         }
     }
 
     func forget() {
         disconnect()
-        flipper = nil
+        bluetoothPeripheral = nil
     }
 }

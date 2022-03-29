@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import Peripheral
 
 public struct RootView: View {
     @ObservedObject var viewModel: RootViewModel

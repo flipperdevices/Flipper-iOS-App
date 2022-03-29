@@ -1,6 +1,7 @@
 import Core
 import Combine
 import Logging
+import Peripheral
 import Foundation
 
 @MainActor

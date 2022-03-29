@@ -1,11 +1,12 @@
 import Core
-import Combine
 import Inject
+import Peripheral
+import Combine
 import SwiftUI
 
 class MainViewModel: ObservableObject {
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
-    @Published var status: Status = .noDevice
+    @Published var status: DeviceStatus = .noDevice
 
     @Published var importedName = ""
     @Published var importedOpacity = 0.0

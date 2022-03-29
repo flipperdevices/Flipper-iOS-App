@@ -17,6 +17,9 @@ let package = Package(
             name: "Inject",
             path: "../Inject"),
         .package(
+            name: "Peripheral",
+            path: "../Peripheral"),
+        .package(
             url: "https://github.com/apple/swift-collections.git",
             .upToNextMajor(from: "1.0.0")),
         .package(
@@ -32,6 +35,7 @@ let package = Package(
             name: "Core",
             dependencies: [
                 "Inject",
+                "Peripheral",
                 "SwiftProtobuf",
                 .product(name: "Collections", package: "swift-collections"),
                 .product(name: "Logging", package: "swift-log")

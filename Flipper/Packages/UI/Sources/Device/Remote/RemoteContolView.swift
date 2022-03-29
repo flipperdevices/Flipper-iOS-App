@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import Peripheral
 
 struct RemoteContolView: View {
     @StateObject var viewModel: RemoteContolViewModel

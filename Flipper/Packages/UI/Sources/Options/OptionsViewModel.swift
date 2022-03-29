@@ -1,5 +1,6 @@
 import Core
 import Combine
+import Peripheral
 import Foundation
 
 @MainActor
@@ -39,5 +40,9 @@ class OptionsViewModel: ObservableObject {
             try await rpc.deleteFile(at: .init(string: "/int/bt.keys"))
             try await rpc.reboot(to: .os)
         }
+    }
+
+    func backupKeys() {
+        appState.archive.backupKeys()
     }
 }

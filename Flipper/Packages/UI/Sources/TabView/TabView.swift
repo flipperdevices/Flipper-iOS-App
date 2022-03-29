@@ -3,7 +3,7 @@ import Core
 
 struct TabView: View {
     @Binding var selected: Tab
-    let status: Status
+    let status: DeviceStatus
 
     enum Tab: String {
         case device

@@ -8,7 +8,7 @@ struct DeviceView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                DeviceHeader(device: viewModel.device)
+                DeviceHeader(device: viewModel.flipper)
 
                 ScrollView {
                     VStack {
@@ -46,7 +46,7 @@ struct DeviceView: View {
                                 .disabled(viewModel.status != .connected)
                             }
 
-                            if viewModel.device == nil {
+                            if viewModel.flipper == nil {
                                 DeviceActionButton(
                                     image: "Connect",
                                     title: "Connect Flipper"

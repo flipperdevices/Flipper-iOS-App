@@ -1,38 +1,28 @@
 import Inject
+import Peripheral
 
 class DeletedArchive: DeletedArchiveProtocol {
-    @Inject var storage: DeletedStorage
-
-    var items: [ArchiveItem.ID: ArchiveItem] = [:] {
-        didSet {
-            storage.items = .init(items.values)
-        }
-    }
+    @Inject var storage: DeletedArchiveStorage
+    @Inject var manifestStorage: DeletedManifestStorage
 
     var manifest: Manifest {
-        .init(items: items.values.map {
-            .init(id: $0.id, hash: $0.hash)
-        })
+        get { manifestStorage.manifest ?? .init() }
+        set { manifestStorage.manifest = newValue }
     }
 
-    init() {
-        for item in storage.items {
-            self.items[item.id] = item
-        }
+    init() {}
+
+    func read(_ path: Path) async throws -> String {
+        try await storage.get(path)
     }
 
-    func read(_ id: ArchiveItem.ID) async throws -> ArchiveItem {
-        guard let item = items[id] else {
-            fatalError("unreachable: invalid id")
-        }
-        return item
+    func upsert(_ content: String, at path: Path) async throws {
+        try await storage.upsert(content, at: path)
+        manifest[path] = .init(content.md5)
     }
 
-    func upsert(_ item: ArchiveItem) async throws {
-        items[item.id] = item
-    }
-
-    func delete(_ id: ArchiveItem.ID) async throws {
-        items.removeValue(forKey: id)
+    func delete(_ path: Path) async throws {
+        try await storage.delete(path)
+        manifest[path] = nil
     }
 }

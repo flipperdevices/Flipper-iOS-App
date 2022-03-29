@@ -1,12 +1,18 @@
-public struct Manifest: Codable {
-    var items: [Item]
+import Peripheral
 
-    public struct Item: Equatable, Codable {
-        public let id: ArchiveItem.ID
-        public let hash: Hash
+public struct Manifest: Codable {
+    var items: [Path: Hash]
+
+    public var paths: Dictionary<Path, Hash>.Keys {
+        items.keys
     }
 
-    subscript(_ id: ArchiveItem.ID) -> Item? {
-        return items.first { $0.id == id }
+    public init(_ items: [Path: Hash] = [:]) {
+        self.items = items
+    }
+
+    public subscript(_ path: Path) -> Hash? {
+        get { items[path] }
+        set { items[path] = newValue }
     }
 }

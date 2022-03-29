@@ -20,6 +20,7 @@
 		8BCFDDE2277A2405002DA4CD /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE1277A2405002DA4CD /* PreviewViewController.swift */; };
 		8BCFDDE4277A2405002DA4CD /* PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE3277A2405002DA4CD /* PreviewProvider.swift */; };
 		8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8BE40CF527F1265900288F66 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 8BE40CF427F1265900288F66 /* .swiftlint.yml */; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -79,6 +80,8 @@
 		8BCFDDE1277A2405002DA4CD /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
 		8BCFDDE3277A2405002DA4CD /* PreviewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewProvider.swift; sourceTree = "<group>"; };
 		8BCFDDE8277A2405002DA4CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8BE40CF427F1265900288F66 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Peripheral/.swiftlint.yml; sourceTree = "<group>"; };
+		8BE40CF627F1266D00288F66 /* Peripheral */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Peripheral; path = Packages/Peripheral; sourceTree = "<group>"; };
 		8BED6143270B66D8009E51E2 /* perform_lint.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -115,12 +118,21 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		8B2D5D0B27EFA992005A2F56 /* Peripheral */ = {
+			isa = PBXGroup;
+			children = (
+				8BE40CF427F1265900288F66 /* .swiftlint.yml */,
+			);
+			name = Peripheral;
+			sourceTree = "<group>";
+		};
 		8B77A9C626CAA3BA00A3DF9F /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				8B89527827581E7B00E4C336 /* UI */,
 				8B89527927581E8700E4C336 /* Inject */,
+				8BE40CF627F1266D00288F66 /* Peripheral */,
 				8B89527A27581E9500E4C336 /* Core */,
+				8B89527827581E7B00E4C336 /* UI */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -150,6 +162,7 @@
 		8BED6139270B617B009E51E2 /* SwiftLint */ = {
 			isa = PBXGroup;
 			children = (
+				8B2D5D0B27EFA992005A2F56 /* Peripheral */,
 				8BED613E270B6202009E51E2 /* UI */,
 				8BED613C270B61EE009E51E2 /* Core */,
 				8BED613D270B61F7009E51E2 /* Inject */,
@@ -327,6 +340,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BE40CF527F1265900288F66 /* .swiftlint.yml in Resources */,
 				8BA57F20273AD21D00A3A33B /* subhz.png in Resources */,
 				8BA57F1F273AD21D00A3A33B /* rfid.png in Resources */,
 				8BA57F21273AD21D00A3A33B /* irda.png in Resources */,
