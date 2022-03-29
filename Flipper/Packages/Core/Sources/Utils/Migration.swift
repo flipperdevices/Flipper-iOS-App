@@ -5,7 +5,10 @@ public func migration() {
         return
     }
 
-    // MARK: migration goes here
+    if UserDefaults.lastVersion == "()" {
+        UserDefaultsStorage.shared.reset()
+        try? FileStorage().reset()
+    }
 
     UserDefaults.lastRelease = Bundle.releaseVersion
     UserDefaults.lastBuild = Bundle.buildVersion
