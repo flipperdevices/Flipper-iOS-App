@@ -33,7 +33,7 @@ class InfoViewModel: ObservableObject {
         guard backup.isFavorite != item.isFavorite else { return }
         guard !isEditMode else { return }
         Task {
-            try await appState.archive.toggleFavorite(item.path)
+            try await appState.archive.onIsFavoriteToggle(item.path)
         }
     }
 

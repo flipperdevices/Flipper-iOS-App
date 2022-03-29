@@ -89,22 +89,31 @@ extension Archive {
     public func delete(_ id: ArchiveItem.ID) async throws {
         if var item = get(id) {
             item.note = ""
+            item.isFavorite = false
             try await backup(item)
             try await mobileArchive.delete(item.path)
             try await mobileNotes.delete(item.path)
+            if item.isFavorite {
+                try await toggleFavorite(for: item.path)
+            }
             items.removeAll { $0.path == item.path }
         }
     }
 
-    public func toggleFavorite(_ path: Path) async throws {
+    public func onIsFavoriteToggle(_ path: Path) async throws {
         guard let index = items.firstIndex(where: { $0.path == path }) else {
             return
         }
+        items[index].isFavorite = try await toggleFavorite(for: path)
+        try await favoritesSync.run()
+    }
+
+    @discardableResult
+    private func toggleFavorite(for path: Path) async throws -> Bool {
         var favorites = try await mobileFavorites.read()
         favorites.toggle(path)
         try await mobileFavorites.write(favorites)
-        items[index].isFavorite = favorites.contains(path)
-        try await favoritesSync.run()
+        return favorites.contains(path)
     }
 }
 
