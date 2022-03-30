@@ -1,6 +1,6 @@
 import struct Foundation.Data
 
-public struct StorageSpace: Equatable, Codable {
+public struct StorageSpace: Equatable {
     public let free: Int
     public let total: Int
 

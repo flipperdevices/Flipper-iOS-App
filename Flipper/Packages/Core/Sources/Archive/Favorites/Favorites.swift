@@ -1,6 +1,6 @@
 import Peripheral
 
-public struct Favorites: Codable {
+public struct Favorites {
     var items: [Path]
 
     public var paths: [Path] {

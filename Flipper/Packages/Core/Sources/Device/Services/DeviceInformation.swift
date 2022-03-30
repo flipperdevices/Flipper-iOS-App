@@ -1,7 +1,7 @@
 import Peripheral
 
 extension Flipper {
-    public struct DeviceInformation: Equatable, Codable {
+    public struct DeviceInformation: Equatable {
         public var manufacturerName: String
         public var serialNumber: String
         public var firmwareRevision: String

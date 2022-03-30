@@ -1,6 +1,6 @@
 import Peripheral
 
-public struct Manifest: Codable {
+public struct Manifest {
     var items: [Path: Hash]
 
     public var paths: Dictionary<Path, Hash>.Keys {

@@ -1,5 +1,5 @@
 extension ArchiveItem {
-    public struct Name: Codable, Equatable, Hashable {
+    public struct Name: Equatable, Hashable {
         public var value: String
 
         public init<T: StringProtocol>(_ value: T) {

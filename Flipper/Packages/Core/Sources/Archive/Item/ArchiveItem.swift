@@ -2,7 +2,7 @@ import Logging
 import Peripheral
 import Foundation
 
-public struct ArchiveItem: Codable, Equatable, Identifiable {
+public struct ArchiveItem: Equatable, Identifiable {
     public var id: ID {
         .init(path: path)
     }
@@ -15,7 +15,7 @@ public struct ArchiveItem: Codable, Equatable, Identifiable {
     public var note: String
     public var date: Date
 
-    public enum Status: Codable, Equatable {
+    public enum Status: Equatable {
         case error
         case deleted
         case imported

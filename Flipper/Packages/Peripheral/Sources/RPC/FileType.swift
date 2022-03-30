@@ -1,4 +1,4 @@
-public enum FileType: Hashable, Comparable, CaseIterable, Codable {
+public enum FileType: Hashable, Comparable, CaseIterable {
     case subghz
     case rfid
     case nfc

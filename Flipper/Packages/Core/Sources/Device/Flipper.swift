@@ -2,7 +2,7 @@ import Peripheral
 
 import struct Foundation.UUID
 
-public struct Flipper: Equatable, Codable, Identifiable {
+public struct Flipper: Equatable, Identifiable {
     public let id: UUID
     public let name: String
     public var color: FlipperColor
@@ -27,7 +27,7 @@ public struct Flipper: Equatable, Codable, Identifiable {
         self.battery = battery
     }
 
-    public struct StorageInfo: Equatable, Codable {
+    public struct StorageInfo: Equatable {
         public var `internal`: StorageSpace?
         public var external: StorageSpace?
     }

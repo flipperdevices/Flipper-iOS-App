@@ -1,4 +1,4 @@
-public struct ProtobufVersion: Codable {
+public struct ProtobufVersion {
     let major: Int
     let minor: Int
     // Unknown / Unsupported

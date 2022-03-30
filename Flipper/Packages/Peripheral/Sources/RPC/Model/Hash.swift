@@ -1,6 +1,6 @@
 import CryptoKit
 
-public struct Hash: Equatable, Codable {
+public struct Hash: Equatable {
     public let value: String
 
     public init(_ value: String) {

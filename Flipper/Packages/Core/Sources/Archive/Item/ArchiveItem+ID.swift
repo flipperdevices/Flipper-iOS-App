@@ -1,7 +1,7 @@
 import Peripheral
 
 extension ArchiveItem {
-    public struct ID: Codable, Equatable, Hashable {
+    public struct ID: Equatable, Hashable {
         let path: Path
 
         init(path: Path) {

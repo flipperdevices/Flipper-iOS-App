@@ -25,27 +25,27 @@ public protocol BluetoothPeripheral: AnyObject {
     func send(_ data: Data)
 }
 
-public enum FlipperColor: String, Equatable, Codable {
+public enum FlipperColor: String, Equatable {
     case unknown
     case black
     case white
 }
 
-public enum FlipperState: Equatable, Codable {
+public enum FlipperState: Equatable {
     case disconnected
     case connecting
     case connected
     case disconnecting
 }
 
-public struct FlipperService: Equatable, Codable, Identifiable {
+public struct FlipperService: Equatable, Identifiable {
     public var id: String { name }
 
     public var name: String
     public var characteristics: [Characteristic] = []
 
     /// swiftlint:disable nesting
-    public struct Characteristic: Equatable, Codable, Identifiable {
+    public struct Characteristic: Equatable, Identifiable {
         public var id: String { name }
 
         public var name: String

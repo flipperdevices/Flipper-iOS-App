@@ -1,5 +1,5 @@
 extension Flipper {
-    public struct Battery: Equatable, Codable {
+    public struct Battery: Equatable {
         public let level: Int
 
         public var decimalValue: Double {
