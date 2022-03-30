@@ -24,10 +24,14 @@ class DeviceViewModel: ObservableObject {
         }
     }
 
+    var _protobufVersion: ProtobufVersion? {
+        flipper?.information?.protobufRevision
+    }
+
     var protobufVersion: String {
-        guard status != .unsupportedDevice else { return "—" }
         guard status != .noDevice, status != .disconnected else { return "—" }
-        return flipper?.information?.protobufRevision ?? ""
+        guard let version = _protobufVersion else { return "" }
+        return version == .unknown ? "—" : version.rawValue
     }
 
     var firmwareVersion: String {

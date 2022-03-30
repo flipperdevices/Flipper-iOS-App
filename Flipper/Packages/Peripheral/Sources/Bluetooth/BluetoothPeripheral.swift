@@ -10,7 +10,6 @@ public protocol BluetoothPeripheral: AnyObject {
     var services: [FlipperService] { get }
 
     var isPairingFailed: Bool { get }
-    var hasProtobufVersion: Bool { get }
     var didDiscoverDeviceInformation: Bool { get }
 
     var maximumWriteValueLength: Int { get }

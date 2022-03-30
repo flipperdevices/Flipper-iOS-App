@@ -1,10 +1,12 @@
+import Peripheral
+
 extension Flipper {
     public struct DeviceInformation: Equatable, Codable {
         public var manufacturerName: String
         public var serialNumber: String
         public var firmwareRevision: String
         public var softwareRevision: String
-        public var protobufRevision: String
+        public var protobufRevision: ProtobufVersion
     }
 }
 

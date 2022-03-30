@@ -25,7 +25,6 @@ class BluetoothPeripheralMock: BluetoothPeripheral {
     ]
 
     var isPairingFailed: Bool { false }
-    var hasProtobufVersion: Bool { true }
     var didDiscoverDeviceInformation: Bool { true }
     var maximumWriteValueLength: Int { 512 }
 

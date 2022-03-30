@@ -11,8 +11,6 @@ public struct Flipper: Equatable, Codable, Identifiable {
     public var battery: Battery?
     public var storage: StorageInfo?
 
-    public var isUnsupported = false
-
     public init(
         id: UUID,
         name: String,
@@ -54,8 +52,6 @@ public extension Flipper {
         self.battery = source.services
             .first { $0.id == .battery }
             .map(Battery.init) ?? nil
-
-        self.isUnsupported = !source.hasProtobufVersion
     }
 }
 

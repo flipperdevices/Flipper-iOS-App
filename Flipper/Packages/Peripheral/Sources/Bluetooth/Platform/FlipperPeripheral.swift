@@ -13,7 +13,6 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     var color: FlipperColor
 
     var isPairingFailed = false
-    var hasProtobufVersion = false
     var didDiscoverDeviceInformation = false
 
     var freeSpace = 0
@@ -134,9 +133,6 @@ extension FlipperPeripheral: CBPeripheralDelegate {
 
     func didDiscoverDeviceInformation(_ characteristics: [CBCharacteristic]) {
         didDiscoverDeviceInformation = true
-        hasProtobufVersion = characteristics.contains {
-            $0.uuid == .protobufRevision
-        }
         characteristics.forEach { characteristic in
             peripheral.readValue(for: characteristic)
         }

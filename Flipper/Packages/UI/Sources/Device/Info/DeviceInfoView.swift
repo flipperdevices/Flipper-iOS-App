@@ -49,7 +49,7 @@ struct DeviceInformationService: View {
 
             SectionRow(
                 name: "Protobuf Revision",
-                value: deviceInformation.protobufRevision)
+                value: deviceInformation.protobufRevision.rawValue)
         }
     }
 }

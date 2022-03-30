@@ -90,7 +90,13 @@ public class AppState {
     }
 
     func validateFirmwareVersion() -> Bool {
-        guard flipper?.isUnsupported == false else {
+        guard let version = flipper?.information?.protobufRevision else {
+            logger.error("can't validate firmware version")
+            status = .disconnected
+            disconnect()
+            return false
+        }
+        guard version >= .v0_3 else {
             logger.error("unsupported firmware version")
             status = .unsupportedDevice
             disconnect()
