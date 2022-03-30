@@ -58,6 +58,7 @@ public class AppState {
         case .connecting where newValue == .connected: didConnect()
         case .connecting where newValue == .disconnected: didFailToConnect()
         case .connected where newValue == .disconnected: didDisconnect()
+        case .synchronized where newValue == .disconnected: didDisconnect()
         case .synchronizing where newValue == .disconnected: didDisconnect()
         case .unsupportedDevice where newValue == .connected: break
         default: status = .init(newValue)
