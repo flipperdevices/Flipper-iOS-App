@@ -76,14 +76,8 @@ class ArchiveSync: ArchiveSyncProtocol {
         guard let newPath = try await duplicate(path) else {
             return
         }
-
-        eventsSubject.send(.syncing(newPath))
         try await updateOnFlipper(newPath)
-        eventsSubject.send(.exported(newPath))
-
-        eventsSubject.send(.syncing(path))
         try await updateOnMobile(path)
-        eventsSubject.send(.imported(path))
     }
 
     // FIXME: refactor
