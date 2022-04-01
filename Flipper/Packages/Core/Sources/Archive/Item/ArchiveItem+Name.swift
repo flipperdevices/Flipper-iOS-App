@@ -1,3 +1,5 @@
+import struct Peripheral.Path
+
 extension ArchiveItem {
     public struct Name: Equatable, Hashable {
         public var value: String
@@ -14,6 +16,15 @@ extension ArchiveItem.Name {
             throw ArchiveItem.Error.invalidName
         }
         self.value = String(name)
+    }
+}
+
+extension ArchiveItem.Name {
+    init(_ path: Path) throws {
+        guard let filename = path.lastComponent else {
+            throw ArchiveItem.Error.invalidPath
+        }
+        try self.init(filename: filename)
     }
 }
 

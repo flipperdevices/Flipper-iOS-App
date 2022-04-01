@@ -1,3 +1,4 @@
+import struct Peripheral.Path
 import Logging
 
 extension ArchiveItem {
@@ -43,6 +44,15 @@ extension ArchiveItem.FileType {
         case .infrared: return "infrared"
         case .ibutton: return "ibutton"
         }
+    }
+}
+
+extension ArchiveItem.FileType {
+    init(_ path: Path) throws {
+        guard let filename = path.lastComponent else {
+            throw ArchiveItem.Error.invalidPath
+        }
+        try self.init(filename: filename)
     }
 }
 

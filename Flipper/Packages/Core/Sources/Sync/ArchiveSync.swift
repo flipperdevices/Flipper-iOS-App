@@ -80,25 +80,33 @@ class ArchiveSync: ArchiveSyncProtocol {
         try await updateOnMobile(path)
     }
 
-    // FIXME: refactor
-    private func duplicate(_ path: Path) async throws -> Path? {
-        guard let filename = path.lastComponent else {
-            return nil
-        }
-        let components = filename.split(separator: ".")
-        guard components.count >= 2 else {
-            return nil
-        }
-        let name = components.dropLast().joined(separator: ".")
-        let type = components.last.unsafelyUnwrapped
-        // TODO: Implement human readable copy name
-        let timestamp = Int(Date().timeIntervalSince1970)
-        let newFilename = "\(name)_\(timestamp).\(type)"
-        let newPath = path.removingLastComponent.appending(newFilename)
+    // MARK: Duplicating item
 
+    private func duplicate(_ path: Path) async throws -> Path? {
+        let newPath = try await findNextAvailableName(for: path)
         let content = try await mobileArchive.read(path)
         try await mobileArchive.upsert(content, at: newPath)
-
         return newPath
+    }
+
+    private func findNextAvailableName(for path: Path) async throws -> Path {
+        let name = try ArchiveItem.Name(path)
+        let type = try ArchiveItem.FileType(path)
+
+        // format: name_{Int}.type
+        let parts = name.value.split(separator: "_")
+        var number = parts.count >= 2
+            ? Int(parts.last.unsafelyUnwrapped) ?? 1
+            : 1
+
+        var location: Path { path.removingLastComponent }
+        var newFileName: String { "\(name)_\(number).\(type)" }
+        var newFilePath: Path { location.appending(newFileName) }
+
+        while try await mobileArchive.manifest[newFilePath] != nil {
+            number += 1
+        }
+
+        return newFilePath
     }
 }

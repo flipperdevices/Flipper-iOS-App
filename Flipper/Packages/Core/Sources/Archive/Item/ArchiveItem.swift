@@ -45,6 +45,7 @@ public struct ArchiveItem: Equatable, Identifiable {
 
 extension ArchiveItem {
     enum Error: Swift.Error {
+        case invalidPath
         case invalidName
         case invalidType
         case invalidContent
