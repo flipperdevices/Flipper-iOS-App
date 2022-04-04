@@ -53,7 +53,7 @@ public class AppState {
         case .preParing where newValue == .connected: status = .pairing
         case .preParing where newValue == .disconnected: didFailToConnect()
         case .pairing where newValue == .disconnected: didDisconnect()
-        case .pairing where flipper?.battery != nil: didConnect()
+        case .pairing where newValue == .connected: didConnect()
         // MARK: Default
         case .connecting where newValue == .connected: didConnect()
         case .connecting where newValue == .disconnected: didFailToConnect()
