@@ -1,4 +1,5 @@
 import Core
+import Inject
 import Combine
 import Logging
 import Peripheral
@@ -7,7 +8,7 @@ import struct Foundation.Date
 @MainActor
 class SpeedTestViewModel: ObservableObject {
     private let logger = Logger(label: "speedtest")
-    private let rpc: RPC = .shared
+    @Inject var rpc: RPC
 
     let defaultPacketSize = 444
     let maximumPacketSize = 1024

@@ -7,7 +7,7 @@ import struct Foundation.Date
 
 @MainActor
 class FileManagerViewModel: ObservableObject {
-    private let rpc: RPC = .shared
+    @Inject var rpc: RPC
 
     @Published var content: Content? {
         didSet {

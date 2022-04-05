@@ -1,13 +1,14 @@
 import Core
-import Combine
+import Inject
 import Peripheral
 import Foundation
+import Combine
 import Logging
 
 @MainActor
 class RemoteContolViewModel: ObservableObject {
     private let logger = Logger(label: "remote")
-    private let rpc: RPC = .shared
+    @Inject var rpc: RPC
 
     @Published var frame: ScreenFrame = .init()
 

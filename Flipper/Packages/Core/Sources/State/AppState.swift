@@ -12,6 +12,7 @@ public class AppState {
         didSet { UserDefaultsStorage.shared.isFirstLaunch = isFirstLaunch }
     }
 
+    @Inject private var rpc: RPC
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
@@ -166,17 +167,17 @@ public class AppState {
         guard status == .connected else { return }
         status = .synchronizing
         await measure("setting datetime") {
-            try? await RPC.shared.setDate()
+            try? await rpc.setDate(.init())
         }
         status = .init(flipper?.state)
     }
 
     func getStorageInfo() async {
         var storage = flipper?.storage ?? .init()
-        if let intSpace = try? await RPC.shared.getStorageInfo(at: "/int") {
+        if let intSpace = try? await rpc.getStorageInfo(at: "/int") {
             storage.internal = intSpace
         }
-        if let extSpace = try? await RPC.shared.getStorageInfo(at: "/ext") {
+        if let extSpace = try? await rpc.getStorageInfo(at: "/ext") {
             storage.external = extSpace
         }
         flipper?.storage = storage

@@ -6,7 +6,7 @@ import Combine
 
 @MainActor
 class DeviceViewModel: ObservableObject {
-    private let rpc: RPC = .shared
+    @Inject var rpc: RPC
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 

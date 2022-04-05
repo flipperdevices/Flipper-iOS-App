@@ -58,7 +58,7 @@ extension RPC {
     }
 
     private func getFileHash(at path: Path) async throws -> Hash {
-        .init(try await calculateFileHash(at: path, priority: .background))
+        try await calculateFileHash(at: path, priority: .background)
     }
 }
 

@@ -6,6 +6,10 @@ public struct Hash: Equatable {
     public init(_ value: String) {
         self.value = value
     }
+
+    public init(_ bytes: [UInt8]) {
+        self.init(.init(decoding: bytes, as: UTF8.self))
+    }
 }
 
 public extension String {

@@ -6,8 +6,8 @@ import Peripheral
 
 public class StressTest {
     static let shared: StressTest = .init()
-    private let rpc: RPC = .shared
 
+    @Inject var rpc: RPC
     @Inject var connector: BluetoothConnector
     var disposeBag: DisposeBag = .init()
 

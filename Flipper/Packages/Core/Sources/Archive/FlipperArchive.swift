@@ -1,7 +1,8 @@
+import Inject
 import Peripheral
 
 class FlipperArchive: FlipperArchiveProtocol {
-    let rpc: RPC = .shared
+    @Inject var rpc: RPC
 
     init() {}
 

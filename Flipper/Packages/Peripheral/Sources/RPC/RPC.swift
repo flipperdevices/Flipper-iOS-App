@@ -1,266 +1,118 @@
-import Inject
-import Combine
-import Logging
-import struct Foundation.Date
+import Foundation
 
-public class RPC {
-    private let logger = Logger(label: "rpc")
+public protocol RPC {
 
-    public static let shared: RPC = .init()
+    // MARK: System
 
-    @Inject private var connector: BluetoothConnector
-    private var subscriptions = [AnyCancellable]()
-
-    private var session: Session?
-    private var peripheral: BluetoothPeripheral? {
-        didSet { self.updateSession() }
-    }
-    private var onScreenFrame: ((ScreenFrame) -> Void)?
-
-    private init() {
-        connector.connected
-            .map { $0.first }
-            .assign(to: \.peripheral, on: self)
-            .store(in: &subscriptions)
-    }
-
-    private func updateSession() {
-        guard let peripheral = peripheral else {
-            self.session = nil
-            return
-        }
-        self.session = FlipperSession(peripheral: peripheral)
-        self.session?.onMessage = self.onMessage
-    }
-
-    private func onMessage(_ message: Message) {
-        switch message {
-        case .decodeError:
-            onDecodeError()
-        case .screenFrame(let screenFrame):
-            onScreenFrame?(screenFrame)
-        }
-    }
-
-    private func onDecodeError() {
-        if let peripheral = peripheral {
-            connector.disconnect(from: peripheral.id)
-            connector.connect(to: peripheral.id)
-        }
-    }
-}
-
-// MARK: Public methods
-
-extension RPC {
-    public func deviceInfo() async throws -> [String: String] {
-        let response = try await session?.send(.system(.info))
-        guard case .system(.info(let result)) = response else {
-            throw Error.unexpectedResponse(response)
-        }
-        return result
-    }
+    func deviceInfo(
+        priority: Priority?
+    ) async throws -> [String: String]
 
     @discardableResult
-    public func ping(_ bytes: [UInt8]) async throws -> [UInt8] {
-        let response = try await session?.send(.system(.ping(bytes)))
-        guard case .system(.ping(let result)) = response else {
-            throw Error.unexpectedResponse(response)
-        }
-        return result
-    }
+    func ping(
+        _ bytes: [UInt8],
+        priority: Priority?
+    ) async throws -> [UInt8]
 
-    public func reboot(to mode: Request.System.RebootMode) async throws {
-        _ = try await session?.send(.system(.reboot(mode)))
-    }
+    func reboot(
+        to mode: Request.System.RebootMode,
+        priority: Priority?
+    ) async throws
 
-    public func getDate() async throws -> Date {
-        let response = try await session?.send(.system(.getDate))
-        guard case .system(.dateTime(let result)) = response else {
-            throw Error.unexpectedResponse(response)
-        }
-        return result
-    }
+    func getDate(
+        priority: Priority?
+    ) async throws -> Date
 
-    public func setDate(_ date: Date = .init()) async throws {
-        let response = try await session?.send(.system(.setDate(date)))
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
-        }
-    }
+    func setDate(
+        _ date: Date,
+        priority: Priority?
+    ) async throws
 
-    public func getStorageInfo(
+    // MARK: Storage
+
+    func getStorageInfo(
         at path: Path,
-        priority: Priority? = nil
-    ) async throws -> StorageSpace {
-        let response = try await session?.send(
-            .storage(.info(path)),
-            priority: priority)
-        guard case .storage(.info(let result)) = response else {
-            throw Error.unexpectedResponse(response)
-        }
-        return result
-    }
+        priority: Priority?
+    ) async throws -> StorageSpace
 
-    public func listDirectory(
+    func listDirectory(
         at path: Path,
-        priority: Priority? = nil
-    ) async throws -> [Element] {
-        let response = try await session?.send(
-            .storage(.list(path)),
-            priority: priority)
-        guard case .storage(.list(let items)) = response else {
-            throw Error.unexpectedResponse(response)
-        }
-        return items
-    }
+        priority: Priority?
+    ) async throws -> [Element]
 
-    public func createFile(
+    func createFile(
         at path: Path,
         isDirectory: Bool,
-        priority: Priority? = nil
-    ) async throws {
-        let response = try await session?.send(
-            .storage(.create(path, isDirectory: isDirectory)),
-            priority: priority)
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
-        }
-    }
+        priority: Priority?
+    ) async throws
 
-    public func deleteFile(
+    func deleteFile(
         at path: Path,
-        force: Bool = false,
-        priority: Priority? = nil
-    ) async throws {
-        let response = try await session?.send(
-            .storage(.delete(path, isForce: force)),
-            priority: priority
-        )
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
-        }
-    }
+        force: Bool,
+        priority: Priority?
+    ) async throws
 
-    public func readFile(
+    func readFile(
         at path: Path,
-        priority: Priority? = nil
-    ) async throws -> [UInt8] {
-        let response = try await session?.send(
-            .storage(.read(path)),
-            priority: priority)
-        guard case .storage(.file(let bytes)) = response else {
-            throw Error.unexpectedResponse(response)
-        }
-        return bytes
-    }
+        priority: Priority?
+    ) async throws -> [UInt8]
 
-    public func writeFile(
+    func writeFile(
         at path: Path,
         bytes: [UInt8],
-        priority: Priority? = nil
-    ) async throws {
-        let response = try await session?.send(
-            .storage(.write(path, bytes)),
-            priority: priority)
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
-        }
-    }
+        priority: Priority?
+    ) async throws
 
-    public func moveFile(
+    func moveFile(
         from: Path,
         to: Path,
-        priority: Priority? = nil
-    ) async throws {
-        let response = try await session?.send(
-            .storage(.move(from, to)),
-            priority: priority)
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
-        }
-    }
+        priority: Priority?
+    ) async throws
 
-    public func calculateFileHash(
+    func calculateFileHash(
         at path: Path,
-        priority: Priority? = nil
-    ) async throws -> String {
-        let response = try await session?.send(
-            .storage(.hash(path)),
-            priority: priority)
-        guard case .storage(.hash(let bytes)) = response else {
-            throw Error.unexpectedResponse(response)
-        }
-        return bytes
-    }
+        priority: Priority?
+    ) async throws -> Hash
 
-    public func startStreaming() async throws {
-        let response = try await session?.send(.gui(.screenStream(true)))
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
-        }
-    }
+    // MARK: GUI
 
-    public func stopStreaming() async throws {
-        let response = try await session?.send(.gui(.screenStream(false)))
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
-        }
-    }
+    func startStreaming(
+        priority: Priority?
+    ) async throws
 
-    public func onScreenFrame(_ body: @escaping (ScreenFrame) -> Void) {
-        self.onScreenFrame = body
-    }
+    func stopStreaming(
+        priority: Priority?
+    ) async throws
 
-    public func pressButton(_ button: InputKey) async throws {
-        func inputType(_ type: InputType) -> Request {
-            .gui(.button(button, type))
-        }
-        guard try await session?.send(inputType(.press)) == .ok else {
-            logger.error("sending press type failed")
-            return
-        }
-        guard try await session?.send(inputType(.short)) == .ok else {
-            logger.error("sending short type failed")
-            return
-        }
-        guard try await session?.send(inputType(.release)) == .ok else {
-            logger.error("sending release type failed")
-            return
-        }
-    }
+    func onScreenFrame(
+        _ body: @escaping (ScreenFrame) -> Void
+    )
 
-    public func playAlert() async throws {
-        let response = try await session?.send(.system(.alert))
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
-        }
-    }
+    func pressButton(
+        _ button: InputKey,
+        priority: Priority?
+    ) async throws
 
-    public func startVirtualDisplay() async throws {
-        let response = try await session?.send(.gui(.virtualDisplay(true)))
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
-        }
-    }
+    func playAlert(
+        priority: Priority?
+    ) async throws
 
-    public func stopVirtualDisplay() async throws {
-        let response = try await session?.send(.gui(.virtualDisplay(false)))
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
-        }
-    }
+    func startVirtualDisplay(
+        priority: Priority?
+    ) async throws
 
-    public func sendScreenFrame(
+    func stopVirtualDisplay(
+        priority: Priority?
+    ) async throws
+
+    func sendScreenFrame(
         _ frame: ScreenFrame,
-        priority: Priority? = nil
-    ) async throws {
-        try await session?.send(.screenFrame(frame), priority: priority)
-    }
+        priority: Priority?
+    ) async throws
 }
 
-extension RPC {
-    public func writeFile(
+public extension RPC {
+    func writeFile(
         at path: Path,
         string: String,
         priority: Priority? = nil
@@ -269,5 +121,101 @@ extension RPC {
             at: path,
             bytes: .init(string.utf8),
             priority: priority)
+    }
+}
+
+// MARK: Default priority
+
+public extension RPC {
+
+    // MARK: System
+
+    func deviceInfo() async throws -> [String: String] {
+        try await deviceInfo(priority: nil)
+    }
+
+    @discardableResult
+    func ping(_ bytes: [UInt8]) async throws -> [UInt8] {
+        try await ping(bytes, priority: nil)
+    }
+
+    func reboot(to mode: Request.System.RebootMode) async throws {
+        try await reboot(to: mode, priority: nil)
+    }
+
+    func getDate() async throws -> Date {
+        try await getDate(priority: nil)
+    }
+
+    func setDate(_ date: Date) async throws {
+        try await setDate(date, priority: nil)
+    }
+
+    // MARK: Storage
+
+    func getStorageInfo(at path: Path) async throws -> StorageSpace {
+        try await getStorageInfo(at: path, priority: nil)
+    }
+
+    func listDirectory(at path: Path) async throws -> [Element] {
+        try await listDirectory(at: path, priority: nil)
+    }
+
+    func createFile(at path: Path, isDirectory: Bool) async throws {
+        try await createFile(at: path, isDirectory: isDirectory, priority: nil)
+    }
+
+    func deleteFile(at path: Path) async throws {
+        try await deleteFile(at: path, force: false, priority: nil)
+    }
+
+    func deleteFile(at path: Path, force: Bool) async throws {
+        try await deleteFile(at: path, force: force, priority: nil)
+    }
+
+    func readFile(at path: Path) async throws -> [UInt8] {
+        try await readFile(at: path, priority: nil)
+    }
+
+    func writeFile(at path: Path, bytes: [UInt8]) async throws {
+        try await writeFile(at: path, bytes: bytes, priority: nil)
+    }
+
+    func moveFile(from: Path, to: Path) async throws {
+        try await moveFile(from: from, to: to, priority: nil)
+    }
+
+    func calculateFileHash(at path: Path) async throws -> Hash {
+        try await calculateFileHash(at: path, priority: nil)
+    }
+
+    // MARK: GUI
+
+    func startStreaming() async throws {
+        try await startStreaming(priority: nil)
+    }
+
+    func stopStreaming() async throws {
+        try await stopStreaming(priority: nil)
+    }
+
+    func pressButton(_ button: InputKey) async throws {
+        try await pressButton(button, priority: nil)
+    }
+
+    func playAlert() async throws {
+        try await playAlert(priority: nil)
+    }
+
+    func startVirtualDisplay() async throws {
+        try await startVirtualDisplay(priority: nil)
+    }
+
+    func stopVirtualDisplay() async throws {
+        try await stopVirtualDisplay(priority: nil)
+    }
+
+    func sendScreenFrame(_ frame: ScreenFrame) async throws {
+        try await sendScreenFrame(frame, priority: nil)
     }
 }

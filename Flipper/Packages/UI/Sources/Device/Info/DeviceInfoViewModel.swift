@@ -6,6 +6,7 @@ import Foundation
 
 @MainActor
 class DeviceInfoViewModel: ObservableObject {
+    @Inject var rpc: RPC
     let appState: AppState = .shared
     var disposeBag = DisposeBag()
 
@@ -21,7 +22,7 @@ class DeviceInfoViewModel: ObservableObject {
 
     func getDeviceInfo() {
         Task {
-            deviceInfo = try await RPC.shared.deviceInfo()
+            deviceInfo = try await rpc.deviceInfo()
         }
     }
 }

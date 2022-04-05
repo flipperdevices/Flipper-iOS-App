@@ -1,11 +1,12 @@
 import Core
+import Inject
 import Combine
 import Peripheral
 import Foundation
 
 @MainActor
 class OptionsViewModel: ObservableObject {
-    private let rpc: RPC = .shared
+    @Inject var rpc: RPC
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 

@@ -1,8 +1,10 @@
 import Core
+import Inject
 import SwiftUI
 import Peripheral
 
 public struct RootView: View {
+    @Inject var rpc: RPC
     @ObservedObject var viewModel: RootViewModel
 
     public init(viewModel: RootViewModel) {
@@ -21,7 +23,7 @@ public struct RootView: View {
             Task { await viewModel.onOpenURL(url) }
         }
         .onContinueUserActivity("PlayAlertIntent") { _ in
-            Task { try? await RPC.shared.playAlert() }
+            Task { try? await rpc.playAlert() }
         }
     }
 }
