@@ -22,7 +22,7 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
         super.init()
     }
 
-    // MARK: BluetoothCentral
+    // MARK: BluetoothCentral & BluetoothConnector
 
     var status: SafePublisher<BluetoothStatus> {
         _status.eraseToAnyPublisher()
@@ -30,6 +30,8 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     let _status: SafeValueSubject<BluetoothStatus> = {
         .init(.notReady(.preparing))
     }()
+
+    // MARK: BluetoothCentral
 
     var discovered: SafePublisher<[BluetoothPeripheral]> {
         _discovered.eraseToAnyPublisher()
