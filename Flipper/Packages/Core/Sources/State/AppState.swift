@@ -44,6 +44,7 @@ public class AppState {
             return
         }
         guard !pairedDevice.isPairingFailed else {
+            status = .failed
             pairedDevice.forget()
             return
         }
