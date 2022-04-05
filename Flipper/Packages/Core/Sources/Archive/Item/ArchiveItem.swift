@@ -57,7 +57,10 @@ extension ArchiveItem {
     }
 
     init(path: Path, content: String) throws {
-        try self.init(filename: path.lastComponent!, content: content)
+        guard let filename = path.lastComponent else {
+            throw Error.invalidPath
+        }
+        try self.init(filename: filename, content: content)
     }
 
     init(filename: String, content: String) throws {
