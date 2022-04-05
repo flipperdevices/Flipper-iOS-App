@@ -1,6 +1,5 @@
 import Combine
 import CoreBluetooth
-import Collections
 import Foundation
 import Logging
 import UIKit
@@ -17,12 +16,11 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     private var flipperServiceIDs: [CBUUID] {
         [.flipperZerof6, .flipperZeroBlack, .flipperZeroWhite]
     }
+    private var discoveredServices: [UUID: CBUUID] = [:]
 
     override init() {
         super.init()
     }
-
-    var colorService: [UUID: CBUUID] = [:]
 
     // MARK: BluetoothCentral
 
@@ -66,7 +64,7 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
         manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
             guard let peripheral = FlipperPeripheral(
                 peripheral: $0,
-                colorService: colorService[$0.identifier]
+                colorService: discoveredServices[$0.identifier]
             ) else {
                 return
             }
@@ -140,12 +138,12 @@ extension FlipperCentral: CBCentralManagerDelegate {
         advertisementData: [String: Any],
         rssi: NSNumber
     ) {
-        self.colorService[peripheral.identifier] =
+        discoveredServices[peripheral.identifier] =
             (advertisementData["kCBAdvDataServiceUUIDs"] as? [CBUUID])?.first
 
         _discovered[peripheral.identifier] = FlipperPeripheral(
             peripheral: peripheral,
-            colorService: colorService[peripheral.identifier])
+            colorService: discoveredServices[peripheral.identifier])
     }
 }
 
