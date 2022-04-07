@@ -4,7 +4,7 @@ import Peripheral
 class FlipperFavorites: FlipperFavoritesProtocol {
     @Inject var rpc: RPC
     let filename = "favorites.txt"
-    var path: Path { .init(components: ["ext", filename]) }
+    var path: Path { .init(components: ["any", filename]) }
 
     func read() async throws -> Favorites {
         let bytes = try await rpc.readFile(at: path, priority: .background)

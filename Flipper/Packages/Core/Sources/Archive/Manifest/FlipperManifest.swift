@@ -4,7 +4,7 @@ import Peripheral
 // TODO: use manifest api when available
 
 extension RPC {
-    private var root: Path { .init(components: ["ext"]) }
+    private var root: Path { .init(components: ["any"]) }
 
     public var manifest: Manifest {
         get async throws {
