@@ -4,10 +4,16 @@ import SwiftUI
 struct Animation: UIViewRepresentable {
     let name: String
     let loopMode: LottieLoopMode
+    let backgroundBehavior: LottieBackgroundBehavior
 
-    init(_ name: String, loopMode: LottieLoopMode = .loop) {
+    init(
+        _ name: String,
+        loopMode: LottieLoopMode = .loop,
+        backgroundBehavior: LottieBackgroundBehavior = .pauseAndRestore
+    ) {
         self.name = name
         self.loopMode = loopMode
+        self.backgroundBehavior = backgroundBehavior
     }
 
     func makeUIView(context: UIViewRepresentableContext<Animation>) -> UIView {
@@ -15,6 +21,7 @@ struct Animation: UIViewRepresentable {
         animationView.animation = .named(name)
         animationView.contentMode = .scaleAspectFit
         animationView.loopMode = loopMode
+        animationView.backgroundBehavior = backgroundBehavior
         animationView.play()
 
         let view = UIView(frame: .zero)
