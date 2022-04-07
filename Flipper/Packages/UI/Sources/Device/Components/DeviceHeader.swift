@@ -86,12 +86,14 @@ struct DeviceInfoHeader: View {
                                 .padding(.leading, 2.66)
                                 .foregroundColor(batteryColor)
                         }
-                    }
 
-                    Text("\(flipper.battery?.level ?? 0)%")
-                        .font(.system(size: 12, weight: .medium))
-                        .opacity(flipper.battery == nil ? 0 : 1)
+                        Text("\(battery.level)%")
+                            .font(.system(size: 12, weight: .medium))
+                    }
                 }
+                .frame(height: 9)
+                .opacity(flipper.battery == nil ? 0 : 1)
+                .opacity(flipper.state == .disconnected ? 0 : 1)
                 .padding(.top, 3)
             }
         }

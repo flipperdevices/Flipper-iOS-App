@@ -144,6 +144,7 @@ public class AppState {
 
     public func disconnect() {
         status = .disconnected
+        flipper?.state = .disconnected
         pairedDevice.disconnect()
     }
 
