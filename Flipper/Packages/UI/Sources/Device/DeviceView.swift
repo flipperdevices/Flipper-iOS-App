@@ -67,7 +67,7 @@ struct DeviceView: View {
                                     image: "Forget",
                                     title: "Forget Flipper"
                                 ) {
-                                    viewModel.showWelcomeScreen()
+                                    viewModel.forgetFlipper()
                                 }
                                 .foregroundColor(.sRed)
                                 .padding(.top, 12)

@@ -86,8 +86,11 @@ class DeviceViewModel: ObservableObject {
     }
 
     func showWelcomeScreen() {
-        appState.forgetDevice()
         appState.isFirstLaunch = true
+    }
+
+    func forgetFlipper() {
+        appState.forgetDevice()
     }
 
     func sync() {
