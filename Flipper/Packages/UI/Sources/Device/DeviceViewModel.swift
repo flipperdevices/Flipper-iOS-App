@@ -10,6 +10,7 @@ class DeviceViewModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
+    @Published var showForgetAction = false
     @Published var showPairingIssueAlert = false
     @Published var showUnsupportedVersionAlert = false
 
@@ -87,6 +88,10 @@ class DeviceViewModel: ObservableObject {
 
     func showWelcomeScreen() {
         appState.isFirstLaunch = true
+    }
+
+    func showForgetActionSheet() {
+        showForgetAction = true
     }
 
     func forgetFlipper() {

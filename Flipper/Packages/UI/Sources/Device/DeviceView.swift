@@ -67,7 +67,7 @@ struct DeviceView: View {
                                     image: "Forget",
                                     title: "Forget Flipper"
                                 ) {
-                                    viewModel.forgetFlipper()
+                                    viewModel.showForgetActionSheet()
                                 }
                                 .foregroundColor(.sRed)
                                 .padding(.top, 12)
@@ -90,6 +90,17 @@ struct DeviceView: View {
                     }
                 }
                 .background(Color.background)
+                .actionSheet(isPresented: $viewModel.showForgetAction) {
+                    .init(
+                        title: Text("This action won't delete your keys"),
+                        buttons: [
+                            .destructive(Text("Foget Flipper")) {
+                                viewModel.forgetFlipper()
+                            },
+                            .cancel()
+                        ]
+                    )
+                }
             }
             .navigationViewStyle(.stack)
             .navigationBarHidden(true)
