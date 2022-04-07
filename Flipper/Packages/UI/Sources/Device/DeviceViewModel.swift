@@ -74,6 +74,29 @@ class DeviceViewModel: ObservableObject {
         return flipper?.storage?.external?.description ?? ""
     }
 
+    var canSync: Bool {
+        status == .connected
+    }
+
+    var canPlayAlert: Bool {
+        status == .connected ||
+        status == .synchronizing ||
+        status == .synchronized
+    }
+
+    var canConnect: Bool {
+        status == .noDevice ||
+        status == .disconnected
+    }
+
+    var canDisconnect: Bool {
+        !canConnect
+    }
+
+    var canForget: Bool {
+        status != .noDevice
+    }
+
     init() {
         appState.$flipper
             .receive(on: DispatchQueue.main)
@@ -88,6 +111,18 @@ class DeviceViewModel: ObservableObject {
 
     func showWelcomeScreen() {
         appState.isFirstLaunch = true
+    }
+
+    func connect() {
+        if status == .noDevice {
+            showWelcomeScreen()
+        } else {
+            appState.connect()
+        }
+    }
+
+    func disconnect() {
+        appState.disconnect()
     }
 
     func showForgetActionSheet() {

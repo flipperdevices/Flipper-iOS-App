@@ -33,44 +33,55 @@ struct DeviceView: View {
                         }
                         .disabled(!viewModel.status.isOnline)
 
-                        VStack(spacing: 12) {
+                        VStack(spacing: 24) {
                             if viewModel.status != .noDevice {
-                                DeviceActionButton(
-                                    image: "Sync",
-                                    title: "Synchronize"
-                                ) {
-                                    viewModel.sync()
+                                VStack(spacing: 12) {
+                                    DeviceActionButton(
+                                        image: "Sync",
+                                        title: "Synchronize"
+                                    ) {
+                                        viewModel.sync()
+                                    }
+                                    .disabled(!viewModel.canSync)
+
+                                    DeviceActionButton(
+                                        image: "Alert",
+                                        title: "Play Alert"
+                                    ) {
+                                        viewModel.playAlert()
+                                    }
+                                    .disabled(!viewModel.canPlayAlert)
                                 }
-                                .disabled(viewModel.status != .connected)
                             }
 
-                            if viewModel.status != .noDevice {
-                                DeviceActionButton(
-                                    image: "Alert",
-                                    title: "Play Alert"
-                                ) {
-                                    viewModel.playAlert()
+                            VStack(spacing: 12) {
+                                if viewModel.canConnect {
+                                    DeviceActionButton(
+                                        image: "Connect",
+                                        title: "Connect Flipper"
+                                    ) {
+                                        viewModel.connect()
+                                    }
                                 }
-                                .disabled(viewModel.status != .connected)
-                            }
 
-                            if viewModel.flipper == nil {
-                                DeviceActionButton(
-                                    image: "Connect",
-                                    title: "Connect Flipper"
-                                ) {
-                                    viewModel.showWelcomeScreen()
+                                if viewModel.canDisconnect {
+                                    DeviceActionButton(
+                                        image: "Forget",
+                                        title: "Disconnect Flipper"
+                                    ) {
+                                        viewModel.disconnect()
+                                    }
                                 }
-                                .padding(.top, 12)
-                            } else {
-                                DeviceActionButton(
-                                    image: "Forget",
-                                    title: "Forget Flipper"
-                                ) {
-                                    viewModel.showForgetActionSheet()
+
+                                if viewModel.canForget {
+                                    DeviceActionButton(
+                                        image: "Forget",
+                                        title: "Forget Flipper"
+                                    ) {
+                                        viewModel.showForgetActionSheet()
+                                    }
+                                    .foregroundColor(.sRed)
                                 }
-                                .foregroundColor(.sRed)
-                                .padding(.top, 12)
                             }
                         }
                         .padding(.vertical, 24)

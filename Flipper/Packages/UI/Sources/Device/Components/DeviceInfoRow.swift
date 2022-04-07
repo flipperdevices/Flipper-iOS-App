@@ -17,6 +17,7 @@ struct DeviceInfoRow: View {
                     .multilineTextAlignment(.trailing)
             } else {
                 ProgressView()
+                    .frame(width: 14, height: 14)
             }
         }
     }

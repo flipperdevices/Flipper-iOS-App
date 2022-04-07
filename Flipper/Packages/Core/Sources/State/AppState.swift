@@ -143,6 +143,7 @@ public class AppState {
     }
 
     public func disconnect() {
+        status = .disconnected
         pairedDevice.disconnect()
     }
 
