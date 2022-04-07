@@ -63,6 +63,7 @@ public class AppState {
         case .synchronized where newValue == .disconnected: didDisconnect()
         case .synchronizing where newValue == .disconnected: didDisconnect()
         case .unsupportedDevice where newValue == .connected: break
+        case .synchronizing where newValue == .connected: break
         default: status = .init(newValue)
         }
     }
@@ -84,6 +85,8 @@ public class AppState {
     }
 
     func waitForProtobufVersion() async throws {
+        status = .synchronizing
+        defer { status = .init(flipper?.state) }
         while true {
             try await Task.sleep(nanoseconds: 100 * 1_000_000)
 
@@ -180,6 +183,8 @@ public class AppState {
     }
 
     func getStorageInfo() async {
+        status = .synchronizing
+        defer { status = .init(flipper?.state) }
         var storage = flipper?.storage ?? .init()
         if let intSpace = try? await rpc.getStorageInfo(at: "/int") {
             storage.internal = intSpace
