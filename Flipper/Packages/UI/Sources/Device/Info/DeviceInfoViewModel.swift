@@ -35,7 +35,7 @@ class DeviceInfoViewModel: ObservableObject {
 
     var protobufRevision: String {
         guard let info = flipper?.information else { return "—" }
-        return info.protobufRevision?.rawValue ?? "unknown"
+        return info.protobufRevision.rawValue
     }
 
     init() {

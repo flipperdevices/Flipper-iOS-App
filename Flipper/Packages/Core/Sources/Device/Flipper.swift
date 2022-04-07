@@ -11,13 +11,17 @@ public struct Flipper: Equatable, Identifiable {
     public var battery: Battery?
     public var storage: StorageInfo?
 
+    // swiftlint:disable discouraged_optional_boolean
+    public var hasProtobufVersion: Bool?
+
     public init(
         id: UUID,
         name: String,
         color: FlipperColor,
         state: FlipperState = .disconnected,
         information: DeviceInformation? = nil,
-        battery: Battery? = nil
+        battery: Battery? = nil,
+        hasProtobufVersion: Bool = false
     ) {
         self.id = id
         self.name = name
@@ -25,6 +29,7 @@ public struct Flipper: Equatable, Identifiable {
         self.state = state
         self.information = information
         self.battery = battery
+        self.hasProtobufVersion = hasProtobufVersion
     }
 
     public struct StorageInfo: Equatable {
@@ -52,6 +57,8 @@ public extension Flipper {
         self.battery = source.services
             .first { $0.id == .battery }
             .map(Battery.init) ?? nil
+
+        self.hasProtobufVersion = source.hasProtobufVersion
     }
 }
 

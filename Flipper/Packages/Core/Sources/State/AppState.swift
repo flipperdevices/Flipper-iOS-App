@@ -73,7 +73,7 @@ public class AppState {
         logger.info("connected")
 
         Task {
-            try await waitForDeviceInformation()
+            try await waitForProtobufVersion()
             guard validateFirmwareVersion() else {
                 return
             }
@@ -83,12 +83,17 @@ public class AppState {
         }
     }
 
-    func waitForDeviceInformation() async throws {
+    func waitForProtobufVersion() async throws {
         while true {
             try await Task.sleep(nanoseconds: 100 * 1_000_000)
-            if flipper?.battery != nil {
-                return
-            }
+
+            guard flipper?.hasProtobufVersion != nil else { continue }
+            guard flipper?.hasProtobufVersion == true else { return }
+
+            guard let info = flipper?.information else { continue }
+            guard info.protobufRevision != .unknown else { continue }
+
+            return
         }
     }
 
