@@ -8,9 +8,12 @@ struct DeviceInfoView: View {
     var body: some View {
         VStack {
             Form {
-                if let deviceInformation = viewModel.flipper?.information {
-                    DeviceInformationService(deviceInformation)
-                }
+                DeviceInformationService(
+                    manufacturerName: viewModel.manufacturerName,
+                    serialNumber: viewModel.serialNumber,
+                    firmwareRevision: viewModel.firmwareRevision,
+                    softwareRevision: viewModel.softwareRevision,
+                    protobufRevision: viewModel.protobufRevision)
 
                 DeviceInformation(viewModel.deviceInfo)
             }
@@ -23,33 +26,33 @@ struct DeviceInfoView: View {
 }
 
 struct DeviceInformationService: View {
-    let deviceInformation: Flipper.DeviceInformation
-
-    init(_ deviceInformation: Flipper.DeviceInformation) {
-        self.deviceInformation = deviceInformation
-    }
+    let manufacturerName: String
+    let serialNumber: String
+    let firmwareRevision: String
+    let softwareRevision: String
+    let protobufRevision: String
 
     var body: some View {
         Section(header: Text("Device Information (GATT)")) {
             SectionRow(
                 name: "Manufacturer Name",
-                value: deviceInformation.manufacturerName)
+                value: manufacturerName)
 
             SectionRow(
                 name: "Serial Number",
-                value: deviceInformation.serialNumber)
+                value: serialNumber)
 
             SectionRow(
                 name: "Firmware Revision",
-                value: deviceInformation.firmwareRevision)
+                value: firmwareRevision)
 
             SectionRow(
                 name: "Software Revision",
-                value: deviceInformation.softwareRevision)
+                value: softwareRevision)
 
             SectionRow(
                 name: "Protobuf Revision",
-                value: deviceInformation.protobufRevision.rawValue)
+                value: protobufRevision)
         }
     }
 }

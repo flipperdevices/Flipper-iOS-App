@@ -13,6 +13,31 @@ class DeviceInfoViewModel: ObservableObject {
     @Published var flipper: Flipper?
     @Published var deviceInfo: [String: String] = [:]
 
+    var manufacturerName: String {
+        guard let info = flipper?.information else { return "—" }
+        return info.manufacturerName
+    }
+
+    var serialNumber: String {
+        guard let info = flipper?.information else { return "—" }
+        return info.serialNumber
+    }
+
+    var firmwareRevision: String {
+        guard let info = flipper?.information else { return "—" }
+        return info.firmwareRevision
+    }
+
+    var softwareRevision: String {
+        guard let info = flipper?.information else { return "—" }
+        return info.softwareRevision
+    }
+
+    var protobufRevision: String {
+        guard let info = flipper?.information else { return "—" }
+        return info.protobufRevision?.rawValue ?? "unknown"
+    }
+
     init() {
         appState.$flipper
             .receive(on: DispatchQueue.main)
