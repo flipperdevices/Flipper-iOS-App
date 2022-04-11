@@ -33,7 +33,6 @@ struct DeviceActionButton: View {
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 12)
             .background(Color.groupedBackground)
-            .cornerRadius(10)
         }
     }
 }

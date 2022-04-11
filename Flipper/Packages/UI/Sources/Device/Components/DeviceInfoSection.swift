@@ -8,36 +8,41 @@ struct DeviceInfoSection: View {
     let externalSpace: String
 
     var body: some View {
-        VStack {
+        VStack(spacing: 18) {
             HStack {
                 Text("Device Info")
                     .font(.system(size: 16, weight: .bold))
                 Spacer()
             }
             .padding(.top, 12)
+            .padding(.horizontal, 12)
 
-            VStack {
-                DeviceInfoRow(
-                    name: "Protobuf Version",
-                    value: protobufVersion)
-                Divider()
+            VStack(spacing: 12) {
                 DeviceInfoRow(
                     name: "Firmware Version",
-                    value: firmwareVersion)
+                    value: firmwareVersion
+                )
+                .padding(.horizontal, 12)
                 Divider()
                 DeviceInfoRow(
-                    name: "Firmware Build",
-                    value: firmwareBuild)
+                    name: "Build Date",
+                    value: firmwareBuild
+                )
+                .padding(.horizontal, 12)
 
                 Divider()
                 DeviceInfoRow(
-                    name: "Internal Flash (Used/Total)",
-                    value: internalSpace)
+                    name: "Int. Flash (Used/Total)",
+                    value: internalSpace
+                )
+                .padding(.horizontal, 12)
 
                 Divider()
                 DeviceInfoRow(
                     name: "SD Card (Used/Total)",
-                    value: externalSpace)
+                    value: externalSpace
+                )
+                .padding(.horizontal, 12)
 
                 HStack {
                     Text("Full info")
@@ -47,9 +52,8 @@ struct DeviceInfoSection: View {
                 .foregroundColor(.black16)
                 .padding(.top, 6)
             }
-            .padding(.vertical, 12)
+            .padding(.bottom, 12)
         }
-        .padding(.horizontal, 16)
         .foregroundColor(.primary)
         .background(Color.groupedBackground)
         .cornerRadius(10)

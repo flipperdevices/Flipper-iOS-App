@@ -14,7 +14,7 @@ struct DeviceView: View {
                     VStack(spacing: 0) {
                         if viewModel.status == .unsupportedDevice {
                             UnsupportedDeviceSection()
-                                .padding(.top, 14)
+                                .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         }
 
@@ -28,14 +28,14 @@ struct DeviceView: View {
                                 internalSpace: viewModel.internalSpace,
                                 externalSpace: viewModel.externalSpace
                             )
-                            .padding(.top, 14)
+                            .padding(.top, 24)
                             .padding(.horizontal, 14)
                         }
                         .disabled(!viewModel.status.isOnline)
 
                         VStack(spacing: 24) {
                             if viewModel.status != .noDevice {
-                                VStack(spacing: 12) {
+                                VStack(spacing: 0) {
                                     DeviceActionButton(
                                         image: "Sync",
                                         title: "Synchronize"
@@ -43,6 +43,8 @@ struct DeviceView: View {
                                         viewModel.sync()
                                     }
                                     .disabled(!viewModel.canSync)
+
+                                    Divider()
 
                                     DeviceActionButton(
                                         image: "Alert",
@@ -52,37 +54,50 @@ struct DeviceView: View {
                                     }
                                     .disabled(!viewModel.canPlayAlert)
                                 }
+                                .cornerRadius(10)
                             }
 
-                            VStack(spacing: 12) {
-                                if viewModel.canConnect {
+                            VStack(spacing: 0) {
+                                if viewModel.status == .noDevice {
                                     DeviceActionButton(
                                         image: "Connect",
                                         title: "Connect Flipper"
                                     ) {
                                         viewModel.connect()
                                     }
-                                }
-
-                                if viewModel.canDisconnect {
-                                    DeviceActionButton(
-                                        image: "Forget",
-                                        title: "Disconnect Flipper"
-                                    ) {
-                                        viewModel.disconnect()
+                                } else {
+                                    if viewModel.canConnect {
+                                        DeviceActionButton(
+                                            image: "Connect",
+                                            title: "Connect"
+                                        ) {
+                                            viewModel.connect()
+                                        }
                                     }
-                                }
 
-                                if viewModel.canForget {
-                                    DeviceActionButton(
-                                        image: "Forget",
-                                        title: "Forget Flipper"
-                                    ) {
-                                        viewModel.showForgetActionSheet()
+                                    if viewModel.canDisconnect {
+                                        DeviceActionButton(
+                                            image: "Disconnect",
+                                            title: "Disconnect"
+                                        ) {
+                                            viewModel.disconnect()
+                                        }
                                     }
-                                    .foregroundColor(.sRed)
+
+                                    Divider()
+
+                                    if viewModel.canForget {
+                                        DeviceActionButton(
+                                            image: "Forget",
+                                            title: "Forget Flipper"
+                                        ) {
+                                            viewModel.showForgetActionSheet()
+                                        }
+                                        .foregroundColor(.sRed)
+                                    }
                                 }
                             }
+                            .cornerRadius(10)
                         }
                         .padding(.vertical, 24)
                         .padding(.horizontal, 14)
