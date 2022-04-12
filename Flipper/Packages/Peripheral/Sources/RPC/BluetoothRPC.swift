@@ -29,18 +29,24 @@ public class BluetoothRPC: RPC {
         }
         self.session = FlipperSession(peripheral: peripheral)
         self.session?.onMessage = self.onMessage
+        self.session?.onError = self.onError
     }
 
     private func onMessage(_ message: Message) {
         switch message {
         case .decodeError:
-            onDecodeError()
+            onError(.common(.decode))
         case .screenFrame(let screenFrame):
             onScreenFrame?(screenFrame)
         }
     }
 
-    private func onDecodeError() {
+    private func onError(_ error: Error) {
+        logger.error("\(error)")
+        reconnect()
+    }
+
+    private func reconnect() {
         if let peripheral = peripheral {
             connector.disconnect(from: peripheral.id)
             connector.connect(to: peripheral.id)

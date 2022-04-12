@@ -6,6 +6,7 @@ public enum Priority {
 
 protocol Session: AnyObject {
     var onMessage: ((Message) -> Void)? { get set }
+    var onError: ((Error) -> Void)? { get set }
 
     func send(
         _ message: Message,

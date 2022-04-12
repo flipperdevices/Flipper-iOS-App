@@ -18,8 +18,11 @@ class FlipperSession: Session {
     var awaitingResponse: [Command] = []
 
     var onMessage: ((Message) -> Void)?
+    var onError: ((Error) -> Void)?
 
     var subscriptions = [AnyCancellable]()
+
+    var timeoutTimer: Timer?
 
     init(peripheral: BluetoothPeripheral) {
         self.peripheral = peripheral
@@ -96,6 +99,7 @@ class FlipperSession: Session {
             let packetSize = peripheral.maximumWriteValueLength
             let next = chunkedOutput.next(maxSize: packetSize)
             peripheral.send(.init(next))
+            setupTimeoutTimer()
         }
     }
 }
@@ -107,6 +111,7 @@ extension FlipperSession {
 
     func didReceiveData(_ data: Data) {
         do {
+            setupTimeoutTimer()
             // single PB_Main can be split into ble chunks;
             // returns nil if data.count < main.size
             guard let nextCommand = try chunkedInput.feed(data) else {
@@ -140,6 +145,30 @@ extension FlipperSession {
             }
         } catch {
             logger.critical("\(error)")
+        }
+    }
+}
+
+// MARK: Timeout
+
+extension FlipperSession {
+    var timeout: Double { 6 }
+
+    func setupTimeoutTimer() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if let timeoutTimer = self.timeoutTimer {
+                timeoutTimer.invalidate()
+            }
+            self.timeoutTimer = .scheduledTimer(
+                withTimeInterval: self.timeout,
+                repeats: false
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                if !self.awaitingResponse.isEmpty {
+                    self.onError?(.timeout)
+                }
+            }
         }
     }
 }

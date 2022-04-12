@@ -1,4 +1,5 @@
 public enum Error: Equatable, Swift.Error {
+    case timeout
     case common(CommonError)
     case storage(StorageError)
     case application(ApplicationError)
@@ -101,6 +102,8 @@ extension Error {
 extension Error: CustomStringConvertible {
     public var description: String {
         switch self {
+        case .timeout:
+            return "BLE timeout"
         case .common(let error):
             return "CommonError: \(error)"
         case .storage(let error):
