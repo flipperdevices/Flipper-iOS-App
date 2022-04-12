@@ -13,12 +13,12 @@ struct UnsupportedDeviceSection: View {
                 Image("Update")
                     .padding(.top, 18)
 
-                Text("Update Flipper Firmware from PC")
+                Text("Outdated firmware version")
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .padding(.top, 12)
 
-                Text("Our app doesn’t support installed firmware version")
+                Text("Firmware version on your Flipper is not supported. Please update it via PC.")
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)
@@ -31,8 +31,8 @@ struct UnsupportedDeviceSection: View {
                         .underline()
                 }
                 .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.black60)
-                .padding(.top, 12)
+                .foregroundColor(.a2)
+                .padding(.top, 18)
             }
             .padding(12)
         }
