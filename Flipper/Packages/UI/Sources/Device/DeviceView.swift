@@ -26,7 +26,8 @@ struct DeviceView: View {
                                 firmwareVersion: viewModel.firmwareVersion,
                                 firmwareBuild: viewModel.firmwareBuild,
                                 internalSpace: viewModel.internalSpace,
-                                externalSpace: viewModel.externalSpace
+                                externalSpace: viewModel.externalSpace,
+                                showFullInfo: viewModel.canDisconnect
                             )
                             .padding(.top, 24)
                             .padding(.horizontal, 14)

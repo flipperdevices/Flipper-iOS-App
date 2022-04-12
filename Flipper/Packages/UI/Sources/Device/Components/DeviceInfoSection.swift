@@ -6,6 +6,7 @@ struct DeviceInfoSection: View {
     let firmwareBuild: String
     let internalSpace: String
     let externalSpace: String
+    let showFullInfo: Bool
 
     var body: some View {
         VStack(spacing: 18) {
@@ -44,13 +45,15 @@ struct DeviceInfoSection: View {
                 )
                 .padding(.horizontal, 12)
 
-                HStack {
-                    Text("Full info")
-                    Image(systemName: "chevron.right")
+                if showFullInfo {
+                    HStack {
+                        Text("Full info")
+                        Image(systemName: "chevron.right")
+                    }
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black16)
+                    .padding(.top, 6)
                 }
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.black16)
-                .padding(.top, 6)
             }
             .padding(.bottom, 12)
         }
