@@ -11,19 +11,15 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     var id: UUID
     var name: String
     var color: FlipperColor
-
-    var isPairingFailed = false
-    var didDiscoverDeviceInformation = false
+    var state: FlipperState {
+        didSet { infoSubject.send(()) }
+    }
 
     var freeSpace = 0
 
     var maximumWriteValueLength: Int {
         min(freeSpace,
             peripheral.maximumWriteValueLength(for: .withoutResponse))
-    }
-
-    var state: FlipperState {
-        .init(peripheral.state)
     }
 
     var services: [FlipperService] {
@@ -46,38 +42,54 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     fileprivate let canWriteSubject = PassthroughSubject<Void, Never>()
     fileprivate let receivedDataSubject = PassthroughSubject<Data, Never>()
 
-    init?(
+    init(
         peripheral: CBPeripheral,
         colorService service: CBUUID? = nil
     ) {
-        guard let name = peripheral.name, name.starts(with: "Flipper ") else {
-            return nil
-        }
         self.id = peripheral.identifier
-        self.name = String(name.dropFirst("Flipper ".count))
+        self.name = String(name: peripheral.name)
         self.color = .init(service)
         self.peripheral = peripheral
+        self.state = .init(peripheral.state)
         super.init()
         self.peripheral.delegate = self
     }
 
+    func onConnecting() {
+        state = .connecting
+    }
+
     func onConnect() {
-        isPairingFailed = false
         peripheral.discoverServices(nil)
     }
 
     func onDisconnect() {
-        // nothing here yet
+        guard state != .pairingFailed, state != .invalidPairing else {
+            return
+        }
+        state = .disconnected
     }
 
     func onError(_ error: Swift.Error) {
-        if (error as? CBATTError)?.code == .insufficientEncryption {
-            isPairingFailed = true
+        switch error {
+        case let error as CBATTError: _onError(error)
+        case let error as CBError: _onError(error)
+        default: logger.error("unknown error type: \(error)")
         }
     }
 
-    func onFailToConnect() {
-        // nothing here yet
+    private func _onError(_ error: CBError) {
+        switch error.code {
+        case .peerRemovedPairingInformation: state = .invalidPairing
+        default: logger.error("unknown error type: \(error)")
+        }
+    }
+
+    private func _onError(_ error: CBATTError) {
+        switch error.code {
+        case .insufficientEncryption: state = .pairingFailed
+        default: logger.error("unknown error type: \(error)")
+        }
     }
 
     func send(_ data: Data) {
@@ -132,7 +144,6 @@ extension FlipperPeripheral: CBPeripheralDelegate {
     }
 
     func didDiscoverDeviceInformation(_ characteristics: [CBCharacteristic]) {
-        didDiscoverDeviceInformation = true
         characteristics.forEach { characteristic in
             peripheral.readValue(for: characteristic)
         }
@@ -206,7 +217,19 @@ extension FlipperPeripheral: CBPeripheralDelegate {
     }
 
     func didUpdateDeviceInformation(_ characteristic: CBCharacteristic) {
-        infoSubject.send()
+        state = .connected
+    }
+}
+
+fileprivate extension String {
+    init(name: String?) {
+        guard let name = name else {
+            self = "Unknown"
+            return
+        }
+        self = name.starts(with: "Flipper ")
+            ? String(name.dropFirst("Flipper ".count))
+            : name
     }
 }
 

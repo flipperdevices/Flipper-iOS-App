@@ -1,95 +1,70 @@
 import Inject
 import Peripheral
 import Combine
+import Logging
 
 import struct Foundation.UUID
 
 class PairedFlipper: PairedDevice, ObservableObject {
-    @Inject var connector: BluetoothConnector
-    @Inject var storage: DeviceStorage
-    var disposeBag: DisposeBag = .init()
+    private let logger = Logger(label: "paired_flipper")
 
-    var flipper: SafePublisher<Flipper?> {
-        flipperSubject.eraseToAnyPublisher()
+    @Inject var storage: DeviceStorage
+    @Inject var connector: BluetoothConnector
+    private var disposeBag: DisposeBag = .init()
+
+    private var bluetoothStatus: BluetoothStatus = .notReady(.preparing) {
+        didSet { didUpdateBluetoothStatus() }
     }
-    private var flipperSubject: SafeValueSubject<Flipper?>
+
+    var flipper: SafePublisher<Flipper?> { _flipper.eraseToAnyPublisher() }
+    private var _flipper: SafeValueSubject<Flipper?> = .init(nil)
 
     private var infoBag: AnyCancellable?
     private var bluetoothPeripheral: BluetoothPeripheral? {
-        didSet { flipperDidChange() }
-    }
-    var isPairingFailed: Bool {
-        bluetoothPeripheral?.isPairingFailed ?? false
+        didSet { peripheralDidChange() }
     }
 
     init() {
-        flipperSubject = .init(nil)
-        flipperSubject.value = storage.flipper
+        _flipper.value = storage.flipper
 
         connector.status
-            .filter { $0 == .ready }
-            .sink { [weak self] _ in
-                self?.onBluetoothReady()
-            }
+            .assign(to: \.bluetoothStatus, on: self)
             .store(in: &disposeBag)
 
         connector.connected
-            .sink { [weak self] peripherals in
-                self?.onConnectedPeripherals(peripherals)
-            }
+            .map { $0.first }
+            .assign(to: \.bluetoothPeripheral, on: self)
             .store(in: &disposeBag)
     }
 
-    func onBluetoothReady() {
-        if let flipper = flipperSubject.value {
-            connector.connect(to: flipper.id)
+    func didUpdateBluetoothStatus() {
+        if bluetoothStatus == .ready {
+            connect()
         }
     }
 
-    func onConnectedPeripherals(_ peripherals: [BluetoothPeripheral]) {
-        guard let peripheral = peripherals.first else {
-            // don't forget device but update state
-            if bluetoothPeripheral?.state == .disconnected {
-                flipperDidChange()
-            }
-            return
-        }
-        bluetoothPeripheral = peripheral
+    func peripheralDidChange() {
+        peripheralDidUpdate()
+        subscribeToUpdates()
     }
 
-    func flipperDidChange() {
+    func peripheralDidUpdate() {
         if let peripheral = bluetoothPeripheral {
-            flipperSubject.value = merge(peripheral)
-            storage.flipper = flipperSubject.value
-            subscribeToUpdates()
-        } else {
-            flipperSubject.value = nil
-            storage.flipper = nil
-            infoBag = nil
+            _flipper.value = _init(peripheral)
+            storage.flipper = _init(peripheral)
         }
     }
 
     func subscribeToUpdates() {
         infoBag = bluetoothPeripheral?.info
             .sink { [weak self] in
-                self?.flipperDidChange()
+                self?.peripheralDidUpdate()
             }
     }
 
-    func merge(_ bluetoothPeripheral: BluetoothPeripheral) -> Flipper {
-        var flipper = Flipper(bluetoothPeripheral)
-        guard let current = flipperSubject.value else {
-            return flipper
-        }
-        // we don't have color on connect
-        // so we have to copy initial value
-        flipper.color = current.color
-        return flipper
-    }
-
     func connect() {
-        if let peripheral = bluetoothPeripheral {
-            connector.connect(to: peripheral.id)
+        if let flipper = _flipper.value {
+            connector.connect(to: flipper.id)
         }
     }
 
@@ -101,6 +76,21 @@ class PairedFlipper: PairedDevice, ObservableObject {
 
     func forget() {
         disconnect()
+        _flipper.value = nil
+        storage.flipper = nil
         bluetoothPeripheral = nil
+    }
+}
+
+fileprivate extension PairedFlipper {
+    // TODO: Move to factory, store all discovered services
+    func _init(_ bluetoothPeripheral: BluetoothPeripheral) -> Flipper {
+        // we don't have color on connect
+        // so we have to copy initial value
+        var flipper = Flipper(bluetoothPeripheral)
+        if let color = _flipper.value?.color {
+            flipper.color = color
+        }
+        return flipper
     }
 }

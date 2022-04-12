@@ -17,7 +17,7 @@ public class AppState {
     private var disposeBag: DisposeBag = .init()
 
     @Published public var flipper: Flipper? {
-        didSet { updateState(flipper?.state) }
+        didSet { updateState(oldValue?.state) }
     }
     @Published public var archive: Archive = .shared
     @Published public var status: DeviceStatus = .noDevice
@@ -35,47 +35,35 @@ public class AppState {
 
     // MARK: Status
 
-    var connectAttemptCount = 0
-    let connectAttemptCountMax = 3
-
-    // swiftlint:disable cyclomatic_complexity
-    func updateState(_ newValue: FlipperState?) {
-        guard let newValue = newValue else {
+    func updateState(_ oldValue: FlipperState?) {
+        guard let flipper = flipper else {
             status = .noDevice
             return
         }
-        guard !pairedDevice.isPairingFailed else {
-            status = .failed
-            pairedDevice.forget()
+        guard flipper.state != oldValue else {
             return
         }
+
+        if status == .unsupportedDevice && flipper.state == .disconnected {
+            return
+        }
+
+        status = .init(flipper.state)
         switch status {
-        // MARK: Pairing
-        case .noDevice where newValue == .connecting: status = .preParing
-        case .preParing where newValue == .connected: status = .pairing
-        case .preParing where newValue == .disconnected: didFailToConnect()
-        case .pairing where newValue == .disconnected: didDisconnect()
-        case .pairing where newValue == .connected: didConnect()
-        // MARK: Default
-        case .connecting where newValue == .connected: didConnect()
-        case .connecting where newValue == .disconnected: didFailToConnect()
-        case .connected where newValue == .disconnected: didDisconnect()
-        case .synchronized where newValue == .disconnected: didDisconnect()
-        case .synchronizing where newValue == .disconnected: didDisconnect()
-        case .unsupportedDevice where newValue == .connected: break
-        case .synchronizing where newValue == .connected: break
-        default: status = .init(newValue)
+        case .connected: didConnect()
+        case .disconnected: didDisconnect()
+        default: break
         }
     }
 
     func didConnect() {
         status = .connected
-        connectAttemptCount = 0
         logger.info("connected")
 
         Task {
             try await waitForProtobufVersion()
             guard validateFirmwareVersion() else {
+                disconnect()
                 return
             }
             await getStorageInfo()
@@ -85,7 +73,6 @@ public class AppState {
     }
 
     func waitForProtobufVersion() async throws {
-        status = .synchronizing
         defer { status = .init(flipper?.state) }
         while true {
             try await Task.sleep(nanoseconds: 100 * 1_000_000)
@@ -104,50 +91,35 @@ public class AppState {
         guard let version = flipper?.information?.protobufRevision else {
             logger.error("can't validate firmware version")
             status = .disconnected
-            disconnect()
             return false
         }
         guard version >= .v0_3 else {
             logger.error("unsupported firmware version")
             status = .unsupportedDevice
-            disconnect()
             return false
         }
         return true
     }
 
-    func didDisconnect() {
-        guard !pairedDevice.isPairingFailed else {
-            status = .failed
-            logger.debug("disconnected: invalid pincode or canceled")
-            return
-        }
-        status = .disconnected
-        logger.debug("disconnected: trying to reconnect")
-        connect()
-    }
+    var reconnectOnDisconnect = true
 
-    func didFailToConnect() {
-        status = .disconnected
-        guard connectAttemptCount >= connectAttemptCountMax else {
-            logger.debug("failed to connect: trying again")
-            connectAttemptCount += 1
-            connect()
+    func didDisconnect() {
+        guard reconnectOnDisconnect else {
             return
         }
-        status = .pairingIssue
-        logger.debug("failed to connect: pairing issue")
+        logger.debug("timeout: trying to reconnect")
+        connect()
     }
 
     // MARK: Connection
 
     public func connect() {
+        reconnectOnDisconnect = true
         pairedDevice.connect()
     }
 
     public func disconnect() {
-        status = .disconnected
-        flipper?.state = .disconnected
+        reconnectOnDisconnect = false
         pairedDevice.disconnect()
     }
 

@@ -1,8 +1,6 @@
-import Combine
+import Inject
 import CoreBluetooth
-import Foundation
 import Logging
-import UIKit
 
 class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     private let logger = Logger(label: "central")
@@ -13,10 +11,14 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
         return manager
     }()
 
+    @Inject var factory: PeripheralFactory
+
+    private var serviceKey: String {
+        "kCBAdvDataServiceUUIDs"
+    }
     private var flipperServiceIDs: [CBUUID] {
         [.flipperZerof6, .flipperZeroBlack, .flipperZeroWhite]
     }
-    private var discoveredServices: [UUID: CBUUID] = [:]
 
     override init() {
         super.init()
@@ -42,14 +44,14 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
 
     func startScanForPeripherals() {
         if _status.value == .ready {
-            self.manager.scanForPeripherals(withServices: flipperServiceIDs)
+            manager.scanForPeripherals(withServices: flipperServiceIDs)
         }
     }
 
     func stopScanForPeripherals() {
         if manager.isScanning {
-            _discovered.value.removeAll()
             manager.stopScan()
+            _discovered.value.removeAll()
         }
     }
 
@@ -62,60 +64,41 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
         .init([])
     }()
 
-    func connect(to identifier: UUID) {
-        manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
-            guard let peripheral = FlipperPeripheral(
-                peripheral: $0,
-                colorService: discoveredServices[$0.identifier]
-            ) else {
-                return
-            }
-            manager.connect($0)
-            _connected[$0.identifier] = peripheral
-            manager.registerForConnectionEvents(options: [
-                .peripheralUUIDs: [$0.identifier]
-            ])
-
-            catchPairingIssue(for: identifier)
+    func connect(to id: UUID) {
+        guard let peripheral = manager.retrievePeripheral(id) else {
+            return
         }
-    }
-
-    func catchPairingIssue(for identifier: UUID) {
-        Task {
-            guard let peripheral = _connected[identifier] else {
-                return
-            }
-            while peripheral.state == .connecting {
-                try await Task.sleep(nanoseconds: 10 * 1_000_000)
-            }
-            if peripheral.state == .disconnected {
-                didFailPairing(peripheral)
-            }
-        }
+        let device = factory.create(peripheral: peripheral)
+        device.onConnecting()
+        _connected[id] = device
+        manager.connect(peripheral)
     }
 
     func disconnect(from identifier: UUID) {
-        manager.retrievePeripherals(withIdentifiers: [identifier]).forEach {
-            manager.cancelPeripheralConnection($0)
-            _connected[$0.identifier] = nil
+        if let peripheral = manager.retrievePeripheral(identifier) {
+            manager.cancelPeripheralConnection(peripheral)
         }
     }
 
     func didConnect(_ peripheral: CBPeripheral) {
-        assert(_connected[peripheral.identifier] != nil)
-        _connected.send(_connected.value)
-        _connected[peripheral.identifier]?.onConnect()
-    }
-
-    func didDisconnect(_ peripheral: CBPeripheral) {
-        if let device = _connected[peripheral.identifier] {
-            _connected[peripheral.identifier] = nil
-            device.onDisconnect()
+        if let peripheral = _connected[peripheral.identifier] {
+            peripheral.onConnect()
+            _connected[peripheral.id] = peripheral
         }
     }
 
-    func didFailPairing(_ peripheral: BluetoothPeripheral) {
-        _connected[peripheral.id] = nil
+    func didDisconnect(_ peripheral: CBPeripheral, error: Swift.Error?) {
+        if let peripheral = _connected[peripheral.identifier] {
+            peripheral.onDisconnect()
+            _connected[peripheral.id] = nil
+        }
+    }
+
+    func didFailToConnect(_ peripheral: CBPeripheral, error: Swift.Error?) {
+        if let device = _connected[peripheral.identifier], let error = error {
+            device.onError(error)
+            _connected[device.id] = nil
+        }
     }
 }
 
@@ -128,6 +111,7 @@ extension FlipperCentral: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ manager: CBCentralManager) {
         if manager.state != .poweredOn {
             _discovered.value.removeAll()
+            _connected.value.removeAll()
         }
         _status.value = .init(manager.state)
     }
@@ -140,12 +124,12 @@ extension FlipperCentral: CBCentralManagerDelegate {
         advertisementData: [String: Any],
         rssi: NSNumber
     ) {
-        discoveredServices[peripheral.identifier] =
-            (advertisementData["kCBAdvDataServiceUUIDs"] as? [CBUUID])?.first
-
-        _discovered[peripheral.identifier] = FlipperPeripheral(
-            peripheral: peripheral,
-            colorService: discoveredServices[peripheral.identifier])
+        let service = (advertisementData[serviceKey] as? [CBUUID])?.first
+        if _discovered[peripheral.identifier] == nil {
+            _discovered[peripheral.identifier] = factory.create(
+                peripheral: peripheral,
+                service: service)
+        }
     }
 }
 
@@ -167,37 +151,17 @@ extension FlipperCentral {
     func centralManager(
         _ central: CBCentralManager,
         didDisconnectPeripheral peripheral: CBPeripheral,
-        error: Error?
+        error: Swift.Error?
     ) {
-        logger.info("did disconnect peripheral")
+        didDisconnect(peripheral, error: error)
     }
 
     func centralManager(
         _ central: CBCentralManager,
         didFailToConnect peripheral: CBPeripheral,
-        error: Error?
+        error: Swift.Error?
     ) {
-        logger.info("did fail to connect")
-    }
-
-    // MARK: Workaround
-
-    func centralManager(
-        _ central: CBCentralManager,
-        connectionEventDidOccur event: CBConnectionEvent,
-        for peripheral: CBPeripheral
-    ) {
-        switch event {
-        case .peerDisconnected:
-            didDisconnect(peripheral)
-        case .peerConnected:
-            // Actual peripheral state is .connecting
-            // Use centralManager didConnect as it has more accurate state
-            // didConnect(peripheral)
-            break
-        default:
-            logger.critical("unhandled event: \(event)")
-        }
+        didFailToConnect(peripheral, error: error)
     }
 }
 

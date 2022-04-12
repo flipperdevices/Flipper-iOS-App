@@ -18,11 +18,15 @@ class DeviceViewModel: ObservableObject {
     @Published var status: DeviceStatus = .noDevice {
         didSet {
             switch status {
-            case .pairingIssue: showPairingIssueAlert = true
+            case .invalidPairing: showPairingIssueAlert = true
             case .unsupportedDevice: showUnsupportedVersionAlert = true
             default: break
             }
         }
+    }
+
+    var isDataAvailable: Bool {
+        canDisconnect
     }
 
     var _protobufVersion: ProtobufVersion? {
@@ -30,13 +34,13 @@ class DeviceViewModel: ObservableObject {
     }
 
     var protobufVersion: String {
-        guard status != .noDevice, status != .disconnected else { return "—" }
+        guard isDataAvailable else { return "—" }
         guard let version = _protobufVersion else { return "" }
         return version == .unknown ? "—" : version.rawValue
     }
 
     var firmwareVersion: String {
-        guard status != .noDevice, status != .disconnected else { return "—" }
+        guard isDataAvailable else { return "—" }
         guard let info = flipper?.information else { return "" }
 
         let version = info
@@ -50,7 +54,7 @@ class DeviceViewModel: ObservableObject {
     }
 
     var firmwareBuild: String {
-        guard status != .noDevice, status != .disconnected else { return "—" }
+        guard isDataAvailable else { return "—" }
         guard let info = flipper?.information else { return "" }
 
         let build = info
@@ -63,14 +67,12 @@ class DeviceViewModel: ObservableObject {
     }
 
     var internalSpace: String {
-        guard status != .unsupportedDevice else { return "—" }
-        guard status != .noDevice, status != .disconnected else { return "—" }
+        guard isDataAvailable else { return "—" }
         return flipper?.storage?.internal?.description ?? ""
     }
 
     var externalSpace: String {
-        guard status != .unsupportedDevice else { return "—" }
-        guard status != .noDevice, status != .disconnected else { return "—" }
+        guard isDataAvailable else { return "—" }
         return flipper?.storage?.external?.description ?? ""
     }
 
@@ -86,7 +88,10 @@ class DeviceViewModel: ObservableObject {
 
     var canConnect: Bool {
         status == .noDevice ||
-        status == .disconnected
+        status == .disconnected ||
+        status == .unsupportedDevice ||
+        status == .pairingFailed ||
+        status == .invalidPairing
     }
 
     var canDisconnect: Bool {

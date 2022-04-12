@@ -47,8 +47,12 @@ class ConnectionViewModel: ObservableObject {
         didSet { updateFlippers() }
     }
 
+    private var connectedPeripherals: [BluetoothPeripheral] = [] {
+        didSet { updateFlippers() }
+    }
+
     var isConnecting: Bool {
-        bluetoothPeripherals.contains { $0.state != .disconnected }
+        !connectedPeripherals.isEmpty
     }
 
     init() {
@@ -65,23 +69,19 @@ class ConnectionViewModel: ObservableObject {
 
         connector.connected
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.updateFlippers()
+            .assign(to: \.connectedPeripherals, on: self)
+            .store(in: &disposeBag)
+
+        appState.$status
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                switch status {
+                case .invalidPairing: self?.isPairingIssue = true
+                case .pairingFailed: self?.isCanceledOrInvalidPin = true
+                case .connected: self?.disposeBag.removeAll()
+                default: break
+                }
             }
-            .store(in: &disposeBag)
-
-        appState.$status
-            .receive(on: DispatchQueue.main)
-            .map { $0 == .pairingIssue }
-            .filter { $0 == true }
-            .assign(to: \.isPairingIssue, on: self)
-            .store(in: &disposeBag)
-
-        appState.$status
-            .receive(on: DispatchQueue.main)
-            .map { $0 == .failed }
-            .filter { $0 == true }
-            .assign(to: \.isCanceledOrInvalidPin, on: self)
             .store(in: &disposeBag)
     }
 
@@ -97,7 +97,13 @@ class ConnectionViewModel: ObservableObject {
     }
 
     func updateFlippers() {
-        flippers = bluetoothPeripherals.map(Flipper.init)
+        var flippers = bluetoothPeripherals.map(Flipper.init)
+        for next in connectedPeripherals {
+            if let index = flippers.firstIndex(where: { $0.id == next.id }) {
+                flippers[index].state = next.state
+            }
+        }
+        self.flippers = flippers
     }
 
     func startScan() {

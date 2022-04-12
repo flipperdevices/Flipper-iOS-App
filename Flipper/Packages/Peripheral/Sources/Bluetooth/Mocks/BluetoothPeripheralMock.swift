@@ -5,7 +5,6 @@ class BluetoothPeripheralMock: BluetoothPeripheral {
     var id: UUID
     var name: String
     var color: FlipperColor
-
     var state: FlipperState = .disconnected
 
     var services: [FlipperService] = [
@@ -52,6 +51,10 @@ class BluetoothPeripheralMock: BluetoothPeripheral {
         self.id = id
         self.name = name
         self.color = color
+    }
+
+    func onConnecting() {
+        print("on connecting")
     }
 
     func onConnect() {

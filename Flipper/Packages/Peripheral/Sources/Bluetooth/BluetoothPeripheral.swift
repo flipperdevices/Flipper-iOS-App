@@ -9,15 +9,13 @@ public protocol BluetoothPeripheral: AnyObject {
     var state: FlipperState { get }
     var services: [FlipperService] { get }
 
-    var isPairingFailed: Bool { get }
-    var didDiscoverDeviceInformation: Bool { get }
-
     var maximumWriteValueLength: Int { get }
 
     var info: AnyPublisher<Void, Never> { get }
     var canWrite: AnyPublisher<Void, Never> { get }
     var received: AnyPublisher<Data, Never> { get }
 
+    func onConnecting()
     func onConnect()
     func onDisconnect()
     func onError(_ error: Swift.Error)
@@ -50,6 +48,8 @@ public enum FlipperState: Equatable {
     case connecting
     case connected
     case disconnecting
+    case pairingFailed
+    case invalidPairing
 }
 
 public struct FlipperService: Equatable, Identifiable {

@@ -8,10 +8,8 @@ public enum DeviceStatus: CustomStringConvertible {
     case disconnected
     case synchronizing
     case synchronized
-    case pairingIssue
-    case preParing
-    case pairing
-    case failed
+    case invalidPairing
+    case pairingFailed
 
     public var isOnline: Bool {
         switch self {
@@ -29,10 +27,8 @@ public enum DeviceStatus: CustomStringConvertible {
         case .disconnected: return "Disconnected"
         case .synchronizing: return "Syncing"
         case .synchronized: return "Synced"
-        case .pairingIssue: return "Pairing Issue"
-        case .preParing: return "PreParing"
-        case .pairing: return "Pairing"
-        case .failed: return "Failed"
+        case .invalidPairing: return "Pairing Issue"
+        case .pairingFailed: return "Failed"
         }
     }
 }
@@ -48,6 +44,8 @@ extension DeviceStatus {
         case .connecting: self = .connecting
         case .disconnected: self = .disconnected
         case .disconnecting: self = .disconnected
+        case .pairingFailed: self = .pairingFailed
+        case .invalidPairing: self = .invalidPairing
         }
     }
 }
