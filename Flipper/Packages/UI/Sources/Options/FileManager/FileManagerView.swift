@@ -118,13 +118,15 @@ struct FileManagerView: View {
                         .stroke(Color.secondary, lineWidth: 1))
 
             HStack {
-                ObsoleteRoundedButton("Close") {
+                Spacer()
+                RoundedButton("Close") {
                     presentationMode.wrappedValue.dismiss()
                 }
-
-                ObsoleteRoundedButton("Save") {
+                Spacer()
+                RoundedButton("Save") {
                     viewModel.save()
                 }
+                Spacer()
             }
         }
         .padding(.bottom, 16)
@@ -140,8 +142,11 @@ struct FileManagerView: View {
                 .padding()
 
             HStack {
-                ObsoleteRoundedButton("Cancel", action: viewModel.cancel)
-                ObsoleteRoundedButton("Create", action: viewModel.create)
+                Spacer()
+                RoundedButton("Cancel", action: viewModel.cancel)
+                Spacer()
+                RoundedButton("Create", action: viewModel.create)
+                Spacer()
             }
         }
         .padding(16)
@@ -152,13 +157,17 @@ struct FileManagerView: View {
             Text("The directory is not empty")
                 .font(.title)
             HStack {
-                ObsoleteRoundedButton(
+                Spacer()
+                RoundedButton(
                     "Cancel",
                     action: viewModel.cancel)
-                ObsoleteRoundedButton(
+                Spacer()
+                RoundedButton(
                     "Force delete",
                     isDanger: true,
-                    action: viewModel.forceDelete)
+                    action: viewModel.forceDelete
+                )
+                Spacer()
             }
         }
     }
