@@ -4,10 +4,18 @@ extension Alert {
     static var pairingIssue: Alert {
         .init(
             title: .init(
-                "Pairing Issue"),
+                "Pairing Failed"),
             message: .init(
-                "Forget your device in bluetooth " +
-                "settings and try again"))
+                """
+                1. Go to Bluetooth Settings
+                2. Open Device Info
+                3. Click Forget This Device
+                """
+            ),
+            primaryButton: .default(.init("Cancel")),
+            secondaryButton: .default(.init("Settings")) {
+                Application.openSystemSettings()
+            })
     }
 
     static var unsupportedDeviceIssue: Alert {

@@ -67,8 +67,8 @@ extension TabView {
         case .disconnected: return "Disconnected"
         case .synchronizing: return "Syncing..."
         case .synchronized: return "Synced!"
-        case .invalidPairing: return "Pairing Issue"
-        case .pairingFailed: return "Sync Failed"
+        case .invalidPairing: return "Pairing Failed"
+        case .pairingFailed: return "Pairing Failed"
         }
     }
 }
@@ -124,8 +124,8 @@ extension TabView {
         case .disconnected: name += "disconnected"
         case .synchronizing: name += "syncing"
         case .synchronized: name += "synced"
-        case .invalidPairing: name += "failed"
-        case .pairingFailed: name += "failed"
+        case .invalidPairing: name += "pairing_failed"
+        case .pairingFailed: name += "pairing_failed"
         }
 
         return name

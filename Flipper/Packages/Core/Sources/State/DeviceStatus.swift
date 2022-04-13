@@ -27,8 +27,8 @@ public enum DeviceStatus: CustomStringConvertible {
         case .disconnected: return "Disconnected"
         case .synchronizing: return "Syncing"
         case .synchronized: return "Synced"
-        case .invalidPairing: return "Pairing Issue"
-        case .pairingFailed: return "Failed"
+        case .invalidPairing: return "Pairing Failed"
+        case .pairingFailed: return "Pairing Failed"
         }
     }
 }
