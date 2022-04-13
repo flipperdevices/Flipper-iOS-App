@@ -2,7 +2,7 @@ import Core
 import Peripheral
 import SwiftUI
 
-struct DeviceInfoSection: View {
+struct DeviceInfo: View {
     let device: Flipper?
 
     var isConnected: Bool {

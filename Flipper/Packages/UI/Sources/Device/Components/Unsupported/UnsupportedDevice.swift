@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct UnsupportedDeviceSection: View {
+struct UnsupportedDevice: View {
     var body: some View {
         VStack {
             VStack(spacing: 0) {

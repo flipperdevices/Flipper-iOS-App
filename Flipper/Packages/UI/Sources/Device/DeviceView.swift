@@ -13,7 +13,7 @@ struct DeviceView: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         if viewModel.status == .unsupportedDevice {
-                            UnsupportedDeviceSection()
+                            UnsupportedDevice()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         }
@@ -21,7 +21,7 @@ struct DeviceView: View {
                         NavigationLink {
                             DeviceInfoView(viewModel: .init())
                         } label: {
-                            DeviceInfoSection(device: viewModel.flipper)
+                            DeviceInfo(device: viewModel.flipper)
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         }
