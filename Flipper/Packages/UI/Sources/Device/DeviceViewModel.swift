@@ -25,30 +25,23 @@ class DeviceViewModel: ObservableObject {
         }
     }
 
-    var isDataAvailable: Bool {
-        canDisconnect
-    }
-
     var canSync: Bool {
         status == .connected
     }
 
     var canPlayAlert: Bool {
-        status == .connected ||
-        status == .synchronizing ||
-        status == .synchronized
+        flipper?.state == .connected &&
+        status != .unsupportedDevice
     }
 
     var canConnect: Bool {
-        status == .noDevice ||
-        status == .disconnected ||
-        status == .unsupportedDevice ||
-        status == .pairingFailed ||
-        status == .invalidPairing
+        flipper?.state == .disconnected ||
+        flipper?.state == .disconnecting
     }
 
     var canDisconnect: Bool {
-        !canConnect
+        flipper?.state == .connected ||
+        flipper?.state == .connecting
     }
 
     var canForget: Bool {
