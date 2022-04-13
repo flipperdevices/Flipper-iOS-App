@@ -30,7 +30,7 @@ struct DeviceView: View {
                         VStack(spacing: 24) {
                             if viewModel.status != .noDevice {
                                 VStack(spacing: 0) {
-                                    DeviceActionButton(
+                                    ActionButton(
                                         image: "Sync",
                                         title: "Synchronize"
                                     ) {
@@ -40,7 +40,7 @@ struct DeviceView: View {
 
                                     Divider()
 
-                                    DeviceActionButton(
+                                    ActionButton(
                                         image: "Alert",
                                         title: "Play Alert"
                                     ) {
@@ -53,7 +53,7 @@ struct DeviceView: View {
 
                             VStack(spacing: 0) {
                                 if viewModel.status == .noDevice {
-                                    DeviceActionButton(
+                                    ActionButton(
                                         image: "Connect",
                                         title: "Connect Flipper"
                                     ) {
@@ -61,7 +61,7 @@ struct DeviceView: View {
                                     }
                                 } else {
                                     if viewModel.canConnect {
-                                        DeviceActionButton(
+                                        ActionButton(
                                             image: "Connect",
                                             title: "Connect"
                                         ) {
@@ -70,7 +70,7 @@ struct DeviceView: View {
                                     }
 
                                     if viewModel.canDisconnect {
-                                        DeviceActionButton(
+                                        ActionButton(
                                             image: "Disconnect",
                                             title: "Disconnect"
                                         ) {
@@ -81,7 +81,7 @@ struct DeviceView: View {
                                     Divider()
 
                                     if viewModel.canForget {
-                                        DeviceActionButton(
+                                        ActionButton(
                                             image: "Forget",
                                             title: "Forget Flipper"
                                         ) {

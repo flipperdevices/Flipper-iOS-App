@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DeviceActionButton: View {
+struct ActionButton: View {
     let image: String
     let title: String
     let action: @MainActor () -> Void
