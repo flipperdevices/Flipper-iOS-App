@@ -84,9 +84,13 @@ struct SectionRow: View {
     let name: String
     let value: String
 
+    var formattedName: String {
+        name.replacingOccurrences(of: "_", with: " ").capitalized
+    }
+
     var body: some View {
         HStack {
-            Text("\(name)")
+            Text("\(formattedName)")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.black30)
             Spacer()
