@@ -27,6 +27,11 @@ struct MainView: View {
 
 struct ImportedBanner: View {
     let itemName: String
+    @Environment(\.colorScheme) var colorScheme
+
+    var backgroundColor: Color {
+        colorScheme == .light ? .black4 : .black80
+    }
 
     var body: some View {
         VStack {
@@ -45,7 +50,7 @@ struct ImportedBanner: View {
             .padding(12)
             .frame(height: 48)
             .frame(maxWidth: .infinity)
-            .background(Color.black4)
+            .background(backgroundColor)
             .cornerRadius(8)
         }
         .padding(12)
