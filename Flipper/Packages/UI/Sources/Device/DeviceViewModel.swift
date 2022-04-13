@@ -29,53 +29,6 @@ class DeviceViewModel: ObservableObject {
         canDisconnect
     }
 
-    var _protobufVersion: ProtobufVersion? {
-        flipper?.information?.protobufRevision
-    }
-
-    var protobufVersion: String {
-        guard isDataAvailable else { return "—" }
-        guard let version = _protobufVersion else { return "" }
-        return version == .unknown ? "—" : version.rawValue
-    }
-
-    var firmwareVersion: String {
-        guard isDataAvailable else { return "—" }
-        guard let info = flipper?.information else { return "" }
-
-        let version = info
-            .softwareRevision
-            .split(separator: " ")
-            .dropFirst()
-            .prefix(1)
-            .joined()
-
-        return .init(version)
-    }
-
-    var firmwareBuild: String {
-        guard isDataAvailable else { return "—" }
-        guard let info = flipper?.information else { return "" }
-
-        let build = info
-            .softwareRevision
-            .split(separator: " ")
-            .suffix(1)
-            .joined(separator: " ")
-
-        return .init(build)
-    }
-
-    var internalSpace: String {
-        guard isDataAvailable else { return "—" }
-        return flipper?.storage?.internal?.description ?? ""
-    }
-
-    var externalSpace: String {
-        guard isDataAvailable else { return "—" }
-        return flipper?.storage?.external?.description ?? ""
-    }
-
     var canSync: Bool {
         status == .connected
     }
@@ -146,23 +99,5 @@ class DeviceViewModel: ObservableObject {
         Task {
             try await rpc.playAlert()
         }
-    }
-}
-
-extension String {
-    static var noDevice: String { "No device" }
-    static var unknown: String { "Unknown" }
-}
-
-extension StorageSpace: CustomStringConvertible {
-    public var description: String {
-        "\(used.hr) / \(total.hr)"
-    }
-}
-
-extension Int {
-    var hr: String {
-        let formatter = ByteCountFormatter()
-        return formatter.string(fromByteCount: Int64(self))
     }
 }

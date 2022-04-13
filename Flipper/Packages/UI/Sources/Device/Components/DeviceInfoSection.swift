@@ -1,12 +1,60 @@
+import Core
+import Peripheral
 import SwiftUI
 
 struct DeviceInfoSection: View {
-    let protobufVersion: String
-    let firmwareVersion: String
-    let firmwareBuild: String
-    let internalSpace: String
-    let externalSpace: String
-    let showFullInfo: Bool
+    let device: Flipper?
+
+    var isConnected: Bool {
+        device?.state == .connected
+    }
+
+    var _protobufVersion: ProtobufVersion? {
+        device?.information?.protobufRevision
+    }
+
+    var protobufVersion: String {
+        guard isConnected else { return "—" }
+        guard let version = _protobufVersion else { return "" }
+        return version == .unknown ? "—" : version.rawValue
+    }
+
+    var firmwareVersion: String {
+        guard isConnected else { return "—" }
+        guard let info = device?.information else { return "" }
+
+        let version = info
+            .softwareRevision
+            .split(separator: " ")
+            .dropFirst()
+            .prefix(1)
+            .joined()
+
+        return .init(version)
+    }
+
+    var firmwareBuild: String {
+        guard isConnected else { return "—" }
+        guard let info = device?.information else { return "" }
+
+        let build = info
+            .softwareRevision
+            .split(separator: " ")
+            .suffix(1)
+            .joined(separator: " ")
+
+        return .init(build)
+    }
+
+    var internalSpace: String {
+        guard isConnected else { return "—" }
+        return device?.storage?.internal?.description ?? ""
+    }
+
+    var externalSpace: String {
+        guard isConnected else { return "—" }
+        return device?.storage?.external?.description ?? ""
+    }
 
     var body: some View {
         VStack(spacing: 18) {
@@ -45,7 +93,7 @@ struct DeviceInfoSection: View {
                 )
                 .padding(.horizontal, 12)
 
-                if showFullInfo {
+                if isConnected {
                     HStack {
                         Text("Full info")
                         Image(systemName: "chevron.right")
@@ -60,5 +108,18 @@ struct DeviceInfoSection: View {
         .foregroundColor(.primary)
         .background(Color.groupedBackground)
         .cornerRadius(10)
+    }
+}
+
+extension StorageSpace: CustomStringConvertible {
+    public var description: String {
+        "\(used.hr) / \(total.hr)"
+    }
+}
+
+fileprivate extension Int {
+    var hr: String {
+        let formatter = ByteCountFormatter()
+        return formatter.string(fromByteCount: Int64(self))
     }
 }

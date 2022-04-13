@@ -21,16 +21,9 @@ struct DeviceView: View {
                         NavigationLink {
                             DeviceInfoView(viewModel: .init())
                         } label: {
-                            DeviceInfoSection(
-                                protobufVersion: viewModel.protobufVersion,
-                                firmwareVersion: viewModel.firmwareVersion,
-                                firmwareBuild: viewModel.firmwareBuild,
-                                internalSpace: viewModel.internalSpace,
-                                externalSpace: viewModel.externalSpace,
-                                showFullInfo: viewModel.canDisconnect
-                            )
-                            .padding(.top, 24)
-                            .padding(.horizontal, 14)
+                            DeviceInfoSection(device: viewModel.flipper)
+                                .padding(.top, 24)
+                                .padding(.horizontal, 14)
                         }
                         .disabled(!viewModel.status.isOnline)
 
