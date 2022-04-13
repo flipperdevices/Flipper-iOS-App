@@ -54,6 +54,7 @@ class ArchiveViewModel: ObservableObject {
             .store(in: &disposeBag)
 
         appState.$importQueue
+            .receive(on: DispatchQueue.main)
             .map { !$0.isEmpty }
             .filter { $0 == true }
             .assign(to: \.hasImportedItem, on: self)
