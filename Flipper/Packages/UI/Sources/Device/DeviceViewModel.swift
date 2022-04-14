@@ -60,6 +60,9 @@ class DeviceViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
+    func update() {
+    }
+
     func showWelcomeScreen() {
         appState.isFirstLaunch = true
     }

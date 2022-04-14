@@ -16,6 +16,12 @@ struct DeviceView: View {
                             UnsupportedDevice()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
+                        } else {
+                            DeviceUpdate {
+                                viewModel.update()
+                            }
+                            .padding(.top, 24)
+                            .padding(.horizontal, 14)
                         }
 
                         NavigationLink {

@@ -82,6 +82,10 @@ extension Color {
         .init(red: 1.0, green: 0.81, blue: 0.37)
     }
 
+    static var sGreenUpdate: Color {
+        .init(red: 0.18, green: 0.85, blue: 0.2)
+    }
+
     // MARK: Keys
 
     static var iButton: Color {
