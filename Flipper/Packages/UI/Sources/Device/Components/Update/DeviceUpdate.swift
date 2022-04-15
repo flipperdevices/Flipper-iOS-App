@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DeviceUpdate: View {
-    let update: () -> Void
+    @StateObject var viewModel: DeviceUpdateViewModel
 
     var body: some View {
         Card {
@@ -28,7 +28,7 @@ struct DeviceUpdate: View {
                     .padding(.top, 12)
 
                 Button {
-                    update()
+                    viewModel.update()
                 } label: {
                     HStack {
                         Spacer()

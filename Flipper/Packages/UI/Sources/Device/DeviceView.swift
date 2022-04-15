@@ -16,11 +16,9 @@ struct DeviceView: View {
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         } else {
-                            DeviceUpdate {
-                                viewModel.update()
-                            }
-                            .padding(.top, 24)
-                            .padding(.horizontal, 14)
+                            DeviceUpdate(viewModel: .init())
+                                .padding(.top, 24)
+                                .padding(.horizontal, 14)
                         }
 
                         NavigationLink {
