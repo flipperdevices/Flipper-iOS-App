@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DeviceInfoRow: View {
+struct DeviceInfoCardRow: View {
     let name: String
     let value: String
 

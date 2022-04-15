@@ -2,7 +2,7 @@ import Core
 import Peripheral
 import SwiftUI
 
-struct DeviceInfo: View {
+struct DeviceInfoCard: View {
     let device: Flipper?
 
     var isConnected: Bool {
@@ -68,27 +68,27 @@ struct DeviceInfo: View {
                 .padding(.horizontal, 12)
 
                 VStack(spacing: 12) {
-                    DeviceInfoRow(
+                    DeviceInfoCardRow(
                         name: "Firmware Version",
                         value: firmwareVersion
                     )
                     .padding(.horizontal, 12)
                     Divider()
-                    DeviceInfoRow(
+                    DeviceInfoCardRow(
                         name: "Build Date",
                         value: firmwareBuild
                     )
                     .padding(.horizontal, 12)
 
                     Divider()
-                    DeviceInfoRow(
+                    DeviceInfoCardRow(
                         name: "Int. Flash (Used/Total)",
                         value: internalSpace
                     )
                     .padding(.horizontal, 12)
 
                     Divider()
-                    DeviceInfoRow(
+                    DeviceInfoCardRow(
                         name: "SD Card (Used/Total)",
                         value: externalSpace
                     )
