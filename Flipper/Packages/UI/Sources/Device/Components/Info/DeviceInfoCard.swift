@@ -3,58 +3,7 @@ import Peripheral
 import SwiftUI
 
 struct DeviceInfoCard: View {
-    let device: Flipper?
-
-    var isConnected: Bool {
-        device?.state == .connected
-    }
-
-    var _protobufVersion: ProtobufVersion? {
-        device?.information?.protobufRevision
-    }
-
-    var protobufVersion: String {
-        guard isConnected else { return "—" }
-        guard let version = _protobufVersion else { return "" }
-        return version == .unknown ? "—" : version.rawValue
-    }
-
-    var firmwareVersion: String {
-        guard isConnected else { return "—" }
-        guard let info = device?.information else { return "" }
-
-        let version = info
-            .softwareRevision
-            .split(separator: " ")
-            .dropFirst()
-            .prefix(1)
-            .joined()
-
-        return .init(version)
-    }
-
-    var firmwareBuild: String {
-        guard isConnected else { return "—" }
-        guard let info = device?.information else { return "" }
-
-        let build = info
-            .softwareRevision
-            .split(separator: " ")
-            .suffix(1)
-            .joined(separator: " ")
-
-        return .init(build)
-    }
-
-    var internalSpace: String {
-        guard isConnected else { return "—" }
-        return device?.storage?.internal?.description ?? ""
-    }
-
-    var externalSpace: String {
-        guard isConnected else { return "—" }
-        return device?.storage?.external?.description ?? ""
-    }
+    @StateObject var viewModel: DeviceInfoCardViewModel
 
     var body: some View {
         Card {
@@ -70,31 +19,31 @@ struct DeviceInfoCard: View {
                 VStack(spacing: 12) {
                     DeviceInfoCardRow(
                         name: "Firmware Version",
-                        value: firmwareVersion
+                        value: viewModel.firmwareVersion
                     )
                     .padding(.horizontal, 12)
                     Divider()
                     DeviceInfoCardRow(
                         name: "Build Date",
-                        value: firmwareBuild
+                        value: viewModel.firmwareBuild
                     )
                     .padding(.horizontal, 12)
 
                     Divider()
                     DeviceInfoCardRow(
                         name: "Int. Flash (Used/Total)",
-                        value: internalSpace
+                        value: viewModel.internalSpace
                     )
                     .padding(.horizontal, 12)
 
                     Divider()
                     DeviceInfoCardRow(
                         name: "SD Card (Used/Total)",
-                        value: externalSpace
+                        value: viewModel.externalSpace
                     )
                     .padding(.horizontal, 12)
 
-                    if isConnected {
+                    if viewModel.isConnected {
                         HStack {
                             Text("Full info")
                             Image(systemName: "chevron.right")
@@ -107,18 +56,5 @@ struct DeviceInfoCard: View {
                 .padding(.bottom, 12)
             }
         }
-    }
-}
-
-extension StorageSpace: CustomStringConvertible {
-    public var description: String {
-        "\(used.hr) / \(total.hr)"
-    }
-}
-
-fileprivate extension Int {
-    var hr: String {
-        let formatter = ByteCountFormatter()
-        return formatter.string(fromByteCount: Int64(self))
     }
 }

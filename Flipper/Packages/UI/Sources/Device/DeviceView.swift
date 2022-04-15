@@ -27,7 +27,7 @@ struct DeviceView: View {
                         NavigationLink {
                             DeviceInfoView(viewModel: .init())
                         } label: {
-                            DeviceInfoCard(device: viewModel.flipper)
+                            DeviceInfoCard(viewModel: .init())
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         }
