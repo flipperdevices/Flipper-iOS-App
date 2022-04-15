@@ -3,7 +3,6 @@ import SwiftUI
 
 struct DeviceView: View {
     @StateObject var viewModel: DeviceViewModel
-    @State private var action: String?
 
     var body: some View {
         NavigationView {
