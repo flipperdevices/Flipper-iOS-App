@@ -7,26 +7,34 @@ public class BluetoothRPC: RPC {
     private let logger = Logger(label: "rpc")
 
     @Inject private var connector: BluetoothConnector
-    private var subscriptions = [AnyCancellable]()
+    private var connectorHandle: AnyCancellable?
+    private var peripheralHandle: AnyCancellable?
 
     public var session: Session?
     private var peripheral: BluetoothPeripheral? {
-        didSet { self.updateSession() }
+        didSet { self.peripheralDidChange() }
     }
     private var onScreenFrame: ((ScreenFrame) -> Void)?
 
     init() {
-        connector.connected
+        connectorHandle = connector.connected
             .map { $0.first }
             .assign(to: \.peripheral, on: self)
-            .store(in: &subscriptions)
+    }
+
+    private func peripheralDidChange() {
+        peripheralHandle = peripheral?.info
+            .sink { [weak self] in
+                self?.updateSession()
+            }
     }
 
     private func updateSession() {
-        guard let peripheral = peripheral else {
-            self.session = nil
+        guard let peripheral = peripheral, peripheral.state == .connected else {
+            session = nil
             return
         }
+        guard session == nil else { return }
         self.session = FlipperSession(peripheral: peripheral)
         self.session?.onMessage = self.onMessage
         self.session?.onError = self.onError
