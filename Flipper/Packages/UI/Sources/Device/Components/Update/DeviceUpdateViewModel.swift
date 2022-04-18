@@ -3,6 +3,7 @@ import Inject
 import Combine
 import Peripheral
 import Foundation
+import SwiftUI
 
 @MainActor
 class DeviceUpdateViewModel: ObservableObject {
@@ -15,27 +16,45 @@ class DeviceUpdateViewModel: ObservableObject {
         flipper?.state == .connected
     }
 
-    var protobufVersion: ProtobufVersion? {
-        flipper?.information?.protobufRevision
+    enum Channel: String {
+        case development
+        case canditate
+        case release
     }
 
-    var firmwareVersion: String? {
-        flipper?.information?
-            .softwareRevision
-            .split(separator: " ")
-            .dropFirst()
-            .prefix(1)
-            .joined()
+    enum State {
+        case noUpdates
+        case versionUpdate
+        case channelUpdate
+        case downloadingFirmware
+        case uploadingFirmware
+        case updateInProgress
     }
+
+    @AppStorage("update_channel") var channel: Channel = .development {
+        didSet { updateAvailableFirmware() }
+    }
+
+    @Published var availableFirmware: String = ""
+
+    @Published var state: State = .downloadingFirmware
+    @Published var progress: Int = 50
 
     init() {
         appState.$flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)
+
+        updateAvailableFirmware()
+    }
+
+    func updateAvailableFirmware() {
     }
 
     func update() {
-        print("update")
+    }
+
+    func cancel() {
     }
 }
