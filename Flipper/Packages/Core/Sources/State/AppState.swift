@@ -157,14 +157,13 @@ public class AppState {
     func getStorageInfo() async {
         status = .synchronizing
         defer { status = .init(flipper?.state) }
-        var storage = flipper?.storage ?? .init()
-        if let intSpace = try? await rpc.getStorageInfo(at: "/int") {
-            storage.internal = intSpace
-        }
-        if let extSpace = try? await rpc.getStorageInfo(at: "/ext") {
-            storage.external = extSpace
-        }
-        flipper?.storage = storage
+        var storageInfo = Flipper.StorageInfo()
+        // swiftlint:disable statement_position
+        do { storageInfo.internal = try await rpc.getStorageInfo(at: "/int") }
+        catch { logger.error("error updating internal space") }
+        do { storageInfo.external = try await rpc.getStorageInfo(at: "/ext") }
+        catch { logger.error("error updating external space") }
+        pairedDevice.updateStorageInfo(storageInfo)
     }
 
     // MARK: Sharing
