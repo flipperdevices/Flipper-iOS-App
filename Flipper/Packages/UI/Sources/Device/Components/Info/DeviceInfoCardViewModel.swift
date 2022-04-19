@@ -28,15 +28,7 @@ class DeviceInfoCardViewModel: ObservableObject {
     var firmwareVersion: String {
         guard isConnected else { return "—" }
         guard let info = device?.information else { return "" }
-
-        let version = info
-            .softwareRevision
-            .split(separator: " ")
-            .dropFirst()
-            .prefix(1)
-            .joined()
-
-        return .init(version)
+        return info.shortSoftwareVersion ?? "invalid"
     }
 
     var firmwareBuild: String {

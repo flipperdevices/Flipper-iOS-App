@@ -90,6 +90,7 @@ struct DeviceUpdate: View {
                     .font(.system(size: 14))
                     .padding(.horizontal, 12)
                     .padding(.top, 18)
+                    .disabled(viewModel.inProgress)
 
                     Divider()
                         .padding(.top, 12)

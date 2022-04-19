@@ -93,31 +93,4 @@ class DeviceViewModel: ObservableObject {
             try await rpc.playAlert()
         }
     }
-
-    // MARK: Update
-
-    enum Channel {
-        case development
-        case canditate
-        case release
-    }
-
-    @Published var updateChannel: Channel = .development {
-        didSet { didSetChannel() }
-    }
-
-    var targetVersion: String {
-        switch updateChannel {
-        case .development: return "Dev 000ebb8f"
-        case .canditate: return "RC 0.55.1"
-        case .release: return "Release 0.55.0"
-        }
-    }
-
-    func didSetChannel() {
-    }
-
-    func update() {
-        print("update")
-    }
 }
