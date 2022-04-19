@@ -24,8 +24,9 @@ struct DeviceUpdate: View {
             return "Downloading from update server..."
         case .uploadingFirmware:
             return "Uploading firmware to Flipper..."
-        default:
-            return ""
+        case .updateInProgress:
+            return "Now Flipper is updating in offline mode. " +
+                "Look at device screen for info and wait for reconnect."
         }
     }
 
@@ -40,59 +41,79 @@ struct DeviceUpdate: View {
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
 
-                HStack {
-                    Text("Update Channel")
-                        .foregroundColor(.black30)
+                if viewModel.state == .updateInProgress {
+                    UpdateStartedImage()
+                        .padding(.top, 12)
+                        .padding(.horizontal, 12)
 
-                    Spacer()
+                    Text("Update started...")
+                        .padding(.top, 8)
 
-                    Menu {
-                        Button("Development") {
-                            viewModel.channel = .development
-                        }
-                        Button("Release") {
-                            viewModel.channel = .release
-                        }
-                        Button("Release-Candidate") {
-                            viewModel.channel = .canditate
-                        }
-                    } label: {
-                        HStack(spacing: 6) {
-                            Spacer()
-                            Text(viewModel.availableFirmware)
-                                .font(.system(size: 14, weight: .regular))
-                                .foregroundColor(targetColor)
-                            Image(systemName: "chevron.down")
-                                .foregroundColor(.black30)
+                    VStack {
+                        Text(description)
+                            .font(.system(size: 14, weight: .medium))
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.black30)
+                    }
+                    .frame(height: 40)
+                    .padding(.top, 8)
+                    .padding(.bottom, 8)
+                    .padding(.horizontal, 12)
+                } else {
+                    HStack {
+                        Text("Update Channel")
+                            .foregroundColor(.black30)
+
+                        Spacer()
+
+                        Menu {
+                            Button("Development") {
+                                viewModel.channel = .development
+                            }
+                            Button("Release") {
+                                viewModel.channel = .release
+                            }
+                            Button("Release-Candidate") {
+                                viewModel.channel = .canditate
+                            }
+                        } label: {
+                            HStack(spacing: 6) {
+                                Spacer()
+                                Text(viewModel.availableFirmware)
+                                    .font(.system(size: 14, weight: .regular))
+                                    .foregroundColor(targetColor)
+                                Image(systemName: "chevron.down")
+                                    .foregroundColor(.black30)
+                            }
                         }
                     }
-                }
-                .font(.system(size: 14))
-                .padding(.horizontal, 12)
-                .padding(.top, 18)
+                    .font(.system(size: 14))
+                    .padding(.horizontal, 12)
+                    .padding(.top, 18)
 
-                Divider()
-                    .padding(.top, 12)
+                    Divider()
+                        .padding(.top, 12)
 
-                switch viewModel.state {
-                case .noUpdates, .versionUpdate, .channelUpdate:
-                    UpdateButton(viewModel: viewModel)
-                case .downloadingFirmware, .uploadingFirmware:
-                    UpdateProgress(viewModel: viewModel)
-                case .updateInProgress:
-                    EmptyView()
-                }
+                    switch viewModel.state {
+                    case .noUpdates, .versionUpdate, .channelUpdate:
+                        UpdateButton(viewModel: viewModel)
+                    case .downloadingFirmware, .uploadingFirmware:
+                        UpdateProgress(viewModel: viewModel)
+                    case .updateInProgress:
+                        EmptyView()
+                    }
 
-                VStack {
-                    Text(description)
-                        .font(.system(size: 12, weight: .medium))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.black16)
+                    VStack {
+                        Text(description)
+                            .font(.system(size: 12, weight: .medium))
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.black16)
+                    }
+                    .frame(height: 48)
+                    .padding(.top, 8)
+                    .padding(.bottom, 8)
+                    .padding(.horizontal, 12)
                 }
-                .frame(height: 48)
-                .padding(.top, 8)
-                .padding(.bottom, 8)
-                .padding(.horizontal, 12)
             }
         }
     }
@@ -147,8 +168,7 @@ struct UpdateProgress: View {
     var image: String {
         switch viewModel.state {
         case .downloadingFirmware: return "DownloadingUpdate"
-        case .uploadingFirmware: return "UploadingUpdate"
-        default: return ""
+        default: return "UploadingUpdate"
         }
     }
 
@@ -190,5 +210,17 @@ struct UpdateProgress: View {
         .cornerRadius(9)
         .padding(.horizontal, 12)
         .padding(.top, 12)
+    }
+}
+
+struct UpdateStartedImage: View {
+    @Environment(\.colorScheme) var colorScheme
+
+    var image: String {
+        colorScheme == .light ? "UpdateStartedLight" : "UpdateStartedDark"
+    }
+
+    var body: some View {
+        Image(image)
     }
 }
