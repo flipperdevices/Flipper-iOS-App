@@ -1,14 +1,18 @@
 import Core
 import Inject
-import Combine
 import Peripheral
 import Foundation
 import SwiftUI
+import Logging
 
 @MainActor
 class DeviceUpdateViewModel: ObservableObject {
+    private let logger = Logger(label: "update-vm")
+
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
+
+    @Inject var rpc: RPC
 
     @Published var flipper: Flipper? {
         didSet { updateState() }
@@ -107,28 +111,52 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
 
-    func update() {
-        state = .downloadingFirmware
-        progress = 0
+    var updateTaskHandle: Task<Void, Swift.Error>?
 
-        Task {
-            while progress < 100 {
-                try await Task.sleep(seconds: 0.005)
-                progress += 1
+    func update() {
+        guard updateTaskHandle == nil else {
+            logger.error("update in progress")
+            return
+        }
+        updateTaskHandle = Task {
+            do {
+                let archive = try await downloadFirmware()
+                let path = try await uploadFirmware(archive)
+                try await startUpdateProcess(path)
+            } catch {
+                logger.error("update error: \(error)")
             }
-            state = .uploadingFirmware
-            progress = 0
-            while progress < 100 {
-                try await Task.sleep(seconds: 0.05)
-                progress += 1
-            }
-            state = .updateInProgress
-            try await Task.sleep(seconds: 1)
-            state = .noUpdates
+            updateTaskHandle = nil
         }
     }
 
+    func downloadFirmware() async throws -> [UInt8] {
+        state = .downloadingFirmware
+        progress = 0
+        return try await updater.downloadFirmware(from: channel) {
+            let progress = Int($0 * 100)
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.progress = progress
+                }
+            }
+        }
+    }
+
+    func uploadFirmware(_ bytes: [UInt8]) async throws -> String {
+        state = .uploadingFirmware
+        progress = 0
+        return try await updater.uploadFirmware(bytes)
+    }
+
+    func startUpdateProcess(_ fuf: String) async throws {
+        state = .updateInProgress
+        progress = 0
+        try await updater.installFirmware(fuf)
+    }
+
     func cancel() {
+        updateTaskHandle?.cancel()
     }
 }
 

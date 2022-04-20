@@ -62,7 +62,7 @@ extension Update.Manifest {
 // MARK: Last archive
 
 extension Update.Manifest.Version {
-    var updateArchive: File? {
+    public var updateArchive: File? {
         files.first { $0.type == "update_tgz" }
     }
 }
