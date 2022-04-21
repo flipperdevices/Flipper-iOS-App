@@ -34,13 +34,10 @@ class DeviceUpdateViewModel: ObservableObject {
     }
 
     @AppStorage("update_channel") var channel: Update.Channel = .development {
-        didSet { updateAvailableFirmware() }
-    }
-
-    @Published var availableFirmware: String = "" {
         didSet { updateState() }
     }
 
+    @Published var availableFirmware: String = ""
     @Published var state: State = .noUpdates
     @Published var progress: Int = 0
 
@@ -68,27 +65,33 @@ class DeviceUpdateViewModel: ObservableObject {
         updateAvailableFirmware()
     }
 
-    func updateAvailableFirmware() {
-        availableFirmware = ""
+    var manifest: Update.Manifest? {
+        didSet { updateState() }
+    }
 
+    func updateAvailableFirmware() {
         Task {
-            let manifest = try await updater.downloadManifest()
-            guard let version = manifest.version(for: channel) else {
-                availableFirmware = "error"
-                return
-            }
-            switch channel {
-            case .development:
-                availableFirmware = "Dev \(version.version)"
-            case .canditate:
-                availableFirmware = "RC \(version.version.dropLast(3))"
-            case .release:
-                availableFirmware = "Release \(version.version)"
-            }
+            self.manifest = try await updater.downloadManifest()
+        }
+    }
+
+    func updateVersion() {
+        guard let version = manifest?.version(for: channel) else {
+            availableFirmware = ""
+            return
+        }
+        switch channel {
+        case .development:
+            availableFirmware = "Dev \(version.version)"
+        case .canditate:
+            availableFirmware = "RC \(version.version.dropLast(3))"
+        case .release:
+            availableFirmware = "Release \(version.version)"
         }
     }
 
     func updateState() {
+        updateVersion()
         state = .noUpdates
         guard
             !availableFirmware.isEmpty,

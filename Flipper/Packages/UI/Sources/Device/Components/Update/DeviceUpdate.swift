@@ -86,6 +86,9 @@ struct DeviceUpdate: View {
                                     .foregroundColor(.black30)
                             }
                         }
+                        .onTapGesture {
+                            viewModel.updateAvailableFirmware()
+                        }
                     }
                     .font(.system(size: 14))
                     .padding(.horizontal, 12)
