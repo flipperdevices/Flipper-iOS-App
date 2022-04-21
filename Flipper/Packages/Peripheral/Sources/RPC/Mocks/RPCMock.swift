@@ -17,7 +17,7 @@ class RPCMock: RPC {
     }
 
     func reboot(
-        to mode: Request.System.RebootMode,
+        to mode: Message.RebootMode,
         priority: Priority?
     ) async throws {
     }

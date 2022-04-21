@@ -1,7 +1,7 @@
 import SwiftProtobuf
 import struct Foundation.Date
 
-// swiftlint:disable nesting function_body_length
+// swiftlint:disable function_body_length
 
 public enum Request {
     case system(System)
@@ -12,14 +12,8 @@ public enum Request {
         case info
         case alert
         case ping([UInt8])
-        case reboot(RebootMode)
         case getDate
         case setDate(Date)
-
-        public enum RebootMode {
-            case os
-            case dfu
-        }
     }
 
     public enum Storage {
@@ -65,12 +59,6 @@ extension Request.System {
             return .with {
                 $0.systemPingRequest = .with {
                     $0.data = .init(bytes)
-                }
-            }
-        case .reboot(let mode):
-            return .with {
-                $0.systemRebootRequest = .with {
-                    $0.mode = .init(mode)
                 }
             }
         case .getDate:
@@ -197,7 +185,7 @@ extension PB_Main {
 }
 
 extension PBSystem_RebootRequest.RebootMode {
-    init(_ source: Request.System.RebootMode) {
+    init(_ source: Message.RebootMode) {
         switch source {
         case .os: self = .os
         case .dfu: self = .dfu

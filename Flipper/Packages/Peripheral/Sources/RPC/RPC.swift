@@ -15,7 +15,7 @@ public protocol RPC {
     ) async throws -> [UInt8]
 
     func reboot(
-        to mode: Request.System.RebootMode,
+        to mode: Message.RebootMode,
         priority: Priority?
     ) async throws
 
@@ -139,7 +139,7 @@ public extension RPC {
         try await ping(bytes, priority: nil)
     }
 
-    func reboot(to mode: Request.System.RebootMode) async throws {
+    func reboot(to mode: Message.RebootMode) async throws {
         try await reboot(to: mode, priority: nil)
     }
 

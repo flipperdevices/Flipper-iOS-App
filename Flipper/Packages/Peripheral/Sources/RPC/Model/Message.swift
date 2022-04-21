@@ -1,6 +1,12 @@
 public enum Message {
     case decodeError
     case screenFrame(ScreenFrame)
+    case reboot(RebootMode)
+
+    public enum RebootMode {
+        case os
+        case dfu
+    }
 }
 
 extension Message {
@@ -37,6 +43,12 @@ extension Message {
             return .with {
                 $0.guiScreenFrame = .with {
                     $0.data = .init(screenFrame.bytes)
+                }
+            }
+        case .reboot(let mode):
+            return .with {
+                $0.systemRebootRequest = .with {
+                    $0.mode = .init(mode)
                 }
             }
         }

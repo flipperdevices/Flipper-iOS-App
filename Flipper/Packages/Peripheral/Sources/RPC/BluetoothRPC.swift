@@ -38,6 +38,8 @@ public class BluetoothRPC: RPC {
             onError(.common(.decode))
         case .screenFrame(let screenFrame):
             onScreenFrame?(screenFrame)
+        case .reboot:
+            fatalError("unreachable")
         }
     }
 
@@ -84,10 +86,10 @@ extension BluetoothRPC {
     }
 
     public func reboot(
-        to mode: Request.System.RebootMode,
+        to mode: Message.RebootMode,
         priority: Priority?
     ) async throws {
-        _ = try await session?.send(.system(.reboot(mode)), priority: priority)
+        try await session?.send(.reboot(mode), priority: priority)
     }
 
     public func getDate(priority: Priority?) async throws -> Date {
