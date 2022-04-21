@@ -59,6 +59,7 @@ struct PBSystem_RebootRequest {
     /// default value
     case os // = 0
     case dfu // = 1
+    case update // = 2
     case UNRECOGNIZED(Int)
 
     init() {
@@ -69,6 +70,7 @@ struct PBSystem_RebootRequest {
       switch rawValue {
       case 0: self = .os
       case 1: self = .dfu
+      case 2: self = .update
       default: self = .UNRECOGNIZED(rawValue)
       }
     }
@@ -77,6 +79,7 @@ struct PBSystem_RebootRequest {
       switch self {
       case .os: return 0
       case .dfu: return 1
+      case .update: return 2
       case .UNRECOGNIZED(let i): return i
       }
     }
@@ -93,6 +96,7 @@ extension PBSystem_RebootRequest.RebootMode: CaseIterable {
   static var allCases: [PBSystem_RebootRequest.RebootMode] = [
     .os,
     .dfu,
+    .update,
   ]
 }
 
@@ -225,6 +229,86 @@ struct PBSystem_PlayAudiovisualAlertRequest {
   init() {}
 }
 
+struct PBSystem_ProtobufVersionRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PBSystem_ProtobufVersionResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var major: UInt32 = 0
+
+  var minor: UInt32 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PBSystem_UpdateRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var updateManifest: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PBSystem_PowerInfoRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PBSystem_PowerInfoResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var key: String = String()
+
+  var value: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+#if swift(>=5.5) && canImport(_Concurrency)
+extension PBSystem_PingRequest: @unchecked Sendable {}
+extension PBSystem_PingResponse: @unchecked Sendable {}
+extension PBSystem_RebootRequest: @unchecked Sendable {}
+extension PBSystem_RebootRequest.RebootMode: @unchecked Sendable {}
+extension PBSystem_DeviceInfoRequest: @unchecked Sendable {}
+extension PBSystem_DeviceInfoResponse: @unchecked Sendable {}
+extension PBSystem_FactoryResetRequest: @unchecked Sendable {}
+extension PBSystem_GetDateTimeRequest: @unchecked Sendable {}
+extension PBSystem_GetDateTimeResponse: @unchecked Sendable {}
+extension PBSystem_SetDateTimeRequest: @unchecked Sendable {}
+extension PBSystem_DateTime: @unchecked Sendable {}
+extension PBSystem_PlayAudiovisualAlertRequest: @unchecked Sendable {}
+extension PBSystem_ProtobufVersionRequest: @unchecked Sendable {}
+extension PBSystem_ProtobufVersionResponse: @unchecked Sendable {}
+extension PBSystem_UpdateRequest: @unchecked Sendable {}
+extension PBSystem_PowerInfoRequest: @unchecked Sendable {}
+extension PBSystem_PowerInfoResponse: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "PB_System"
@@ -329,6 +413,7 @@ extension PBSystem_RebootRequest.RebootMode: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "OS"),
     1: .same(proto: "DFU"),
+    2: .same(proto: "UPDATE"),
   ]
 }
 
@@ -581,6 +666,152 @@ extension PBSystem_PlayAudiovisualAlertRequest: SwiftProtobuf.Message, SwiftProt
   }
 
   static func ==(lhs: PBSystem_PlayAudiovisualAlertRequest, rhs: PBSystem_PlayAudiovisualAlertRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_ProtobufVersionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ProtobufVersionRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_ProtobufVersionRequest, rhs: PBSystem_ProtobufVersionRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_ProtobufVersionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ProtobufVersionResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "major"),
+    2: .same(proto: "minor"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.major) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.minor) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.major != 0 {
+      try visitor.visitSingularUInt32Field(value: self.major, fieldNumber: 1)
+    }
+    if self.minor != 0 {
+      try visitor.visitSingularUInt32Field(value: self.minor, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_ProtobufVersionResponse, rhs: PBSystem_ProtobufVersionResponse) -> Bool {
+    if lhs.major != rhs.major {return false}
+    if lhs.minor != rhs.minor {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_UpdateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".UpdateRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "update_manifest"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.updateManifest) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.updateManifest.isEmpty {
+      try visitor.visitSingularStringField(value: self.updateManifest, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_UpdateRequest, rhs: PBSystem_UpdateRequest) -> Bool {
+    if lhs.updateManifest != rhs.updateManifest {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_PowerInfoRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PowerInfoRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_PowerInfoRequest, rhs: PBSystem_PowerInfoRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_PowerInfoResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PowerInfoResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "key"),
+    2: .same(proto: "value"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.key) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.value) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.key.isEmpty {
+      try visitor.visitSingularStringField(value: self.key, fieldNumber: 1)
+    }
+    if !self.value.isEmpty {
+      try visitor.visitSingularStringField(value: self.value, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_PowerInfoResponse, rhs: PBSystem_PowerInfoResponse) -> Bool {
+    if lhs.key != rhs.key {return false}
+    if lhs.value != rhs.value {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
