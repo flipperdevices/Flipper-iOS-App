@@ -1,5 +1,6 @@
 import Inject
 import Peripheral
+import DCompression
 import Foundation
 import Logging
 
@@ -22,6 +23,7 @@ public class Update {
         case urlSessionError(Swift.Error)
         case emptyResponse
         case inProgress
+        case invalidFirmware
     }
 
     public init() {
@@ -49,8 +51,30 @@ public class Update {
         return .init(try await makeRequest(firmwareURL, progress: progress))
     }
 
-    public func uploadFirmware(_ bytes: [UInt8]) async throws -> String {
-        return "/ext/update/VERSION/update.fuf"
+    public func uploadFirmware(
+        _ bytes: [UInt8],
+        progress: @escaping (Double) -> Void
+    ) async throws -> String {
+        let entries = try await TAR.decode(from: bytes, compression: .gzip)
+        // directory + at least one file
+        guard entries.count > 1, entries[0].typeflag == .directory else {
+            throw Error.invalidFirmware
+        }
+        let basePath = "/ext/update"
+        let directory = entries[0].name
+        try? await rpc.createDirectory(at: "\(basePath)")
+        try? await rpc.createDirectory(at: "\(basePath)/\(directory)")
+
+        let files = entries.filter { $0.typeflag == .file }
+        for (index, file) in files.enumerated() {
+            print(file.name)
+            try await rpc.writeFile(
+                at: "\(basePath)/\(file.name)",
+                bytes: file.data)
+            progress(Double(index + 1) / Double(files.count))
+        }
+
+        return "\(basePath)/\(directory)"
     }
 
     public func installFirmware(_ path: String) async throws {

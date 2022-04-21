@@ -124,7 +124,9 @@ class DeviceUpdateViewModel: ObservableObject {
         updateTaskHandle = Task {
             do {
                 let archive = try await downloadFirmware()
+                try await Task.sleep(seconds: 0.3)
                 let path = try await uploadFirmware(archive)
+                try await Task.sleep(seconds: 0.3)
                 try await startUpdateProcess(path)
             } catch {
                 logger.error("update error: \(error)")
@@ -149,13 +151,20 @@ class DeviceUpdateViewModel: ObservableObject {
     func uploadFirmware(_ bytes: [UInt8]) async throws -> String {
         state = .uploadingFirmware
         progress = 0
-        return try await updater.uploadFirmware(bytes)
+        return try await updater.uploadFirmware(bytes) {
+            let progress = Int($0 * 100)
+            DispatchQueue.main.async {
+                withAnimation(.easeOut) {
+                    self.progress = progress
+                }
+            }
+        }
     }
 
-    func startUpdateProcess(_ fuf: String) async throws {
+    func startUpdateProcess(_ directory: String) async throws {
         state = .updateInProgress
         progress = 0
-        try await updater.installFirmware(fuf)
+        try await updater.installFirmware(directory)
     }
 
     func cancel() {

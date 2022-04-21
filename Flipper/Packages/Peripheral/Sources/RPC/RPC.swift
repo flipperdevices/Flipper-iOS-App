@@ -161,6 +161,10 @@ public extension RPC {
         try await listDirectory(at: path, priority: nil)
     }
 
+    func createDirectory(at path: Path) async throws {
+        try await createFile(at: path, isDirectory: true, priority: nil)
+    }
+
     func createFile(at path: Path, isDirectory: Bool) async throws {
         try await createFile(at: path, isDirectory: isDirectory, priority: nil)
     }

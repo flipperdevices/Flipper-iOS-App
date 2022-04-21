@@ -20,6 +20,7 @@ let package = Package(
             name: "Peripheral",
             path: "../Peripheral"),
         .package(
+            name: "Collections",
             url: "https://github.com/apple/swift-collections.git",
             .upToNextMajor(from: "1.0.0")),
         .package(
@@ -27,8 +28,13 @@ let package = Package(
             url: "https://github.com/apple/swift-protobuf.git",
             from: "1.18.0"),
         .package(
+            name: "Logging",
             url: "https://github.com/apple/swift-log.git",
-            from: "1.4.2")
+            from: "1.4.2"),
+        .package(
+            name: "DCompression",
+            url: "https://github.com/swiftstack/dcompression.git",
+            branch: "dev")
     ],
     targets: [
         .target(
@@ -37,8 +43,9 @@ let package = Package(
                 "Inject",
                 "Peripheral",
                 "SwiftProtobuf",
-                .product(name: "Collections", package: "swift-collections"),
-                .product(name: "Logging", package: "swift-log")
+                "DCompression",
+                "Collections",
+                "Logging"
             ],
             path: "Sources"),
         .testTarget(
