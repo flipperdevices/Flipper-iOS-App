@@ -36,7 +36,9 @@ class DeviceViewModel: ObservableObject {
 
     var canConnect: Bool {
         flipper?.state == .disconnected ||
-        flipper?.state == .disconnecting
+        flipper?.state == .disconnecting ||
+        flipper?.state == .pairingFailed ||
+        flipper?.state == .invalidPairing
     }
 
     var canDisconnect: Bool {
