@@ -28,6 +28,11 @@ public protocol RPC {
         priority: Priority?
     ) async throws
 
+    func update(
+        manifest: String,
+        priority: Priority?
+    ) async throws
+
     // MARK: Storage
 
     func getStorageInfo(
@@ -149,6 +154,10 @@ public extension RPC {
 
     func setDate(_ date: Date) async throws {
         try await setDate(date, priority: nil)
+    }
+
+    func update(manifest: String) async throws {
+        try await update(manifest: manifest, priority: nil)
     }
 
     // MARK: Storage

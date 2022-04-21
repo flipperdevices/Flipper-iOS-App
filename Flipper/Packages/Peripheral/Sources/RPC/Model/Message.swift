@@ -6,6 +6,7 @@ public enum Message {
     public enum RebootMode {
         case os
         case dfu
+        case update
     }
 }
 

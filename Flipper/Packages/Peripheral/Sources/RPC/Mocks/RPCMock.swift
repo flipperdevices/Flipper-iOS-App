@@ -29,6 +29,9 @@ class RPCMock: RPC {
     func setDate(_ date: Date, priority: Priority?) async throws {
     }
 
+    func update(manifest: String, priority: Priority?) async throws {
+    }
+
     func getStorageInfo(
         at path: Path,
         priority: Priority?

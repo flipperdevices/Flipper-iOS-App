@@ -111,6 +111,15 @@ extension BluetoothRPC {
         }
     }
 
+    public func update(manifest: String, priority: Priority?) async throws {
+        let response = try await session?.send(
+            .system(.update(manifest)),
+            priority: priority)
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
     public func getStorageInfo(
         at path: Path,
         priority: Priority?

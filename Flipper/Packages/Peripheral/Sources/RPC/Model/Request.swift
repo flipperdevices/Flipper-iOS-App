@@ -14,6 +14,7 @@ public enum Request {
         case ping([UInt8])
         case getDate
         case setDate(Date)
+        case update(String)
     }
 
     public enum Storage {
@@ -69,6 +70,12 @@ extension Request.System {
             return .with {
                 $0.systemSetDatetimeRequest = .with {
                     $0.datetime = date.dateTime
+                }
+            }
+        case .update(let manifest):
+            return .with {
+                $0.systemUpdateRequest = .with {
+                    $0.updateManifest = manifest
                 }
             }
         }
@@ -189,6 +196,7 @@ extension PBSystem_RebootRequest.RebootMode {
         switch source {
         case .os: self = .os
         case .dfu: self = .dfu
+        case .update: self = .update
         }
     }
 }

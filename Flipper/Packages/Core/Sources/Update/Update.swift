@@ -78,7 +78,8 @@ public class Update {
     }
 
     public func installFirmware(_ path: String) async throws {
-        try await rpc.reboot(to: .os)
+        try await rpc.update(manifest: path + "update.fuf")
+        try await rpc.reboot(to: .update)
     }
 
     // TODO: Move out
