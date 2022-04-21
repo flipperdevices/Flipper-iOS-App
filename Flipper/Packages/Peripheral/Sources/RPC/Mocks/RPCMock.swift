@@ -2,6 +2,8 @@ import Inject
 import Foundation
 
 class RPCMock: RPC {
+    var session: Session?
+
     func deviceInfo(
         priority: Priority?
     ) async throws -> [String: String] {

@@ -9,7 +9,7 @@ public class BluetoothRPC: RPC {
     @Inject private var connector: BluetoothConnector
     private var subscriptions = [AnyCancellable]()
 
-    private var session: Session?
+    public var session: Session?
     private var peripheral: BluetoothPeripheral? {
         didSet { self.updateSession() }
     }

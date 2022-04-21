@@ -4,7 +4,9 @@ public enum Priority {
     case background
 }
 
-protocol Session: AnyObject {
+public protocol Session: AnyObject {
+    var bytesSent: Int { get }
+
     var onMessage: ((Message) -> Void)? { get set }
     var onError: ((Error) -> Void)? { get set }
 

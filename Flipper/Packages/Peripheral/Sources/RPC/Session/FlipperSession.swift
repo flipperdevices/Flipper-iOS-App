@@ -24,6 +24,8 @@ class FlipperSession: Session {
 
     var timeoutTimer: Timer?
 
+    var bytesSent: Int = 0
+
     init(peripheral: BluetoothPeripheral) {
         self.peripheral = peripheral
         subscribeToUpdates()
@@ -99,6 +101,7 @@ class FlipperSession: Session {
             let packetSize = peripheral.maximumWriteValueLength
             let next = chunkedOutput.next(maxSize: packetSize)
             peripheral.send(.init(next))
+            bytesSent += next.count
             setupTimeoutTimer()
         }
     }

@@ -1,6 +1,7 @@
 import Foundation
 
 public protocol RPC {
+    var session: Session? { get }
 
     // MARK: System
 

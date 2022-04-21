@@ -66,15 +66,30 @@ public class Update {
         try? await rpc.createDirectory(at: "\(basePath)/\(directory)")
 
         let files = entries.filter { $0.typeflag == .file }
-        for (index, file) in files.enumerated() {
-            print(file.name)
-            try await rpc.writeFile(
-                at: "\(basePath)/\(file.name)",
-                bytes: file.data)
-            progress(Double(index + 1) / Double(files.count))
+        progressHack(files: files, progress: progress)
+        for file in files {
+            let path = Path("\(basePath)/\(file.name)")
+            try await rpc.writeFile(at: path, bytes: file.data)
         }
 
         return "\(basePath)/\(directory)"
+    }
+
+    func progressHack(
+        files: [TAR.Entry],
+        progress: @escaping (Double) -> Void
+    ) {
+        guard let session = rpc.session else {
+            return
+        }
+        let filesByteCount = files.map { $0.data.count }.reduce(0, +)
+        let totalBytes = session.bytesSent + Int(Double(filesByteCount) * 1.185)
+        Task {
+            while session.bytesSent < totalBytes {
+                try await Task.sleep(nanoseconds: 100 * 1_000_000)
+                progress(Double(session.bytesSent) / Double(totalBytes))
+            }
+        }
     }
 
     public func installFirmware(_ path: String) async throws {
