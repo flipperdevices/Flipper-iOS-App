@@ -19,6 +19,7 @@ struct DeviceView: View {
                             DeviceUpdate(viewModel: .init())
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
+                                .disabled(!viewModel.canUpdate)
                         }
 
                         NavigationLink {
