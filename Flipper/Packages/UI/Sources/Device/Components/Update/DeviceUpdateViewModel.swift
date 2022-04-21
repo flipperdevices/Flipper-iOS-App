@@ -91,8 +91,10 @@ class DeviceUpdateViewModel: ObservableObject {
     }
 
     func updateState() {
+        if state != .updateInProgress {
+            state = .noUpdates
+        }
         updateVersion()
-        state = .noUpdates
         guard
             !availableFirmware.isEmpty,
             let installedFirmware = installedFirmware,
