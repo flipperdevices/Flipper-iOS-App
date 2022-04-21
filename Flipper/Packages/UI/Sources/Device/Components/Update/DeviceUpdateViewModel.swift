@@ -91,6 +91,9 @@ class DeviceUpdateViewModel: ObservableObject {
     }
 
     func updateState() {
+        if flipper == nil {
+            updateTaskHandle = nil
+        }
         if state != .updateInProgress {
             state = .noUpdates
         }
