@@ -9,7 +9,7 @@ class DelimitedResponse {
         }
 
         guard case let .some(content) = main.content else {
-            return .failure(.unexpectedResponse(nil))
+            return .some(.success(.ok))
         }
 
         let response = Response(decoding: content)
