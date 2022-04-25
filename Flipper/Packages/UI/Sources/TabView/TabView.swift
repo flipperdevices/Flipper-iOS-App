@@ -50,7 +50,7 @@ struct TabView: View {
                 .foregroundColor(optionsColor)
             }
             .padding(.top, 6)
-            .padding(.horizontal, 17)
+            .padding(.horizontal, 8)
         }
         .frame(height: tabViewHeight + bottomSafeArea + 9, alignment: .top)
         .background(systemBackground)
