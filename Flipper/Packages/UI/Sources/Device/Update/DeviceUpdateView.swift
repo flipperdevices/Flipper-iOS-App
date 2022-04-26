@@ -7,6 +7,8 @@ struct DeviceUpdateView: View {
         switch viewModel.state {
         case .downloadingFirmware:
             return "Downloading from update server..."
+        case .prepearingForUpdate:
+            return "Preparing for update..."
         case .uploadingFirmware:
             return "Uploading firmware to Flipper..."
         case .canceling:
@@ -64,8 +66,7 @@ struct UpdateProgress: View {
     var color: Color {
         switch viewModel.state {
         case .downloadingFirmware: return .sGreenUpdate
-        case .uploadingFirmware: return .a2
-        default: return .clear
+        case .prepearingForUpdate, .uploadingFirmware, .canceling: return .a2
         }
     }
 
@@ -84,9 +85,15 @@ struct UpdateProgress: View {
 
                 Spacer()
 
-                Text("\(viewModel.progress)%")
-                    .foregroundColor(.white)
-                    .font(.custom("HelvetiPixel", fixedSize: 40))
+                if viewModel.state == .prepearingForUpdate {
+                    Text("...")
+                        .foregroundColor(.white)
+                        .font(.custom("HelvetiPixel", fixedSize: 40))
+                } else {
+                    Text("\(viewModel.progress)%")
+                        .foregroundColor(.white)
+                        .font(.custom("HelvetiPixel", fixedSize: 40))
+                }
 
                 Spacer()
 

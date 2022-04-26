@@ -21,6 +21,7 @@ class DeviceUpdateViewModel: ObservableObject {
 
     enum State {
         case downloadingFirmware
+        case prepearingForUpdate
         case uploadingFirmware
         case canceling
     }
@@ -101,11 +102,14 @@ class DeviceUpdateViewModel: ObservableObject {
     }
 
     func uploadFirmware(_ bytes: [UInt8]) async throws -> String {
-        state = .uploadingFirmware
+        state = .prepearingForUpdate
         progress = 0
         return try await updater.uploadFirmware(bytes) {
             let progress = Int($0 * 100)
             DispatchQueue.main.async {
+                if progress > 0 {
+                    self.state = .uploadingFirmware
+                }
                 withAnimation(.easeOut) {
                     self.progress = progress
                 }
