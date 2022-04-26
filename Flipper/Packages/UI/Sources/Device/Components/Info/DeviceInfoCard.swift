@@ -22,6 +22,7 @@ struct DeviceInfoCard: View {
                             name: "Firmware Version",
                             value: viewModel.firmwareVersion
                         )
+                        .foregroundColor(viewModel.firmwareVersionColor)
                         .padding(.horizontal, 12)
                         Divider()
                         DeviceInfoCardRow(

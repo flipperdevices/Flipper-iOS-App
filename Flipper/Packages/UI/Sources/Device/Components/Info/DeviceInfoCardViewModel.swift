@@ -3,6 +3,7 @@ import Inject
 import Combine
 import Peripheral
 import Foundation
+import SwiftUI
 
 @MainActor
 class DeviceInfoCardViewModel: ObservableObject {
@@ -35,6 +36,15 @@ class DeviceInfoCardViewModel: ObservableObject {
         guard isConnected else { return "" }
         guard let info = device?.information else { return "" }
         return info.shortSoftwareVersion ?? "invalid"
+    }
+
+    var firmwareVersionColor: Color {
+        switch firmwareVersion {
+        case _ where firmwareVersion.starts(with: "Dev"): return .development
+        case _ where firmwareVersion.starts(with: "RC"): return .candidate
+        case _ where firmwareVersion.starts(with: "Release"): return .release
+        default: return .clear
+        }
     }
 
     var firmwareBuild: String {
