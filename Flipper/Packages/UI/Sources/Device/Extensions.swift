@@ -8,7 +8,7 @@ extension Flipper.DeviceInformation {
         let parts = softwareRevision.split(separator: " ")
 
         switch channel {
-        case .release: return String(parts[1])
+        case .release: return "Release \(String(parts[1]))"
         case .canditate: return "RC \(parts[1].dropLast(3))"
         case .development: return "Dev \(parts[0])"
         }
