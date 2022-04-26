@@ -17,7 +17,7 @@ class DeviceInfoCardViewModel: ObservableObject {
 
     var isInfoLoaded: Bool {
         [firmwareVersion, firmwareBuild, internalSpace, externalSpace]
-            .allSatisfy { !$0.isEmpty && $0 != "—" }
+            .allSatisfy { !$0.isEmpty }
     }
 
     var _protobufVersion: ProtobufVersion? {
@@ -25,19 +25,19 @@ class DeviceInfoCardViewModel: ObservableObject {
     }
 
     var protobufVersion: String {
-        guard isConnected else { return "—" }
+        guard isConnected else { return "" }
         guard let version = _protobufVersion else { return "" }
         return version == .unknown ? "—" : version.rawValue
     }
 
     var firmwareVersion: String {
-        guard isConnected else { return "—" }
+        guard isConnected else { return "" }
         guard let info = device?.information else { return "" }
         return info.shortSoftwareVersion ?? "invalid"
     }
 
     var firmwareBuild: String {
-        guard isConnected else { return "—" }
+        guard isConnected else { return "" }
         guard let info = device?.information else { return "" }
 
         let build = info
@@ -56,7 +56,7 @@ class DeviceInfoCardViewModel: ObservableObject {
 
     var externalSpace: String {
         guard isConnected else { return "—" }
-        return device?.storage?.external?.description ?? ""
+        return device?.storage?.external?.description ?? "—"
     }
 
     init() {
