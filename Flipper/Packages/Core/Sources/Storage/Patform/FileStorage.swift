@@ -52,7 +52,6 @@ class FileStorage {
             .contentsOfDirectory(atPath: baseURL.path)
 
         for path in contents {
-            print(path)
             let url = baseURL.appendingPathComponent(path)
             try FileManager.default.removeItem(at: url)
         }
