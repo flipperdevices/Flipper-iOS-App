@@ -16,7 +16,7 @@ struct DeviceView: View {
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         } else {
-                            DeviceUpdate(viewModel: .init())
+                            DeviceUpdateCard(viewModel: .init())
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                                 .disabled(!viewModel.canUpdate)
