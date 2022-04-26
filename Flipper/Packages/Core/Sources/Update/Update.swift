@@ -61,21 +61,50 @@ public class Update {
             throw Error.invalidFirmware
         }
         let basePath = "/ext/update"
-        let directory = entries[0].name
+        let updatePath = "\(basePath)/\(entries[0].name)"
         try? await rpc.createDirectory(at: "\(basePath)")
-        try? await rpc.createDirectory(at: "\(basePath)/\(directory)")
+        try? await rpc.createDirectory(at: "\(updatePath)")
 
-        let files = entries.filter { $0.typeflag == .file }
+        var files = entries.filter { $0.typeflag == .file }
+
+        files = await filterExising(files, at: basePath)
         progressHack(files: files, progress: progress)
+
         for file in files {
             let path = Path("\(basePath)/\(file.name)")
             try await rpc.writeFile(at: path, bytes: file.data)
         }
 
-        return "\(basePath)/\(directory)"
+        return updatePath
     }
 
-    func progressHack(
+    public func installFirmware(_ path: String) async throws {
+        try await rpc.update(manifest: path + "update.fuf")
+        try await rpc.reboot(to: .update)
+    }
+
+    // TODO: Refactor
+
+    private func filterExising(
+        _ files: [TAR.Entry],
+        at path: String
+    ) async -> [TAR.Entry] {
+        var result = [TAR.Entry]()
+        for file in files {
+            let path = Path("\(path)/\(file.name)")
+            if let hash = await hash(for: path), hash.value == file.data.md5 {
+                continue
+            }
+            result.append(file)
+        }
+        return result
+    }
+
+    private func hash(for path: Path) async -> Hash? {
+        try? await rpc.calculateFileHash(at: path)
+    }
+
+    private func progressHack(
         files: [TAR.Entry],
         progress: @escaping (Double) -> Void
     ) {
@@ -90,11 +119,6 @@ public class Update {
                 progress(Double(session.bytesSent) / Double(totalBytes))
             }
         }
-    }
-
-    public func installFirmware(_ path: String) async throws {
-        try await rpc.update(manifest: path + "update.fuf")
-        try await rpc.reboot(to: .update)
     }
 
     // TODO: Move out
