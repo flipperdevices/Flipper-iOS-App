@@ -165,7 +165,7 @@ struct ConnectPlaceholderView: View {
             Spacer()
             HStack {
                 Image("PhonePlaceholder")
-                Animation("Loader")
+                Animation("Dots")
                     .frame(width: 32, height: 32)
                     .padding(.horizontal, 8)
                 Image("DevicePlaceholder")
