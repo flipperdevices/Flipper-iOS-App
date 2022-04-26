@@ -11,8 +11,13 @@ class DeviceInfoCardViewModel: ObservableObject {
 
     @Published var device: Flipper?
 
-    var isConnected: Bool {
-        device?.state == .connected
+    var isConnecting: Bool { device?.state == .connecting }
+    var isConnected: Bool { device?.state == .connected }
+    var isDisconnected: Bool { device?.state == .disconnected }
+
+    var isInfoLoaded: Bool {
+        [firmwareVersion, firmwareBuild, internalSpace, externalSpace]
+            .allSatisfy { !$0.isEmpty && $0 != "—" }
     }
 
     var _protobufVersion: ProtobufVersion? {
