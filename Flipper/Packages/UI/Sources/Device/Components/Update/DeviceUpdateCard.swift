@@ -5,6 +5,10 @@ struct DeviceUpdateCard: View {
 
     var description: String {
         switch viewModel.state {
+        case .disconnected:
+            return "Connect to Flipper to see available updates"
+        case .connecting:
+            return "Connecting to Flipper..."
         case .noUpdates:
             return "There are no updates in selected channel"
         case .versionUpdate:
@@ -29,7 +33,25 @@ struct DeviceUpdateCard: View {
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
 
-                if viewModel.state == .updateInProgress {
+                if viewModel.state == .disconnected {
+                    VStack(spacing: 2) {
+                        Image("UpdateNoDevice")
+                        Text(description)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.black30)
+                    }
+                    .padding(.top, 26)
+                    .padding(.bottom, 26)
+                } else if viewModel.state == .connecting {
+                    VStack(spacing: 4) {
+                        Spinner()
+                        Text(description)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.black30)
+                    }
+                    .padding(.top, 36)
+                    .padding(.bottom, 36)
+                } else if viewModel.state == .updateInProgress {
                     UpdateStartedImage()
                         .padding(.top, 12)
                         .padding(.horizontal, 12)
@@ -93,8 +115,7 @@ struct DeviceUpdateCard: View {
                             .multilineTextAlignment(.center)
                             .foregroundColor(.black16)
                     }
-                    .frame(height: 48)
-                    .padding(.top, 8)
+                    .padding(.top, 5)
                     .padding(.bottom, 8)
                     .padding(.horizontal, 12)
                 }

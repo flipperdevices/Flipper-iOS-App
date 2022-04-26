@@ -21,6 +21,8 @@ class DeviceUpdateCardModel: ObservableObject {
     let updater = Update()
 
     enum State {
+        case disconnected
+        case connecting
         case noUpdates
         case versionUpdate
         case channelUpdate
@@ -41,7 +43,7 @@ class DeviceUpdateCardModel: ObservableObject {
         case .release: return .release
         }
     }
-    @Published var state: State = .noUpdates
+    @Published var state: State = .disconnected
 
     var installedChannel: Update.Channel? {
         flipper?.information?.firmwareChannel
@@ -86,8 +88,15 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func updateState() {
-        if flipper?.state == .connected {
-            state = .noUpdates
+        guard flipper?.state != .disconnected else {
+            if state != .updateInProgress {
+                state = .disconnected
+            }
+            return
+        }
+        guard flipper?.state == .connected else {
+            state = .connecting
+            return
         }
         updateVersion()
         guard
@@ -109,6 +118,7 @@ class DeviceUpdateCardModel: ObservableObject {
             state = .versionUpdate
             return
         }
+        state = .noUpdates
     }
 
     func update() {
