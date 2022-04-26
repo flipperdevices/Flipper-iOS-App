@@ -54,7 +54,7 @@ struct DeviceInfoCard: View {
                     }
                     .padding(.top, 18)
                     .padding(.bottom, 12)
-                } else if viewModel.isDisconnected {
+                } else if viewModel.isDisconnected || viewModel.isNoDevice {
                     VStack(spacing: 2) {
                         Image("InfoNoDevice")
                         Text("Connect to Flipper to see device info")

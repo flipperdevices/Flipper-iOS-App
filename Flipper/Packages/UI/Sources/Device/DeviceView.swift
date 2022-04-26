@@ -15,7 +15,7 @@ struct DeviceView: View {
                             UnsupportedDevice()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
-                        } else {
+                        } else if viewModel.status != .noDevice {
                             DeviceUpdateCard(viewModel: .init())
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)

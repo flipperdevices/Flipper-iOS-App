@@ -14,6 +14,7 @@ class DeviceInfoCardViewModel: ObservableObject {
     var isConnecting: Bool { device?.state == .connecting }
     var isConnected: Bool { device?.state == .connected }
     var isDisconnected: Bool { device?.state == .disconnected }
+    var isNoDevice: Bool { device == nil }
 
     var isInfoLoaded: Bool {
         [firmwareVersion, firmwareBuild, internalSpace, externalSpace]
