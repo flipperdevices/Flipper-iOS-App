@@ -139,10 +139,6 @@ struct ConnectionView: View {
     func alertsHack() -> some View {
         HStack {
             Spacer()
-                .alert(isPresented: $viewModel.isPairingIssue) {
-                    .pairingIssue
-                }
-            Spacer()
                 .alert(isPresented: $viewModel.isConnectTimeout) {
                     .connectionTimeout {
                         viewModel.stopScan()

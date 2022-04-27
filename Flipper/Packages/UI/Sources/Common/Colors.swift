@@ -12,6 +12,10 @@ extension Color {
         .init(UIColor.secondarySystemGroupedBackground)
     }
 
+    static var secondaryGroupedBackground: Color {
+        .init(UIColor.tertiarySystemGroupedBackground)
+    }
+
     static var shadow: Color {
         .init(UIColor.clear)
     }

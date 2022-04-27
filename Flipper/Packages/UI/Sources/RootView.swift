@@ -25,5 +25,6 @@ public struct RootView: View {
         .onContinueUserActivity("PlayAlertIntent") { _ in
             Task { try? await rpc.playAlert() }
         }
+        .pairingIssueAlert(isPresented: $viewModel.isPairingIssue)
     }
 }

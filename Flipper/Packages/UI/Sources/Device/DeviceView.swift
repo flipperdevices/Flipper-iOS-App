@@ -103,12 +103,6 @@ struct DeviceView: View {
                         .padding(.horizontal, 14)
 
                         Color.clear.alert(
-                            isPresented: $viewModel.showPairingIssueAlert
-                        ) {
-                            .pairingIssue
-                        }
-
-                        Color.clear.alert(
                             isPresented: $viewModel.showUnsupportedVersionAlert
                         ) {
                             .unsupportedDeviceIssue

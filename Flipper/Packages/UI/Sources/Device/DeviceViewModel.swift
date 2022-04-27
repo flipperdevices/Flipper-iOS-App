@@ -11,14 +11,12 @@ class DeviceViewModel: ObservableObject {
     private var disposeBag: DisposeBag = .init()
 
     @Published var showForgetAction = false
-    @Published var showPairingIssueAlert = false
     @Published var showUnsupportedVersionAlert = false
 
     @Published var flipper: Flipper?
     @Published var status: DeviceStatus = .noDevice {
         didSet {
             switch status {
-            case .invalidPairing: showPairingIssueAlert = true
             case .unsupportedDevice: showUnsupportedVersionAlert = true
             default: break
             }

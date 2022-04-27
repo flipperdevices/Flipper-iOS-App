@@ -13,6 +13,7 @@ public class RootViewModel: ObservableObject {
     var disposeBag: DisposeBag = .init()
 
     @Published var isFirstLaunch: Bool
+    @Published var isPairingIssue = false
 
     public init() {
         isFirstLaunch = appState.isFirstLaunch
@@ -22,6 +23,11 @@ public class RootViewModel: ObservableObject {
             .sink { [weak self] in
                 guard let self = self else {
                     return
+                }
+                if $0 == .invalidPairing {
+                    withAnimation(.easeOut.speed(2)) {
+                        self.isPairingIssue = true
+                    }
                 }
                 if $0 == .connected || $0 == .unsupportedDevice {
                     self.appState.isFirstLaunch = false
