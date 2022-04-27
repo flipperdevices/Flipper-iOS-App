@@ -38,7 +38,9 @@ struct DeviceUpdateCard: View {
                         Image("UpdateNoDevice")
                         Text(description)
                             .font(.system(size: 14, weight: .medium))
+                            .multilineTextAlignment(.center)
                             .foregroundColor(.black30)
+                            .padding(.horizontal, 12)
                     }
                     .padding(.top, 26)
                     .padding(.bottom, 26)
