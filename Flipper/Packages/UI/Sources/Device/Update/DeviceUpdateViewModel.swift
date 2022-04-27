@@ -16,6 +16,7 @@ class DeviceUpdateViewModel: ObservableObject {
 
     @Binding var isPresented: Bool
     @Published var deviceStatus: DeviceStatus = .noDevice
+    @Published var showCancelUpdate = false
 
     let updater = Update()
 
@@ -121,6 +122,10 @@ class DeviceUpdateViewModel: ObservableObject {
         try await updater.installFirmware(directory)
         onSuccess()
         isPresented = false
+    }
+
+    func confirmCancel() {
+        showCancelUpdate = true
     }
 
     func cancel() {

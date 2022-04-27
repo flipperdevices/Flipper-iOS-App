@@ -40,7 +40,7 @@ struct DeviceUpdateView: View {
                 .padding(.top, 8)
             Spacer()
             Button {
-                viewModel.cancel()
+                viewModel.confirmCancel()
             } label: {
                 Text("Cancel")
                     .font(.system(size: 16, weight: .medium))
@@ -49,6 +49,15 @@ struct DeviceUpdateView: View {
         }
         .onAppear {
             viewModel.update()
+        }
+        .alert(isPresented: $viewModel.showCancelUpdate) {
+            Alert(
+                title: Text("Cancel Update?"),
+                message: Text("You can restart this update later"),
+                primaryButton: .default(.init("No")),
+                secondaryButton: .default(.init("Yes")) {
+                    viewModel.cancel()
+                })
         }
     }
 }
