@@ -22,14 +22,16 @@ struct DeviceView: View {
                                 .disabled(!viewModel.canUpdate)
                         }
 
-                        NavigationLink {
-                            DeviceInfoView(viewModel: .init())
-                        } label: {
-                            DeviceInfoCard(viewModel: .init())
-                                .padding(.top, 24)
-                                .padding(.horizontal, 14)
+                        if viewModel.status != .unsupportedDevice {
+                            NavigationLink {
+                                DeviceInfoView(viewModel: .init())
+                            } label: {
+                                DeviceInfoCard(viewModel: .init())
+                                    .padding(.top, 24)
+                                    .padding(.horizontal, 14)
+                            }
+                            .disabled(!viewModel.status.isOnline)
                         }
-                        .disabled(!viewModel.status.isOnline)
 
                         VStack(spacing: 24) {
                             if viewModel.status != .noDevice {
