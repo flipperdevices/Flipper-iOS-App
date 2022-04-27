@@ -88,7 +88,11 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func updateState() {
-        guard flipper?.state != .disconnected else {
+        guard
+            flipper?.state != .disconnected,
+            flipper?.state != .pairingFailed,
+            flipper?.state != .invalidPairing
+        else {
             if state != .updateInProgress {
                 state = .disconnected
             }

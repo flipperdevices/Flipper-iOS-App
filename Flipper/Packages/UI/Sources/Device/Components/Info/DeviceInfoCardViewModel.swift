@@ -12,10 +12,20 @@ class DeviceInfoCardViewModel: ObservableObject {
 
     @Published var device: Flipper?
 
-    var isConnecting: Bool { device?.state == .connecting }
-    var isConnected: Bool { device?.state == .connected }
-    var isDisconnected: Bool { device?.state == .disconnected }
-    var isNoDevice: Bool { device == nil }
+    var isConnecting: Bool {
+        device?.state == .connecting
+    }
+    var isConnected: Bool {
+        device?.state == .connected
+    }
+    var isDisconnected: Bool {
+        device?.state == .disconnected ||
+        device?.state == .pairingFailed ||
+        device?.state == .invalidPairing
+    }
+    var isNoDevice: Bool {
+        device == nil
+    }
 
     var isInfoLoaded: Bool {
         [firmwareVersion, firmwareBuild, internalSpace, externalSpace]
