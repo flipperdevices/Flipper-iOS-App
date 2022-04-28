@@ -22,6 +22,7 @@ class DeviceUpdateCardModel: ObservableObject {
     let updater = Update()
 
     enum State {
+        case noInternet
         case disconnected
         case connecting
         case noUpdates
@@ -71,7 +72,11 @@ class DeviceUpdateCardModel: ObservableObject {
 
     func updateAvailableFirmware() {
         Task {
-            self.manifest = try await updater.downloadManifest()
+            do {
+                self.manifest = try await updater.downloadManifest()
+            } catch {
+                state = .noInternet
+            }
         }
     }
 
@@ -100,7 +105,9 @@ class DeviceUpdateCardModel: ObservableObject {
             return
         }
         guard flipper?.state == .connected else {
-            state = .connecting
+            if state != .noInternet {
+                state = .connecting
+            }
             return
         }
         updateVersion()

@@ -147,6 +147,7 @@ public class Update {
         let task = URLSession.shared.dataTask(
             with: URL(string: url).unsafelyUnwrapped
         ) { data, _, error in
+            defer { self.handle = nil }
             if let error = error {
                 completion(.failure(.urlSessionError(error)))
                 return
@@ -156,7 +157,6 @@ public class Update {
                 return
             }
             completion(.success(data))
-            self.handle = nil
         }
         handle = task.progress.observe(\.fractionCompleted) { progress, _ in
             progressCallback(progress.fractionCompleted)

@@ -5,6 +5,8 @@ struct DeviceUpdateCard: View {
 
     var description: String {
         switch viewModel.state {
+        case .noInternet:
+            return "Connect to the internet to see available updates"
         case .disconnected:
             return "Connect to Flipper to see available updates"
         case .connecting:
@@ -33,7 +35,31 @@ struct DeviceUpdateCard: View {
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
 
-                if viewModel.state == .disconnected {
+                if viewModel.state == .noInternet {
+                    VStack(spacing: 2) {
+                        Image("NoInternet")
+                        Text("No internet connection")
+                            .font(.system(size: 14, weight: .medium))
+                        HStack {
+                            Text(description)
+                                .font(.system(size: 14, weight: .medium))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.black30)
+                        }
+                        .frame(height: 31)
+                        .padding(.horizontal, 12)
+                    }
+                    .padding(.vertical, 4)
+
+                    Button {
+                        viewModel.updateAvailableFirmware()
+                    } label: {
+                        Text("Retry")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.a2)
+                    }
+                    .padding(.bottom, 8)
+                } else if viewModel.state == .disconnected {
                     VStack(spacing: 2) {
                         Image("UpdateNoDevice")
                         Text(description)
