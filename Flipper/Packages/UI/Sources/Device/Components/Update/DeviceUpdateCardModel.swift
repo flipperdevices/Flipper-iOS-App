@@ -105,7 +105,7 @@ class DeviceUpdateCardModel: ObservableObject {
             return
         }
         guard flipper?.state == .connected else {
-            if state != .noInternet {
+            if state != .noInternet, state != .updateInProgress {
                 state = .connecting
             }
             return
