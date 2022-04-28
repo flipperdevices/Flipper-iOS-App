@@ -123,6 +123,15 @@ struct DeviceUpdateCard: View {
                 }
             }
         }
+        .alert(isPresented: $viewModel.showConfirmUpdate) {
+            Alert(
+                title: Text("Update Firmware?"),
+                message: Text("New Firmware \(viewModel.availableFirmware) will be installed"),
+                primaryButton: .default(.init("Cancel")),
+                secondaryButton: .default(.init("Update").bold(), action: {
+                    viewModel.update()
+                }))
+        }
         .fullScreenCover(isPresented: $viewModel.showUpdateView) {
             DeviceUpdateView(viewModel: .init(
                 isPresented: $viewModel.showUpdateView,
@@ -157,7 +166,7 @@ struct UpdateButton: View {
 
     var body: some View {
         Button {
-            viewModel.update()
+            viewModel.confirmUpdate()
         } label: {
             HStack {
                 Spacer()

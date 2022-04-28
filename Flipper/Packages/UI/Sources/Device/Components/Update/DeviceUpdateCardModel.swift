@@ -12,6 +12,7 @@ class DeviceUpdateCardModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
+    @Published var showConfirmUpdate = false
     @Published var showUpdateView = false
 
     @Published var flipper: Flipper? {
@@ -123,6 +124,10 @@ class DeviceUpdateCardModel: ObservableObject {
             return
         }
         state = .noUpdates
+    }
+
+    func confirmUpdate() {
+        showConfirmUpdate = true
     }
 
     func update() {
