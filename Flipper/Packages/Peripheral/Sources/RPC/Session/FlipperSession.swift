@@ -167,9 +167,10 @@ extension FlipperSession {
                 withTimeInterval: self.timeout,
                 repeats: false
             ) { [weak self] _ in
-                guard self?.peripheral.state == .connected else { return }
-                guard self?.awaitingResponse.isEmpty == false else { return }
-                self?.onError?(.timeout)
+                guard let self = self else { return }
+                guard self.peripheral.state == .connected else { return }
+                guard self.awaitingResponse.isEmpty == false else { return }
+                self.onError?(.timeout)
             }
         }
     }
