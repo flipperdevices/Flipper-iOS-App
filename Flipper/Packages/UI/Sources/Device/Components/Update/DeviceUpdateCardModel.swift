@@ -31,7 +31,7 @@ class DeviceUpdateCardModel: ObservableObject {
         case updateInProgress
     }
 
-    @AppStorage("update_channel") var channel: Update.Channel = .development {
+    @AppStorage(.updateChannelKey) var channel: Update.Channel = .release {
         didSet { updateState() }
     }
 
