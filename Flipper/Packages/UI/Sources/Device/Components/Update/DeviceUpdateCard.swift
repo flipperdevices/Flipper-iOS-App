@@ -154,9 +154,9 @@ struct DeviceUpdateCard: View {
                 title: Text("Update Firmware?"),
                 message: Text("New Firmware \(viewModel.availableFirmware) will be installed"),
                 primaryButton: .default(.init("Cancel")),
-                secondaryButton: .default(.init("Update").bold(), action: {
+                secondaryButton: .default(.init("Update").bold()) {
                     viewModel.update()
-                }))
+                })
         }
         .fullScreenCover(isPresented: $viewModel.showUpdateView) {
             DeviceUpdateView(viewModel: .init(

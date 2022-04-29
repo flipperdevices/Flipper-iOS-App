@@ -9,13 +9,19 @@ func share(
         applicationActivities: nil)
     activityContoller.completionWithItemsHandler = completion
 
-    UIApplication.shared
+    (UIApplication
+        .shared
+        .connectedScenes
+        .first as? UIWindowScene)?
         .windows
         .first?
         .rootViewController?
         .dismiss(animated: true)
 
-    UIApplication.shared
+    (UIApplication
+        .shared
+        .connectedScenes
+        .first as? UIWindowScene)?
         .windows
         .first?
         .rootViewController?
