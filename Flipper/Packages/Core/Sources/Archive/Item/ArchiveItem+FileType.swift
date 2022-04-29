@@ -59,3 +59,15 @@ extension ArchiveItem.FileType {
 extension ArchiveItem.FileType: CustomStringConvertible {
     public var description: String { location }
 }
+
+extension ArchiveItem.FileType {
+    public var application: String {
+        switch self {
+        case .rfid: return "125 kHz RFID"
+        case .subghz: return "Sub-GHz"
+        case .nfc: return "NFC"
+        case .infrared: return "Infrared"
+        case .ibutton: return "iButton"
+        }
+    }
+}

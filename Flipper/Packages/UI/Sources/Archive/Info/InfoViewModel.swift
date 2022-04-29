@@ -1,4 +1,6 @@
 import Core
+import Inject
+import Peripheral
 import Combine
 import SwiftUI
 
@@ -10,9 +12,12 @@ class InfoViewModel: ObservableObject {
     @Published var isError = false
     var error = ""
 
-    let appState: AppState = .shared
+    @Inject var rpc: RPC
+    @Published var appState: AppState = .shared
     var dismissPublisher = PassthroughSubject<Void, Never>()
     var disposeBag = DisposeBag()
+
+    @Published var isConnected = false
 
     init(item: ArchiveItem?) {
         self.item = item ?? .none
@@ -27,6 +32,13 @@ class InfoViewModel: ObservableObject {
                 self?.toggleFavorite()
             }
             .store(in: &disposeBag)
+
+        appState.$status
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.isConnected = ($0 == .connected || $0 == .synchronized)
+            }
+            .store(in: &disposeBag)
     }
 
     func toggleFavorite() {
@@ -34,6 +46,14 @@ class InfoViewModel: ObservableObject {
         guard !isEditMode else { return }
         Task {
             try await appState.archive.onIsFavoriteToggle(item.path)
+        }
+    }
+
+    func emulate() {
+        Task {
+            try await rpc.startRequest(
+                item.fileType.application,
+                args: item.path.string)
         }
     }
 
