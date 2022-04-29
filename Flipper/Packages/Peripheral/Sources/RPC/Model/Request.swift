@@ -1,5 +1,6 @@
 import SwiftProtobuf
 import struct Foundation.Date
+import struct Foundation.Data
 
 // swiftlint:disable function_body_length
 
@@ -30,7 +31,7 @@ public enum Request {
 
     public enum GUI {
         case screenStream(Bool)
-        case virtualDisplay(Bool)
+        case virtualDisplay(Bool, ScreenFrame?)
         case button(InputKey, InputType)
     }
 }
@@ -161,11 +162,19 @@ extension Request.GUI {
                     $0.guiStopScreenStreamRequest = .init()
                 }
             }
-        case let .virtualDisplay(start):
+        case let .virtualDisplay(start, frame):
             switch start {
             case true:
-                return .with {
-                    $0.guiStartVirtualDisplayRequest = .init()
+                if let frame = frame {
+                    return .with {
+                        $0.guiStartVirtualDisplayRequest = .with {
+                            $0.firstFrame = .init(frame)
+                        }
+                    }
+                } else {
+                    return .with {
+                        $0.guiStartVirtualDisplayRequest = .init()
+                    }
                 }
             case false:
                 return .with {
@@ -222,6 +231,14 @@ extension PBGui_InputType {
         case .short: self = .short
         case .long: self = .long
         case .repeat: self = .repeat
+        }
+    }
+}
+
+extension PBGui_ScreenFrame {
+    init(_ source: ScreenFrame) {
+        self = .with {
+            $0.data = Data(source.bytes)
         }
     }
 }

@@ -104,6 +104,7 @@ public protocol RPC {
     ) async throws
 
     func startVirtualDisplay(
+        with frame: ScreenFrame?,
         priority: Priority?
     ) async throws
 
@@ -221,8 +222,8 @@ public extension RPC {
         try await playAlert(priority: nil)
     }
 
-    func startVirtualDisplay() async throws {
-        try await startVirtualDisplay(priority: nil)
+    func startVirtualDisplay(with frame: ScreenFrame? = nil) async throws {
+        try await startVirtualDisplay(with: frame, priority: nil)
     }
 
     func stopVirtualDisplay() async throws {

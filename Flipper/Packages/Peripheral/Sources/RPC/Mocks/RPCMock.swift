@@ -108,7 +108,10 @@ class RPCMock: RPC {
     func playAlert(priority: Priority?) async throws {
     }
 
-    func startVirtualDisplay(priority: Priority?) async throws {
+    func startVirtualDisplay(
+        with frame: ScreenFrame?,
+        priority: Priority?
+    ) async throws {
     }
 
     func stopVirtualDisplay(priority: Priority?) async throws {

@@ -287,9 +287,11 @@ extension BluetoothRPC {
         }
     }
 
-    public func startVirtualDisplay(priority: Priority?) async throws {
+    public func startVirtualDisplay(
+        with frame: ScreenFrame?, priority: Priority?
+    ) async throws {
         let response = try await session?.send(
-            .gui(.virtualDisplay(true)),
+            .gui(.virtualDisplay(true, frame)),
             priority: priority)
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
@@ -298,7 +300,7 @@ extension BluetoothRPC {
 
     public func stopVirtualDisplay(priority: Priority?) async throws {
         let response = try await session?.send(
-            .gui(.virtualDisplay(false)),
+            .gui(.virtualDisplay(false, nil)),
             priority: priority)
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)

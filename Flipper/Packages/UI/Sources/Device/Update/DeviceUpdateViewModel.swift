@@ -82,12 +82,17 @@ class DeviceUpdateViewModel: ObservableObject {
             do {
                 try await Task.sleep(seconds: 0.3)
                 let archive = try await downloadFirmware(firmware)
+
                 try await Task.sleep(seconds: 0.3)
+                try await updater.showUpdatingFrame()
                 let path = try await uploadFirmware(archive)
+
                 try await Task.sleep(seconds: 0.3)
                 try await startUpdateProcess(path)
             } catch {
                 logger.error("update error: \(error)")
+                try await updater.hideUpdatingFrame()
+                cancel()
             }
             updateTaskHandle = nil
         }

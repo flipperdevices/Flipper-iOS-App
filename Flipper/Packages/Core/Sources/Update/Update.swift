@@ -56,6 +56,14 @@ public class Update {
         return try await data.bytes
     }
 
+    public func showUpdatingFrame() async throws {
+        try await rpc.startVirtualDisplay(with: updatingFrame)
+    }
+
+    public func hideUpdatingFrame() async throws {
+        try await rpc.stopVirtualDisplay()
+    }
+
     public func uploadFirmware(
         _ bytes: [UInt8],
         progress: @escaping (Double) -> Void
