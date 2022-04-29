@@ -48,7 +48,11 @@ struct DeviceUpdateView: View {
             .padding(.bottom, 8)
         }
         .onAppear {
+            UIApplication.shared.isIdleTimerDisabled = true
             viewModel.update()
+        }
+        .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
         }
         .alert(isPresented: $viewModel.showCancelUpdate) {
             Alert(
