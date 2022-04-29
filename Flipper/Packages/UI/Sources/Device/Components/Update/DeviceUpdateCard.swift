@@ -105,14 +105,14 @@ struct DeviceUpdateCard: View {
                         Spacer()
 
                         Menu {
-                            Button("Development") {
-                                viewModel.channel = .development
-                            }
                             Button("Release") {
                                 viewModel.channel = .release
                             }
                             Button("Release-Candidate") {
                                 viewModel.channel = .canditate
+                            }
+                            Button("Development") {
+                                viewModel.channel = .development
                             }
                         } label: {
                             HStack(spacing: 6) {
