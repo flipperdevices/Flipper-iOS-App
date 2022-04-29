@@ -24,6 +24,7 @@ public class Update {
         case emptyResponse
         case inProgress
         case invalidFirmware
+        case invalidFirmwareURL
     }
 
     public init() {
@@ -41,11 +42,11 @@ public class Update {
         let manifest = try await downloadManifest()
         guard let version = manifest.version(for: channel) else {
             logger.error("invalid firmware version")
-            return []
+            throw Error.invalidFirmware
         }
         guard let firmwareURL = version.updateArchive?.url else {
             logger.error("invalid firmware url")
-            return []
+            throw Error.invalidFirmwareURL
         }
         logger.info("downloading firmware \(firmwareURL)")
         return .init(try await makeRequest(firmwareURL, progress: progress))
