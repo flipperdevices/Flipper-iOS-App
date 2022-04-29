@@ -4,8 +4,9 @@ import PackageDescription
 let package = Package(
     name: "Peripheral",
     platforms: [
-        .iOS(.v14),
-        .macOS(.v11)
+        .iOS(.v15),
+        .macOS(.v12),
+        .tvOS(.v15)
     ],
     products: [
         .library(
