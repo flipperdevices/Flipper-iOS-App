@@ -94,7 +94,7 @@ public class AppState {
             status = .disconnected
             return false
         }
-        guard version >= .v0_3 else {
+        guard version >= .v0_6 else {
             logger.error("unsupported firmware version")
             status = .unsupportedDevice
             return false
