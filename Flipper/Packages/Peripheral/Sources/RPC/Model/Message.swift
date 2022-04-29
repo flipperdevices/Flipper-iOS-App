@@ -2,6 +2,7 @@ public enum Message {
     case decodeError
     case screenFrame(ScreenFrame)
     case reboot(RebootMode)
+    case unknown(String)
 
     public enum RebootMode {
         case os
@@ -20,7 +21,7 @@ extension Message {
         case .guiScreenFrame(let response):
             self.init(decoding: response)
         default:
-            fatalError("unhandled response")
+            self = .unknown("\(main)")
         }
     }
 
@@ -52,6 +53,8 @@ extension Message {
                     $0.mode = .init(mode)
                 }
             }
+        case .unknown:
+            fatalError("uncreachable")
         }
     }
 }

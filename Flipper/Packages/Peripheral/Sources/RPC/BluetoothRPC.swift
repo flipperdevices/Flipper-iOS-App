@@ -46,6 +46,8 @@ public class BluetoothRPC: RPC {
             onError(.common(.decode))
         case .screenFrame(let screenFrame):
             onScreenFrame?(screenFrame)
+        case .unknown(let command):
+            logger.error("unexpected message: \(command)")
         case .reboot:
             fatalError("unreachable")
         }
