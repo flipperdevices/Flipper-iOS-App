@@ -39,14 +39,9 @@ public class Update {
     }
 
     public func downloadFirmware(
-        from channel: Update.Channel,
+        _ version: Update.Manifest.Version,
         progress: @escaping (Double) -> Void
     ) async throws -> [UInt8] {
-        let manifest = try await downloadManifest()
-        guard let version = manifest.version(for: channel) else {
-            logger.error("invalid firmware version")
-            throw Error.invalidFirmware
-        }
         guard
             let urlString = version.updateArchive?.url,
             let url = URL(string: urlString)

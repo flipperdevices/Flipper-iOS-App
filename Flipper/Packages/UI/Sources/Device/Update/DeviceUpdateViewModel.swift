@@ -74,10 +74,14 @@ class DeviceUpdateViewModel: ObservableObject {
             logger.error("update in progress")
             return
         }
+        guard let firmware = firmware else {
+            logger.error("invalid firmware")
+            return
+        }
         updateTaskHandle = Task {
             do {
                 try await Task.sleep(seconds: 0.3)
-                let archive = try await downloadFirmware()
+                let archive = try await downloadFirmware(firmware)
                 try await Task.sleep(seconds: 0.3)
                 let path = try await uploadFirmware(archive)
                 try await Task.sleep(seconds: 0.3)
@@ -89,10 +93,12 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
 
-    func downloadFirmware() async throws -> [UInt8] {
+    func downloadFirmware(
+        _ firmware: Update.Manifest.Version
+    ) async throws -> [UInt8] {
         state = .downloadingFirmware
         progress = 0
-        return try await updater.downloadFirmware(from: channel) {
+        return try await updater.downloadFirmware(firmware) {
             let progress = Int($0 * 100)
             DispatchQueue.main.async {
                 withAnimation {
