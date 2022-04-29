@@ -80,6 +80,14 @@ public protocol RPC {
         priority: Priority?
     ) async throws -> Hash
 
+    // MARK: Application
+
+    func startRequest(
+        _ name: String,
+        args: String,
+        priority: Priority?
+    ) async throws
+
     // MARK: GUI
 
     func startStreaming(
@@ -202,6 +210,12 @@ public extension RPC {
 
     func calculateFileHash(at path: Path) async throws -> Hash {
         try await calculateFileHash(at: path, priority: nil)
+    }
+
+    // MARK: Application
+
+    func startRequest(_ name: String, args: String) async throws {
+        try await startRequest(name, args: args, priority: nil)
     }
 
     // MARK: GUI

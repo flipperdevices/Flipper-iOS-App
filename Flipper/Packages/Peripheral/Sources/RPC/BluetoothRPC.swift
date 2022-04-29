@@ -233,6 +233,19 @@ extension BluetoothRPC {
         return .init(bytes)
     }
 
+    public func startRequest(
+        _ name: String,
+        args: String,
+        priority: Priority?
+    ) async throws {
+        let response = try await session?.send(
+            .application(.startRequest(name, args)),
+            priority: priority)
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
     public func startStreaming(priority: Priority?) async throws {
         let response = try await session?.send(
             .gui(.screenStream(true)),

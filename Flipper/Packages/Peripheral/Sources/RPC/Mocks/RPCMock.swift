@@ -90,6 +90,13 @@ class RPCMock: RPC {
         .init("")
     }
 
+    func startRequest(
+        _ name: String,
+        args: String,
+        priority: Priority?
+    ) async throws {
+    }
+
     func startStreaming(priority: Priority?) async throws {
     }
 

@@ -7,6 +7,7 @@ import struct Foundation.Data
 public enum Request {
     case system(System)
     case storage(Storage)
+    case application(Application)
     case gui(GUI)
 
     public enum System {
@@ -29,6 +30,10 @@ public enum Request {
         case hash(Path)
     }
 
+    public enum Application {
+        case startRequest(String, String)
+    }
+
     public enum GUI {
         case screenStream(Bool)
         case virtualDisplay(Bool, ScreenFrame?)
@@ -41,6 +46,7 @@ extension Request {
         switch self {
         case .system(let request): return request.serialize()
         case .storage(let request): return request.serialize()
+        case .application(let request): return request.serialize()
         case .gui(let request): return request.serialize()
         }
     }
@@ -142,6 +148,20 @@ extension Request.Storage {
             return .with {
                 $0.storageMd5SumRequest = .with {
                     $0.path = path.string
+                }
+            }
+        }
+    }
+}
+
+extension Request.Application {
+    func serialize() -> PB_Main {
+        switch self {
+        case let .startRequest(name, args):
+            return .with {
+                $0.appStartRequest = .with {
+                    $0.name = name
+                    $0.args = args
                 }
             }
         }
