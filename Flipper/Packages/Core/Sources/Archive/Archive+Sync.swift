@@ -1,10 +1,10 @@
 import Inject
 
 extension Archive {
-    func synchronize() async {
+    func synchronize(_ progress: (Double) -> Void) async {
         guard !isSyncronizing else { return }
         do {
-            try await archiveSync.run()
+            try await archiveSync.run(progress)
             try await favoritesSync.run()
             try await updateFavoriteItems()
         } catch {

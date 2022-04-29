@@ -5,5 +5,5 @@ class ArchiveSyncMock: ArchiveSyncProtocol {
         Empty().eraseToAnyPublisher()
     }
 
-    func run() {}
+    func run(_ progress: (Double) -> Void) {}
 }

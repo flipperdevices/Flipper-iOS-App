@@ -7,6 +7,7 @@ import SwiftUI
 class MainViewModel: ObservableObject {
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
     @Published var status: DeviceStatus = .noDevice
+    @Published var syncProgress: Int = 0
 
     @Published var importedName = ""
     @Published var importedOpacity = 0.0
@@ -29,6 +30,11 @@ class MainViewModel: ObservableObject {
             .sink { [weak self] item in
                 self?.onItemAdded(item: item)
             }
+            .store(in: &disposeBag)
+
+        appState.$syncProgress
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.syncProgress, on: self)
             .store(in: &disposeBag)
     }
 

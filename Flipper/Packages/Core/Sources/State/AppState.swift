@@ -21,6 +21,7 @@ public class AppState {
     }
     @Published public var archive: Archive = .shared
     @Published public var status: DeviceStatus = .noDevice
+    @Published public var syncProgress: Int = 0
 
     @Published public var importQueue: [ArchiveItem] = []
 
@@ -135,7 +136,9 @@ public class AppState {
         guard status != .synchronizing else { return }
         status = .synchronizing
         await measure("syncing archive") {
-            await archive.synchronize()
+            await archive.synchronize { progress in
+                self.syncProgress = Int(progress * 100)
+            }
         }
         status = .synchronized
         Task {

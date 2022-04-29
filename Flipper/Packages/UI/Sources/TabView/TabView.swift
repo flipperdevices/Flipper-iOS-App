@@ -4,6 +4,7 @@ import Core
 struct TabView: View {
     @Binding var selected: Tab
     let status: DeviceStatus
+    @Binding var progress: Int
 
     enum Tab: String {
         case device
@@ -65,7 +66,8 @@ extension TabView {
         case .connecting: return "Connecting..."
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"
-        case .synchronizing: return "Syncing..."
+        case .synchronizing where progress == 0: return "Syncing..."
+        case .synchronizing: return "Syncing \(progress)%"
         case .synchronized: return "Synced!"
         case .invalidPairing: return "Pairing Failed"
         case .pairingFailed: return "Pairing Failed"

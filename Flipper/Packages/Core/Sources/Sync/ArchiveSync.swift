@@ -13,7 +13,7 @@ class ArchiveSync: ArchiveSyncProtocol {
     private var eventsSubject: SafeSubject<Event> = .init()
     var events: SafePublisher<Event> { eventsSubject.eraseToAnyPublisher() }
 
-    func run() async throws {
+    func run(_ progress: (Double) -> Void) async throws {
         let lastManifest = manifestStorage.manifest ?? .init()
 
         let mobileChanges = try await mobileArchive
@@ -28,7 +28,7 @@ class ArchiveSync: ArchiveSyncProtocol {
             mobileChanges: mobileChanges,
             flipperChanges: flipperChanges)
 
-        for (path, action) in actions {
+        for (index, (path, action)) in actions.enumerated() {
             switch action {
             case .update(.mobile): try await updateOnMobile(path)
             case .delete(.mobile): try await deleteOnMobile(path)
@@ -36,6 +36,7 @@ class ArchiveSync: ArchiveSyncProtocol {
             case .delete(.flipper): try await deleteOnFlipper(path)
             case .conflict: try await keepBoth(path)
             }
+            progress(Double(index + 1) / Double(actions.count))
         }
 
         manifestStorage.manifest = try await mobileArchive.manifest

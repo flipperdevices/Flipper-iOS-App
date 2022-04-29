@@ -1,5 +1,5 @@
 protocol ArchiveSyncProtocol {
     var events: SafePublisher<ArchiveSync.Event> { get }
 
-    func run() async throws
+    func run(_ progress: (Double) -> Void) async throws
 }
