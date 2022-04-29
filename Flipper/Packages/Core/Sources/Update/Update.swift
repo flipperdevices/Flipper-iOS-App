@@ -15,14 +15,12 @@ public class Update {
         case release
     }
 
-    var manifestURL: String {
-        "https://update.flipperzero.one/firmware/directory.json"
+    var manifestURL: URL {
+        .init(string: "https://update.flipperzero.one/firmware/directory.json")
+        .unsafelyUnwrapped
     }
 
     public enum Error: Swift.Error {
-        case urlSessionError(Swift.Error)
-        case emptyResponse
-        case inProgress
         case invalidFirmware
         case invalidFirmwareURL
     }
@@ -30,9 +28,14 @@ public class Update {
     public init() {
     }
 
-    public func downloadManifest() async throws -> Manifest {
-        try await JSONDecoder()
-            .decode(Manifest.self, from: makeRequest(manifestURL))
+    public func downloadManifest(
+        progress: @escaping (Double) -> Void = { _ in }
+    ) async throws -> Manifest {
+        let data = URLSessionData(from: manifestURL) {
+            progress($0.fractionCompleted)
+        }
+        return try await JSONDecoder()
+            .decode(Manifest.self, from: data.result)
     }
 
     public func downloadFirmware(
@@ -44,12 +47,18 @@ public class Update {
             logger.error("invalid firmware version")
             throw Error.invalidFirmware
         }
-        guard let firmwareURL = version.updateArchive?.url else {
+        guard
+            let urlString = version.updateArchive?.url,
+            let url = URL(string: urlString)
+        else {
             logger.error("invalid firmware url")
             throw Error.invalidFirmwareURL
         }
-        logger.info("downloading firmware \(firmwareURL)")
-        return .init(try await makeRequest(firmwareURL, progress: progress))
+        logger.info("downloading firmware \(url)")
+        let data = URLSessionData(from: url) {
+            progress($0.fractionCompleted)
+        }
+        return try await data.bytes
     }
 
     public func uploadFirmware(
@@ -120,48 +129,5 @@ public class Update {
                 progress(Double(session.bytesSent) / Double(totalBytes))
             }
         }
-    }
-
-    // TODO: Move out
-
-    private func makeRequest(
-        _ url: String,
-        progress: @escaping (Double) -> Void = { _ in }
-    ) async throws -> Data {
-        try await withCheckedThrowingContinuation { continuation in
-            makeRequest(url, progress, continuation.resume)
-        }
-    }
-
-    private var handle: NSKeyValueObservation?
-
-    private func makeRequest(
-        _ url: String,
-        _ progressCallback: @escaping (Double) -> Void,
-        _ completion: @escaping (Result<Data, Error>) -> Void
-    ) {
-        guard handle == nil else {
-            logger.error("operation in progress")
-            completion(.failure(.inProgress))
-            return
-        }
-        let task = URLSession.shared.dataTask(
-            with: URL(string: url).unsafelyUnwrapped
-        ) { data, _, error in
-            defer { self.handle = nil }
-            if let error = error {
-                completion(.failure(.urlSessionError(error)))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(.emptyResponse))
-                return
-            }
-            completion(.success(data))
-        }
-        handle = task.progress.observe(\.fractionCompleted) { progress, _ in
-            progressCallback(progress.fractionCompleted)
-        }
-        task.resume()
     }
 }
