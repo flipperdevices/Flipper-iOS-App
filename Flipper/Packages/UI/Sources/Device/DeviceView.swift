@@ -19,7 +19,6 @@ struct DeviceView: View {
                             DeviceUpdateCard(viewModel: .init())
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
-                                .disabled(!viewModel.canUpdate)
                         }
 
                         if viewModel.status != .unsupportedDevice {

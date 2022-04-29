@@ -21,6 +21,10 @@ class DeviceUpdateCardModel: ObservableObject {
 
     let updater = Update()
 
+    var canUpdate: Bool {
+        appState.status == .connected || appState.status == .synchronized
+    }
+
     enum State {
         case noInternet
         case disconnected
@@ -134,6 +138,9 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func confirmUpdate() {
+        guard canUpdate else {
+            return
+        }
         showConfirmUpdate = true
     }
 

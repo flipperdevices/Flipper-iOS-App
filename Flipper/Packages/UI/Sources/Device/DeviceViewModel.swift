@@ -23,10 +23,6 @@ class DeviceViewModel: ObservableObject {
         }
     }
 
-    var canUpdate: Bool {
-        status == .connected || status == .synchronized
-    }
-
     var canSync: Bool {
         status == .connected
     }
