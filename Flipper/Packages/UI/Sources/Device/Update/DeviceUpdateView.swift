@@ -21,7 +21,7 @@ struct DeviceUpdateView: View {
             Text("Updating your Flipper")
                 .font(.system(size: 18, weight: .bold))
                 .padding(.top, 48)
-            Image("FlipperWhite")
+            Image("FlipperUpdating")
                 .resizable()
                 .padding(.horizontal, 14)
                 .scaledToFit()
