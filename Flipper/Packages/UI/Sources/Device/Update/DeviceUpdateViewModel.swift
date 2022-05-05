@@ -91,7 +91,7 @@ class DeviceUpdateViewModel: ObservableObject {
                 try await startUpdateProcess(path)
             } catch {
                 logger.error("update error: \(error)")
-                try await updater.hideUpdatingFrame()
+                try? await updater.hideUpdatingFrame()
                 cancel()
             }
             updateTaskHandle = nil
