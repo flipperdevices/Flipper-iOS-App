@@ -105,10 +105,11 @@ public class AppState {
     var reconnectOnDisconnect = true
 
     func didDisconnect() {
+        logger.info("disconnected")
         guard reconnectOnDisconnect else {
             return
         }
-        logger.debug("timeout: trying to reconnect")
+        logger.debug("reconnecting")
         connect()
     }
 
