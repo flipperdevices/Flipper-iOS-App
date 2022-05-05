@@ -15,24 +15,17 @@ extension FlipperSession {
     }
 
     struct Queue {
-        private var normal: [Command] = []
-        private var background: [Command] = []
+        private var commands: [Command] = []
 
-        private var processing: [Command] = []
+        var count: Int { commands.count }
 
-        var count: Int { normal.count + background.count }
-
-        mutating func append(_ command: Command, priority: Priority?) {
-            switch priority {
-            case .none: normal.append(command)
-            case .background: background.append(command)
-            }
+        mutating func append(_ command: Command) {
+            commands.append(command)
         }
 
         mutating func dequeue() -> Command? {
-            if !normal.isEmpty { return normal.removeFirst() }
-            if !background.isEmpty { return background.removeFirst() }
-            return nil
+            guard !commands.isEmpty else { return nil }
+            return commands.removeFirst()
         }
     }
 }

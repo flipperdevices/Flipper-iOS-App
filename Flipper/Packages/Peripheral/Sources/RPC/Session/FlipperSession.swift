@@ -45,32 +45,22 @@ class FlipperSession: Session {
             .store(in: &subscriptions)
     }
 
-    func send(
-        _ message: Message,
-        priority: Priority?
-    ) async throws {
-        _ = try await send(.message(message), id: 0, priority: priority)
+    func send(_ message: Message) async throws {
+        _ = try await send(.message(message), id: 0)
     }
 
-    func send(
-        _ request: Request,
-        priority: Priority? = nil
-    ) async throws -> Response {
-        try await send(.request(request), id: nextId, priority: priority)
+    func send(_ request: Request) async throws -> Response {
+        try await send(.request(request), id: nextId)
     }
 
-    private func send(
-        _ content: Command.Content,
-        id: Int,
-        priority: Priority? = nil
-    ) async throws -> Response {
+    private func send(_ content: Command.Content, id: Int) async throws -> Response {
         try await withUnsafeThrowingContinuation { continuation in
             let command = Command(
                 id: id,
                 content: content,
                 continuation: continuation)
 
-            queue.append(command, priority: priority)
+            queue.append(command)
 
             if awaitingResponse.isEmpty {
                 sendNextCommand()

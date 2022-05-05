@@ -4,129 +4,80 @@ import Foundation
 class RPCMock: RPC {
     var session: Session?
 
-    func deviceInfo(
-        priority: Priority?
-    ) async throws -> [String: String] {
+    func deviceInfo() async throws -> [String: String] {
         .init()
     }
 
     @discardableResult
-    func ping(
-        _ bytes: [UInt8],
-        priority: Priority?
-    ) async throws -> [UInt8] {
+    func ping(_ bytes: [UInt8]) async throws -> [UInt8] {
         .init()
     }
 
-    func reboot(
-        to mode: Message.RebootMode,
-        priority: Priority?
-    ) async throws {
+    func reboot(to mode: Message.RebootMode) async throws {
     }
 
-    func getDate(priority: Priority?) async throws -> Date {
+    func getDate() async throws -> Date {
         .init()
     }
 
-    func setDate(_ date: Date, priority: Priority?) async throws {
+    func setDate(_ date: Date) async throws {
     }
 
-    func update(manifest: String, priority: Priority?) async throws {
+    func update(manifest: String) async throws {
     }
 
-    func getStorageInfo(
-        at path: Path,
-        priority: Priority?
-    ) async throws -> StorageSpace {
+    func getStorageInfo(at path: Path) async throws -> StorageSpace {
         .init(free: 0, total: 0)
     }
 
-    func listDirectory(
-        at path: Path,
-        priority: Priority?
-    ) async throws -> [Element] {
+    func listDirectory(at path: Path) async throws -> [Element] {
         .init()
     }
 
-    func createFile(
-        at path: Path,
-        isDirectory: Bool,
-        priority: Priority?
-    ) async throws {
+    func createFile(at path: Path, isDirectory: Bool) async throws {
     }
 
-    func deleteFile(
-        at path: Path,
-        force: Bool,
-        priority: Priority?
-    ) async throws {
+    func deleteFile(at path: Path, force: Bool) async throws {
     }
 
-    func readFile(
-        at path: Path,
-        priority: Priority? = nil
-    ) async throws -> [UInt8] {
+    func readFile(at path: Path) async throws -> [UInt8] {
         .init()
     }
 
-    func writeFile(
-        at path: Path,
-        bytes: [UInt8],
-        priority: Priority?
-    ) async throws {
+    func writeFile(at path: Path, bytes: [UInt8]) async throws {
     }
 
-    func moveFile(
-        from: Path,
-        to: Path,
-        priority: Priority?
-    ) async throws {
+    func moveFile(from: Path, to: Path) async throws {
     }
 
-    func calculateFileHash(
-        at path: Path,
-        priority: Priority?
-    ) async throws -> Hash {
+    func calculateFileHash(at path: Path) async throws -> Hash {
         .init("")
     }
 
-    func startRequest(
-        _ name: String,
-        args: String,
-        priority: Priority?
-    ) async throws {
+    func startRequest(_ name: String, args: String) async throws {
     }
 
-    func startStreaming(priority: Priority?) async throws {
+    func startStreaming() async throws {
     }
 
-    func stopStreaming(priority: Priority?) async throws {
+    func stopStreaming() async throws {
     }
 
     func onScreenFrame(_ body: @escaping (ScreenFrame) -> Void) {
     }
 
-    func pressButton(
-        _ button: InputKey,
-        priority: Priority?
-    ) async throws {
+    func pressButton(_ button: InputKey) async throws {
     }
 
-    func playAlert(priority: Priority?) async throws {
+    func playAlert() async throws {
     }
 
-    func startVirtualDisplay(
-        with frame: ScreenFrame?,
-        priority: Priority?
-    ) async throws {
+    func startVirtualDisplay(with frame: ScreenFrame?) async throws {
     }
 
-    func stopVirtualDisplay(priority: Priority?) async throws {
+    func stopVirtualDisplay() async throws {
     }
 
-    func sendScreenFrame(
-        _ frame: ScreenFrame,
-        priority: Priority?
-    ) async throws {
+    func sendScreenFrame(_ frame: ScreenFrame) async throws {
     }
 }

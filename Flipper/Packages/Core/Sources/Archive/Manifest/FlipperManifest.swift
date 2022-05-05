@@ -52,13 +52,11 @@ extension RPC {
     }
 
     private func list(at path: Path) async throws -> [Element] {
-        try await listDirectory(
-            at: path,
-            priority: .background)
+        try await listDirectory(at: path)
     }
 
     private func getFileHash(at path: Path) async throws -> Hash {
-        try await calculateFileHash(at: path, priority: .background)
+        try await calculateFileHash(at: path)
     }
 }
 

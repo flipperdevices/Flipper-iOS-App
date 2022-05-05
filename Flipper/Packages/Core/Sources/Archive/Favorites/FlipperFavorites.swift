@@ -8,7 +8,7 @@ class FlipperFavorites: FlipperFavoritesProtocol {
 
     func read() async throws -> Favorites {
         do {
-            let bytes = try await rpc.readFile(at: path, priority: .background)
+            let bytes = try await rpc.readFile(at: path)
             let content = String(decoding: bytes, as: UTF8.self)
             return try .init(decoding: content)
         } catch let error as Peripheral.Error {
