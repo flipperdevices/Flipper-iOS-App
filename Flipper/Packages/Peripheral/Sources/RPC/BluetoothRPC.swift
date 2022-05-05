@@ -31,6 +31,7 @@ public class BluetoothRPC: RPC {
 
     private func updateSession() {
         guard let peripheral = peripheral, peripheral.state == .connected else {
+            session?.close()
             session = nil
             return
         }

@@ -68,6 +68,12 @@ class FlipperSession: Session {
         }
     }
 
+    func close() {
+        for command in awaitingResponse {
+            command.continuation.resume(throwing: Error.canceled)
+        }
+    }
+
     func sendNextCommand() {
         guard let command = queue.dequeue() else { return }
         switch command.content {

@@ -8,4 +8,6 @@ public protocol Session: AnyObject {
 
     func send(_ message: Message) async throws
     func send(_ request: Request) async throws -> Response
+
+    func close()
 }
