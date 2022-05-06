@@ -154,7 +154,7 @@ public class AppState {
     func synchronizeDateTime() async {
         guard status == .connected else { return }
         status = .synchronizing
-        await measure("setting datetime") {
+        await measure("syncing date") {
             try? await rpc.setDate(.init())
         }
         status = .init(flipper?.state)
@@ -199,6 +199,7 @@ public class AppState {
     // MARK: Debug
 
     func measure(_ label: String, _ task: () async -> Void) async {
+        logger.info("\(label)")
         let start = Date()
         await task()
         let time = (Date().timeIntervalSince(start) * 1000).rounded() / 1000
