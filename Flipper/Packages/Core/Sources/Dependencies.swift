@@ -6,7 +6,7 @@ public func registerDependencies() {
     let container = Container.shared
 
     LoggingSystem.bootstrap(FileLogHandler.factory)
-    container.register(JSONLoggerStorage.init, as: LoggerStorage.self, isSingleton: true)
+    container.register(PlainLoggerStorage.init, as: LoggerStorage.self, isSingleton: true)
 
     Peripheral.registerDependencies()
 
