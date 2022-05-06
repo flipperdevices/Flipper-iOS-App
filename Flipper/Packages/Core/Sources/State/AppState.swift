@@ -155,7 +155,7 @@ public class AppState {
         guard status == .connected else { return }
         status = .synchronizing
         await measure("syncing date") {
-            try? await rpc.setDate(.init())
+            try await rpc.setDate(.init())
         }
         status = .init(flipper?.state)
     }
@@ -198,12 +198,16 @@ public class AppState {
 
     // MARK: Debug
 
-    func measure(_ label: String, _ task: () async -> Void) async {
-        logger.info("\(label)")
-        let start = Date()
-        await task()
-        let time = (Date().timeIntervalSince(start) * 1000).rounded() / 1000
-        logger.info("\(label): \(time)s")
+    func measure(_ label: String, _ task: () async throws -> Void) async {
+        do {
+            logger.info("\(label)")
+            let start = Date()
+            try await task()
+            let time = (Date().timeIntervalSince(start) * 1000).rounded() / 1000
+            logger.info("\(label): \(time)s")
+        } catch {
+            logger.error("\(error)")
+        }
     }
 
     // MARK: App Reset
