@@ -26,6 +26,8 @@ public class AppState {
     @Published public var importQueue: [ArchiveItem] = []
 
     public init() {
+        logger.info("app version: \(Bundle.fullVersion)")
+
         isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
 
         pairedDevice.flipper
