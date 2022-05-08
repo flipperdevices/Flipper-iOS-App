@@ -55,12 +55,17 @@ public class Archive: ObservableObject {
         var items = [ArchiveItem]()
         let favorites = try await mobileFavorites.read()
         for path in try await mobileArchive.manifest.paths {
-            let content = try await mobileArchive.read(path)
-            var item = try ArchiveItem(path: path, content: content)
-            item.status = status(for: item)
-            item.isFavorite = favorites.contains(item.path)
-            item.note = (try? await mobileNotes.get(item.path)) ?? ""
-            items.append(item)
+            do {
+                let content = try await mobileArchive.read(path)
+                var item = try ArchiveItem(path: path, content: content)
+                item.status = status(for: item)
+                item.isFavorite = favorites.contains(item.path)
+                item.note = (try? await mobileNotes.get(item.path)) ?? ""
+                items.append(item)
+            } catch {
+                logger.error("load key: \(path)")
+                continue
+            }
         }
         return items
     }
@@ -68,10 +73,15 @@ public class Archive: ObservableObject {
     func loadDeleted() async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
         for path in try await deletedArchive.manifest.paths {
-            let content = try await deletedArchive.read(path)
-            var item = try ArchiveItem(path: path, content: content)
-            item.status = .deleted
-            items.append(item)
+            do {
+                let content = try await deletedArchive.read(path)
+                var item = try ArchiveItem(path: path, content: content)
+                item.status = .deleted
+                items.append(item)
+            } catch {
+                logger.error("load deleted key: \(path)")
+                continue
+            }
         }
         return items
     }
