@@ -65,7 +65,7 @@ extension ArchiveItem {
 
     init(filename: String, content: String) throws {
         guard let properties = [Property](content: content) else {
-            throw Error.invalidContent(content)
+            throw Error.invalidContent(filename)
         }
         self = try .init(filename: filename, properties: properties)
     }
