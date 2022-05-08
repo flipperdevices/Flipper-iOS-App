@@ -30,7 +30,7 @@ extension RPC {
         }
 
         for path in missing {
-            try await createFile(at: path, isDirectory: true)
+            try await createDirectory(at: path)
         }
     }
 
