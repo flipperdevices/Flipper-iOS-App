@@ -2,13 +2,16 @@ import Inject
 
 extension Archive {
     func synchronize(_ progress: (Double) -> Void) async {
-        guard !isSyncronizing else { return }
+        guard !isLoading else {
+            logger.critical("sync error: archive isn't loaded")
+            return
+        }
         do {
             try await archiveSync.run(progress)
             try await favoritesSync.run()
             try await updateFavoriteItems()
         } catch {
-            logger.critical("syncronization error: \(error)")
+            logger.critical("sync error: \(error)")
         }
     }
 

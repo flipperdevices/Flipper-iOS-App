@@ -20,7 +20,7 @@ public class Archive: ObservableObject {
     @Published public var items: [ArchiveItem] = []
     @Published public var deletedItems: [ArchiveItem] = []
 
-    @Published public var isSyncronizing = false
+    @Published public var isLoading = false
 
     private var disposeBag: DisposeBag = .init()
 
@@ -39,11 +39,15 @@ public class Archive: ObservableObject {
     }
 
     func load() {
-        isSyncronizing = true
+        isLoading = true
         Task {
-            items = try await loadArchive()
-            deletedItems = try await loadDeleted()
-            isSyncronizing = false
+            do {
+                items = try await loadArchive()
+                deletedItems = try await loadDeleted()
+                isLoading = false
+            } catch {
+                logger.critical("loading archive error: \(error)")
+            }
         }
     }
 
