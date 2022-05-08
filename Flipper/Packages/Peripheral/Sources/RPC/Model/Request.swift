@@ -262,3 +262,16 @@ extension PBGui_ScreenFrame {
         }
     }
 }
+
+extension Request {
+    public var debugDescription: String {
+        var string: String
+        switch self {
+        case .system: string = "Peripheral.Request.System."
+        case .storage: string = "Peripheral.Request.Storage."
+        case .application: string = "Peripheral.Request.Application."
+        case .gui: string = "Peripheral.Request.GUI."
+        }
+        return "\(self)".replacingOccurrences(of: string, with: "")
+    }
+}

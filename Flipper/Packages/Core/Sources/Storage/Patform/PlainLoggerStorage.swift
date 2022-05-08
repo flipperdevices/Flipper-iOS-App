@@ -10,12 +10,14 @@ class PlainLoggerStorage: LoggerStorage {
 
     private let formatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "YYYY-MM-dd"
+        formatter.dateFormat = "HH:mm:ss dd-MM-YYYY"
         return formatter
     }()
 
-    private var current: String {
-        formatter.string(from: Date())
+    private var current: String
+
+    init() {
+        current = formatter.string(from: Date())
     }
 
     func list() -> [String] {

@@ -27,6 +27,7 @@ class FlipperSession: Session {
     var bytesSent: Int = 0
 
     init(peripheral: BluetoothPeripheral) {
+        logger.info("session started")
         self.peripheral = peripheral
         subscribeToUpdates()
     }
@@ -46,11 +47,15 @@ class FlipperSession: Session {
     }
 
     func send(_ message: Message) async throws {
+        logger.info(">> \(message)")
         _ = try await send(.message(message), id: 0)
     }
 
     func send(_ request: Request) async throws -> Response {
-        try await send(.request(request), id: nextId)
+        logger.info("> \(request.debugDescription)")
+        let response = try await send(.request(request), id: nextId)
+        logger.info("< \(response.debugDescription)")
+        return response
     }
 
     private func send(_ content: Command.Content, id: Int) async throws -> Response {
@@ -69,9 +74,11 @@ class FlipperSession: Session {
     }
 
     func close() {
+        logger.info("canceling tasks...")
         for command in awaitingResponse {
             command.continuation.resume(throwing: Error.canceled)
         }
+        logger.info("canceling tasks done")
     }
 
     func sendNextCommand() {
@@ -166,6 +173,7 @@ extension FlipperSession {
                 guard let self = self else { return }
                 guard self.peripheral.state == .connected else { return }
                 guard self.awaitingResponse.isEmpty == false else { return }
+                self.logger.info("time is out")
                 self.onError?(.timeout)
             }
         }

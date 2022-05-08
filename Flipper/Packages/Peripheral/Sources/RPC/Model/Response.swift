@@ -139,3 +139,16 @@ fileprivate extension Response.Storage {
         }
     }
 }
+
+extension Response {
+    public var debugDescription: String {
+        var string: String
+        switch self {
+        case .ok: string = "Peripheral.Response."
+        case .error: string = "Peripheral.Response."
+        case .system: string = "Peripheral.Response.System."
+        case .storage: string = "Peripheral.Response.Storage."
+        }
+        return "\(self)".replacingOccurrences(of: string, with: "")
+    }
+}
