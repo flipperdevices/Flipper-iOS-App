@@ -35,11 +35,15 @@ extension Array where Element == ArchiveItem.Property {
             let description = comments
             comments.removeAll()
 
+            guard line.contains(":") else { return nil }
+
             let keyValue = line.split(separator: ":", maxSplits: 1)
-            guard keyValue.count == 2 else { return nil }
+            let key = keyValue[0]
+            let value = keyValue.count == 2 ? keyValue[1] : ""
+
             properties.append(.init(
-                key: String(keyValue[0].trimmingCharacters(in: .whitespaces)),
-                value: String(keyValue[1].trimmingCharacters(in: .whitespaces)),
+                key: String(key.trimmingCharacters(in: .whitespaces)),
+                value: String(value.trimmingCharacters(in: .whitespaces)),
                 description: description))
         }
 
