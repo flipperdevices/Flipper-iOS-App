@@ -263,15 +263,75 @@ extension PBGui_ScreenFrame {
     }
 }
 
-extension Request {
-    public var debugDescription: String {
-        var string: String
+extension Request: CustomStringConvertible {
+    public var description: String {
         switch self {
-        case .system: string = "Peripheral.Request.System."
-        case .storage: string = "Peripheral.Request.Storage."
-        case .application: string = "Peripheral.Request.Application."
-        case .gui: string = "Peripheral.Request.GUI."
+        case let .system(system): return "system(\(system))"
+        case let .storage(storage): return "storage(\(storage))"
+        case let .application(application): return "application(\(application))"
+        case let .gui(gui): return "gui(\(gui))"
         }
-        return "\(self)".replacingOccurrences(of: string, with: "")
+    }
+}
+
+extension Request.System: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .info: return "info"
+        case .alert: return "alert"
+        case .ping(let bytes): return "ping(\(bytes.count) bytes)"
+        case .getDate: return "info"
+        case .setDate(let date): return "setDate(\(date))"
+        case .update(let manifest): return "update(\(manifest))"
+        }
+    }
+}
+
+extension Request.Storage: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case let .info(path):
+            return "info(\(path))"
+        case let .list(path):
+            return "list(\(path))"
+        case let .read(path):
+            return "read(\(path))"
+        case let .write(path, bytes):
+            return "write(\(path), \(bytes.count) bytes)"
+        case let .create(path, isDirectory):
+            return "create(\(path), \(isDirectory))"
+        case let .delete(path, isForce):
+            return "delete(\(path), \(isForce))"
+        case let .move(from, to):
+            return "move(\(from), \(to))"
+        case let .hash(path):
+            return "hash(\(path))"
+        }
+    }
+}
+
+extension Request.Application: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case let .startRequest(name, args):
+            return "startRequest(\(name), \(args))"
+        }
+    }
+}
+
+extension Request.GUI: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case let .screenStream(start):
+            return "screenStream(\(start))"
+        case let .virtualDisplay(start, frame):
+            if let frame = frame {
+                return "virtualDisplay(\(start), \(frame.bytes.count) bytes)"
+            } else {
+                return "virtualDisplay(\(start))"
+            }
+        case let .button(key, type):
+            return "button(\(key), \(type))"
+        }
     }
 }

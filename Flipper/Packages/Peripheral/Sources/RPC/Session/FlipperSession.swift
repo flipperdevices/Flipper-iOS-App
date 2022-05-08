@@ -52,9 +52,9 @@ class FlipperSession: Session {
     }
 
     func send(_ request: Request) async throws -> Response {
-        logger.info("> \(request.debugDescription)")
+        logger.info("> \(request)")
         let response = try await send(.request(request), id: nextId)
-        logger.info("< \(response.debugDescription)")
+        logger.info("< \(response)")
         return response
     }
 

@@ -140,15 +140,34 @@ fileprivate extension Response.Storage {
     }
 }
 
-extension Response {
-    public var debugDescription: String {
-        var string: String
+extension Response: CustomStringConvertible {
+    public var description: String {
         switch self {
-        case .ok: string = "Peripheral.Response."
-        case .error: string = "Peripheral.Response."
-        case .system: string = "Peripheral.Response.System."
-        case .storage: string = "Peripheral.Response.Storage."
+        case .ok: return "ok"
+        case .error(let error): return "error(\(error))"
+        case .system(let system): return "system(\(system))"
+        case .storage(let storage): return "storage(\(storage))"
         }
-        return "\(self)".replacingOccurrences(of: string, with: "")
+    }
+}
+
+extension Response.System: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case let .ping(bytes): return "ping(\(bytes.count) bytes)"
+        case let .info(info): return "info(\(info))"
+        case let .dateTime(date): return "dateTime(\(date))"
+        }
+    }
+}
+
+extension Response.Storage: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case let .info(space): return "info(\(space))"
+        case let .list(element): return "list(\(element))"
+        case let .file(bytes): return "file(\(bytes.count) bytes)"
+        case let .hash(hash): return "hash(\(hash))"
+        }
     }
 }
