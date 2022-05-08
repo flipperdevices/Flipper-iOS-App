@@ -15,6 +15,17 @@ struct LogsView: View {
             }
         }
         .navigationTitle("Logs")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    viewModel.deleteAll()
+                } label: {
+                    Text("Delete all")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.primary)
+                }
+            }
+        }
         .navigationBarTitleDisplayMode(.inline)
     }
 }

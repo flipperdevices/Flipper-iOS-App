@@ -13,6 +13,11 @@ class LogsViewModel: ObservableObject {
         logs = loggerStorage.list().sorted()
     }
 
+    func deleteAll() {
+        logs.forEach(loggerStorage.delete)
+        logs = loggerStorage.list().sorted()
+    }
+
     func delete(at indexSet: IndexSet) {
         if let index = indexSet.first {
             loggerStorage.delete(logs[index])
