@@ -3,9 +3,12 @@ import Inject
 import Peripheral
 import Foundation
 import Combine
+import Logging
 
 @MainActor
 class DeviceViewModel: ObservableObject {
+    private let logger = Logger(label: "device-vm")
+
     @Inject var rpc: RPC
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
@@ -85,12 +88,22 @@ class DeviceViewModel: ObservableObject {
     }
 
     func sync() {
-        Task { await appState.synchronize() }
+        Task {
+            do {
+                try await appState.synchronize()
+            } catch {
+                logger.error("device sync: \(error)")
+            }
+        }
     }
 
     func playAlert() {
         Task {
-            try await rpc.playAlert()
+            do {
+                try await rpc.playAlert()
+            } catch {
+                logger.error("device alert: \(error)")
+            }
         }
     }
 }

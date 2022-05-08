@@ -2,11 +2,14 @@ import Core
 import Inject
 import Peripheral
 import Combine
+import Logging
 
 import struct Foundation.Date
 
 @MainActor
 class FileManagerViewModel: ObservableObject {
+    private let logger = Logger(label: "file-manager-vm")
+
     @Inject var rpc: RPC
 
     @Published var content: Content? {
@@ -53,11 +56,13 @@ class FileManagerViewModel: ObservableObject {
         self.mode = mode
     }
 
-    func update() async {
-        switch self.mode {
-        case .list: await listDirectory()
-        case .edit: await readFile()
-        default: break
+    func update() {
+        Task {
+            switch self.mode {
+            case .list: await listDirectory()
+            case .edit: await readFile()
+            default: break
+            }
         }
     }
 
@@ -69,6 +74,7 @@ class FileManagerViewModel: ObservableObject {
             let items = try await rpc.listDirectory(at: path)
             self.content = .list(items)
         } catch {
+            logger.error("list directory: \(error)")
             self.content = .error(String(describing: error))
         }
     }
@@ -86,6 +92,7 @@ class FileManagerViewModel: ObservableObject {
             let bytes = try await rpc.readFile(at: path)
             self.content = .file(.init(decoding: bytes, as: UTF8.self))
         } catch {
+            logger.error("read file: \(error)")
             self.content = .error(String(describing: error))
         }
     }
@@ -98,6 +105,7 @@ class FileManagerViewModel: ObservableObject {
                 try await rpc.writeFile(at: path, string: text)
                 self.content = .file(text)
             } catch {
+                logger.error("save file: \(error)")
                 self.content = .error(String(describing: error))
             }
         }
@@ -131,6 +139,7 @@ class FileManagerViewModel: ObservableObject {
                 try await rpc.createFile(at: path, isDirectory: isDirectory)
                 await listDirectory()
             } catch {
+                logger.error("create file: \(error)")
                 self.content = .error(String(describing: error))
             }
         }
@@ -154,6 +163,7 @@ class FileManagerViewModel: ObservableObject {
             } catch let error as Peripheral.Error where error == .storage(.notEmpty) {
                 self.content = .forceDelete(elementPath)
             } catch {
+                logger.error("delete file: \(error)")
                 self.content = .error(String(describing: error))
             }
         }
@@ -168,6 +178,7 @@ class FileManagerViewModel: ObservableObject {
                 try await rpc.deleteFile(at: path, force: true)
                 await listDirectory()
             } catch {
+                logger.error("force delete: \(error)")
                 self.content = .error(String(describing: error))
             }
         }

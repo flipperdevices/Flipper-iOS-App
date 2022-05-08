@@ -1,10 +1,6 @@
-import Core
-import Inject
 import SwiftUI
-import Peripheral
 
 public struct RootView: View {
-    @Inject var rpc: RPC
     @ObservedObject var viewModel: RootViewModel
 
     public init(viewModel: RootViewModel) {
@@ -20,10 +16,10 @@ public struct RootView: View {
             }
         }
         .onOpenURL { url in
-            Task { await viewModel.onOpenURL(url) }
+            viewModel.onOpenURL(url)
         }
         .onContinueUserActivity("PlayAlertIntent") { _ in
-            Task { try? await rpc.playAlert() }
+            viewModel.playAlert()
         }
         .pairingIssueAlert(isPresented: $viewModel.isPairingIssue)
     }

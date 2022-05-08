@@ -3,9 +3,12 @@ import Inject
 import Peripheral
 import Combine
 import SwiftUI
+import Logging
 
 @MainActor
 class InfoViewModel: ObservableObject {
+    private let logger = Logger(label: "info-vm")
+
     var backup: ArchiveItem
     @Published var item: ArchiveItem
     @Published var isEditMode = false
@@ -45,15 +48,23 @@ class InfoViewModel: ObservableObject {
         guard backup.isFavorite != item.isFavorite else { return }
         guard !isEditMode else { return }
         Task {
-            try await appState.archive.onIsFavoriteToggle(item.path)
+            do {
+                try await appState.archive.onIsFavoriteToggle(item.path)
+            } catch {
+                logger.error("toggling favorite: \(error)")
+            }
         }
     }
 
     func emulate() {
         Task {
-            try await rpc.startRequest(
-                item.fileType.application,
-                args: item.path.string)
+            do {
+                try await rpc.startRequest(
+                    item.fileType.application,
+                    args: item.path.string)
+            } catch {
+                logger.error("emilating key: \(error)")
+            }
         }
     }
 
@@ -69,8 +80,12 @@ class InfoViewModel: ObservableObject {
 
     func delete() {
         Task {
-            try await appState.archive.delete(item.id)
-            await appState.synchronize()
+            do {
+                try await appState.archive.delete(item.id)
+                try await appState.synchronize()
+            } catch {
+                logger.error("deleting item: \(error)")
+            }
         }
         dismiss()
     }
@@ -93,11 +108,12 @@ class InfoViewModel: ObservableObject {
                     isEditMode = false
                 }
                 item.status = .synchronizing
-                await appState.synchronize()
+                try await appState.synchronize()
                 withAnimation {
                     item.status = appState.archive.status(for: item)
                 }
             } catch {
+                logger.error("saving changes: \(error)")
                 item.status = .error
                 showError(error)
             }

@@ -21,14 +21,22 @@ class RemoteContolViewModel: ObservableObject {
     func startStreaming() {
         logger.info("start streaming")
         Task {
-            try await rpc.startStreaming()
+            do {
+                try await rpc.startStreaming()
+            } catch {
+                logger.error("start streaming: \(error)")
+            }
         }
     }
 
     func stopStreaming() {
         logger.info("stop streaming")
         Task {
-            try await rpc.stopStreaming()
+            do {
+                try await rpc.stopStreaming()
+            } catch {
+                logger.error("stop streaming: \(error)")
+            }
         }
     }
 
@@ -40,8 +48,12 @@ class RemoteContolViewModel: ObservableObject {
         logger.info("\(button) button pressed")
         feedback()
         Task {
-            try await rpc.pressButton(button)
-            isBusy = false
+            do {
+                try await rpc.pressButton(button)
+                isBusy = false
+            } catch {
+                logger.error("press button: \(error)")
+            }
         }
     }
 }

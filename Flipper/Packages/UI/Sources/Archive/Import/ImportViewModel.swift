@@ -1,9 +1,12 @@
 import Core
 import Combine
 import SwiftUI
+import Logging
 
 @MainActor
 class ImportViewModel: ObservableObject {
+    private let logger = Logger(label: "import-vm")
+
     var backup: ArchiveItem
     @Published var item: ArchiveItem
     @Published var isEditMode = false
@@ -24,7 +27,11 @@ class ImportViewModel: ObservableObject {
             return
         }
         Task {
-            try await appState.importKey(item)
+            do {
+                try await appState.importKey(item)
+            } catch {
+                logger.error("add key: \(error)")
+            }
         }
         dismiss()
     }

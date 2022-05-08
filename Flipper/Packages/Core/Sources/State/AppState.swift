@@ -64,14 +64,18 @@ public class AppState {
         logger.info("connected")
 
         Task {
-            try await waitForProtobufVersion()
-            guard validateFirmwareVersion() else {
-                disconnect()
-                return
+            do {
+                try await waitForProtobufVersion()
+                guard validateFirmwareVersion() else {
+                    disconnect()
+                    return
+                }
+                try await getStorageInfo()
+                try await synchronizeDateTime()
+                try await synchronize()
+            } catch {
+                logger.error("did connect: \(error)")
             }
-            await getStorageInfo()
-            await synchronizeDateTime()
-            await synchronize()
         }
     }
 
@@ -133,43 +137,45 @@ public class AppState {
 
     // MARK: Synchronization
 
-    public func synchronize() async {
+    public func synchronize() async throws {
         guard flipper?.state == .connected else { return }
         guard status != .unsupportedDevice else { return }
         guard status != .synchronizing else { return }
         status = .synchronizing
-        await measure("syncing archive") {
-            await archive.synchronize { progress in
+        try await measure("syncing archive") {
+            try await archive.synchronize { progress in
                 self.syncProgress = Int(progress * 100)
             }
         }
         status = .synchronized
-        Task {
-            try await Task.sleep(nanoseconds: 3_000 * 1_000_000)
-            guard status == .synchronized else { return }
-            status = .init(flipper?.state)
-        }
+        try await Task.sleep(nanoseconds: 3_000 * 1_000_000)
+        guard status == .synchronized else { return }
+        status = .init(flipper?.state)
     }
 
-    func synchronizeDateTime() async {
-        guard status == .connected else { return }
-        status = .synchronizing
-        await measure("syncing date") {
+    func synchronizeDateTime() async throws {
+        try await measure("syncing date") {
             try await rpc.setDate(.init())
         }
         status = .init(flipper?.state)
     }
 
-    func getStorageInfo() async {
-        status = .synchronizing
-        defer { status = .init(flipper?.state) }
+    func getStorageInfo() async throws {
         var storageInfo = Flipper.StorageInfo()
-        // swiftlint:disable statement_position
-        do { storageInfo.internal = try await rpc.getStorageInfo(at: "/int") }
-        catch { logger.error("error updating internal space") }
-        do { storageInfo.external = try await rpc.getStorageInfo(at: "/ext") }
-        catch { logger.error("error updating external space") }
-        pairedDevice.updateStorageInfo(storageInfo)
+        do {
+            storageInfo.internal = try await rpc.getStorageInfo(at: "/int")
+            pairedDevice.updateStorageInfo(storageInfo)
+        } catch {
+            logger.error("updating internal space")
+            throw error
+        }
+        do {
+            storageInfo.external = try await rpc.getStorageInfo(at: "/ext")
+            pairedDevice.updateStorageInfo(storageInfo)
+        } catch {
+            logger.error("updating external space")
+            throw error
+        }
     }
 
     // MARK: Sharing
@@ -180,7 +186,7 @@ public class AppState {
             importQueue = [item]
             logger.info("key url opened")
         } catch {
-            logger.error("\(error)")
+            logger.error("open url: \(error)")
         }
     }
 
@@ -193,21 +199,20 @@ public class AppState {
         try await archive.importKey(item)
         logger.info("key imported")
         importedSubject.send(item)
-        await synchronize()
+        try await synchronize()
     }
 
     // MARK: Debug
 
-    func measure(_ label: String, _ task: () async throws -> Void) async {
-        do {
-            logger.info("\(label)")
-            let start = Date()
-            try await task()
-            let time = (Date().timeIntervalSince(start) * 1000).rounded() / 1000
-            logger.info("\(label): \(time)s")
-        } catch {
-            logger.error("\(error)")
-        }
+    func measure(
+        _ label: String,
+        _ task: () async throws -> Void
+    ) async rethrows {
+        logger.info("\(label)")
+        let start = Date()
+        try await task()
+        let time = (Date().timeIntervalSince(start) * 1000).rounded() / 1000
+        logger.info("\(label): \(time)s")
     }
 
     // MARK: App Reset

@@ -1,9 +1,12 @@
 import Core
 import Combine
 import Dispatch
+import Logging
 
 @MainActor
 class CategoryDeletedViewModel: ObservableObject {
+    private let logger = Logger(label: "category-deleted-vm")
+
     @Published var items: [ArchiveItem] = []
     var selectedItem: ArchiveItem?
     @Published var showInfoView = false
@@ -26,7 +29,11 @@ class CategoryDeletedViewModel: ObservableObject {
 
     func deleteAll() {
         Task {
-            try await appState.archive.wipeAll()
+            do {
+                try await appState.archive.wipeAll()
+            } catch {
+                logger.error("delete all: \(error)")
+            }
         }
     }
 }

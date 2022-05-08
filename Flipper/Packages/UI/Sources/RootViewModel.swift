@@ -1,13 +1,14 @@
 import Core
-import Combine
 import Inject
-import Logging
+import Peripheral
 import Foundation
 import SwiftUI
+import Logging
 
 public class RootViewModel: ObservableObject {
     private let logger = Logger(label: "root")
 
+    @Inject var rpc: RPC
     let appState: AppState = .shared
 
     var disposeBag: DisposeBag = .init()
@@ -61,7 +62,19 @@ public class RootViewModel: ObservableObject {
         }
     }
 
-    func onOpenURL(_ url: URL) async {
-        await appState.onOpenURL(url)
+    func onOpenURL(_ url: URL) {
+        Task {
+            await appState.onOpenURL(url)
+        }
+    }
+
+    func playAlert() {
+        Task {
+            do {
+                try await rpc.playAlert()
+            } catch {
+                logger.error("play alert intent: \(error)")
+            }
+        }
     }
 }

@@ -127,9 +127,13 @@ public class Update {
         let filesByteCount = files.map { $0.data.count }.reduce(0, +)
         let totalBytes = session.bytesSent + Int(Double(filesByteCount) * 1.185)
         Task {
-            while session.bytesSent < totalBytes {
-                try await Task.sleep(nanoseconds: 100 * 1_000_000)
-                progress(Double(session.bytesSent) / Double(totalBytes))
+            do {
+                while session.bytesSent < totalBytes {
+                    try await Task.sleep(nanoseconds: 100 * 1_000_000)
+                    progress(Double(session.bytesSent) / Double(totalBytes))
+                }
+            } catch {
+                logger.error("progress: \(error)")
             }
         }
     }

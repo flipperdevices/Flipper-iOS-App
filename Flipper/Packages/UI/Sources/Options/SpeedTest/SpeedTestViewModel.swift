@@ -52,7 +52,11 @@ class SpeedTestViewModel: ObservableObject {
         guard !isRunning else { return }
         isRunning = true
         Task {
-            try await runSpeedTest()
+            do {
+                try await runSpeedTest()
+            } catch {
+                logger.error("speed test: \(error)")
+            }
         }
     }
 

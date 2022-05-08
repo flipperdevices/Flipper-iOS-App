@@ -46,7 +46,7 @@ public class Archive: ObservableObject {
                 deletedItems = try await loadDeleted()
                 isLoading = false
             } catch {
-                logger.critical("loading archive error: \(error)")
+                logger.critical("loading archive: \(error)")
             }
         }
     }

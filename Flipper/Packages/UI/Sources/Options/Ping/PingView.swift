@@ -45,9 +45,7 @@ struct PingView: View {
             .padding(.vertical, 30)
 
             Button("Send ping") {
-                Task {
-                    await viewModel.sendPing()
-                }
+                viewModel.sendPing()
             }
         }
         .padding(14)

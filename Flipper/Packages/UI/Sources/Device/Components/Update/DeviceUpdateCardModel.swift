@@ -80,6 +80,7 @@ class DeviceUpdateCardModel: ObservableObject {
                 self.manifest = try await updater.downloadManifest()
             } catch {
                 state = .noInternet
+                logger.error("download manifest: \(error)")
             }
         }
     }

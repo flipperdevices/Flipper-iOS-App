@@ -40,9 +40,7 @@ struct FileManagerView: View {
             }
         }
         .onAppear {
-            Task {
-                await viewModel.update()
-            }
+            viewModel.update()
         }
     }
 

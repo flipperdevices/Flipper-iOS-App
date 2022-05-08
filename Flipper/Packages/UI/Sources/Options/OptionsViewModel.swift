@@ -3,9 +3,12 @@ import Inject
 import Combine
 import Peripheral
 import Foundation
+import Logging
 
 @MainActor
 class OptionsViewModel: ObservableObject {
+    private let logger = Logger(label: "options-vm")
+
     @Inject var rpc: RPC
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
@@ -22,7 +25,11 @@ class OptionsViewModel: ObservableObject {
 
     func rebootFlipper() {
         Task {
-            try await rpc.reboot(to: .os)
+            do {
+                try await rpc.reboot(to: .os)
+            } catch {
+                logger.error("reboot flipper: \(error)")
+            }
         }
     }
 
@@ -32,8 +39,12 @@ class OptionsViewModel: ObservableObject {
 
     func unpairFlipper() {
         Task {
-            try await rpc.deleteFile(at: .init(string: "/int/bt.keys"))
-            try await rpc.reboot(to: .os)
+            do {
+                try await rpc.deleteFile(at: .init(string: "/int/bt.keys"))
+                try await rpc.reboot(to: .os)
+            } catch {
+                logger.error("unpair flipper: \(error)")
+            }
         }
     }
 
