@@ -42,6 +42,7 @@ extension RPC {
 
             let files = try await list(at: path)
                 .files
+                .filter { !$0.hasPrefix(".") }
                 .filter { $0.hasSuffix(type.extension) }
                 .map { path.appending($0) }
 
