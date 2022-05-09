@@ -3,41 +3,39 @@ import SwiftUI
 struct DeviceUpdateView: View {
     @StateObject var viewModel: DeviceUpdateViewModel
 
-    var description: String {
+    var title: String {
         switch viewModel.state {
-        case .downloadingFirmware:
-            return "Downloading from update server..."
-        case .prepearingForUpdate:
-            return "Preparing for update..."
-        case .uploadingFirmware:
-            return "Uploading firmware to Flipper..."
-        case .canceling:
-            return "Canceling..."
+        case .noInternet, .noCard: return "Update Not Started"
+        case .noDevice: return "Update Failed"
+        default: return "Updating your Flipper"
+        }
+    }
+
+    var image: String {
+        switch viewModel.state {
+        case .noInternet, .noDevice: return "FlipperDead"
+        case .noCard: return "FlipperNoCard"
+        default: return "FlipperUpdating"
         }
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            Text("Updating your Flipper")
+            Text(title)
                 .font(.system(size: 18, weight: .bold))
                 .padding(.top, 48)
-            Image("FlipperUpdating")
+            Image(image)
                 .resizable()
                 .padding(.horizontal, 14)
                 .scaledToFit()
                 .padding(.top, 22)
-            Text(viewModel.availableFirmware)
-                .font(.system(size: 18, weight: .medium))
-                .foregroundColor(viewModel.availableFirmwareColor)
-                .padding(.top, 64)
-            UpdateProgress(viewModel: viewModel)
-                .padding(.top, 12)
-                .padding(.horizontal, 24)
-            Text(description)
-                .font(.system(size: 14, weight: .medium))
-                .multilineTextAlignment(.center)
-                .foregroundColor(.black30)
-                .padding(.top, 8)
+
+            switch viewModel.state {
+            case .noInternet: NoInternetView(viewModel: viewModel)
+            case .noDevice: NoDeviceView(viewModel: viewModel)
+            default: UpdateProgressView(viewModel: viewModel)
+            }
+
             Spacer()
             Button {
                 viewModel.confirmCancel()
@@ -65,60 +63,5 @@ struct DeviceUpdateView: View {
                     viewModel.cancel()
                 })
         }
-    }
-}
-
-struct UpdateProgress: View {
-    @StateObject var viewModel: DeviceUpdateViewModel
-
-    var image: String {
-        switch viewModel.state {
-        case .downloadingFirmware: return "DownloadingUpdate"
-        default: return "UploadingUpdate"
-        }
-    }
-
-    var color: Color {
-        switch viewModel.state {
-        case .downloadingFirmware: return .sGreenUpdate
-        case .prepearingForUpdate, .uploadingFirmware, .canceling: return .a2
-        }
-    }
-
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 9)
-                .stroke(color, lineWidth: 3)
-
-            GeometryReader { reader in
-                color.frame(width: reader.size.width / 100 * Double(viewModel.progress))
-            }
-
-            HStack {
-                Image(image)
-                    .padding([.leading, .top, .bottom], 9)
-
-                Spacer()
-
-                if viewModel.state == .prepearingForUpdate {
-                    Text("...")
-                        .foregroundColor(.white)
-                        .font(.custom("HelvetiPixel", fixedSize: 40))
-                } else {
-                    Text("\(viewModel.progress)%")
-                        .foregroundColor(.white)
-                        .font(.custom("HelvetiPixel", fixedSize: 40))
-                }
-
-                Spacer()
-
-                Image(image)
-                    .padding([.leading, .top, .bottom], 9)
-                    .opacity(0)
-            }
-        }
-        .frame(height: 46)
-        .background(color.opacity(0.54))
-        .cornerRadius(9)
     }
 }

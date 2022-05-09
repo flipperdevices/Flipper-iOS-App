@@ -25,6 +25,9 @@ class DeviceUpdateViewModel: ObservableObject {
         case prepearingForUpdate
         case uploadingFirmware
         case canceling
+        case noInternet
+        case noDevice
+        case noCard
     }
 
     let channel: Update.Channel
@@ -80,20 +83,19 @@ class DeviceUpdateViewModel: ObservableObject {
         }
         updateTaskHandle = Task {
             do {
-                try await Task.sleep(seconds: 0.3)
                 let archive = try await downloadFirmware(firmware)
-
-                try await Task.sleep(seconds: 0.3)
                 try await updater.showUpdatingFrame()
                 let path = try await uploadFirmware(archive)
-
-                try await Task.sleep(seconds: 0.3)
                 try await startUpdateProcess(path)
+            } catch where error is URLError {
+                logger.error("no internet")
+                self.state = .noInternet
             } catch {
-                logger.error("update error: \(error)")
-                try? await updater.hideUpdatingFrame()
-                cancel()
+                logger.error("update: \(error)")
+                self.state = .noDevice
             }
+            try? await updater.hideUpdatingFrame()
+            updateTaskHandle?.cancel()
             updateTaskHandle = nil
         }
     }
@@ -106,9 +108,7 @@ class DeviceUpdateViewModel: ObservableObject {
         return try await updater.downloadFirmware(firmware) {
             let progress = Int($0 * 100)
             DispatchQueue.main.async {
-                withAnimation {
-                    self.progress = progress
-                }
+                self.progress = progress
             }
         }
     }
@@ -119,12 +119,10 @@ class DeviceUpdateViewModel: ObservableObject {
         return try await updater.uploadFirmware(bytes) {
             let progress = Int($0 * 100)
             DispatchQueue.main.async {
-                if progress > 0 {
+                if self.state == .prepearingForUpdate, progress > 0 {
                     self.state = .uploadingFirmware
                 }
-                withAnimation(.easeOut) {
-                    self.progress = progress
-                }
+                self.progress = progress
             }
         }
     }
@@ -144,6 +142,12 @@ class DeviceUpdateViewModel: ObservableObject {
         appState.disconnect()
         appState.connect()
         isPresented = false
+    }
+
+    func readMore() {
+        if let url = URL(string: "https://docs.flipperzero.one/") {
+            UIApplication.shared.open(url)
+        }
     }
 }
 
