@@ -6,7 +6,7 @@ struct DeviceUpdateCard: View {
     var description: String {
         switch viewModel.state {
         case .noInternet:
-            return "Connect to the internet to see available updates"
+            return "Can’t connect to update server"
         case .disconnected:
             return "Connect to Flipper to see available updates"
         case .connecting:
@@ -38,7 +38,7 @@ struct DeviceUpdateCard: View {
                 if viewModel.state == .noInternet {
                     VStack(spacing: 2) {
                         Image("NoInternet")
-                        Text("No internet connection")
+                        Text("No Internet connection")
                             .font(.system(size: 14, weight: .medium))
                         HStack {
                             Text(description)
@@ -152,7 +152,9 @@ struct DeviceUpdateCard: View {
         .alert(isPresented: $viewModel.showConfirmUpdate) {
             Alert(
                 title: Text("Update Firmware?"),
-                message: Text("New Firmware \(viewModel.availableFirmware) will be installed"),
+                message: Text(
+                    "New Firmware \(viewModel.availableFirmware) " +
+                    "will be installed"),
                 primaryButton: .default(.init("Cancel")),
                 secondaryButton: .default(.init("Update").bold()) {
                     viewModel.update()

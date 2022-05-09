@@ -56,10 +56,12 @@ struct DeviceUpdateView: View {
         }
         .alert(isPresented: $viewModel.showCancelUpdate) {
             Alert(
-                title: Text("Cancel Update?"),
-                message: Text("You can restart this update later"),
-                primaryButton: .default(.init("No")),
-                secondaryButton: .default(.init("Yes")) {
+                title: Text("Abort Update?"),
+                message: Text(
+                    "Updating will be interrupted. " +
+                    "Flipper will still have the previous firmware version."),
+                primaryButton: .default(.init("Continue")),
+                secondaryButton: .default(.init("Abort")) {
                     viewModel.cancel()
                 })
         }
