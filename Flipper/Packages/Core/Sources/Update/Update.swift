@@ -128,9 +128,14 @@ public class Update {
         let totalBytes = session.bytesSent + Int(Double(filesByteCount) * 1.185)
         Task {
             do {
+                var last: Double = 0
                 while session.bytesSent < totalBytes {
                     try await Task.sleep(nanoseconds: 100 * 1_000_000)
-                    progress(Double(session.bytesSent) / Double(totalBytes))
+                    let current = Double(session.bytesSent) / Double(totalBytes)
+                    if last != current {
+                        last = current
+                        progress(last)
+                    }
                 }
             } catch {
                 logger.error("progress: \(error)")
