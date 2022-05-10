@@ -75,7 +75,9 @@ class FlipperSession: Session {
 
     func close() {
         logger.info("canceling tasks...")
-        for command in awaitingResponse {
+        let commands = awaitingResponse
+        awaitingResponse.removeAll()
+        for command in commands {
             command.continuation.resume(throwing: Error.canceled)
         }
         logger.info("canceling tasks done")
