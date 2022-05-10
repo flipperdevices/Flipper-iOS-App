@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DeviceUpdateCard: View {
     @StateObject var viewModel: DeviceUpdateCardModel
+    @Environment(\.scenePhase) private var scenePhase
 
     var description: String {
         switch viewModel.state {
@@ -167,6 +168,11 @@ struct DeviceUpdateCard: View {
                 firmware: viewModel.availableFirmwareVersion,
                 onSuccess: viewModel.onSuccess
             ))
+        }
+        .onChange(of: scenePhase) { phase in
+            if phase == .active {
+                viewModel.updateAvailableFirmware()
+            }
         }
     }
 }
