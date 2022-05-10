@@ -2,6 +2,7 @@ import Core
 import Inject
 import Peripheral
 import Foundation
+import Network
 import SwiftUI
 import Logging
 
@@ -67,17 +68,37 @@ class DeviceUpdateCardModel: ObservableObject {
             .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)
 
-        updateAvailableFirmware()
+        monitorNetworkStatus()
     }
 
     var manifest: Update.Manifest? {
         didSet { updateState() }
     }
 
+    func monitorNetworkStatus() {
+        let monitor = NWPathMonitor()
+        var lastStatus: NWPath.Status?
+        monitor.pathUpdateHandler = { [weak self] path in
+            guard lastStatus != path.status else { return }
+            self?.onNetworkStatusChanged(path.status)
+            lastStatus = path.status
+        }
+        monitor.start(queue: .main)
+    }
+
+    func onNetworkStatusChanged(_ status: NWPath.Status) {
+        if status == .unsatisfied {
+            self.state = .noInternet
+        } else {
+            self.state = .noUpdates
+            self.updateAvailableFirmware()
+        }
+    }
+
     func updateAvailableFirmware() {
         Task {
             do {
-                self.manifest = try await updater.downloadManifest()
+                manifest = try await updater.downloadManifest()
             } catch {
                 state = .noInternet
                 logger.error("download manifest: \(error)")
