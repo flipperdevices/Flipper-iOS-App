@@ -216,7 +216,7 @@ struct UpdateButton: View {
             .padding(.horizontal, 12)
             .padding(.top, 12)
         }
-        .disabled(viewModel.state == .noUpdates)
+        // .disabled(viewModel.state == .noUpdates)
     }
 }
 
