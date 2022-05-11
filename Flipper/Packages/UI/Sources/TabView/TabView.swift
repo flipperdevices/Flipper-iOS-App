@@ -69,6 +69,7 @@ extension TabView {
         case .synchronizing where progress == 0: return "Syncing..."
         case .synchronizing: return "Syncing \(progress)%"
         case .synchronized: return "Synced!"
+        case .updating: return "Connecting..."
         case .invalidPairing: return "Pairing Failed"
         case .pairingFailed: return "Pairing Failed"
         }
@@ -88,6 +89,7 @@ extension TabView {
         case .disconnected: return .black40
         case .synchronizing: return .a2
         case .synchronized: return .a2
+        case .updating: return .black40
         case .invalidPairing: return .sRed
         case .pairingFailed: return .sRed
         }
@@ -126,6 +128,7 @@ extension TabView {
         case .disconnected: name += "disconnected"
         case .synchronizing: name += "syncing"
         case .synchronized: name += "synced"
+        case .updating: name += "connecting"
         case .invalidPairing: name += "pairing_failed"
         case .pairingFailed: name += "pairing_failed"
         }

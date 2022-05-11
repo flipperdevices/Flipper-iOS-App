@@ -87,6 +87,7 @@ class DeviceUpdateViewModel: ObservableObject {
                 try await updater.showUpdatingFrame()
                 let path = try await uploadFirmware(archive)
                 try await startUpdateProcess(path)
+                appState.onUpdateStarted()
             } catch where error is URLError {
                 logger.error("no internet")
                 self.state = .noInternet

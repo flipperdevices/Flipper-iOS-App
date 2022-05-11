@@ -26,6 +26,9 @@ class DeviceInfoCardViewModel: ObservableObject {
     var isNoDevice: Bool {
         device == nil
     }
+    var isUpdating: Bool {
+        appState.status == .updating
+    }
 
     var isInfoLoaded: Bool {
         [firmwareVersion, firmwareBuild, internalSpace, externalSpace]

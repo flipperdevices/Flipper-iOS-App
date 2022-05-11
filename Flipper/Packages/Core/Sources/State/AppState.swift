@@ -47,8 +47,19 @@ public class AppState {
             return
         }
 
+        // We want to preserve unsupportedDevice state instead of disconnected
         if status == .unsupportedDevice && flipper.state == .disconnected {
             return
+        }
+
+        // We want to preserve updating state instead of disconnected/connecting
+        if status == .updating {
+            if flipper.state == .disconnected {
+                connect()
+                return
+            } else if flipper.state == .connecting {
+                return
+            }
         }
 
         status = .init(flipper.state)
@@ -200,6 +211,13 @@ public class AppState {
         logger.info("key imported")
         importedSubject.send(item)
         try await synchronize()
+    }
+
+    // MARK: Update:
+
+    public func onUpdateStarted() {
+        logger.info("update started")
+        status = .updating
     }
 
     // MARK: Debug

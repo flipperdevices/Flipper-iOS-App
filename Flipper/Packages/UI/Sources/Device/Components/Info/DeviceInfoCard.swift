@@ -55,6 +55,19 @@ struct DeviceInfoCard: View {
                     }
                     .padding(.top, 18)
                     .padding(.bottom, 12)
+                } else if viewModel.isUpdating {
+                    VStack(spacing: 4) {
+                        Spinner()
+                        Text(
+                            "Waiting for Flipper to finish update.\n" +
+                            "Reconnecting..."
+                        )
+                        .multilineTextAlignment(.center)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.black30)
+                    }
+                    .padding(.top, 66)
+                    .padding(.bottom, 62)
                 } else if viewModel.isDisconnected || viewModel.isNoDevice {
                     VStack(spacing: 2) {
                         Image("InfoNoDevice")
