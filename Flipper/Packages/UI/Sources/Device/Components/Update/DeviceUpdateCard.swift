@@ -125,16 +125,17 @@ struct DeviceUpdateCard: View {
                                     .foregroundColor(.black30)
                             }
                         }
+                        .frame(maxHeight: .infinity)
                         .onTapGesture {
                             viewModel.updateAvailableFirmware()
                         }
                     }
+                    .frame(height: 32)
                     .font(.system(size: 14))
                     .padding(.horizontal, 12)
-                    .padding(.top, 18)
+                    .padding(.top, 6)
 
                     Divider()
-                        .padding(.top, 12)
 
                     UpdateButton(viewModel: viewModel)
 
