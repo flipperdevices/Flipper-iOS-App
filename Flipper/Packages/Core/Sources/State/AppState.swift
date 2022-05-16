@@ -21,10 +21,13 @@ public class AppState {
     }
     @Published public var archive: Archive = .shared
     @Published public var status: DeviceStatus = .noDevice
+    @Published public var syncProgress: Int = 0
 
     @Published public var importQueue: [ArchiveItem] = []
 
     public init() {
+        logger.info("app version: \(Bundle.fullVersion)")
+
         isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
 
         pairedDevice.flipper
@@ -44,8 +47,19 @@ public class AppState {
             return
         }
 
+        // We want to preserve unsupportedDevice state instead of disconnected
         if status == .unsupportedDevice && flipper.state == .disconnected {
             return
+        }
+
+        // We want to preserve updating state instead of disconnected/connecting
+        if status == .updating {
+            if flipper.state == .disconnected {
+                connect()
+                return
+            } else if flipper.state == .connecting {
+                return
+            }
         }
 
         status = .init(flipper.state)
@@ -61,14 +75,18 @@ public class AppState {
         logger.info("connected")
 
         Task {
-            try await waitForProtobufVersion()
-            guard validateFirmwareVersion() else {
-                disconnect()
-                return
+            do {
+                try await waitForProtobufVersion()
+                guard validateFirmwareVersion() else {
+                    disconnect()
+                    return
+                }
+                try await getStorageInfo()
+                try await synchronizeDateTime()
+                try await synchronize()
+            } catch {
+                logger.error("did connect: \(error)")
             }
-            await getStorageInfo()
-            await synchronizeDateTime()
-            await synchronize()
         }
     }
 
@@ -93,7 +111,7 @@ public class AppState {
             status = .disconnected
             return false
         }
-        guard version >= .v0_3 else {
+        guard version >= .v0_6 else {
             logger.error("unsupported firmware version")
             status = .unsupportedDevice
             return false
@@ -104,10 +122,11 @@ public class AppState {
     var reconnectOnDisconnect = true
 
     func didDisconnect() {
+        logger.info("disconnected")
         guard reconnectOnDisconnect else {
             return
         }
-        logger.debug("timeout: trying to reconnect")
+        logger.debug("reconnecting")
         connect()
     }
 
@@ -129,42 +148,45 @@ public class AppState {
 
     // MARK: Synchronization
 
-    public func synchronize() async {
+    public func synchronize() async throws {
         guard flipper?.state == .connected else { return }
         guard status != .unsupportedDevice else { return }
         guard status != .synchronizing else { return }
         status = .synchronizing
-        await measure("syncing archive") {
-            await archive.synchronize()
+        try await measure("syncing archive") {
+            try await archive.synchronize { progress in
+                self.syncProgress = Int(progress * 100)
+            }
         }
         status = .synchronized
-        Task {
-            try await Task.sleep(nanoseconds: 3_000 * 1_000_000)
-            guard status == .synchronized else { return }
-            status = .init(flipper?.state)
-        }
+        try await Task.sleep(nanoseconds: 3_000 * 1_000_000)
+        guard status == .synchronized else { return }
+        status = .init(flipper?.state)
     }
 
-    func synchronizeDateTime() async {
-        guard status == .connected else { return }
-        status = .synchronizing
-        await measure("setting datetime") {
-            try? await rpc.setDate(.init())
+    func synchronizeDateTime() async throws {
+        try await measure("syncing date") {
+            try await rpc.setDate(.init())
         }
         status = .init(flipper?.state)
     }
 
-    func getStorageInfo() async {
-        status = .synchronizing
-        defer { status = .init(flipper?.state) }
-        var storage = flipper?.storage ?? .init()
-        if let intSpace = try? await rpc.getStorageInfo(at: "/int") {
-            storage.internal = intSpace
+    func getStorageInfo() async throws {
+        var storageInfo = Flipper.StorageInfo()
+        do {
+            storageInfo.internal = try await rpc.getStorageInfo(at: "/int")
+            pairedDevice.updateStorageInfo(storageInfo)
+        } catch {
+            logger.error("updating internal space")
+            throw error
         }
-        if let extSpace = try? await rpc.getStorageInfo(at: "/ext") {
-            storage.external = extSpace
+        do {
+            storageInfo.external = try await rpc.getStorageInfo(at: "/ext")
+            pairedDevice.updateStorageInfo(storageInfo)
+        } catch {
+            logger.error("updating external space")
+            throw error
         }
-        flipper?.storage = storage
     }
 
     // MARK: Sharing
@@ -175,7 +197,7 @@ public class AppState {
             importQueue = [item]
             logger.info("key url opened")
         } catch {
-            logger.error("\(error)")
+            logger.error("open url: \(error)")
         }
     }
 
@@ -188,14 +210,25 @@ public class AppState {
         try await archive.importKey(item)
         logger.info("key imported")
         importedSubject.send(item)
-        await synchronize()
+        try await synchronize()
+    }
+
+    // MARK: Update:
+
+    public func onUpdateStarted() {
+        logger.info("update started")
+        status = .updating
     }
 
     // MARK: Debug
 
-    func measure(_ label: String, _ task: () async -> Void) async {
+    func measure(
+        _ label: String,
+        _ task: () async throws -> Void
+    ) async rethrows {
+        logger.info("\(label)")
         let start = Date()
-        await task()
+        try await task()
         let time = (Date().timeIntervalSince(start) * 1000).rounded() / 1000
         logger.info("\(label): \(time)s")
     }

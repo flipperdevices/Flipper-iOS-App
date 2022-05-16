@@ -14,7 +14,7 @@ extension ArchiveItem {
 extension ArchiveItem.FileType {
     init<T: StringProtocol>(filename: T) throws {
         guard let `extension` = filename.split(separator: ".").last else {
-            throw ArchiveItem.Error.invalidType
+            throw ArchiveItem.Error.invalidType(String(filename))
         }
         switch `extension` {
         case "sub": self = .subghz
@@ -22,7 +22,7 @@ extension ArchiveItem.FileType {
         case "nfc": self = .nfc
         case "ir": self = .infrared
         case "ibtn": self = .ibutton
-        default: throw ArchiveItem.Error.invalidType
+        default: throw ArchiveItem.Error.invalidType(String(filename))
         }
     }
 
@@ -50,7 +50,7 @@ extension ArchiveItem.FileType {
 extension ArchiveItem.FileType {
     init(_ path: Path) throws {
         guard let filename = path.lastComponent else {
-            throw ArchiveItem.Error.invalidPath
+            throw ArchiveItem.Error.invalidPath(path)
         }
         try self.init(filename: filename)
     }
@@ -58,4 +58,16 @@ extension ArchiveItem.FileType {
 
 extension ArchiveItem.FileType: CustomStringConvertible {
     public var description: String { location }
+}
+
+extension ArchiveItem.FileType {
+    public var application: String {
+        switch self {
+        case .rfid: return "125 kHz RFID"
+        case .subghz: return "Sub-GHz"
+        case .nfc: return "NFC"
+        case .infrared: return "Infrared"
+        case .ibutton: return "iButton"
+        }
+    }
 }

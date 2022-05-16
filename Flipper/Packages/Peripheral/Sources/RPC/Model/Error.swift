@@ -1,9 +1,11 @@
 public enum Error: Equatable, Swift.Error {
     case timeout
+    case canceled
     case common(CommonError)
     case storage(StorageError)
     case application(ApplicationError)
     case virtualDisplay(VirtualDisplayError)
+    case unexpectedRequest
     case unexpectedResponse(Response?)
     case unsupported(Int)
 
@@ -104,6 +106,8 @@ extension Error: CustomStringConvertible {
         switch self {
         case .timeout:
             return "BLE timeout"
+        case .canceled:
+            return "Session closed"
         case .common(let error):
             return "CommonError: \(error)"
         case .storage(let error):
@@ -112,6 +116,8 @@ extension Error: CustomStringConvertible {
             return "ApplicationError: \(error)"
         case .virtualDisplay(let error):
             return "VirtualDisplayError: \(error)"
+        case .unexpectedRequest:
+            return "Unexpected request"
         case .unexpectedResponse(let response):
             return "Unexpected response: \(String(describing: response))"
         case .unsupported(let code):

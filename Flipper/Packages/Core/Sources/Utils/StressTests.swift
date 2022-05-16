@@ -87,7 +87,7 @@ public class StressTest {
         let path = temp
 
         do {
-            try await rpc.writeFile(at: path, bytes: bytes, priority: .background)
+            try await rpc.writeFile(at: path, bytes: bytes)
             log(.debug, "did write \(bytes.count) bytes at \(path)")
         } catch {
             log(.error, "error wiring at \(path): \(error)")
@@ -96,7 +96,7 @@ public class StressTest {
         guard isRunning else { return }
 
         do {
-            let received = try await rpc.readFile(at: path, priority: .background)
+            let received = try await rpc.readFile(at: path)
             log(.debug, "did read \(received.count) bytes from \(path)")
             switch bytes == received {
             case true: log(.success, "buffers are equal")

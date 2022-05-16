@@ -14,13 +14,20 @@ public class UserDefaultsStorage {
         set { storage.set(newValue, forKey: .selectedTabKey) }
     }
 
+    public var updateChannel: String {
+        get { storage.value(forKey: .updateChannelKey) as? String ?? "" }
+        set { storage.set(newValue, forKey: .updateChannelKey) }
+    }
+
     func reset() {
         storage.removeObject(forKey: .isFirstLaunchKey)
         storage.removeObject(forKey: .selectedTabKey)
+        storage.removeObject(forKey: .updateChannelKey)
     }
 }
 
 public extension String {
     static var isFirstLaunchKey: String { "isFirstLaunch" }
     static var selectedTabKey: String { "selectedTab" }
+    static var updateChannelKey: String { "updateChannel" }
 }

@@ -7,6 +7,7 @@ public struct ProtobufVersion {
     public static var v0_2: ProtobufVersion = .init(major: 0, minor: 2)
     public static var v0_3: ProtobufVersion = .init(major: 0, minor: 3)
     public static var v0_4: ProtobufVersion = .init(major: 0, minor: 4)
+    public static var v0_6: ProtobufVersion = .init(major: 0, minor: 6)
 }
 
 extension ProtobufVersion: RawRepresentable {

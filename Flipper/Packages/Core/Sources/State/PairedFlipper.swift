@@ -82,6 +82,13 @@ class PairedFlipper: PairedDevice, ObservableObject {
     }
 }
 
+extension PairedFlipper {
+    public func updateStorageInfo(_ storageInfo: Flipper.StorageInfo) {
+        _flipper.value?.storage = storageInfo
+        storage.flipper = _flipper.value
+    }
+}
+
 fileprivate extension PairedFlipper {
     // TODO: Move to factory, store all discovered services
     func _init(_ bluetoothPeripheral: BluetoothPeripheral) -> Flipper {
@@ -90,6 +97,9 @@ fileprivate extension PairedFlipper {
         var flipper = Flipper(bluetoothPeripheral)
         if let color = _flipper.value?.color {
             flipper.color = color
+        }
+        if let storage = _flipper.value?.storage {
+            flipper.storage = storage
         }
         return flipper
     }

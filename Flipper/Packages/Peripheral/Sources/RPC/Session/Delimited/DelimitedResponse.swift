@@ -1,52 +1,55 @@
-class DelimitedResponse {
-    var partialResponse: Response?
-
-    func feed(_ main: PB_Main) throws -> Result<Response, Error>? {
-        defer { resetIfNeeded(inspecting: main) }
-
-        guard main.commandStatus == .ok else {
-            return .failure(.init(main.commandStatus))
-        }
-
-        guard case let .some(content) = main.content else {
-            return .failure(.unexpectedResponse(nil))
-        }
-
-        let response = Response(decoding: content)
-
-        do {
-            switch (main.hasNext_p, partialResponse) {
-
-            case (false, .none):
-                return .success(response)
-
-            case (true, .none):
-                partialResponse = response
-                return nil
-
-            case (false, .some(let current)):
-                return .success(try current.merging(with: response))
-
-            case (true, .some(let current)):
-                partialResponse = try current.merging(with: response)
-                return nil
-            }
-        } catch {
-            return .failure(.unexpectedResponse(response))
-        }
+extension Response {
+    func appending(contentsOf response: Response) throws -> Response {
+        var result = self
+        try result.append(contentsOf: response)
+        return result
     }
 
-    func resetIfNeeded(inspecting main: PB_Main) {
-        var reset = false
+    mutating func append(contentsOf response: Response) throws {
+        switch (self, response) {
 
-        // all cases in one place not to
-        // forget resetting partialResponse
-        reset = reset || main.hasNext_p == false
-        reset = reset || main.commandStatus != .ok
-        reset = reset || main.content == nil
+        case (.system(var current), .system(let next)):
+            try current.append(contentsOf: next)
+            self = .system(current)
 
-        if reset {
-            partialResponse = nil
+        case (.storage(var current), .storage(let next)):
+            try current.append(contentsOf: next)
+            self = .storage(current)
+
+        default:
+            throw Error.unexpectedResponse(response)
+        }
+    }
+}
+
+fileprivate extension Response.System {
+    mutating func append(contentsOf response: Response.System) throws {
+        switch (self, response) {
+
+        case let (.ping(current), .ping(next)):
+            self = .ping(current + next)
+
+        case let (.info(current), .info(next)):
+            self = .info(current.merging(next, uniquingKeysWith: { $0 + $1 }))
+
+        default:
+            throw Error.unexpectedResponse(.system(response))
+        }
+    }
+}
+
+fileprivate extension Response.Storage {
+    mutating func append(contentsOf response: Response.Storage) throws {
+        switch (self, response) {
+
+        case let (.list(current), .list(next)):
+            self = .list(current + next)
+
+        case let (.file(current), .file(next)):
+            self = .file(current + next)
+
+        default:
+            throw Error.unexpectedResponse(.storage(response))
         }
     }
 }

@@ -30,7 +30,7 @@ extension RPC {
         }
 
         for path in missing {
-            try await createFile(at: path, isDirectory: true)
+            try await createDirectory(at: path)
         }
     }
 
@@ -42,6 +42,7 @@ extension RPC {
 
             let files = try await list(at: path)
                 .files
+                .filter { !$0.hasPrefix(".") }
                 .filter { $0.hasSuffix(type.extension) }
                 .map { path.appending($0) }
 
@@ -52,13 +53,11 @@ extension RPC {
     }
 
     private func list(at path: Path) async throws -> [Element] {
-        try await listDirectory(
-            at: path,
-            priority: .background)
+        try await listDirectory(at: path)
     }
 
     private func getFileHash(at path: Path) async throws -> Hash {
-        try await calculateFileHash(at: path, priority: .background)
+        try await calculateFileHash(at: path)
     }
 }
 

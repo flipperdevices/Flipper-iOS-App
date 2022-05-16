@@ -13,11 +13,11 @@ class ArchiveViewModel: ObservableObject {
     @Published var deleted: [ArchiveItem] = []
 
     var sortedItems: [ArchiveItem] {
-        items.sorted { $0.name < $1.name }
+        items.sorted { $0.date < $1.date }
     }
 
     var favoriteItems: [ArchiveItem] {
-        items.filter { $0.isFavorite }
+        sortedItems.filter { $0.isFavorite }
     }
 
     var selectedItem: ArchiveItem?

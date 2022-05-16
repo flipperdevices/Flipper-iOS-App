@@ -32,19 +32,21 @@ class PingViewModel: ObservableObject {
 
     var sent: Int = 0
 
-    func sendPing() async {
-        do {
-            sent = Int(payloadSize)
-            requestTimestamp = now
-            let sent: [UInt8] = .random(size: sent)
-            let received = try await rpc.ping(sent)
-            responseTimestamp = now
+    func sendPing() {
+        Task {
+            do {
+                sent = Int(payloadSize)
+                requestTimestamp = now
+                let sent: [UInt8] = .random(size: sent)
+                let received = try await rpc.ping(sent)
+                responseTimestamp = now
 
-            if received != sent {
-                logger.error("buffers are not equal")
+                if received != sent {
+                    logger.error("buffers are not equal")
+                }
+            } catch {
+                logger.error("\(error)")
             }
-        } catch {
-            logger.critical("\(error)")
         }
     }
 }

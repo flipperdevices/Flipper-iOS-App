@@ -5,26 +5,18 @@ import Logging
 class FlipperSession: Session {
     private let logger = Logger(label: "session")
 
-    let peripheral: BluetoothPeripheral
+    private let peripheral: BluetoothPeripheral
+    private var subscriptions = [AnyCancellable]()
 
-    let chunkedInput: ChunkedInput = .init()
-    let delimitedResponse: DelimitedResponse = .init()
-
-    let delimitedRequest: DelimitedRequest = .init()
-    var chunkedOutput: ChunkedOutput = .init()
-
-    @CommandId var nextId: Int
     var queue: Queue = .init()
-    var awaitingResponse: [Command] = []
 
     var onMessage: ((Message) -> Void)?
     var onError: ((Error) -> Void)?
 
-    var subscriptions = [AnyCancellable]()
-
     var timeoutTimer: Timer?
 
     init(peripheral: BluetoothPeripheral) {
+        logger.info("session started")
         self.peripheral = peripheral
         subscribeToUpdates()
     }
@@ -43,105 +35,72 @@ class FlipperSession: Session {
             .store(in: &subscriptions)
     }
 
-    func send(
-        _ message: Message,
-        priority: Priority?
-    ) async throws {
-        _ = try await send(.message(message), id: 0, priority: priority)
+    func send(_ message: Message) async throws {
+        logger.debug(">> \(message)")
+        for try await _ in send(.message(message)).output { }
     }
 
-    func send(
-        _ request: Request,
-        priority: Priority? = nil
-    ) async throws -> Response {
-        try await send(.request(request), id: nextId, priority: priority)
-    }
+    func send(_ request: Request) -> AsyncThrowingStreams {
+        return .init { output, input in
+            let streams = send(.request(request))
 
-    private func send(
-        _ content: Command.Content,
-        id: Int,
-        priority: Priority? = nil
-    ) async throws -> Response {
-        try await withUnsafeThrowingContinuation { continuation in
-            let command = Command(
-                id: id,
-                content: content,
-                continuation: continuation)
+            Task {
+                do {
+                    for try await next in streams.output {
+                        logger.info("> \(next)")
+                        output.yield(next)
+                    }
+                    output.finish()
+                } catch {
+                    output.finish(throwing: error)
+                }
+            }
 
-            queue.append(command, priority: priority)
-
-            if awaitingResponse.isEmpty {
-                sendNextCommand()
+            Task {
+                do {
+                    for try await next in streams.input {
+                        logger.info("< response(\(next))")
+                        input.yield(next)
+                    }
+                    input.finish()
+                } catch {
+                    input.finish(throwing: error)
+                }
             }
         }
+    }
+
+    private func send(_ content: Content) -> AsyncThrowingStreams {
+        defer { sendNextCommand() }
+        return queue.feed(content)
     }
 
     func sendNextCommand() {
-        guard let command = queue.dequeue() else { return }
-        switch command.content {
-        case .message(let message):
-            chunkedOutput.feed([message.serialize()])
-            command.continuation.resume(returning: .ok)
-            processChunkedOutput()
-        case .request(let request):
-            awaitingResponse.append(command)
-            var requests = delimitedRequest.split(request)
-            for index in requests.indices {
-                requests[index].commandID = .init(command.id)
-            }
-            chunkedOutput.feed(requests)
-            processChunkedOutput()
-        }
-    }
-
-    func processChunkedOutput() {
-        while chunkedOutput.hasData && peripheral.maximumWriteValueLength > 0 {
-            let packetSize = peripheral.maximumWriteValueLength
-            let next = chunkedOutput.next(maxSize: packetSize)
+        while !queue.isEmpty && peripheral.maximumWriteValueLength > 0 {
+            let size = peripheral.maximumWriteValueLength
+            let next = queue.drain(upTo: size)
             peripheral.send(.init(next))
             setupTimeoutTimer()
         }
+    }
+
+    func close() {
+        logger.info("canceling tasks...")
+        queue.cancel()
+        logger.info("canceling tasks done")
     }
 }
 
 extension FlipperSession {
     func onCanWrite() {
-        processChunkedOutput()
+        sendNextCommand()
     }
 
     func didReceiveData(_ data: Data) {
         do {
             setupTimeoutTimer()
-            // single PB_Main can be split into ble chunks;
-            // returns nil if data.count < main.size
-            guard let nextCommand = try chunkedInput.feed(data) else {
-                return
-            }
-            guard nextCommand.commandID != 0 else {
-                onMessage?(.init(decoding: nextCommand))
-                return
-            }
-            guard let currentCommand = awaitingResponse.first else {
-                logger.critical("unexpected response: \(nextCommand)")
-                return
-            }
-            guard nextCommand.commandID == currentCommand.id else {
-                logger.critical("invalid id: \(nextCommand.commandID)")
-                return
-            }
-            // complete PB_Main can be split into multiple messages
-            guard let result = try delimitedResponse.feed(nextCommand) else {
-                return
-            }
-            // dequeue and send next command
-            let command = awaitingResponse.removeFirst()
-            sendNextCommand()
-            // handle current response
-            switch result {
-            case .success(let response):
-                command.continuation.resume(returning: response)
-            case .failure(let error):
-                command.continuation.resume(throwing: error)
+            if let message = try queue.didReceiveData(data) {
+                onMessage?(message)
             }
         } catch {
             logger.critical("\(error)")
@@ -164,9 +123,11 @@ extension FlipperSession {
                 withTimeInterval: self.timeout,
                 repeats: false
             ) { [weak self] _ in
-                guard self?.peripheral.state == .connected else { return }
-                guard self?.awaitingResponse.isEmpty == false else { return }
-                self?.onError?(.timeout)
+                guard let self = self else { return }
+                guard self.peripheral.state == .connected else { return }
+                guard self.queue.onResponse.isEmpty == false else { return }
+                self.logger.info("time is out")
+                self.onError?(.timeout)
             }
         }
     }

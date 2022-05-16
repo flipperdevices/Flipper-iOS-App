@@ -19,7 +19,8 @@ struct MainView: View {
 
             TabView(
                 selected: $viewModel.selectedTab,
-                status: viewModel.status)
+                status: viewModel.status,
+                progress: $viewModel.syncProgress)
         }
         .edgesIgnoringSafeArea(.bottom)
     }

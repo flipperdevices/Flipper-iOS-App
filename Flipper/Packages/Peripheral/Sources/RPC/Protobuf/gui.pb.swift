@@ -216,6 +216,17 @@ struct PBGui_StopVirtualDisplayRequest {
   init() {}
 }
 
+#if swift(>=5.5) && canImport(_Concurrency)
+extension PBGui_InputKey: @unchecked Sendable {}
+extension PBGui_InputType: @unchecked Sendable {}
+extension PBGui_ScreenFrame: @unchecked Sendable {}
+extension PBGui_StartScreenStreamRequest: @unchecked Sendable {}
+extension PBGui_StopScreenStreamRequest: @unchecked Sendable {}
+extension PBGui_SendInputEventRequest: @unchecked Sendable {}
+extension PBGui_StartVirtualDisplayRequest: @unchecked Sendable {}
+extension PBGui_StopVirtualDisplayRequest: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "PB_Gui"

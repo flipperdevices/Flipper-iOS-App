@@ -3,7 +3,6 @@ import SwiftUI
 
 struct DeviceView: View {
     @StateObject var viewModel: DeviceViewModel
-    @State private var action: String?
 
     var body: some View {
         NavigationView {
@@ -13,31 +12,30 @@ struct DeviceView: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         if viewModel.status == .unsupportedDevice {
-                            UnsupportedDeviceSection()
+                            UnsupportedDevice()
+                                .padding(.top, 24)
+                                .padding(.horizontal, 14)
+                        } else if viewModel.status != .noDevice {
+                            DeviceUpdateCard(viewModel: .init())
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         }
 
-                        NavigationLink {
-                            DeviceInfoView(viewModel: .init())
-                        } label: {
-                            DeviceInfoSection(
-                                protobufVersion: viewModel.protobufVersion,
-                                firmwareVersion: viewModel.firmwareVersion,
-                                firmwareBuild: viewModel.firmwareBuild,
-                                internalSpace: viewModel.internalSpace,
-                                externalSpace: viewModel.externalSpace,
-                                showFullInfo: viewModel.canDisconnect
-                            )
-                            .padding(.top, 24)
-                            .padding(.horizontal, 14)
+                        if viewModel.status != .unsupportedDevice {
+                            NavigationLink {
+                                DeviceInfoView(viewModel: .init())
+                            } label: {
+                                DeviceInfoCard(viewModel: .init())
+                                    .padding(.top, 24)
+                                    .padding(.horizontal, 14)
+                            }
+                            .disabled(!viewModel.status.isOnline)
                         }
-                        .disabled(!viewModel.status.isOnline)
 
                         VStack(spacing: 24) {
                             if viewModel.status != .noDevice {
                                 VStack(spacing: 0) {
-                                    DeviceActionButton(
+                                    ActionButton(
                                         image: "Sync",
                                         title: "Synchronize"
                                     ) {
@@ -47,7 +45,7 @@ struct DeviceView: View {
 
                                     Divider()
 
-                                    DeviceActionButton(
+                                    ActionButton(
                                         image: "Alert",
                                         title: "Play Alert"
                                     ) {
@@ -60,7 +58,7 @@ struct DeviceView: View {
 
                             VStack(spacing: 0) {
                                 if viewModel.status == .noDevice {
-                                    DeviceActionButton(
+                                    ActionButton(
                                         image: "Connect",
                                         title: "Connect Flipper"
                                     ) {
@@ -68,7 +66,7 @@ struct DeviceView: View {
                                     }
                                 } else {
                                     if viewModel.canConnect {
-                                        DeviceActionButton(
+                                        ActionButton(
                                             image: "Connect",
                                             title: "Connect"
                                         ) {
@@ -77,7 +75,7 @@ struct DeviceView: View {
                                     }
 
                                     if viewModel.canDisconnect {
-                                        DeviceActionButton(
+                                        ActionButton(
                                             image: "Disconnect",
                                             title: "Disconnect"
                                         ) {
@@ -88,7 +86,7 @@ struct DeviceView: View {
                                     Divider()
 
                                     if viewModel.canForget {
-                                        DeviceActionButton(
+                                        ActionButton(
                                             image: "Forget",
                                             title: "Forget Flipper"
                                         ) {
@@ -102,12 +100,6 @@ struct DeviceView: View {
                         }
                         .padding(.vertical, 24)
                         .padding(.horizontal, 14)
-
-                        Color.clear.alert(
-                            isPresented: $viewModel.showPairingIssueAlert
-                        ) {
-                            .pairingIssue
-                        }
 
                         Color.clear.alert(
                             isPresented: $viewModel.showUnsupportedVersionAlert

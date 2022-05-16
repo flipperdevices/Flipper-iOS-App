@@ -308,6 +308,46 @@ struct PB_Main {
     set {content = .systemPlayAudiovisualAlertRequest(newValue)}
   }
 
+  var systemProtobufVersionRequest: PBSystem_ProtobufVersionRequest {
+    get {
+      if case .systemProtobufVersionRequest(let v)? = content {return v}
+      return PBSystem_ProtobufVersionRequest()
+    }
+    set {content = .systemProtobufVersionRequest(newValue)}
+  }
+
+  var systemProtobufVersionResponse: PBSystem_ProtobufVersionResponse {
+    get {
+      if case .systemProtobufVersionResponse(let v)? = content {return v}
+      return PBSystem_ProtobufVersionResponse()
+    }
+    set {content = .systemProtobufVersionResponse(newValue)}
+  }
+
+  var systemUpdateRequest: PBSystem_UpdateRequest {
+    get {
+      if case .systemUpdateRequest(let v)? = content {return v}
+      return PBSystem_UpdateRequest()
+    }
+    set {content = .systemUpdateRequest(newValue)}
+  }
+
+  var systemPowerInfoRequest: PBSystem_PowerInfoRequest {
+    get {
+      if case .systemPowerInfoRequest(let v)? = content {return v}
+      return PBSystem_PowerInfoRequest()
+    }
+    set {content = .systemPowerInfoRequest(newValue)}
+  }
+
+  var systemPowerInfoResponse: PBSystem_PowerInfoResponse {
+    get {
+      if case .systemPowerInfoResponse(let v)? = content {return v}
+      return PBSystem_PowerInfoResponse()
+    }
+    set {content = .systemPowerInfoResponse(newValue)}
+  }
+
   var storageInfoRequest: PBStorage_InfoRequest {
     get {
       if case .storageInfoRequest(let v)? = content {return v}
@@ -420,6 +460,22 @@ struct PB_Main {
     set {content = .storageRenameRequest(newValue)}
   }
 
+  var storageBackupCreateRequest: PBStorage_BackupCreateRequest {
+    get {
+      if case .storageBackupCreateRequest(let v)? = content {return v}
+      return PBStorage_BackupCreateRequest()
+    }
+    set {content = .storageBackupCreateRequest(newValue)}
+  }
+
+  var storageBackupRestoreRequest: PBStorage_BackupRestoreRequest {
+    get {
+      if case .storageBackupRestoreRequest(let v)? = content {return v}
+      return PBStorage_BackupRestoreRequest()
+    }
+    set {content = .storageBackupRestoreRequest(newValue)}
+  }
+
   var appStartRequest: PBApp_StartRequest {
     get {
       if case .appStartRequest(let v)? = content {return v}
@@ -507,6 +563,11 @@ struct PB_Main {
     case systemGetDatetimeResponse(PBSystem_GetDateTimeResponse)
     case systemSetDatetimeRequest(PBSystem_SetDateTimeRequest)
     case systemPlayAudiovisualAlertRequest(PBSystem_PlayAudiovisualAlertRequest)
+    case systemProtobufVersionRequest(PBSystem_ProtobufVersionRequest)
+    case systemProtobufVersionResponse(PBSystem_ProtobufVersionResponse)
+    case systemUpdateRequest(PBSystem_UpdateRequest)
+    case systemPowerInfoRequest(PBSystem_PowerInfoRequest)
+    case systemPowerInfoResponse(PBSystem_PowerInfoResponse)
     case storageInfoRequest(PBStorage_InfoRequest)
     case storageInfoResponse(PBStorage_InfoResponse)
     case storageStatRequest(PBStorage_StatRequest)
@@ -521,6 +582,8 @@ struct PB_Main {
     case storageMd5SumRequest(PBStorage_Md5sumRequest)
     case storageMd5SumResponse(PBStorage_Md5sumResponse)
     case storageRenameRequest(PBStorage_RenameRequest)
+    case storageBackupCreateRequest(PBStorage_BackupCreateRequest)
+    case storageBackupRestoreRequest(PBStorage_BackupRestoreRequest)
     case appStartRequest(PBApp_StartRequest)
     case appLockStatusRequest(PBApp_LockStatusRequest)
     case appLockStatusResponse(PBApp_LockStatusResponse)
@@ -585,6 +648,26 @@ struct PB_Main {
         guard case .systemPlayAudiovisualAlertRequest(let l) = lhs, case .systemPlayAudiovisualAlertRequest(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
+      case (.systemProtobufVersionRequest, .systemProtobufVersionRequest): return {
+        guard case .systemProtobufVersionRequest(let l) = lhs, case .systemProtobufVersionRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemProtobufVersionResponse, .systemProtobufVersionResponse): return {
+        guard case .systemProtobufVersionResponse(let l) = lhs, case .systemProtobufVersionResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemUpdateRequest, .systemUpdateRequest): return {
+        guard case .systemUpdateRequest(let l) = lhs, case .systemUpdateRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemPowerInfoRequest, .systemPowerInfoRequest): return {
+        guard case .systemPowerInfoRequest(let l) = lhs, case .systemPowerInfoRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemPowerInfoResponse, .systemPowerInfoResponse): return {
+        guard case .systemPowerInfoResponse(let l) = lhs, case .systemPowerInfoResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       case (.storageInfoRequest, .storageInfoRequest): return {
         guard case .storageInfoRequest(let l) = lhs, case .storageInfoRequest(let r) = rhs else { preconditionFailure() }
         return l == r
@@ -641,6 +724,14 @@ struct PB_Main {
         guard case .storageRenameRequest(let l) = lhs, case .storageRenameRequest(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
+      case (.storageBackupCreateRequest, .storageBackupCreateRequest): return {
+        guard case .storageBackupCreateRequest(let l) = lhs, case .storageBackupCreateRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.storageBackupRestoreRequest, .storageBackupRestoreRequest): return {
+        guard case .storageBackupRestoreRequest(let l) = lhs, case .storageBackupRestoreRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       case (.appStartRequest, .appStartRequest): return {
         guard case .appStartRequest(let l) = lhs, case .appStartRequest(let r) = rhs else { preconditionFailure() }
         return l == r
@@ -685,6 +776,14 @@ struct PB_Main {
 
   init() {}
 }
+
+#if swift(>=5.5) && canImport(_Concurrency)
+extension PB_CommandStatus: @unchecked Sendable {}
+extension PB_Empty: @unchecked Sendable {}
+extension PB_StopSession: @unchecked Sendable {}
+extension PB_Main: @unchecked Sendable {}
+extension PB_Main.OneOf_Content: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
@@ -772,6 +871,11 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     36: .standard(proto: "system_get_datetime_response"),
     37: .standard(proto: "system_set_datetime_request"),
     38: .standard(proto: "system_play_audiovisual_alert_request"),
+    39: .standard(proto: "system_protobuf_version_request"),
+    40: .standard(proto: "system_protobuf_version_response"),
+    41: .standard(proto: "system_update_request"),
+    44: .standard(proto: "system_power_info_request"),
+    45: .standard(proto: "system_power_info_response"),
     28: .standard(proto: "storage_info_request"),
     29: .standard(proto: "storage_info_response"),
     24: .standard(proto: "storage_stat_request"),
@@ -786,6 +890,8 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     14: .standard(proto: "storage_md5sum_request"),
     15: .standard(proto: "storage_md5sum_response"),
     30: .standard(proto: "storage_rename_request"),
+    42: .standard(proto: "storage_backup_create_request"),
+    43: .standard(proto: "storage_backup_restore_request"),
     16: .standard(proto: "app_start_request"),
     17: .standard(proto: "app_lock_status_request"),
     18: .standard(proto: "app_lock_status_response"),
@@ -1261,6 +1367,97 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .systemPlayAudiovisualAlertRequest(v)
         }
       }()
+      case 39: try {
+        var v: PBSystem_ProtobufVersionRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemProtobufVersionRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemProtobufVersionRequest(v)
+        }
+      }()
+      case 40: try {
+        var v: PBSystem_ProtobufVersionResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemProtobufVersionResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemProtobufVersionResponse(v)
+        }
+      }()
+      case 41: try {
+        var v: PBSystem_UpdateRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemUpdateRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemUpdateRequest(v)
+        }
+      }()
+      case 42: try {
+        var v: PBStorage_BackupCreateRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .storageBackupCreateRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .storageBackupCreateRequest(v)
+        }
+      }()
+      case 43: try {
+        var v: PBStorage_BackupRestoreRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .storageBackupRestoreRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .storageBackupRestoreRequest(v)
+        }
+      }()
+      case 44: try {
+        var v: PBSystem_PowerInfoRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemPowerInfoRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemPowerInfoRequest(v)
+        }
+      }()
+      case 45: try {
+        var v: PBSystem_PowerInfoResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemPowerInfoResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemPowerInfoResponse(v)
+        }
+      }()
       default: break
       }
     }
@@ -1420,6 +1617,34 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .systemPlayAudiovisualAlertRequest?: try {
       guard case .systemPlayAudiovisualAlertRequest(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 38)
+    }()
+    case .systemProtobufVersionRequest?: try {
+      guard case .systemProtobufVersionRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 39)
+    }()
+    case .systemProtobufVersionResponse?: try {
+      guard case .systemProtobufVersionResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 40)
+    }()
+    case .systemUpdateRequest?: try {
+      guard case .systemUpdateRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 41)
+    }()
+    case .storageBackupCreateRequest?: try {
+      guard case .storageBackupCreateRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 42)
+    }()
+    case .storageBackupRestoreRequest?: try {
+      guard case .storageBackupRestoreRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 43)
+    }()
+    case .systemPowerInfoRequest?: try {
+      guard case .systemPowerInfoRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 44)
+    }()
+    case .systemPowerInfoResponse?: try {
+      guard case .systemPowerInfoResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 45)
     }()
     case nil: break
     }

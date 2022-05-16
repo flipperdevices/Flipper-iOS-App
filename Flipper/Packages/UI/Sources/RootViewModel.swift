@@ -1,18 +1,20 @@
 import Core
-import Combine
 import Inject
-import Logging
+import Peripheral
 import Foundation
 import SwiftUI
+import Logging
 
 public class RootViewModel: ObservableObject {
     private let logger = Logger(label: "root")
 
+    @Inject var rpc: RPC
     let appState: AppState = .shared
 
     var disposeBag: DisposeBag = .init()
 
     @Published var isFirstLaunch: Bool
+    @Published var isPairingIssue = false
 
     public init() {
         isFirstLaunch = appState.isFirstLaunch
@@ -22,6 +24,11 @@ public class RootViewModel: ObservableObject {
             .sink { [weak self] in
                 guard let self = self else {
                     return
+                }
+                if $0 == .invalidPairing {
+                    withAnimation(.easeOut.speed(2)) {
+                        self.isPairingIssue = true
+                    }
                 }
                 if $0 == .connected || $0 == .unsupportedDevice {
                     self.appState.isFirstLaunch = false
@@ -55,7 +62,19 @@ public class RootViewModel: ObservableObject {
         }
     }
 
-    func onOpenURL(_ url: URL) async {
-        await appState.onOpenURL(url)
+    func onOpenURL(_ url: URL) {
+        Task {
+            await appState.onOpenURL(url)
+        }
+    }
+
+    func playAlert() {
+        Task {
+            do {
+                try await rpc.playAlert()
+            } catch {
+                logger.error("play alert intent: \(error)")
+            }
+        }
     }
 }

@@ -45,10 +45,10 @@ public struct ArchiveItem: Equatable, Identifiable {
 
 extension ArchiveItem {
     enum Error: Swift.Error {
-        case invalidPath
-        case invalidName
-        case invalidType
-        case invalidContent
+        case invalidPath(Path)
+        case invalidName(String)
+        case invalidType(String)
+        case invalidContent(String)
     }
 
     init(filename: String, data: Data) throws {
@@ -58,14 +58,14 @@ extension ArchiveItem {
 
     init(path: Path, content: String) throws {
         guard let filename = path.lastComponent else {
-            throw Error.invalidPath
+            throw Error.invalidPath(path)
         }
         try self.init(filename: filename, content: content)
     }
 
     init(filename: String, content: String) throws {
         guard let properties = [Property](content: content) else {
-            throw Error.invalidContent
+            throw Error.invalidContent(filename)
         }
         self = try .init(filename: filename, properties: properties)
     }

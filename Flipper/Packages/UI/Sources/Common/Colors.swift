@@ -12,6 +12,10 @@ extension Color {
         .init(UIColor.secondarySystemGroupedBackground)
     }
 
+    static var secondaryGroupedBackground: Color {
+        .init(UIColor.tertiarySystemGroupedBackground)
+    }
+
     static var shadow: Color {
         .init(UIColor.clear)
     }
@@ -80,6 +84,24 @@ extension Color {
 
     static var sYellow: Color {
         .init(red: 1.0, green: 0.81, blue: 0.37)
+    }
+
+    static var sGreenUpdate: Color {
+        .init(red: 0.18, green: 0.85, blue: 0.2)
+    }
+
+    // MARK: Update channels
+
+    static var development: Color {
+        .init(red: 0.96, green: 0.25, blue: 0.25)
+    }
+
+    static var candidate: Color {
+        .init(red: 0.54, green: 0.17, blue: 0.89)
+    }
+
+    static var release: Color {
+        .init(red: 0.18, green: 0.85, blue: 0.2)
     }
 
     // MARK: Keys

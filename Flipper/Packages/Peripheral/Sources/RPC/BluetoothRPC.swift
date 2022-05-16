@@ -7,26 +7,35 @@ public class BluetoothRPC: RPC {
     private let logger = Logger(label: "rpc")
 
     @Inject private var connector: BluetoothConnector
-    private var subscriptions = [AnyCancellable]()
+    private var connectorHandle: AnyCancellable?
+    private var peripheralHandle: AnyCancellable?
 
-    private var session: Session?
+    public var session: Session?
     private var peripheral: BluetoothPeripheral? {
-        didSet { self.updateSession() }
+        didSet { self.peripheralDidChange() }
     }
     private var onScreenFrame: ((ScreenFrame) -> Void)?
 
     init() {
-        connector.connected
+        connectorHandle = connector.connected
             .map { $0.first }
             .assign(to: \.peripheral, on: self)
-            .store(in: &subscriptions)
+    }
+
+    private func peripheralDidChange() {
+        peripheralHandle = peripheral?.info
+            .sink { [weak self] in
+                self?.updateSession()
+            }
     }
 
     private func updateSession() {
-        guard let peripheral = peripheral else {
-            self.session = nil
+        guard let peripheral = peripheral, peripheral.state == .connected else {
+            session?.close()
+            session = nil
             return
         }
+        guard session == nil else { return }
         self.session = FlipperSession(peripheral: peripheral)
         self.session?.onMessage = self.onMessage
         self.session?.onError = self.onError
@@ -38,6 +47,10 @@ public class BluetoothRPC: RPC {
             onError(.common(.decode))
         case .screenFrame(let screenFrame):
             onScreenFrame?(screenFrame)
+        case .unknown(let command):
+            logger.error("unexpected message: \(command)")
+        case .reboot:
+            fatalError("unreachable")
         }
     }
 
@@ -57,12 +70,10 @@ public class BluetoothRPC: RPC {
 // MARK: Public methods
 
 extension BluetoothRPC {
-    public func deviceInfo(
-        priority: Priority?
-    ) async throws -> [String: String] {
-        let response = try await session?.send(
-            .system(.info),
-            priority: priority)
+    public func deviceInfo() async throws -> [String: String] {
+        let response = try await session?
+            .send(.system(.info))
+            .response
         guard case .system(.info(let result)) = response else {
             throw Error.unexpectedResponse(response)
         }
@@ -70,163 +81,184 @@ extension BluetoothRPC {
     }
 
     @discardableResult
-    public func ping(
-        _ bytes: [UInt8],
-        priority: Priority?
-    ) async throws -> [UInt8] {
-        let response = try await session?.send(
-            .system(.ping(bytes)),
-            priority: priority)
+    public func ping(_ bytes: [UInt8]) async throws -> [UInt8] {
+        let response = try await session?
+            .send(.system(.ping(bytes)))
+            .response
         guard case .system(.ping(let result)) = response else {
             throw Error.unexpectedResponse(response)
         }
         return result
     }
 
-    public func reboot(
-        to mode: Request.System.RebootMode,
-        priority: Priority?
-    ) async throws {
-        _ = try await session?.send(.system(.reboot(mode)), priority: priority)
+    public func reboot(to mode: Message.RebootMode) async throws {
+        try await session?.send(.reboot(mode))
     }
 
-    public func getDate(priority: Priority?) async throws -> Date {
-        let response = try await session?.send(
-            .system(.getDate),
-            priority: priority)
+    public func getDate() async throws -> Date {
+        let response = try await session?
+            .send(.system(.getDate))
+            .response
         guard case .system(.dateTime(let result)) = response else {
             throw Error.unexpectedResponse(response)
         }
         return result
     }
 
-    public func setDate(_ date: Date, priority: Priority?) async throws {
-        let response = try await session?.send(
-            .system(.setDate(date)),
-            priority: priority)
+    public func setDate(_ date: Date) async throws {
+        let response = try await session?
+            .send(.system(.setDate(date)))
+            .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
     }
 
-    public func getStorageInfo(
-        at path: Path,
-        priority: Priority?
-    ) async throws -> StorageSpace {
-        let response = try await session?.send(
-            .storage(.info(path)),
-            priority: priority)
+    public func update(manifest: String) async throws {
+        let response = try await session?
+            .send(.system(.update(manifest)))
+            .response
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func getStorageInfo(at path: Path) async throws -> StorageSpace {
+        let response = try await session?
+            .send(.storage(.info(path)))
+            .response
         guard case .storage(.info(let result)) = response else {
             throw Error.unexpectedResponse(response)
         }
         return result
     }
 
-    public func listDirectory(
-        at path: Path,
-        priority: Priority?
-    ) async throws -> [Element] {
-        let response = try await session?.send(
-            .storage(.list(path)),
-            priority: priority)
+    public func listDirectory(at path: Path) async throws -> [Element] {
+        let response = try await session?
+            .send(.storage(.list(path)))
+            .response
         guard case .storage(.list(let items)) = response else {
             throw Error.unexpectedResponse(response)
         }
         return items
     }
 
-    public func createFile(
-        at path: Path,
-        isDirectory: Bool,
-        priority: Priority?
-    ) async throws {
-        let response = try await session?.send(
-            .storage(.create(path, isDirectory: isDirectory)),
-            priority: priority)
+    public func createFile(at path: Path, isDirectory: Bool) async throws {
+        let response = try await session?
+            .send(.storage(.create(path, isDirectory: isDirectory)))
+            .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
     }
 
-    public func deleteFile(
-        at path: Path,
-        force: Bool,
-        priority: Priority?
-    ) async throws {
-        let response = try await session?.send(
-            .storage(.delete(path, isForce: force)),
-            priority: priority
-        )
+    public func deleteFile(at path: Path, force: Bool) async throws {
+        let response = try await session?
+            .send(.storage(.delete(path, isForce: force)))
+            .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
     }
 
     public func readFile(
-        at path: Path,
-        priority: Priority? = nil
-    ) async throws -> [UInt8] {
-        let response = try await session?.send(
-            .storage(.read(path)),
-            priority: priority)
-        guard case .storage(.file(let bytes)) = response else {
-            throw Error.unexpectedResponse(response)
+        at path: Path
+    ) -> AsyncThrowingStream<[UInt8], Swift.Error> {
+        .init { continuation in
+            Task {
+                do {
+                    guard let session = session else {
+                        throw Error.unsupported(0)
+                    }
+                    let streams = session.send(.storage(.read(path)))
+                    for try await next in streams.input {
+                        guard case .storage(.file(let bytes)) = next else {
+                            throw Error.unexpectedResponse(next)
+                        }
+                        continuation.yield(bytes)
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
         }
-        return bytes
     }
 
     public func writeFile(
         at path: Path,
-        bytes: [UInt8],
-        priority: Priority?
-    ) async throws {
-        let response = try await session?.send(
-            .storage(.write(path, bytes)),
-            priority: priority)
+        bytes: [UInt8]
+    ) -> AsyncThrowingStream<Int, Swift.Error> {
+        .init { continuation in
+            Task {
+                do {
+                    guard let session = session else {
+                        throw Error.unsupported(0)
+                    }
+                    let streams = session.send(.storage(.write(path, bytes)))
+                    for try await next in streams.output {
+                        guard case let .request(.storage(.write(_, chunk))) = next else {
+                            continuation.finish(throwing: Error.unexpectedRequest)
+                            return
+                        }
+                        continuation.yield(chunk.count)
+                    }
+                    for try await next in streams.input {
+                        guard case .ok = next else {
+                            continuation.finish(throwing: Error.unexpectedResponse(next))
+                            return
+                        }
+                        continuation.finish()
+                        return
+                    }
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+
+    public func moveFile(from: Path, to: Path) async throws {
+        let response = try await session?
+            .send(.storage(.move(from, to)))
+            .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
     }
 
-    public func moveFile(
-        from: Path,
-        to: Path,
-        priority: Priority?
-    ) async throws {
-        let response = try await session?.send(
-            .storage(.move(from, to)),
-            priority: priority)
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
-        }
-    }
-
-    public func calculateFileHash(
-        at path: Path,
-        priority: Priority?
-    ) async throws -> Hash {
-        let response = try await session?.send(
-            .storage(.hash(path)),
-            priority: priority)
+    public func calculateFileHash(at path: Path) async throws -> Hash {
+        let response = try await session?
+            .send(.storage(.hash(path)))
+            .response
         guard case .storage(.hash(let bytes)) = response else {
             throw Error.unexpectedResponse(response)
         }
         return .init(bytes)
     }
 
-    public func startStreaming(priority: Priority?) async throws {
-        let response = try await session?.send(
-            .gui(.screenStream(true)),
-            priority: priority)
+    public func startRequest(_ name: String, args: String) async throws {
+        let response = try await session?
+            .send(.application(.startRequest(name, args)))
+            .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
     }
 
-    public func stopStreaming(priority: Priority?) async throws {
-        let response = try await session?.send(
-            .gui(.screenStream(false)),
-            priority: priority)
+    public func startStreaming() async throws {
+        let response = try await session?
+            .send(.gui(.screenStream(true)))
+            .response
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func stopStreaming() async throws {
+        let response = try await session?
+            .send(.gui(.screenStream(false)))
+            .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
@@ -236,14 +268,9 @@ extension BluetoothRPC {
         self.onScreenFrame = body
     }
 
-    public func pressButton(
-        _ button: InputKey,
-        priority: Priority?
-    ) async throws {
+    public func pressButton(_ button: InputKey) async throws {
         func send(_ type: InputType) async throws -> Response? {
-            try await session?.send(
-                .gui(.button(button, type)),
-                priority: priority)
+            try await session?.send(.gui(.button(button, type))).response
         }
         guard try await send(.press) == .ok else {
             logger.error("sending press type failed")
@@ -259,37 +286,34 @@ extension BluetoothRPC {
         }
     }
 
-    public func playAlert(priority: Priority?) async throws {
-        let response = try await session?.send(
-            .system(.alert),
-            priority: priority)
+    public func playAlert() async throws {
+        let response = try await session?
+            .send(.system(.alert))
+            .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
     }
 
-    public func startVirtualDisplay(priority: Priority?) async throws {
-        let response = try await session?.send(
-            .gui(.virtualDisplay(true)),
-            priority: priority)
+    public func startVirtualDisplay(with frame: ScreenFrame?) async throws {
+        let response = try await session?
+            .send(.gui(.virtualDisplay(true, frame)))
+            .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
     }
 
-    public func stopVirtualDisplay(priority: Priority?) async throws {
-        let response = try await session?.send(
-            .gui(.virtualDisplay(false)),
-            priority: priority)
+    public func stopVirtualDisplay() async throws {
+        let response = try await session?
+            .send(.gui(.virtualDisplay(false, nil)))
+            .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)
         }
     }
 
-    public func sendScreenFrame(
-        _ frame: ScreenFrame,
-        priority: Priority?
-    ) async throws {
-        try await session?.send(.screenFrame(frame), priority: priority)
+    public func sendScreenFrame(_ frame: ScreenFrame) async throws {
+        try await session?.send(.screenFrame(frame))
     }
 }

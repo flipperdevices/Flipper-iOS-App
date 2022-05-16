@@ -40,6 +40,18 @@ class FileStorage {
         try content.write(to: url, atomically: true, encoding: .utf8)
     }
 
+    func append(_ content: String, at path: Path) throws {
+        try makeDirectory(for: path)
+        let url = makeURL(for: path)
+        if !url.isExists {
+            FileManager.default.createFile(atPath: url.path, contents: nil)
+        }
+        let fileHandle = try FileHandle(forWritingTo: url)
+        try fileHandle.seekToEnd()
+        try fileHandle.write(contentsOf: content.data(using: .utf8) ?? .init())
+        try fileHandle.close()
+    }
+
     func delete(_ path: Path) throws {
         let url = makeURL(for: path)
         guard url.isExists else { return }
@@ -52,10 +64,14 @@ class FileStorage {
             .contentsOfDirectory(atPath: baseURL.path)
 
         for path in contents {
-            print(path)
             let url = baseURL.appendingPathComponent(path)
             try FileManager.default.removeItem(at: url)
         }
+    }
+
+    func list(at path: Path) throws -> [String] {
+        let path = baseURL.appendingPathComponent(path.string).path
+        return try FileManager.default.contentsOfDirectory(atPath: path)
     }
 
     func archive(

@@ -26,6 +26,27 @@ struct InfoView: View {
             .padding(.top, 14)
             .padding(.horizontal, 24)
 
+            Button {
+                viewModel.emulate()
+            } label: {
+                HStack(spacing: 7) {
+                    Spacer()
+                    Image("Emulate")
+                    Text("Emulate")
+                    Spacer()
+                }
+                .frame(height: 47)
+                .frame(maxWidth: .infinity)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.white)
+                .background(viewModel.isConnected ? Color.a2 : .gray)
+                .cornerRadius(30)
+            }
+            .disabled(!viewModel.isConnected)
+            .opacity(viewModel.isEditMode ? 0 : 1)
+            .padding(.horizontal, 24)
+            .padding(.top, 18)
+
             VStack(alignment: .leading, spacing: 20) {
                 InfoButton(image: .init("edit"), title: "Edit") {
                     viewModel.edit()

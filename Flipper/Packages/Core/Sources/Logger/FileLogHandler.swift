@@ -39,8 +39,8 @@ struct FileLogHandler: LogHandler {
         line: UInt
     ) {
         #if DEBUG
-        print(message)
+        print("[\(time)][\(level)]: \(message)")
         #endif
-        storage.write("[\(time)] \(message)")
+        storage.write("[\(time)][\(level)]: \(message)")
     }
 }

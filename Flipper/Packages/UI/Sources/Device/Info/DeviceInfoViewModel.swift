@@ -3,9 +3,12 @@ import Inject
 import Combine
 import Peripheral
 import Foundation
+import Logging
 
 @MainActor
 class DeviceInfoViewModel: ObservableObject {
+    private let logger = Logger(label: "device-info-vm")
+
     @Inject var rpc: RPC
     let appState: AppState = .shared
     var disposeBag = DisposeBag()
@@ -47,7 +50,11 @@ class DeviceInfoViewModel: ObservableObject {
 
     func getDeviceInfo() {
         Task {
-            deviceInfo = try await rpc.deviceInfo()
+            do {
+                deviceInfo = try await rpc.deviceInfo()
+            } catch {
+                logger.error("device info: \(error)")
+            }
         }
     }
 }
