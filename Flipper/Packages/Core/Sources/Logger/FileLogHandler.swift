@@ -8,7 +8,7 @@ struct FileLogHandler: LogHandler {
     @Inject var storage: LoggerStorage
 
     static func factory(_ label: String) -> FileLogHandler {
-        return .init(metadata: .init(), logLevel: .info)
+        return .init(metadata: .init(), logLevel: .debug)
     }
 
     var metadata: Logger.Metadata

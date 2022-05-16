@@ -47,7 +47,7 @@ class FlipperSession: Session {
             Task {
                 do {
                     for try await next in streams.output {
-                        logger.info("> \(next)")
+                        logger.debug("> \(next)")
                         output.yield(next)
                     }
                     output.finish()
@@ -59,7 +59,7 @@ class FlipperSession: Session {
             Task {
                 do {
                     for try await next in streams.input {
-                        logger.info("< response(\(next))")
+                        logger.debug("< response(\(next))")
                         input.yield(next)
                     }
                     input.finish()
@@ -126,7 +126,7 @@ extension FlipperSession {
                 guard let self = self else { return }
                 guard self.peripheral.state == .connected else { return }
                 guard self.queue.onResponse.isEmpty == false else { return }
-                self.logger.info("time is out")
+                self.logger.debug("time is out")
                 self.onError?(.timeout)
             }
         }
