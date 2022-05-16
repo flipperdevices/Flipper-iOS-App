@@ -19,8 +19,8 @@ public protocol RPC {
     func listDirectory(at path: Path) async throws -> [Element]
     func createFile(at path: Path, isDirectory: Bool) async throws
     func deleteFile(at path: Path, force: Bool) async throws
-    func readFile(at path: Path) async throws -> [UInt8]
-    func writeFile(at path: Path, bytes: [UInt8]) async throws
+    func readFile(at path: Path) -> AsyncThrowingStream<[UInt8], Swift.Error>
+    func writeFile(at path: Path, bytes: [UInt8]) -> AsyncThrowingStream<Int, Swift.Error>
     func moveFile(from: Path, to: Path) async throws
     func calculateFileHash(at path: Path) async throws -> Hash
 
@@ -41,6 +41,18 @@ public protocol RPC {
 }
 
 public extension RPC {
+    func readFile(at path: Path) async throws -> [UInt8] {
+        var result: [UInt8] = []
+        for try await next in readFile(at: path) {
+            result += next
+        }
+        return result
+    }
+
+    func writeFile(at path: Path, bytes: [UInt8]) async throws {
+        for try await _ in writeFile(at: path, bytes: bytes) { }
+    }
+
     func writeFile(at path: Path, string: String) async throws {
         try await writeFile(at: path, bytes: .init(string.utf8))
     }

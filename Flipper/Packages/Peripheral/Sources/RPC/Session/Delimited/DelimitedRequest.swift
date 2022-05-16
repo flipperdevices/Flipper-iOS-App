@@ -1,27 +1,25 @@
-class DelimitedRequest {
-    func split(_ request: Request) -> [PB_Main] {
-        switch request {
+extension Request {
+    func split() -> [Request] {
+        switch self {
         // the only request at the moment that can exceed the limit
-        case let .storage(.write(path, bytes))
-            where bytes.count > Limits.maxPBStorageFileData:
+        case let .storage(.write(path, bytes)):
             return splitWriteRequest(path: path, bytes: bytes)
         default:
-            return [request.serialize()]
+            return [self]
         }
     }
 
-    private func splitWriteRequest(path: Path, bytes: [UInt8]) -> [PB_Main] {
-        var requests = [PB_Main]()
+    private func splitWriteRequest(path: Path, bytes: [UInt8]) -> [Request] {
+        var requests = [Request]()
         bytes.chunk(maxCount: Limits.maxPBStorageFileData).forEach { chunk in
-            let nextRequest = Request.storage(.write(path, chunk))
-            var nextMain = nextRequest.serialize()
-            nextMain.hasNext_p = true
-            requests.append(nextMain)
-        }
-        if var last = requests.popLast() {
-            last.hasNext_p = false
-            requests.append(last)
+            requests.append(.storage(.write(path, chunk)))
         }
         return requests
+    }
+}
+
+extension Message {
+    func split() -> [Message] {
+        return [self]
     }
 }

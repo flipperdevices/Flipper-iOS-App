@@ -40,11 +40,12 @@ class RPCMock: RPC {
     func deleteFile(at path: Path, force: Bool) async throws {
     }
 
-    func readFile(at path: Path) async throws -> [UInt8] {
-        .init()
+    func readFile(at path: Path) -> AsyncThrowingStream<[UInt8], Swift.Error> {
+        .init { _ in }
     }
 
-    func writeFile(at path: Path, bytes: [UInt8]) async throws {
+    func writeFile(at path: Path, bytes: [UInt8]) -> AsyncThrowingStream<Int, Swift.Error> {
+        .init { _ in }
     }
 
     func moveFile(from: Path, to: Path) async throws {

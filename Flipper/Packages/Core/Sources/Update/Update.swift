@@ -81,11 +81,16 @@ public class Update {
         var files = entries.filter { $0.typeflag == .file }
 
         files = await filterExising(files, at: basePath)
-        progressHack(files: files, progress: progress)
+
+        let totalSize = files.reduce(0) { $0 + $1.size }
+        var totalSent = 0
 
         for file in files {
             let path = Path("\(basePath)/\(file.name)")
-            try await rpc.writeFile(at: path, bytes: file.data)
+            for try await sent in rpc.writeFile(at: path, bytes: file.data) {
+                totalSent += sent
+                progress(Double(totalSent) / Double(totalSize))
+            }
         }
 
         return updatePath
@@ -115,31 +120,5 @@ public class Update {
 
     private func hash(for path: Path) async -> Hash? {
         try? await rpc.calculateFileHash(at: path)
-    }
-
-    private func progressHack(
-        files: [TAR.Entry],
-        progress: @escaping (Double) -> Void
-    ) {
-        guard let session = rpc.session else {
-            return
-        }
-        let filesByteCount = files.map { $0.data.count }.reduce(0, +)
-        let totalBytes = session.bytesSent + Int(Double(filesByteCount) * 1.185)
-        Task {
-            do {
-                var last: Double = 0
-                while session.bytesSent < totalBytes {
-                    try await Task.sleep(nanoseconds: 100 * 1_000_000)
-                    let current = Double(session.bytesSent) / Double(totalBytes)
-                    if last != current {
-                        last = current
-                        progress(last)
-                    }
-                }
-            } catch {
-                logger.error("progress: \(error)")
-            }
-        }
     }
 }
