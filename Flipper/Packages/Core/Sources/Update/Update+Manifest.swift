@@ -1,3 +1,5 @@
+import Foundation
+
 extension Update {
     // swiftlint:disable nesting
     public struct Manifest: Decodable {
@@ -23,6 +25,24 @@ extension Update {
                 let sha256: String
             }
         }
+    }
+}
+
+// MARK: Downloading
+
+extension Update {
+    var manifestURL: URL {
+        .init(string: "https://update.flipperzero.one/firmware/directory.json")
+        .unsafelyUnwrapped
+    }
+
+    public func downloadManifest(
+        progress: @escaping (Double) -> Void = { _ in }
+    ) async throws -> Manifest {
+        let data = URLSessionData(from: manifestURL) {
+            progress($0.fractionCompleted)
+        }
+        return try await JSONDecoder().decode(Manifest.self, from: data.result)
     }
 }
 

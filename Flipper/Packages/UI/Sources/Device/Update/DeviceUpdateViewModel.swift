@@ -103,7 +103,7 @@ class DeviceUpdateViewModel: ObservableObject {
 
     func downloadFirmware(
         _ firmware: Update.Manifest.Version
-    ) async throws -> [UInt8] {
+    ) async throws -> Update.Firmware {
         state = .downloadingFirmware
         progress = 0
         return try await updater.downloadFirmware(firmware) {
@@ -114,10 +114,10 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
 
-    func uploadFirmware(_ bytes: [UInt8]) async throws -> String {
+    func uploadFirmware(_ firmware: Update.Firmware) async throws -> String {
         state = .prepearingForUpdate
         progress = 0
-        return try await updater.uploadFirmware(bytes) {
+        return try await updater.uploadFirmware(firmware) {
             let progress = Int($0 * 100)
             DispatchQueue.main.async {
                 if self.state == .prepearingForUpdate, progress > 0 {
@@ -129,7 +129,7 @@ class DeviceUpdateViewModel: ObservableObject {
     }
 
     func startUpdateProcess(_ directory: String) async throws {
-        try await updater.installFirmware(directory)
+        try await updater.startUpdateProcess(from: directory)
         onSuccess()
         isPresented = false
     }
