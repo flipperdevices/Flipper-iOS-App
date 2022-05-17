@@ -61,7 +61,7 @@ extension DeviceUpdateView {
                     .stroke(color, lineWidth: 3)
 
                 GeometryReader { reader in
-                    color.frame(width: reader.size.width / 100 * Double(viewModel.progress))
+                    color.frame(width: reader.size.width * viewModel.progress)
                 }
 
                 HStack {
@@ -75,7 +75,7 @@ extension DeviceUpdateView {
                             .foregroundColor(.white)
                             .font(.custom("HelvetiPixel", fixedSize: 40))
                     } else {
-                        Text("\(viewModel.progress)%")
+                        Text("\(Int(viewModel.progress * 100))%")
                             .foregroundColor(.white)
                             .font(.custom("HelvetiPixel", fixedSize: 40))
                     }

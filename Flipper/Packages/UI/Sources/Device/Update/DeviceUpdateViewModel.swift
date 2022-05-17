@@ -51,7 +51,7 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
     @Published var state: State = .downloadingFirmware
-    @Published var progress: Int = 0
+    @Published var progress: Double = 0
 
     init(
         isPresented: Binding<Bool>,
@@ -106,8 +106,7 @@ class DeviceUpdateViewModel: ObservableObject {
     ) async throws -> Update.Firmware {
         state = .downloadingFirmware
         progress = 0
-        return try await updater.downloadFirmware(firmware) {
-            let progress = Int($0 * 100)
+        return try await updater.downloadFirmware(firmware) { progress in
             DispatchQueue.main.async {
                 self.progress = progress
             }
@@ -117,8 +116,7 @@ class DeviceUpdateViewModel: ObservableObject {
     func uploadFirmware(_ firmware: Update.Firmware) async throws -> String {
         state = .prepearingForUpdate
         progress = 0
-        return try await updater.uploadFirmware(firmware) {
-            let progress = Int($0 * 100)
+        return try await updater.uploadFirmware(firmware) { progress in
             DispatchQueue.main.async {
                 if self.state == .prepearingForUpdate {
                     self.state = .uploadingFirmware
