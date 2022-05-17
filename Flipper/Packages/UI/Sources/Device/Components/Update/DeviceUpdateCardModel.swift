@@ -27,6 +27,7 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     enum State {
+        case noSDCard
         case noInternet
         case disconnected
         case connecting
@@ -52,6 +53,14 @@ class DeviceUpdateCardModel: ObservableObject {
     }
     @Published var state: State = .disconnected
 
+    var noSDCard: Bool {
+        // ignore ukwnown state
+        guard let storage = flipper?.storage else {
+            return false
+        }
+        return storage.external == nil
+    }
+
     var installedChannel: Update.Channel? {
         flipper?.information?.firmwareChannel
     }
@@ -73,6 +82,20 @@ class DeviceUpdateCardModel: ObservableObject {
 
     var manifest: Update.Manifest? {
         didSet { updateState() }
+    }
+
+    func updateStorageInfo() {
+        Task {
+            await updateStorageInfo()
+        }
+    }
+
+    func updateStorageInfo() async {
+        do {
+            try await appState.updateStorageInfo()
+        } catch {
+            logger.error("retry sd card")
+        }
     }
 
     func monitorNetworkStatus() {
@@ -136,6 +159,10 @@ class DeviceUpdateCardModel: ObservableObject {
             }
             return
         }
+        guard !noSDCard else {
+            state = .noSDCard
+            return
+        }
         updateVersion()
         guard
             !availableFirmware.isEmpty,
@@ -167,7 +194,13 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func update() {
-        showUpdateView = true
+        Task {
+            await updateStorageInfo()
+            guard !noSDCard else {
+                return
+            }
+            showUpdateView = true
+        }
     }
 
     func onSuccess() {

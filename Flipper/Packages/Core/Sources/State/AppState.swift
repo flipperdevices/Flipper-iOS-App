@@ -81,7 +81,7 @@ public class AppState {
                     disconnect()
                     return
                 }
-                try await getStorageInfo()
+                try await updateStorageInfo()
                 try await synchronizeDateTime()
                 try await synchronize()
             } catch {
@@ -171,20 +171,14 @@ public class AppState {
         status = .init(flipper?.state)
     }
 
-    func getStorageInfo() async throws {
+    public func updateStorageInfo() async throws {
         var storageInfo = Flipper.StorageInfo()
+        defer { pairedDevice.updateStorageInfo(storageInfo) }
         do {
             storageInfo.internal = try await rpc.getStorageInfo(at: "/int")
-            pairedDevice.updateStorageInfo(storageInfo)
-        } catch {
-            logger.error("updating internal space")
-            throw error
-        }
-        do {
             storageInfo.external = try await rpc.getStorageInfo(at: "/ext")
-            pairedDevice.updateStorageInfo(storageInfo)
         } catch {
-            logger.error("updating external space")
+            logger.error("updating storage info")
             throw error
         }
     }

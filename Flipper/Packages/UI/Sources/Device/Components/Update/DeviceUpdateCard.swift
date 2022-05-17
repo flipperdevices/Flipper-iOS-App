@@ -6,6 +6,8 @@ struct DeviceUpdateCard: View {
 
     var description: String {
         switch viewModel.state {
+        case .noSDCard:
+            return "Install SD card in Flipper to update firmware"
         case .noInternet:
             return "Can’t connect to update server"
         case .disconnected:
@@ -36,7 +38,31 @@ struct DeviceUpdateCard: View {
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
 
-                if viewModel.state == .noInternet {
+                if viewModel.state == .noSDCard {
+                    VStack(spacing: 2) {
+                        Image("NoSDCard")
+                        Text("No SD сard")
+                            .font(.system(size: 14, weight: .medium))
+                        HStack {
+                            Text(description)
+                                .font(.system(size: 14, weight: .medium))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.black30)
+                        }
+                        .frame(height: 31)
+                        .padding(.horizontal, 12)
+                    }
+                    .padding(.vertical, 4)
+
+                    Button {
+                        viewModel.updateStorageInfo()
+                    } label: {
+                        Text("Retry")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.a2)
+                    }
+                    .padding(.bottom, 8)
+                } else if viewModel.state == .noInternet {
                     VStack(spacing: 2) {
                         Image("NoInternet")
                         Text("No Internet connection")
