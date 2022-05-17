@@ -63,6 +63,8 @@ extension Update {
         let totalSize = files.reduce(0) { $0 + $1.data.count }
         var totalSent = 0
 
+        progress(0)
+
         for file in files {
             let path = Path("\(basePath)/\(file.name)")
             for try await sent in rpc.writeFile(at: path, bytes: file.data) {

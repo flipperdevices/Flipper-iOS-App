@@ -120,7 +120,7 @@ class DeviceUpdateViewModel: ObservableObject {
         return try await updater.uploadFirmware(firmware) {
             let progress = Int($0 * 100)
             DispatchQueue.main.async {
-                if self.state == .prepearingForUpdate, progress > 0 {
+                if self.state == .prepearingForUpdate {
                     self.state = .uploadingFirmware
                 }
                 self.progress = progress
