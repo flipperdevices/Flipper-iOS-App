@@ -7,8 +7,10 @@ import Foundation
 struct FileLogHandler: LogHandler {
     @Inject var storage: LoggerStorage
 
+    static var logLevel: Logger.Level { UserDefaultsStorage.shared.logLevel }
+
     static func factory(_ label: String) -> FileLogHandler {
-        return .init(metadata: .init(), logLevel: .debug)
+        .init(metadata: .init(), logLevel: logLevel)
     }
 
     var metadata: Logger.Metadata

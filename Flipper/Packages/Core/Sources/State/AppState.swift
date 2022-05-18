@@ -27,6 +27,7 @@ public class AppState {
 
     public init() {
         logger.info("app version: \(Bundle.fullVersion)")
+        logger.info("log level: \(UserDefaultsStorage.shared.logLevel)")
 
         isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
 
@@ -228,7 +229,7 @@ public class AppState {
         let start = Date()
         try await task()
         let time = (Date().timeIntervalSince(start) * 1000).rounded() / 1000
-        logger.info("\(label): \(time)s")
+        logger.info("\(label) done (\(time)s)")
     }
 
     // MARK: App Reset

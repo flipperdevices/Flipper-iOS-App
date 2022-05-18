@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LogsView: View {
     @StateObject var viewModel: LogsViewModel
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         List {
@@ -14,8 +15,32 @@ struct LogsView: View {
                 viewModel.delete(at: indexSet)
             }
         }
-        .navigationTitle("Logs")
+        .navigationBarBackButtonHidden(true)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                BackButton {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }
+            ToolbarItem(placement: .navigationBarLeading) {
+                Text("Logs")
+                    .font(.system(size: 20, weight: .bold))
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Menu {
+                    ForEach(viewModel.logLevels, id: \.self) { level in
+                        Button {
+                            viewModel.changeLogLevel(to: level)
+                        } label: {
+                            Text(level.rawValue)
+                        }
+                    }
+                } label: {
+                    Text("Log level")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.primary)
+                }
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     viewModel.deleteAll()
