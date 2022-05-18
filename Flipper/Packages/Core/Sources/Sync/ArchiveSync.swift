@@ -10,10 +10,25 @@ class ArchiveSync: ArchiveSyncProtocol {
     @Inject private var flipperArchive: FlipperArchiveProtocol
     @Inject private var mobileArchive: MobileArchiveProtocol
 
+    private var state: State = .idle
     private var eventsSubject: SafeSubject<Event> = .init()
     var events: SafePublisher<Event> { eventsSubject.eraseToAnyPublisher() }
 
+    enum State {
+        case idle
+        case running
+        case canceled
+    }
+
     func run(_ progress: (Double) -> Void) async throws {
+        guard state == .idle else { return }
+        state = .running
+        defer { state = .idle }
+        progress(0)
+        try await sync(progress)
+    }
+
+    private func sync(_ progress: (Double) -> Void) async throws {
         let lastManifest = manifestStorage.manifest ?? .init()
 
         let mobileChanges = try await mobileArchive
@@ -29,6 +44,9 @@ class ArchiveSync: ArchiveSyncProtocol {
             flipperChanges: flipperChanges)
 
         for (index, (path, action)) in actions.enumerated() {
+            guard state != .canceled else {
+                break
+            }
             switch action {
             case .update(.mobile): try await updateOnMobile(path)
             case .delete(.mobile): try await deleteOnMobile(path)
@@ -40,6 +58,10 @@ class ArchiveSync: ArchiveSyncProtocol {
         }
 
         manifestStorage.manifest = try await mobileArchive.manifest
+    }
+
+    func cancel() {
+        state = .canceled
     }
 
     private func updateOnMobile(_ path: Path) async throws {

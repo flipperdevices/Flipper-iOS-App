@@ -6,4 +6,5 @@ class ArchiveSyncMock: ArchiveSyncProtocol {
     }
 
     func run(_ progress: (Double) -> Void) {}
+    func cancel() {}
 }

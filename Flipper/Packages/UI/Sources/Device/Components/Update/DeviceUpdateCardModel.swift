@@ -209,6 +209,7 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func pauseSync() {
+        appState.cancelSync()
     }
 
     func onSuccess() {

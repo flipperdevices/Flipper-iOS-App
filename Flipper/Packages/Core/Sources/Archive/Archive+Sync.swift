@@ -16,6 +16,10 @@ extension Archive {
         }
     }
 
+    func cancelSync() {
+        archiveSync.cancel()
+    }
+
     func updateFavoriteItems() async throws {
         let favorites = try await mobileFavorites.read()
         items = items.map {

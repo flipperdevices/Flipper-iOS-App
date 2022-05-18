@@ -164,6 +164,10 @@ public class AppState {
         status = .init(flipper?.state)
     }
 
+    public func cancelSync() {
+        archive.cancelSync()
+    }
+
     func synchronizeDateTime() async throws {
         try await measure("syncing date") {
             try await rpc.setDate(.init())
