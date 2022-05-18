@@ -14,12 +14,19 @@ class OptionsViewModel: ObservableObject {
     private var disposeBag: DisposeBag = .init()
 
     @Published var isOnline = false
+    @Published var hasKeys = false
 
     init() {
         appState.$status
             .receive(on: DispatchQueue.main)
             .map(\.isOnline)
             .assign(to: \.isOnline, on: self)
+            .store(in: &disposeBag)
+
+        appState.archive.$items
+            .receive(on: DispatchQueue.main)
+            .map { !$0.isEmpty }
+            .assign(to: \.hasKeys, on: self)
             .store(in: &disposeBag)
     }
 

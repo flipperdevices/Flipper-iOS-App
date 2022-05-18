@@ -26,6 +26,7 @@ struct OptionsView: View {
                     Button("Backup Keys") {
                         viewModel.backupKeys()
                     }
+                    .disabled(!viewModel.hasKeys)
                 }
 
                 Section(header: Text("Remote")) {
