@@ -37,17 +37,6 @@ class OptionsViewModel: ObservableObject {
         appState.reset()
     }
 
-    func unpairFlipper() {
-        Task {
-            do {
-                try await rpc.deleteFile(at: .init(string: "/int/bt.keys"))
-                try await rpc.reboot(to: .os)
-            } catch {
-                logger.error("unpair flipper: \(error)")
-            }
-        }
-    }
-
     func backupKeys() {
         appState.archive.backupKeys()
     }

@@ -47,12 +47,6 @@ struct OptionsView: View {
                         viewModel.resetApp()
                     }
                     .foregroundColor(.sRed)
-
-                    Button("Unpair Flipper") {
-                        viewModel.unpairFlipper()
-                    }
-                    .foregroundColor(viewModel.isOnline ? .sRed : .gray)
-                    .disabled(!viewModel.isOnline)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
