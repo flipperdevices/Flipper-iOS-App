@@ -29,6 +29,9 @@ struct StressTestView: View {
         }
         .navigationTitle("Stress Test")
         .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+            viewModel.stop()
+        }
     }
 }
 
