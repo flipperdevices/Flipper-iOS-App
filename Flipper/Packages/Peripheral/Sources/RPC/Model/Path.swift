@@ -31,8 +31,9 @@ public struct Path: Equatable, Hashable {
     }
 
     public mutating func append(_ component: String) {
-        // TODO: validate input
-        components.append(component)
+        component.split(separator: "/").forEach {
+            components.append(.init($0))
+        }
     }
 
     public func appending(_ component: String) -> Path {

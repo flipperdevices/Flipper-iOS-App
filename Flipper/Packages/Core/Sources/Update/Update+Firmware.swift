@@ -49,42 +49,49 @@ extension Update {
     public func uploadFirmware(
         _ firmware: Firmware,
         progress: @escaping (Double) -> Void
-    ) async throws -> String {
+    ) async throws -> Path {
         guard case let .directory(directory) = firmware.entries.first else {
             throw Error.invalidFirmware
         }
-        let basePath = "/ext/update"
-        let updatePath = "\(basePath)/\(directory)"
-        try? await rpc.createDirectory(at: "\(basePath)")
-        try? await rpc.createDirectory(at: "\(updatePath)")
+        let basePath = Path("/ext/update")
+        let updatePath = basePath.appending(directory)
+        try? await rpc.createDirectory(at: basePath)
+        try? await rpc.createDirectory(at: updatePath)
 
         let files = await filterExising(firmware.files, at: basePath)
 
-        let totalSize = files.reduce(0) { $0 + $1.data.count }
-        var totalSent = 0
-
-        progress(0)
-
-        for file in files {
-            let path = Path("\(basePath)/\(file.name)")
-            for try await sent in rpc.writeFile(at: path, bytes: file.data) {
-                totalSent += sent
-                progress(Double(totalSent) / Double(totalSize))
-            }
+        if !files.isEmpty {
+            progress(0)
+            try await uploadFiles(files, at: basePath, progress: progress)
         }
 
         return updatePath
     }
 
-    // TODO: Refactor
+    private func uploadFiles(
+        _ files: [Firmware.File],
+        at path: Path,
+        progress: (Double) -> Void
+    ) async throws {
+        let totalSize = files.reduce(0) { $0 + $1.data.count }
+        var totalSent = 0
+
+        for file in files {
+            let path = path.appending(file.name)
+            for try await sent in rpc.writeFile(at: path, bytes: file.data) {
+                totalSent += sent
+                progress(Double(totalSent) / Double(totalSize))
+            }
+        }
+    }
 
     private func filterExising(
         _ files: [Firmware.File],
-        at path: String
+        at path: Path
     ) async -> [Firmware.File] {
         var result = [Firmware.File]()
         for file in files {
-            let path = Path("\(path)/\(file.name)")
+            let path = path.appending(file.name)
             if let hash = await hash(for: path), hash.value == file.data.md5 {
                 continue
             }

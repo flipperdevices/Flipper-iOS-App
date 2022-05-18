@@ -23,7 +23,7 @@ class RPCMock: RPC {
     func setDate(_ date: Date) async throws {
     }
 
-    func update(manifest: String) async throws {
+    func update(manifest: Path) async throws {
     }
 
     func getStorageInfo(at path: Path) async throws -> StorageSpace {

@@ -29,8 +29,8 @@ public class Update {
         try await rpc.stopVirtualDisplay()
     }
 
-    public func startUpdateProcess(from directory: String) async throws {
-        try await rpc.update(manifest: directory + "update.fuf")
+    public func startUpdateProcess(from path: Path) async throws {
+        try await rpc.update(manifest: path.appending("update.fuf"))
         try await rpc.reboot(to: .update)
     }
 }

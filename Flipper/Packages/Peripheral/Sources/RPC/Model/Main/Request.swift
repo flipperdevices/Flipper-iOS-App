@@ -16,7 +16,7 @@ public enum Request {
         case ping([UInt8])
         case getDate
         case setDate(Date)
-        case update(String)
+        case update(Path)
     }
 
     public enum Storage {
@@ -82,7 +82,7 @@ extension Request.System {
         case .update(let manifest):
             return .with {
                 $0.systemUpdateRequest = .with {
-                    $0.updateManifest = manifest
+                    $0.updateManifest = manifest.string
                 }
             }
         }

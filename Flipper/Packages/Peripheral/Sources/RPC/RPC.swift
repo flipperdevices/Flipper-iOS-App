@@ -11,7 +11,7 @@ public protocol RPC {
     func reboot(to mode: Message.RebootMode) async throws
     func getDate() async throws -> Date
     func setDate(_ date: Date) async throws
-    func update(manifest: String) async throws
+    func update(manifest: Path) async throws
 
     // MARK: Storage
 

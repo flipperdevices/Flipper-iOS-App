@@ -113,7 +113,7 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
 
-    func uploadFirmware(_ firmware: Update.Firmware) async throws -> String {
+    func uploadFirmware(_ firmware: Update.Firmware) async throws -> Peripheral.Path {
         state = .prepearingForUpdate
         progress = 0
         return try await updater.uploadFirmware(firmware) { progress in
@@ -126,7 +126,7 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
 
-    func startUpdateProcess(_ directory: String) async throws {
+    func startUpdateProcess(_ directory: Peripheral.Path) async throws {
         try await updater.startUpdateProcess(from: directory)
         onSuccess()
         isPresented = false

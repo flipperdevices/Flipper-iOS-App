@@ -114,7 +114,7 @@ extension BluetoothRPC {
         }
     }
 
-    public func update(manifest: String) async throws {
+    public func update(manifest: Path) async throws {
         let response = try await session?
             .send(.system(.update(manifest)))
             .response
