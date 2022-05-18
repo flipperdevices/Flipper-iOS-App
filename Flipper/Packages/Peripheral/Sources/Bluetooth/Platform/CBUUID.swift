@@ -19,6 +19,7 @@ extension CBUUID {
     static var battery: CBUUID { .init(string: "180F") }
     // characteristics
     static var batteryLevel: CBUUID { .init(string: "2A19") }
+    static var batteryPowerState: CBUUID { .init(string: "2A1A") }
 
     // service
     static var serial: CBUUID { .init(string: "8FE5B3D5-2E7F-4A98-2A48-7ACC60FE0000") }

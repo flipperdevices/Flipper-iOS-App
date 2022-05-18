@@ -85,6 +85,10 @@ struct DeviceInfoHeader: View {
                                 .padding(.top, 2.53)
                                 .padding(.leading, 2.66)
                                 .foregroundColor(batteryColor)
+
+                            Image("Charging")
+                                .offset(x: 6, y: -2)
+                                .opacity(battery.state == .charging ? 1 : 0)
                         }
 
                         Text("\(battery.level)%")

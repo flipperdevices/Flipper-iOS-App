@@ -30,6 +30,10 @@ extension Array where Element == CBCharacteristic {
         first { $0.uuid == .batteryLevel }
     }
 
+    var batteryPowerState: CBCharacteristic? {
+        first { $0.uuid == .batteryPowerState }
+    }
+
     // MARK: Serial Service
 
     var serialRead: CBCharacteristic? {

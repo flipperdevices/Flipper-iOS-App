@@ -94,15 +94,33 @@ fileprivate extension Flipper.DeviceInformation {
     }
 }
 
+fileprivate extension String {
+    static var batteryLevel: String { "Battery Level" }
+    static var batteryPowerState: String { "Battery Power State" }
+}
+
 fileprivate extension Flipper.Battery {
     init?(_ service: FlipperService) {
-        guard
-            service.id == .battery,
-            let characteristic = service.characteristics.first,
-            !characteristic.value.isEmpty
-        else {
+        guard service.id == .battery else {
             return nil
         }
-        self.init(level: Int(characteristic.value[0]))
+
+        let level = service.characteristics
+            .first { $0.name == .batteryLevel }?.value ?? []
+
+        let state = service.characteristics
+            .first { $0.name == .batteryPowerState }?.value ?? []
+
+        self.init(
+            level: Int(level.first ?? 0),
+            state: .init(rawValue: state.first ?? 0))
+    }
+}
+
+fileprivate extension Flipper.Battery.State {
+    init(rawValue: UInt8) {
+        self = rawValue & 0b0011_0000 == 0b0011_0000
+            ? .charging
+            : .discharging
     }
 }

@@ -157,6 +157,12 @@ extension FlipperPeripheral: CBPeripheralDelegate {
         }
         peripheral.setNotifyValue(true, for: batteryLevel)
         peripheral.readValue(for: batteryLevel)
+
+        if let batteryPowerState = characteristics.batteryPowerState {
+            peripheral.setNotifyValue(true, for: batteryPowerState)
+            peripheral.readValue(for: batteryPowerState)
+            return
+        }
     }
 
     func didDiscoverSerial(_ characteristics: [CBCharacteristic]) {
