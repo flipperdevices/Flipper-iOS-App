@@ -12,60 +12,66 @@ struct InfoView: View {
                     onSave: viewModel.saveChanges,
                     onCancel: viewModel.undoChanges
                 )
+                .padding(.bottom, 6)
             } else {
                 SheetHeader("Key Info") {
                     viewModel.dismiss()
                 }
+                .padding(.bottom, 6)
             }
 
-            CardView(
-                item: $viewModel.item,
-                isEditing: viewModel.isEditMode,
-                kind: .existing
-            )
-            .padding(.top, 14)
-            .padding(.horizontal, 24)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    CardView(
+                        item: $viewModel.item,
+                        isEditing: viewModel.isEditMode,
+                        kind: .existing
+                    )
+                    .padding(.top, 14)
+                    .padding(.horizontal, 24)
 
-            Button {
-                viewModel.emulate()
-            } label: {
-                HStack(spacing: 7) {
+                    Button {
+                        viewModel.emulate()
+                    } label: {
+                        HStack(spacing: 7) {
+                            Spacer()
+                            Image("Emulate")
+                            Text("Emulate")
+                            Spacer()
+                        }
+                        .frame(height: 47)
+                        .frame(maxWidth: .infinity)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white)
+                        .background(viewModel.isConnected ? Color.a2 : .gray)
+                        .cornerRadius(30)
+                    }
+                    .disabled(!viewModel.isConnected)
+                    .opacity(viewModel.isEditMode ? 0 : 1)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 18)
+
+                    VStack(alignment: .leading, spacing: 20) {
+                        InfoButton(image: .init("edit"), title: "Edit") {
+                            viewModel.edit()
+                        }
+                        .foregroundColor(.primary)
+                        InfoButton(image: .init("share"), title: "Share") {
+                            viewModel.share()
+                        }
+                        .foregroundColor(.primary)
+                        InfoButton(image: .init("delete"), title: "Delete") {
+                            viewModel.delete()
+                        }
+                        .foregroundColor(.sRed)
+                    }
+                    .padding(.top, 24)
+                    .padding(.horizontal, 24)
+                    .opacity(viewModel.isEditMode ? 0 : 1)
+
                     Spacer()
-                    Image("Emulate")
-                    Text("Emulate")
-                    Spacer()
                 }
-                .frame(height: 47)
-                .frame(maxWidth: .infinity)
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(.white)
-                .background(viewModel.isConnected ? Color.a2 : .gray)
-                .cornerRadius(30)
             }
-            .disabled(!viewModel.isConnected)
-            .opacity(viewModel.isEditMode ? 0 : 1)
-            .padding(.horizontal, 24)
-            .padding(.top, 18)
-
-            VStack(alignment: .leading, spacing: 20) {
-                InfoButton(image: .init("edit"), title: "Edit") {
-                    viewModel.edit()
-                }
-                .foregroundColor(.primary)
-                InfoButton(image: .init("share"), title: "Share") {
-                    viewModel.share()
-                }
-                .foregroundColor(.primary)
-                InfoButton(image: .init("delete"), title: "Delete") {
-                    viewModel.delete()
-                }
-                .foregroundColor(.sRed)
-            }
-            .padding(.top, 24)
-            .padding(.horizontal, 24)
-            .opacity(viewModel.isEditMode ? 0 : 1)
-
-            Spacer()
         }
         .alert(isPresented: $viewModel.isError) {
             Alert(title: Text(viewModel.error))
