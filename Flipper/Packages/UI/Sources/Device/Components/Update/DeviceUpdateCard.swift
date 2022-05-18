@@ -176,17 +176,29 @@ struct DeviceUpdateCard: View {
                     .padding(.horizontal, 12)
                 }
             }
-        }
-        .alert(isPresented: $viewModel.showConfirmUpdate) {
-            Alert(
-                title: Text("Update Firmware?"),
-                message: Text(
-                    "New Firmware \(viewModel.availableFirmware) " +
-                    "will be installed"),
-                primaryButton: .default(.init("Cancel")),
-                secondaryButton: .default(.init("Update").bold()) {
-                    viewModel.update()
-                })
+
+            Color.clear.alert(isPresented: $viewModel.showConfirmUpdate) {
+                Alert(
+                    title: Text("Update Firmware?"),
+                    message: Text(
+                        "New Firmware \(viewModel.availableFirmware) " +
+                        "will be installed"),
+                    primaryButton: .default(.init("Cancel")),
+                    secondaryButton: .default(.init("Update").bold()) {
+                        viewModel.update()
+                    })
+            }
+            Color.clear.alert(isPresented: $viewModel.showPauseSync) {
+                Alert(
+                    title: Text("Pause Synchronization?"),
+                    message: Text(
+                        "Flipper is busy with syncing. " +
+                        "Sync will be paused before updating."),
+                    primaryButton: .default(.init("Continue")),
+                    secondaryButton: .default(.init("Pause").bold()) {
+                        viewModel.pauseSync()
+                    })
+            }
         }
         .fullScreenCover(isPresented: $viewModel.showUpdateView) {
             DeviceUpdateView(viewModel: .init(

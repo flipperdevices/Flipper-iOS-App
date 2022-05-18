@@ -15,6 +15,7 @@ class DeviceUpdateCardModel: ObservableObject {
 
     @Published var showConfirmUpdate = false
     @Published var showUpdateView = false
+    @Published var showPauseSync = false
 
     @Published var flipper: Flipper? {
         didSet { updateState() }
@@ -187,6 +188,10 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func confirmUpdate() {
+        guard appState.status != .synchronizing else {
+            showPauseSync = true
+            return
+        }
         guard canUpdate else {
             return
         }
@@ -201,6 +206,9 @@ class DeviceUpdateCardModel: ObservableObject {
             }
             showUpdateView = true
         }
+    }
+
+    func pauseSync() {
     }
 
     func onSuccess() {
