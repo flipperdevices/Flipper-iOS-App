@@ -32,7 +32,12 @@ struct LogsView: View {
                         Button {
                             viewModel.changeLogLevel(to: level)
                         } label: {
-                            Text(level.rawValue)
+                            HStack {
+                                Text(level.rawValue)
+                                if level == viewModel.logLevel {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
                         }
                     }
                 } label: {
