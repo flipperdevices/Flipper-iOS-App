@@ -120,9 +120,7 @@ struct DeviceUpdateCard: View {
                             .multilineTextAlignment(.center)
                             .foregroundColor(.black30)
                     }
-                    .frame(height: 40)
-                    .padding(.top, 8)
-                    .padding(.bottom, 8)
+                    .padding(.vertical, 8)
                     .padding(.horizontal, 12)
                 } else {
                     HStack {
