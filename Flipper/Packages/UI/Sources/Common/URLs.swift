@@ -23,7 +23,7 @@ extension URL {
     // MARK: Welcome
 
     static var termsOfServiceURL: URL {
-        .init(string: "https://docs.flipperzero.one/legal/terms-of-service")!
+        .init(string: "https://flipp.dev/flipper-app-terms-of-service")!
     }
 
     static var privacyPolicyURL: URL {
