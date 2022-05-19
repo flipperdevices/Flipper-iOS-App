@@ -16,16 +16,13 @@ class DeviceUpdateCardModel: ObservableObject {
     @Published var showConfirmUpdate = false
     @Published var showUpdateView = false
     @Published var showPauseSync = false
+    @Published var showCharge = false
 
     @Published var flipper: Flipper? {
         didSet { updateState() }
     }
 
     let updater = Update()
-
-    var canUpdate: Bool {
-        appState.status == .connected || appState.status == .synchronized
-    }
 
     enum State {
         case noSDCard
@@ -188,11 +185,14 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func confirmUpdate() {
-        guard appState.status != .synchronizing else {
-            showPauseSync = true
+        guard let battery = flipper?.battery,
+            battery.level >= 10 || battery.state == .charging
+        else {
+            self.showCharge = true
             return
         }
-        guard canUpdate else {
+        guard appState.status != .synchronizing else {
+            showPauseSync = true
             return
         }
         showConfirmUpdate = true

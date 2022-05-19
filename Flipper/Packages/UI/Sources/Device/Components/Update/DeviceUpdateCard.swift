@@ -180,6 +180,16 @@ struct DeviceUpdateCard: View {
                 "Flipper is busy with syncing. " +
                 "Sync will be paused before updating.")
         }
+        .alert(
+            "Unable to Install Update",
+            isPresented: $viewModel.showCharge
+        ) {
+            Button("Close") { }
+        } message: {
+            Text(
+                "Please charge up to 10% or keep your Flipper " +
+                "connected to a power source")
+        }
         .fullScreenCover(isPresented: $viewModel.showUpdateView) {
             DeviceUpdateView(viewModel: .init(
                 isPresented: $viewModel.showUpdateView,
