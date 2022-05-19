@@ -13,6 +13,7 @@ public struct Flipper: Equatable, Identifiable {
 
     // swiftlint:disable discouraged_optional_boolean
     public var hasProtobufVersion: Bool?
+    public var hasBatteryPowerState: Bool?
 
     public init(
         id: UUID,
@@ -59,6 +60,7 @@ public extension Flipper {
             .map(Battery.init) ?? nil
 
         self.hasProtobufVersion = source.hasProtobufVersion
+        self.hasBatteryPowerState = source.hasBatteryPowerState
     }
 }
 

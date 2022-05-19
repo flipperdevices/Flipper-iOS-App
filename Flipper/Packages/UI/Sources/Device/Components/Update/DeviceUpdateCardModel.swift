@@ -59,6 +59,10 @@ class DeviceUpdateCardModel: ObservableObject {
         return storage.external == nil
     }
 
+    var hasBatteryState: Bool {
+        flipper?.hasBatteryPowerState == true
+    }
+
     var installedChannel: Update.Channel? {
         flipper?.information?.firmwareChannel
     }
@@ -185,9 +189,9 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func confirmUpdate() {
-        guard let battery = flipper?.battery,
-            battery.level >= 10 || battery.state == .charging
-        else {
+        guard let battery = flipper?.battery else { return }
+
+        guard battery.level >= 10 || battery.state == .charging else {
             self.showCharge = true
             return
         }

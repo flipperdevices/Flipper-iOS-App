@@ -187,8 +187,11 @@ struct DeviceUpdateCard: View {
             Button("Close") { }
         } message: {
             Text(
-                "Please charge up to 10% or keep your Flipper " +
-                "connected to a power source")
+                // swiftlint:disable indentation_width
+                viewModel.hasBatteryState
+                    ? "Please charge up to 10% or keep your Flipper " +
+                      "connected to a power source"
+                    : "This update requires at least 10% battery")
         }
         .fullScreenCover(isPresented: $viewModel.showUpdateView) {
             DeviceUpdateView(viewModel: .init(

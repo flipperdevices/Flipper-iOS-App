@@ -25,15 +25,22 @@ public protocol BluetoothPeripheral: AnyObject {
 
 public extension BluetoothPeripheral {
     // swiftlint:disable discouraged_optional_boolean
-    var hasProtobufVersion: Bool? {
+
+    private func hasCharacteristic(_ id: String) -> Bool? {
         guard !services.isEmpty else {
             return nil
         }
         return services.contains { service in
-            service.characteristics.contains { characteristic in
-                characteristic.id == "03F6666D-AE5E-47C8-8E1A-5D873EB5A933"
-            }
+            service.characteristics.contains { $0.id == id }
         }
+    }
+
+    var hasProtobufVersion: Bool? {
+        hasCharacteristic("03F6666D-AE5E-47C8-8E1A-5D873EB5A933")
+    }
+
+    var hasBatteryPowerState: Bool? {
+        hasCharacteristic("Battery Power State")
     }
 }
 
