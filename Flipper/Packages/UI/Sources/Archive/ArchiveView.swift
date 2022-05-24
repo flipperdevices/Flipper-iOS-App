@@ -7,46 +7,38 @@ struct ArchiveView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                CategoryCard(
-                    groups: viewModel.groups,
-                    deletedCount: viewModel.deleted.count
-                )
-                .padding(14)
+            VStack {
+                if viewModel.status == .synchronizing {
+                    VStack(spacing: 4) {
+                        Spinner()
+                        Text(
+                            viewModel.syncProgress == 0
+                                ? "Syncing..."
+                                : "Syncing \(viewModel.syncProgress)%"
+                        )
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.black30)
+                    }
+                } else {
+                    ScrollView {
+                        CategoryCard(
+                            groups: viewModel.groups,
+                            deletedCount: viewModel.deleted.count
+                        )
+                        .padding(14)
 
-                if !viewModel.favoriteItems.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text("Favorites")
-                                .font(.system(size: 16, weight: .bold))
-                            Image("StarFilled")
-                                .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 20, height: 20)
-                                .foregroundColor(.sYellow)
+                        if !viewModel.favoriteItems.isEmpty {
+                            FavoritesSection(viewModel: viewModel)
+                                .padding(.horizontal, 14)
+                                .padding(.bottom, 14)
                         }
 
-                        CompactList(items: viewModel.favoriteItems) { item in
-                            viewModel.onItemSelected(item: item)
+                        if !viewModel.items.isEmpty {
+                            AllItemsSection(viewModel: viewModel)
+                                .padding(.horizontal, 14)
+                                .padding(.bottom, 14)
                         }
                     }
-                    .padding(.horizontal, 14)
-                    .padding(.bottom, 14)
-                }
-
-                if !viewModel.items.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text("All")
-                                .font(.system(size: 16, weight: .bold))
-                        }
-
-                        CompactList(items: viewModel.sortedItems) { item in
-                            viewModel.onItemSelected(item: item)
-                        }
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.bottom, 14)
                 }
             }
             .background(Color.background)
@@ -79,5 +71,46 @@ struct ArchiveView: View {
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
+    }
+}
+
+extension ArchiveView {
+    struct FavoritesSection: View {
+        @StateObject var viewModel: ArchiveViewModel
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("Favorites")
+                        .font(.system(size: 16, weight: .bold))
+                    Image("StarFilled")
+                        .resizable()
+                        .renderingMode(.template)
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(.sYellow)
+                }
+
+                CompactList(items: viewModel.favoriteItems) { item in
+                    viewModel.onItemSelected(item: item)
+                }
+            }
+        }
+    }
+
+    struct AllItemsSection: View {
+        @StateObject var viewModel: ArchiveViewModel
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("All")
+                        .font(.system(size: 16, weight: .bold))
+                }
+
+                CompactList(items: viewModel.sortedItems) { item in
+                    viewModel.onItemSelected(item: item)
+                }
+            }
+        }
     }
 }

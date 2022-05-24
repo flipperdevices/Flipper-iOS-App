@@ -11,6 +11,8 @@ class ArchiveViewModel: ObservableObject {
 
     @Published var items: [ArchiveItem] = []
     @Published var deleted: [ArchiveItem] = []
+    @Published var status: DeviceStatus = .noDevice
+    @Published var syncProgress: Int = 0
 
     var sortedItems: [ArchiveItem] {
         items.sorted { $0.date < $1.date }
@@ -58,6 +60,16 @@ class ArchiveViewModel: ObservableObject {
             .map { !$0.isEmpty }
             .filter { $0 == true }
             .assign(to: \.hasImportedItem, on: self)
+            .store(in: &disposeBag)
+
+        appState.$status
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.status, on: self)
+            .store(in: &disposeBag)
+
+        appState.$syncProgress
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.syncProgress, on: self)
             .store(in: &disposeBag)
     }
 
