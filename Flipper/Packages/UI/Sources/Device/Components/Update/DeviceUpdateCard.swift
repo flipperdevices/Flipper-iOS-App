@@ -177,8 +177,8 @@ struct DeviceUpdateCard: View {
             }
         } message: {
             Text(
-                "Flipper is busy with syncing. " +
-                "Sync will be paused before updating.")
+                "Firmware update is not possible during synchronization. " +
+                "Wait for sync to finish or pause it.")
         }
         .alert(
             "Unable to Install Update",
