@@ -21,6 +21,8 @@ public struct RootView: View {
         .onContinueUserActivity("PlayAlertIntent") { _ in
             viewModel.playAlert()
         }
-        .pairingIssueAlert(isPresented: $viewModel.isPairingIssue)
+        .customAlert(isPresented: $viewModel.isPairingIssue) {
+            PairingIssueAlert(isPresented: $viewModel.isPairingIssue)
+        }
     }
 }
