@@ -13,6 +13,9 @@ class DeviceUpdateCardModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
+    var channelSelectorOffset: Double = .zero
+
+    @Published var showChannelSelector = false
     @Published var showConfirmUpdate = false
     @Published var showUpdateView = false
     @Published var showPauseSync = false
@@ -117,6 +120,15 @@ class DeviceUpdateCardModel: ObservableObject {
         } else {
             self.state = .noUpdates
             self.updateAvailableFirmware()
+        }
+    }
+
+    func onChannelSelected(_ channel: String) {
+        switch channel {
+        case "Release": self.channel = .release
+        case "Release-Candidate": self.channel = .canditate
+        case "Development": self.channel = .development
+        default: break
         }
     }
 

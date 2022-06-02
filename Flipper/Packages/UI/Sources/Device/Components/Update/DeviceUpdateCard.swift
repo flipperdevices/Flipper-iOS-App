@@ -129,7 +129,7 @@ struct DeviceUpdateCard: View {
 
                         Spacer()
 
-                        ChannelMenu(viewModel: viewModel)
+                        SelectChannelButton(viewModel: viewModel)
                             .onTapGesture {
                                 viewModel.updateAvailableFirmware()
                             }
@@ -195,34 +195,6 @@ struct DeviceUpdateCard: View {
             if phase == .active {
                 viewModel.updateAvailableFirmware()
             }
-        }
-    }
-}
-
-struct ChannelMenu: View {
-    @StateObject var viewModel: DeviceUpdateCardModel
-
-    var body: some View {
-        Menu {
-            Button("Release") {
-                viewModel.channel = .release
-            }
-            Button("Release-Candidate") {
-                viewModel.channel = .canditate
-            }
-            Button("Development") {
-                viewModel.channel = .development
-            }
-        } label: {
-            HStack(spacing: 6) {
-                Spacer()
-                Text(viewModel.availableFirmware)
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(viewModel.availableFirmwareColor)
-                Image(systemName: "chevron.down")
-                    .foregroundColor(.black30)
-            }
-            .frame(height: 44)
         }
     }
 }

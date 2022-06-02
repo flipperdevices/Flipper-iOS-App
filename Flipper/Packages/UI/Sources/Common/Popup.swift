@@ -6,7 +6,7 @@ extension View {
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
         fullScreenCover(isPresented: isPresented) {
-            ZStack {
+            ZStack(alignment: .top) {
                 Color.black
                     .opacity(0.3)
                     .edgesIgnoringSafeArea(.all)
