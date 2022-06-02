@@ -192,7 +192,9 @@ class DeviceUpdateCardModel: ObservableObject {
         guard let battery = flipper?.battery else { return }
 
         guard battery.level >= 10 || battery.state == .charging else {
-            self.showCharge = true
+            withoutAnimation {
+                showCharge = true
+            }
             return
         }
         guard appState.status != .synchronizing else {

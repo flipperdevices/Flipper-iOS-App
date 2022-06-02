@@ -180,18 +180,8 @@ struct DeviceUpdateCard: View {
                 "Firmware update is not possible during synchronization. " +
                 "Wait for sync to finish or pause it.")
         }
-        .alert(
-            "Unable to Install Update",
-            isPresented: $viewModel.showCharge
-        ) {
-            Button("Close") { }
-        } message: {
-            Text(
-                // swiftlint:disable indentation_width
-                viewModel.hasBatteryState
-                    ? "Please charge up to 10% or keep your Flipper " +
-                      "connected to a power source"
-                    : "This update requires at least 10% battery")
+        .customAlert(isPresented: $viewModel.showCharge) {
+            LowBatteryAlert()
         }
         .fullScreenCover(isPresented: $viewModel.showUpdateView) {
             DeviceUpdateView(viewModel: .init(
