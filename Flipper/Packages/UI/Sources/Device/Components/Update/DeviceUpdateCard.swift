@@ -129,7 +129,7 @@ struct DeviceUpdateCard: View {
 
                         Spacer()
 
-                        ChannelMenu(viewModel: viewModel)
+                        SelectChannelButton(viewModel: viewModel)
                             .onTapGesture {
                                 viewModel.updateAvailableFirmware()
                             }
@@ -180,18 +180,8 @@ struct DeviceUpdateCard: View {
                 "Firmware update is not possible during synchronization. " +
                 "Wait for sync to finish or pause it.")
         }
-        .alert(
-            "Unable to Install Update",
-            isPresented: $viewModel.showCharge
-        ) {
-            Button("Close") { }
-        } message: {
-            Text(
-                // swiftlint:disable indentation_width
-                viewModel.hasBatteryState
-                    ? "Please charge up to 10% or keep your Flipper " +
-                      "connected to a power source"
-                    : "This update requires at least 10% battery")
+        .customAlert(isPresented: $viewModel.showCharge) {
+            LowBatteryAlert()
         }
         .fullScreenCover(isPresented: $viewModel.showUpdateView) {
             DeviceUpdateView(viewModel: .init(
@@ -205,34 +195,6 @@ struct DeviceUpdateCard: View {
             if phase == .active {
                 viewModel.updateAvailableFirmware()
             }
-        }
-    }
-}
-
-struct ChannelMenu: View {
-    @StateObject var viewModel: DeviceUpdateCardModel
-
-    var body: some View {
-        Menu {
-            Button("Release") {
-                viewModel.channel = .release
-            }
-            Button("Release-Candidate") {
-                viewModel.channel = .canditate
-            }
-            Button("Development") {
-                viewModel.channel = .development
-            }
-        } label: {
-            HStack(spacing: 6) {
-                Spacer()
-                Text(viewModel.availableFirmware)
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(viewModel.availableFirmwareColor)
-                Image(systemName: "chevron.down")
-                    .foregroundColor(.black30)
-            }
-            .frame(height: 44)
         }
     }
 }

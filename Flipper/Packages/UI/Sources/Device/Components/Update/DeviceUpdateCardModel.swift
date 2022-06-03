@@ -13,6 +13,9 @@ class DeviceUpdateCardModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
+    var channelSelectorOffset: Double = .zero
+
+    @Published var showChannelSelector = false
     @Published var showConfirmUpdate = false
     @Published var showUpdateView = false
     @Published var showPauseSync = false
@@ -120,6 +123,15 @@ class DeviceUpdateCardModel: ObservableObject {
         }
     }
 
+    func onChannelSelected(_ channel: String) {
+        switch channel {
+        case "Release": self.channel = .release
+        case "Release-Candidate": self.channel = .canditate
+        case "Development": self.channel = .development
+        default: break
+        }
+    }
+
     func updateAvailableFirmware() {
         Task {
             do {
@@ -192,7 +204,9 @@ class DeviceUpdateCardModel: ObservableObject {
         guard let battery = flipper?.battery else { return }
 
         guard battery.level >= 10 || battery.state == .charging else {
-            self.showCharge = true
+            withoutAnimation {
+                showCharge = true
+            }
             return
         }
         guard appState.status != .synchronizing else {

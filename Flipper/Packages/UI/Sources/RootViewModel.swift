@@ -26,7 +26,7 @@ public class RootViewModel: ObservableObject {
                     return
                 }
                 if $0 == .invalidPairing {
-                    withAnimation(.easeOut.speed(2)) {
+                    withoutAnimation {
                         self.isPairingIssue = true
                     }
                 }
