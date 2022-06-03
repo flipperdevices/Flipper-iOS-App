@@ -18,28 +18,28 @@ struct DeviceInfoCard: View {
 
                 if viewModel.isInfoLoaded {
                     VStack(spacing: 12) {
-                        DeviceInfoCardRow(
+                        CardRow(
                             name: "Firmware Version",
                             value: viewModel.firmwareVersion
                         )
                         .foregroundColor(viewModel.firmwareVersionColor)
                         .padding(.horizontal, 12)
                         Divider()
-                        DeviceInfoCardRow(
+                        CardRow(
                             name: "Build Date",
                             value: viewModel.firmwareBuild
                         )
                         .padding(.horizontal, 12)
 
                         Divider()
-                        DeviceInfoCardRow(
+                        CardRow(
                             name: "Int. Flash (Used/Total)",
                             value: viewModel.internalSpace
                         )
                         .padding(.horizontal, 12)
 
                         Divider()
-                        DeviceInfoCardRow(
+                        CardRow(
                             name: "SD Card (Used/Total)",
                             value: viewModel.externalSpace
                         )
