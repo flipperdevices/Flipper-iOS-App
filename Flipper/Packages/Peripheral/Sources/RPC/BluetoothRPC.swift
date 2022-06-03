@@ -70,14 +70,27 @@ public class BluetoothRPC: RPC {
 // MARK: Public methods
 
 extension BluetoothRPC {
-    public func deviceInfo() async throws -> [String: String] {
-        let response = try await session?
-            .send(.system(.info))
-            .response
-        guard case .system(.info(let result)) = response else {
-            throw Error.unexpectedResponse(response)
+    public func deviceInfo(
+    ) -> AsyncThrowingStream<(String, String), Swift.Error> {
+        .init { continuation in
+            Task {
+                do {
+                    guard let session = session else {
+                        throw Error.unsupported(0)
+                    }
+                    let streams = session.send(.system(.info))
+                    for try await next in streams.input {
+                        guard case let .system(.info(key, value)) = next else {
+                            throw Error.unexpectedResponse(next)
+                        }
+                        continuation.yield((key, value))
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
         }
-        return result
     }
 
     @discardableResult

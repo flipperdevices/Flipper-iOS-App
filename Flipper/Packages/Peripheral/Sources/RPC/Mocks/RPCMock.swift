@@ -4,8 +4,8 @@ import Foundation
 class RPCMock: RPC {
     var session: Session?
 
-    func deviceInfo() async throws -> [String: String] {
-        .init()
+    func deviceInfo() -> AsyncThrowingStream<(String, String), Swift.Error> {
+        .init { _ in }
     }
 
     @discardableResult

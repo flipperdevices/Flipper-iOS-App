@@ -9,7 +9,7 @@ public enum Response: Equatable {
 
     public enum System: Equatable {
         case ping([UInt8])
-        case info([String: String])
+        case info(String, String)
         case dateTime(Date)
     }
 
@@ -75,7 +75,7 @@ extension Response {
     }
 
     init(decoding response: PBSystem_DeviceInfoResponse) {
-        self = .system(.info([response.key: response.value]))
+        self = .system(.info(response.key, response.value))
     }
 
     init(decoding response: PBSystem_GetDateTimeResponse) {
@@ -114,7 +114,7 @@ extension Response.System: CustomStringConvertible {
     public var description: String {
         switch self {
         case let .ping(bytes): return "ping(\(bytes.count) bytes)"
-        case let .info(info): return "info(\(info))"
+        case let .info(key, value): return "info(\(key): \(value))"
         case let .dateTime(date): return "dateTime(\(date))"
         }
     }

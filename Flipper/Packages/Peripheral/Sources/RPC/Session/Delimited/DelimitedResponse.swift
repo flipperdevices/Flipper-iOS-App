@@ -29,9 +29,6 @@ fileprivate extension Response.System {
         case let (.ping(current), .ping(next)):
             self = .ping(current + next)
 
-        case let (.info(current), .info(next)):
-            self = .info(current.merging(next, uniquingKeysWith: { $0 + $1 }))
-
         default:
             throw Error.unexpectedResponse(.system(response))
         }

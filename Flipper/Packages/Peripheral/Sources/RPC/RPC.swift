@@ -5,7 +5,7 @@ public protocol RPC {
 
     // MARK: System
 
-    func deviceInfo() async throws -> [String: String]
+    func deviceInfo() -> AsyncThrowingStream<(String, String), Swift.Error>
     @discardableResult
     func ping(_ bytes: [UInt8]) async throws -> [UInt8]
     func reboot(to mode: Message.RebootMode) async throws
@@ -41,6 +41,14 @@ public protocol RPC {
 }
 
 public extension RPC {
+    func deviceInfo() async throws -> [String: String] {
+        var result: [String: String] = [:]
+        for try await (key, value) in deviceInfo() {
+            result[key] = value
+        }
+        return result
+    }
+
     func readFile(at path: Path) async throws -> [UInt8] {
         var result: [UInt8] = []
         for try await next in readFile(at: path) {

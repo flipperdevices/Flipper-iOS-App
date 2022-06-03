@@ -51,7 +51,9 @@ class DeviceInfoViewModel: ObservableObject {
     func getDeviceInfo() {
         Task {
             do {
-                deviceInfo = try await rpc.deviceInfo()
+                for try await (key, value) in rpc.deviceInfo() {
+                    deviceInfo[key] = value
+                }
             } catch {
                 logger.error("device info: \(error)")
             }
