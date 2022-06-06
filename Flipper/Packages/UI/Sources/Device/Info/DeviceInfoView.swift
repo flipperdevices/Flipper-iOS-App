@@ -1,4 +1,5 @@
 import Core
+import Collections
 import SwiftUI
 
 struct DeviceInfoView: View {
@@ -6,97 +7,97 @@ struct DeviceInfoView: View {
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
-        VStack {
-            Form {
-                DeviceInformationService(
-                    manufacturerName: viewModel.manufacturerName,
-                    serialNumber: viewModel.serialNumber,
-                    firmwareRevision: viewModel.firmwareRevision,
-                    softwareRevision: viewModel.softwareRevision,
-                    protobufRevision: viewModel.protobufRevision)
+        ScrollView {
+            VStack(spacing: 14) {
+                DeviceInfoViewCard(
+                    title: "Flipper Device",
+                    values: [
+                        "Device Name": viewModel.deviceName,
+                        "Hardware Model": viewModel.hardwareModel,
+                        "Hardware Region": viewModel.hardwareRegion,
+                        "Hardware Version": viewModel.hardwareVersion,
+                        "Hardware OTP Version": viewModel.hardwareOTPVersion,
+                        "Serial Number": viewModel.serialNumber
+                    ]
+                )
 
-                DeviceInformation(viewModel.deviceInfo)
+                DeviceInfoViewCard(
+                    title: "Firmware",
+                    values: [
+                        "Software Revision": viewModel.softwareRevision,
+                        "Build Date": viewModel.buildDate,
+                        "Target": viewModel.firmwareTarget,
+                        "Protobuf Version": viewModel.protobufVersion
+                    ]
+                )
+
+                DeviceInfoViewCard(
+                    title: "Radio Stack",
+                    values: [
+                        "Radio Firmware": viewModel.radioFirmware
+                    ]
+                )
+
+                DeviceInfoViewCard(
+                    title: "Bootloader",
+                    values: [
+                        "Software Revision": viewModel.softwareRevision,
+                        "Build Date": viewModel.buildDate,
+                        "Target": viewModel.firmwareTarget
+                    ]
+                )
+            }
+            .padding(.vertical, 14)
+        }
+        .background(Color.background)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                BackButton {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }
+            ToolbarItem(placement: .navigationBarLeading) {
+                Text("Device Info")
+                    .font(.system(size: 20, weight: .bold))
             }
         }
-        .navigationTitle("Device Info")
         .onAppear {
             viewModel.getDeviceInfo()
         }
     }
 }
 
-struct DeviceInformationService: View {
-    let manufacturerName: String
-    let serialNumber: String
-    let firmwareRevision: String
-    let softwareRevision: String
-    let protobufRevision: String
+struct DeviceInfoViewCard: View {
+    let title: String
+    var values: OrderedDictionary<String, String>
 
-    var body: some View {
-        Section(header: Text("Device Information (GATT)")) {
-            SectionRow(
-                name: "Manufacturer Name",
-                value: manufacturerName)
-
-            SectionRow(
-                name: "Serial Number",
-                value: serialNumber)
-
-            SectionRow(
-                name: "Firmware Revision",
-                value: firmwareRevision)
-
-            SectionRow(
-                name: "Software Revision",
-                value: softwareRevision)
-
-            SectionRow(
-                name: "Protobuf Revision",
-                value: protobufRevision)
-        }
-    }
-}
-
-struct DeviceInformation: View {
-    let deviceInformation: [String: String]
-
-    init(_ deviceInformation: [String: String]) {
-        self.deviceInformation = deviceInformation
+    var zippedIndexKey: [(Int, String)] {
+        .init(zip(values.keys.indices, values.keys))
     }
 
     var body: some View {
-        Section {
-            ForEach([String](deviceInformation.keys), id: \.self) { key in
-                SectionRow(name: key, value: deviceInformation[key] ?? "")
+        Card {
+            VStack(spacing: 12) {
+                HStack {
+                    Text(title)
+                        .font(.system(size: 16, weight: .bold))
+                    Spacer()
+                }
+                .padding(.bottom, 6)
+                .padding(.horizontal, 12)
+
+                ForEach(zippedIndexKey, id: \.0) { index, key in
+                    CardRow(name: key, value: values[key] ?? "")
+                        .padding(.horizontal, 12)
+                    if index + 1 < values.count {
+                        Divider()
+                    }
+                }
             }
-        } header: {
-            HStack(spacing: 8) {
-                Text("Device Information (RPC)")
-                ProgressView()
-                    .opacity(deviceInformation.isEmpty ? 1 : 0)
-                Spacer()
-            }
+            .padding(.vertical, 12)
         }
-    }
-}
-
-struct SectionRow: View {
-    let name: String
-    let value: String
-
-    var formattedName: String {
-        name.replacingOccurrences(of: "_", with: " ").capitalized
-    }
-
-    var body: some View {
-        HStack {
-            Text("\(formattedName)")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.black30)
-            Spacer()
-            Text("\(value)")
-                .font(.system(size: 14, weight: .regular))
-                .multilineTextAlignment(.trailing)
-        }
+        .padding(.horizontal, 14)
     }
 }
