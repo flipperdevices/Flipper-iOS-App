@@ -5,7 +5,7 @@ extension View {
         isPresented: Binding<Bool>,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
-        popup(isPresented: isPresented) {
+        popup(isPresented: isPresented, hideOnTap: false) {
             ZStack {
                 VStack(spacing: 0) {
                     HStack {

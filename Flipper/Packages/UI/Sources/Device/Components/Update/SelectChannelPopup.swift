@@ -109,7 +109,7 @@ struct SelectChannelButton: View {
         .onPreferenceChange(SelectChannelOffsetKey.self) {
             viewModel.channelSelectorOffset = $0
         }
-        .popup(isPresented: $viewModel.showChannelSelector) {
+        .popup(isPresented: $viewModel.showChannelSelector, hideOnTap: true) {
             SelectChannelPopup(y: viewModel.channelSelectorOffset) {
                 viewModel.onChannelSelected($0)
             }

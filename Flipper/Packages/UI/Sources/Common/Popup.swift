@@ -3,6 +3,7 @@ import SwiftUI
 extension View {
     func popup<Content: View>(
         isPresented: Binding<Bool>,
+        hideOnTap: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
         fullScreenCover(isPresented: isPresented) {
@@ -10,6 +11,13 @@ extension View {
                 Color.black
                     .opacity(0.3)
                     .edgesIgnoringSafeArea(.all)
+                    .onTapGesture {
+                        if hideOnTap {
+                            withoutAnimation {
+                                isPresented.wrappedValue = false
+                            }
+                        }
+                    }
 
                 content()
             }
