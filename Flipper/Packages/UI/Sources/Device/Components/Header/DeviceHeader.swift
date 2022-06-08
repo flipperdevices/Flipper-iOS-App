@@ -43,7 +43,10 @@ struct DeviceInfoHeader: View {
     let flipper: Flipper
 
     var flipperImage: String {
-        flipper.color == .black
+        guard flipper.state == .connected else {
+            return "FlipperNoDevice"
+        }
+        return flipper.color == .black
             ? "FlipperBlack"
             : "FlipperWhite"
     }
