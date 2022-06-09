@@ -26,8 +26,8 @@ let package = Package(
             .upToNextMajor(from: "1.0.0")),
         .package(
             name: "SwiftProtobuf",
-            url: "https://github.com/apple/swift-protobuf.git",
-            from: "1.18.0"),
+            url: "https://github.com/tonyfreeman/swift-protobuf.git",
+            branch: "ignore-invalid-utf8"),
         .package(
             name: "Logging",
             url: "https://github.com/apple/swift-log.git",

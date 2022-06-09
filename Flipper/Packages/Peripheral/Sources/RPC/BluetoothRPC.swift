@@ -153,7 +153,7 @@ extension BluetoothRPC {
         guard case .storage(.list(let items)) = response else {
             throw Error.unexpectedResponse(response)
         }
-        return items
+        return items.filter { !$0.name.isEmpty }
     }
 
     public func createFile(at path: Path, isDirectory: Bool) async throws {
