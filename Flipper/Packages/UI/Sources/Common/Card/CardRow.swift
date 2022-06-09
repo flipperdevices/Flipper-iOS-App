@@ -16,8 +16,8 @@ struct CardRow: View {
                     .font(.system(size: 14, weight: .regular))
                     .multilineTextAlignment(.trailing)
             } else {
-                ProgressView()
-                    .frame(width: 14, height: 14)
+                AnimatedPlaceholder()
+                    .frame(width: 50, height: 17)
             }
         }
     }
