@@ -21,7 +21,7 @@
 		8BCFDDDF277A2405002DA4CD /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BCFDDDE277A2405002DA4CD /* QuickLook.framework */; platformFilter = maccatalyst; };
 		8BCFDDE2277A2405002DA4CD /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE1277A2405002DA4CD /* PreviewViewController.swift */; };
 		8BCFDDE4277A2405002DA4CD /* PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE3277A2405002DA4CD /* PreviewProvider.swift */; };
-		8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8BE40CF527F1265900288F66 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 8BE40CF427F1265900288F66 /* .swiftlint.yml */; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
@@ -48,15 +48,15 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8BCFDDEC277A2405002DA4CD /* Embed App Extensions */ = {
+		8BCFDDEC277A2405002DA4CD /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed App Extensions */,
+				8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -290,7 +290,7 @@
 				F0DBFA1E24EF2F9900EB2880 /* Frameworks */,
 				F0DBFA1F24EF2F9900EB2880 /* Resources */,
 				44A5B5B624F05FCE009EE7FB /* Embed Frameworks */,
-				8BCFDDEC277A2405002DA4CD /* Embed App Extensions */,
+				8BCFDDEC277A2405002DA4CD /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -313,7 +313,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1320;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1400;
 				TargetAttributes = {
 					8BCFDDDC277A2405002DA4CD = {
 						CreatedOnToolsVersion = 13.2;
@@ -511,6 +511,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -573,6 +574,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
