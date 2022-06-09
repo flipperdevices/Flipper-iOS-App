@@ -1,4 +1,5 @@
 import Core
+import Peripheral
 import SwiftUI
 
 struct DeviceHeader: View {
@@ -12,7 +13,7 @@ struct DeviceHeader: View {
                     .padding(.bottom, 12)
                     .padding(.horizontal, 14)
             } else {
-                NoDeviceHeader()
+                NoDeviceHeader(flipper: device)
                     .padding(.top, 4)
                     .padding(.bottom, 12)
                     .padding(.horizontal, 14)
@@ -25,9 +26,17 @@ struct DeviceHeader: View {
 }
 
 struct NoDeviceHeader: View {
+    let flipper: Flipper?
+
+    var flipperImage: String {
+        flipper?.color == .black
+            ? "FlipperNoDeviceBlack"
+            : "FlipperNoDeviceWhite"
+    }
+
     var body: some View {
         HStack(spacing: 18) {
-            Image("FlipperNoDevice")
+            Image(flipperImage)
                 .resizable()
                 .scaledToFit()
 
@@ -44,7 +53,9 @@ struct DeviceInfoHeader: View {
 
     var flipperImage: String {
         guard flipper.state == .connected else {
-            return "FlipperNoDevice"
+            return flipper.color == .black
+                ? "FlipperNoDeviceBlack"
+                : "FlipperNoDeviceWhite"
         }
         return flipper.color == .black
             ? "FlipperBlack"

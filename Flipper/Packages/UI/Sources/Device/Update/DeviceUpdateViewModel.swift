@@ -18,6 +18,10 @@ class DeviceUpdateViewModel: ObservableObject {
     @Published var deviceStatus: DeviceStatus = .noDevice
     @Published var showCancelUpdate = false
 
+    var deviceColor: FlipperColor {
+        appState.flipper?.color ?? .white
+    }
+
     let updater = Update()
 
     enum State {

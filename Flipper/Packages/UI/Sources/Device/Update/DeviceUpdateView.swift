@@ -13,9 +13,18 @@ struct DeviceUpdateView: View {
 
     var image: String {
         switch viewModel.state {
-        case .noInternet, .noDevice: return "FlipperDead"
-        case .noCard: return "FlipperNoCard"
-        default: return "FlipperUpdating"
+        case .noCard:
+            return "FlipperNoCard"
+        case .noInternet, .noDevice:
+            switch viewModel.deviceColor {
+            case .black: return "FlipperDeadBlack"
+            default: return "FlipperDeadWhite"
+            }
+        default:
+            switch viewModel.deviceColor {
+            case .black: return "FlipperUpdatingBlack"
+            default: return "FlipperUpdatingWhite"
+            }
         }
     }
 
