@@ -98,14 +98,25 @@ struct DeviceUpdateCard: View {
                     .padding(.top, 26)
                     .padding(.bottom, 26)
                 } else if viewModel.state == .connecting {
-                    VStack(spacing: 4) {
-                        Spinner()
-                        Text(description)
-                            .font(.system(size: 14, weight: .medium))
+                    HStack {
+                        Text("Update Channel")
                             .foregroundColor(.black30)
+
+                        Spacer()
+
+                        AnimatedPlaceholder()
+                            .frame(width: 90, height: 17)
                     }
-                    .padding(.top, 36)
-                    .padding(.bottom, 36)
+                    .font(.system(size: 14))
+                    .padding(.horizontal, 12)
+                    .padding(.top, 18)
+                    .padding(.bottom, 12)
+
+                    Divider()
+
+                    AnimatedPlaceholder()
+                        .frame(height: 46)
+                        .padding(12)
                 } else if viewModel.state == .updateInProgress {
                     UpdateStartedImage()
                         .padding(.top, 12)

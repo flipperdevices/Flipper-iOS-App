@@ -30,11 +30,6 @@ class DeviceInfoCardViewModel: ObservableObject {
         appState.status == .updating
     }
 
-    var isInfoLoaded: Bool {
-        [firmwareVersion, firmwareBuild, internalSpace, externalSpace]
-            .allSatisfy { !$0.isEmpty }
-    }
-
     var _protobufVersion: ProtobufVersion? {
         device?.information?.protobufRevision
     }
@@ -74,12 +69,13 @@ class DeviceInfoCardViewModel: ObservableObject {
     }
 
     var internalSpace: String {
-        guard isConnected else { return "—" }
+        guard isConnected else { return "" }
         return device?.storage?.internal?.description ?? ""
     }
 
     var externalSpace: String {
-        guard isConnected else { return "—" }
+        guard isConnected else { return "" }
+        guard device?.storage?.internal != nil else { return "" }
         return device?.storage?.external?.description ?? "—"
     }
 
