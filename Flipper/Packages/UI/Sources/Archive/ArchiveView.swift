@@ -8,7 +8,14 @@ struct ArchiveView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if viewModel.status == .synchronizing {
+                if viewModel.status == .connecting {
+                    VStack(spacing: 4) {
+                        Spinner()
+                        Text("Connecting to Flipper...")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.black30)
+                    }
+                } else if viewModel.status == .synchronizing {
                     VStack(spacing: 4) {
                         Spinner()
                         Text(
