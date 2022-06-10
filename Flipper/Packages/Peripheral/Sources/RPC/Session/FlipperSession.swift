@@ -8,12 +8,12 @@ class FlipperSession: Session {
     private let peripheral: BluetoothPeripheral
     private var subscriptions = [AnyCancellable]()
 
-    var queue: Queue = .init()
+    let queue: Queue = .init()
 
     var onMessage: ((Message) -> Void)?
     var onError: ((Error) -> Void)?
 
-    var timeoutTimer: Timer?
+    var timeoutTaskHandle: Task<(), Never>?
 
     init(peripheral: BluetoothPeripheral) {
         logger.info("session started")
@@ -37,14 +37,14 @@ class FlipperSession: Session {
 
     func send(_ message: Message) async throws {
         logger.debug(">> \(message)")
-        for try await _ in send(.message(message)).output { }
+        for try await _ in await send(.message(message)).output { }
     }
 
-    func send(_ request: Request) -> AsyncThrowingStreams {
-        return .init { output, input in
-            let streams = send(.request(request))
-
+    func send(_ request: Request) async -> AsyncThrowingStreams {
+        .init { output, input in
             Task {
+                let streams = await send(.request(request))
+
                 do {
                     for try await next in streams.output {
                         logger.debug("> \(next)")
@@ -54,9 +54,7 @@ class FlipperSession: Session {
                 } catch {
                     output.finish(throwing: error)
                 }
-            }
 
-            Task {
                 do {
                     for try await next in streams.input {
                         logger.debug("< response(\(next))")
@@ -70,40 +68,45 @@ class FlipperSession: Session {
         }
     }
 
-    private func send(_ content: Content) -> AsyncThrowingStreams {
-        defer { sendNextCommand() }
-        return queue.feed(content)
+    private func send(_ content: Content) async -> AsyncThrowingStreams {
+        let streams = await queue.feed(content)
+        await sendNextCommand()
+        return streams
     }
 
-    func sendNextCommand() {
-        while !queue.isEmpty && peripheral.maximumWriteValueLength > 0 {
+    func sendNextCommand() async {
+        while !(await queue.isEmpty) && peripheral.maximumWriteValueLength > 0 {
             let size = peripheral.maximumWriteValueLength
-            let next = queue.drain(upTo: size)
+            let next = await queue.drain(upTo: size)
             peripheral.send(.init(next))
             setupTimeoutTimer()
         }
     }
 
-    func close() {
+    func close() async {
         logger.info("canceling tasks...")
-        queue.cancel()
+        await queue.cancel()
         logger.info("canceling tasks done")
     }
 }
 
 extension FlipperSession {
     func onCanWrite() {
-        sendNextCommand()
+        Task {
+            await sendNextCommand()
+        }
     }
 
     func didReceiveData(_ data: Data) {
-        do {
-            setupTimeoutTimer()
-            if let message = try queue.didReceiveData(data) {
-                onMessage?(message)
+        Task {
+            do {
+                setupTimeoutTimer()
+                if let message = try await queue.didReceiveData(data) {
+                    onMessage?(message)
+                }
+            } catch {
+                logger.critical("\(error)")
             }
-        } catch {
-            logger.critical("\(error)")
         }
     }
 }
@@ -111,22 +114,19 @@ extension FlipperSession {
 // MARK: Timeout
 
 extension FlipperSession {
-    var timeout: Double { 6 }
+    var timeoutNanoseconds: UInt64 { 6 * 1_000 * 1_000_000 }
 
     func setupTimeoutTimer() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            if let timeoutTimer = self.timeoutTimer {
-                timeoutTimer.invalidate()
-            }
-            self.timeoutTimer = .scheduledTimer(
-                withTimeInterval: self.timeout,
-                repeats: false
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                guard self.peripheral.state == .connected else { return }
-                guard self.queue.onResponse.isEmpty == false else { return }
-                self.logger.debug("time is out")
+        if let current = timeoutTaskHandle {
+            current.cancel()
+        }
+        timeoutTaskHandle = Task {
+            try? await Task.sleep(nanoseconds: timeoutNanoseconds)
+            guard !Task.isCancelled else { return }
+            guard self.peripheral.state == .connected else { return }
+            guard await queue.isBusy else { return }
+            self.logger.debug("time is out")
+            Task { @MainActor in
                 self.onError?(.timeout)
             }
         }

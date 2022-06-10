@@ -1,6 +1,6 @@
 import struct Foundation.Data
 
-struct Queue {
+actor Queue {
     @CommandId var nextId: Int
     private var commands: [Command] = []
     private var tail: [UInt8] = []
@@ -9,10 +9,12 @@ struct Queue {
 
     var onResponse: [Int: InputContinuation] = [:]
 
+    var isBusy: Bool { !onResponse.isEmpty }
+
     var count: Int { commands.count }
     var isEmpty: Bool { commands.isEmpty && tail.isEmpty }
 
-    mutating func feed(_ content: Content) -> AsyncThrowingStreams {
+    func feed(_ content: Content) -> AsyncThrowingStreams {
         .init { output, input in
             commands.append(.init(
                 id: nextId,
@@ -22,7 +24,7 @@ struct Queue {
         }
     }
 
-    mutating func drain(upTo limit: Int) -> [UInt8] {
+    func drain(upTo limit: Int) -> [UInt8] {
         var result: [UInt8] = []
         while result.count < limit {
             guard chunkedOutput.isEmpty else {
@@ -51,7 +53,7 @@ struct Queue {
         return result
     }
 
-    mutating func didReceiveData(_ data: Data) throws -> Message? {
+    func didReceiveData(_ data: Data) throws -> Message? {
         // single PB_Main can be split into ble chunks;
         // returns nil if data.count < main.size
         guard let nextMain = try chunkedInput.feed(data) else {
@@ -80,7 +82,7 @@ struct Queue {
         return nil
     }
 
-    mutating func cancel() {
+    func cancel() {
         for command in self.commands {
             command.inputContinuation.finish(throwing: Error.canceled)
             command.outputContinuation.finish(throwing: Error.canceled)

@@ -25,13 +25,14 @@ public class BluetoothRPC: RPC {
     private func peripheralDidChange() {
         peripheralHandle = peripheral?.info
             .sink { [weak self] in
-                self?.updateSession()
+                guard let self = self else { return }
+                Task { await self.updateSession() }
             }
     }
 
-    private func updateSession() {
+    private func updateSession() async {
         guard let peripheral = peripheral, peripheral.state == .connected else {
-            session?.close()
+            await session?.close()
             session = nil
             return
         }
@@ -78,7 +79,7 @@ extension BluetoothRPC {
                     guard let session = session else {
                         throw Error.unsupported(0)
                     }
-                    let streams = session.send(.system(.info))
+                    let streams = await session.send(.system(.info))
                     for try await next in streams.input {
                         guard case let .system(.info(key, value)) = next else {
                             throw Error.unexpectedResponse(next)
@@ -183,7 +184,7 @@ extension BluetoothRPC {
                     guard let session = session else {
                         throw Error.unsupported(0)
                     }
-                    let streams = session.send(.storage(.read(path)))
+                    let streams = await session.send(.storage(.read(path)))
                     for try await next in streams.input {
                         guard case .storage(.file(let bytes)) = next else {
                             throw Error.unexpectedResponse(next)
@@ -208,7 +209,7 @@ extension BluetoothRPC {
                     guard let session = session else {
                         throw Error.unsupported(0)
                     }
-                    let streams = session.send(.storage(.write(path, bytes)))
+                    let streams = await session.send(.storage(.write(path, bytes)))
                     for try await next in streams.output {
                         guard case let .request(.storage(.write(_, chunk))) = next else {
                             continuation.finish(throwing: Error.unexpectedRequest)

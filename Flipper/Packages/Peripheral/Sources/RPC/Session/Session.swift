@@ -5,9 +5,9 @@ public protocol Session: AnyObject {
     var onError: ((Error) -> Void)? { get set }
 
     func send(_ message: Message) async throws
-    func send(_ request: Request) -> AsyncThrowingStreams
+    func send(_ request: Request) async -> AsyncThrowingStreams
 
-    func close()
+    func close() async
 }
 
 extension AsyncThrowingStreams {
