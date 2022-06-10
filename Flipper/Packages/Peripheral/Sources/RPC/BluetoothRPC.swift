@@ -157,6 +157,16 @@ extension BluetoothRPC {
         return items.filter { !$0.name.isEmpty }
     }
 
+    public func getSize(at path: Path) async throws -> Int {
+        let response = try await session?
+            .send(.storage(.stat(path)))
+            .response
+        guard case .storage(.stat(let size)) = response else {
+            throw Error.unexpectedResponse(response)
+        }
+        return size
+    }
+
     public func createFile(at path: Path, isDirectory: Bool) async throws {
         let response = try await session?
             .send(.storage(.create(path, isDirectory: isDirectory)))

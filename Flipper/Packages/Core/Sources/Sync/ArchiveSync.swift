@@ -48,19 +48,36 @@ class ArchiveSync: ArchiveSyncProtocol {
             mobileChanges: mobileChanges,
             flipperChanges: flipperChanges)
 
-        for (index, (path, action)) in actions.enumerated() {
+        let syncItemFactor = syncProgressFactor / Double(actions.count)
+        var currentProgress = manifestProgressFactor
+
+        for (path, action) in actions {
             guard state != .canceled else {
                 break
             }
             switch action {
-            case .update(.mobile): try await updateOnMobile(path)
-            case .delete(.mobile): try await deleteOnMobile(path)
-            case .update(.flipper): try await updateOnFlipper(path)
-            case .delete(.flipper): try await deleteOnFlipper(path)
-            case .conflict: try await keepBoth(path)
+            case .update(.mobile):
+                try await updateOnMobile(path) { itemProgress in
+                    progress(currentProgress + syncItemFactor * itemProgress)
+                }
+            case .delete(.mobile):
+                try await deleteOnMobile(path) { itemProgress in
+                    progress(currentProgress + syncItemFactor * itemProgress)
+                }
+            case .update(.flipper):
+                try await updateOnFlipper(path) { itemProgress in
+                    progress(currentProgress + syncItemFactor * itemProgress)
+                }
+            case .delete(.flipper):
+                try await deleteOnFlipper(path) { itemProgress in
+                    progress(currentProgress + syncItemFactor * itemProgress)
+                }
+            case .conflict:
+                try await keepBoth(path) { itemProgress in
+                    progress(currentProgress + syncItemFactor * itemProgress)
+                }
             }
-            let syncProgress = Double(index + 1) / Double(actions.count)
-            progress(manifestProgressFactor + syncProgress * syncProgressFactor)
+            currentProgress += syncItemFactor
         }
 
         manifestStorage.manifest = try await mobileArchive.getManifest()
@@ -70,43 +87,64 @@ class ArchiveSync: ArchiveSyncProtocol {
         state = .canceled
     }
 
-    private func updateOnMobile(_ path: Path) async throws {
+    private func updateOnMobile(
+        _ path: Path,
+        progress: (Double) -> Void
+    ) async throws {
         logger.info("update on mobile \(path)")
         eventsSubject.send(.syncing(path))
-        let content = try await flipperArchive.read(path)
+        let content = try await flipperArchive.read(path, progress: progress)
         try await mobileArchive.upsert(content, at: path)
         eventsSubject.send(.imported(path))
     }
 
-    private func updateOnFlipper(_ path: Path) async throws {
+    private func updateOnFlipper(
+        _ path: Path,
+        progress: (Double) -> Void
+    ) async throws {
         logger.info("update on flipper \(path)")
         eventsSubject.send(.syncing(path))
         let content = try await mobileArchive.read(path)
-        try await flipperArchive.upsert(content, at: path)
+        try await flipperArchive.upsert(content, at: path, progress: progress)
         eventsSubject.send(.exported(path))
     }
 
-    private func deleteOnMobile(_ path: Path) async throws {
+    private func deleteOnMobile(
+        _ path: Path,
+        progress: (Double) -> Void
+    ) async throws {
         logger.info("delete on mobile \(path)")
         eventsSubject.send(.syncing(path))
         try await mobileArchive.delete(path)
+        progress(1)
         eventsSubject.send(.deleted(path))
     }
 
-    private func deleteOnFlipper(_ path: Path) async throws {
+    private func deleteOnFlipper(
+        _ path: Path,
+        progress: (Double) -> Void
+    ) async throws {
         logger.info("delete on flipper \(path)")
         eventsSubject.send(.syncing(path))
         try await flipperArchive.delete(path)
+        progress(1)
         eventsSubject.send(.deleted(path))
     }
 
-    private func keepBoth(_ path: Path) async throws {
+    private func keepBoth(
+        _ path: Path,
+        progress: (Double) -> Void
+    ) async throws {
         logger.info("keep both \(path)")
         guard let newPath = try await duplicate(path) else {
             return
         }
-        try await updateOnFlipper(newPath)
-        try await updateOnMobile(path)
+        try await updateOnFlipper(newPath) {
+            progress($0 / 2)
+        }
+        try await updateOnMobile(path) {
+            progress(0.5 + $0 / 2)
+        }
     }
 
     // MARK: Duplicating item

@@ -34,6 +34,10 @@ class RPCMock: RPC {
         .init()
     }
 
+    func getSize(at path: Path) async throws -> Int {
+        0
+    }
+
     func createFile(at path: Path, isDirectory: Bool) async throws {
     }
 

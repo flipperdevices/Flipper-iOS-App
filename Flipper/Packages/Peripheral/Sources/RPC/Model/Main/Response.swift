@@ -16,6 +16,7 @@ public enum Response: Equatable {
     public enum Storage: Equatable {
         case info(StorageSpace)
         case list([Element])
+        case stat(Int)
         case file([UInt8])
         case hash(String)
     }
@@ -56,6 +57,8 @@ extension Response {
             self.init(decoding: response)
         case .storageListResponse(let response):
             self.init(decoding: response)
+        case .storageStatResponse(let response):
+            self.init(decoding: response)
         case .storageReadResponse(let response):
             self.init(decoding: response)
         case .storageMd5SumResponse(let response):
@@ -88,6 +91,10 @@ extension Response {
 
     init(decoding response: PBStorage_ListResponse) {
         self = .storage(.list(.init(response.file.map(Element.init))))
+    }
+
+    init(decoding response: PBStorage_StatResponse) {
+        self = .storage(.stat(Int(response.file.size)))
     }
 
     init(decoding response: PBStorage_ReadResponse) {
@@ -125,6 +132,7 @@ extension Response.Storage: CustomStringConvertible {
         switch self {
         case let .info(space): return "info(\(space))"
         case let .list(element): return "list(\(element))"
+        case let .stat(size): return "stat(\(size))"
         case let .file(bytes): return "file(\(bytes.count) bytes)"
         case let .hash(hash): return "hash(\(hash))"
         }

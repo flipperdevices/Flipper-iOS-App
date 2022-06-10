@@ -18,11 +18,11 @@ class MobileArchive: MobileArchiveProtocol {
         return manifest
     }
 
-    func read(_ path: Path) async throws -> String {
+    func read(_ path: Path, progress: (Double) -> Void) async throws -> String {
         try await storage.get(path)
     }
 
-    func upsert(_ content: String, at path: Path) async throws {
+    func upsert(_ content: String, at path: Path, progress: (Double) -> Void) async throws {
         try await storage.upsert(content, at: path)
         manifest[path] = .init(content.md5)
     }

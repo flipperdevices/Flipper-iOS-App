@@ -22,6 +22,7 @@ public enum Request {
     public enum Storage {
         case info(Path)
         case list(Path)
+        case stat(Path)
         case read(Path)
         case write(Path, [UInt8])
         case create(Path, isDirectory: Bool)
@@ -101,6 +102,12 @@ extension Request.Storage {
         case let .list(path):
             return .with {
                 $0.storageListRequest = .with {
+                    $0.path = path.string
+                }
+            }
+        case let .stat(path):
+            return .with {
+                $0.storageStatRequest = .with {
                     $0.path = path.string
                 }
             }
@@ -294,6 +301,8 @@ extension Request.Storage: CustomStringConvertible {
             return "info(\(path))"
         case let .list(path):
             return "list(\(path))"
+        case let .stat(path):
+            return "stat(\(path))"
         case let .read(path):
             return "read(\(path))"
         case let .write(path, bytes):
