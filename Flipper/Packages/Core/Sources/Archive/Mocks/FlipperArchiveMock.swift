@@ -1,7 +1,9 @@
 import Peripheral
 
 class FlipperArchiveMock: FlipperArchiveProtocol {
-    var manifest: Manifest { .init() }
+    func getManifest(progress: (Double) -> Void) async throws -> Manifest {
+        .init()
+    }
 
     func read(_ path: Path) async throws -> String {
         fatalError("not implemented")

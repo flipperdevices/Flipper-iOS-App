@@ -6,10 +6,8 @@ class FlipperArchive: FlipperArchiveProtocol {
 
     init() {}
 
-    var manifest: Manifest {
-        get async throws {
-            try await rpc.manifest
-        }
+    func getManifest(progress: (Double) -> Void) async throws -> Manifest {
+        try await rpc.getManifest(progress: progress)
     }
 
     func read(_ path: Path) async throws -> String {

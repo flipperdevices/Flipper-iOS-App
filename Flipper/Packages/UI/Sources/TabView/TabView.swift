@@ -66,7 +66,6 @@ extension TabView {
         case .connecting: return "Connecting..."
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"
-        case .synchronizing where progress == 0: return "Syncing..."
         case .synchronizing: return "Syncing \(progress)%"
         case .synchronized: return "Synced!"
         case .updating: return "Connecting..."

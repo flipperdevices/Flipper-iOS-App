@@ -13,6 +13,11 @@ class MobileArchive: MobileArchiveProtocol {
 
     init() {}
 
+    func getManifest(progress: (Double) -> Void) async throws -> Manifest {
+        progress(1)
+        return manifest
+    }
+
     func read(_ path: Path) async throws -> String {
         try await storage.get(path)
     }

@@ -28,15 +28,20 @@ class ArchiveSync: ArchiveSyncProtocol {
         try await sync(progress)
     }
 
+    var manifestProgressFactor: Double { 0.5 }
+    var syncProgressFactor: Double { 1.0 - manifestProgressFactor }
+
     private func sync(_ progress: (Double) -> Void) async throws {
         let lastManifest = manifestStorage.manifest ?? .init()
 
         let mobileChanges = try await mobileArchive
-            .manifest
+            .getManifest()
             .changesSince(lastManifest)
 
         let flipperChanges = try await flipperArchive
-            .manifest
+            .getManifest { manifestProgress in
+                progress(manifestProgress * manifestProgressFactor)
+            }
             .changesSince(lastManifest)
 
         let actions = resolveActions(
@@ -54,10 +59,11 @@ class ArchiveSync: ArchiveSyncProtocol {
             case .delete(.flipper): try await deleteOnFlipper(path)
             case .conflict: try await keepBoth(path)
             }
-            progress(Double(index + 1) / Double(actions.count))
+            let syncProgress = Double(index + 1) / Double(actions.count)
+            progress(manifestProgressFactor + syncProgress * syncProgressFactor)
         }
 
-        manifestStorage.manifest = try await mobileArchive.manifest
+        manifestStorage.manifest = try await mobileArchive.getManifest()
     }
 
     func cancel() {
@@ -126,7 +132,7 @@ class ArchiveSync: ArchiveSyncProtocol {
         var newFileName: String { "\(name)_\(number).\(type)" }
         var newFilePath: Path { location.appending(newFileName) }
 
-        while try await mobileArchive.manifest[newFilePath] != nil {
+        while try await mobileArchive.getManifest()[newFilePath] != nil {
             number += 1
         }
 

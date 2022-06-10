@@ -54,7 +54,7 @@ public class Archive: ObservableObject {
     func loadArchive() async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
         let favorites = try await mobileFavorites.read()
-        for path in try await mobileArchive.manifest.paths {
+        for path in try await mobileArchive.getManifest().paths {
             do {
                 let content = try await mobileArchive.read(path)
                 var item = try ArchiveItem(path: path, content: content)
@@ -72,7 +72,7 @@ public class Archive: ObservableObject {
 
     func loadDeleted() async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
-        for path in try await deletedArchive.manifest.paths {
+        for path in try await deletedArchive.getManifest().paths {
             do {
                 let content = try await deletedArchive.read(path)
                 var item = try ArchiveItem(path: path, content: content)
@@ -169,7 +169,7 @@ extension Archive {
     }
 
     public func restore(_ item: ArchiveItem) async throws {
-        let manifest = try await mobileArchive.manifest
+        let manifest = try await mobileArchive.getManifest()
         // TODO: resolve conflicts
         guard manifest[item.path] == nil else {
             logger.error("alredy exists")
