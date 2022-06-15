@@ -48,6 +48,7 @@ struct ArchiveView: View {
                     }
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
