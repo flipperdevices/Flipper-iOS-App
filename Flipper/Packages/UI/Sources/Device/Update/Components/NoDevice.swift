@@ -24,7 +24,7 @@ extension DeviceUpdateView {
                     HStack(alignment: .top) {
                         Text("3.")
                         Text(
-                            "If Flipper doesn’t responds, reboot it and " +
+                            "If Flipper doesn’t respond, reboot it and " +
                             "connect to the app via Bluetooth")
                     }
                     HStack {
