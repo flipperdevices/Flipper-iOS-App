@@ -148,7 +148,7 @@ class DeviceUpdateViewModel: ObservableObject {
     }
 
     func readMore() {
-        if let url = URL(string: "https://docs.flipperzero.one/") {
+        if let url = URL(string: "https://docs.flipperzero.one/basics/reboot") {
             UIApplication.shared.open(url)
         }
     }
