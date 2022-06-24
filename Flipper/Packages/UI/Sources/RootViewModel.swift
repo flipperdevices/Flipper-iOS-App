@@ -77,4 +77,21 @@ public class RootViewModel: ObservableObject {
             }
         }
     }
+
+    var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
+
+    func onActive() {
+        if backgroundTaskID != .invalid {
+            UIApplication.shared.endBackgroundTask(backgroundTaskID)
+            backgroundTaskID = .invalid
+            appState.onActive()
+        }
+    }
+
+    func onInactive() {
+        backgroundTaskID = UIApplication.shared.beginBackgroundTask {
+            UIApplication.shared.endBackgroundTask(self.backgroundTaskID)
+        }
+        appState.onInactive()
+    }
 }

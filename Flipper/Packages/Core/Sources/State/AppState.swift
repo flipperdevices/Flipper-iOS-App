@@ -212,11 +212,33 @@ public class AppState {
         try await synchronize()
     }
 
-    // MARK: Update:
+    // MARK: Update
 
     public func onUpdateStarted() {
         logger.info("update started")
         status = .updating
+    }
+
+    // MARK: Background
+
+    var backgroundTimer: Timer?
+
+    public func onActive() {
+        if status == .disconnected {
+            connect()
+        } else {
+            backgroundTimer?.invalidate()
+            backgroundTimer = nil
+        }
+    }
+
+    public func onInactive() {
+        backgroundTimer = .scheduledTimer(
+            withTimeInterval: 22,
+            repeats: false
+        ) { [weak self] _ in
+            self?.disconnect()
+        }
     }
 
     // MARK: Debug
