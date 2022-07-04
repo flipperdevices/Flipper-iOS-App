@@ -23,7 +23,7 @@ class FileManagerViewModel: ObservableObject {
     @Published var name: String = ""
 
     var supportedExtensions: [String] = [
-        ".ibtn", ".nfc", ".sub", ".rfid", ".ir", ".txt"
+        ".ibtn", ".nfc", ".sub", ".rfid", ".ir", ".fmf", ".txt"
     ]
 
     enum Content {
