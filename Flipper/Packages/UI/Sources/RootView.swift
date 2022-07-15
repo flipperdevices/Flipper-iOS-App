@@ -1,6 +1,7 @@
 import SwiftUI
 
 public struct RootView: View {
+    @Environment(\.scenePhase) var scenePhase
     @ObservedObject var viewModel: RootViewModel
 
     public init(viewModel: RootViewModel) {
@@ -23,6 +24,13 @@ public struct RootView: View {
         }
         .customAlert(isPresented: $viewModel.isPairingIssue) {
             PairingIssueAlert(isPresented: $viewModel.isPairingIssue)
+        }
+        .onChange(of: scenePhase) { newPhase in
+            switch newPhase {
+            case .active: viewModel.onActive()
+            case .inactive: viewModel.onInactive()
+            default: break
+            }
         }
     }
 }

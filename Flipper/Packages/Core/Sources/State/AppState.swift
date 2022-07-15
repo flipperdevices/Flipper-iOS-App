@@ -212,11 +212,32 @@ public class AppState {
         try await synchronize()
     }
 
-    // MARK: Update:
+    // MARK: Update
 
     public func onUpdateStarted() {
         logger.info("update started")
         status = .updating
+    }
+
+    // MARK: Background
+
+    var backgroundTask: Task<Void, Swift.Error>?
+
+    public func onActive() {
+        backgroundTask?.cancel()
+        if status == .disconnected {
+            connect()
+        }
+    }
+
+    public func onInactive() async throws {
+        backgroundTask = Task {
+            try await Task.sleep(minutes: 10)
+            logger.info("disconnecting due to inactivity")
+            disconnect()
+        }
+        _ = await backgroundTask?.result
+        backgroundTask = nil
     }
 
     // MARK: Debug
