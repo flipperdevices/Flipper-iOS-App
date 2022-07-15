@@ -104,6 +104,10 @@ extension Color {
         .init(red: 0.18, green: 0.85, blue: 0.2)
     }
 
+    static var custom: Color {
+        .black16
+    }
+
     // MARK: Keys
 
     static var iButton: Color {

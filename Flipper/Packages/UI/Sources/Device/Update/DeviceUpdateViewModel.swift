@@ -44,6 +44,7 @@ class DeviceUpdateViewModel: ObservableObject {
         case .development: return "Dev \(firmware.version)"
         case .canditate: return "RC \(firmware.version.dropLast(3))"
         case .release: return "Release \(firmware.version)"
+        case .custom(let url): return "Custom \(url.lastPathComponent)"
         }
     }
 
@@ -52,6 +53,7 @@ class DeviceUpdateViewModel: ObservableObject {
         case .development: return .development
         case .canditate: return .candidate
         case .release: return .release
+        case .custom: return .custom
         }
     }
     @Published var state: State = .downloadingFirmware

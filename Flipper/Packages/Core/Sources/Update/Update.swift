@@ -8,15 +8,18 @@ public class Update {
 
     @Inject var rpc: RPC
 
-    public enum Channel: String {
+    public enum Channel {
         case development
         case canditate
         case release
+        case custom(URL)
     }
 
     public enum Error: Swift.Error {
         case invalidFirmware
         case invalidFirmwareURL
+        case invalidFirmwareURLString
+        case invalidFirmwareCloudDocument
     }
 
     public init() {}
@@ -32,5 +35,23 @@ public class Update {
     public func startUpdateProcess(from path: Path) async throws {
         try await rpc.update(manifest: path.appending("update.fuf"))
         try await rpc.reboot(to: .update)
+    }
+}
+
+extension Update.Channel: RawRepresentable {
+    public var rawValue: String {
+        switch self {
+        case .release: return "release"
+        case .canditate: return "canditate"
+        default: return "development"
+        }
+    }
+
+    public init(rawValue: String) {
+        switch rawValue {
+        case "release": self = .release
+        case "canditate": self = .canditate
+        default: self = .development
+        }
     }
 }

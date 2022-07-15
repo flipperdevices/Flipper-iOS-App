@@ -50,6 +50,7 @@ class DeviceUpdateCardModel: ObservableObject {
         case .development: return .development
         case .canditate: return .candidate
         case .release: return .release
+        case .custom: return .custom
         }
     }
     @Published var state: State = .disconnected
@@ -80,6 +81,13 @@ class DeviceUpdateCardModel: ObservableObject {
         appState.$flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
+            .store(in: &disposeBag)
+
+        appState.$customFirmwareURL
+            .receive(on: DispatchQueue.main)
+            .compactMap { $0 }
+            .map { .custom($0) }
+            .assign(to: \.channel, on: self)
             .store(in: &disposeBag)
 
         monitorNetworkStatus()
@@ -146,6 +154,7 @@ class DeviceUpdateCardModel: ObservableObject {
     func updateVersion() {
         guard let version = manifest?.version(for: channel) else {
             availableFirmware = ""
+            availableFirmwareVersion = nil
             return
         }
         self.availableFirmwareVersion = version
@@ -153,6 +162,7 @@ class DeviceUpdateCardModel: ObservableObject {
         case .development: availableFirmware = "Dev \(version.version)"
         case .canditate: availableFirmware = "RC \(version.version.dropLast(3))"
         case .release: availableFirmware = "Release \(version.version)"
+        case .custom(let url): availableFirmware = "Custom \(url.lastPathComponent)"
         }
     }
 

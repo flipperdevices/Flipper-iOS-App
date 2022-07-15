@@ -19,7 +19,7 @@ extension Update {
             public let files: [File]
 
             public struct File: Decodable {
-                let url: String
+                let url: URL
                 let target: String
                 let type: String
                 let sha256: String
@@ -75,7 +75,22 @@ extension Update.Manifest {
         case .development: return development
         case .canditate: return candidate
         case .release: return release
+        case .custom(let url): return .init(url: url)
         }
+    }
+}
+
+extension Update.Manifest.Version {
+    init?(url: URL) {
+        guard url.lastPathComponent.contains("-f7-") else {
+            return nil
+        }
+        self.init(
+            version: "custom",
+            timestamp: 0,
+            files: [
+                .init(url: url, target: "f7", type: "update_tgz", sha256: "")
+            ])
     }
 }
 

@@ -24,6 +24,7 @@ public class AppState {
     @Published public var syncProgress: Int = 0
 
     @Published public var importQueue: [ArchiveItem] = []
+    @Published public var customFirmwareURL: URL?
 
     public init() {
         logger.info("app version: \(Bundle.fullVersion)")
@@ -194,12 +195,23 @@ public class AppState {
 
     public func onOpenURL(_ url: URL) async {
         do {
-            let item = try await Sharing.importKey(from: url)
-            importQueue = [item]
-            logger.info("key url opened")
+            switch url.pathExtension {
+            case "tgz": try await onOpenUpdateBundle(url)
+            default: try await onOpenKeyURL(url)
+            }
         } catch {
             logger.error("open url: \(error)")
         }
+    }
+
+    private func onOpenUpdateBundle(_ url: URL) async throws {
+        customFirmwareURL = url
+    }
+
+    private func onOpenKeyURL(_ url: URL) async throws {
+        let item = try await Sharing.importKey(from: url)
+        importQueue = [item]
+        logger.info("key url opened")
     }
 
     public var imported: SafePublisher<ArchiveItem> {

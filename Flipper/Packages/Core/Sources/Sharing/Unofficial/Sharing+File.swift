@@ -6,7 +6,7 @@ class FileImporter: Importer {
     let logger = Logger(label: "file-importer")
 
     enum Error: String, Swift.Error {
-        case cantOpenDoc = "error opening doc"
+        case cantOpenKey = "error opening key"
     }
 
     @MainActor
@@ -30,25 +30,14 @@ extension FileImporter {
 }
 
 extension FileImporter {
-    private class KeyDocument: UIDocument {
-        var data: Data?
-
-        override func load(
-            fromContents contents: Any,
-            ofType typeName: String?
-        ) throws {
-            self.data = contents as? Data
-        }
-    }
-
     @MainActor
     func importCloudKey(from url: URL) async throws -> ArchiveItem {
         let filename = url.lastPathComponent
         logger.debug("importing icloud key: \(filename)")
 
-        let doc = KeyDocument(fileURL: url)
+        let doc = CloudDocument(fileURL: url)
         guard await doc.open(), let data = doc.data else {
-            throw Error.cantOpenDoc
+            throw Error.cantOpenKey
         }
         return try .init(filename: filename, data: data)
     }

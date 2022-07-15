@@ -31,19 +31,53 @@ extension Update {
         _ version: Manifest.Version,
         progress: @escaping (Double) -> Void
     ) async throws -> Firmware {
-        guard
-            let urlString = version.updateArchive?.url,
-            let url = URL(string: urlString)
-        else {
-            logger.error("invalid firmware url")
+        guard let url = version.updateArchive?.url else {
             throw Error.invalidFirmwareURL
         }
-        logger.info("downloading firmware \(url)")
-        let data = URLSessionData(from: url) {
-            progress($0.fractionCompleted)
-        }
-        let entries = try await unpackFirmware(data.bytes)
+
+        let bytes = url.isFileURL
+            ? try await readCustomFirmwareData(url, progress: progress)
+            : try await downloadFirmwareData(url, progress: progress)
+
+        let entries = try await unpackFirmware(bytes)
         return .init(version: version, entries: entries)
+    }
+
+    func downloadFirmwareData(
+        _ url: URL,
+        progress: @escaping (Double) -> Void
+    ) async throws -> [UInt8] {
+        logger.info("downloading firmware \(url)")
+        return try await URLSessionData(from: url) {
+            progress($0.fractionCompleted)
+        }.bytes
+    }
+
+    func readCustomFirmwareData(
+        _ url: URL,
+        progress: @escaping (Double) -> Void
+    ) async throws -> [UInt8] {
+        defer { progress(1.0) }
+        switch try? Data(contentsOf: url) {
+        case .some: return try await readLocalFirmware(from: url)
+        case .none: return try await readCloudFirmware(from: url)
+        }
+    }
+
+    private func readLocalFirmware(from url: URL) async throws -> [UInt8] {
+        logger.debug("reading local firmware file: \(url.lastPathComponent)")
+        let data = try Data(contentsOf: url)
+        try FileManager.default.removeItem(at: url)
+        return .init(data)
+    }
+
+    private  func readCloudFirmware(from url: URL) async throws -> [UInt8] {
+        logger.debug("reading cloud firmware file: \(url.lastPathComponent)")
+        let doc = await CloudDocument(fileURL: url)
+        guard await doc.open(), let data = await doc.data else {
+            throw Error.invalidFirmwareCloudDocument
+        }
+        return .init(data)
     }
 
     public func uploadFirmware(
