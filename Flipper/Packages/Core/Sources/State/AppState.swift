@@ -83,8 +83,10 @@ public class AppState {
                     return
                 }
                 try await updateStorageInfo()
+                #if !DEBUG
                 try await synchronizeDateTime()
                 try await synchronize()
+                #endif
             } catch {
                 logger.error("did connect: \(error)")
             }
