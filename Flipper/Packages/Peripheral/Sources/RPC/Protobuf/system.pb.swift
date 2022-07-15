@@ -265,6 +265,82 @@ struct PBSystem_UpdateRequest {
   init() {}
 }
 
+struct PBSystem_UpdateResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var code: PBSystem_UpdateResponse.UpdateResultCode = .ok
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum UpdateResultCode: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case ok // = 0
+    case manifestPathInvalid // = 1
+    case manifestFolderNotFound // = 2
+    case manifestInvalid // = 3
+    case stageMissing // = 4
+    case stageIntegrityError // = 5
+    case manifestPointerError // = 6
+    case targetMismatch // = 7
+    case UNRECOGNIZED(Int)
+
+    init() {
+      self = .ok
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .ok
+      case 1: self = .manifestPathInvalid
+      case 2: self = .manifestFolderNotFound
+      case 3: self = .manifestInvalid
+      case 4: self = .stageMissing
+      case 5: self = .stageIntegrityError
+      case 6: self = .manifestPointerError
+      case 7: self = .targetMismatch
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .ok: return 0
+      case .manifestPathInvalid: return 1
+      case .manifestFolderNotFound: return 2
+      case .manifestInvalid: return 3
+      case .stageMissing: return 4
+      case .stageIntegrityError: return 5
+      case .manifestPointerError: return 6
+      case .targetMismatch: return 7
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+  }
+
+  init() {}
+}
+
+#if swift(>=4.2)
+
+extension PBSystem_UpdateResponse.UpdateResultCode: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [PBSystem_UpdateResponse.UpdateResultCode] = [
+    .ok,
+    .manifestPathInvalid,
+    .manifestFolderNotFound,
+    .manifestInvalid,
+    .stageMissing,
+    .stageIntegrityError,
+    .manifestPointerError,
+    .targetMismatch,
+  ]
+}
+
+#endif  // swift(>=4.2)
+
 struct PBSystem_PowerInfoRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -305,6 +381,8 @@ extension PBSystem_PlayAudiovisualAlertRequest: @unchecked Sendable {}
 extension PBSystem_ProtobufVersionRequest: @unchecked Sendable {}
 extension PBSystem_ProtobufVersionResponse: @unchecked Sendable {}
 extension PBSystem_UpdateRequest: @unchecked Sendable {}
+extension PBSystem_UpdateResponse: @unchecked Sendable {}
+extension PBSystem_UpdateResponse.UpdateResultCode: @unchecked Sendable {}
 extension PBSystem_PowerInfoRequest: @unchecked Sendable {}
 extension PBSystem_PowerInfoResponse: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
@@ -758,6 +836,51 @@ extension PBSystem_UpdateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension PBSystem_UpdateResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".UpdateResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "code"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.code) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.code != .ok {
+      try visitor.visitSingularEnumField(value: self.code, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBSystem_UpdateResponse, rhs: PBSystem_UpdateResponse) -> Bool {
+    if lhs.code != rhs.code {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBSystem_UpdateResponse.UpdateResultCode: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "OK"),
+    1: .same(proto: "ManifestPathInvalid"),
+    2: .same(proto: "ManifestFolderNotFound"),
+    3: .same(proto: "ManifestInvalid"),
+    4: .same(proto: "StageMissing"),
+    5: .same(proto: "StageIntegrityError"),
+    6: .same(proto: "ManifestPointerError"),
+    7: .same(proto: "TargetMismatch"),
+  ]
 }
 
 extension PBSystem_PowerInfoRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

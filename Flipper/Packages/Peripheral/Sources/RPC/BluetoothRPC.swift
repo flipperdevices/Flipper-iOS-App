@@ -132,8 +132,10 @@ extension BluetoothRPC {
         let response = try await session?
             .send(.system(.update(manifest)))
             .response
-        guard case .ok = response else {
-            throw Error.unexpectedResponse(response)
+        switch response {
+        case .ok: break
+        case .system(.update(.ok)): break
+        default: throw Error.unexpectedResponse(response)
         }
     }
 

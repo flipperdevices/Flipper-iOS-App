@@ -332,6 +332,14 @@ struct PB_Main {
     set {content = .systemUpdateRequest(newValue)}
   }
 
+  var systemUpdateResponse: PBSystem_UpdateResponse {
+    get {
+      if case .systemUpdateResponse(let v)? = content {return v}
+      return PBSystem_UpdateResponse()
+    }
+    set {content = .systemUpdateResponse(newValue)}
+  }
+
   var systemPowerInfoRequest: PBSystem_PowerInfoRequest {
     get {
       if case .systemPowerInfoRequest(let v)? = content {return v}
@@ -566,6 +574,7 @@ struct PB_Main {
     case systemProtobufVersionRequest(PBSystem_ProtobufVersionRequest)
     case systemProtobufVersionResponse(PBSystem_ProtobufVersionResponse)
     case systemUpdateRequest(PBSystem_UpdateRequest)
+    case systemUpdateResponse(PBSystem_UpdateResponse)
     case systemPowerInfoRequest(PBSystem_PowerInfoRequest)
     case systemPowerInfoResponse(PBSystem_PowerInfoResponse)
     case storageInfoRequest(PBStorage_InfoRequest)
@@ -658,6 +667,10 @@ struct PB_Main {
       }()
       case (.systemUpdateRequest, .systemUpdateRequest): return {
         guard case .systemUpdateRequest(let l) = lhs, case .systemUpdateRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.systemUpdateResponse, .systemUpdateResponse): return {
+        guard case .systemUpdateResponse(let l) = lhs, case .systemUpdateResponse(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       case (.systemPowerInfoRequest, .systemPowerInfoRequest): return {
@@ -874,6 +887,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     39: .standard(proto: "system_protobuf_version_request"),
     40: .standard(proto: "system_protobuf_version_response"),
     41: .standard(proto: "system_update_request"),
+    46: .standard(proto: "system_update_response"),
     44: .standard(proto: "system_power_info_request"),
     45: .standard(proto: "system_power_info_response"),
     28: .standard(proto: "storage_info_request"),
@@ -1458,6 +1472,19 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .systemPowerInfoResponse(v)
         }
       }()
+      case 46: try {
+        var v: PBSystem_UpdateResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .systemUpdateResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .systemUpdateResponse(v)
+        }
+      }()
       default: break
       }
     }
@@ -1645,6 +1672,10 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .systemPowerInfoResponse?: try {
       guard case .systemPowerInfoResponse(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 45)
+    }()
+    case .systemUpdateResponse?: try {
+      guard case .systemUpdateResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 46)
     }()
     case nil: break
     }

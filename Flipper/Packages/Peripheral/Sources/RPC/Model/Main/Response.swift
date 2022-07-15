@@ -1,6 +1,8 @@
 import Foundation
 import SwiftProtobuf
 
+// swiftlint:disable nesting
+
 public enum Response: Equatable {
     case ok
     case error(String)
@@ -11,6 +13,19 @@ public enum Response: Equatable {
         case ping([UInt8])
         case info(String, String)
         case dateTime(Date)
+        case update(Update)
+
+        public enum Update: Equatable {
+            case ok
+            case manifestPathInvalid
+            case manifestFolderNotFound
+            case manifestInvalid
+            case stageMissing
+            case stageIntegrityError
+            case manifestPointerError
+            case targetMismatch
+            case unknown(Int)
+        }
     }
 
     public enum Storage: Equatable {
@@ -38,12 +53,12 @@ extension Response {
 }
 
 extension Response {
+    // swiftlint:disable cyclomatic_complexity
     init(decoding content: PB_Main.OneOf_Content) {
         switch content {
-
+        // Empty
         case .empty(let response):
             self.init(decoding: response)
-
         // System
         case .systemPingResponse(let response):
             self.init(decoding: response)
@@ -51,7 +66,8 @@ extension Response {
             self.init(decoding: response)
         case .systemGetDatetimeResponse(let response):
             self.init(decoding: response)
-
+        case .systemUpdateResponse(let response):
+            self.init(decoding: response)
         // Storage
         case .storageInfoResponse(let response):
             self.init(decoding: response)
@@ -63,7 +79,7 @@ extension Response {
             self.init(decoding: response)
         case .storageMd5SumResponse(let response):
             self.init(decoding: response)
-
+        // Not implemented
         default:
             fatalError("unhandled response")
         }
@@ -83,6 +99,10 @@ extension Response {
 
     init(decoding response: PBSystem_GetDateTimeResponse) {
         self = .system(.dateTime(.init(response.datetime)))
+    }
+
+    init(decoding response: PBSystem_UpdateResponse) {
+        self = .system(.update(.init(response.code)))
     }
 
     init(decoding response: PBStorage_InfoResponse) {
@@ -106,6 +126,22 @@ extension Response {
     }
 }
 
+extension Response.System.Update {
+    init(_ code: PBSystem_UpdateResponse.UpdateResultCode) {
+        switch code {
+        case .ok: self = .ok
+        case .manifestPathInvalid: self = .manifestPathInvalid
+        case .manifestFolderNotFound: self = .manifestFolderNotFound
+        case .manifestInvalid: self = .manifestInvalid
+        case .stageMissing: self = .stageMissing
+        case .stageIntegrityError: self = .stageIntegrityError
+        case .manifestPointerError: self = .manifestPointerError
+        case .targetMismatch: self = .targetMismatch
+        case .UNRECOGNIZED(let code): self = .unknown(code)
+        }
+    }
+}
+
 extension Response: CustomStringConvertible {
     public var description: String {
         switch self {
@@ -123,6 +159,7 @@ extension Response.System: CustomStringConvertible {
         case let .ping(bytes): return "ping(\(bytes.count) bytes)"
         case let .info(key, value): return "info(\(key): \(value))"
         case let .dateTime(date): return "dateTime(\(date))"
+        case let .update(update): return "update(\(update))"
         }
     }
 }
