@@ -221,24 +221,23 @@ public class AppState {
 
     // MARK: Background
 
-    var backgroundTimer: Timer?
+    var backgroundTask: Task<Void, Swift.Error>?
 
     public func onActive() {
+        backgroundTask?.cancel()
         if status == .disconnected {
             connect()
-        } else {
-            backgroundTimer?.invalidate()
-            backgroundTimer = nil
         }
     }
 
-    public func onInactive() {
-        backgroundTimer = .scheduledTimer(
-            withTimeInterval: 22,
-            repeats: false
-        ) { [weak self] _ in
-            self?.disconnect()
+    public func onInactive() async throws {
+        backgroundTask = Task {
+            try await Task.sleep(minutes: 10)
+            logger.info("disconnecting due to inactivity")
+            disconnect()
         }
+        _ = await backgroundTask?.result
+        backgroundTask = nil
     }
 
     // MARK: Debug
