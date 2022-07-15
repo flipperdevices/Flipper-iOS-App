@@ -1,6 +1,8 @@
 # Flipper-iOS-App [![Discord](https://img.shields.io/discord/740930220399525928.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](http://flipperzero.one/discord)
 
-This is a work-in-progress iOS 14+ app to rule all the Flipper family.
+This is a work-in-progress iOS 15+ app to rule all the Flipper family. 
+
+Please use our [forum](forum.flipperzero.one/c/mobile/14) to submit an issue or feature request.
 
 ## Features
 
