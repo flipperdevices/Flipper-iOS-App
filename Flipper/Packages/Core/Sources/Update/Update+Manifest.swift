@@ -82,9 +82,6 @@ extension Update.Manifest {
 
 extension Update.Manifest.Version {
     init?(url: URL) {
-        guard url.lastPathComponent.contains("-f7-") else {
-            return nil
-        }
         self.init(
             version: "custom",
             timestamp: 0,
