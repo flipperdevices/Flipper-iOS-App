@@ -14,7 +14,7 @@ extension Update {
 
         public struct Version: Decodable {
             public let version: String
-            // let changelog: String
+            public let changelog: String
             public let timestamp: Int
             public let files: [File]
 
@@ -84,6 +84,7 @@ extension Update.Manifest.Version {
     init?(url: URL) {
         self.init(
             version: "custom",
+            changelog: "",
             timestamp: 0,
             files: [
                 .init(url: url, target: "f7", type: "update_tgz", sha256: "")

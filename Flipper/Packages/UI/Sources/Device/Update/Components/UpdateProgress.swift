@@ -24,15 +24,34 @@ extension DeviceUpdateView {
                 Text(viewModel.availableFirmware)
                     .font(.system(size: 18, weight: .medium))
                     .foregroundColor(viewModel.availableFirmwareColor)
-                    .padding(.top, 64)
+                    .padding(.top, 14)
                 UpdateProgress(viewModel: viewModel)
-                    .padding(.top, 12)
+                    .padding(.top, 8)
                     .padding(.horizontal, 24)
                 Text(description)
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black30)
                     .padding(.top, 8)
+
+                Divider()
+                    .padding(.top, 12)
+
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        Text("What’s New")
+                            .font(.system(size: 18, weight: .bold))
+                            .padding(.top, 24)
+
+                        Text(viewModel.changelog)
+                            .font(.system(size: 15))
+                            .padding(.vertical, 14)
+                    }
+                    .padding(.horizontal, 14)
+                }
+
+                Divider()
+                    .padding(.bottom, 7)
             }
         }
     }

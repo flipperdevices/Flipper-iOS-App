@@ -32,7 +32,7 @@ struct DeviceUpdateView: View {
         VStack(spacing: 0) {
             Text(title)
                 .font(.system(size: 18, weight: .bold))
-                .padding(.top, 48)
+                .padding(.top, 12)
             Image(image)
                 .resizable()
                 .padding(.horizontal, 14)

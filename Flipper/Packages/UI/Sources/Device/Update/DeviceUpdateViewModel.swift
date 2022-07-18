@@ -48,6 +48,11 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
 
+    var changelog: String {
+        guard let firmware = firmware else { return "" }
+        return firmware.changelog
+    }
+
     var availableFirmwareColor: Color {
         switch channel {
         case .development: return .development
@@ -56,6 +61,7 @@ class DeviceUpdateViewModel: ObservableObject {
         case .custom: return .custom
         }
     }
+
     @Published var state: State = .downloadingFirmware
     @Published var progress: Double = 0
 
