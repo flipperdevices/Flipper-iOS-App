@@ -49,6 +49,21 @@ struct OptionsView: View {
                     }
                     .foregroundColor(.sRed)
                 }
+
+                Section {
+                } footer: {
+                    VStack(alignment: .center) {
+                        Text("Flipper Mobile App")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.black20)
+                        Text("Version: \(viewModel.appVersion)")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.black40)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.top, -20)
+                .padding(.bottom, 20)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

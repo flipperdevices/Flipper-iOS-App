@@ -16,6 +16,10 @@ class OptionsViewModel: ObservableObject {
     @Published var isOnline = false
     @Published var hasKeys = false
 
+    var appVersion: String {
+        Bundle.releaseVersion
+    }
+
     init() {
         appState.$status
             .receive(on: DispatchQueue.main)
