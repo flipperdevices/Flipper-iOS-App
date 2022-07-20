@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainView: View {
     @StateObject var viewModel: MainViewModel
+    @StateObject var tabViewController: TabViewController = .init()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -17,12 +18,17 @@ struct MainView: View {
                     .opacity(viewModel.importedOpacity)
             }
 
-            TabView(
-                selected: $viewModel.selectedTab,
-                status: viewModel.status,
-                progress: $viewModel.syncProgress)
+            if !tabViewController.isHidden {
+                TabView(
+                    selected: $viewModel.selectedTab,
+                    status: viewModel.status,
+                    progress: $viewModel.syncProgress
+                )
+                .transition(.move(edge: .bottom))
+            }
         }
         .edgesIgnoringSafeArea(.bottom)
+        .environmentObject(tabViewController)
     }
 }
 
