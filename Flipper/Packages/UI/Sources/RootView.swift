@@ -19,14 +19,12 @@ public struct RootView: View {
 
             VStack {
                 Spacer()
-                if !hexKeyboardController.isHidden {
-                    HexKeyboard(
-                        onButton: { hexKeyboardController.onKey(.hex($0)) },
-                        onBack: { hexKeyboardController.onKey(.back) },
-                        onOK: { hexKeyboardController.onKey(.ok) }
-                    )
-                    .transition(.move(edge: .bottom))
-                }
+                HexKeyboard(
+                    onButton: { hexKeyboardController.onKey(.hex($0)) },
+                    onBack: { hexKeyboardController.onKey(.back) },
+                    onOK: { hexKeyboardController.onKey(.ok) }
+                )
+                .offset(y: hexKeyboardController.isHidden ? 500 : 0)
             }
         }
         .environmentObject(hexKeyboardController)
