@@ -6,7 +6,7 @@ struct ImportView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if viewModel.isEditMode {
+            if viewModel.isEditing {
                 SheetEditHeader(
                     "Edit Key",
                     onSave: viewModel.saveChanges,
@@ -20,7 +20,7 @@ struct ImportView: View {
 
             CardView(
                 item: $viewModel.item,
-                isEditing: viewModel.isEditMode,
+                isEditing: $viewModel.isEditing,
                 kind: .imported
             )
             .padding(.top, 14)
@@ -39,7 +39,7 @@ struct ImportView: View {
             }
             .padding(.top, 18)
             .padding(.horizontal, 60)
-            .opacity(viewModel.isEditMode ? 0 : 1)
+            .opacity(viewModel.isEditing ? 0 : 1)
 
             Spacer()
         }

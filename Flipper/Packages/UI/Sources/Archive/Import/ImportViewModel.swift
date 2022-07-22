@@ -9,7 +9,7 @@ class ImportViewModel: ObservableObject {
 
     var backup: ArchiveItem
     @Published var item: ArchiveItem
-    @Published var isEditMode = false
+    @Published var isEditing = false
     @Published var isError = false
     var error = ""
 
@@ -38,18 +38,18 @@ class ImportViewModel: ObservableObject {
 
     func edit() {
         withAnimation {
-            isEditMode = true
+            isEditing = true
         }
     }
 
     func saveChanges() {
         backup = item
-        isEditMode = false
+        isEditing = false
     }
 
     func undoChanges() {
         item = backup
-        isEditMode = false
+        isEditing = false
     }
 
     func showError(_ error: Swift.Error) {

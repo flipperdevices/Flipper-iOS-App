@@ -12,7 +12,7 @@ struct DeletedInfoView: View {
 
             CardView(
                 item: $viewModel.item,
-                isEditing: false,
+                isEditing: $viewModel.isEditing,
                 kind: .existing
             )
             .padding(.top, 14)

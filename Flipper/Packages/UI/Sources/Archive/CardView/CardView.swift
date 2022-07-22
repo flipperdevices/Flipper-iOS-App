@@ -4,7 +4,7 @@ import SwiftUI
 struct CardView: View {
     @State var focusedField: String = ""
     @Binding var item: ArchiveItem
-    let isEditing: Bool
+    @Binding var isEditing: Bool
     let kind: Kind
 
     enum Kind {
@@ -12,23 +12,23 @@ struct CardView: View {
         case imported
     }
 
-    init(item: Binding<ArchiveItem>, isEditing: Bool, kind: Kind) {
+    init(item: Binding<ArchiveItem>, isEditing: Binding<Bool>, kind: Kind) {
         self._item = item
-        self.isEditing = isEditing
+        self._isEditing = isEditing
         self.kind = kind
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             CardHeaderView(
-                item: item,
+                item: $item,
                 kind: kind,
                 isEditing: isEditing)
 
             CardNameView(
                 item: $item,
                 kind: kind,
-                isEditing: isEditing,
+                isEditing: $isEditing,
                 focusedField: $focusedField
             )
             .padding(.top, 21)

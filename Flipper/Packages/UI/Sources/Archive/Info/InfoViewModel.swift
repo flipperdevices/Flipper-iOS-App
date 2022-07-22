@@ -11,7 +11,7 @@ class InfoViewModel: ObservableObject {
 
     var backup: ArchiveItem
     @Published var item: ArchiveItem
-    @Published var isEditMode = false
+    @Published var isEditing = false
     @Published var isError = false
     var error = ""
 
@@ -46,7 +46,7 @@ class InfoViewModel: ObservableObject {
 
     func toggleFavorite() {
         guard backup.isFavorite != item.isFavorite else { return }
-        guard !isEditMode else { return }
+        guard !isEditing else { return }
         Task {
             do {
                 try await appState.archive.onIsFavoriteToggle(item.path)
@@ -70,7 +70,7 @@ class InfoViewModel: ObservableObject {
 
     func edit() {
         withAnimation {
-            isEditMode = true
+            isEditing = true
         }
     }
 
@@ -93,7 +93,7 @@ class InfoViewModel: ObservableObject {
     func saveChanges() {
         guard item != backup else {
             withAnimation {
-                isEditMode = false
+                isEditing = false
             }
             return
         }
@@ -105,7 +105,7 @@ class InfoViewModel: ObservableObject {
                 try await appState.archive.upsert(item)
                 backup = item
                 withAnimation {
-                    isEditMode = false
+                    isEditing = false
                 }
                 item.status = .synchronizing
                 try await appState.synchronize()
@@ -123,7 +123,7 @@ class InfoViewModel: ObservableObject {
     func undoChanges() {
         item = backup
         withAnimation {
-            isEditMode = false
+            isEditing = false
         }
     }
 

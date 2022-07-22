@@ -5,6 +5,7 @@ extension CardView {
     struct CardNameInfoView: View {
         @Binding var item: ArchiveItem
         let kind: Kind
+        @Binding var isEditing: Bool
 
         var isFavorite: Bool { item.isFavorite }
         var isDeleted: Bool { item.status == .deleted }
@@ -17,16 +18,17 @@ extension CardView {
                         .lineLimit(1)
 
                     Button {
-                        item.isFavorite.toggle()
+                        withAnimation {
+                            isEditing = true
+                        }
                     } label: {
-                        Image(isFavorite ? "StarFilled" : "Star")
+                        Image("edit")
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 24, height: 24)
-                            .foregroundColor(.sYellow)
+                            .foregroundColor(.primary)
                             .opacity(kind == .existing ? 1 : 0)
                     }
-                    .opacity(isDeleted ? 0 : 1)
                 }
 
                 if item.note.isEmpty {

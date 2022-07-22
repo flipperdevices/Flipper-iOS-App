@@ -6,7 +6,7 @@ struct InfoView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if viewModel.isEditMode {
+            if viewModel.isEditing {
                 SheetEditHeader(
                     "Editing",
                     onSave: viewModel.saveChanges,
@@ -24,7 +24,7 @@ struct InfoView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     CardView(
                         item: $viewModel.item,
-                        isEditing: viewModel.isEditMode,
+                        isEditing: $viewModel.isEditing,
                         kind: .existing
                     )
                     .padding(.top, 14)
@@ -47,15 +47,11 @@ struct InfoView: View {
                         .cornerRadius(30)
                     }
                     .disabled(!viewModel.isConnected)
-                    .opacity(viewModel.isEditMode ? 0 : 1)
+                    .opacity(viewModel.isEditing ? 0 : 1)
                     .padding(.horizontal, 24)
                     .padding(.top, 18)
 
                     VStack(alignment: .leading, spacing: 20) {
-                        InfoButton(image: .init("edit"), title: "Edit") {
-                            viewModel.edit()
-                        }
-                        .foregroundColor(.primary)
                         InfoButton(image: .init("share"), title: "Share") {
                             viewModel.share()
                         }
@@ -67,7 +63,7 @@ struct InfoView: View {
                     }
                     .padding(.top, 24)
                     .padding(.horizontal, 24)
-                    .opacity(viewModel.isEditMode ? 0 : 1)
+                    .opacity(viewModel.isEditing ? 0 : 1)
 
                     Spacer()
                 }

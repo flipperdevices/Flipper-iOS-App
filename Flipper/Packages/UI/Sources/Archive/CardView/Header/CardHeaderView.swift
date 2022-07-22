@@ -3,7 +3,7 @@ import SwiftUI
 
 extension CardView {
     struct CardHeaderView: View {
-        let item: ArchiveItem
+        @Binding var item: ArchiveItem
         let kind: Kind
         let isEditing: Bool
 
@@ -17,6 +17,20 @@ extension CardView {
                     item.fileType,
                     isDeleted: isDeleted)
                 Spacer()
+
+                Button {
+                    item.isFavorite.toggle()
+                } label: {
+                    Image(item.isFavorite ? "StarFilled" : "Star")
+                        .resizable()
+                        .renderingMode(.template)
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.sYellow)
+                        .opacity(kind == .existing ? 1 : 0)
+                }
+                .padding(8)
+                .opacity(isDeleted ? 0 : 1)
+
                 VStack(spacing: 2) {
                     item.status.image
                     Text(item.status.title)
