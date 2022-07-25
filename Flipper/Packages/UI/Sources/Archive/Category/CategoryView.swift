@@ -3,7 +3,7 @@ import SwiftUI
 
 struct CategoryView: View {
     @StateObject var viewModel: CategoryViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         ZStack {
@@ -24,7 +24,7 @@ struct CategoryView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 BackButton {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
             }
             ToolbarItem(placement: .navigationBarLeading) {

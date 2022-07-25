@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LowBatteryAlert: View {
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         VStack(spacing: 0) {
@@ -21,7 +21,7 @@ struct LowBatteryAlert: View {
 
             Button {
                 withoutAnimation {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
             } label: {
                 Text("Got It")

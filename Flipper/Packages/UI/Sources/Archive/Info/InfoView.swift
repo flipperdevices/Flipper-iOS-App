@@ -2,7 +2,7 @@ import SwiftUI
 
 struct InfoView: View {
     @StateObject var viewModel: InfoViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -78,7 +78,7 @@ struct InfoView: View {
             Alert(title: Text(viewModel.error))
         }
         .onReceive(viewModel.dismissPublisher) {
-            presentationMode.wrappedValue.dismiss()
+            dismiss()
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)

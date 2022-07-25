@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ArchiveSearchView: View {
     @StateObject var viewModel: ArchiveSearchViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         VStack(spacing: 0) {
@@ -12,7 +12,7 @@ struct ArchiveSearchView: View {
                     predicate: $viewModel.predicate)
 
                 Button {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 } label: {
                     Text("Cancel")
                         .font(.system(size: 18, weight: .regular))

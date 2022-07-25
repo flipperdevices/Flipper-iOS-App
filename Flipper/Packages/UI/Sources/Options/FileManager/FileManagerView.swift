@@ -4,7 +4,7 @@ import Peripheral
 
 struct FileManagerView: View {
     @StateObject var viewModel: FileManagerViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         VStack {
@@ -48,7 +48,7 @@ struct FileManagerView: View {
         List {
             if !viewModel.path.isEmpty {
                 Button("..") {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
                 .foregroundColor(.primary)
             }
@@ -118,7 +118,7 @@ struct FileManagerView: View {
             HStack {
                 Spacer()
                 RoundedButton("Close") {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
                 Spacer()
                 RoundedButton("Save") {
