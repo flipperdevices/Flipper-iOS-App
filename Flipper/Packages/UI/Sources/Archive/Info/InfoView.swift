@@ -52,11 +52,16 @@ struct InfoView: View {
                     .padding(.top, 18)
 
                     VStack(alignment: .leading, spacing: 20) {
-                        InfoButton(image: .init("Share"), title: "Share") {
+                        if viewModel.isEditableNFC {
+                            InfoButton(image: "HexEditor", title: "Edit Dump") {
+                            }
+                            .foregroundColor(.primary)
+                        }
+                        InfoButton(image: "Share", title: "Share") {
                             viewModel.share()
                         }
                         .foregroundColor(.primary)
-                        InfoButton(image: .init("Delete"), title: "Delete") {
+                        InfoButton(image: "Delete", title: "Delete") {
                             viewModel.delete()
                         }
                         .foregroundColor(.sRed)
@@ -81,14 +86,14 @@ struct InfoView: View {
 }
 
 struct InfoButton: View {
-    let image: Image
+    let image: String
     let title: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
-                image
+                Image(image)
                     .renderingMode(.template)
                 Text(title)
                     .font(.system(size: 14, weight: .medium))

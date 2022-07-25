@@ -15,6 +15,18 @@ class InfoViewModel: ObservableObject {
     @Published var isError = false
     var error = ""
 
+    var isEditableNFC: Bool {
+        guard item.fileType == .nfc else {
+            return false
+        }
+        guard let typeProperty = item.properties.first(
+            where: { $0.key == "Mifare Classic type" }
+        ) else {
+            return false
+        }
+        return typeProperty.value == "1K" || typeProperty.value == "4K"
+    }
+
     @Inject var rpc: RPC
     @Published var appState: AppState = .shared
     var dismissPublisher = PassthroughSubject<Void, Never>()
