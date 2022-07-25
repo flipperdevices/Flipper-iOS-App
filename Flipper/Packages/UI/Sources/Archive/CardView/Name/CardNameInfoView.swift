@@ -22,7 +22,7 @@ extension CardView {
                             isEditing = true
                         }
                     } label: {
-                        Image("edit")
+                        Image("Edit")
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 24, height: 24)

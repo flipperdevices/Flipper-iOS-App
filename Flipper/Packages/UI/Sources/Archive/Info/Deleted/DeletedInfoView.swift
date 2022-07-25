@@ -19,11 +19,11 @@ struct DeletedInfoView: View {
             .padding(.horizontal, 24)
 
             VStack(alignment: .leading, spacing: 20) {
-                InfoButton(image: .init("restore"), title: "Restore") {
+                InfoButton(image: .init("Restore"), title: "Restore") {
                     viewModel.restore()
                 }
                 .foregroundColor(.primary)
-                InfoButton(image: .init("delete"), title: "Delete Permanently") {
+                InfoButton(image: .init("Delete"), title: "Delete Permanently") {
                     viewModel.delete()
                 }
                 .foregroundColor(.sRed)

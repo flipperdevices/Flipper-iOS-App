@@ -52,11 +52,11 @@ struct InfoView: View {
                     .padding(.top, 18)
 
                     VStack(alignment: .leading, spacing: 20) {
-                        InfoButton(image: .init("share"), title: "Share") {
+                        InfoButton(image: .init("Share"), title: "Share") {
                             viewModel.share()
                         }
                         .foregroundColor(.primary)
-                        InfoButton(image: .init("delete"), title: "Delete") {
+                        InfoButton(image: .init("Delete"), title: "Delete") {
                             viewModel.delete()
                         }
                         .foregroundColor(.sRed)
