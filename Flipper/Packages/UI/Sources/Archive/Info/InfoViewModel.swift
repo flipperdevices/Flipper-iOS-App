@@ -11,6 +11,7 @@ class InfoViewModel: ObservableObject {
 
     var backup: ArchiveItem
     @Published var item: ArchiveItem
+    @Published var showDumpEditor = false
     @Published var isEditing = false
     @Published var isError = false
     var error = ""

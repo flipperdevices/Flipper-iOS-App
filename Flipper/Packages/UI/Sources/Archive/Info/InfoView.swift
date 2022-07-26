@@ -54,6 +54,7 @@ struct InfoView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         if viewModel.isEditableNFC {
                             InfoButton(image: "HexEditor", title: "Edit Dump") {
+                                viewModel.showDumpEditor = true
                             }
                             .foregroundColor(.primary)
                         }
@@ -73,6 +74,9 @@ struct InfoView: View {
                     Spacer()
                 }
             }
+        }
+        .fullScreenCover(isPresented: $viewModel.showDumpEditor) {
+            NFCEditorView(viewModel: .init(item: viewModel.item))
         }
         .alert(isPresented: $viewModel.isError) {
             Alert(title: Text(viewModel.error))
