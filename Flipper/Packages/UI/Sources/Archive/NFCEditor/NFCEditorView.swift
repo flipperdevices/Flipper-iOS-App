@@ -13,7 +13,10 @@ struct NFCEditorView: View {
                 title: "Edit Dump",
                 description: viewModel.item.name.value,
                 onCancel: { dismiss() },
-                onSave: { viewModel.save() }
+                onSave: {
+                    viewModel.save()
+                    dismiss()
+                }
             )
 
             GeometryReader { proxy in
@@ -22,7 +25,7 @@ struct NFCEditorView: View {
                         NFCCard(item: $viewModel.item)
 
                         HexEditor(
-                            bytes: viewModel.bytes,
+                            bytes: $viewModel.bytes,
                             width: proxy.size.width - 33
                         )
                     }

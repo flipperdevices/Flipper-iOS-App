@@ -3,7 +3,7 @@ import SwiftUI
 struct HexEditor: View {
     @EnvironmentObject var hexKeyboardController: HexKeyboardController
 
-    @State var bytes: [UInt8?]
+    @Binding var bytes: [UInt8?]
     let width: Double
     @State private var input: String = ""
     @State private var selectedIndex: Int?
