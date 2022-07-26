@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 
 struct NFCEditorView: View {
@@ -18,6 +19,8 @@ struct NFCEditorView: View {
             GeometryReader { proxy in
                 ScrollView {
                     VStack(spacing: 24) {
+                        NFCCard(item: $viewModel.item)
+
                         HexEditor(
                             bytes: viewModel.bytes,
                             width: proxy.size.width - 33
@@ -42,6 +45,69 @@ struct NFCEditorView: View {
 }
 
 extension NFCEditorView {
+    struct NFCCard: View {
+        @Binding var item: ArchiveItem
+
+        var body: some View {
+            ZStack {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack(spacing: 4) {
+                        Text("MIFARE Classic 4K")
+                            .font(.system(size: 12, weight: .heavy))
+
+                        Image("NFCCardWaves")
+                            .frame(width: 24, height: 24)
+                    }
+                    .padding(.top, 17)
+
+                    Image("NFCCardInfo")
+                        .resizable()
+                        .scaledToFit()
+                        .padding(.top, 31)
+
+                    VStack(spacing: 5) {
+                        HStack {
+                            Text("UID:")
+                                .fontWeight(.bold)
+                            Text(item["UID"] ?? "")
+                                .fontWeight(.medium)
+                        }
+
+                        HStack(spacing: 23) {
+                            HStack {
+                                Text("ATQA:")
+                                    .fontWeight(.bold)
+                                Text(item["ATQA"] ?? "")
+                                    .fontWeight(.medium)
+                            }
+
+                            HStack {
+                                Text("SAK:")
+                                    .fontWeight(.bold)
+                                Text(item["SAK"] ?? "")
+                                    .fontWeight(.medium)
+                            }
+                        }
+                    }
+                    .font(.system(size: 10))
+                    .padding(.top, 32)
+                    .padding(.bottom, 13)
+                }
+                .padding(.leading, 12)
+                .padding(.trailing, 17)
+            }
+            .foregroundColor(.white)
+            .padding(.horizontal, 14)
+            .background {
+                Image("NFCCard")
+                    .resizable()
+                    .scaledToFit()
+            }
+        }
+    }
+}
+
+extension NFCEditorView {
     struct Header: View {
         let title: String
         let description: String?
@@ -60,7 +126,7 @@ extension NFCEditorView {
 
                 Spacer()
 
-                VStack {
+                VStack(spacing: 0) {
                     Text(title)
                         .font(.system(size: 18, weight: .bold))
                     if let description = description {
