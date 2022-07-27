@@ -81,6 +81,22 @@ struct HexEditorSection: View {
         selectedIndex = row * columnsCount + column
     }
 
+    func color(_ row: Int, _ column: Int) -> Color {
+        let row = row % 4
+        guard row != 0 else {
+            return sector == 0 ? .candidate : .primary
+        }
+        guard row == 3 else {
+            return .primary
+        }
+        switch column {
+        case 0...5: return .sGreenUpdate
+        case 6...8: return .sRed
+        case 10...15: return .a2
+        default: return .primary
+        }
+    }
+
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             Text("Sector: \(sector)")
@@ -108,11 +124,13 @@ struct HexEditorSection: View {
                                 HexByteEditor(byte: column.byte, input: $input)
                                     .padding(bytePadding)
                                     .frame(width: byteWidth, height: byteHeight)
+                                    .foregroundColor(color(row.id, column.id))
                                     .background(Color(uiColor: .lightGray))
                             } else {
                                 HexByte(byte: column.byte)
                                     .padding(bytePadding)
                                     .frame(width: byteWidth, height: byteHeight)
+                                    .foregroundColor(color(row.id, column.id))
                                     .onTapGesture {
                                         makeSelected(row.id, column.id)
                                     }
