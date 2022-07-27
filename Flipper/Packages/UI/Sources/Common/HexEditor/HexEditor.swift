@@ -25,26 +25,34 @@ struct HexEditor: View {
         }
         .onChange(of: selectedIndex) { selectedIndex in
             input = ""
-            guard let selectedIndex = selectedIndex else {
+            guard selectedIndex != nil else {
                 hexKeyboardController.hide()
                 return
             }
             hexKeyboardController.show { key in
-                guard key != .ok else {
-                    self.selectedIndex = nil
-                    return
-                }
-                guard case let .hex(button) = key else {
-                    return
-                }
-                input += button
-                if input.count == 2 {
-                    bytes[selectedIndex] = UInt8(input, radix: 16) ?? 0
-                    if selectedIndex + 1 < bytes.count {
-                        self.selectedIndex = selectedIndex + 1
-                    } else {
-                        self.selectedIndex = nil
-                    }
+                onKey(key)
+            }
+        }
+    }
+
+    func onKey(_ key: HexKeyboardController.Key) {
+        guard let selectedIndex = selectedIndex else {
+            return
+        }
+        switch key {
+        case .ok:
+            self.selectedIndex = nil
+        case .back:
+            bytes[selectedIndex] = nil
+            if selectedIndex > 0 {
+                self.selectedIndex = selectedIndex - 1
+            }
+        case let .hex(button):
+            input += button
+            if input.count == 2 {
+                bytes[selectedIndex] = UInt8(input, radix: 16)
+                if selectedIndex + 1 < bytes.count {
+                    self.selectedIndex = selectedIndex + 1
                 }
             }
         }
