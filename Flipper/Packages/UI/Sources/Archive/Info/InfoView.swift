@@ -14,7 +14,7 @@ struct InfoView: View {
                 )
                 .padding(.bottom, 6)
             } else {
-                SheetHeader("Key Info") {
+                SheetHeader(viewModel.isNFC ? "Card Info" : "Key Info") {
                     viewModel.dismiss()
                 }
                 .padding(.bottom, 6)

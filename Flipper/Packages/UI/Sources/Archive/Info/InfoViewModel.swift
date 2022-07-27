@@ -16,11 +16,12 @@ class InfoViewModel: ObservableObject {
     @Published var isError = false
     var error = ""
 
+    var isNFC: Bool {
+        item.fileType == .nfc
+    }
+
     var isEditableNFC: Bool {
-        guard item.fileType == .nfc else {
-            return false
-        }
-        guard let typeProperty = item.properties.first(
+        guard isNFC, let typeProperty = item.properties.first(
             where: { $0.key == "Mifare Classic type" }
         ) else {
             return false
