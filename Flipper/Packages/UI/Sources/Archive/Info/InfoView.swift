@@ -30,26 +30,14 @@ struct InfoView: View {
                     .padding(.top, 14)
                     .padding(.horizontal, 24)
 
-                    Button {
-                        viewModel.emulate()
-                    } label: {
-                        HStack(spacing: 7) {
-                            Spacer()
-                            Image("Emulate")
-                            Text("Emulate")
-                            Spacer()
-                        }
-                        .frame(height: 47)
-                        .frame(maxWidth: .infinity)
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.white)
-                        .background(viewModel.isConnected ? Color.a2 : .gray)
-                        .cornerRadius(30)
+                    switch viewModel.item.fileType {
+                    case .nfc, .rfid, .ibutton:
+                        EmulateButton(viewModel: viewModel)
+                    case .subghz:
+                        SendButton(viewModel: viewModel)
+                    default:
+                        EmptyView()
                     }
-                    .disabled(!viewModel.isConnected)
-                    .opacity(viewModel.isEditing ? 0 : 1)
-                    .padding(.horizontal, 24)
-                    .padding(.top, 18)
 
                     VStack(alignment: .leading, spacing: 20) {
                         if viewModel.isEditableNFC {
@@ -86,6 +74,111 @@ struct InfoView: View {
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
+        .onDisappear {
+            viewModel.stopApp()
+        }
+    }
+}
+
+struct EmulateButton: View {
+    @ObservedObject var viewModel: InfoViewModel
+    @State var isPressed = false
+
+    var body: some View {
+        Button {
+            if viewModel.isEmulating {
+                isPressed = false
+                viewModel.stopEmulate()
+            } else {
+                isPressed = true
+                viewModel.emulate()
+            }
+        } label: {
+            HStack(spacing: 7) {
+                Spacer()
+                Image("Emulate")
+                if viewModel.isEmulating {
+                    Image("TextEmulating")
+                        .padding(.top, 4)
+                } else {
+                    Image("TextEmulate")
+                        .padding(.bottom, 2)
+                }
+                Spacer()
+            }
+            .frame(height: 48)
+            .frame(maxWidth: .infinity)
+            .foregroundColor(.white)
+            .background {
+                if !viewModel.isConnected {
+                    Color.black8
+                } else if viewModel.isEmulating {
+                    AnimatedPlaceholder(
+                        color1: .init(red: 0.65, green: 0.82, blue: 1.0, opacity: 1.0),
+                        color2: .init(red: 0.35, green: 0.62, blue: 1.0, opacity: 1.0)
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    Color.a2
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(viewModel.isConnected ? Color.a2 : .black8, lineWidth: 2))
+        }
+        .disabled(!viewModel.isConnected)
+        .opacity(viewModel.isEditing ? 0 : 1)
+        .padding(.horizontal, isPressed ? 18 : 24)
+        .padding(.top, 18)
+    }
+}
+
+struct SendButton: View {
+    @ObservedObject var viewModel: InfoViewModel
+    @State var isPressed = false
+
+    var body: some View {
+        HStack(spacing: 7) {
+            Spacer()
+            Image("Send")
+            Image("TextSend")
+            Spacer()
+        }
+        .frame(height: 48)
+        .frame(maxWidth: .infinity)
+        .foregroundColor(.white)
+        .background {
+            if !viewModel.isConnected {
+                Color.black8
+            } else if viewModel.isEmulating {
+                AnimatedPlaceholder(
+                    color1: .init(red: 1.0, green: 0.71, blue: 0.0, opacity: 1.0),
+                    color2: .init(red: 1.0, green: 0.51, blue: 0.0, opacity: 1.0)
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                Color.a1
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(viewModel.isConnected ? Color.a1 : .black8, lineWidth: 2))
+        .disabled(!viewModel.isConnected)
+        .opacity(viewModel.isEditing ? 0 : 1)
+        .padding(.horizontal, isPressed ? 18 : 24)
+        .padding(.top, 18)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    isPressed = true
+                    viewModel.emulate()
+                }
+                .onEnded { _ in
+                    isPressed = false
+                    viewModel.stopEmulate()
+                })
     }
 }
 

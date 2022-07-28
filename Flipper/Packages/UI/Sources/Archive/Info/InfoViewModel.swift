@@ -13,6 +13,7 @@ class InfoViewModel: ObservableObject {
     @Published var item: ArchiveItem
     @Published var showDumpEditor = false
     @Published var isEditing = false
+    @Published var isEmulating = false
     @Published var isError = false
     var error = ""
 
@@ -35,11 +36,27 @@ class InfoViewModel: ObservableObject {
     var disposeBag = DisposeBag()
 
     @Published var isConnected = false
+    @Published var isFlipperAppStarted = false
 
     init(item: ArchiveItem?) {
         self.item = item ?? .none
         self.backup = item ?? .none
         watchIsFavorite()
+
+        rpc.onAppStateChanged { [weak self] state in
+            guard let self = self else { return }
+            Task { @MainActor in
+                self.onAppStateChanged(state)
+            }
+        }
+    }
+
+    func onAppStateChanged(_ state: Message.AppState) {
+        isFlipperAppStarted = state == .started
+        if state == .closed {
+            isEmulating = false
+        }
+        logger.info("flipper app \(state)")
     }
 
     func watchIsFavorite() {
@@ -70,16 +87,46 @@ class InfoViewModel: ObservableObject {
         }
     }
 
+    func startApp() async throws {
+        try await rpc.appStart(item.fileType.application, args: "RPC")
+        while !isFlipperAppStarted {
+            try await Task.sleep(nanoseconds: 100 * 1_000_000)
+        }
+    }
+
+    func stopApp() {
+        Task {
+            await stopApp()
+        }
+    }
+
+    func stopApp() async {
+        do {
+            isFlipperAppStarted = false
+            try await rpc.appExit()
+        } catch {
+            logger.error("stop app: \(error)")
+        }
+    }
+
     func emulate() {
         Task {
             do {
-                try await rpc.appStart(
-                    item.fileType.application,
-                    args: item.path.string)
+                isEmulating = true
+                if !isFlipperAppStarted {
+                    try await startApp()
+                }
+                try await rpc.appLoadFile(item.path)
+                try await rpc.appButtonPress()
             } catch {
                 logger.error("emilating key: \(error)")
             }
         }
+    }
+
+    func stopEmulate() {
+        isEmulating = false
+        stopApp()
     }
 
     func edit() {

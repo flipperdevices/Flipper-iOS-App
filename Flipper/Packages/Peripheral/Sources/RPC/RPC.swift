@@ -78,4 +78,8 @@ public extension RPC {
     func createDirectory(at path: Path) async throws {
         try await createFile(at: path, isDirectory: true)
     }
+
+    func appButtonPress() async throws {
+        try await appButtonPress("")
+    }
 }
