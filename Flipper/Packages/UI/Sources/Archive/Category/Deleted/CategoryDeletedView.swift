@@ -3,7 +3,7 @@ import SwiftUI
 
 struct CategoryDeletedView: View {
     @StateObject var viewModel: CategoryDeletedViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
 
     var sheetTitle: String {
         "All this keys will be deleted.\nThis action cannot be undone."
@@ -29,7 +29,7 @@ struct CategoryDeletedView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 BackButton {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
             }
             ToolbarItem(placement: .navigationBarLeading) {

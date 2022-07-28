@@ -2,7 +2,7 @@ import SwiftUI
 
 struct DeletedInfoView: View {
     @StateObject var viewModel: DeletedInfoViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -12,18 +12,18 @@ struct DeletedInfoView: View {
 
             CardView(
                 item: $viewModel.item,
-                isEditing: false,
+                isEditing: $viewModel.isEditing,
                 kind: .existing
             )
             .padding(.top, 14)
             .padding(.horizontal, 24)
 
             VStack(alignment: .leading, spacing: 20) {
-                InfoButton(image: .init("restore"), title: "Restore") {
+                InfoButton(image: .init("Restore"), title: "Restore") {
                     viewModel.restore()
                 }
                 .foregroundColor(.primary)
-                InfoButton(image: .init("delete"), title: "Delete Permanently") {
+                InfoButton(image: .init("Delete"), title: "Delete Permanently") {
                     viewModel.delete()
                 }
                 .foregroundColor(.sRed)
@@ -37,7 +37,7 @@ struct DeletedInfoView: View {
             Alert(title: Text(viewModel.error))
         }
         .onReceive(viewModel.dismissPublisher) {
-            presentationMode.wrappedValue.dismiss()
+            dismiss()
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)

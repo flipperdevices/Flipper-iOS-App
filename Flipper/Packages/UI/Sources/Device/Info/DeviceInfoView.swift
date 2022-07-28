@@ -4,7 +4,7 @@ import SwiftUI
 
 struct DeviceInfoView: View {
     @StateObject var viewModel: DeviceInfoViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         ScrollView {
@@ -55,7 +55,7 @@ struct DeviceInfoView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 BackButton {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
             }
             ToolbarItem(placement: .navigationBarLeading) {

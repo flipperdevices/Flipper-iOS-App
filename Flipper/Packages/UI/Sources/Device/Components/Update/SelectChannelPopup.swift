@@ -45,7 +45,7 @@ struct SelectChannelPopup: View {
 }
 
 struct ChannelMenuRow: View {
-    @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.dismiss) var dismiss
 
     let title: String
     let description: String
@@ -63,7 +63,7 @@ struct ChannelMenuRow: View {
     var body: some View {
         Button {
             withoutAnimation {
-                presentationMode.wrappedValue.dismiss()
+                dismiss()
                 onClick(title)
             }
         } label: {

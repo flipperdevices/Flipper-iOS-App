@@ -30,6 +30,6 @@ public func share(_ key: ArchiveItem) {
     do {
         try shareWeb(key)
     } catch {
-        Logger(label: "share").error("\(error)")
+        Logger(label: "Share").error("\(error)")
     }
 }

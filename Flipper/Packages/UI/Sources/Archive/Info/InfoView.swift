@@ -2,11 +2,11 @@ import SwiftUI
 
 struct InfoView: View {
     @StateObject var viewModel: InfoViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if viewModel.isEditMode {
+            if viewModel.isEditing {
                 SheetEditHeader(
                     "Editing",
                     onSave: viewModel.saveChanges,
@@ -14,7 +14,7 @@ struct InfoView: View {
                 )
                 .padding(.bottom, 6)
             } else {
-                SheetHeader("Key Info") {
+                SheetHeader(viewModel.isNFC ? "Card Info" : "Key Info") {
                     viewModel.dismiss()
                 }
                 .padding(.bottom, 6)
@@ -24,7 +24,7 @@ struct InfoView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     CardView(
                         item: $viewModel.item,
-                        isEditing: viewModel.isEditMode,
+                        isEditing: $viewModel.isEditing,
                         kind: .existing
                     )
                     .padding(.top, 14)
@@ -47,37 +47,42 @@ struct InfoView: View {
                         .cornerRadius(30)
                     }
                     .disabled(!viewModel.isConnected)
-                    .opacity(viewModel.isEditMode ? 0 : 1)
+                    .opacity(viewModel.isEditing ? 0 : 1)
                     .padding(.horizontal, 24)
                     .padding(.top, 18)
 
                     VStack(alignment: .leading, spacing: 20) {
-                        InfoButton(image: .init("edit"), title: "Edit") {
-                            viewModel.edit()
+                        if viewModel.isEditableNFC {
+                            InfoButton(image: "HexEditor", title: "Edit Dump") {
+                                viewModel.showDumpEditor = true
+                            }
+                            .foregroundColor(.primary)
                         }
-                        .foregroundColor(.primary)
-                        InfoButton(image: .init("share"), title: "Share") {
+                        InfoButton(image: "Share", title: "Share") {
                             viewModel.share()
                         }
                         .foregroundColor(.primary)
-                        InfoButton(image: .init("delete"), title: "Delete") {
+                        InfoButton(image: "Delete", title: "Delete") {
                             viewModel.delete()
                         }
                         .foregroundColor(.sRed)
                     }
                     .padding(.top, 24)
                     .padding(.horizontal, 24)
-                    .opacity(viewModel.isEditMode ? 0 : 1)
+                    .opacity(viewModel.isEditing ? 0 : 1)
 
                     Spacer()
                 }
             }
         }
+        .fullScreenCover(isPresented: $viewModel.showDumpEditor) {
+            NFCEditorView(viewModel: .init(item: viewModel.item))
+        }
         .alert(isPresented: $viewModel.isError) {
             Alert(title: Text(viewModel.error))
         }
         .onReceive(viewModel.dismissPublisher) {
-            presentationMode.wrappedValue.dismiss()
+            dismiss()
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
@@ -85,14 +90,14 @@ struct InfoView: View {
 }
 
 struct InfoButton: View {
-    let image: Image
+    let image: String
     let title: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
-                image
+                Image(image)
                     .renderingMode(.template)
                 Text(title)
                     .font(.system(size: 14, weight: .medium))

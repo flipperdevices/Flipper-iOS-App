@@ -9,6 +9,7 @@ class DeletedInfoViewModel: ObservableObject {
 
     @Published var item: ArchiveItem
     @Published var showDeleteSheet = false
+    @Published var isEditing = false
     @Published var isError = false
     var error = ""
 

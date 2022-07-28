@@ -11,9 +11,23 @@ class InfoViewModel: ObservableObject {
 
     var backup: ArchiveItem
     @Published var item: ArchiveItem
-    @Published var isEditMode = false
+    @Published var showDumpEditor = false
+    @Published var isEditing = false
     @Published var isError = false
     var error = ""
+
+    var isNFC: Bool {
+        item.fileType == .nfc
+    }
+
+    var isEditableNFC: Bool {
+        guard isNFC, let typeProperty = item.properties.first(
+            where: { $0.key == "Mifare Classic type" }
+        ) else {
+            return false
+        }
+        return typeProperty.value == "1K" || typeProperty.value == "4K"
+    }
 
     @Inject var rpc: RPC
     @Published var appState: AppState = .shared
@@ -46,7 +60,7 @@ class InfoViewModel: ObservableObject {
 
     func toggleFavorite() {
         guard backup.isFavorite != item.isFavorite else { return }
-        guard !isEditMode else { return }
+        guard !isEditing else { return }
         Task {
             do {
                 try await appState.archive.onIsFavoriteToggle(item.path)
@@ -70,7 +84,7 @@ class InfoViewModel: ObservableObject {
 
     func edit() {
         withAnimation {
-            isEditMode = true
+            isEditing = true
         }
     }
 
@@ -93,7 +107,7 @@ class InfoViewModel: ObservableObject {
     func saveChanges() {
         guard item != backup else {
             withAnimation {
-                isEditMode = false
+                isEditing = false
             }
             return
         }
@@ -105,7 +119,7 @@ class InfoViewModel: ObservableObject {
                 try await appState.archive.upsert(item)
                 backup = item
                 withAnimation {
-                    isEditMode = false
+                    isEditing = false
                 }
                 item.status = .synchronizing
                 try await appState.synchronize()
@@ -123,7 +137,7 @@ class InfoViewModel: ObservableObject {
     func undoChanges() {
         item = backup
         withAnimation {
-            isEditMode = false
+            isEditing = false
         }
     }
 

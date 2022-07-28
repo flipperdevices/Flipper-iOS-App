@@ -30,7 +30,7 @@ extension UserDefaults {
     }
 }
 
-extension Bundle {
+public extension Bundle {
     static var fullVersion: String {
         "\(releaseVersion)(\(buildVersion))"
     }

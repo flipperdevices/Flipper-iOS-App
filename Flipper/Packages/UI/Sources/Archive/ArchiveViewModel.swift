@@ -6,7 +6,7 @@ import OrderedCollections
 
 @MainActor
 class ArchiveViewModel: ObservableObject {
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     let appState: AppState = .shared
 
     @Published var items: [ArchiveItem] = []
