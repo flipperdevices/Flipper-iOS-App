@@ -1,5 +1,5 @@
 public enum Message {
-    case decodeError
+    case error(Error)
     case screenFrame(ScreenFrame)
     case appState(AppState)
     case reboot(RebootMode)
@@ -20,8 +20,8 @@ public enum Message {
 
 extension Message {
     init(decoding main: PB_Main) {
-        guard main.commandStatus != .errorDecode else {
-            self = .decodeError
+        guard main.commandStatus == .ok else {
+            self = .error(.init(main.commandStatus))
             return
         }
         switch main.content {
@@ -54,10 +54,6 @@ extension Message {
 extension Message {
     func serialize() -> PB_Main {
         switch self {
-        case .decodeError:
-            return .with {
-                $0.commandStatus = .errorDecode
-            }
         case .screenFrame(let screenFrame):
             return .with {
                 $0.guiScreenFrame = .with {

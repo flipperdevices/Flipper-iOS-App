@@ -44,8 +44,8 @@ public class BluetoothRPC: RPC {
 
     private func onMessage(_ message: Message) {
         switch message {
-        case .decodeError:
-            onError(.common(.decode))
+        case .error(let error):
+            onError(error)
         case .screenFrame(let screenFrame):
             onScreenFrame?(screenFrame)
         case .unknown(let command):
