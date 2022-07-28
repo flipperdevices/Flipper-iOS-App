@@ -51,6 +51,24 @@ extension NFCEditorView {
     struct NFCCard: View {
         @Binding var item: ArchiveItem
 
+        // FIXME: buggy padding
+
+        var paddingLeading: Double {
+            switch UIScreen.main.bounds.width {
+            case 320: return 3
+            case 414: return 24
+            default: return 12
+            }
+        }
+
+        var paddingTrailing: Double {
+            switch UIScreen.main.bounds.width {
+            case 320: return 4
+            case 414: return 34
+            default: return 17
+            }
+        }
+
         var body: some View {
             ZStack {
                 VStack(alignment: .leading, spacing: 0) {
@@ -68,7 +86,7 @@ extension NFCEditorView {
                         .scaledToFit()
                         .padding(.top, 31)
 
-                    VStack(spacing: 5) {
+                    VStack(alignment: .leading, spacing: 5) {
                         HStack {
                             Text("UID:")
                                 .fontWeight(.bold)
@@ -96,8 +114,8 @@ extension NFCEditorView {
                     .padding(.top, 32)
                     .padding(.bottom, 13)
                 }
-                .padding(.leading, 12)
-                .padding(.trailing, 17)
+                .padding(.leading, paddingLeading)
+                .padding(.trailing, paddingTrailing)
             }
             .foregroundColor(.white)
             .padding(.horizontal, 14)
