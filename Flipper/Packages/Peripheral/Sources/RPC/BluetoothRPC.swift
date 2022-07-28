@@ -263,9 +263,45 @@ extension BluetoothRPC {
         return .init(bytes)
     }
 
-    public func startRequest(_ name: String, args: String) async throws {
+    public func appStart(_ name: String, args: String) async throws {
         let response = try await session?
-            .send(.application(.startRequest(name, args)))
+            .send(.application(.start(name, args)))
+            .response
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func appLoadFile(_ path: Path) async throws {
+        let response = try await session?
+            .send(.application(.loadFile(path)))
+            .response
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func appButtonPress(_ button: String) async throws {
+        let response = try await session?
+            .send(.application(.pressButton(button)))
+            .response
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func appButtonRelease() async throws {
+        let response = try await session?
+            .send(.application(.releaseButton))
+            .response
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func appExit() async throws {
+        let response = try await session?
+            .send(.application(.exit))
             .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)

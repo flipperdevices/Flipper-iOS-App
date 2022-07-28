@@ -27,7 +27,12 @@ public protocol RPC {
 
     // MARK: Application
 
-    func startRequest(_ name: String, args: String) async throws
+    func appStart(_ name: String, args: String) async throws
+    func appLoadFile(_ path: Path) async throws
+    func appButtonPress(_ button: String) async throws
+    func appButtonRelease() async throws
+    func appExit() async throws
+
 
     // MARK: GUI
 

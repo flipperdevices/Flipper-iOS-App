@@ -73,7 +73,7 @@ class InfoViewModel: ObservableObject {
     func emulate() {
         Task {
             do {
-                try await rpc.startRequest(
+                try await rpc.appStart(
                     item.fileType.application,
                     args: item.path.string)
             } catch {

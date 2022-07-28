@@ -32,7 +32,12 @@ public enum Request {
     }
 
     public enum Application {
-        case startRequest(String, String)
+        case start(String, String)
+        case lockStatus
+        case loadFile(Path)
+        case pressButton(String)
+        case releaseButton
+        case exit
     }
 
     public enum GUI {
@@ -164,12 +169,36 @@ extension Request.Storage {
 extension Request.Application {
     func serialize() -> PB_Main {
         switch self {
-        case let .startRequest(name, args):
+        case let .start(name, args):
             return .with {
                 $0.appStartRequest = .with {
                     $0.name = name
                     $0.args = args
                 }
+            }
+        case .lockStatus:
+            return .with {
+                $0.appLockStatusRequest = .init()
+            }
+        case let .loadFile(path):
+            return .with {
+                $0.appLoadFileRequest = .with {
+                    $0.path = path.string
+                }
+            }
+        case let .pressButton(button):
+            return .with {
+                $0.appButtonPressRequest = .with {
+                    $0.args = button
+                }
+            }
+        case .releaseButton:
+            return .with {
+                $0.appButtonReleaseRequest = .init()
+            }
+        case .exit:
+            return .with {
+                $0.appExitRequest = .init()
             }
         }
     }
@@ -322,8 +351,18 @@ extension Request.Storage: CustomStringConvertible {
 extension Request.Application: CustomStringConvertible {
     public var description: String {
         switch self {
-        case let .startRequest(name, args):
-            return "startRequest(\(name), \(args))"
+        case let .start(name, args):
+            return "start(\(name), \(args))"
+        case .lockStatus:
+            return "lockStatus"
+        case let .loadFile(path):
+            return "loadFile(\(path))"
+        case let .pressButton(button):
+            return "pressButton(\(button))"
+        case .releaseButton:
+            return "releaseButton"
+        case .exit:
+            return "exit"
         }
     }
 }

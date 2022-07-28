@@ -7,6 +7,7 @@ public enum Response: Equatable {
     case ok
     case error(String)
     case system(System)
+    case application(Application)
     case storage(Storage)
 
     public enum System: Equatable {
@@ -29,6 +30,10 @@ public enum Response: Equatable {
             case unspecifiedError
             case unknown(Int)
         }
+    }
+
+    public enum Application: Equatable {
+        case lockStatus(Bool)
     }
 
     public enum Storage: Equatable {
@@ -154,6 +159,7 @@ extension Response: CustomStringConvertible {
         case .ok: return "ok"
         case .error(let error): return "error(\(error))"
         case .system(let system): return "system(\(system))"
+        case .application(let application): return "application(\(application))"
         case .storage(let storage): return "storage(\(storage))"
         }
     }
@@ -166,6 +172,14 @@ extension Response.System: CustomStringConvertible {
         case let .info(key, value): return "info(\(key): \(value))"
         case let .dateTime(date): return "dateTime(\(date))"
         case let .update(update): return "update(\(update))"
+        }
+    }
+}
+
+extension Response.Application: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .lockStatus(let status): return "lockStatus(\(status))"
         }
     }
 }
