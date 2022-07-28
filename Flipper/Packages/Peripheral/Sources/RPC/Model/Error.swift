@@ -5,6 +5,7 @@ public enum Error: Equatable, Swift.Error {
     case storage(StorageError)
     case application(ApplicationError)
     case virtualDisplay(VirtualDisplayError)
+    case gpio(GPIOError)
     case unexpectedRequest
     case unexpectedResponse(Response?)
     case unsupported(Int)
@@ -41,6 +42,11 @@ public enum Error: Equatable, Swift.Error {
     public enum VirtualDisplayError: Equatable, Swift.Error {
         case alreadyStarted
         case notStarted
+    }
+
+    public enum GPIOError: Equatable, Swift.Error {
+        case modeIncorrect
+        case unknownPinMode
     }
 }
 
@@ -99,6 +105,11 @@ extension Error {
         case .errorVirtualDisplayNotStarted:
             self = .virtualDisplay(.notStarted)
 
+        case .errorGpioModeIncorrect:
+            self = .gpio(.modeIncorrect)
+        case .errorGpioUnknownPinMode:
+            self = .gpio(.unknownPinMode)
+
         case .ok, .UNRECOGNIZED:
             self = .unsupported(source.rawValue)
         }
@@ -122,6 +133,8 @@ extension Error: CustomStringConvertible {
             return "ApplicationError: \(error)"
         case .virtualDisplay(let error):
             return "VirtualDisplayError: \(error)"
+        case .gpio(let error):
+            return "GPIOError: \(error)"
         case .unexpectedRequest:
             return "Unexpected request"
         case .unexpectedResponse(let response):

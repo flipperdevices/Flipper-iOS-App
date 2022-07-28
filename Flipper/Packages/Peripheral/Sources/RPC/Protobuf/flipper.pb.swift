@@ -89,6 +89,10 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
 
   ///*< Virtual Display session can't be stopped when it's not started 
   case errorVirtualDisplayNotStarted // = 20
+
+  ///*< GPIO Errors 
+  case errorGpioModeIncorrect // = 58
+  case errorGpioUnknownPinMode // = 59
   case UNRECOGNIZED(Int)
 
   init() {
@@ -120,6 +124,8 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
     case 20: self = .errorVirtualDisplayNotStarted
     case 21: self = .errorAppNotRunning
     case 22: self = .errorAppCmdError
+    case 58: self = .errorGpioModeIncorrect
+    case 59: self = .errorGpioUnknownPinMode
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -149,6 +155,8 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
     case .errorVirtualDisplayNotStarted: return 20
     case .errorAppNotRunning: return 21
     case .errorAppCmdError: return 22
+    case .errorGpioModeIncorrect: return 58
+    case .errorGpioUnknownPinMode: return 59
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -183,6 +191,8 @@ extension PB_CommandStatus: CaseIterable {
     .errorAppCmdError,
     .errorVirtualDisplayAlreadyStarted,
     .errorVirtualDisplayNotStarted,
+    .errorGpioModeIncorrect,
+    .errorGpioUnknownPinMode,
   ]
 }
 
@@ -600,6 +610,62 @@ struct PB_Main {
     set {content = .guiStopVirtualDisplayRequest(newValue)}
   }
 
+  var gpioSetPinMode: PBGpio_SetPinMode {
+    get {
+      if case .gpioSetPinMode(let v)? = content {return v}
+      return PBGpio_SetPinMode()
+    }
+    set {content = .gpioSetPinMode(newValue)}
+  }
+
+  var gpioSetInputPull: PBGpio_SetInputPull {
+    get {
+      if case .gpioSetInputPull(let v)? = content {return v}
+      return PBGpio_SetInputPull()
+    }
+    set {content = .gpioSetInputPull(newValue)}
+  }
+
+  var gpioGetPinMode: PBGpio_GetPinMode {
+    get {
+      if case .gpioGetPinMode(let v)? = content {return v}
+      return PBGpio_GetPinMode()
+    }
+    set {content = .gpioGetPinMode(newValue)}
+  }
+
+  var gpioGetPinModeResponse: PBGpio_GetPinModeResponse {
+    get {
+      if case .gpioGetPinModeResponse(let v)? = content {return v}
+      return PBGpio_GetPinModeResponse()
+    }
+    set {content = .gpioGetPinModeResponse(newValue)}
+  }
+
+  var gpioReadPin: PBGpio_ReadPin {
+    get {
+      if case .gpioReadPin(let v)? = content {return v}
+      return PBGpio_ReadPin()
+    }
+    set {content = .gpioReadPin(newValue)}
+  }
+
+  var gpioReadPinResponse: PBGpio_ReadPinResponse {
+    get {
+      if case .gpioReadPinResponse(let v)? = content {return v}
+      return PBGpio_ReadPinResponse()
+    }
+    set {content = .gpioReadPinResponse(newValue)}
+  }
+
+  var gpioWritePin: PBGpio_WritePin {
+    get {
+      if case .gpioWritePin(let v)? = content {return v}
+      return PBGpio_WritePin()
+    }
+    set {content = .gpioWritePin(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Content: Equatable {
@@ -650,6 +716,13 @@ struct PB_Main {
     case guiSendInputEventRequest(PBGui_SendInputEventRequest)
     case guiStartVirtualDisplayRequest(PBGui_StartVirtualDisplayRequest)
     case guiStopVirtualDisplayRequest(PBGui_StopVirtualDisplayRequest)
+    case gpioSetPinMode(PBGpio_SetPinMode)
+    case gpioSetInputPull(PBGpio_SetInputPull)
+    case gpioGetPinMode(PBGpio_GetPinMode)
+    case gpioGetPinModeResponse(PBGpio_GetPinModeResponse)
+    case gpioReadPin(PBGpio_ReadPin)
+    case gpioReadPinResponse(PBGpio_ReadPinResponse)
+    case gpioWritePin(PBGpio_WritePin)
 
   #if !swift(>=4.1)
     static func ==(lhs: PB_Main.OneOf_Content, rhs: PB_Main.OneOf_Content) -> Bool {
@@ -845,6 +918,34 @@ struct PB_Main {
         guard case .guiStopVirtualDisplayRequest(let l) = lhs, case .guiStopVirtualDisplayRequest(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
+      case (.gpioSetPinMode, .gpioSetPinMode): return {
+        guard case .gpioSetPinMode(let l) = lhs, case .gpioSetPinMode(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.gpioSetInputPull, .gpioSetInputPull): return {
+        guard case .gpioSetInputPull(let l) = lhs, case .gpioSetInputPull(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.gpioGetPinMode, .gpioGetPinMode): return {
+        guard case .gpioGetPinMode(let l) = lhs, case .gpioGetPinMode(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.gpioGetPinModeResponse, .gpioGetPinModeResponse): return {
+        guard case .gpioGetPinModeResponse(let l) = lhs, case .gpioGetPinModeResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.gpioReadPin, .gpioReadPin): return {
+        guard case .gpioReadPin(let l) = lhs, case .gpioReadPin(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.gpioReadPinResponse, .gpioReadPinResponse): return {
+        guard case .gpioReadPinResponse(let l) = lhs, case .gpioReadPinResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.gpioWritePin, .gpioWritePin): return {
+        guard case .gpioWritePin(let l) = lhs, case .gpioWritePin(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       default: return false
       }
     }
@@ -891,6 +992,8 @@ extension PB_CommandStatus: SwiftProtobuf._ProtoNameProviding {
     20: .same(proto: "ERROR_VIRTUAL_DISPLAY_NOT_STARTED"),
     21: .same(proto: "ERROR_APP_NOT_RUNNING"),
     22: .same(proto: "ERROR_APP_CMD_ERROR"),
+    58: .same(proto: "ERROR_GPIO_MODE_INCORRECT"),
+    59: .same(proto: "ERROR_GPIO_UNKNOWN_PIN_MODE"),
   ]
 }
 
@@ -985,6 +1088,13 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     23: .standard(proto: "gui_send_input_event_request"),
     26: .standard(proto: "gui_start_virtual_display_request"),
     27: .standard(proto: "gui_stop_virtual_display_request"),
+    51: .standard(proto: "gpio_set_pin_mode"),
+    52: .standard(proto: "gpio_set_input_pull"),
+    53: .standard(proto: "gpio_get_pin_mode"),
+    54: .standard(proto: "gpio_get_pin_mode_response"),
+    55: .standard(proto: "gpio_read_pin"),
+    56: .standard(proto: "gpio_read_pin_response"),
+    57: .standard(proto: "gpio_write_pin"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1607,6 +1717,97 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .appButtonReleaseRequest(v)
         }
       }()
+      case 51: try {
+        var v: PBGpio_SetPinMode?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .gpioSetPinMode(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .gpioSetPinMode(v)
+        }
+      }()
+      case 52: try {
+        var v: PBGpio_SetInputPull?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .gpioSetInputPull(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .gpioSetInputPull(v)
+        }
+      }()
+      case 53: try {
+        var v: PBGpio_GetPinMode?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .gpioGetPinMode(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .gpioGetPinMode(v)
+        }
+      }()
+      case 54: try {
+        var v: PBGpio_GetPinModeResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .gpioGetPinModeResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .gpioGetPinModeResponse(v)
+        }
+      }()
+      case 55: try {
+        var v: PBGpio_ReadPin?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .gpioReadPin(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .gpioReadPin(v)
+        }
+      }()
+      case 56: try {
+        var v: PBGpio_ReadPinResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .gpioReadPinResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .gpioReadPinResponse(v)
+        }
+      }()
+      case 57: try {
+        var v: PBGpio_WritePin?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .gpioWritePin(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .gpioWritePin(v)
+        }
+      }()
       default: break
       }
     }
@@ -1814,6 +2015,34 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .appButtonReleaseRequest?: try {
       guard case .appButtonReleaseRequest(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 50)
+    }()
+    case .gpioSetPinMode?: try {
+      guard case .gpioSetPinMode(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 51)
+    }()
+    case .gpioSetInputPull?: try {
+      guard case .gpioSetInputPull(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 52)
+    }()
+    case .gpioGetPinMode?: try {
+      guard case .gpioGetPinMode(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 53)
+    }()
+    case .gpioGetPinModeResponse?: try {
+      guard case .gpioGetPinModeResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 54)
+    }()
+    case .gpioReadPin?: try {
+      guard case .gpioReadPin(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 55)
+    }()
+    case .gpioReadPinResponse?: try {
+      guard case .gpioReadPinResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 56)
+    }()
+    case .gpioWritePin?: try {
+      guard case .gpioWritePin(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 57)
     }()
     case nil: break
     }
