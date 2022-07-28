@@ -51,6 +51,15 @@ extension NFCEditorView {
     struct NFCCard: View {
         @Binding var item: ArchiveItem
 
+        var mifareType: String {
+            guard let typeProperty = item.properties.first(
+                where: { $0.key == "Mifare Classic type" }
+            ) else {
+                return "??"
+            }
+            return typeProperty.value
+        }
+
         // FIXME: buggy padding
 
         var paddingLeading: Double {
@@ -73,7 +82,7 @@ extension NFCEditorView {
             ZStack {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 4) {
-                        Text("MIFARE Classic 4K")
+                        Text("MIFARE Classic \(mifareType)")
                             .font(.system(size: 12, weight: .heavy))
 
                         Image("NFCCardWaves")
