@@ -24,6 +24,9 @@ public enum Response: Equatable {
             case stageIntegrityError
             case manifestPointerError
             case targetMismatch
+            case outdatedManifestVersion
+            case intFull
+            case unspecifiedError
             case unknown(Int)
         }
     }
@@ -137,6 +140,9 @@ extension Response.System.Update {
         case .stageIntegrityError: self = .stageIntegrityError
         case .manifestPointerError: self = .manifestPointerError
         case .targetMismatch: self = .targetMismatch
+        case .outdatedManifestVersion: self = .outdatedManifestVersion
+        case .intFull: self = .intFull
+        case .unspecifiedError: self = .unspecifiedError
         case .UNRECOGNIZED(let code): self = .unknown(code)
         }
     }

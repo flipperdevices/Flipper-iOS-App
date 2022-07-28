@@ -34,6 +34,8 @@ public enum Error: Equatable, Swift.Error {
     public enum ApplicationError: Equatable, Swift.Error {
         case cantStart
         case systemLocked
+        case notRunning
+        case cmdError
     }
 
     public enum VirtualDisplayError: Equatable, Swift.Error {
@@ -87,6 +89,10 @@ extension Error {
             self = .application(.cantStart)
         case .errorAppSystemLocked:
             self = .application(.systemLocked)
+        case .errorAppNotRunning:
+            self = .application(.notRunning)
+        case .errorAppCmdError:
+            self = .application(.cmdError)
 
         case .errorVirtualDisplayAlreadyStarted:
             self = .virtualDisplay(.alreadyStarted)
@@ -179,6 +185,10 @@ extension Error.ApplicationError: CustomStringConvertible {
             return "Can't start app - internal error"
         case .systemLocked:
             return "System locked - another app is running"
+        case .notRunning:
+            return "App is not running or doesn't support RPC commands"
+        case .cmdError:
+            return "Command execution error"
         }
     }
 }

@@ -284,6 +284,9 @@ struct PBSystem_UpdateResponse {
     case stageIntegrityError // = 5
     case manifestPointerError // = 6
     case targetMismatch // = 7
+    case outdatedManifestVersion // = 8
+    case intFull // = 9
+    case unspecifiedError // = 10
     case UNRECOGNIZED(Int)
 
     init() {
@@ -300,6 +303,9 @@ struct PBSystem_UpdateResponse {
       case 5: self = .stageIntegrityError
       case 6: self = .manifestPointerError
       case 7: self = .targetMismatch
+      case 8: self = .outdatedManifestVersion
+      case 9: self = .intFull
+      case 10: self = .unspecifiedError
       default: self = .UNRECOGNIZED(rawValue)
       }
     }
@@ -314,6 +320,9 @@ struct PBSystem_UpdateResponse {
       case .stageIntegrityError: return 5
       case .manifestPointerError: return 6
       case .targetMismatch: return 7
+      case .outdatedManifestVersion: return 8
+      case .intFull: return 9
+      case .unspecifiedError: return 10
       case .UNRECOGNIZED(let i): return i
       }
     }
@@ -336,6 +345,9 @@ extension PBSystem_UpdateResponse.UpdateResultCode: CaseIterable {
     .stageIntegrityError,
     .manifestPointerError,
     .targetMismatch,
+    .outdatedManifestVersion,
+    .intFull,
+    .unspecifiedError,
   ]
 }
 
@@ -880,6 +892,9 @@ extension PBSystem_UpdateResponse.UpdateResultCode: SwiftProtobuf._ProtoNameProv
     5: .same(proto: "StageIntegrityError"),
     6: .same(proto: "ManifestPointerError"),
     7: .same(proto: "TargetMismatch"),
+    8: .same(proto: "OutdatedManifestVersion"),
+    9: .same(proto: "IntFull"),
+    10: .same(proto: "UnspecifiedError"),
   ]
 }
 

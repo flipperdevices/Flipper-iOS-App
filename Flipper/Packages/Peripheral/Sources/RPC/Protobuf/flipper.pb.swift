@@ -78,6 +78,12 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
   ///*< Another app is running 
   case errorAppSystemLocked // = 17
 
+  ///*< App is not running or doesn't support RPC commands 
+  case errorAppNotRunning // = 21
+
+  ///*< Command execution error 
+  case errorAppCmdError // = 22
+
   ///*< Virtual Display Errors 
   case errorVirtualDisplayAlreadyStarted // = 19
 
@@ -112,6 +118,8 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
     case 18: self = .errorStorageDirNotEmpty
     case 19: self = .errorVirtualDisplayAlreadyStarted
     case 20: self = .errorVirtualDisplayNotStarted
+    case 21: self = .errorAppNotRunning
+    case 22: self = .errorAppCmdError
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -139,6 +147,8 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
     case .errorStorageDirNotEmpty: return 18
     case .errorVirtualDisplayAlreadyStarted: return 19
     case .errorVirtualDisplayNotStarted: return 20
+    case .errorAppNotRunning: return 21
+    case .errorAppCmdError: return 22
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -169,6 +179,8 @@ extension PB_CommandStatus: CaseIterable {
     .errorStorageDirNotEmpty,
     .errorAppCantStart,
     .errorAppSystemLocked,
+    .errorAppNotRunning,
+    .errorAppCmdError,
     .errorVirtualDisplayAlreadyStarted,
     .errorVirtualDisplayNotStarted,
   ]
@@ -508,6 +520,38 @@ struct PB_Main {
     set {content = .appLockStatusResponse(newValue)}
   }
 
+  var appExitRequest: PBApp_AppExitRequest {
+    get {
+      if case .appExitRequest(let v)? = content {return v}
+      return PBApp_AppExitRequest()
+    }
+    set {content = .appExitRequest(newValue)}
+  }
+
+  var appLoadFileRequest: PBApp_AppLoadFileRequest {
+    get {
+      if case .appLoadFileRequest(let v)? = content {return v}
+      return PBApp_AppLoadFileRequest()
+    }
+    set {content = .appLoadFileRequest(newValue)}
+  }
+
+  var appButtonPressRequest: PBApp_AppButtonPressRequest {
+    get {
+      if case .appButtonPressRequest(let v)? = content {return v}
+      return PBApp_AppButtonPressRequest()
+    }
+    set {content = .appButtonPressRequest(newValue)}
+  }
+
+  var appButtonReleaseRequest: PBApp_AppButtonReleaseRequest {
+    get {
+      if case .appButtonReleaseRequest(let v)? = content {return v}
+      return PBApp_AppButtonReleaseRequest()
+    }
+    set {content = .appButtonReleaseRequest(newValue)}
+  }
+
   var guiStartScreenStreamRequest: PBGui_StartScreenStreamRequest {
     get {
       if case .guiStartScreenStreamRequest(let v)? = content {return v}
@@ -596,6 +640,10 @@ struct PB_Main {
     case appStartRequest(PBApp_StartRequest)
     case appLockStatusRequest(PBApp_LockStatusRequest)
     case appLockStatusResponse(PBApp_LockStatusResponse)
+    case appExitRequest(PBApp_AppExitRequest)
+    case appLoadFileRequest(PBApp_AppLoadFileRequest)
+    case appButtonPressRequest(PBApp_AppButtonPressRequest)
+    case appButtonReleaseRequest(PBApp_AppButtonReleaseRequest)
     case guiStartScreenStreamRequest(PBGui_StartScreenStreamRequest)
     case guiStopScreenStreamRequest(PBGui_StopScreenStreamRequest)
     case guiScreenFrame(PBGui_ScreenFrame)
@@ -757,6 +805,22 @@ struct PB_Main {
         guard case .appLockStatusResponse(let l) = lhs, case .appLockStatusResponse(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
+      case (.appExitRequest, .appExitRequest): return {
+        guard case .appExitRequest(let l) = lhs, case .appExitRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.appLoadFileRequest, .appLoadFileRequest): return {
+        guard case .appLoadFileRequest(let l) = lhs, case .appLoadFileRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.appButtonPressRequest, .appButtonPressRequest): return {
+        guard case .appButtonPressRequest(let l) = lhs, case .appButtonPressRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.appButtonReleaseRequest, .appButtonReleaseRequest): return {
+        guard case .appButtonReleaseRequest(let l) = lhs, case .appButtonReleaseRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       case (.guiStartScreenStreamRequest, .guiStartScreenStreamRequest): return {
         guard case .guiStartScreenStreamRequest(let l) = lhs, case .guiStartScreenStreamRequest(let r) = rhs else { preconditionFailure() }
         return l == r
@@ -825,6 +889,8 @@ extension PB_CommandStatus: SwiftProtobuf._ProtoNameProviding {
     18: .same(proto: "ERROR_STORAGE_DIR_NOT_EMPTY"),
     19: .same(proto: "ERROR_VIRTUAL_DISPLAY_ALREADY_STARTED"),
     20: .same(proto: "ERROR_VIRTUAL_DISPLAY_NOT_STARTED"),
+    21: .same(proto: "ERROR_APP_NOT_RUNNING"),
+    22: .same(proto: "ERROR_APP_CMD_ERROR"),
   ]
 }
 
@@ -909,6 +975,10 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     16: .standard(proto: "app_start_request"),
     17: .standard(proto: "app_lock_status_request"),
     18: .standard(proto: "app_lock_status_response"),
+    47: .standard(proto: "app_exit_request"),
+    48: .standard(proto: "app_load_file_request"),
+    49: .standard(proto: "app_button_press_request"),
+    50: .standard(proto: "app_button_release_request"),
     20: .standard(proto: "gui_start_screen_stream_request"),
     21: .standard(proto: "gui_stop_screen_stream_request"),
     22: .standard(proto: "gui_screen_frame"),
@@ -1485,6 +1555,58 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .systemUpdateResponse(v)
         }
       }()
+      case 47: try {
+        var v: PBApp_AppExitRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .appExitRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .appExitRequest(v)
+        }
+      }()
+      case 48: try {
+        var v: PBApp_AppLoadFileRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .appLoadFileRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .appLoadFileRequest(v)
+        }
+      }()
+      case 49: try {
+        var v: PBApp_AppButtonPressRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .appButtonPressRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .appButtonPressRequest(v)
+        }
+      }()
+      case 50: try {
+        var v: PBApp_AppButtonReleaseRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .appButtonReleaseRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .appButtonReleaseRequest(v)
+        }
+      }()
       default: break
       }
     }
@@ -1676,6 +1798,22 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .systemUpdateResponse?: try {
       guard case .systemUpdateResponse(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 46)
+    }()
+    case .appExitRequest?: try {
+      guard case .appExitRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 47)
+    }()
+    case .appLoadFileRequest?: try {
+      guard case .appLoadFileRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 48)
+    }()
+    case .appButtonPressRequest?: try {
+      guard case .appButtonPressRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 49)
+    }()
+    case .appButtonReleaseRequest?: try {
+      guard case .appButtonReleaseRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 50)
     }()
     case nil: break
     }
