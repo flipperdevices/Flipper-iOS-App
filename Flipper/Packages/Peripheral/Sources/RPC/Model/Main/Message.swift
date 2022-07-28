@@ -1,6 +1,7 @@
 public enum Message {
     case decodeError
     case screenFrame(ScreenFrame)
+    case appState(AppState)
     case reboot(RebootMode)
     case unknown(String)
 
@@ -8,6 +9,12 @@ public enum Message {
         case os
         case dfu
         case update
+    }
+
+    public enum AppState {
+        case closed
+        case started
+        case unknown
     }
 }
 
@@ -20,6 +27,8 @@ extension Message {
         switch main.content {
         case .guiScreenFrame(let response):
             self.init(decoding: response)
+        case .appStateResponse(let response):
+            self.init(decoding: response)
         default:
             self = .unknown("\(main)")
         }
@@ -31,6 +40,14 @@ extension Message {
             return
         }
         self = .screenFrame(frame)
+    }
+
+    init(decoding response: PBApp_AppStateResponse) {
+        switch response.state {
+        case .appClosed: self = .appState(.closed)
+        case .appStarted: self = .appState(.started)
+        default: self = .appState(.unknown)
+        }
     }
 }
 
@@ -53,8 +70,8 @@ extension Message {
                     $0.mode = .init(mode)
                 }
             }
-        case .unknown:
-            fatalError("uncreachable")
+        default:
+            fatalError("unreachable")
         }
     }
 }

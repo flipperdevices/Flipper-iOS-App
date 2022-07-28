@@ -20,6 +20,46 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
+enum PBApp_AppState: SwiftProtobuf.Enum {
+  typealias RawValue = Int
+  case appClosed // = 0
+  case appStarted // = 1
+  case UNRECOGNIZED(Int)
+
+  init() {
+    self = .appClosed
+  }
+
+  init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .appClosed
+    case 1: self = .appStarted
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  var rawValue: Int {
+    switch self {
+    case .appClosed: return 0
+    case .appStarted: return 1
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+}
+
+#if swift(>=4.2)
+
+extension PBApp_AppState: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [PBApp_AppState] = [
+    .appClosed,
+    .appStarted,
+  ]
+}
+
+#endif  // swift(>=4.2)
+
 struct PBApp_StartRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -100,7 +140,20 @@ struct PBApp_AppButtonReleaseRequest {
   init() {}
 }
 
+struct PBApp_AppStateResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var state: PBApp_AppState = .appClosed
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
+extension PBApp_AppState: @unchecked Sendable {}
 extension PBApp_StartRequest: @unchecked Sendable {}
 extension PBApp_LockStatusRequest: @unchecked Sendable {}
 extension PBApp_LockStatusResponse: @unchecked Sendable {}
@@ -108,11 +161,19 @@ extension PBApp_AppExitRequest: @unchecked Sendable {}
 extension PBApp_AppLoadFileRequest: @unchecked Sendable {}
 extension PBApp_AppButtonPressRequest: @unchecked Sendable {}
 extension PBApp_AppButtonReleaseRequest: @unchecked Sendable {}
+extension PBApp_AppStateResponse: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "PB_App"
+
+extension PBApp_AppState: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "APP_CLOSED"),
+    1: .same(proto: "APP_STARTED"),
+  ]
+}
 
 extension PBApp_StartRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StartRequest"
@@ -300,6 +361,38 @@ extension PBApp_AppButtonReleaseRequest: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 
   static func ==(lhs: PBApp_AppButtonReleaseRequest, rhs: PBApp_AppButtonReleaseRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PBApp_AppStateResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".AppStateResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "state"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.state) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.state != .appClosed {
+      try visitor.visitSingularEnumField(value: self.state, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PBApp_AppStateResponse, rhs: PBApp_AppStateResponse) -> Bool {
+    if lhs.state != rhs.state {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

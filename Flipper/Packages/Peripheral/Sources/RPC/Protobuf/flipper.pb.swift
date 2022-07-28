@@ -666,6 +666,14 @@ struct PB_Main {
     set {content = .gpioWritePin(newValue)}
   }
 
+  var appStateResponse: PBApp_AppStateResponse {
+    get {
+      if case .appStateResponse(let v)? = content {return v}
+      return PBApp_AppStateResponse()
+    }
+    set {content = .appStateResponse(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Content: Equatable {
@@ -723,6 +731,7 @@ struct PB_Main {
     case gpioReadPin(PBGpio_ReadPin)
     case gpioReadPinResponse(PBGpio_ReadPinResponse)
     case gpioWritePin(PBGpio_WritePin)
+    case appStateResponse(PBApp_AppStateResponse)
 
   #if !swift(>=4.1)
     static func ==(lhs: PB_Main.OneOf_Content, rhs: PB_Main.OneOf_Content) -> Bool {
@@ -946,6 +955,10 @@ struct PB_Main {
         guard case .gpioWritePin(let l) = lhs, case .gpioWritePin(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
+      case (.appStateResponse, .appStateResponse): return {
+        guard case .appStateResponse(let l) = lhs, case .appStateResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       default: return false
       }
     }
@@ -1095,6 +1108,7 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     55: .standard(proto: "gpio_read_pin"),
     56: .standard(proto: "gpio_read_pin_response"),
     57: .standard(proto: "gpio_write_pin"),
+    58: .standard(proto: "app_state_response"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1808,6 +1822,19 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .gpioWritePin(v)
         }
       }()
+      case 58: try {
+        var v: PBApp_AppStateResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .appStateResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .appStateResponse(v)
+        }
+      }()
       default: break
       }
     }
@@ -2043,6 +2070,10 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .gpioWritePin?: try {
       guard case .gpioWritePin(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 57)
+    }()
+    case .appStateResponse?: try {
+      guard case .appStateResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 58)
     }()
     case nil: break
     }
