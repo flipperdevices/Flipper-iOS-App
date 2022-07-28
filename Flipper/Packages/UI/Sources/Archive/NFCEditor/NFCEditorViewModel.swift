@@ -46,8 +46,8 @@ extension ArchiveItem {
                 return
             }
             for offset in 0..<newValue.count / 16 {
-                let bytes = newValue[offset..<(offset + 16)].map { byte in
-                    guard let byte = byte else {
+                let bytes: [String] = newValue[offset..<(offset + 16)].map {
+                    guard let byte = $0 else {
                         return "??"
                     }
                     return byte < 16
