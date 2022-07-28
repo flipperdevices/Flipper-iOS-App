@@ -56,7 +56,6 @@ extension ArchiveItem {
                 }
                 if let index = properties.firstIndex(where: { $0.key == "Block \(offset)" }) {
                     properties[index].value = bytes.joined(separator: " ")
-                    print(properties[index])
                 }
             }
         }
