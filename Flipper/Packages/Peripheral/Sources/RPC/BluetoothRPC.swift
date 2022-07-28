@@ -15,6 +15,7 @@ public class BluetoothRPC: RPC {
         didSet { self.peripheralDidChange() }
     }
     private var onScreenFrame: ((ScreenFrame) -> Void)?
+    private var onAppStateChanged: ((Message.AppState) -> Void)?
 
     init() {
         connectorHandle = connector.connected
@@ -48,6 +49,8 @@ public class BluetoothRPC: RPC {
             onError(error)
         case .screenFrame(let screenFrame):
             onScreenFrame?(screenFrame)
+        case .appState(let state):
+            onAppStateChanged?(state)
         case .unknown(let command):
             logger.error("unknown command: \(command)")
         default:
@@ -328,6 +331,10 @@ extension BluetoothRPC {
 
     public func onScreenFrame(_ body: @escaping (ScreenFrame) -> Void) {
         self.onScreenFrame = body
+    }
+
+    public func onAppStateChanged(_ body: @escaping (Message.AppState) -> Void) {
+        self.onAppStateChanged = body
     }
 
     public func pressButton(_ button: InputKey) async throws {

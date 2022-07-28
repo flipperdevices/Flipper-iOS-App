@@ -33,12 +33,12 @@ public protocol RPC {
     func appButtonRelease() async throws
     func appExit() async throws
 
-
     // MARK: GUI
 
     func startStreaming() async throws
     func stopStreaming() async throws
     func onScreenFrame(_ body: @escaping (ScreenFrame) -> Void)
+    func onAppStateChanged(_ body: @escaping (Message.AppState) -> Void)
     func pressButton(_ button: InputKey) async throws
     func playAlert() async throws
     func startVirtualDisplay(with frame: ScreenFrame?) async throws

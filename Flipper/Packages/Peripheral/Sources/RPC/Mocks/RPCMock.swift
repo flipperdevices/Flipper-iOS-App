@@ -83,6 +83,9 @@ class RPCMock: RPC {
     func onScreenFrame(_ body: @escaping (ScreenFrame) -> Void) {
     }
 
+    func onAppStateChanged(_ body: @escaping (Message.AppState) -> Void) {
+    }
+
     func pressButton(_ button: InputKey) async throws {
     }
 
