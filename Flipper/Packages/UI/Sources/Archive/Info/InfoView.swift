@@ -88,7 +88,7 @@ struct EmulateButton: View {
             if viewModel.isEmulating {
                 viewModel.stopEmulate()
             } else {
-                viewModel.emulate()
+                viewModel.startEmulate()
             }
         } label: {
             VStack(spacing: 4) {
@@ -175,7 +175,7 @@ struct SendButton: View {
             .simultaneousGesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in
-                        viewModel.emulate()
+                        viewModel.startEmulate()
                     }
                     .onEnded { _ in
                         viewModel.stopEmulate()

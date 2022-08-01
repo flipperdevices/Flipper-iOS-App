@@ -120,7 +120,7 @@ class InfoViewModel: ObservableObject {
         }
     }
 
-    func emulate() {
+    func startEmulate() {
         guard !isEmulating else { return }
         isEmulating = true
         Task {
