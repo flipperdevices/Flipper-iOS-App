@@ -56,14 +56,6 @@ struct HexEditorSection: View {
         return rows
     }
 
-    var hasKeys: Bool {
-        rows.contains {
-            $0.columns.contains {
-                $0.byte != nil
-            }
-        }
-    }
-
     var symbolWidth: Double {
         let symbolsCount = 3 + columnsCount * 2
         return width / Double(symbolsCount)
@@ -105,37 +97,28 @@ struct HexEditorSection: View {
                 .padding(.leading, lineNumberWidth + bytePadding)
                 .padding(.bottom, 6)
 
-            if !hasKeys {
+            ForEach(rows) { row in
                 HStack(spacing: 0) {
-                    Text("No Keys Found")
-                        .padding(.leading, lineNumberWidth + bytePadding)
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.black40)
-                }
-            } else {
-                ForEach(rows) { row in
-                    HStack(spacing: 0) {
-                        LineNumber(row.id)
-                            .padding(bytePadding)
-                            .frame(width: lineNumberWidth, height: byteHeight)
-                            .foregroundColor(.black16)
+                    LineNumber(row.id)
+                        .padding(bytePadding)
+                        .frame(width: lineNumberWidth, height: byteHeight)
+                        .foregroundColor(.black16)
 
-                        ForEach(row.columns) { column in
-                            if isSelected(row.id, column.id) {
-                                HexByteEditor(byte: column.byte, input: $input)
-                                    .padding(bytePadding)
-                                    .frame(width: byteWidth, height: byteHeight)
-                                    .foregroundColor(color(row.id, column.id))
-                                    .background(Color(uiColor: .lightGray))
-                            } else {
-                                HexByte(byte: column.byte)
-                                    .padding(bytePadding)
-                                    .frame(width: byteWidth, height: byteHeight)
-                                    .foregroundColor(color(row.id, column.id))
-                                    .onTapGesture {
-                                        makeSelected(row.id, column.id)
-                                    }
-                            }
+                    ForEach(row.columns) { column in
+                        if isSelected(row.id, column.id) {
+                            HexByteEditor(byte: column.byte, input: $input)
+                                .padding(bytePadding)
+                                .frame(width: byteWidth, height: byteHeight)
+                                .foregroundColor(color(row.id, column.id))
+                                .background(Color(uiColor: .lightGray))
+                        } else {
+                            HexByte(byte: column.byte)
+                                .padding(bytePadding)
+                                .frame(width: byteWidth, height: byteHeight)
+                                .foregroundColor(color(row.id, column.id))
+                                .onTapGesture {
+                                    makeSelected(row.id, column.id)
+                                }
                         }
                     }
                 }
