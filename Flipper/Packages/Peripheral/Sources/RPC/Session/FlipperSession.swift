@@ -70,7 +70,9 @@ class FlipperSession: Session {
 
     private func send(_ content: Content) async -> AsyncThrowingStreams {
         let streams = await queue.feed(content)
-        await sendNextCommand()
+        if await queue.count == 1 {
+            await sendNextCommand()
+        }
         return streams
     }
 
