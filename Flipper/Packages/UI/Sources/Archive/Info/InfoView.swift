@@ -82,15 +82,12 @@ struct InfoView: View {
 
 struct EmulateButton: View {
     @ObservedObject var viewModel: InfoViewModel
-    @State var isPressed = false
 
     var body: some View {
         Button {
             if viewModel.isEmulating {
-                isPressed = false
                 viewModel.stopEmulate()
             } else {
-                isPressed = true
                 viewModel.emulate()
             }
         } label: {
@@ -129,12 +126,12 @@ struct EmulateButton: View {
                         .stroke(viewModel.isConnected ? Color.a2 : .black8, lineWidth: 2))
                 .disabled(!viewModel.isConnected)
                 .opacity(viewModel.isEditing ? 0 : 1)
-                .padding(.horizontal, isPressed ? 18 : 24)
+                .padding(.horizontal, viewModel.isEmulating ? 18 : 24)
                 .padding(.top, 18)
                 Text("Emulating on Flipper... Tap to stop")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(.black20)
-                    .opacity(isPressed ? 1 : 0)
+                    .opacity(viewModel.isEmulating ? 1 : 0)
             }
         }
     }
@@ -142,7 +139,6 @@ struct EmulateButton: View {
 
 struct SendButton: View {
     @ObservedObject var viewModel: InfoViewModel
-    @State var isPressed = false
 
     var body: some View {
         VStack(spacing: 4) {
@@ -174,22 +170,20 @@ struct SendButton: View {
                     .stroke(viewModel.isConnected ? Color.a1 : .black8, lineWidth: 2))
             .disabled(!viewModel.isConnected)
             .opacity(viewModel.isEditing ? 0 : 1)
-            .padding(.horizontal, isPressed ? 18 : 24)
+            .padding(.horizontal, viewModel.isEmulating ? 18 : 24)
             .padding(.top, 18)
             .simultaneousGesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in
-                        isPressed = true
                         viewModel.emulate()
                     }
                     .onEnded { _ in
-                        isPressed = false
                         viewModel.stopEmulate()
                     })
             Text("Hold to send from Flipper")
                 .font(.system(size: 11, weight: .medium))
                 .foregroundColor(.black20)
-                .opacity(isPressed ? 0 : 1)
+                .opacity(viewModel.isEmulating ? 0 : 1)
         }
     }
 }

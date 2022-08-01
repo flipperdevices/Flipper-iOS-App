@@ -42,13 +42,7 @@ class InfoViewModel: ObservableObject {
         self.item = item ?? .none
         self.backup = item ?? .none
         watchIsFavorite()
-
-        rpc.onAppStateChanged { [weak self] state in
-            guard let self = self else { return }
-            Task { @MainActor in
-                self.onAppStateChanged(state)
-            }
-        }
+        watchRPCAppState()
     }
 
     func onAppStateChanged(_ state: Message.AppState) {
@@ -71,6 +65,23 @@ class InfoViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.isConnected = ($0 == .connected || $0 == .synchronized)
+            }
+            .store(in: &disposeBag)
+    }
+
+    func watchRPCAppState() {
+        rpc.onAppStateChanged { [weak self] state in
+            guard let self = self else { return }
+            Task { @MainActor in
+                self.onAppStateChanged(state)
+            }
+        }
+
+        appState.$status
+            .receive(on: DispatchQueue.main)
+            .filter { $0 == .disconnected }
+            .sink { [weak self] _ in
+                self?.resetEmulate()
             }
             .store(in: &disposeBag)
     }
@@ -128,6 +139,11 @@ class InfoViewModel: ObservableObject {
         guard isEmulating else { return }
         isEmulating = false
         stopApp()
+    }
+
+    func resetEmulate() {
+        isEmulating = false
+        isFlipperAppStarted = false
     }
 
     func edit() {
