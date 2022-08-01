@@ -128,7 +128,9 @@ class InfoViewModel: ObservableObject {
                 guard !isFlipperAppStarted else { return }
                 try await startApp()
                 try await rpc.appLoadFile(item.path)
-                try await rpc.appButtonPress()
+                if item.fileType == .subghz {
+                    try await rpc.appButtonPress()
+                }
             } catch {
                 logger.error("emilating key: \(error)")
             }
