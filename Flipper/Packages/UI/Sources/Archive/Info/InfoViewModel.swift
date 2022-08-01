@@ -110,9 +110,10 @@ class InfoViewModel: ObservableObject {
     }
 
     func emulate() {
+        guard !isEmulating else { return }
+        isEmulating = true
         Task {
             do {
-                isEmulating = true
                 if !isFlipperAppStarted {
                     try await startApp()
                 }
@@ -125,6 +126,7 @@ class InfoViewModel: ObservableObject {
     }
 
     func stopEmulate() {
+        guard isEmulating else { return }
         isEmulating = false
         stopApp()
     }
