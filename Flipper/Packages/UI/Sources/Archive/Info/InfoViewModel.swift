@@ -134,7 +134,11 @@ class InfoViewModel: ObservableObject {
         emulateTaskHandle.cancel()
         Task {
             _ = await emulateTaskHandle.result
-            try await rpc.appExit()
+            do {
+                try await rpc.appExit()
+            } catch {
+                logger.error("exiting the app: \(error)")
+            }
         }
     }
 
