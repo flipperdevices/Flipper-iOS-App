@@ -114,9 +114,8 @@ class InfoViewModel: ObservableObject {
         isEmulating = true
         Task {
             do {
-                if !isFlipperAppStarted {
-                    try await startApp()
-                }
+                guard !isFlipperAppStarted else { return }
+                try await startApp()
                 try await rpc.appLoadFile(item.path)
                 try await rpc.appButtonPress()
             } catch {
