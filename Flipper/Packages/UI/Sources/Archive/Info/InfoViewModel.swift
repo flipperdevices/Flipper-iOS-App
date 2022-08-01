@@ -113,8 +113,8 @@ class InfoViewModel: ObservableObject {
 
     func stopApp() async {
         do {
-            isFlipperAppStarted = false
             try await rpc.appExit()
+            resetEmulate()
         } catch {
             logger.error("stop app: \(error)")
         }
@@ -139,7 +139,6 @@ class InfoViewModel: ObservableObject {
 
     func stopEmulate() {
         guard isEmulating else { return }
-        isEmulating = false
         stopApp()
     }
 
