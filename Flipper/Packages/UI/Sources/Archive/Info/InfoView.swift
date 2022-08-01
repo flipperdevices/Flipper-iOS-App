@@ -75,7 +75,7 @@ struct InfoView: View {
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
         .onDisappear {
-            viewModel.stopApp()
+            viewModel.stopEmulate()
         }
     }
 }

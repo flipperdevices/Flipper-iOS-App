@@ -98,37 +98,27 @@ class InfoViewModel: ObservableObject {
         }
     }
 
-    func startApp() async throws {
-        try await rpc.appStart(item.fileType.application, args: "RPC")
+    var emulateTaskHandle: Task<Void, Swift.Error>?
+
+    func waitForAppStartedEvent() async throws {
         while !isFlipperAppStarted {
             try await Task.sleep(nanoseconds: 100 * 1_000_000)
-        }
-    }
-
-    func stopApp() {
-        Task {
-            await stopApp()
-        }
-    }
-
-    func stopApp() async {
-        do {
-            try await rpc.appExit()
-            resetEmulate()
-        } catch {
-            logger.error("stop app: \(error)")
         }
     }
 
     func startEmulate() {
         guard !isEmulating else { return }
         isEmulating = true
-        Task {
+        emulateTaskHandle = Task {
             do {
-                guard !isFlipperAppStarted else { return }
-                try await startApp()
+                try Task.checkCancellation()
+                try await rpc.appStart(item.fileType.application, args: "RPC")
+                try Task.checkCancellation()
+                try await waitForAppStartedEvent()
+                try Task.checkCancellation()
                 try await rpc.appLoadFile(item.path)
                 if item.fileType == .subghz {
+                    try Task.checkCancellation()
                     try await rpc.appButtonPress()
                 }
             } catch {
@@ -138,8 +128,14 @@ class InfoViewModel: ObservableObject {
     }
 
     func stopEmulate() {
-        guard isEmulating else { return }
-        stopApp()
+        guard isFlipperAppStarted else { return }
+        guard let emulateTaskHandle = emulateTaskHandle else { return }
+        self.emulateTaskHandle = nil
+        emulateTaskHandle.cancel()
+        Task {
+            _ = await emulateTaskHandle.result
+            try await rpc.appExit()
+        }
     }
 
     func resetEmulate() {
