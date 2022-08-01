@@ -13,24 +13,31 @@ struct HexEditor: View {
     }
 
     var body: some View {
-        LazyVStack(alignment: .leading, spacing: 24) {
-            ForEach(sectionsRange, id: \.self) { i in
-                HexEditorSection(
-                    sector: i,
-                    width: width,
-                    selectedIndex: $selectedIndex,
-                    input: $input,
-                    bytes: $bytes)
+        ScrollViewReader { scrollView in
+            LazyVStack(alignment: .leading, spacing: 24) {
+                ForEach(sectionsRange, id: \.self) { i in
+                    HexEditorSection(
+                        sector: i,
+                        width: width,
+                        selectedIndex: $selectedIndex,
+                        input: $input,
+                        bytes: $bytes
+                    )
+                    .id(i)
+                }
             }
-        }
-        .onChange(of: selectedIndex) { selectedIndex in
-            input = ""
-            guard selectedIndex != nil else {
-                hexKeyboardController.hide()
-                return
-            }
-            hexKeyboardController.show { key in
-                onKey(key)
+            .onChange(of: selectedIndex) { selectedIndex in
+                input = ""
+                guard let selectedIndex = selectedIndex else {
+                    hexKeyboardController.hide()
+                    return
+                }
+                hexKeyboardController.show { key in
+                    onKey(key)
+                }
+                withAnimation {
+                    scrollView.scrollTo(selectedIndex / 64, anchor: .center)
+                }
             }
         }
     }
