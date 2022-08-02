@@ -106,13 +106,28 @@ class InfoViewModel: ObservableObject {
         }
     }
 
+    func startApp() async throws {
+        while !Task.isCancelled {
+            do {
+                try await rpc.appStart(item.fileType.application, args: "RPC")
+                return
+            } catch let error as Error {
+                if error == .application(.systemLocked) {
+                    try await Task.sleep(nanoseconds: 100 * 1_000_000)
+                    continue
+                }
+                throw error
+            }
+        }
+    }
+
     func startEmulate() {
         guard !isEmulating else { return }
         isEmulating = true
         emulateTaskHandle = Task {
             do {
                 try Task.checkCancellation()
-                try await rpc.appStart(item.fileType.application, args: "RPC")
+                try await startApp()
                 try Task.checkCancellation()
                 try await waitForAppStartedEvent()
                 try Task.checkCancellation()
