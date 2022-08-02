@@ -13,7 +13,8 @@ class EmulateViewModel: ObservableObject {
     @Published var isConnected = false
     @Published var isEmulating = false
     @Published var isFlipperAppStarted = false
-    private var emulateTaskHandle: Task<Void, Swift.Error>?
+    @Published var isFlipperAppCancellation = false
+    private var emulateTask: Task<Void, Swift.Error>?
 
     @Published var appState: AppState = .shared
     var disposeBag = DisposeBag()
@@ -44,6 +45,7 @@ class EmulateViewModel: ObservableObject {
         isFlipperAppStarted = state == .started
         if state == .closed {
             isEmulating = false
+            isFlipperAppCancellation = false
         }
         logger.info("flipper app \(state)")
     }
@@ -55,7 +57,7 @@ class EmulateViewModel: ObservableObject {
     }
 
     func startApp() async throws {
-        while !Task.isCancelled {
+        while !isFlipperAppCancellation {
             do {
                 try await rpc.appStart(item.fileType.application, args: "RPC")
                 return
@@ -69,34 +71,40 @@ class EmulateViewModel: ObservableObject {
         }
     }
 
+    func checkCancellation() throws {
+        guard !isFlipperAppCancellation else {
+            throw Error.canceled
+        }
+    }
+
     func startEmulate() {
         guard !isEmulating else { return }
         isEmulating = true
-        emulateTaskHandle = Task {
+        emulateTask = Task {
             do {
-                try Task.checkCancellation()
+                try checkCancellation()
                 try await startApp()
-                try Task.checkCancellation()
+                try checkCancellation()
                 try await waitForAppStartedEvent()
-                try Task.checkCancellation()
+                try checkCancellation()
                 try await rpc.appLoadFile(item.path)
                 if item.fileType == .subghz {
-                    try Task.checkCancellation()
+                    try checkCancellation()
                     try await rpc.appButtonPress()
                 }
             } catch {
                 logger.error("emilating key: \(error)")
             }
+            emulateTask = nil
         }
     }
 
     func stopEmulate() {
         guard isFlipperAppStarted else { return }
-        guard let emulateTaskHandle = emulateTaskHandle else { return }
-        self.emulateTaskHandle = nil
-        emulateTaskHandle.cancel()
+        guard !isFlipperAppCancellation else { return }
+        isFlipperAppCancellation = true
         Task {
-            _ = await emulateTaskHandle.result
+            _ = await emulateTask?.result
             do {
                 try await rpc.appExit()
             } catch {
@@ -108,5 +116,6 @@ class EmulateViewModel: ObservableObject {
     func resetEmulate() {
         isEmulating = false
         isFlipperAppStarted = false
+        isFlipperAppCancellation = false
     }
 }
