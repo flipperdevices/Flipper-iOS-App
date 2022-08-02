@@ -84,7 +84,6 @@ class EmulateViewModel: ObservableObject {
             do {
                 try checkCancellation()
                 try await startApp()
-                try checkCancellation()
                 try await waitForAppStartedEvent()
                 try checkCancellation()
                 try await rpc.appLoadFile(item.path)
