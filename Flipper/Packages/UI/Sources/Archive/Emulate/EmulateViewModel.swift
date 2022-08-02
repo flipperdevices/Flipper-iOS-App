@@ -99,6 +99,7 @@ class EmulateViewModel: ObservableObject {
     }
 
     func stopEmulate() {
+        guard isEmulating else { return }
         guard !isFlipperAppCancellation else { return }
         isFlipperAppCancellation = true
         Task {
