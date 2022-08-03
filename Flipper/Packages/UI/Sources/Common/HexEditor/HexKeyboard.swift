@@ -49,7 +49,7 @@ struct HexKeyboard: View {
             }
         }
         .padding(14)
-        .background(Color(uiColor: .darkGray))
+        .background(Color.keyboardBackground)
     }
 }
 
@@ -67,7 +67,7 @@ struct KeyboardButton: View {
                 .foregroundColor(.primary)
                 .frame(maxWidth: .infinity)
         }
-        .background(.gray)
+        .background(Color.keyboardButton)
         .cornerRadius(8)
     }
 }
@@ -86,7 +86,7 @@ struct KeyboardDeleteButton: View {
         }
         .padding(.vertical, 15)
         .padding(.horizontal, 13)
-        .background(.gray)
+        .background(Color.keyboardControl)
         .cornerRadius(8)
     }
 }
@@ -107,7 +107,7 @@ struct KeyboardOKButton: View {
         }
         .padding(.vertical, 15)
         .padding(.horizontal, 20)
-        .background(.gray)
+        .background(Color.keyboardControl)
         .cornerRadius(8)
     }
 }

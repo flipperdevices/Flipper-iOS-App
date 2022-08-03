@@ -20,6 +20,18 @@ extension Color {
         .init(UIColor.clear)
     }
 
+    static var keyboardBackground: Color {
+        .init("KeyboardBackground")
+    }
+
+    static var keyboardButton: Color {
+        .init("KeyboardButton")
+    }
+
+    static var keyboardControl: Color {
+        .init("KeyboardControl")
+    }
+
     // MARK: Accent
 
     static var a1: Color {
