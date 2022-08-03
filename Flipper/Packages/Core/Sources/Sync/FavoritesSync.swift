@@ -18,8 +18,8 @@ class FavoritesSync: FavoritesSyncProtocol {
         let actualOnMobile = mobile.filter { !deletedOnFlipper.contains($0) }
         let actualOnFlipper = flippers.filter { !deletedOnMobile.contains($0) }
 
-        let result = OrderedSet<Path>(actualOnMobile)
-            .union(OrderedSet<Path>(actualOnFlipper))
+        let result = OrderedSet<Path>(actualOnFlipper)
+            .union(OrderedSet<Path>(actualOnMobile))
         let favorites: Favorites = .init([Path](result))
 
         try await mobileFavorites.write(favorites)
