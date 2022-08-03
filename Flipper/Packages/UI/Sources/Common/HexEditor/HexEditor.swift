@@ -8,16 +8,39 @@ struct HexEditor: View {
     @State private var input: String = ""
     @State private var selectedIndex: Int?
 
-    var sectionsRange: Range<Int> {
-        0..<(bytes.count + 63) / 64
+    var sectorsRange: Range<Int> {
+        bytes.count == 4096
+            ? 0..<40
+            : 0..<16
+    }
+
+    func sector(for sectorNumber: Int) -> HexEditorSection.Sector {
+        switch sectorNumber {
+        case 0..<32:
+            return .init(
+                number: sectorNumber,
+                offset: sectorNumber * 64,
+                lineOffset: sectorNumber * 4,
+                columnsCount: 16,
+                rowsCount: 4)
+        case 32...:
+            return .init(
+                number: sectorNumber,
+                offset: (32 * 64) + (sectorNumber - 32) * 256,
+                lineOffset: (32 * 4) + (sectorNumber - 32) * 16,
+                columnsCount: 16,
+                rowsCount: 16)
+        default:
+            fatalError("unreachable")
+        }
     }
 
     var body: some View {
         ScrollViewReader { scrollView in
             LazyVStack(alignment: .leading, spacing: 24) {
-                ForEach(sectionsRange, id: \.self) { i in
+                ForEach(sectorsRange, id: \.self) { i in
                     HexEditorSection(
-                        sector: i,
+                        sector: sector(for: i),
                         width: width,
                         selectedIndex: $selectedIndex,
                         input: $input,

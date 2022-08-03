@@ -1,26 +1,24 @@
 import SwiftUI
 
 struct HexEditorSection: View {
-    let sector: Int
+    let sector: Sector
     let width: Double
 
     @Binding var selectedIndex: Int?
     @Binding var input: String
     @Binding var bytes: [UInt8?]
 
-    let columnsCount = 16
-    let rowsCount = 4
+    var offset: Int { sector.offset }
+    var lineOffset: Int { sector.lineOffset }
+    var columnsCount: Int { sector.columnsCount }
+    var rowsCount: Int { sector.rowsCount }
 
-    var bytesCount: Int {
-        columnsCount * rowsCount
-    }
-
-    var offset: Int {
-        sector * bytesCount
-    }
-
-    var rowOffset: Int {
-        sector * 4
+    struct Sector {
+        let number: Int
+        let offset: Int
+        let lineOffset: Int
+        let columnsCount: Int
+        let rowsCount: Int
     }
 
     struct Row: Identifiable {
@@ -47,8 +45,8 @@ struct HexEditorSection: View {
         var rows = [Row]()
         for i in 0 ..< rowsCount {
             rows.append(.init(
-                id: offset / 16 + i,
-                bytes: .init(bytes[offset...].prefix(16))))
+                id: lineOffset + i,
+                bytes: .init(bytes[offset...].prefix(columnsCount))))
             if bytes.count >= columnsCount {
                 bytes.removeFirst(columnsCount)
             }
@@ -75,11 +73,11 @@ struct HexEditorSection: View {
     }
 
     func color(_ row: Int, _ column: Int) -> Color {
-        let row = row % 4
+        let row = row % rowsCount
         guard row != 0 else {
-            return sector == 0 ? .candidate : .primary
+            return sector.number == 0 ? .candidate : .primary
         }
-        guard row == 3 else {
+        guard row == rowsCount - 1 else {
             return .primary
         }
         switch column {
@@ -92,7 +90,7 @@ struct HexEditorSection: View {
 
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
-            Text("Sector: \(sector)")
+            Text("Sector: \(sector.number)")
                 .font(.system(size: 14, weight: .bold, design: .monospaced))
                 .padding(.leading, lineNumberWidth + bytePadding)
                 .padding(.bottom, 6)
