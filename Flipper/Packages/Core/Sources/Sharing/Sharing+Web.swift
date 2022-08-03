@@ -52,7 +52,13 @@ public func shareWeb(_ key: ArchiveItem) throws {
         throw Sharing.Error.encodingError
     }
 
-    share([baseURL + query])
+    let url = baseURL + query
+
+    guard url.count <= 2000 else {
+        throw Sharing.Error.urlIsTooLong
+    }
+
+    share([url])
 }
 
 fileprivate extension Array where Element == ArchiveItem.Property {

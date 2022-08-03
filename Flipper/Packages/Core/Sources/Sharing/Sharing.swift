@@ -7,6 +7,7 @@ public class Sharing {
     enum Error: String, Swift.Error {
         case unsupportedScheme = "unsupported scheme"
         case encodingError = "encoding error"
+        case urlIsTooLong = "url is too long"
     }
 
     private static func importer(for scheme: String?) -> Importer? {
@@ -29,6 +30,8 @@ public class Sharing {
 public func share(_ key: ArchiveItem) {
     do {
         try shareWeb(key)
+    } catch let error as Sharing.Error where error == .urlIsTooLong {
+        shareFile(key)
     } catch {
         Logger(label: "Share").error("\(error)")
     }
