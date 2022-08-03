@@ -51,7 +51,7 @@ struct HexEditor: View {
             self.selectedIndex = nil
         case .back:
             bytes[selectedIndex] = nil
-            if selectedIndex > 64 {
+            if selectedIndex > 16 {
                 self.selectedIndex = selectedIndex - 1
             }
         case let .hex(button):
