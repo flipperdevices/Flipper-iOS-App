@@ -13,7 +13,7 @@ class FlipperSession: Session {
     var onMessage: ((Message) -> Void)?
     var onError: ((Error) -> Void)?
 
-    var timeoutTaskHandle: Task<(), Never>?
+    var timeoutTask: Task<Void, Swift.Error>?
 
     init(peripheral: BluetoothPeripheral) {
         logger.info("session started")
@@ -119,12 +119,11 @@ extension FlipperSession {
     var timeoutNanoseconds: UInt64 { 6 * 1_000 * 1_000_000 }
 
     func setupTimeoutTimer() {
-        if let current = timeoutTaskHandle {
+        if let current = timeoutTask {
             current.cancel()
         }
-        timeoutTaskHandle = Task {
-            try? await Task.sleep(nanoseconds: timeoutNanoseconds)
-            guard !Task.isCancelled else { return }
+        timeoutTask = Task {
+            try await Task.sleep(nanoseconds: timeoutNanoseconds)
             guard self.peripheral.state == .connected else { return }
             guard await queue.isBusy else { return }
             self.logger.debug("time is out")
