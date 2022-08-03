@@ -24,12 +24,10 @@ class ConnectionViewModel: ObservableObject {
 
     @Published var showHelpSheet = false
 
-    var scanTimer: Timer?
-    let scanTimoutInSecons = 30.0
+    let scanTimeoutInSeconds = 30
     @Published var isScanTimeout = false
 
-    var connectTimer: Timer?
-    let connectTimoutInSecons = 30.0
+    let connectTimeoutInSeconds = 30
     @Published var isConnectTimeout = false
 
     var uuid: UUID?
@@ -126,34 +124,33 @@ class ConnectionViewModel: ObservableObject {
 
     // MARK: Scan timeout
 
+    private var scanTimeoutTask: Task<Void, Swift.Error>?
+
     func startScanTimer() {
-        isScanTimeout = false
-        scanTimer = .scheduledTimer(
-            withTimeInterval: scanTimoutInSecons,
-            repeats: false
-        ) { [weak self] _ in
-            guard let self = self else { return }
-            if self.flippers.isEmpty {
-                self.stopScan()
-                self.isScanTimeout = true
+        stopScanTimer()
+        scanTimeoutTask = Task {
+            try await Task.sleep(seconds: scanTimeoutInSeconds)
+            if flippers.isEmpty {
+                stopScan()
+                isScanTimeout = true
             }
         }
     }
 
     func stopScanTimer() {
-        scanTimer?.invalidate()
-        scanTimer = nil
+        scanTimeoutTask?.cancel()
+        scanTimeoutTask = nil
+        isScanTimeout = false
     }
 
     // MARK: Connect timout
 
+    private var connectTimeoutTask: Task<Void, Swift.Error>?
+
     func startConnectTimer() {
-        isConnectTimeout = false
-        connectTimer = .scheduledTimer(
-            withTimeInterval: connectTimoutInSecons,
-            repeats: false
-        ) { [weak self] _ in
-            guard let self = self else { return }
+        stopConnectTimer()
+        connectTimeoutTask = Task {
+            try await Task.sleep(seconds: connectTimeoutInSeconds)
             if self.isConnecting, let uuid = self.uuid {
                 self.connector.disconnect(from: uuid)
                 self.isConnectTimeout = true
@@ -162,7 +159,8 @@ class ConnectionViewModel: ObservableObject {
     }
 
     func stopConnectTimer() {
-        connectTimer?.invalidate()
-        connectTimer = nil
+        connectTimeoutTask?.cancel()
+        connectTimeoutTask = nil
+        isConnectTimeout = false
     }
 }
