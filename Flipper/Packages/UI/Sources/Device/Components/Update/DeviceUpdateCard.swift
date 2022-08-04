@@ -22,8 +22,8 @@ struct DeviceUpdateCard: View {
             return "Firmware on Flipper doesn’t match update channel. " +
                 "Selected version will be installed."
         case .updateInProgress:
-            return "Now Flipper is updating in offline mode. " +
-                "Look at device screen for info and wait for reconnect."
+            return "Flipper is updating in offline mode. " +
+                "Look at the device screen for info and wait for reconnection."
         }
     }
 
