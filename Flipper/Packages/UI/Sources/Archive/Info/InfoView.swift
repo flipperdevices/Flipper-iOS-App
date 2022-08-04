@@ -40,9 +40,12 @@ struct InfoView: View {
                             }
                             .foregroundColor(.primary)
                         }
-                        InfoButton(image: "Share", title: "Share") {
-                            viewModel.share()
-                        }
+                        InfoButton(
+                            image: "Share",
+                            title: "Share",
+                            action: { viewModel.share() },
+                            longPressAction: { viewModel.shareAsFile() }
+                        )
                         .foregroundColor(.primary)
                         InfoButton(image: "Delete", title: "Delete") {
                             viewModel.delete()
@@ -75,9 +78,23 @@ struct InfoButton: View {
     let image: String
     let title: String
     let action: () -> Void
+    let longPressAction: () -> Void
+
+    init(
+        image: String,
+        title: String,
+        action: @escaping () -> Void,
+        longPressAction: @escaping () -> Void = {}
+    ) {
+        self.image = image
+        self.title = title
+        self.action = action
+        self.longPressAction = longPressAction
+    }
 
     var body: some View {
-        Button(action: action) {
+        Button {
+        } label: {
             HStack(spacing: 8) {
                 Image(image)
                     .renderingMode(.template)
@@ -85,5 +102,11 @@ struct InfoButton: View {
                     .font(.system(size: 14, weight: .medium))
             }
         }
+        .simultaneousGesture(LongPressGesture().onEnded { _ in
+            longPressAction()
+        })
+        .simultaneousGesture(TapGesture().onEnded {
+            action()
+        })
     }
 }

@@ -27,9 +27,17 @@ public class Sharing {
     }
 }
 
-public func share(_ key: ArchiveItem) {
+public enum SharingMethod {
+    case urlOrFile
+    case file
+}
+
+public func share(_ key: ArchiveItem, as method: SharingMethod = .urlOrFile) {
     do {
-        try shareWeb(key)
+        switch method {
+        case .urlOrFile: try shareWeb(key)
+        case .file: shareFile(key)
+        }
     } catch let error as Sharing.Error where error == .urlIsTooLong {
         shareFile(key)
     } catch {

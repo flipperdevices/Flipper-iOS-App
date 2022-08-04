@@ -81,6 +81,10 @@ class InfoViewModel: ObservableObject {
         Core.share(item)
     }
 
+    func shareAsFile() {
+        Core.share(item, as: .file)
+    }
+
     func delete() {
         Task {
             do {
