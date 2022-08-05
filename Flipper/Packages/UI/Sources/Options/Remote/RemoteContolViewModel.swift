@@ -13,8 +13,11 @@ class RemoteContolViewModel: ObservableObject {
     @Published var frame: ScreenFrame = .init()
 
     init() {
-        rpc.onScreenFrame { [weak self] in
-            self?.frame = $0
+        rpc.onScreenFrame { [weak self] frame in
+            guard let self = self else { return }
+            Task { @MainActor in
+                self.frame = frame
+            }
         }
     }
 
