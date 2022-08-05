@@ -15,6 +15,9 @@ struct EmulateView: View {
                 EmptyView()
             }
         }
+        .onChange(of: viewModel.isEmulating) { _ in
+            feedback()
+        }
         .onDisappear {
             viewModel.stopEmulate()
         }
