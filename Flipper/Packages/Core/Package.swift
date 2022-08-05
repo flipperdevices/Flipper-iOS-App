@@ -18,6 +18,9 @@ let package = Package(
             name: "Inject",
             path: "../Inject"),
         .package(
+            name: "Analytics",
+            path: "../Analytics"),
+        .package(
             name: "Peripheral",
             path: "../Peripheral"),
         .package(
@@ -42,6 +45,7 @@ let package = Package(
             name: "Core",
             dependencies: [
                 "Inject",
+                "Analytics",
                 "Peripheral",
                 "SwiftProtobuf",
                 "DCompression",

@@ -64,6 +64,7 @@
 /* Begin PBXFileReference section */
 		44A5B59224F05647009EE7FB /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8B38AA5F289D6BD800A152F3 /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Analytics; path = Packages/Analytics; sourceTree = "<group>"; };
 		8B7480DD2807483500692304 /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		8B886F162759BA9A00D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Core/.swiftlint.yml; sourceTree = "<group>"; };
 		8B886F172759BAA500D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/UI/.swiftlint.yml; sourceTree = "<group>"; };
@@ -71,6 +72,7 @@
 		8B89527827581E7B00E4C336 /* UI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UI; path = Packages/UI; sourceTree = "<group>"; };
 		8B89527927581E8700E4C336 /* Inject */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Inject; path = Packages/Inject; sourceTree = "<group>"; };
 		8B89527A27581E9500E4C336 /* Core */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Core; path = Packages/Core; sourceTree = "<group>"; };
+		8B8A5A82289D6FDA00F005F5 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Analytics/.swiftlint.yml; sourceTree = "<group>"; };
 		8BA57F18273AD21D00A3A33B /* nfc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nfc.png; sourceTree = "<group>"; };
 		8BA57F19273AD21D00A3A33B /* ibutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ibutton.png; sourceTree = "<group>"; };
 		8BA57F1A273AD21D00A3A33B /* rfid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rfid.png; sourceTree = "<group>"; };
@@ -144,11 +146,20 @@
 			isa = PBXGroup;
 			children = (
 				8B89527927581E8700E4C336 /* Inject */,
+				8B38AA5F289D6BD800A152F3 /* Analytics */,
 				8BE40CF627F1266D00288F66 /* Peripheral */,
 				8B89527A27581E9500E4C336 /* Core */,
 				8B89527827581E7B00E4C336 /* UI */,
 			);
 			name = Packages;
+			sourceTree = "<group>";
+		};
+		8B8A5A81289D6FA500F005F5 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				8B8A5A82289D6FDA00F005F5 /* .swiftlint.yml */,
+			);
+			name = Analytics;
 			sourceTree = "<group>";
 		};
 		8BA57ED9273AA05900A3A33B /* FileIcons */ = {
@@ -176,10 +187,11 @@
 		8BED6139270B617B009E51E2 /* SwiftLint */ = {
 			isa = PBXGroup;
 			children = (
-				8B2D5D0B27EFA992005A2F56 /* Peripheral */,
-				8BED613E270B6202009E51E2 /* UI */,
-				8BED613C270B61EE009E51E2 /* Core */,
 				8BED613D270B61F7009E51E2 /* Inject */,
+				8B8A5A81289D6FA500F005F5 /* Analytics */,
+				8B2D5D0B27EFA992005A2F56 /* Peripheral */,
+				8BED613C270B61EE009E51E2 /* Core */,
+				8BED613E270B6202009E51E2 /* UI */,
 				8BED6143270B66D8009E51E2 /* perform_lint.sh */,
 			);
 			name = SwiftLint;

@@ -33,11 +33,25 @@ public class UserDefaultsStorage {
         }
     }
 
+    public var DeviceID: String {
+        get {
+            if let id = storage.value(forKey: .deviceIDKey) as? String {
+                return id
+            } else {
+                let id = UUID().uuidString
+                storage.set(id, forKey: .deviceIDKey)
+                return id
+            }
+        }
+    }
+
     func reset() {
         storage.removeObject(forKey: .isFirstLaunchKey)
         storage.removeObject(forKey: .selectedTabKey)
         storage.removeObject(forKey: .updateChannelKey)
         storage.removeObject(forKey: .logLevelKey)
+        // NOTE: Don't reset deviceID
+        // storage.removeObject(forKey: .deviceIDKey)
     }
 }
 
@@ -46,4 +60,5 @@ public extension String {
     static var selectedTabKey: String { "selectedTab" }
     static var updateChannelKey: String { "updateChannel" }
     static var logLevelKey: String { "logLevel" }
+    static var deviceIDKey: String { "deviceID" }
 }

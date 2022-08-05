@@ -18,6 +18,9 @@ let package = Package(
             name: "Core",
             path: "../Core"),
         .package(
+            name: "Analytics",
+            path: "../Analytics"),
+        .package(
             name: "Lottie",
             url: "https://github.com/airbnb/lottie-ios.git",
             from: "3.3.0")
@@ -27,7 +30,8 @@ let package = Package(
             name: "UI",
             dependencies: [
                 "Core",
-                "Lottie"
+                "Lottie",
+                "Analytics"
             ],
             path: "Sources"),
         .testTarget(

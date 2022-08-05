@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "Countly",
+        "repositoryURL": "https://github.com/Countly/countly-sdk-ios.git",
+        "state": {
+          "branch": null,
+          "revision": "51a22dc9c040c4f6fccef7db3edef16d58dead12",
+          "version": "21.11.2"
+        }
+      },
+      {
         "package": "DCompression",
         "repositoryURL": "https://github.com/swiftstack/dcompression.git",
         "state": {

@@ -1,6 +1,8 @@
 import Inject
 import Logging
-import Peripheral
+
+import func Analytics.registerMockDependencies
+import func Peripheral.registerMockDependencies
 
 public func registerMockDependencies() {
     let container = Container.shared
@@ -8,6 +10,7 @@ public func registerMockDependencies() {
     LoggingSystem.bootstrap(FileLogHandler.factory)
     container.register(LoggerStorageMock.init, as: LoggerStorage.self, isSingleton: true)
 
+    Analytics.registerMockDependencies()
     Peripheral.registerMockDependencies()
 
     // device

@@ -1,5 +1,6 @@
 import Core
 import Inject
+import Analytics
 import Peripheral
 import Foundation
 import SwiftUI
@@ -8,6 +9,7 @@ import Logging
 public class RootViewModel: ObservableObject {
     private let logger = Logger(label: "root")
 
+    @Inject var analytics: Analytics
     @Inject var rpc: RPC
     let appState: AppState = .shared
 
@@ -106,5 +108,11 @@ public class RootViewModel: ObservableObject {
     private func endBackgroundTask() {
         UIApplication.shared.endBackgroundTask(backgroundTaskID)
         backgroundTaskID = .invalid
+    }
+
+    // Analytics
+
+    func recordAppOpen() async {
+        await analytics.record(.appOpen(.init(target: .app)))
     }
 }
