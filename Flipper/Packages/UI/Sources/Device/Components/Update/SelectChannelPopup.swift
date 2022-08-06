@@ -95,7 +95,7 @@ struct SelectChannelButton: View {
                 Spacer()
                 Text(viewModel.availableFirmware ?? "unknown")
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(viewModel.availableFirmwareColor)
+                    .foregroundColor(viewModel.channelColor)
                 Image(systemName: "chevron.down")
                     .foregroundColor(.black30)
             }

@@ -48,7 +48,7 @@ class DeviceUpdateCardModel: ObservableObject {
     var availableFirmwareVersion: Update.Manifest.Version?
 
     @Published var availableFirmware: String?
-    var availableFirmwareColor: Color {
+    var channelColor: Color {
         switch channel {
         case .development: return .development
         case .canditate: return .candidate
@@ -111,6 +111,9 @@ class DeviceUpdateCardModel: ObservableObject {
         state = .updateInProgress
     }
 
+    var alertVersion: String = ""
+    var alertVersionColor: Color = .clear
+
     func verifyUpdateResult() {
         guard
             installedFirmware != nil,
@@ -119,6 +122,8 @@ class DeviceUpdateCardModel: ObservableObject {
         else {
             return
         }
+        alertVersion = updateToVersion
+        alertVersionColor = channelColor
         self.updateFromVersion = nil
         self.updateToVersion = nil
 
@@ -128,13 +133,14 @@ class DeviceUpdateCardModel: ObservableObject {
 
         Task {
             // FIXME: ignore GATT cache
-            try await Task.sleep(seconds: 1)
+            try await Task.sleep(milliseconds: 333)
+
             if installedFirmware == updateToVersion {
                 logger.info("update success: \(updateFromToVersion)")
-                showUpdateSuccessed = true
+                withoutAnimation { showUpdateSuccessed = true }
             } else {
                 logger.info("update error: \(updateFromToVersion)")
-                showUpdateFailed = true
+                withoutAnimation { showUpdateFailed = true }
             }
         }
     }
