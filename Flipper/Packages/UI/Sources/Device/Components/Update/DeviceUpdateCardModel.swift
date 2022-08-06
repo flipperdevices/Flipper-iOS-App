@@ -29,11 +29,13 @@ class DeviceUpdateCardModel: ObservableObject {
     @Published var showChannelSelector = false
     @Published var showConfirmUpdate = false
     @Published var showUpdateView = false
+    @Published var showUpdateFailed = false
+    @Published var showUpdateSuccessed = false
     @Published var showPauseSync = false
     @Published var showCharge = false
 
     @Published var flipper: Flipper? {
-        didSet { updateState() }
+        didSet { onFlipperChanged(oldValue) }
     }
 
     var channelSelectorOffset: Double = .zero
@@ -45,7 +47,7 @@ class DeviceUpdateCardModel: ObservableObject {
     var manifest: Update.Manifest?
     var availableFirmwareVersion: Update.Manifest.Version?
 
-    @Published var availableFirmware: String = ""
+    @Published var availableFirmware: String?
     var availableFirmwareColor: Color {
         switch channel {
         case .development: return .development
@@ -75,8 +77,6 @@ class DeviceUpdateCardModel: ObservableObject {
         flipper?.information?.shortSoftwareVersion
     }
 
-    var lastInstalledFirmware: String = ""
-
     init() {
         appState.$flipper
             .receive(on: DispatchQueue.main)
@@ -91,6 +91,52 @@ class DeviceUpdateCardModel: ObservableObject {
             .store(in: &disposeBag)
 
         monitorNetworkStatus()
+    }
+
+    func onFlipperChanged(_ oldValue: Flipper?) {
+        updateState()
+
+        guard flipper?.state == .connected else { return }
+
+        verifyUpdateResult()
+    }
+
+    var updateFromVersion: String?
+    var updateToVersion: String?
+
+    func onUpdateStarted() {
+        updateFromVersion = installedFirmware
+        updateToVersion = availableFirmware
+
+        state = .updateInProgress
+    }
+
+    func verifyUpdateResult() {
+        guard
+            installedFirmware != nil,
+            let updateFromVersion = updateFromVersion,
+            let updateToVersion = updateToVersion
+        else {
+            return
+        }
+        self.updateFromVersion = nil
+        self.updateToVersion = nil
+
+        var updateFromToVersion: String {
+            "from \(updateFromVersion) to \(updateToVersion)"
+        }
+
+        Task {
+            // FIXME: ignore GATT cache
+            try await Task.sleep(seconds: 1)
+            if installedFirmware == updateToVersion {
+                logger.info("update success: \(updateFromToVersion)")
+                showUpdateSuccessed = true
+            } else {
+                logger.info("update error: \(updateFromToVersion)")
+                showUpdateFailed = true
+            }
+        }
     }
 
     func updateStorageInfo() {
@@ -147,7 +193,7 @@ class DeviceUpdateCardModel: ObservableObject {
 
     func updateVersion() {
         guard let version = manifest?.version(for: channel) else {
-            availableFirmware = ""
+            availableFirmware = nil
             availableFirmwareVersion = nil
             return
         }
@@ -207,7 +253,7 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func validateAvailableFirmware() -> Bool {
-        !availableFirmware.isEmpty
+        availableFirmware != nil
     }
 
     func checkSelectedChannel() -> Bool {
@@ -225,11 +271,7 @@ class DeviceUpdateCardModel: ObservableObject {
         guard let installedFirmware = installedFirmware else {
             return false
         }
-        guard
-            lastInstalledFirmware != installedFirmware,
-            installedFirmware == availableFirmware
-        else {
-            lastInstalledFirmware = installedFirmware
+        guard installedFirmware == availableFirmware else {
             state = .versionUpdate
             return false
         }
@@ -266,9 +308,5 @@ class DeviceUpdateCardModel: ObservableObject {
 
     func pauseSync() {
         appState.cancelSync()
-    }
-
-    func onSuccess() {
-        state = .updateInProgress
     }
 }

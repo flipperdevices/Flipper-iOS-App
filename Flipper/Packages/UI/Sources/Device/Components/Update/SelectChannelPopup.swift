@@ -93,7 +93,7 @@ struct SelectChannelButton: View {
         } label: {
             HStack(spacing: 6) {
                 Spacer()
-                Text(viewModel.availableFirmware)
+                Text(viewModel.availableFirmware ?? "unknown")
                     .font(.system(size: 14, weight: .regular))
                     .foregroundColor(viewModel.availableFirmwareColor)
                 Image(systemName: "chevron.down")
