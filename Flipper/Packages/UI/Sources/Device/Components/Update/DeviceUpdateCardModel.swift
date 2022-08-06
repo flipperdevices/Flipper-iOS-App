@@ -10,10 +10,13 @@ import Logging
 class DeviceUpdateCardModel: ObservableObject {
     private let logger = Logger(label: "update-vm")
 
+    @Inject var rpc: RPC
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
     var channelSelectorOffset: Double = .zero
+    // swiftlint:disable discouraged_optional_boolean
+    var noManifest: Bool?
 
     @Published var showChannelSelector = false
     @Published var showConfirmUpdate = false
@@ -122,6 +125,19 @@ class DeviceUpdateCardModel: ObservableObject {
         monitor.start(queue: .main)
     }
 
+    func checkManifest() {
+        Task {
+            do {
+                let size = try await rpc.getSize(at: "/ext/Manifest")
+                logger.info("size manifest \(size)")
+                noManifest = false
+            } catch {
+                logger.error("manifest not exist: \(error)")
+                noManifest = true
+            }
+        }
+    }
+
     func onNetworkStatusChanged(_ status: NWPath.Status) {
         if status == .unsatisfied {
             self.state = .noInternet
@@ -207,7 +223,16 @@ class DeviceUpdateCardModel: ObservableObject {
             state = .versionUpdate
             return
         }
-        state = .noUpdates
+        checkManifest()
+    
+        switch noManifest {
+        case .some(true):
+            state = .versionUpdate
+        case .some(false):
+            state = .noUpdates
+        default:
+            state = .connecting
+        }
     }
 
     func confirmUpdate() {
