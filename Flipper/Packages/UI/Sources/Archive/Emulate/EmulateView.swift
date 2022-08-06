@@ -15,6 +15,9 @@ struct EmulateView: View {
                 EmptyView()
             }
         }
+        .onChange(of: viewModel.isEmulating) { _ in
+            feedback()
+        }
         .onDisappear {
             viewModel.stopEmulate()
         }
@@ -24,26 +27,31 @@ struct EmulateView: View {
 struct EmulateButton: View {
     @ObservedObject var viewModel: EmulateViewModel
 
+    var image: String {
+        "Emulate"
+    }
+
+    var text: String {
+        viewModel.isEmulating
+            ? "Emulating..."
+            : "Emulate"
+    }
+
     var body: some View {
         Button {
-            if viewModel.isEmulating {
-                viewModel.stopEmulate()
-            } else {
-                viewModel.startEmulate()
+            withoutAnimation {
+                if viewModel.isEmulating {
+                    viewModel.stopEmulate()
+                } else {
+                    viewModel.startEmulate()
+                }
             }
         } label: {
             VStack(spacing: 4) {
-                HStack(spacing: 7) {
-                    Spacer()
-                    Image("Emulate")
-                    if viewModel.isEmulating {
-                        Image("TextEmulating")
-                            .padding(.top, 4)
-                    } else {
-                        Image("TextEmulate")
-                            .padding(.bottom, 2)
-                    }
-                    Spacer()
+                HStack(spacing: 4) {
+                    Image(image)
+                    Text(text)
+                        .font(.born2bSportyV2(size: 23))
                 }
                 .frame(height: 48)
                 .frame(maxWidth: .infinity)
@@ -80,13 +88,24 @@ struct EmulateButton: View {
 struct SendButton: View {
     @ObservedObject var viewModel: EmulateViewModel
 
+    var image: String {
+        viewModel.isEmulating
+            ? "Sending"
+            : "Send"
+    }
+
+    var text: String {
+        viewModel.isEmulating
+            ? "Sending..."
+            : "Send"
+    }
+
     var body: some View {
         VStack(spacing: 4) {
-            HStack(spacing: 7) {
-                Spacer()
-                Image("Send")
-                Image("TextSend")
-                Spacer()
+            HStack(spacing: 4) {
+                Image(image)
+                Text(text)
+                    .font(.born2bSportyV2(size: 23))
             }
             .frame(height: 48)
             .frame(maxWidth: .infinity)

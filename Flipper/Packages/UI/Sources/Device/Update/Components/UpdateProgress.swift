@@ -66,6 +66,12 @@ extension DeviceUpdateView {
             }
         }
 
+        var text: String {
+            viewModel.state == .prepearingForUpdate
+                ? "..."
+                : "\(Int(viewModel.progress * 100))%"
+        }
+
         var color: Color {
             switch viewModel.state {
             case .downloadingFirmware: return .sGreenUpdate
@@ -89,15 +95,10 @@ extension DeviceUpdateView {
 
                     Spacer()
 
-                    if viewModel.state == .prepearingForUpdate {
-                        Text("...")
-                            .foregroundColor(.white)
-                            .font(.custom("HelvetiPixel", fixedSize: 40))
-                    } else {
-                        Text("\(Int(viewModel.progress * 100))%")
-                            .foregroundColor(.white)
-                            .font(.custom("HelvetiPixel", fixedSize: 40))
-                    }
+                    Text(text)
+                        .foregroundColor(.white)
+                        .font(.haxrCorpNeue(size: 40))
+                        .padding(.bottom, 4)
 
                     Spacer()
 

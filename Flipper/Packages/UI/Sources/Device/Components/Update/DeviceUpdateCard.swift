@@ -239,7 +239,7 @@ struct UpdateButton: View {
                 Spacer()
                 Text(title)
                     .foregroundColor(.white)
-                    .font(.custom("Born2bSportyV2", size: 40))
+                    .font(.born2bSportyV2(size: 40))
                 Spacer()
             }
             .frame(height: 46)

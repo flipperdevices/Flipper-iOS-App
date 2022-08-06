@@ -14,21 +14,9 @@ class DeviceUpdateCardModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
-    var channelSelectorOffset: Double = .zero
+    @Published var state: State = .disconnected
     // swiftlint:disable discouraged_optional_boolean
     var noManifest: Bool?
-
-    @Published var showChannelSelector = false
-    @Published var showConfirmUpdate = false
-    @Published var showUpdateView = false
-    @Published var showPauseSync = false
-    @Published var showCharge = false
-
-    @Published var flipper: Flipper? {
-        didSet { updateState() }
-    }
-
-    let updater = Update()
 
     enum State {
         case noSDCard
@@ -41,10 +29,23 @@ class DeviceUpdateCardModel: ObservableObject {
         case updateInProgress
     }
 
-    @AppStorage(.updateChannelKey) var channel: Update.Channel = .release {
+    @Published var showChannelSelector = false
+    @Published var showConfirmUpdate = false
+    @Published var showUpdateView = false
+    @Published var showPauseSync = false
+    @Published var showCharge = false
+
+    @Published var flipper: Flipper? {
         didSet { updateState() }
     }
 
+    var channelSelectorOffset: Double = .zero
+
+    let updater = Update()
+
+    @AppStorage(.updateChannelKey) var channel: Update.Channel = .release
+
+    var manifest: Update.Manifest?
     var availableFirmwareVersion: Update.Manifest.Version?
 
     @Published var availableFirmware: String = ""
@@ -56,18 +57,17 @@ class DeviceUpdateCardModel: ObservableObject {
         case .custom: return .custom
         }
     }
-    @Published var state: State = .disconnected
 
-    var noSDCard: Bool {
-        // ignore ukwnown state
-        guard let storage = flipper?.storage else {
-            return false
-        }
-        return storage.external == nil
+    enum LazyResult<Success, Failure> where Failure: Swift.Error {
+        case idle
+        case working
+        case success(Success)
+        case failure(Failure)
     }
 
-    var hasBatteryState: Bool {
-        flipper?.hasBatteryPowerState == true
+    var hasSDCard: LazyResult<Bool, Swift.Error> {
+        guard let storage = flipper?.storage else { return .working }
+        return .success(storage.external != nil)
     }
 
     var installedChannel: Update.Channel? {
@@ -96,22 +96,14 @@ class DeviceUpdateCardModel: ObservableObject {
         monitorNetworkStatus()
     }
 
-    var manifest: Update.Manifest? {
-        didSet { updateState() }
-    }
-
     func updateStorageInfo() {
-        Task {
-            await updateStorageInfo()
-        }
+        Task { await updateStorageInfo() }
     }
 
     func updateStorageInfo() async {
-        do {
-            try await appState.updateStorageInfo()
-        } catch {
-            logger.error("retry sd card")
-        }
+        // swiftlint:disable statement_position
+        do { try await appState.updateStorageInfo() }
+        catch { logger.error("update storage info: \(error)") }
     }
 
     func monitorNetworkStatus() {
@@ -142,7 +134,7 @@ class DeviceUpdateCardModel: ObservableObject {
         if status == .unsatisfied {
             self.state = .noInternet
         } else {
-            self.state = .noUpdates
+            self.state = .connecting
             self.updateAvailableFirmware()
         }
     }
@@ -154,12 +146,14 @@ class DeviceUpdateCardModel: ObservableObject {
         case "Development": self.channel = .development
         default: break
         }
+        updateVersion()
     }
 
     func updateAvailableFirmware() {
         Task {
             do {
                 manifest = try await updater.downloadManifest()
+                updateVersion()
             } catch {
                 state = .noInternet
                 logger.error("download manifest: \(error)")
@@ -180,51 +174,20 @@ class DeviceUpdateCardModel: ObservableObject {
         case .release: availableFirmware = "Release \(version.version)"
         case .custom(let url): availableFirmware = "Custom \(url.lastPathComponent)"
         }
+        updateState()
     }
 
+    // Validating
+
     func updateState() {
-        guard
-            flipper?.state != .disconnected,
-            flipper?.state != .pairingFailed,
-            flipper?.state != .invalidPairing
-        else {
-            if state != .updateInProgress {
-                state = .disconnected
-            }
-            return
-        }
-        guard flipper?.state == .connected else {
-            if state != .noInternet, state != .updateInProgress {
-                state = .connecting
-            }
-            return
-        }
-        guard !noSDCard else {
-            state = .noSDCard
-            return
-        }
-        updateVersion()
-        guard
-            !availableFirmware.isEmpty,
-            let installedFirmware = installedFirmware,
-            let installedChannel = installedChannel
-        else {
-            return
-        }
-        guard installedChannel == channel else {
-            state = .channelUpdate
-            return
-        }
-        guard
-            lastInstalledFirmware != installedFirmware,
-            installedFirmware == availableFirmware
-        else {
-            lastInstalledFirmware = installedFirmware
-            state = .versionUpdate
-            return
-        }
-        checkManifest()
-    
+        guard validateFlipperState() else { return }
+        guard validateSDCard() else { return }
+
+        guard validateAvailableFirmware() else { return }
+
+        guard checkSelectedChannel() else { return }
+        guard checkInsalledFirmware() else { return }
+
         switch noManifest {
         case .some(true):
             state = .versionUpdate
@@ -234,6 +197,69 @@ class DeviceUpdateCardModel: ObservableObject {
             state = .connecting
         }
     }
+
+    func validateFlipperState() -> Bool {
+        guard let flipper = flipper else { return false }
+
+        switch flipper.state {
+        case .connected:
+            return true
+        case .connecting:
+            if state != .noInternet, state != .updateInProgress {
+                state = .connecting
+            }
+            return false
+        default:
+            if state != .updateInProgress {
+                state = .disconnected
+            }
+            return false
+        }
+    }
+
+    func validateSDCard() -> Bool {
+        guard case .success(let hasSDCard) = hasSDCard else {
+            state = .connecting
+            return false
+        }
+        guard hasSDCard else {
+            state = .noSDCard
+            return false
+        }
+        return true
+    }
+
+    func validateAvailableFirmware() -> Bool {
+        !availableFirmware.isEmpty
+    }
+
+    func checkSelectedChannel() -> Bool {
+        guard let installedChannel = installedChannel else {
+            return false
+        }
+        guard installedChannel == channel else {
+            state = .channelUpdate
+            return false
+        }
+        return true
+    }
+
+    func checkInsalledFirmware() -> Bool {
+        guard let installedFirmware = installedFirmware else {
+            return false
+        }
+        guard
+            lastInstalledFirmware != installedFirmware,
+            installedFirmware == availableFirmware
+        else {
+            lastInstalledFirmware = installedFirmware
+            state = .versionUpdate
+            return false
+        }
+        return true
+    }
+
+    // MARK: Confirm update
 
     func confirmUpdate() {
         guard let battery = flipper?.battery else { return }
@@ -254,7 +280,7 @@ class DeviceUpdateCardModel: ObservableObject {
     func update() {
         Task {
             await updateStorageInfo()
-            guard !noSDCard else {
+            guard validateSDCard() else {
                 return
             }
             showUpdateView = true

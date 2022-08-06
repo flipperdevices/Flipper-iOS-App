@@ -11,13 +11,13 @@
 		8B7064CC26E27429006CB4A8 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B7064CB26E27429006CB4A8 /* UI */; };
 		8B7480DE2807483500692304 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
 		8B77A9CD26CAA43300A3DF9F /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B77A9CC26CAA43300A3DF9F /* Core */; };
-		8B86D55E280F11D000E8D38E /* HelvetiPixel.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B86D55D280F11D000E8D38E /* HelvetiPixel.ttf */; };
 		8BA57F1D273AD21D00A3A33B /* nfc.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F18273AD21D00A3A33B /* nfc.png */; };
 		8BA57F1E273AD21D00A3A33B /* ibutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F19273AD21D00A3A33B /* ibutton.png */; };
 		8BA57F1F273AD21D00A3A33B /* rfid.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1A273AD21D00A3A33B /* rfid.png */; };
 		8BA57F20273AD21D00A3A33B /* subhz.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1B273AD21D00A3A33B /* subhz.png */; };
 		8BA57F21273AD21D00A3A33B /* irda.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1C273AD21D00A3A33B /* irda.png */; };
 		8BCB0168278F135C00DA66F5 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8BCB0167278F135C00DA66F5 /* Intents.intentdefinition */; };
+		8BCE39EB289D47EA00FB5704 /* HaxrCorpNeue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */; };
 		8BCFDDDF277A2405002DA4CD /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BCFDDDE277A2405002DA4CD /* QuickLook.framework */; platformFilter = maccatalyst; };
 		8BCFDDE2277A2405002DA4CD /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE1277A2405002DA4CD /* PreviewViewController.swift */; };
 		8BCFDDE4277A2405002DA4CD /* PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE3277A2405002DA4CD /* PreviewProvider.swift */; };
@@ -65,7 +65,6 @@
 		44A5B59224F05647009EE7FB /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B7480DD2807483500692304 /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
-		8B86D55D280F11D000E8D38E /* HelvetiPixel.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HelvetiPixel.ttf; sourceTree = "<group>"; };
 		8B886F162759BA9A00D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Core/.swiftlint.yml; sourceTree = "<group>"; };
 		8B886F172759BAA500D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/UI/.swiftlint.yml; sourceTree = "<group>"; };
 		8B886F192759BAC600D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Inject/.swiftlint.yml; sourceTree = "<group>"; };
@@ -79,6 +78,7 @@
 		8BA57F1C273AD21D00A3A33B /* irda.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = irda.png; sourceTree = "<group>"; };
 		8BC4791227FB2D9400863945 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Peripheral/Sources/RPC/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
 		8BCB0167278F135C00DA66F5 /* Intents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Intents.intentdefinition; sourceTree = "<group>"; };
+		8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HaxrCorpNeue.ttf; sourceTree = "<group>"; };
 		8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = KeyPreview.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BCFDDDE277A2405002DA4CD /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		8BCFDDE1277A2405002DA4CD /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
@@ -134,7 +134,7 @@
 		8B7480D42807474900692304 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				8B86D55D280F11D000E8D38E /* HelvetiPixel.ttf */,
+				8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */,
 				8B7480DD2807483500692304 /* Born2bSportyV2.ttf */,
 			);
 			path = Fonts;
@@ -355,13 +355,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				8B7480DE2807483500692304 /* Born2bSportyV2.ttf in Resources */,
+				8BCE39EB289D47EA00FB5704 /* HaxrCorpNeue.ttf in Resources */,
 				8BE40CF527F1265900288F66 /* .swiftlint.yml in Resources */,
 				8BA57F20273AD21D00A3A33B /* subhz.png in Resources */,
 				8BA57F1F273AD21D00A3A33B /* rfid.png in Resources */,
 				8BA57F21273AD21D00A3A33B /* irda.png in Resources */,
 				8BA57F1E273AD21D00A3A33B /* ibutton.png in Resources */,
 				49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */,
-				8B86D55E280F11D000E8D38E /* HelvetiPixel.ttf in Resources */,
 				8BA57F1D273AD21D00A3A33B /* nfc.png in Resources */,
 				F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */,
 			);
