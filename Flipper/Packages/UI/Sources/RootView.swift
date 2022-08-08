@@ -3,6 +3,7 @@ import SwiftUI
 public struct RootView: View {
     @Environment(\.scenePhase) var scenePhase
     @ObservedObject var viewModel: RootViewModel
+    @StateObject var alertController: AlertController = .shared
     @StateObject var hexKeyboardController: HexKeyboardController = .init()
 
     public init(viewModel: RootViewModel) {
@@ -25,6 +26,10 @@ public struct RootView: View {
                     onOK: { hexKeyboardController.onKey(.ok) }
                 )
                 .offset(y: hexKeyboardController.isHidden ? 500 : 0)
+            }
+
+            if alertController.isPresented {
+                alertController.alert
             }
         }
         .environmentObject(hexKeyboardController)

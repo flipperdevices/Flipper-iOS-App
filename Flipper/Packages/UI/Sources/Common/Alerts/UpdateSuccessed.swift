@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct UpdateSuccessedAlert: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
 
     var firmwareVersion: String
     var firmwareVersionColor: Color
@@ -32,9 +32,7 @@ struct UpdateSuccessedAlert: View {
                 .padding(.top, 4)
 
             Button {
-                withoutAnimation {
-                    dismiss()
-                }
+                isPresented = false
             } label: {
                 Text("Ok")
                     .frame(height: 41)

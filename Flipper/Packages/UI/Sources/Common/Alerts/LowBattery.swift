@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LowBatteryAlert: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -20,9 +20,7 @@ struct LowBatteryAlert: View {
                 .padding(.top, 4)
 
             Button {
-                withoutAnimation {
-                    dismiss()
-                }
+                isPresented = false
             } label: {
                 Text("Got It")
                     .frame(height: 41)

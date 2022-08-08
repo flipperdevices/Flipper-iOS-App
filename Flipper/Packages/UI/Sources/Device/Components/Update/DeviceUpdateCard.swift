@@ -192,15 +192,17 @@ struct DeviceUpdateCard: View {
                 "Wait for sync to finish or pause it.")
         }
         .customAlert(isPresented: $viewModel.showCharge) {
-            LowBatteryAlert()
+            LowBatteryAlert(isPresented: $viewModel.showCharge)
         }
         .customAlert(isPresented: $viewModel.showUpdateSuccessed) {
             UpdateSuccessedAlert(
+                isPresented: $viewModel.showUpdateSuccessed,
                 firmwareVersion: viewModel.alertVersion,
                 firmwareVersionColor: viewModel.alertVersionColor)
         }
         .customAlert(isPresented: $viewModel.showUpdateFailed) {
             UpdateFailedAlert(
+                isPresented: $viewModel.showUpdateFailed,
                 firmwareVersion: viewModel.alertVersion,
                 firmwareVersionColor: viewModel.alertVersionColor)
         }

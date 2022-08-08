@@ -11,9 +11,7 @@ extension View {
                     HStack {
                         Spacer()
                         Button {
-                            withoutAnimation {
-                                isPresented.wrappedValue = false
-                            }
+                            isPresented.wrappedValue = false
                         } label: {
                             Image(systemName: "xmark")
                         }

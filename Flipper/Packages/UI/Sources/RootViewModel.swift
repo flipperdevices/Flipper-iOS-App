@@ -26,9 +26,7 @@ public class RootViewModel: ObservableObject {
                     return
                 }
                 if $0 == .invalidPairing {
-                    withoutAnimation {
-                        self.isPairingIssue = true
-                    }
+                    self.isPairingIssue = true
                 }
                 if $0 == .connected || $0 == .unsupportedDevice {
                     self.appState.isFirstLaunch = false

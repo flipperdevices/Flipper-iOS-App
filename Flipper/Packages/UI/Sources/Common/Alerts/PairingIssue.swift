@@ -71,9 +71,7 @@ struct PairingIssueAlert: View {
 
                 Button {
                     Application.openSystemSettings()
-                    withoutAnimation {
-                        isPresented.wrappedValue = false
-                    }
+                    isPresented.wrappedValue = false
                 } label: {
                     Text("Go to Settings")
                         .frame(height: 41)

@@ -165,10 +165,10 @@ class DeviceUpdateCardModel: ObservableObject {
 
             if installedFirmware == updateToVersion {
                 logger.info("update success: \(updateFromToVersion)")
-                withoutAnimation { showUpdateSuccessed = true }
+                showUpdateSuccessed = true
             } else {
                 logger.info("update error: \(updateFromToVersion)")
-                withoutAnimation { showUpdateFailed = true }
+                showUpdateFailed = true
             }
         }
     }
@@ -204,6 +204,7 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func onChannelSelected(_ channel: String) {
+        showChannelSelector = false
         switch channel {
         case "Release": self.channel = .release
         case "Release-Candidate": self.channel = .canditate
@@ -332,9 +333,7 @@ class DeviceUpdateCardModel: ObservableObject {
         guard let battery = flipper?.battery else { return }
 
         guard battery.level >= 10 || battery.state == .charging else {
-            withoutAnimation {
-                showCharge = true
-            }
+            showCharge = true
             return
         }
         guard appState.status != .synchronizing else {

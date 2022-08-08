@@ -6,42 +6,25 @@ extension View {
         hideOnTap: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
-        fullScreenCover(isPresented: isPresented) {
-            ZStack(alignment: .top) {
-                Color.black
-                    .opacity(0.3)
-                    .edgesIgnoringSafeArea(.all)
-                    .onTapGesture {
-                        if hideOnTap {
-                            withoutAnimation {
-                                isPresented.wrappedValue = false
+        self.onChange(of: isPresented.wrappedValue) { newValue in
+            if newValue {
+                AlertController.shared.show {
+                    ZStack(alignment: .top) {
+                        Color.black
+                            .opacity(0.3)
+                            .edgesIgnoringSafeArea(.all)
+                            .onTapGesture {
+                                if hideOnTap {
+                                    isPresented.wrappedValue = false
+                                }
                             }
-                        }
+
+                        content()
                     }
-
-                content()
+                }
+            } else {
+                AlertController.shared.hide()
             }
-            .background(BackgroundCleaner())
         }
     }
-}
-
-func withoutAnimation(_ body: () -> Void) {
-    var transaction = Transaction()
-    transaction.disablesAnimations = true
-    withTransaction(transaction) {
-        body()
-    }
-}
-
-struct BackgroundCleaner: UIViewRepresentable {
-    func makeUIView(context: Context) -> UIView {
-        let view = UIView()
-        DispatchQueue.main.async {
-            view.superview?.superview?.backgroundColor = .clear
-        }
-        return view
-    }
-
-    func updateUIView(_ uiView: UIView, context: Context) {}
 }

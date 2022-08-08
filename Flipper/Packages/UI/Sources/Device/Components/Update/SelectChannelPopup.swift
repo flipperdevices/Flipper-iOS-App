@@ -45,8 +45,6 @@ struct SelectChannelPopup: View {
 }
 
 struct ChannelMenuRow: View {
-    @Environment(\.dismiss) var dismiss
-
     let title: String
     let description: String
     var onClick: (String) -> Void
@@ -62,10 +60,7 @@ struct ChannelMenuRow: View {
 
     var body: some View {
         Button {
-            withoutAnimation {
-                dismiss()
-                onClick(title)
-            }
+            onClick(title)
         } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 1) {
@@ -87,9 +82,7 @@ struct SelectChannelButton: View {
 
     var body: some View {
         Button {
-            withoutAnimation {
-                viewModel.showChannelSelector = true
-            }
+            viewModel.showChannelSelector = true
         } label: {
             HStack(spacing: 6) {
                 Spacer()
