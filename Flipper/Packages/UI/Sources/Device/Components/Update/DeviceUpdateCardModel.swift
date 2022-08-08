@@ -10,6 +10,7 @@ import Logging
 class DeviceUpdateCardModel: ObservableObject {
     private let logger = Logger(label: "update-vm")
 
+    @Inject var rpc: RPC
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
@@ -64,6 +65,8 @@ class DeviceUpdateCardModel: ObservableObject {
         case failure(Failure)
     }
 
+    var hasManifest: LazyResult<Bool, Swift.Error> = .idle
+
     var hasSDCard: LazyResult<Bool, Swift.Error> {
         guard let storage = flipper?.storage else { return .working }
         return .success(storage.external != nil)
@@ -96,9 +99,34 @@ class DeviceUpdateCardModel: ObservableObject {
     func onFlipperChanged(_ oldValue: Flipper?) {
         updateState()
 
-        guard flipper?.state == .connected else { return }
+        guard flipper?.state == .connected else {
+            resetState()
+            return
+        }
+
+        if oldValue?.state != .connected {
+            verifyManifest()
+        }
 
         verifyUpdateResult()
+    }
+    
+    func resetState() {
+        hasManifest = .idle
+    }
+
+    func verifyManifest() {
+        guard case .idle = hasManifest else { return }
+        hasManifest = .working
+        Task {
+            do {
+                let size = try await rpc.getSize(at: "/ext/Manifest")
+                hasManifest = .success(true)
+            } catch {
+                logger.error("manifest not exist: \(error)")
+                hasManifest = .success(false)
+            }
+        }
     }
 
     var updateFromVersion: String?
@@ -224,6 +252,8 @@ class DeviceUpdateCardModel: ObservableObject {
         guard checkSelectedChannel() else { return }
         guard checkInsalledFirmware() else { return }
 
+        guard validateManifest() else { return }
+
         state = .noUpdates
     }
 
@@ -253,6 +283,18 @@ class DeviceUpdateCardModel: ObservableObject {
         }
         guard hasSDCard else {
             state = .noSDCard
+            return false
+        }
+        return true
+    }
+
+    func validateManifest() -> Bool {
+        guard case .success(let hasManifest) = hasManifest else {
+            state = .connecting
+            return false
+        }
+        guard hasManifest else {
+            state = .versionUpdate
             return false
         }
         return true
