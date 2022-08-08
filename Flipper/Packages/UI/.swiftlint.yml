@@ -1,6 +1,7 @@
 
  disabled_rules:
   - identifier_name
+  - nesting
   - todo
   - closure_body_length
 

@@ -2,7 +2,6 @@ import Peripheral
 import Foundation
 
 extension Update {
-    // swiftlint:disable nesting
     public struct Firmware {
         let version: Manifest.Version
         let entries: [Entry]

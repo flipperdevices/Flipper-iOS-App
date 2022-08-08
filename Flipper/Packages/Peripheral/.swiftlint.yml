@@ -5,6 +5,7 @@ excluded:
 disabled_rules:
  - identifier_name
  - type_name
+ - nesting
  - todo
 
 opt_in_rules:

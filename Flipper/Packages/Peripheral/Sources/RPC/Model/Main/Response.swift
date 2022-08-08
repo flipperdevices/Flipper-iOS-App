@@ -1,8 +1,6 @@
 import Foundation
 import SwiftProtobuf
 
-// swiftlint:disable nesting
-
 public enum Response: Equatable {
     case ok
     case error(String)

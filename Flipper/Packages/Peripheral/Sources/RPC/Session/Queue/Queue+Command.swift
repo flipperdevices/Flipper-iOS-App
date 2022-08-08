@@ -1,5 +1,3 @@
-// swiftlint:disable nesting
-
 extension Queue {
     public typealias OutputContinuation = AsyncThrowingStream<Content, Swift.Error>.Continuation
     public typealias InputContinuation = AsyncThrowingStream<Response, Swift.Error>.Continuation

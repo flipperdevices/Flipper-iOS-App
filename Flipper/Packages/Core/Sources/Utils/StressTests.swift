@@ -2,8 +2,6 @@ import Inject
 import Foundation
 import Peripheral
 
-// swiftlint:disable nesting
-
 public class StressTest {
     static let shared: StressTest = .init()
 

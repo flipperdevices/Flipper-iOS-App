@@ -65,7 +65,6 @@ public struct FlipperService: Equatable, Identifiable {
     public var name: String
     public var characteristics: [Characteristic] = []
 
-    /// swiftlint:disable nesting
     public struct Characteristic: Equatable, Identifiable {
         public var id: String { name }
 

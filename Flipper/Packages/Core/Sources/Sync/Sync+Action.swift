@@ -1,5 +1,5 @@
 import Peripheral
-// swiftlint:disable nesting cyclomatic_complexity
+// swiftlint:disable cyclomatic_complexity
 
 extension ArchiveSync {
     enum Action {

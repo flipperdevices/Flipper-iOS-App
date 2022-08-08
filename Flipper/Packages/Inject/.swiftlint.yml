@@ -1,6 +1,7 @@
 
 disabled_rules:
  - identifier_name
+ - nesting
  - todo
 
 opt_in_rules:

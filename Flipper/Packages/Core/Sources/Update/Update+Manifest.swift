@@ -1,7 +1,6 @@
 import Foundation
 
 extension Update {
-    // swiftlint:disable nesting
     public struct Manifest: Decodable {
         public let channels: [Channel]
 
