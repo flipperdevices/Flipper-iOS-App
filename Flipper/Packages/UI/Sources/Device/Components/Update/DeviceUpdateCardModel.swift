@@ -110,7 +110,7 @@ class DeviceUpdateCardModel: ObservableObject {
 
         verifyUpdateResult()
     }
-    
+
     func resetState() {
         hasManifest = .idle
     }
@@ -120,10 +120,10 @@ class DeviceUpdateCardModel: ObservableObject {
         hasManifest = .working
         Task {
             do {
-                let size = try await rpc.getSize(at: "/ext/Manifest")
+                _ = try await rpc.getSize(at: "/ext/Manifest")
                 hasManifest = .success(true)
             } catch {
-                logger.error("manifest not exist: \(error)")
+                logger.error("manifest doesn't exist: \(error)")
                 hasManifest = .success(false)
             }
         }
