@@ -97,6 +97,7 @@ class DeviceUpdateViewModel: ObservableObject {
             do {
                 let archive = try await downloadFirmware(firmware)
                 try await updater.showUpdatingFrame()
+                try await provideSubGHzRegion()
                 let path = try await uploadFirmware(archive)
                 try await startUpdateProcess(path)
                 appState.onUpdateStarted()
@@ -125,7 +126,24 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
 
-    func uploadFirmware(_ firmware: Update.Firmware) async throws -> Peripheral.Path {
+    func provideSubGHzRegion() async throws {
+        state = .prepearingForUpdate
+        let info = try await rpc.deviceInfo()
+        guard
+            let regionString = info["hardware_region"],
+            let region = Int(regionString),
+            region >= 0
+        else {
+            return
+        }
+        try await rpc.writeFile(
+            at: Path(string: Provisioning.location),
+            bytes: Provisioning.generate())
+    }
+
+    func uploadFirmware(
+        _ firmware: Update.Firmware
+    ) async throws -> Peripheral.Path {
         state = .prepearingForUpdate
         progress = 0
         return try await updater.uploadFirmware(firmware) { progress in
