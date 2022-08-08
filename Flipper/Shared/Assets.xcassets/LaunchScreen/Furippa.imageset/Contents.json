@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Furippa.svg",
+      "filename" : "FurippaBlack.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -12,7 +12,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Furippa-1.svg",
+      "filename" : "FurippaWhite.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
