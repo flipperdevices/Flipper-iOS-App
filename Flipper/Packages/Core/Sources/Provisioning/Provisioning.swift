@@ -61,7 +61,8 @@ public class Provisioning {
     }
 
     private static func detectCountry(geoIP country: String?) -> String? {
-        RegionInfo.cellular ?? country ?? RegionInfo.locale
+        let geoCountry = country == "unknown" ? nil : country
+        return RegionInfo.cellular ?? geoCountry ?? RegionInfo.locale
     }
 }
 
