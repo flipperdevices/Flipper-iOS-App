@@ -6,13 +6,9 @@ public class Provisioning {
 
     public init() {}
 
-    public struct Error: Swift.Error {
-        let message: String?
-    }
-
     public struct Response: Decodable {
         let success: Database?
-        let error: String?
+        let error: Error?
     }
 
     public struct Database: Decodable {
@@ -20,6 +16,13 @@ public class Provisioning {
         let countries: [String: [String]]
         let country: String?
         let `default`: [String]
+    }
+
+    public struct Error: Decodable, Swift.Error {
+        let code: Int
+        let text: String
+
+        static var unwnown: Error { .init(code: 0, text: "unknown") }
     }
 
     public struct Region: Decodable {
@@ -52,7 +55,7 @@ public class Provisioning {
         let (data, _) = try await URLSession.shared.data(for: .init(url: url))
         let result = try JSONDecoder().decode(Response.self, from: data)
         guard let success = result.success else {
-            throw Error(message: result.error)
+            throw result.error ?? .unwnown
         }
         return success
     }
