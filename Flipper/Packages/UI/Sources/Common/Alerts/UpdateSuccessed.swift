@@ -18,7 +18,7 @@ struct UpdateSuccessedAlert: View {
         VStack(spacing: 0) {
             Image("UpdateSuccessed")
                 .renderingMode(.template)
-                .foregroundColor(.primary)
+                .foregroundColor(.blackBlack20)
                 .padding(.top, 17)
 
             Text("Update Successful")
