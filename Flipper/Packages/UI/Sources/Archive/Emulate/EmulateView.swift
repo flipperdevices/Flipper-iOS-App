@@ -27,10 +27,6 @@ struct EmulateView: View {
 struct EmulateButton: View {
     @ObservedObject var viewModel: EmulateViewModel
 
-    var image: String {
-        "Emulate"
-    }
-
     var text: String {
         viewModel.isEmulating
             ? "Emulating..."
@@ -49,7 +45,12 @@ struct EmulateButton: View {
         } label: {
             VStack(spacing: 4) {
                 HStack(spacing: 4) {
-                    Image(image)
+                    if viewModel.isEmulating {
+                        Animation("Emulating")
+                            .frame(width: 32, height: 32)
+                    } else {
+                        Image("Emulate")
+                    }
                     Text(text)
                         .font(.born2bSportyV2(size: 23))
                 }
@@ -88,12 +89,6 @@ struct EmulateButton: View {
 struct SendButton: View {
     @ObservedObject var viewModel: EmulateViewModel
 
-    var image: String {
-        viewModel.isEmulating
-            ? "Sending"
-            : "Send"
-    }
-
     var text: String {
         viewModel.isEmulating
             ? "Sending..."
@@ -103,7 +98,13 @@ struct SendButton: View {
     var body: some View {
         VStack(spacing: 4) {
             HStack(spacing: 4) {
-                Image(image)
+                if viewModel.isEmulating {
+                    Animation("Sending")
+                        .frame(width: 32, height: 32)
+                } else {
+                    Image("Send")
+                }
+
                 Text(text)
                     .font(.born2bSportyV2(size: 23))
             }
