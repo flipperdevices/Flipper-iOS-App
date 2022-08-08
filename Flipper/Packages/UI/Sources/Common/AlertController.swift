@@ -6,7 +6,7 @@ class AlertController: ObservableObject {
     @Published var isPresented = false
     var alert = AnyView(EmptyView())
 
-    func show(@ViewBuilder content: () -> some View) {
+    func show<Content: View>(@ViewBuilder content: () -> Content) {
         alert = AnyView(content())
         isPresented = true
     }
