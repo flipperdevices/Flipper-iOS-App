@@ -99,14 +99,24 @@ class DeviceUpdateCardModel: ObservableObject {
     func onFlipperChanged(_ oldValue: Flipper?) {
         updateState()
 
-        guard flipper?.state == .connected else { return }
+        guard flipper?.state == .connected else {
+            resetState()
+            return
+        }
 
-        if flipper?.state == .connected { verifyManifest() }
+        if oldValue?.state != .connected {
+            verifyManifest()
+        }
 
         verifyUpdateResult()
     }
+    
+    func resetState() {
+        hasManifest = .idle
+    }
 
     func verifyManifest() {
+        guard case .idle = hasManifest else { return }
         hasManifest = .working
         Task {
             do {
