@@ -26,7 +26,7 @@ public class Provisioning {
     }
 
     public struct Region: Decodable {
-        let country: String?
+        let country: String
         let bands: [Band]
     }
 
@@ -70,7 +70,7 @@ fileprivate extension Provisioning.Database {
     func getRegion(for country: String?) -> Provisioning.Region {
         let bandNames = getBandNames(for: country)
         let bands = getBands(for: bandNames)
-        return .init(country: country, bands: bands)
+        return .init(country: country ?? "WW", bands: bands)
     }
 
     func getBandNames(for country: String?) -> [String] {

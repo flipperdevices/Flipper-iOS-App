@@ -10,7 +10,7 @@ extension Provisioning.Region {
     private func _encode() throws -> Data {
         try PB_Region
             .with {
-                $0.countryCode = .init((country ?? "").utf8)
+                $0.countryCode = .init(country.utf8)
                 $0.bands = .init(bands)
             }
             .serializedData()
