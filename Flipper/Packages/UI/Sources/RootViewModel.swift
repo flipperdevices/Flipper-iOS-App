@@ -112,7 +112,7 @@ public class RootViewModel: ObservableObject {
 
     // Analytics
 
-    func recordAppOpen() async {
-        await analytics.record(.appOpen(.init(target: .app)))
+    func recordAppOpen() {
+        analytics.appOpen(target: .app)
     }
 }
