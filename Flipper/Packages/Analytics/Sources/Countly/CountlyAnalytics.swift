@@ -2,15 +2,19 @@ import Countly
 
 class CountlyAnalytics: Analytics {
     init() {
+        #if !DEBUG
         let config = CountlyConfig()
         config.appKey = "COUNTLY_APP_KEY"
         config.host = "https://countly.flipp.dev/"
         Countly.sharedInstance().start(with: config)
+        #endif
     }
 
     // swiftlint:disable discouraged_optional_collection
     private func recordEvent(key: String, segmentation: [String: String]?) {
+        #if !DEBUG
         Countly.sharedInstance().recordEvent(key, segmentation: segmentation)
+        #endif
     }
 
     func appOpen(target: OpenTarget) {
