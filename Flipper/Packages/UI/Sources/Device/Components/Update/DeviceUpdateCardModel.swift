@@ -149,18 +149,18 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func onUpdateFailed(_ error: DeviceUpdateViewModel.UpdateError) {
-        let result: UpdateResult
+        let status: Event.UpdateResult.Status
         switch error {
-        case .canceled: result = .canceled
-        case .failedDownloading: result = .failedDownload
-        case .failedPrepearing: result = .failedPrepare
-        case .failedUploading: result = .failedUpload
+        case .canceled: status = .canceled
+        case .failedDownloading: status = .failedDownload
+        case .failedPrepearing: status = .failedPrepare
+        case .failedUploading: status = .failedUpload
         }
         analytics.flipperUpdateResult(
             id: updateID,
             from: updateFromVersion ?? "unknown",
             to: updateToVersion ?? "unknown",
-            status: result)
+            status: status)
     }
 
     var alertVersion: String = ""

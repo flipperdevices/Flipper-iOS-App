@@ -1,24 +1,55 @@
 public protocol Analytics {
-    func appOpen(target: OpenTarget)
-    func flipperGATTInfo(flipperVersion: String)
+    func record(_ event: Event)
+}
+
+public extension Analytics {
+    func appOpen(target: Event.AppOpen.Target) {
+        record(.appOpen(.init(target: target)))
+    }
+
+    func flipperGATTInfo(flipperVersion: String) {
+        record(.flipperGATTInfo(.init(flipperVersion: flipperVersion)))
+    }
+
     func flipperRPCInfo(
         sdcardIsAvailable: Bool,
         internalFreeByte: Int,
         internalTotalByte: Int,
         externalFreeByte: Int,
         externalTotalByte: Int
-    )
+    ) {
+        record(.flipperRPCInfo(.init(
+            sdcardIsAvailable: sdcardIsAvailable,
+            internalFreeByte: internalFreeByte,
+            internalTotalByte: internalTotalByte,
+            externalFreeByte: externalFreeByte,
+            externalTotalByte: externalTotalByte)))
+    }
+
     func flipperUpdateStart(
         id: Int,
         from: String,
         to: String
-    )
+    ) {
+        record(.flipperUpdateStart(.init(
+            id: id,
+            from: from,
+            to: to)))
+    }
+
     func flipperUpdateResult(
         id: Int,
         from: String,
         to: String,
-        status: UpdateResult
-    )
+        status: Event.UpdateResult.Status
+    ) {
+        record(.flipperUpdateResult(.init(
+            id: id,
+            from: from,
+            to: to,
+            status: status)))
+    }
+
     func syncronizationResult(
         subGHzCount: Int,
         rfidCount: Int,
@@ -26,39 +57,18 @@ public protocol Analytics {
         infraredCount: Int,
         iButtonCount: Int,
         synchronizationTime: Int
-    )
+    ) {
+
+    }
+
     func subghzProvisioning(
         sim1: String,
         sim2: String,
         ip: String,
         system: String,
         provided: String,
-        source: RegionSource
-    )
-}
-
-public enum OpenTarget: Sendable {
-    case app
-    case keyImport
-    case keyEmulate
-    case keyEdit
-    case keyShare
-    case fileManager
-    case remoteControl
-}
-
-public enum UpdateResult: Sendable {
-    case completed
-    case canceled
-    case failedDownload
-    case failedPrepare
-    case failedUpload
-    case failed
-}
-
-public enum RegionSource: Sendable {
-    case sim
-    case geoIP
-    case locale
-    case `default`
+        source: Event.Provisioning.Source
+    ) {
+        
+    }
 }
