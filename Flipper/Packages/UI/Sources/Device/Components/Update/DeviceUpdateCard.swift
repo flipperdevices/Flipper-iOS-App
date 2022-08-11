@@ -175,7 +175,7 @@ struct DeviceUpdateCard: View {
             }
         } message: {
             Text(
-                "New Firmware \(viewModel.availableFirmware) " +
+                "New Firmware \(viewModel.availableFirmware ?? "") " +
                 "will be installed")
         }
         .alert(

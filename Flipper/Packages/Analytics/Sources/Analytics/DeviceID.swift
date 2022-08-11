@@ -1,6 +1,6 @@
 import Foundation
 
-public class DeviceID {
+public enum DeviceID {
     private static var storage: UserDefaults { .standard }
 
     public static var uuidString: String {

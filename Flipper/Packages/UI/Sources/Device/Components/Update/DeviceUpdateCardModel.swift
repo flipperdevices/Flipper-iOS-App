@@ -8,6 +8,7 @@ import SwiftUI
 import Logging
 
 @MainActor
+// swiftlint:disable type_body_length
 class DeviceUpdateCardModel: ObservableObject {
     private let logger = Logger(label: "update-vm")
 
