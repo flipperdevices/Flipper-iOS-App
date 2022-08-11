@@ -108,7 +108,8 @@ struct HexEditorSection: View {
                                 .padding(bytePadding)
                                 .frame(width: byteWidth, height: byteHeight)
                                 .foregroundColor(color(row.id, column.id))
-                                .background(Color(uiColor: .lightGray))
+                                .background(Color.hexSelection)
+                                .cornerRadius(2)
                         } else {
                             HexByte(byte: column.byte)
                                 .padding(bytePadding)

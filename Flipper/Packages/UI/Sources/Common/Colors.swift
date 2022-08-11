@@ -151,4 +151,10 @@ extension Color {
     static var badUSB: Color {
         .init(red: 1.0, green: 0.75, blue: 0.91)
     }
+
+    // HEX Editor
+
+    static var hexSelection: Color {
+        .init("HEXSelection")
+    }
 }
