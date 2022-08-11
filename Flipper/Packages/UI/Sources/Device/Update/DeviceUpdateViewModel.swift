@@ -132,7 +132,7 @@ class DeviceUpdateViewModel: ObservableObject {
         guard
             let regionString = info["hardware_region"],
             let region = Int(regionString),
-            region >= 0
+            region > 0
         else {
             return
         }
