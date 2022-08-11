@@ -24,7 +24,11 @@ let package = Package(
         .package(
             name: "Countly",
             url: "https://github.com/Countly/countly-sdk-ios.git",
-            from: "21.11.2")
+            from: "21.11.2"),
+        .package(
+            name: "SwiftProtobuf",
+            url: "https://github.com/tonyfreeman/swift-protobuf.git",
+            branch: "ignore-invalid-utf8")
     ],
     targets: [
         .target(
@@ -32,7 +36,8 @@ let package = Package(
             dependencies: [
                 "Inject",
                 "Logging",
-                "Countly"
+                "Countly",
+                "SwiftProtobuf"
             ],
             path: "Sources"),
         .testTarget(

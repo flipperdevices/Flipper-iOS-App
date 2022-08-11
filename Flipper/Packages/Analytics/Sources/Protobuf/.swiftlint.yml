@@ -1,0 +1,16 @@
+disabled_rules:
+ - identifier_name
+ - type_name
+ - redundant_optional_initialization
+ - private_over_fileprivate
+ - file_length
+ - operator_whitespace
+ - trailing_comma
+ - line_length
+ - cyclomatic_complexity
+ - function_body_length
+ - type_body_length
+ - nesting
+ - comment_spacing
+
+reporter: "xcode"
