@@ -15,6 +15,8 @@ struct DeviceInfoView: View {
                         "Device Name": viewModel.deviceName,
                         "Hardware Model": viewModel.hardwareModel,
                         "Hardware Region": viewModel.hardwareRegion,
+                        "Hardware Region Provisioned":
+                            viewModel.hardwareRegionProvisioned,
                         "Hardware Version": viewModel.hardwareVersion,
                         "Hardware OTP Version": viewModel.hardwareOTPVersion,
                         "Serial Number": viewModel.serialNumber

@@ -36,9 +36,19 @@ class DeviceInfoViewModel: ObservableObject {
         }
     }
 
-    var deviceName: String { deviceInfo["hardware_name"] ?? "" }
-    var hardwareModel: String { deviceInfo["hardware_model"] ?? "" }
-    var hardwareRegion: String { deviceInfo["hardware_region"] ?? "" }
+    var deviceName: String {
+        deviceInfo["hardware_name"] ?? ""
+    }
+    var hardwareModel: String {
+        deviceInfo["hardware_model"] ?? ""
+    }
+    var hardwareRegion: String {
+        deviceInfo["hardware_region"] ?? ""
+    }
+    var hardwareRegionProvisioned: String {
+        deviceInfo["hardware_region_provisioned"] ?? ""
+    }
+
     var hardwareVersion: String { deviceInfo["hardware_ver"] ?? "" }
     var hardwareOTPVersion: String { deviceInfo["hardware_otp_ver"] ?? "" }
     var serialNumber: String { deviceInfo["hardware_uid"] ?? "" }
