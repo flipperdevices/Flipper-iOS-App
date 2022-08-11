@@ -6,6 +6,7 @@ struct DeviceUpdateView: View {
     var title: String {
         switch viewModel.state {
         case .noInternet, .noCard: return "Update Not Started"
+        case .outdatedAppVersion: return "Unable to Update"
         case .noDevice: return "Update Failed"
         default: return "Updating your Flipper"
         }
@@ -15,7 +16,7 @@ struct DeviceUpdateView: View {
         switch viewModel.state {
         case .noCard:
             return "FlipperNoCard"
-        case .noInternet, .noDevice:
+        case .noInternet, .noDevice, .outdatedAppVersion:
             switch viewModel.deviceColor {
             case .black: return "FlipperDeadBlack"
             default: return "FlipperDeadWhite"
@@ -42,6 +43,7 @@ struct DeviceUpdateView: View {
             switch viewModel.state {
             case .noInternet: NoInternetView(viewModel: viewModel)
             case .noDevice: NoDeviceView(viewModel: viewModel)
+            case .outdatedAppVersion: OutdatedAppView(viewModel: viewModel)
             default: UpdateProgressView(viewModel: viewModel)
             }
 

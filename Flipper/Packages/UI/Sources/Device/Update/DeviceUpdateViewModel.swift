@@ -32,6 +32,7 @@ class DeviceUpdateViewModel: ObservableObject {
         case noInternet
         case noDevice
         case noCard
+        case outdatedAppVersion
     }
 
     let channel: Update.Channel
@@ -114,6 +115,10 @@ class DeviceUpdateViewModel: ObservableObject {
                 logger.error("no internet")
                 onFailure(.failedDownloading)
                 self.state = .noInternet
+            } catch where error is Provisioning.Error {
+                logger.error("provisioning: \(error)")
+                onFailure(.failedPrepearing)
+                self.state = .outdatedAppVersion
             } catch {
                 logger.error("update: \(error)")
                 onFailure(.failedUploading)
