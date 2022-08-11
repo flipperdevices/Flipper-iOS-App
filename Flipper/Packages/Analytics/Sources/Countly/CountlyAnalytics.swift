@@ -32,76 +32,114 @@ class CountlyAnalytics {
 }
 
 extension CountlyAnalytics: Analytics {
-    func record(_ event: Event) {
-        switch event {
-        case .appOpen(let event):
-            recordEvent(
-                key: "app_open",
-                segmentation: [
-                    "target": String(event.target.value)
-                ])
-        case .flipperGATTInfo(let event):
-            recordEvent(
-                key: "flipper_gatt_info",
-                segmentation: [
-                    "flipper_version": event.flipperVersion
-                ])
-        case .flipperRPCInfo(let event):
-            recordEvent(
-                key: "flipper_rpc_info",
-                segmentation: [
-                    "sdcard_is_available": .init(event.sdcardIsAvailable),
-                    "internal_free_byte": .init(event.internalFreeByte),
-                    "internal_total_byte": .init(event.internalTotalByte),
-                    "external_free_byte": .init(event.externalFreeByte),
-                    "external_total_byte": .init(event.externalTotalByte)
-                ])
-        case .flipperUpdateStart(let event):
-            recordEvent(
-                key: "update_flipper_start",
-                segmentation: [
-                    "update_id": .init(event.id),
-                    "update_from": event.from,
-                    "update_to": event.to
-                ])
-        case .flipperUpdateResult(let event):
-            recordEvent(
-                key: "update_flipper_end",
-                segmentation: [
-                    "update_id": .init(event.id),
-                    "update_from": event.from,
-                    "update_to": event.to,
-                    "status": .init(event.status.value)
-                ])
-        case .syncronizationResult(let event):
-            recordEvent(
-                key: "synchronization_end",
-                segmentation: [
-                    "subghz_count": .init(event.subGHzCount),
-                    "rfid_count": .init(event.rfidCount),
-                    "nfc_count": .init(event.nfcCount),
-                    "infrared_count": .init(event.infraredCount),
-                    "ibutton_count": .init(event.iButtonCount),
-                    "synchronization_time_ms": .init(event.synchronizationTime)
-                ])
-        case .provisioning(let event):
-            recordEvent(
-                key: "synchronization_end",
-                segmentation: [
-                    "region_network": "",
-                    "region_sim_1": event.sim1,
-                    "region_sim_2": event.sim2,
-                    "region_ip": event.ip,
-                    "region_system": event.system,
-                    "region_provided": event.provided,
-                    "region_source": .init(event.source.value),
-                    "is_roaming": "false"
-                ])
-        }
+    func appOpen(target: OpenTarget) {
+        recordEvent(
+            key: "app_open",
+            segmentation: [
+                "target": String(target.value)
+            ])
+    }
+
+    func flipperGATTInfo(flipperVersion: String) {
+        recordEvent(
+            key: "flipper_gatt_info",
+            segmentation: [
+                "flipper_version": flipperVersion
+            ])
+    }
+
+    func flipperRPCInfo(
+        sdcardIsAvailable: Bool,
+        internalFreeByte: Int,
+        internalTotalByte: Int,
+        externalFreeByte: Int,
+        externalTotalByte: Int
+    ) {
+        recordEvent(
+            key: "flipper_rpc_info",
+            segmentation: [
+                "sdcard_is_available": .init(sdcardIsAvailable),
+                "internal_free_byte": .init(internalFreeByte),
+                "internal_total_byte": .init(internalTotalByte),
+                "external_free_byte": .init(externalFreeByte),
+                "external_total_byte": .init(externalTotalByte)
+            ])
+    }
+
+    func flipperUpdateStart(
+        id: Int,
+        from: String,
+        to: String
+    ) {
+        recordEvent(
+            key: "update_flipper_start",
+            segmentation: [
+                "update_id": .init(id),
+                "update_from": from,
+                "update_to": to
+            ])
+    }
+
+    func flipperUpdateResult(
+        id: Int,
+        from: String,
+        to: String,
+        status: UpdateResult
+    ) {
+        recordEvent(
+            key: "update_flipper_end",
+            segmentation: [
+                "update_id": .init(id),
+                "update_from": from,
+                "update_to": to,
+                "status": .init(status.value)
+            ])
+    }
+
+    func syncronizationResult(
+        subGHzCount: Int,
+        rfidCount: Int,
+        nfcCount: Int,
+        infraredCount: Int,
+        iButtonCount: Int,
+        synchronizationTime: Int
+    ) {
+        recordEvent(
+            key: "synchronization_end",
+            segmentation: [
+                "subghz_count": .init(subGHzCount),
+                "rfid_count": .init(rfidCount),
+                "nfc_count": .init(nfcCount),
+                "infrared_count": .init(infraredCount),
+                "ibutton_count": .init(iButtonCount),
+                "synchronization_time_ms": .init(synchronizationTime)
+            ])
+    }
+
+    func subghzProvisioning(
+        sim1: String,
+        sim2: String,
+        ip: String,
+        system: String,
+        provided: String,
+        source: RegionSource
+    ) {
+        recordEvent(
+            key: "synchronization_end",
+            segmentation: [
+                "region_network": "",
+                "region_sim_1": sim1,
+                "region_sim_2": sim2,
+                "region_ip": ip,
+                "region_system": system,
+                "region_provided": provided,
+                "region_source": .init(source.value),
+                "is_roaming": "false"
+            ])
     }
 }
 
-fileprivate extension Event.AppOpen.Target {
+fileprivate extension OpenTarget {
     var value: Int {
         switch self {
         case .app: return 0
@@ -115,7 +153,7 @@ fileprivate extension Event.AppOpen.Target {
     }
 }
 
-fileprivate extension Event.UpdateResult.Status {
+fileprivate extension UpdateResult {
     var value: Int {
         switch self {
         case .completed: return 1
@@ -128,7 +166,7 @@ fileprivate extension Event.UpdateResult.Status {
     }
 }
 
-fileprivate extension Event.Provisioning.Source {
+fileprivate extension RegionSource {
     var value: Int {
         switch self {
         case .sim: return 1
