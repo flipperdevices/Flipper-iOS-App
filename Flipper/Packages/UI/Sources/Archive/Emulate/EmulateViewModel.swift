@@ -1,5 +1,6 @@
 import Core
 import Inject
+import Analytics
 import Peripheral
 import SwiftUI
 import Logging
@@ -7,7 +8,9 @@ import Logging
 @MainActor
 class EmulateViewModel: ObservableObject {
     private let logger = Logger(label: "emulate-vm")
+
     @Inject var rpc: RPC
+    @Inject var analytics: Analytics
 
     @Published var item: ArchiveItem
     @Published var isConnected = false
@@ -96,6 +99,7 @@ class EmulateViewModel: ObservableObject {
             }
             emulateTask = nil
         }
+        recordEmulate()
     }
 
     func stopEmulate() {
@@ -116,5 +120,11 @@ class EmulateViewModel: ObservableObject {
         isEmulating = false
         isFlipperAppStarted = false
         isFlipperAppCancellation = false
+    }
+
+    // Analytics
+
+    func recordEmulate() {
+        analytics.appOpen(target: .keyEmulate)
     }
 }

@@ -35,7 +35,7 @@ class AnalyticMock: Analytics {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTimeMS: Int
+        synchronizationTime: Int
     ) {
     }
 

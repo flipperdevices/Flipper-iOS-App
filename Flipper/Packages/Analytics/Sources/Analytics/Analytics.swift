@@ -25,7 +25,7 @@ public protocol Analytics {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTimeMS: Int
+        synchronizationTime: Int
     )
     func subghzProvisioning(
         sim1: String,

@@ -87,7 +87,7 @@ class CountlyAnalytics: Analytics {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTimeMS: Int
+        synchronizationTime: Int
     ) {
         recordEvent(
             key: "synchronization_end",
@@ -97,7 +97,7 @@ class CountlyAnalytics: Analytics {
                 "nfc_count": .init(nfcCount),
                 "infrared_count": .init(infraredCount),
                 "ibutton_count": .init(iButtonCount),
-                "synchronization_time_ms": .init(synchronizationTimeMS)
+                "synchronization_time_ms": .init(synchronizationTime)
             ])
     }
 

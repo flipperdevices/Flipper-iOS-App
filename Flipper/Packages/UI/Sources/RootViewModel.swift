@@ -15,10 +15,12 @@ public class RootViewModel: ObservableObject {
 
     var disposeBag: DisposeBag = .init()
 
-    @Published var isFirstLaunch: Bool
+    @Published var isFirstLaunch = true
     @Published var isPairingIssue = false
 
     public init() {
+        recordAppOpen()
+
         isFirstLaunch = appState.isFirstLaunch
 
         appState.$status

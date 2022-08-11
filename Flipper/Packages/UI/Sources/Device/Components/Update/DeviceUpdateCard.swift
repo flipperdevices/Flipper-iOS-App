@@ -211,7 +211,8 @@ struct DeviceUpdateCard: View {
                 isPresented: $viewModel.showUpdateView,
                 channel: viewModel.channel,
                 firmware: viewModel.availableFirmwareVersion,
-                onSuccess: viewModel.onUpdateStarted
+                onSuccess: viewModel.onUpdateStarted,
+                onFailure: viewModel.onUpdateFailed
             ))
         }
         .onChange(of: scenePhase) { phase in

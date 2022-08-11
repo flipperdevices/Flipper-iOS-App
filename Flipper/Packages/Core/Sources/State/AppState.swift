@@ -1,4 +1,5 @@
 import Inject
+import Analytics
 import Peripheral
 import Foundation
 import Combine
@@ -13,11 +14,12 @@ public class AppState {
     }
 
     @Inject private var rpc: RPC
+    @Inject private var analytics: Analytics
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
     @Published public var flipper: Flipper? {
-        didSet { updateState(oldValue?.state) }
+        didSet { onFlipperChanged(oldValue) }
     }
     @Published public var archive: Archive = .shared
     @Published public var status: DeviceStatus = .noDevice
@@ -36,6 +38,13 @@ public class AppState {
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)
+    }
+
+    func onFlipperChanged(_ oldValue: Flipper?) {
+        updateState(oldValue?.state)
+        if oldValue?.information != flipper?.information {
+            reportGATTInfo()
+        }
     }
 
     // MARK: Status
@@ -157,12 +166,15 @@ public class AppState {
         guard status != .unsupportedDevice else { return }
         guard status != .synchronizing else { return }
         status = .synchronizing
-        try await measure("syncing archive") {
+        let time = try await measure {
             try await archive.synchronize { progress in
                 self.syncProgress = Int(progress * 100)
             }
         }
+        reportSynchronizationResult(time: time)
+        logger.info("syncing archive: (\(time)s)")
         status = .synchronized
+
         try await Task.sleep(nanoseconds: 3_000 * 1_000_000)
         guard status == .synchronized else { return }
         status = .init(flipper?.state)
@@ -173,15 +185,19 @@ public class AppState {
     }
 
     func synchronizeDateTime() async throws {
-        try await measure("syncing date") {
+        let time = try await measure {
             try await rpc.setDate(.init())
         }
+        logger.info("syncing date: (\(time)s)")
         status = .init(flipper?.state)
     }
 
     public func updateStorageInfo() async throws {
         var storageInfo = Flipper.StorageInfo()
-        defer { pairedDevice.updateStorageInfo(storageInfo) }
+        defer {
+            pairedDevice.updateStorageInfo(storageInfo)
+            reportRPCInfo()
+        }
         do {
             storageInfo.internal = try await rpc.getStorageInfo(at: "/int")
             storageInfo.external = try await rpc.getStorageInfo(at: "/ext")
@@ -256,20 +272,48 @@ public class AppState {
 
     // MARK: Debug
 
-    func measure(
-        _ label: String,
-        _ task: () async throws -> Void
-    ) async rethrows {
-        logger.info("\(label)")
+    func measure(_ task: () async throws -> Void) async rethrows -> Int {
         let start = Date()
         try await task()
-        let time = (Date().timeIntervalSince(start) * 1000).rounded() / 1000
-        logger.info("\(label) done (\(time)s)")
+        return Int(Date().timeIntervalSince(start) * 1000)
     }
 
     // MARK: App Reset
 
     public func reset() {
         AppReset().reset()
+    }
+
+    // MARK: Analytics
+
+    func reportGATTInfo() {
+        analytics.flipperGATTInfo(
+            flipperVersion: flipper?.information?.softwareRevision ?? "ukwnown")
+    }
+
+    func reportRPCInfo() {
+        guard let storage = flipper?.storage else { return }
+        analytics.flipperRPCInfo(
+            sdcardIsAvailable: storage.external != nil,
+            internalFreeByte: storage.internal?.free ?? 0,
+            internalTotalByte: storage.internal?.total ?? 0,
+            externalFreeByte: storage.external?.free ?? 0,
+            externalTotalByte: storage.external?.total ?? 0)
+    }
+
+    func reportSynchronizationResult(time: Int) {
+        analytics.syncronizationResult(
+            subGHzCount: archive.items.count { $0.fileType == .subghz },
+            rfidCount: archive.items.count { $0.fileType == .rfid },
+            nfcCount: archive.items.count { $0.fileType == .nfc },
+            infraredCount: archive.items.count { $0.fileType == .infrared },
+            iButtonCount: archive.items.count { $0.fileType == .ibutton },
+            synchronizationTime: time)
+    }
+}
+
+extension Array where Element == ArchiveItem {
+    func count(_ isIncluded: (Self.Element) -> Bool) -> Int {
+        filter(isIncluded).count
     }
 }

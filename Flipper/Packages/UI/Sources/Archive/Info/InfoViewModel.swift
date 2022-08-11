@@ -1,5 +1,6 @@
 import Core
 import Inject
+import Analytics
 import Peripheral
 import Combine
 import SwiftUI
@@ -8,6 +9,8 @@ import Logging
 @MainActor
 class InfoViewModel: ObservableObject {
     private let logger = Logger(label: "info-vm")
+
+    @Inject var analytics: Analytics
 
     var backup: ArchiveItem
     @Published var item: ArchiveItem
@@ -75,14 +78,17 @@ class InfoViewModel: ObservableObject {
         withAnimation {
             isEditing = true
         }
+        recordEdit()
     }
 
     func share() {
         Core.share(item)
+        recordShare()
     }
 
     func shareAsFile() {
         Core.share(item, as: .file)
+        recordShare()
     }
 
     func delete() {
@@ -141,5 +147,15 @@ class InfoViewModel: ObservableObject {
 
     func dismiss() {
         dismissPublisher.send(())
+    }
+
+    // Analytics
+
+    func recordEdit() {
+        analytics.appOpen(target: .keyEdit)
+    }
+
+    func recordShare() {
+        analytics.appOpen(target: .keyShare)
     }
 }

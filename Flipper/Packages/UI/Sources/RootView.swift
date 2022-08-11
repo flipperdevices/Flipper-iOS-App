@@ -49,8 +49,5 @@ public struct RootView: View {
             default: break
             }
         }
-        .task {
-            await viewModel.recordAppOpen()
-        }
     }
 }
