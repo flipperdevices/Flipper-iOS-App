@@ -3,8 +3,14 @@ import Countly
 class CountlyAnalytics: Analytics {
     init() {
         #if !DEBUG
+        guard let appKey = Bundle
+            .main
+            .object(forInfoDictionaryKey: "COUNTLY_APP_KEY") as? String
+        else {
+            return
+        }
         let config = CountlyConfig()
-        config.appKey = "COUNTLY_APP_KEY"
+        config.appKey = appKey
         config.host = "https://countly.flipp.dev/"
         Countly.sharedInstance().start(with: config)
         #endif
