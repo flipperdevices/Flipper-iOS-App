@@ -1,8 +1,10 @@
 import Countly
 import Logging
 
-class CountlyAnalytics: Analytics {
+class CountlyAnalytics {
     private let logger = Logger(label: "countly-analytics")
+
+    private let hostURL = "https://countly.flipp.dev/"
 
     init() {
         #if !DEBUG
@@ -15,8 +17,8 @@ class CountlyAnalytics: Analytics {
         }
         let config = CountlyConfig()
         config.appKey = appKey
-        config.deviceID = UserDefaultsStorage.shared.deviceID
-        config.host = "https://countly.flipp.dev/"
+        config.deviceID = DeviceID.uuidString
+        config.host = hostURL
         Countly.sharedInstance().start(with: config)
         #endif
     }
@@ -27,7 +29,9 @@ class CountlyAnalytics: Analytics {
         Countly.sharedInstance().recordEvent(key, segmentation: segmentation)
         #endif
     }
+}
 
+extension CountlyAnalytics: Analytics {
     func appOpen(target: OpenTarget) {
         recordEvent(
             key: "app_open",

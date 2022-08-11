@@ -1,10 +1,9 @@
 import Foundation
 
-public class UserDefaultsStorage {
-    public static let shared: UserDefaultsStorage = .init()
-    private var storage: UserDefaults { .standard }
+public class DeviceID {
+    private static var storage: UserDefaults { .standard }
 
-    public var deviceID: String {
+    public static var uuidString: String {
         if let id = storage.value(forKey: .deviceIDKey) as? String {
             return id
         } else {
