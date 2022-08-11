@@ -257,5 +257,7 @@
 			</dict>
 		</dict>
 	</array>
+	<key>COUNTLY_APP_KEY</key>
+	<string>$(CI_COUNTLY_APP_KEY)</string>
 </dict>
 </plist>

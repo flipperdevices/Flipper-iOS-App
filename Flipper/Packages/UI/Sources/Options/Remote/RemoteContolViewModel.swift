@@ -1,5 +1,6 @@
 import Core
 import Inject
+import Analytics
 import Peripheral
 import Foundation
 import Combine
@@ -8,7 +9,9 @@ import Logging
 @MainActor
 class RemoteContolViewModel: ObservableObject {
     private let logger = Logger(label: "remote")
+
     @Inject var rpc: RPC
+    @Inject var analytics: Analytics
 
     @Published var frame: ScreenFrame = .init()
 
@@ -19,6 +22,7 @@ class RemoteContolViewModel: ObservableObject {
                 self.frame = frame
             }
         }
+        recordRemoteControl()
     }
 
     func startStreaming() {
@@ -58,5 +62,11 @@ class RemoteContolViewModel: ObservableObject {
                 logger.error("press button: \(error)")
             }
         }
+    }
+
+    // Analytics
+
+    func recordRemoteControl() {
+        analytics.appOpen(target: .remoteControl)
     }
 }

@@ -1,5 +1,6 @@
 import Core
 import Inject
+import Analytics
 import Peripheral
 import Foundation
 import Network
@@ -7,10 +8,12 @@ import SwiftUI
 import Logging
 
 @MainActor
+// swiftlint:disable type_body_length
 class DeviceUpdateCardModel: ObservableObject {
     private let logger = Logger(label: "update-vm")
 
     @Inject var rpc: RPC
+    @Inject var analytics: Analytics
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
@@ -129,14 +132,36 @@ class DeviceUpdateCardModel: ObservableObject {
         }
     }
 
+    var updateID: Int = 0
     var updateFromVersion: String?
     var updateToVersion: String?
 
     func onUpdateStarted() {
+        updateID = Int(Date().timeIntervalSince1970)
         updateFromVersion = installedFirmware
         updateToVersion = availableFirmware
 
         state = .updateInProgress
+
+        analytics.flipperUpdateStart(
+            id: updateID,
+            from: updateFromVersion ?? "unknown",
+            to: updateToVersion ?? "unknown")
+    }
+
+    func onUpdateFailed(_ error: DeviceUpdateViewModel.UpdateError) {
+        let result: UpdateResult
+        switch error {
+        case .canceled: result = .canceled
+        case .failedDownloading: result = .failedDownload
+        case .failedPrepearing: result = .failedPrepare
+        case .failedUploading: result = .failedUpload
+        }
+        analytics.flipperUpdateResult(
+            id: updateID,
+            from: updateFromVersion ?? "unknown",
+            to: updateToVersion ?? "unknown",
+            status: result)
     }
 
     var alertVersion: String = ""

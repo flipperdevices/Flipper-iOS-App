@@ -1,6 +1,8 @@
 import Inject
 import Logging
-import Peripheral
+
+import func Analytics.registerDependencies
+import func Peripheral.registerDependencies
 
 public func registerDependencies() {
     let container = Container.shared
@@ -8,6 +10,7 @@ public func registerDependencies() {
     LoggingSystem.bootstrap(FileLogHandler.factory)
     container.register(PlainLoggerStorage.init, as: LoggerStorage.self, isSingleton: true)
 
+    Analytics.registerDependencies()
     Peripheral.registerDependencies()
 
     // device

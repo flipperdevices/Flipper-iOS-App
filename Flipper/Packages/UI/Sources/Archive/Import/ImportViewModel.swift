@@ -1,4 +1,6 @@
 import Core
+import Inject
+import Analytics
 import Combine
 import SwiftUI
 import Logging
@@ -6,6 +8,8 @@ import Logging
 @MainActor
 class ImportViewModel: ObservableObject {
     private let logger = Logger(label: "import-vm")
+
+    @Inject var analytics: Analytics
 
     var backup: ArchiveItem
     @Published var item: ArchiveItem
@@ -19,6 +23,7 @@ class ImportViewModel: ObservableObject {
     init(item: ArchiveItem?) {
         self.item = item ?? .none
         self.backup = item ?? .none
+        recordImport()
     }
 
     func add() {
@@ -59,6 +64,12 @@ class ImportViewModel: ObservableObject {
 
     func dismiss() {
         dismissPublisher.send(())
+    }
+
+    // Analytics
+
+    func recordImport() {
+        analytics.appOpen(target: .keyImport)
     }
 }
 

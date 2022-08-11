@@ -1,5 +1,6 @@
 import Core
 import Inject
+import Analytics
 import Peripheral
 import Combine
 import Logging
@@ -11,6 +12,7 @@ class FileManagerViewModel: ObservableObject {
     private let logger = Logger(label: "file-manager-vm")
 
     @Inject var rpc: RPC
+    @Inject var analytics: Analytics
 
     @Published var content: Content? {
         didSet {
@@ -54,6 +56,7 @@ class FileManagerViewModel: ObservableObject {
     init(path: Path, mode: PathMode) {
         self.path = path
         self.mode = mode
+        recordFileManager()
     }
 
     func update() {
@@ -182,5 +185,11 @@ class FileManagerViewModel: ObservableObject {
                 self.content = .error(String(describing: error))
             }
         }
+    }
+
+    // Analytics
+
+    func recordFileManager() {
+        analytics.appOpen(target: .fileManager)
     }
 }

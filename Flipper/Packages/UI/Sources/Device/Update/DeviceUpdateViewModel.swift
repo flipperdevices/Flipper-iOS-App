@@ -37,6 +37,14 @@ class DeviceUpdateViewModel: ObservableObject {
     let channel: Update.Channel
     let firmware: Update.Manifest.Version?
     let onSuccess: @MainActor () -> Void
+    let onFailure: @MainActor (UpdateError) -> Void
+
+    enum UpdateError {
+        case canceled
+        case failedDownloading
+        case failedPrepearing
+        case failedUploading
+    }
 
     var availableFirmware: String {
         guard let firmware = firmware else { return "" }
@@ -69,12 +77,14 @@ class DeviceUpdateViewModel: ObservableObject {
         isPresented: Binding<Bool>,
         channel: Update.Channel,
         firmware: Update.Manifest.Version?,
-        onSuccess: @escaping @MainActor () -> Void
+        onSuccess: @escaping @MainActor () -> Void,
+        onFailure: @escaping @MainActor (UpdateError) -> Void
     ) {
         self._isPresented = isPresented
         self.channel = channel
         self.firmware = firmware
         self.onSuccess = onSuccess
+        self.onFailure = onFailure
 
         appState.$status
             .receive(on: DispatchQueue.main)
@@ -100,12 +110,13 @@ class DeviceUpdateViewModel: ObservableObject {
                 try await provideSubGHzRegion()
                 let path = try await uploadFirmware(archive)
                 try await startUpdateProcess(path)
-                appState.onUpdateStarted()
             } catch where error is URLError {
                 logger.error("no internet")
+                onFailure(.failedDownloading)
                 self.state = .noInternet
             } catch {
                 logger.error("update: \(error)")
+                onFailure(.failedUploading)
                 self.state = .noDevice
             }
             try? await updater.hideUpdatingFrame()
@@ -158,6 +169,7 @@ class DeviceUpdateViewModel: ObservableObject {
 
     func startUpdateProcess(_ directory: Peripheral.Path) async throws {
         try await updater.startUpdateProcess(from: directory)
+        appState.onUpdateStarted()
         onSuccess()
         isPresented = false
     }
@@ -170,6 +182,7 @@ class DeviceUpdateViewModel: ObservableObject {
         updateTaskHandle?.cancel()
         appState.disconnect()
         appState.connect()
+        onFailure(.canceled)
         isPresented = false
     }
 
