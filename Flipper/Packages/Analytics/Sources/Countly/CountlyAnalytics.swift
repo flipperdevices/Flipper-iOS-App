@@ -15,6 +15,7 @@ class CountlyAnalytics: Analytics {
         }
         let config = CountlyConfig()
         config.appKey = appKey
+        config.deviceID = UserDefaultsStorage.shared.deviceID
         config.host = "https://countly.flipp.dev/"
         Countly.sharedInstance().start(with: config)
         #endif
