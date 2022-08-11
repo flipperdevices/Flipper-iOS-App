@@ -1,12 +1,16 @@
 import Countly
+import Logging
 
 class CountlyAnalytics: Analytics {
+    private let logger = Logger(label: "countly-analytics")
+
     init() {
         #if !DEBUG
         guard let appKey = Bundle
             .main
             .object(forInfoDictionaryKey: "COUNTLY_APP_KEY") as? String
         else {
+            logger.error("COUNTLY_APP_KEY not found")
             return
         }
         let config = CountlyConfig()
