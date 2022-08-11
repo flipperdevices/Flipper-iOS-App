@@ -2,7 +2,7 @@
 
 This is a work-in-progress iOS 15+ app to rule all the Flipper family. 
 
-Please use our [forum](forum.flipperzero.one/c/mobile/14) to submit an issue or feature request.
+Please use our [forum](https://forum.flipperzero.one/c/mobile/14) to submit an issue or feature request.
 
 ## Features
 
