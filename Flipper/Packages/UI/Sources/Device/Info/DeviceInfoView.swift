@@ -39,15 +39,6 @@ struct DeviceInfoView: View {
                         "Radio Firmware": viewModel.radioFirmware
                     ]
                 )
-
-                DeviceInfoViewCard(
-                    title: "Bootloader",
-                    values: [
-                        "Software Revision": viewModel.softwareRevision,
-                        "Build Date": viewModel.buildDate,
-                        "Target": viewModel.firmwareTarget
-                    ]
-                )
             }
             .padding(.vertical, 14)
         }
