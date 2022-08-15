@@ -113,7 +113,7 @@ struct DeviceView: View {
                     .init(
                         title: Text("This action won't delete your keys"),
                         buttons: [
-                            .destructive(Text("Foget Flipper")) {
+                            .destructive(Text("Forget Flipper")) {
                                 viewModel.forgetFlipper()
                             },
                             .cancel()
