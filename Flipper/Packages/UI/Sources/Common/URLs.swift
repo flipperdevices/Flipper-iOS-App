@@ -33,11 +33,11 @@ extension URL {
     // MARK: Help
 
     static var helpToKnowName: URL {
-        .init(string: "https://docs.flipperzero.one/basics/control/dolphin#yj-flipper-name")!
+        .init(string: "https://docs.flipperzero.one/basics/settings#eJsLP")!
     }
 
     static var helpToTurnOnBluetooth: URL {
-        .init(string: "https://docs.flipperzero.one/basics/control/bluetooth#n3-turn-on-bluetooth")!
+        .init(string: "https://docs.flipperzero.one/basics/settings#eJsLP")!
     }
 
     static var helpToInstallFirmware: URL {
