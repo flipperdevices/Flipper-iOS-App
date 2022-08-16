@@ -33,7 +33,7 @@ extension URL {
     // MARK: Help
 
     static var helpToKnowName: URL {
-        .init(string: "https://docs.flipperzero.one/basics/settings#eJsLP")!
+        .init(string: "https://docs.flipperzero.one/basics/settings#rRnAy")!
     }
 
     static var helpToTurnOnBluetooth: URL {
