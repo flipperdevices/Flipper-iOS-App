@@ -69,6 +69,7 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     var hasManifest: LazyResult<Bool, Swift.Error> = .idle
+    var hasRegionData: LazyResult<Bool, Swift.Error> = .idle
 
     var hasSDCard: LazyResult<Bool, Swift.Error> {
         guard let storage = flipper?.storage else { return .working }
@@ -109,6 +110,7 @@ class DeviceUpdateCardModel: ObservableObject {
 
         if oldValue?.state != .connected {
             verifyManifest()
+            verifyRegionData()
         }
 
         verifyUpdateResult()
@@ -116,6 +118,7 @@ class DeviceUpdateCardModel: ObservableObject {
 
     func resetState() {
         hasManifest = .idle
+        hasRegionData = .idle
     }
 
     func verifyManifest() {
@@ -128,6 +131,20 @@ class DeviceUpdateCardModel: ObservableObject {
             } catch {
                 logger.error("manifest doesn't exist: \(error)")
                 hasManifest = .success(false)
+            }
+        }
+    }
+
+    func verifyRegionData() {
+        guard case .idle = hasRegionData else { return }
+        hasRegionData = .working
+        Task {
+            do {
+                _ = try await rpc.getSize(at: Provisioning.location)
+                hasRegionData = .success(true)
+            } catch {
+                logger.error("region data doesn't exist: \(error)")
+                hasRegionData = .success(false)
             }
         }
     }
@@ -279,6 +296,7 @@ class DeviceUpdateCardModel: ObservableObject {
         guard checkInsalledFirmware() else { return }
 
         guard validateManifest() else { return }
+        guard validateRegionData() else { return }
 
         state = .noUpdates
     }
@@ -320,6 +338,18 @@ class DeviceUpdateCardModel: ObservableObject {
             return false
         }
         guard hasManifest else {
+            state = .versionUpdate
+            return false
+        }
+        return true
+    }
+
+    func validateRegionData() -> Bool {
+        guard case .success(let hasRegionData) = hasRegionData else {
+            state = .connecting
+            return false
+        }
+        guard hasRegionData else {
             state = .versionUpdate
             return false
         }

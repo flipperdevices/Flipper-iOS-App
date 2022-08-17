@@ -1,8 +1,9 @@
+import Peripheral
 import Foundation
 
 public class Provisioning {
     static let url: URL = "https://update.flipperzero.one/regions/api/v0/bundle"
-    public static let location: String = "/int/.region_data"
+    public static let location: Path = "/int/.region_data"
 
     public init() {}
 

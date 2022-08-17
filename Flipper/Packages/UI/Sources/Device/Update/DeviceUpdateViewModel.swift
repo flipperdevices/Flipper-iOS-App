@@ -153,7 +153,7 @@ class DeviceUpdateViewModel: ObservableObject {
             return
         }
         try await rpc.writeFile(
-            at: Path(string: Provisioning.location),
+            at: Provisioning.location,
             bytes: Provisioning.generate())
     }
 
