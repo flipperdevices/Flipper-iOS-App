@@ -4,6 +4,7 @@ import Peripheral
 import Combine
 import SwiftUI
 
+@MainActor
 class MainViewModel: ObservableObject {
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
     @Published var status: DeviceStatus = .noDevice
@@ -27,6 +28,7 @@ class MainViewModel: ObservableObject {
             .store(in: &disposeBag)
 
         appState.imported
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
                 self?.onItemAdded(item: item)
             }
@@ -40,15 +42,11 @@ class MainViewModel: ObservableObject {
 
     func onItemAdded(item: ArchiveItem) {
         importedName = item.name.value
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
-            withAnimation {
-                self.importedOpacity = 1.0
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-                withAnimation {
-                    self.importedOpacity = 0
-                }
-            }
+        Task { @MainActor in
+            try await Task.sleep(milliseconds: 200)
+            withAnimation { importedOpacity = 1.0 }
+            try await Task.sleep(seconds: 3)
+            withAnimation { importedOpacity = 0 }
         }
     }
 }
