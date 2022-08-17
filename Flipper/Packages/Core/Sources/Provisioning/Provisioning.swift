@@ -22,7 +22,7 @@ public class Provisioning {
         let code: Int
         let text: String
 
-        static var unwnown: Error { .init(code: 0, text: "unknown") }
+        static var unknown: Error { .init(code: 0, text: "unknown") }
     }
 
     public struct Region: Decodable {
@@ -46,7 +46,7 @@ public class Provisioning {
 
     public static func generate() async throws -> [UInt8] {
         let database = try await downloadDatabase()
-        let country = detectCountry(geoIP: database.country)
+        let country = detectCountry(geoIP: database.getCountry())
         let region = database.getRegion(for: country)
         return try region.encode()
     }
@@ -55,18 +55,21 @@ public class Provisioning {
         let (data, _) = try await URLSession.shared.data(for: .init(url: url))
         let result = try JSONDecoder().decode(Response.self, from: data)
         guard let success = result.success else {
-            throw result.error ?? .unwnown
+            throw result.error ?? .unknown
         }
         return success
     }
 
     private static func detectCountry(geoIP country: String?) -> String? {
-        let geoCountry = country == "unknown" ? nil : country
-        return RegionInfo.cellular ?? geoCountry ?? RegionInfo.locale
+        return RegionInfo.cellular ?? country ?? RegionInfo.locale
     }
 }
 
 fileprivate extension Provisioning.Database {
+    func getCountry() -> String? {
+        country?.count == 2 ? country : nil
+    }
+
     func getRegion(for country: String?) -> Provisioning.Region {
         let bandNames = getBandNames(for: country)
         let bands = getBands(for: bandNames)
