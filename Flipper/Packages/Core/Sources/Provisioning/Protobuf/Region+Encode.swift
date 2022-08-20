@@ -1,19 +1,24 @@
-import Peripheral
 import Foundation
 import SwiftProtobuf
 
 extension Provisioning.Region {
-    func encode() throws -> [UInt8] {
+    public func encode() throws -> [UInt8] {
         try .init(_encode())
     }
 
     private func _encode() throws -> Data {
         try PB_Region
             .with {
-                $0.countryCode = .init(country.utf8)
+                $0.countryCode = .init(code)
                 $0.bands = .init(bands)
             }
             .serializedData()
+    }
+}
+
+extension Data {
+    init(_ code: ISOCode) {
+        self = .init(code.value.utf8)
     }
 }
 

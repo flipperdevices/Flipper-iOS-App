@@ -147,14 +147,14 @@ class DeviceUpdateViewModel: ObservableObject {
         let info = try await rpc.deviceInfo()
         guard
             let regionString = info["hardware_region"],
-            let region = Int(regionString),
-            region > 0
+            let hardwareRegion = Int(regionString),
+            hardwareRegion > 0
         else {
             return
         }
-        try await rpc.writeFile(
-            at: Provisioning.location,
-            bytes: Provisioning.generate())
+        let path = Provisioning.location
+        let region = try await Provisioning().provideRegion()
+        try await rpc.writeFile(at: path, bytes: region.encode())
     }
 
     func uploadFirmware(
