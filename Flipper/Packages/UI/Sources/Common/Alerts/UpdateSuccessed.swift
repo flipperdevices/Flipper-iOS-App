@@ -3,14 +3,13 @@ import SwiftUI
 struct UpdateSuccessedAlert: View {
     @Binding var isPresented: Bool
 
-    var firmwareVersion: String
-    var firmwareVersionColor: Color
+    let firmwareVersion: String
 
     var message: AttributedString {
         var version = AttributedString(firmwareVersion)
-        version.foregroundColor = .init(uiColor: .init(firmwareVersionColor))
+        version.foregroundColor = .primary
         var message = AttributedString(" was installed on your Flipper")
-        message.foregroundColor = .init(uiColor: .init(.black40))
+        message.foregroundColor = .init(.black40)
         return version + message
     }
 
@@ -23,6 +22,7 @@ struct UpdateSuccessedAlert: View {
 
             Text("Update Successful")
                 .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.sGreenUpdate)
                 .padding(.top, 24)
 
             Text(message)

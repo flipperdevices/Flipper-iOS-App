@@ -197,14 +197,12 @@ struct DeviceUpdateCard: View {
         .customAlert(isPresented: $viewModel.showUpdateSuccessed) {
             UpdateSuccessedAlert(
                 isPresented: $viewModel.showUpdateSuccessed,
-                firmwareVersion: viewModel.alertVersion,
-                firmwareVersionColor: viewModel.alertVersionColor)
+                firmwareVersion: viewModel.alertVersion)
         }
         .customAlert(isPresented: $viewModel.showUpdateFailed) {
             UpdateFailedAlert(
                 isPresented: $viewModel.showUpdateFailed,
-                firmwareVersion: viewModel.alertVersion,
-                firmwareVersionColor: viewModel.alertVersionColor)
+                firmwareVersion: viewModel.alertVersion)
         }
         .fullScreenCover(isPresented: $viewModel.showUpdateView) {
             DeviceUpdateView(viewModel: .init(

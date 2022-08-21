@@ -3,12 +3,11 @@ import SwiftUI
 struct UpdateFailedAlert: View {
     @Binding var isPresented: Bool
 
-    var firmwareVersion: String
-    var firmwareVersionColor: Color
+    let firmwareVersion: String
 
     var message: AttributedString {
         var version = AttributedString(firmwareVersion)
-        version.foregroundColor = .init(uiColor: .init(firmwareVersionColor))
+        version.foregroundColor = .primary
         var message = AttributedString(
             " wasn’t installed on your Flipper." +
             " Try to install it again")
@@ -23,6 +22,7 @@ struct UpdateFailedAlert: View {
 
             Text("Update Failed")
                 .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.sRed)
                 .padding(.top, 24)
 
             Text(message)

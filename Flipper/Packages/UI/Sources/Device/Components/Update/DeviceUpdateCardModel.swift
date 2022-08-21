@@ -182,7 +182,6 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     var alertVersion: String = ""
-    var alertVersionColor: Color = .clear
 
     func verifyUpdateResult() {
         guard
@@ -193,7 +192,6 @@ class DeviceUpdateCardModel: ObservableObject {
             return
         }
         alertVersion = updateToVersion
-        alertVersionColor = channelColor
         self.updateFromVersion = nil
         self.updateToVersion = nil
 
