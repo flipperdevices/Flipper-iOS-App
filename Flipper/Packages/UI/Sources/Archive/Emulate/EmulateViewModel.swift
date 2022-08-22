@@ -17,6 +17,7 @@ class EmulateViewModel: ObservableObject {
     @Published var isEmulating = false
     @Published var isFlipperAppStarted = false
     @Published var isFlipperAppCancellation = false
+    @Published var isFlipperAppSystemLocked = false
     private var emulateTask: Task<Void, Swift.Error>?
 
     @Published var appState: AppState = .shared
@@ -66,8 +67,7 @@ class EmulateViewModel: ObservableObject {
                 return
             } catch let error as Error {
                 if error == .application(.systemLocked) {
-                    try await Task.sleep(nanoseconds: 100 * 1_000_000)
-                    continue
+                    isFlipperAppSystemLocked = true
                 }
                 throw error
             }
@@ -81,7 +81,7 @@ class EmulateViewModel: ObservableObject {
     }
 
     func startEmulate() {
-        guard !isEmulating else { return }
+        guard !isEmulating, !isFlipperAppSystemLocked else { return }
         isEmulating = true
         emulateTask = Task {
             do {
@@ -96,6 +96,7 @@ class EmulateViewModel: ObservableObject {
                 }
             } catch {
                 logger.error("emilating key: \(error)")
+                resetEmulate()
             }
             emulateTask = nil
         }

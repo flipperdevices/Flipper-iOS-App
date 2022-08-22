@@ -23,6 +23,13 @@ struct EmulateView: View {
         }
         .padding(.horizontal, viewModel.isEmulating ? 18 : 24)
         .padding(.top, 18)
+        .alert(
+            "Another app is running",
+            isPresented: $viewModel.isFlipperAppSystemLocked
+        ) {
+        } message: {
+            Text("Press ↩️ button on your Flipper")
+        }
         .onChange(of: viewModel.isEmulating) { _ in
             feedback()
         }
