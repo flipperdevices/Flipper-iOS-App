@@ -116,6 +116,12 @@ class EmulateViewModel: ObservableObject {
         }
     }
 
+    func toggleEmulate() {
+        isEmulating
+            ? stopEmulate()
+            : startEmulate()
+    }
+
     func resetEmulate() {
         isEmulating = false
         isFlipperAppStarted = false
