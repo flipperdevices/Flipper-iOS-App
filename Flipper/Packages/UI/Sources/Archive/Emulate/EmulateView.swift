@@ -30,9 +30,6 @@ struct EmulateView: View {
         } message: {
             Text("Press ↩️ button on your Flipper")
         }
-        .onChange(of: viewModel.isEmulating) { _ in
-            feedback()
-        }
         .onDisappear {
             viewModel.stopEmulate()
         }

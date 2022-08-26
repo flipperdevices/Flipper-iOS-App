@@ -53,7 +53,7 @@ class RemoteContolViewModel: ObservableObject {
         guard !isBusy else { return }
         isBusy = true
         logger.info("\(button) button pressed")
-        feedback()
+        feedback(style: .heavy)
         Task {
             do {
                 try await rpc.pressButton(button)

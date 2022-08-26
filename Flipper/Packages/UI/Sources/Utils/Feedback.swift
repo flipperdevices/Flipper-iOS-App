@@ -1,6 +1,6 @@
 import SwiftUI
 
-func feedback() {
-    let impactMed = UIImpactFeedbackGenerator(style: .heavy)
+func feedback(style: UIImpactFeedbackGenerator.FeedbackStyle) {
+    let impactMed = UIImpactFeedbackGenerator(style: style)
     impactMed.impactOccurred()
 }
