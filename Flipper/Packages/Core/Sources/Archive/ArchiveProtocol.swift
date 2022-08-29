@@ -21,6 +21,36 @@ extension ArchiveProtocol {
     func upsert(_ content: String, at path: Path) async throws {
         try await upsert(content, at: path) { _ in }
     }
+
+    func nextAvailablePath(for path: Path) async throws -> Path {
+        let manifest = try await getManifest()
+        guard manifest[path] != nil else {
+            return path
+        }
+
+        let name = try ArchiveItem.Name(path)
+        let type = try ArchiveItem.FileType(path)
+
+        // format: name_{Int}.type
+        let parts = name.value.split(separator: "_")
+
+        let namePrefix = parts.count >= 2
+            ? parts.dropLast().joined(separator: "_")
+            : parts.joined(separator: "_")
+        var number = parts.count >= 2
+            ? Int(parts.last.unsafelyUnwrapped) ?? 1
+            : 1
+
+        var location: Path { path.removingLastComponent }
+        var newFileName: String { "\(namePrefix)_\(number).\(type.extension)" }
+        var newFilePath: Path { location.appending(newFileName) }
+
+        while manifest[newFilePath] != nil {
+            number += 1
+        }
+
+        return newFilePath
+    }
 }
 
 protocol FlipperArchiveProtocol: ArchiveProtocol {}

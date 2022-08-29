@@ -10,6 +10,7 @@ class CategoryDeletedViewModel: ObservableObject {
     @Published var items: [ArchiveItem] = []
     var selectedItem: ArchiveItem?
     @Published var showInfoView = false
+    @Published var showRestoreSheet = false
     @Published var showDeleteSheet = false
 
     let appState: AppState = .shared
@@ -25,6 +26,17 @@ class CategoryDeletedViewModel: ObservableObject {
     func onItemSelected(item: ArchiveItem) {
         selectedItem = item
         showInfoView = true
+    }
+
+    func restoreAll() {
+        Task {
+            do {
+                try await appState.archive.restoreAll()
+                try await appState.synchronize()
+            } catch {
+                logger.error("restore all: \(error)")
+            }
+        }
     }
 
     func deleteAll() {

@@ -150,30 +150,9 @@ class ArchiveSync: ArchiveSyncProtocol {
     // MARK: Duplicating item
 
     private func duplicate(_ path: Path) async throws -> Path? {
-        let newPath = try await findNextAvailableName(for: path)
+        let newPath = try await mobileArchive.nextAvailablePath(for: path)
         let content = try await mobileArchive.read(path)
         try await mobileArchive.upsert(content, at: newPath)
         return newPath
-    }
-
-    private func findNextAvailableName(for path: Path) async throws -> Path {
-        let name = try ArchiveItem.Name(path)
-        let type = try ArchiveItem.FileType(path)
-
-        // format: name_{Int}.type
-        let parts = name.value.split(separator: "_")
-        var number = parts.count >= 2
-            ? Int(parts.last.unsafelyUnwrapped) ?? 1
-            : 1
-
-        var location: Path { path.removingLastComponent }
-        var newFileName: String { "\(name)_\(number).\(type)" }
-        var newFilePath: Path { location.appending(newFileName) }
-
-        while try await mobileArchive.getManifest()[newFilePath] != nil {
-            number += 1
-        }
-
-        return newFilePath
     }
 }

@@ -133,6 +133,12 @@ extension Archive {
 }
 
 extension Archive {
+    public func restoreAll() async throws {
+        for item in deletedItems {
+            try await restore(item)
+        }
+    }
+
     public func wipe(_ path: Path) async throws {
         try await deletedArchive.delete(path)
         deletedItems.removeAll { $0.path == path }
@@ -169,17 +175,11 @@ extension Archive {
     }
 
     public func restore(_ item: ArchiveItem) async throws {
-        let manifest = try await mobileArchive.getManifest()
-        // TODO: resolve conflicts
-        guard manifest[item.path] == nil else {
-            logger.error("alredy exists")
-            return
-        }
-        var item = item
-        item.status = status(for: item)
-        try await mobileArchive.upsert(item.content, at: item.path)
-        items.append(item)
-
+        let newPath = try await mobileArchive.nextAvailablePath(for: item.path)
+        var newItem = try ArchiveItem(path: newPath, content: item.content)
+        newItem.status = status(for: newItem)
+        try await mobileArchive.upsert(newItem.content, at: newItem.path)
+        items.append(newItem)
         try await deletedArchive.delete(item.path)
         deletedItems.removeAll { $0.path == item.path }
     }
