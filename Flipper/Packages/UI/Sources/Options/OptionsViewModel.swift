@@ -3,6 +3,7 @@ import Inject
 import Combine
 import Peripheral
 import Foundation
+import SwiftUI
 import Logging
 
 @MainActor
@@ -15,6 +16,9 @@ class OptionsViewModel: ObservableObject {
 
     @Published var isOnline = false
     @Published var hasKeys = false
+
+    @AppStorage(.isDebugMode) var isDebugMode = false
+    @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
 
     var appVersion: String {
         Bundle.releaseVersion
@@ -50,5 +54,15 @@ class OptionsViewModel: ObservableObject {
 
     func backupKeys() {
         appState.archive.backupKeys()
+    }
+
+    var versionTapCount = 0
+
+    func onVersionTapGesture() {
+        versionTapCount += 1
+        if versionTapCount == 10 {
+            isDebugMode = true
+            versionTapCount = 0
+        }
     }
 }

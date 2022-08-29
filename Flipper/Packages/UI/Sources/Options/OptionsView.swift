@@ -43,11 +43,16 @@ struct OptionsView: View {
                 }
                 .disabled(!viewModel.isOnline)
 
-                Section(header: Text("Danger")) {
-                    Button("Reset App") {
-                        viewModel.resetApp()
+                if viewModel.isDebugMode {
+                    Section(header: Text("Debug")) {
+                        Toggle(isOn: $viewModel.isProvisioningDisabled) {
+                            Text("Disable provisioning")
+                        }
+                        Button("Reset App") {
+                            viewModel.resetApp()
+                        }
+                        .foregroundColor(.sRed)
                     }
-                    .foregroundColor(.sRed)
                 }
 
                 Section {
@@ -60,9 +65,13 @@ struct OptionsView: View {
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(.black40)
                     }
+                    .padding(.vertical, 20)
                     .frame(maxWidth: .infinity)
+                    .onTapGesture {
+                        viewModel.onVersionTapGesture()
+                    }
                 }
-                .padding(.top, -20)
+                .padding(.top, -40)
                 .padding(.bottom, 20)
             }
             .navigationBarTitleDisplayMode(.inline)

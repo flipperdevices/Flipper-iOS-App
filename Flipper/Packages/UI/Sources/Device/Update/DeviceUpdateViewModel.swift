@@ -18,6 +18,8 @@ class DeviceUpdateViewModel: ObservableObject {
     @Published var deviceStatus: DeviceStatus = .noDevice
     @Published var showCancelUpdate = false
 
+    @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
+
     var deviceColor: FlipperColor {
         appState.flipper?.color ?? .white
     }
@@ -142,19 +144,30 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
 
+    var hardwareRegion: Int? {
+        get async throws {
+            let info = try await rpc.deviceInfo()
+            return Int(info["hardware_region"] ?? "")
+        }
+    }
+
+    var isProvisioningEnabled: Bool {
+        get async throws {
+            if isProvisioningDisabled, let region = try await hardwareRegion {
+                return region == 0
+            }
+            return false
+        }
+    }
+
     func provideSubGHzRegion() async throws {
         state = .prepearingForUpdate
-        let info = try await rpc.deviceInfo()
-        guard
-            let regionString = info["hardware_region"],
-            let hardwareRegion = Int(regionString),
-            hardwareRegion > 0
-        else {
+        guard try await isProvisioningEnabled else {
             return
         }
-        let path = Provisioning.location
-        let region = try await Provisioning().provideRegion()
-        try await rpc.writeFile(at: path, bytes: region.encode())
+        try await rpc.writeFile(
+            at: Provisioning.location,
+            bytes: Provisioning().provideRegion().encode())
     }
 
     func uploadFirmware(
