@@ -19,6 +19,10 @@ class EmulateViewModel: ObservableObject {
     @Published var isFlipperAppStarted = false
     @Published var isFlipperAppCancellation = false
     @Published var isFlipperAppSystemLocked = false
+
+    var emulatePress: Date = .now
+    var emulateRelease: Date = .now
+    var emulateStarted: Date = .now
     private var emulateTask: Task<Void, Swift.Error>?
 
     @Published var appState: AppState = .shared
@@ -83,16 +87,18 @@ class EmulateViewModel: ObservableObject {
     func startEmulate() {
         guard !isEmulating else { return }
         isEmulating = true
+        emulatePress = .now
         emulateTask = Task {
             do {
                 feedback(style: .soft)
                 try await startApp()
                 try await waitForAppStartedEvent()
                 try await loadFile(item.path)
-                feedback(style: .heavy)
                 if item.fileType == .subghz {
                     try await rpc.appButtonPress()
                 }
+                feedback(style: .heavy)
+                emulateStarted = .now
             } catch {
                 logger.error("emilating key: \(error)")
                 resetEmulate()
@@ -102,12 +108,20 @@ class EmulateViewModel: ObservableObject {
         recordEmulate()
     }
 
+    var emulateLag: Int {
+        let desired = Int(emulateRelease.timeIntervalSince(emulatePress) * 1000)
+        let emulated = Int(Date().timeIntervalSince(emulateStarted) * 1000)
+        return max(0, desired - emulated)
+    }
+
     func stopEmulate() {
         guard !isFlipperAppCancellation else { return }
         isFlipperAppCancellation = true
+        emulateRelease = .now
         Task {
             _ = await emulateTask?.result
             do {
+                try await Task.sleep(milliseconds: emulateLag)
                 if item.fileType == .subghz {
                     try await rpc.appButtonRelease()
                 }
