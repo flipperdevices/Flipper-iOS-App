@@ -80,26 +80,17 @@ class EmulateViewModel: ObservableObject {
         isFileLoaded = true
     }
 
-    func checkCancellation() throws {
-        guard !isFlipperAppCancellation else {
-            throw Error.canceled
-        }
-    }
-
     func startEmulate() {
-        guard !isEmulating, !isFlipperAppSystemLocked else { return }
+        guard !isEmulating else { return }
         isEmulating = true
         emulateTask = Task {
             do {
                 feedback(style: .soft)
-                try checkCancellation()
                 try await startApp()
                 try await waitForAppStartedEvent()
-                try checkCancellation()
                 try await loadFile(item.path)
                 feedback(style: .heavy)
                 if item.fileType == .subghz {
-                    try checkCancellation()
                     try await rpc.appButtonPress()
                 }
             } catch {
@@ -112,12 +103,14 @@ class EmulateViewModel: ObservableObject {
     }
 
     func stopEmulate() {
-        guard isEmulating else { return }
         guard !isFlipperAppCancellation else { return }
         isFlipperAppCancellation = true
         Task {
             _ = await emulateTask?.result
             do {
+                if item.fileType == .subghz {
+                    try await rpc.appButtonRelease()
+                }
                 try await rpc.appExit()
                 feedback(style: .soft)
             } catch {
