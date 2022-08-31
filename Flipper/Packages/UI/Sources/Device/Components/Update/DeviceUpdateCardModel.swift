@@ -206,9 +206,21 @@ class DeviceUpdateCardModel: ObservableObject {
             if installedFirmware == updateToVersion {
                 logger.info("update success: \(updateFromToVersion)")
                 showUpdateSuccessed = true
+
+                analytics.flipperUpdateResult(
+                    id: updateID,
+                    from: updateFromVersion,
+                    to: updateToVersion,
+                    status: .completed)
             } else {
                 logger.info("update error: \(updateFromToVersion)")
                 showUpdateFailed = true
+
+                analytics.flipperUpdateResult(
+                    id: updateID,
+                    from: updateFromVersion,
+                    to: updateToVersion,
+                    status: .failed)
             }
         }
     }
