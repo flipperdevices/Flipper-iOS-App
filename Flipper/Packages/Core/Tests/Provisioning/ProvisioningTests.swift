@@ -3,6 +3,10 @@ import XCTest
 @testable import Core
 
 class ProvisioningTests: XCTestCase {
+    override class func setUp() {
+        Core.registerMockDependencies()
+    }
+
     class TestRegion: RegionProvider {
         let regionCode: ISOCode?
 

@@ -1,8 +1,12 @@
+import Inject
+import Analytics
 import Peripheral
 import Foundation
 
 public class Provisioning {
     public static let location: Path = "/int/.region_data"
+
+    @Inject private var analytics: Analytics
 
     private let cellurarRegionProvider: RegionProvider
     private let localeRegionProvider: RegionProvider
@@ -48,7 +52,31 @@ public class Provisioning {
             ?? bundle.geoIP
             ?? localeRegionProvider.regionCode
             ?? .default
-        let bands = bundle.bands[code]
-        return .init(code: code, bands: bands)
+        reportProvisioning(geoIP: bundle.geoIP, provided: code)
+        return .init(code: code, bands: bundle.bands[code])
+    }
+}
+
+// MARK: Analytics
+
+fileprivate extension Provisioning {
+    func reportProvisioning(geoIP: ISOCode?, provided: ISOCode) {
+        analytics.subghzProvisioning(
+            sim1: cellurarRegionProvider.regionCode?.value ?? "",
+            sim2: "",
+            ip: geoIP?.value ?? "",
+            system: localeRegionProvider.regionCode?.value ?? "",
+            provided: provided.value,
+            source: detectSource(geoIP: geoIP))
+    }
+
+    func detectSource(geoIP: ISOCode?) -> RegionSource {
+        cellurarRegionProvider.regionCode != nil
+            ? .sim
+            : geoIP != nil
+                ? .geoIP
+                : localeRegionProvider.regionCode != nil
+                    ? .locale
+                    : .default
     }
 }
