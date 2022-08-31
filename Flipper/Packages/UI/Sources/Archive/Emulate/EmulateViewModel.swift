@@ -20,8 +20,6 @@ class EmulateViewModel: ObservableObject {
     @Published var isFlipperAppCancellation = false
     @Published var isFlipperAppSystemLocked = false
 
-    var emulatePress: Date = .now
-    var emulateRelease: Date = .now
     var emulateStarted: Date = .now
     private var emulateTask: Task<Void, Swift.Error>?
 
@@ -87,7 +85,6 @@ class EmulateViewModel: ObservableObject {
     func startEmulate() {
         guard !isEmulating else { return }
         isEmulating = true
-        emulatePress = .now
         emulateTask = Task {
             do {
                 feedback(style: .soft)
@@ -108,20 +105,17 @@ class EmulateViewModel: ObservableObject {
         recordEmulate()
     }
 
-    var emulateLag: Int {
-        let desired = Int(emulateRelease.timeIntervalSince(emulatePress) * 1000)
-        let emulated = Int(Date().timeIntervalSince(emulateStarted) * 1000)
-        return max(0, desired - emulated)
-    }
+    var emulateMinimum: Int { 500 }
+    var emulateDuration: Int { Date().timeIntervalSince(emulateStarted).ms }
+    var emulateDurationRemains: Int { max(0, emulateMinimum - emulateDuration) }
 
     func stopEmulate() {
         guard !isFlipperAppCancellation else { return }
         isFlipperAppCancellation = true
-        emulateRelease = .now
         Task {
             _ = await emulateTask?.result
             do {
-                try await Task.sleep(milliseconds: emulateLag)
+                try await Task.sleep(milliseconds: emulateDurationRemains)
                 if item.fileType == .subghz {
                     try await rpc.appButtonRelease()
                 }
@@ -150,5 +144,11 @@ class EmulateViewModel: ObservableObject {
 
     func recordEmulate() {
         analytics.appOpen(target: .keyEmulate)
+    }
+}
+
+fileprivate extension Double {
+    var ms: Int {
+        Int(self * 1000)
     }
 }
