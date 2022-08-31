@@ -87,15 +87,14 @@ class EmulateViewModel: ObservableObject {
         isEmulating = true
         emulateTask = Task {
             do {
-                feedback(style: .soft)
                 try await startApp()
                 try await waitForAppStartedEvent()
                 try await loadFile(item.path)
+                feedback(style: .soft)
                 if item.fileType == .subghz {
                     try await rpc.appButtonPress()
+                    emulateStarted = .now
                 }
-                feedback(style: .heavy)
-                emulateStarted = .now
             } catch {
                 logger.error("emilating key: \(error)")
                 resetEmulate()
@@ -105,24 +104,58 @@ class EmulateViewModel: ObservableObject {
         recordEmulate()
     }
 
-    var emulateMinimum: Int { 500 }
-    var emulateDuration: Int { Date().timeIntervalSince(emulateStarted).ms }
-    var emulateDurationRemains: Int { max(0, emulateMinimum - emulateDuration) }
+    // Emulated since button pressed (ms)
+    var emulateDuration: Int {
+        Date().timeIntervalSince(emulateStarted).ms
+    }
+
+    // Minimum for known SubGHz protocols (ms)
+    var emulateMinimum: Int {
+        500
+    }
+    var emulateDurationRemains: Int {
+        max(0, emulateMinimum - emulateDuration)
+    }
+
+    // Minimum for RAW SubGHz in ms
+    var emulateRawMinimum: Int {
+        let durationMicroseconds = item.properties
+            .filter { $0.key == "RAW_Data" }
+            .map { $0.value.split(separator: " ").compactMap { Int($0) } }
+            .reduce(into: []) { $0.append(contentsOf: $1) }
+            .map { abs($0) }
+            .reduce(0, +)
+        return durationMicroseconds / 1000
+    }
+
+    var emulateRawDurationRemains: Int {
+        max(0, emulateRawMinimum - emulateDuration)
+    }
 
     func stopEmulate() {
-        guard !isFlipperAppCancellation else { return }
+        guard isEmulating, !isFlipperAppCancellation else { return }
         isFlipperAppCancellation = true
         Task {
+            // Wait for task to complete
             _ = await emulateTask?.result
+            // Try to release button
             do {
-                try await Task.sleep(milliseconds: emulateDurationRemains)
-                if item.fileType == .subghz {
+                if isEmulating, item.fileType == .subghz {
+                    let delayMilliseconds = item.isRaw
+                        ? emulateRawDurationRemains
+                        : emulateDurationRemains
+                    try await Task.sleep(milliseconds: delayMilliseconds)
                     try await rpc.appButtonRelease()
                 }
-                try await rpc.appExit()
-                feedback(style: .soft)
             } catch {
-                logger.error("exiting the app: \(error)")
+                logger.error("release button: \(error)")
+            }
+            // Try to exit the app
+            do {
+                feedback(style: .soft)
+                try await rpc.appExit()
+            } catch {
+                logger.error("app exit: \(error)")
             }
         }
     }
