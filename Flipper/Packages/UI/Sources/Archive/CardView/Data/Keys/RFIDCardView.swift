@@ -15,8 +15,8 @@ struct RFIDCardView: View {
 }
 
 fileprivate extension ArchiveItem {
-    var data: String { self["Data"] ?? "" }
-    var keyType: String { self["Key type"] ?? "" }
+    var data: String { properties["Data"] ?? "" }
+    var keyType: String { properties["Key type"] ?? "" }
 
     var keyName: String {
         switch keyType {

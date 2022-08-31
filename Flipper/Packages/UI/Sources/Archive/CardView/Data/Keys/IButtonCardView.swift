@@ -15,6 +15,6 @@ struct IButtonCardView: View {
 }
 
 fileprivate extension ArchiveItem {
-    var key: String { self["Data"] ?? "" }
-    var type: String { self["Key type"] ?? "" }
+    var key: String { properties["Data"] ?? "" }
+    var type: String { properties["Key type"] ?? "" }
 }

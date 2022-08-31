@@ -99,7 +99,7 @@ extension NFCEditorView {
                         HStack {
                             Text("UID:")
                                 .fontWeight(.bold)
-                            Text(item["UID"] ?? "")
+                            Text(item.properties["UID"] ?? "")
                                 .fontWeight(.medium)
                         }
 
@@ -107,14 +107,14 @@ extension NFCEditorView {
                             HStack {
                                 Text("ATQA:")
                                     .fontWeight(.bold)
-                                Text(item["ATQA"] ?? "")
+                                Text(item.properties["ATQA"] ?? "")
                                     .fontWeight(.medium)
                             }
 
                             HStack {
                                 Text("SAK:")
                                     .fontWeight(.bold)
-                                Text(item["SAK"] ?? "")
+                                Text(item.properties["SAK"] ?? "")
                                     .fontWeight(.medium)
                             }
                         }

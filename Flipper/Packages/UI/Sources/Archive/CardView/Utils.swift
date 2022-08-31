@@ -16,9 +16,3 @@ extension Binding where
         }
     }
 }
-
-extension ArchiveItem {
-    subscript(key: String) -> String? {
-        properties.first { $0.key == key }?.value
-    }
-}

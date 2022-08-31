@@ -49,11 +49,11 @@ struct CategoryItem: View {
 fileprivate extension ArchiveItem {
     var info: String {
         switch fileType {
-        case .subghz: return self["Protocol"] ?? ""
-        case .rfid: return self["Key type"] ?? ""
-        case .nfc: return self["Device type"] ?? ""
-        case .infrared: return self["protocol"] ?? ""
-        case .ibutton: return self["Key type"] ?? ""
+        case .subghz: return properties["Protocol"] ?? ""
+        case .rfid: return properties["Key type"] ?? ""
+        case .nfc: return properties["Device type"] ?? ""
+        case .infrared: return properties["protocol"] ?? ""
+        case .ibutton: return properties["Key type"] ?? ""
         }
     }
 }

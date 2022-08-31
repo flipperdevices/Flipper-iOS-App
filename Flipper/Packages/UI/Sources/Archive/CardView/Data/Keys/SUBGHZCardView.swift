@@ -30,13 +30,9 @@ struct SUBGHZCardView: View {
 }
 
 fileprivate extension ArchiveItem {
-    var isRaw: Bool {
-        self["Filetype"] == "Flipper SubGhz RAW File"
-    }
-
-    var key: String { self["Key"] ?? "" }
-    var bit: String { self["Bit"] ?? "" }
-    var frequency: String { self["Frequency"] ?? "" }
-    var proto: String { self["Protocol"] ?? "" }
-    var rawData: String { self["RAW_Data"] ?? "" }
+    var key: String { properties["Key"] ?? "" }
+    var bit: String { properties["Bit"] ?? "" }
+    var frequency: String { properties["Frequency"] ?? "" }
+    var proto: String { properties["Protocol"] ?? "" }
+    var rawData: String { properties["RAW_Data"] ?? "" }
 }

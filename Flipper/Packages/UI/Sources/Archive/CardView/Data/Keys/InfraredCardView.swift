@@ -19,11 +19,11 @@ struct InfraredCardView: View {
 }
 
 fileprivate extension ArchiveItem {
-    var name: String { self["name"] ?? "" }
-    var type: String { self["type"] ?? "" }
-    var proto: String { self["protocol"] ?? "" }
-    var address: String { self["address"] ?? "" }
-    var command: String { self["command"] ?? "" }
+    var name: String { properties["name"] ?? "" }
+    var type: String { properties["type"] ?? "" }
+    var proto: String { properties["protocol"] ?? "" }
+    var address: String { properties["address"] ?? "" }
+    var command: String { properties["command"] ?? "" }
 
-    var data: String { self["data"] ?? "" }
+    var data: String { properties["data"] ?? "" }
 }

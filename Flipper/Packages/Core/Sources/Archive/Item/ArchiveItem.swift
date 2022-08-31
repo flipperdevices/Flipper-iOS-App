@@ -94,3 +94,15 @@ extension ArchiveItem {
             properties: properties)
     }
 }
+
+extension Array where Element == ArchiveItem.Property {
+    public subscript(key: String) -> String? {
+        first { $0.key == key }?.value
+    }
+}
+
+extension ArchiveItem {
+    public var isRaw: Bool {
+        properties["Filetype"] == "Flipper SubGhz RAW File"
+    }
+}

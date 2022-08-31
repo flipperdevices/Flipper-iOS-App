@@ -17,15 +17,15 @@ struct NFCCardView: View {
 }
 
 fileprivate extension ArchiveItem {
-    var type: String { self["Device type"] ?? "" }
-    var uid: String { self["UID"] ?? "" }
-    var atqa: String { self["ATQA"] ?? "" }
-    var sak: String { self["SAK"] ?? "" }
+    var type: String { properties["Device type"] ?? "" }
+    var uid: String { properties["UID"] ?? "" }
+    var atqa: String { properties["ATQA"] ?? "" }
+    var sak: String { properties["SAK"] ?? "" }
 
     // bank card
-    var aid: String { self["AID"] ?? "" }
-    var name: String { self["Name"] ?? "" }
-    var number: String { self["Number"] ?? "" }
-    var expData: String { self["Exp data"] ?? "" }
-    var countryCode: String { self["Country code"] ?? "" }
+    var aid: String { properties["AID"] ?? "" }
+    var name: String { properties["Name"] ?? "" }
+    var number: String { properties["Number"] ?? "" }
+    var expData: String { properties["Exp data"] ?? "" }
+    var countryCode: String { properties["Country code"] ?? "" }
 }
