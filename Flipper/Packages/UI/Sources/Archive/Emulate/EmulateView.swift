@@ -31,7 +31,7 @@ struct EmulateView: View {
             Text("Press ↩️ button on your Flipper")
         }
         .onDisappear {
-            viewModel.stopEmulate()
+            viewModel.forceStopEmulate()
         }
     }
 }
@@ -133,7 +133,9 @@ struct SendButton: View {
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
-                    viewModel.startEmulate()
+                    viewModel.isFlipperAppCancellation
+                        ? viewModel.forceStopEmulate()
+                        : viewModel.startEmulate()
                 }
                 .onEnded { _ in
                     viewModel.stopEmulate()

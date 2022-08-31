@@ -20,6 +20,7 @@ class EmulateViewModel: ObservableObject {
     @Published var isFlipperAppCancellation = false
     @Published var isFlipperAppSystemLocked = false
 
+    var forceStop = false
     var emulateStarted: Date = .now
     private var emulateTask: Task<Void, Swift.Error>?
 
@@ -51,8 +52,7 @@ class EmulateViewModel: ObservableObject {
     func onAppStateChanged(_ state: Message.AppState) {
         isFlipperAppStarted = state == .started
         if state == .closed {
-            isEmulating = false
-            isFlipperAppCancellation = false
+            resetEmulate()
         }
         logger.info("flipper app \(state)")
     }
@@ -141,10 +141,7 @@ class EmulateViewModel: ObservableObject {
             // Try to release button
             do {
                 if isEmulating, item.fileType == .subghz {
-                    let delayMilliseconds = item.isRaw
-                        ? emulateRawDurationRemains
-                        : emulateDurationRemains
-                    try await Task.sleep(milliseconds: delayMilliseconds)
+                    try await waitForEmulateMinimumDuration()
                     try await rpc.appButtonRelease()
                 }
             } catch {
@@ -160,6 +157,23 @@ class EmulateViewModel: ObservableObject {
         }
     }
 
+    func waitForEmulateMinimumDuration() async throws {
+        let delayMilliseconds = item.isRaw
+            ? emulateRawDurationRemains
+            : emulateDurationRemains
+        for _ in 0..<(delayMilliseconds / 10) {
+            guard !forceStop else { break }
+            try await Task.sleep(milliseconds: 10)
+        }
+    }
+
+    func forceStopEmulate() {
+        forceStop = true
+        if isEmulating {
+            stopEmulate()
+        }
+    }
+
     func toggleEmulate() {
         isEmulating
             ? stopEmulate()
@@ -167,6 +181,7 @@ class EmulateViewModel: ObservableObject {
     }
 
     func resetEmulate() {
+        forceStop = false
         isEmulating = false
         isFileLoaded = false
         isFlipperAppStarted = false
