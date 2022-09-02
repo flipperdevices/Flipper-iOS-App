@@ -44,3 +44,7 @@ public func share(_ key: ArchiveItem, as method: SharingMethod = .urlOrFile) {
         Logger(label: "Share").error("\(error)")
     }
 }
+
+public func share(_ text: String) {
+    share([text])
+}

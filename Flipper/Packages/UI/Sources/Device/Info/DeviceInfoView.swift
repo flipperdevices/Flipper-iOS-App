@@ -55,6 +55,14 @@ struct DeviceInfoView: View {
                 Text("Device Info")
                     .font(.system(size: 20, weight: .bold))
             }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    viewModel.share()
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .foregroundColor(.primary)
+            }
         }
         .onAppear {
             viewModel.getDeviceInfo()

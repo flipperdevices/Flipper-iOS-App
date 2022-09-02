@@ -97,4 +97,17 @@ class DeviceInfoViewModel: ObservableObject {
             }
         }
     }
+
+    func share() {
+        let maxCount = deviceInfo.max {
+            $0.key.count < $1.key.count
+        }?.key.count ?? 1
+
+        let array = deviceInfo.map { key, value -> String in
+            let spaces = String(repeating: " ", count: maxCount - key.count + 1)
+            return "\(key)\(spaces): \(value)"
+        }
+
+        Core.share(array.joined(separator: "\n"))
+    }
 }
