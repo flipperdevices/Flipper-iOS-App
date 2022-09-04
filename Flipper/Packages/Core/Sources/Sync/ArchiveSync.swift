@@ -51,31 +51,25 @@ class ArchiveSync: ArchiveSyncProtocol {
         let syncItemFactor = syncProgressFactor / Double(actions.count)
         var currentProgress = manifestProgressFactor
 
+        func preciseProgress(_ itemProgress: Double) {
+            progress(currentProgress + syncItemFactor * itemProgress)
+        }
+
         for (path, action) in actions {
             guard state != .canceled else {
                 break
             }
             switch action {
             case .update(.mobile):
-                try await updateOnMobile(path) { itemProgress in
-                    progress(currentProgress + syncItemFactor * itemProgress)
-                }
+                try await updateOnMobile(path, progress: preciseProgress)
             case .delete(.mobile):
-                try await deleteOnMobile(path) { itemProgress in
-                    progress(currentProgress + syncItemFactor * itemProgress)
-                }
+                try await deleteOnMobile(path, progress: preciseProgress)
             case .update(.flipper):
-                try await updateOnFlipper(path) { itemProgress in
-                    progress(currentProgress + syncItemFactor * itemProgress)
-                }
+                try await updateOnFlipper(path, progress: preciseProgress)
             case .delete(.flipper):
-                try await deleteOnFlipper(path) { itemProgress in
-                    progress(currentProgress + syncItemFactor * itemProgress)
-                }
+                try await deleteOnFlipper(path, progress: preciseProgress)
             case .conflict:
-                try await keepBoth(path) { itemProgress in
-                    progress(currentProgress + syncItemFactor * itemProgress)
-                }
+                try await keepBoth(path, progress: preciseProgress)
             }
             currentProgress += syncItemFactor
         }
