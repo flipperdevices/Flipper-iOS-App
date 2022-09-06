@@ -9,7 +9,11 @@ class DeletedArchiveMock: DeletedArchiveProtocol {
         fatalError("not implemented")
     }
 
-    func upsert(_ content: String, at path: Path, progress: (Double) -> Void) async throws {
+    func upsert(
+        _ content: String,
+        at path: Path,
+        progress: (Double) -> Void
+    ) async throws {
     }
 
     func delete(_ path: Path) async throws {

@@ -20,7 +20,7 @@ class ArchiveSearchViewModel: ObservableObject {
 
     @Published var predicate = ""
 
-    var selectedItem: ArchiveItem?
+    var selectedItem: ArchiveItem = .none
     @Published var showInfoView = false
 
     init() {}

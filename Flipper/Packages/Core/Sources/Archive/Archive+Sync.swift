@@ -1,4 +1,5 @@
 import Inject
+import Peripheral
 
 extension Archive {
     func synchronize(_ progress: (Double) -> Void) async throws {
@@ -42,24 +43,29 @@ extension Archive {
     private func handleSyncEvent(_ event: ArchiveSync.Event) async throws {
         switch event {
         case .syncing(let path):
-            if let index = items.firstIndex(where: { $0.path == path }) {
-                items[index].status = .synchronizing
-            }
+            setStatus(.synchronizing, for: .init(path: path))
         case .imported(let path):
-            let content = try await mobileArchive.read(path)
-            var item = try ArchiveItem(path: path, content: content)
-            item.status = .synchronized
-            items.removeAll { $0.path == path }
-            items.append(item)
+            if path.isShadowFile {
+                if let path = originPath(forShadow: path) {
+                    try await reload(.init(path: path))
+                }
+            } else {
+                try await reload(.init(path: path))
+            }
+            setStatus(.synchronized, for: .init(path: path))
         case .exported(let path):
-            if let index = items.firstIndex(where: { $0.path == path }) {
-                items[index].status = .synchronized
-            }
+            setStatus(.synchronized, for: .init(path: path))
         case .deleted(let path):
-            if let index = items.firstIndex(where: { $0.path == path }) {
-                try await backup(items[index])
-                items.removeAll { $0.path == path }
-            }
+            try await delete(.init(path: path))
         }
+    }
+
+    // FIXME:
+    private func originPath(forShadow path: Path) -> Path? {
+        let originPath = Path(string: "\(path.string.dropLast(3))nfc")
+        guard manifestStorage.manifest?[originPath] != nil else {
+            return nil
+        }
+        return originPath
     }
 }

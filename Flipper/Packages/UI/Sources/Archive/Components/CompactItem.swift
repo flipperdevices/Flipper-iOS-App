@@ -7,7 +7,7 @@ struct CompactItem: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: 0) {
-                FileTypeView(item.fileType)
+                FileTypeView(item.kind)
                 Spacer()
                 item.status.image
                     .padding([.top, .trailing], 8)

@@ -77,7 +77,8 @@ extension ArchiveItem {
     static var none: Self {
         .init(
             name: "",
-            fileType: .ibutton,
-            properties: [])
+            kind: .ibutton,
+            properties: [],
+            shadowCopy: [])
     }
 }

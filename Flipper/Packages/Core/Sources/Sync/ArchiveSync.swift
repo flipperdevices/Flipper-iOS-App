@@ -69,7 +69,9 @@ class ArchiveSync: ArchiveSyncProtocol {
             case .delete(.flipper):
                 try await deleteOnFlipper(path, progress: preciseProgress)
             case .conflict:
-                try await keepBoth(path, progress: preciseProgress)
+                path.isShadowFile
+                    ? try await updateOnMobile(path, progress: preciseProgress)
+                    : try await keepBoth(path, progress: preciseProgress)
             }
             currentProgress += syncItemFactor
         }
@@ -148,5 +150,12 @@ class ArchiveSync: ArchiveSyncProtocol {
         let content = try await mobileArchive.read(path)
         try await mobileArchive.upsert(content, at: newPath)
         return newPath
+    }
+}
+
+extension Path {
+    var isShadowFile: Bool {
+        guard let filename = lastComponent else { return false }
+        return filename.hasSuffix(FileType.shadow.extension)
     }
 }

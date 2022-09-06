@@ -6,7 +6,7 @@ struct EmulateView: View {
 
     var body: some View {
         VStack(spacing: 4) {
-            switch viewModel.item.fileType {
+            switch viewModel.item.kind {
             case .nfc, .rfid, .ibutton:
                 EmulateButton(viewModel: viewModel)
                     .disabled(!viewModel.isConnected)

@@ -42,8 +42,12 @@ public class Archive: ObservableObject {
         isLoading = true
         Task {
             do {
-                items = try await loadArchive()
-                deletedItems = try await loadDeleted()
+                items = try await loadItems(
+                    from: mobileArchive,
+                    loadItem: loadArchiveItem)
+                deletedItems = try await loadItems(
+                    from: deletedArchive,
+                    loadItem: loadDeletedItem)
                 isLoading = false
             } catch {
                 logger.critical("loading archive: \(error)")
@@ -51,41 +55,63 @@ public class Archive: ObservableObject {
         }
     }
 
-    func loadArchive() async throws -> [ArchiveItem] {
+    private func loadItems(
+        from archive: ArchiveProtocol,
+        loadItem: (Path, ArchiveProtocol) async throws -> ArchiveItem
+    ) async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
-        let favorites = try await mobileFavorites.read()
-        for path in try await mobileArchive.getManifest().paths {
+        let paths = try await archive.getManifest().paths.filter {
+            !$0.isShadowFile
+        }
+        for path in paths {
             do {
-                let content = try await mobileArchive.read(path)
-                var item = try ArchiveItem(path: path, content: content)
-                item.status = status(for: item)
-                item.isFavorite = favorites.contains(item.path)
-                item.note = (try? await mobileNotes.get(item.path)) ?? ""
-                items.append(item)
+                items.append(try await loadItem(path, archive))
             } catch {
                 logger.error("load key: \(path)")
-                continue
             }
         }
         return items
     }
 
-    func loadDeleted() async throws -> [ArchiveItem] {
-        var items = [ArchiveItem]()
-        for path in try await deletedArchive.getManifest().paths {
-            do {
-                let content = try await deletedArchive.read(path)
-                var item = try ArchiveItem(path: path, content: content)
-                item.status = .deleted
-                items.append(item)
-            } catch {
-                logger.error("load deleted key: \(path)")
-                continue
-            }
+    private func readItem(
+        at path: Path,
+        from archive: ArchiveProtocol
+    ) async throws -> ArchiveItem {
+        let content = try await archive.read(path)
+        var item = try ArchiveItem(path: path, content: content)
+        if let path = item.shadowPath {
+            let content = (try? await archive.read(path)) ?? ""
+            item.shadowCopy = .init(content: content) ?? []
         }
-        return items
+        return item
+    }
+
+    private func loadArchiveItem(
+        at path: Path,
+        from archive: ArchiveProtocol
+    ) async throws -> ArchiveItem {
+        var item = try await readItem(at: path, from: archive)
+        item.status = status(for: item)
+        item.isFavorite = (try await mobileFavorites.read()).contains(item.path)
+        item.note = try await loadNote(for: item.path)
+        return item
+    }
+
+    private func loadDeletedItem(
+        at path: Path,
+        from archive: ArchiveProtocol
+    ) async throws -> ArchiveItem {
+        var item = try await readItem(at: path, from: archive)
+        item.status = .deleted
+        return item
+    }
+
+    private func loadNote(for path: Path) async throws -> String {
+        (try? await mobileNotes.get(path)) ?? ""
     }
 }
+
+// MARK: Actions
 
 extension Archive {
     public func get(_ id: ArchiveItem.ID) -> ArchiveItem? {
@@ -94,10 +120,19 @@ extension Archive {
 
     public func upsert(_ item: ArchiveItem) async throws {
         try await mobileArchive.upsert(item.content, at: item.path)
+        if let path = item.shadowPath {
+            item.shadowCopy.isEmpty
+                ? try await mobileArchive.delete(path)
+                : try await mobileArchive.upsert(item.shadowContent, at: path)
+        }
         try await mobileNotes.upsert(item.note, at: item.path)
         items.removeAll { $0.path == item.path }
-        var item = item
-        item.status = status(for: item)
+        items.append(item)
+    }
+
+    public func reload(_ id: ArchiveItem.ID) async throws {
+        let item = try await loadArchiveItem(at: id.path, from: mobileArchive)
+        items.removeAll { $0.path == item.path }
         items.append(item)
     }
 
@@ -106,12 +141,55 @@ extension Archive {
             item.note = ""
             item.isFavorite = false
             try await backup(item)
-            try await mobileArchive.delete(item.path)
             try await mobileNotes.delete(item.path)
-            if item.isFavorite {
-                try await toggleFavorite(for: item.path)
+            try await removeFavorite(for: item.path)
+            try await mobileArchive.delete(item.path)
+            if let shadowPath = item.shadowPath {
+                try await mobileArchive.delete(shadowPath)
             }
             items.removeAll { $0.path == item.path }
+        }
+    }
+
+    private func backup(_ item: ArchiveItem) async throws {
+        var item = item
+        item.status = .deleted
+        try await deletedArchive.upsert(item.content, at: item.path)
+        if let shadowPath = item.shadowPath {
+            try await deletedArchive.upsert(item.shadowContent, at: shadowPath)
+        }
+        deletedItems.removeAll { $0.path == item.path }
+        deletedItems.append(item)
+    }
+
+    public func restore(_ item: ArchiveItem) async throws {
+        let newPath = try await mobileArchive.nextAvailablePath(for: item.path)
+        var newItem = try ArchiveItem(
+            filename: newPath.lastComponent ?? "",
+            properties: item.properties,
+            shadowCopy: item.shadowCopy)
+        newItem.status = status(for: newItem)
+        try await upsert(newItem)
+        try await wipe(newItem)
+    }
+
+    public func restoreAll() async throws {
+        for item in deletedItems {
+            try await restore(item)
+        }
+    }
+
+    public func wipe(_ item: ArchiveItem) async throws {
+        try await deletedArchive.delete(item.path)
+        if let shadowPath = item.shadowPath {
+            try await deletedArchive.delete(shadowPath)
+        }
+        deletedItems.removeAll { $0.path == item.path }
+    }
+
+    public func wipeAll() async throws {
+        for item in deletedItems {
+            try await wipe(item)
         }
     }
 
@@ -130,58 +208,39 @@ extension Archive {
         try await mobileFavorites.write(favorites)
         return favorites.contains(path)
     }
+
+    private func removeFavorite(for path: Path) async throws {
+        var favorites = try await mobileFavorites.read()
+        favorites.delete(path)
+        try await mobileFavorites.write(favorites)
+    }
 }
 
 extension Archive {
-    public func restoreAll() async throws {
-        for item in deletedItems {
-            try await restore(item)
-        }
-    }
-
-    public func wipe(_ path: Path) async throws {
-        try await deletedArchive.delete(path)
-        deletedItems.removeAll { $0.path == path }
-    }
-
-    public func wipeAll() async throws {
-        for item in deletedItems {
-            try await deletedArchive.delete(item.path)
-        }
-        deletedItems.removeAll()
-    }
-
-    public func rename(_ id: ArchiveItem.ID, to name: ArchiveItem.Name) async throws {
+    public func rename(
+        _ id: ArchiveItem.ID,
+        to name: ArchiveItem.Name
+    ) async throws {
         if let item = get(id) {
             let newItem = item.rename(to: name)
             guard get(newItem.id) == nil else {
                 throw Error.alredyExists
             }
             try await mobileArchive.delete(item.path)
+            if let shadowPath = item.shadowPath {
+                try? await mobileArchive.delete(shadowPath)
+            }
             try await mobileNotes.delete(item.path)
-            items.removeAll { $0.path == item.path }
             try await mobileArchive.upsert(newItem.content, at: newItem.path)
             try await mobileNotes.upsert(newItem.content, at: newItem.path)
+            if let shadowPath = newItem.shadowPath {
+                try await mobileArchive.upsert(
+                    newItem.shadowContent,
+                    at: shadowPath)
+            }
+            items.removeAll { $0.path == item.path }
             items.append(newItem)
         }
-    }
-
-    func backup(_ item: ArchiveItem) async throws {
-        var item = item
-        item.status = .deleted
-        try await deletedArchive.upsert(item.content, at: item.path)
-        deletedItems.removeAll { $0.path == item.path }
-        deletedItems.append(item)
-    }
-
-    public func restore(_ item: ArchiveItem) async throws {
-        let newPath = try await mobileArchive.nextAvailablePath(for: item.path)
-        var newItem = try ArchiveItem(path: newPath, content: item.content)
-        newItem.status = status(for: newItem)
-        try await mobileArchive.upsert(newItem.content, at: newItem.path)
-        items.append(newItem)
-        try await deletedArchive.delete(item.path)
-        deletedItems.removeAll { $0.path == item.path }
     }
 }
 
@@ -191,6 +250,15 @@ extension Archive {
             return .imported
         }
         return hash == item.hash ? .synchronized : .modified
+    }
+
+    public func setStatus(
+        _ status: ArchiveItem.Status,
+        for id: ArchiveItem.ID
+    ) {
+        if let index = items.firstIndex(where: { $0.path == id.path }) {
+            items[index].status = status
+        }
     }
 }
 

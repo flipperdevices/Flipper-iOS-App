@@ -19,19 +19,6 @@ class InfoViewModel: ObservableObject {
     @Published var isError = false
     var error = ""
 
-    var isNFC: Bool {
-        item.fileType == .nfc
-    }
-
-    var isEditableNFC: Bool {
-        guard isNFC, let typeProperty = item.properties.first(
-            where: { $0.key == "Mifare Classic type" }
-        ) else {
-            return false
-        }
-        return typeProperty.value == "1K" || typeProperty.value == "4K"
-    }
-
     @Inject var rpc: RPC
     @Published var appState: AppState = .shared
     var dismissPublisher = PassthroughSubject<Void, Never>()
@@ -40,9 +27,9 @@ class InfoViewModel: ObservableObject {
     @Published var isConnected = false
     @Published var isFlipperAppStarted = false
 
-    init(item: ArchiveItem?) {
-        self.item = item ?? .none
-        self.backup = item ?? .none
+    init(item: ArchiveItem) {
+        self.item = item
+        self.backup = item
         watchIsFavorite()
     }
 
@@ -157,5 +144,20 @@ class InfoViewModel: ObservableObject {
 
     func recordShare() {
         analytics.appOpen(target: .keyShare)
+    }
+}
+
+extension ArchiveItem {
+    var isNFC: Bool {
+        kind == .nfc
+    }
+
+    var isEditableNFC: Bool {
+        guard isNFC, let typeProperty = properties.first(
+            where: { $0.key == "Mifare Classic type" }
+        ) else {
+            return false
+        }
+        return typeProperty.value == "1K" || typeProperty.value == "4K"
     }
 }

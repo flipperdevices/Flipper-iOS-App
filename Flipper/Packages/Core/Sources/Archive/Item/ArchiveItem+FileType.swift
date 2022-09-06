@@ -1,8 +1,8 @@
-import struct Peripheral.Path
+import Peripheral
 import Logging
 
 extension ArchiveItem {
-    public enum FileType: Hashable, Comparable, CaseIterable {
+    public enum Kind: Hashable, Comparable, CaseIterable {
         case subghz
         case rfid
         case nfc
@@ -11,56 +11,54 @@ extension ArchiveItem {
     }
 }
 
-extension ArchiveItem.FileType {
+extension ArchiveItem.Kind {
     init<T: StringProtocol>(filename: T) throws {
-        guard let `extension` = filename.split(separator: ".").last else {
+        guard let filetype = Peripheral.FileType(filename: filename) else {
             throw ArchiveItem.Error.invalidType(String(filename))
         }
-        switch `extension` {
-        case "sub": self = .subghz
-        case "rfid": self = .rfid
-        case "nfc": self = .nfc
-        case "ir": self = .infrared
-        case "ibtn": self = .ibutton
-        default: throw ArchiveItem.Error.invalidType(String(filename))
-        }
+        self = try .init(filetype)
     }
 
-    public var `extension`: String {
-        switch self {
-        case .rfid: return "rfid"
-        case .subghz: return "sub"
-        case .nfc: return "nfc"
-        case .infrared: return "ir"
-        case .ibutton: return "ibtn"
-        }
-    }
-
-    var location: String {
-        switch self {
-        case .rfid: return "lfrfid"
-        case .subghz: return "subghz"
-        case .nfc: return "nfc"
-        case .infrared: return "infrared"
-        case .ibutton: return "ibutton"
-        }
-    }
-}
-
-extension ArchiveItem.FileType {
     init(_ path: Path) throws {
         guard let filename = path.lastComponent else {
             throw ArchiveItem.Error.invalidPath(path)
         }
-        try self.init(filename: filename)
+        self = try .init(filename: filename)
     }
 }
 
-extension ArchiveItem.FileType: CustomStringConvertible {
-    public var description: String { location }
-}
+extension ArchiveItem.Kind {
+    init(_ source: Peripheral.FileType) throws {
+        switch source {
+        case .subghz: self = .subghz
+        case .rfid: self = .rfid
+        case .nfc: self = .nfc
+        case .infrared: self = .infrared
+        case .ibutton: self = .ibutton
+        default: throw ArchiveItem.Error.invalidType("\(source)")
+        }
+    }
 
-extension ArchiveItem.FileType {
+    var `extension`: String {
+        switch self {
+        case .rfid: return FileType.rfid.extension
+        case .subghz: return FileType.subghz.extension
+        case .nfc: return FileType.nfc.extension
+        case .infrared: return FileType.infrared.extension
+        case .ibutton: return FileType.ibutton.extension
+        }
+    }
+
+    public var location: String {
+        switch self {
+        case .rfid: return FileType.rfid.location
+        case .subghz: return FileType.subghz.location
+        case .nfc: return FileType.nfc.location
+        case .infrared: return FileType.infrared.location
+        case .ibutton: return FileType.ibutton.location
+        }
+    }
+
     public var application: String {
         switch self {
         case .rfid: return "125 kHz RFID"

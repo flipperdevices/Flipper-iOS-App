@@ -22,7 +22,7 @@ class ArchiveViewModel: ObservableObject {
         sortedItems.filter { $0.isFavorite }
     }
 
-    var selectedItem: ArchiveItem?
+    var selectedItem: ArchiveItem = .none
     @Published var showInfoView = false
     @Published var showSearchView = false
     @Published var hasImportedItem = false
@@ -34,13 +34,13 @@ class ArchiveViewModel: ObservableObject {
     var archive: Archive { appState.archive }
     var disposeBag: DisposeBag = .init()
 
-    var groups: OrderedDictionary<ArchiveItem.FileType, Int> {
+    var groups: OrderedDictionary<ArchiveItem.Kind, Int> {
         [
-            .subghz: items.filter { $0.fileType == .subghz }.count,
-            .rfid: items.filter { $0.fileType == .rfid }.count,
-            .nfc: items.filter { $0.fileType == .nfc }.count,
-            .infrared: items.filter { $0.fileType == .infrared }.count,
-            .ibutton: items.filter { $0.fileType == .ibutton }.count
+            .subghz: items.filter { $0.kind == .subghz }.count,
+            .rfid: items.filter { $0.kind == .rfid }.count,
+            .nfc: items.filter { $0.kind == .nfc }.count,
+            .infrared: items.filter { $0.kind == .infrared }.count,
+            .ibutton: items.filter { $0.kind == .ibutton }.count
         ]
     }
 

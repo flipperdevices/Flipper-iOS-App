@@ -10,6 +10,10 @@ extension ArchiveItem {
     public var content: String {
         properties.content
     }
+
+    public var shadowContent: String {
+        shadowCopy.content
+    }
 }
 
 extension Array where Element == ArchiveItem.Property {

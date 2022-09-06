@@ -303,11 +303,11 @@ public class AppState {
 
     func reportSynchronizationResult(time: Int) {
         analytics.syncronizationResult(
-            subGHzCount: archive.items.count { $0.fileType == .subghz },
-            rfidCount: archive.items.count { $0.fileType == .rfid },
-            nfcCount: archive.items.count { $0.fileType == .nfc },
-            infraredCount: archive.items.count { $0.fileType == .infrared },
-            iButtonCount: archive.items.count { $0.fileType == .ibutton },
+            subGHzCount: archive.items.count { $0.kind == .subghz },
+            rfidCount: archive.items.count { $0.kind == .rfid },
+            nfcCount: archive.items.count { $0.kind == .nfc },
+            infraredCount: archive.items.count { $0.kind == .infrared },
+            iButtonCount: archive.items.count { $0.kind == .ibutton },
             synchronizationTime: time)
     }
 }

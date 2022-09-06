@@ -8,8 +8,9 @@ public struct ArchiveItem: Equatable, Identifiable {
     }
 
     public var name: Name
-    public let fileType: FileType
+    public let kind: Kind
     public var properties: [Property]
+    public var shadowCopy: [Property]
     public var isFavorite: Bool
     public var status: Status
     public var note: String
@@ -26,17 +27,19 @@ public struct ArchiveItem: Equatable, Identifiable {
 
     public init(
         name: Name,
-        fileType: FileType,
+        kind: Kind,
         properties: [Property],
+        shadowCopy: [Property],
         isFavorite: Bool = false,
         status: Status = .imported,
         note: String = "",
         date: Date = .init()
     ) {
         self.name = name
-        self.fileType = fileType
+        self.kind = kind
         self.isFavorite = isFavorite
         self.properties = properties
+        self.shadowCopy = shadowCopy
         self.status = status
         self.note = note
         self.date = date
@@ -70,19 +73,33 @@ extension ArchiveItem {
         self = try .init(filename: filename, properties: properties)
     }
 
-    init(filename: String, properties: [Property]) throws {
+    init(
+        filename: String,
+        properties: [Property],
+        shadowCopy: [Property] = []
+    ) throws {
         self.init(
             name: try .init(filename: filename),
-            fileType: try .init(filename: filename),
-            properties: properties)
+            kind: try .init(filename: filename),
+            properties: properties,
+            shadowCopy: shadowCopy)
     }
 
     public var path: Path {
-        .init(components: ["any", fileType.location, filename])
+        .init(components: ["any", kind.location, filename])
     }
 
     var filename: String {
-        "\(name).\(fileType.extension)"
+        "\(name).\(kind.extension)"
+    }
+}
+
+extension ArchiveItem {
+    public var shadowPath: Path? {
+        guard kind == .nfc else {
+            return nil
+        }
+        return .init(components: ["any", kind.location, "\(name).shd"])
     }
 }
 
@@ -90,8 +107,9 @@ extension ArchiveItem {
     public func rename(to name: Name) -> ArchiveItem {
         .init(
             name: name,
-            fileType: fileType,
-            properties: properties)
+            kind: kind,
+            properties: properties,
+            shadowCopy: shadowCopy)
     }
 }
 

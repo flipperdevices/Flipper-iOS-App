@@ -66,7 +66,7 @@ class EmulateViewModel: ObservableObject {
     func startApp() async throws {
         while !isFlipperAppCancellation {
             do {
-                try await rpc.appStart(item.fileType.application, args: "RPC")
+                try await rpc.appStart(item.kind.application, args: "RPC")
                 return
             } catch let error as Error {
                 if error == .application(.systemLocked) {
@@ -91,7 +91,7 @@ class EmulateViewModel: ObservableObject {
                 try await waitForAppStartedEvent()
                 try await loadFile(item.path)
                 feedback(style: .soft)
-                if item.fileType == .subghz {
+                if item.kind == .subghz {
                     try await rpc.appButtonPress()
                     emulateStarted = .now
                 }
@@ -140,7 +140,7 @@ class EmulateViewModel: ObservableObject {
             _ = await emulateTask?.result
             // Try to release button
             do {
-                if isEmulating, item.fileType == .subghz {
+                if isEmulating, item.kind == .subghz {
                     try await waitForEmulateMinimumDuration()
                     try await rpc.appButtonRelease()
                 }

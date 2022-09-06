@@ -3,14 +3,14 @@ import SwiftUI
 import OrderedCollections
 
 struct CategoryCard: View {
-    let groups: OrderedDictionary<ArchiveItem.FileType, Int>
+    let groups: OrderedDictionary<ArchiveItem.Kind, Int>
     let deletedCount: Int
 
     var body: some View {
         VStack(spacing: 0) {
             ForEach(groups.keys, id: \.self) { key in
                 CategoryLink(
-                    fileType: key,
+                    kind: key,
                     count: groups[key] ?? 0)
             }
 
@@ -28,18 +28,18 @@ struct CategoryCard: View {
 }
 
 struct CategoryLink: View {
-    let fileType: ArchiveItem.FileType
+    let kind: ArchiveItem.Kind
     let count: Int
 
     var body: some View {
         NavigationLink {
             CategoryView(viewModel: .init(
-                name: fileType.name,
-                fileType: fileType))
+                name: kind.name,
+                kind: kind))
         } label: {
             CategoryRow(
-                image: fileType.icon,
-                name: fileType.name,
+                image: kind.icon,
+                name: kind.name,
                 count: count)
         }
     }

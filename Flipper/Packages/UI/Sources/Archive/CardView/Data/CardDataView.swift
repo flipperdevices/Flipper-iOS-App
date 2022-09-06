@@ -7,7 +7,7 @@ struct CardDataView: View {
     @Binding var focusedField: String
 
     var body: some View {
-        switch item.fileType {
+        switch item.kind {
         case .rfid:
             RFIDCardView(
                 item: _item,

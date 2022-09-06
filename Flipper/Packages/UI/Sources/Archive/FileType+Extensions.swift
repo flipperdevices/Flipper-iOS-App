@@ -1,7 +1,7 @@
 import Core
 import SwiftUI
 
-extension ArchiveItem.FileType {
+extension ArchiveItem.Kind {
     var name: String {
         switch self {
         case .subghz: return "Sub-GHz"

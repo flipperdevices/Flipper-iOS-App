@@ -14,7 +14,7 @@ struct InfoView: View {
                 )
                 .padding(.bottom, 6)
             } else {
-                SheetHeader(viewModel.isNFC ? "Card Info" : "Key Info") {
+                SheetHeader(viewModel.item.isNFC ? "Card Info" : "Key Info") {
                     viewModel.dismiss()
                 }
                 .padding(.bottom, 6)
@@ -34,7 +34,7 @@ struct InfoView: View {
                         .opacity(viewModel.isEditing ? 0 : 1)
 
                     VStack(alignment: .leading, spacing: 20) {
-                        if viewModel.isEditableNFC {
+                        if viewModel.item.isEditableNFC {
                             InfoButton(image: "HexEditor", title: "Edit Dump") {
                                 viewModel.showDumpEditor = true
                             }

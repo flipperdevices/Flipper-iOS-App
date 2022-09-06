@@ -14,7 +14,7 @@ extension CardView {
         var body: some View {
             HStack(alignment: .top, spacing: 0) {
                 FileTypeView(
-                    item.fileType,
+                    item.kind,
                     isDeleted: isDeleted)
                 Spacer()
 
