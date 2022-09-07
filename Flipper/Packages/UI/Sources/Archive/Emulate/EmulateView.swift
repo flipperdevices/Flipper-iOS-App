@@ -9,14 +9,12 @@ struct EmulateView: View {
             switch viewModel.item.kind {
             case .nfc, .rfid, .ibutton:
                 EmulateButton(viewModel: viewModel)
-                    .disabled(!viewModel.isConnected)
-                EmulateDescription("Emulating on Flipper... Tap to stop")
-                    .opacity(viewModel.isEmulating ? 1 : 0)
+                    .disabled(viewModel.status != .connected)
+                EmulateDescription(viewModel: viewModel)
             case .subghz:
                 SendButton(viewModel: viewModel)
-                    .disabled(!viewModel.isConnected)
-                EmulateDescription("Hold to send from Flipper")
-                    .opacity(viewModel.isEmulating ? 0 : 1)
+                    .disabled(viewModel.status != .connected)
+                EmulateDescription(viewModel: viewModel)
             default:
                 EmptyView()
             }
@@ -210,15 +208,55 @@ struct SendButton: View {
 }
 
 struct EmulateDescription: View {
-    let text: String
+    @StateObject var viewModel: EmulateViewModel
 
-    init(_ text: String) {
-        self.text = text
+    var text: String {
+        switch viewModel.status {
+        case .connected:
+            return viewModel.item.kind == .subghz ? sendText : emulateText
+        case .connecting:
+            return "Connecting..."
+        case .synchronizing, .synchronized:
+            return "Not synced. Unable to send from Flipper."
+        default:
+            return "Flipper Not Connected"
+        }
+    }
+
+    var sendText: String {
+        if viewModel.isEmulating {
+            return ""
+        } else {
+            return "Tap to send from Flipper"
+        }
+    }
+
+    var emulateText: String {
+        if viewModel.isEmulating {
+            return "Emulating on Flipper... Tap to stop"
+        } else {
+            return ""
+        }
+    }
+
+    var image: String {
+        "WarningSmall"
+    }
+
+    var isError: Bool {
+        viewModel.status != .connected &&
+        viewModel.status != .connecting
     }
 
     var body: some View {
-        Text(text)
-            .font(.system(size: 11, weight: .medium))
-            .foregroundColor(.black20)
+        HStack(spacing: 4) {
+            if isError {
+                Image(image)
+            }
+
+            Text(text)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.black20)
+        }
     }
 }

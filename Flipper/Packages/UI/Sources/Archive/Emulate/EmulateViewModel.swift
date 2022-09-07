@@ -13,7 +13,7 @@ class EmulateViewModel: ObservableObject {
     @Inject var analytics: Analytics
 
     @Published var item: ArchiveItem
-    @Published var isConnected = false
+    @Published var status: DeviceStatus = .disconnected
     @Published var isEmulating = false
     @Published var isFileLoaded = false
     @Published var isFlipperAppStarted = false
@@ -41,8 +41,8 @@ class EmulateViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 guard let self = self else { return }
-                self.isConnected = ($0 == .connected || $0 == .synchronized)
-                if $0 == .disconnected {
+                self.status = $0
+                if self.status == .disconnected {
                     self.resetEmulate()
                 }
             }
