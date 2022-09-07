@@ -2,62 +2,73 @@ import SwiftUI
 
 struct InfoView: View {
     @StateObject var viewModel: InfoViewModel
+    @StateObject var alertController: AlertController = .init()
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if viewModel.isEditing {
-                SheetEditHeader(
-                    "Editing",
-                    onSave: viewModel.saveChanges,
-                    onCancel: viewModel.undoChanges
-                )
-                .padding(.bottom, 6)
-            } else {
-                SheetHeader(viewModel.item.isNFC ? "Card Info" : "Key Info") {
-                    viewModel.dismiss()
-                }
-                .padding(.bottom, 6)
-            }
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    CardView(
-                        item: $viewModel.item,
-                        isEditing: $viewModel.isEditing,
-                        kind: .existing
+        ZStack {
+            VStack(alignment: .leading, spacing: 0) {
+                if viewModel.isEditing {
+                    SheetEditHeader(
+                        "Editing",
+                        onSave: viewModel.saveChanges,
+                        onCancel: viewModel.undoChanges
                     )
-                    .padding(.top, 14)
-                    .padding(.horizontal, 24)
+                    .padding(.bottom, 6)
+                } else {
+                    SheetHeader(viewModel.item.isNFC ? "Card Info" : "Key Info") {
+                        viewModel.dismiss()
+                    }
+                    .padding(.bottom, 6)
+                }
 
-                    EmulateView(viewModel: .init(item: viewModel.item))
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        CardView(
+                            item: $viewModel.item,
+                            isEditing: $viewModel.isEditing,
+                            kind: .existing
+                        )
+                        .padding(.top, 14)
+                        .padding(.horizontal, 24)
+
+                        EmulateView(viewModel: .init(item: viewModel.item))
+                            .opacity(viewModel.isEditing ? 0 : 1)
+                            .environmentObject(alertController)
+
+                        VStack(alignment: .leading, spacing: 20) {
+                            if viewModel.item.isEditableNFC {
+                                InfoButton(
+                                    image: "HexEditor",
+                                    title: "Edit Dump"
+                                ) {
+                                    viewModel.showDumpEditor = true
+                                }
+                                .foregroundColor(.primary)
+                            }
+                            InfoButton(
+                                image: "Share",
+                                title: "Share",
+                                action: { viewModel.share() },
+                                longPressAction: { viewModel.shareAsFile() }
+                            )
+                            .foregroundColor(.primary)
+                            InfoButton(image: "Delete", title: "Delete") {
+                                viewModel.delete()
+                            }
+                            .foregroundColor(.sRed)
+                        }
+                        .padding(.top, 24)
+                        .padding(.horizontal, 24)
                         .opacity(viewModel.isEditing ? 0 : 1)
 
-                    VStack(alignment: .leading, spacing: 20) {
-                        if viewModel.item.isEditableNFC {
-                            InfoButton(image: "HexEditor", title: "Edit Dump") {
-                                viewModel.showDumpEditor = true
-                            }
-                            .foregroundColor(.primary)
-                        }
-                        InfoButton(
-                            image: "Share",
-                            title: "Share",
-                            action: { viewModel.share() },
-                            longPressAction: { viewModel.shareAsFile() }
-                        )
-                        .foregroundColor(.primary)
-                        InfoButton(image: "Delete", title: "Delete") {
-                            viewModel.delete()
-                        }
-                        .foregroundColor(.sRed)
+                        Spacer()
                     }
-                    .padding(.top, 24)
-                    .padding(.horizontal, 24)
-                    .opacity(viewModel.isEditing ? 0 : 1)
-
-                    Spacer()
                 }
+            }
+
+            if alertController.isPresented {
+                alertController.alert
             }
         }
         .fullScreenCover(isPresented: $viewModel.showDumpEditor) {

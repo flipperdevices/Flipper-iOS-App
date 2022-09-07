@@ -25,7 +25,6 @@ class InfoViewModel: ObservableObject {
     var disposeBag = DisposeBag()
 
     @Published var isConnected = false
-    @Published var isFlipperAppStarted = false
 
     init(item: ArchiveItem) {
         self.item = item

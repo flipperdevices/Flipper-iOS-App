@@ -3,7 +3,7 @@ import SwiftUI
 public struct RootView: View {
     @Environment(\.scenePhase) var scenePhase
     @ObservedObject var viewModel: RootViewModel
-    @StateObject var alertController: AlertController = .shared
+    @StateObject var alertController: AlertController = .init()
     @StateObject var hexKeyboardController: HexKeyboardController = .init()
 
     public init(viewModel: RootViewModel) {
@@ -32,6 +32,7 @@ public struct RootView: View {
                 alertController.alert
             }
         }
+        .environmentObject(alertController)
         .environmentObject(hexKeyboardController)
         .onOpenURL { url in
             viewModel.onOpenURL(url)

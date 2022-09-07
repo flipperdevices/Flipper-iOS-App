@@ -1,8 +1,6 @@
 import SwiftUI
 
 class AlertController: ObservableObject {
-    static let shared: AlertController = .init()
-
     @Published var isPresented = false
     var alert = AnyView(EmptyView())
 
