@@ -8,18 +8,28 @@ struct EmulateView: View {
         VStack(spacing: 4) {
             switch viewModel.item.kind {
             case .nfc, .rfid, .ibutton:
-                EmulateButton(viewModel: viewModel)
-                    .disabled(viewModel.status != .connected)
+                ZStack {
+                    ConnectingButton()
+                        .opacity(viewModel.status == .connecting ? 1 : 0)
+                    EmulateButton(viewModel: viewModel)
+                        .opacity(viewModel.status == .connecting ? 0 : 1)
+                        .disabled(viewModel.status != .connected)
+                }
                 EmulateDescription(viewModel: viewModel)
             case .subghz:
-                SendButton(viewModel: viewModel)
-                    .disabled(viewModel.status != .connected)
+                ZStack {
+                    ConnectingButton()
+                        .opacity(viewModel.status == .connecting ? 1 : 0)
+                    SendButton(viewModel: viewModel)
+                        .opacity(viewModel.status == .connecting ? 0 : 1)
+                        .disabled(viewModel.status != .connected)
+                }
                 EmulateDescription(viewModel: viewModel)
             default:
                 EmptyView()
             }
         }
-        .padding(.horizontal, viewModel.isEmulating ? 18 : 24)
+        .padding(.horizontal, 24)
         .padding(.top, 18)
         .customAlert(isPresented: $viewModel.isFlipperAppSystemLocked) {
             FlipperBusyAlert(isPresented: $viewModel.isFlipperAppSystemLocked)
@@ -30,7 +40,16 @@ struct EmulateView: View {
     }
 }
 
-struct EmulateButton: View {
+private struct ConnectingButton: View {
+    var body: some View {
+        AnimatedPlaceholder()
+            .frame(height: 48)
+            .frame(maxWidth: .infinity)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+private struct EmulateButton: View {
     @ObservedObject var viewModel: EmulateViewModel
     @Environment(\.isEnabled) var isEnabled
 
@@ -86,7 +105,6 @@ struct EmulateButton: View {
         }
         .frame(height: 48)
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, viewModel.isEmulating ? 0 : 6)
         .foregroundColor(.white)
         .background(buttonColor)
         .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -113,7 +131,7 @@ struct EmulateButton: View {
     }
 }
 
-struct SendButton: View {
+private struct SendButton: View {
     @ObservedObject var viewModel: EmulateViewModel
     @Environment(\.isEnabled) var isEnabled
 
