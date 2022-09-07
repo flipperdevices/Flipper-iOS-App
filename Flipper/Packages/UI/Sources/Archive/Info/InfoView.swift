@@ -10,13 +10,17 @@ struct InfoView: View {
             VStack(alignment: .leading, spacing: 0) {
                 if viewModel.isEditing {
                     SheetEditHeader(
-                        "Editing",
+                        title: "Editing",
+                        description: viewModel.item.name.value,
                         onSave: viewModel.saveChanges,
                         onCancel: viewModel.undoChanges
                     )
                     .padding(.bottom, 6)
                 } else {
-                    SheetHeader(viewModel.item.isNFC ? "Card Info" : "Key Info") {
+                    SheetHeader(
+                        title: viewModel.item.isNFC ? "Card Info" : "Key Info",
+                        description: viewModel.item.name.value
+                    ) {
                         viewModel.dismiss()
                     }
                     .padding(.bottom, 6)

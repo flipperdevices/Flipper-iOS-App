@@ -2,10 +2,16 @@ import SwiftUI
 
 struct SheetHeader: View {
     let title: String
+    let description: String?
     let onCancel: () -> Void
 
-    init(_ title: String, onCancel: @escaping () -> Void) {
+    init(
+        title: String,
+        description: String? = nil,
+        onCancel: @escaping () -> Void
+    ) {
         self.title = title
+        self.description = description
         self.onCancel = onCancel
     }
 
@@ -15,8 +21,16 @@ struct SheetHeader: View {
                 .font(.system(size: 20, weight: .medium))
                 .opacity(0)
             Spacer()
-            Text(title)
-                .font(.system(size: 18, weight: .bold))
+
+            VStack(spacing: 0) {
+                Text(title)
+                    .font(.system(size: 18, weight: .bold))
+                if let description = description {
+                    Text(description)
+                        .font(.system(size: 12, weight: .medium))
+                }
+            }
+
             Spacer()
             Button(action: onCancel) {
                 Image(systemName: "xmark")

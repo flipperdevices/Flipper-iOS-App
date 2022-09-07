@@ -8,12 +8,12 @@ struct ImportView: View {
         VStack(spacing: 0) {
             if viewModel.isEditing {
                 SheetEditHeader(
-                    "Edit Key",
+                    title: "Edit Key",
                     onSave: viewModel.saveChanges,
                     onCancel: viewModel.undoChanges
                 )
             } else {
-                SheetHeader("Add Key") {
+                SheetHeader(title: "Add Key") {
                     viewModel.dismiss()
                 }
             }

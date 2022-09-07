@@ -6,7 +6,7 @@ struct DeletedInfoView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            SheetHeader("Key Info") {
+            SheetHeader(title: "Key Info") {
                 viewModel.dismiss()
             }
 
