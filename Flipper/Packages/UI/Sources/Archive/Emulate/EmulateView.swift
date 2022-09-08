@@ -248,7 +248,7 @@ struct EmulateDescription: View {
         if viewModel.isEmulating {
             return ""
         } else {
-            return "Tap to send from Flipper"
+            return "Hold to send from Flipper"
         }
     }
 
