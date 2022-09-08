@@ -56,7 +56,14 @@ extension Archive {
         case .exported(let path):
             setStatus(.synchronized, for: .init(path: path))
         case .deleted(let path):
-            try await delete(.init(path: path))
+            if path.isShadowFile {
+                try await mobileArchive.delete(path)
+                if let path = originPath(forShadow: path) {
+                    try await reload(.init(path: path))
+                }
+            } else {
+                try await delete(.init(path: path))
+            }
         }
     }
 
