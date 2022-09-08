@@ -20,6 +20,17 @@ class EmulateViewModel: ObservableObject {
     @Published var isFlipperAppCancellation = false
     @Published var isFlipperAppSystemLocked = false
 
+    var showProgressButton: Bool {
+        status == .connecting ||
+        status == .synchronizing ||
+        status == .synchronized
+    }
+
+    var canEmulate: Bool {
+        status == .connected &&
+        item.status == .synchronized
+    }
+
     var forceStop = false
     var emulateStarted: Date = .now
     private var emulateTask: Task<Void, Swift.Error>?

@@ -10,19 +10,19 @@ struct EmulateView: View {
             case .nfc, .rfid, .ibutton:
                 ZStack {
                     ConnectingButton()
-                        .opacity(viewModel.status == .connecting ? 1 : 0)
+                        .opacity(viewModel.showProgressButton ? 1 : 0)
                     EmulateButton(viewModel: viewModel)
-                        .opacity(viewModel.status == .connecting ? 0 : 1)
-                        .disabled(viewModel.status != .connected)
+                        .opacity(viewModel.showProgressButton ? 0 : 1)
+                        .disabled(!viewModel.canEmulate)
                 }
                 EmulateDescription(viewModel: viewModel)
             case .subghz:
                 ZStack {
                     ConnectingButton()
-                        .opacity(viewModel.status == .connecting ? 1 : 0)
+                        .opacity(viewModel.showProgressButton ? 1 : 0)
                     SendButton(viewModel: viewModel)
-                        .opacity(viewModel.status == .connecting ? 0 : 1)
-                        .disabled(viewModel.status != .connected)
+                        .opacity(viewModel.showProgressButton ? 0 : 1)
+                        .disabled(!viewModel.canEmulate)
                 }
                 EmulateDescription(viewModel: viewModel)
             default:
@@ -231,11 +231,14 @@ struct EmulateDescription: View {
     var text: String {
         switch viewModel.status {
         case .connected:
+            guard viewModel.item.status == .synchronized else {
+                return "Not synced. Unable to send from Flipper."
+            }
             return viewModel.item.kind == .subghz ? sendText : emulateText
         case .connecting:
             return "Connecting..."
         case .synchronizing, .synchronized:
-            return "Not synced. Unable to send from Flipper."
+            return "Syncing..."
         default:
             return "Flipper Not Connected"
         }
@@ -262,8 +265,11 @@ struct EmulateDescription: View {
     }
 
     var isError: Bool {
-        viewModel.status != .connected &&
-        viewModel.status != .connecting
+        (viewModel.item.status != .synchronized) ||
+            (viewModel.status != .connected &&
+            viewModel.status != .connecting &&
+            viewModel.status != .synchronized &&
+            viewModel.status != .synchronizing)
     }
 
     var body: some View {
