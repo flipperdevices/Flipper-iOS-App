@@ -12,3 +12,9 @@ public struct ISOCode: Equatable, Hashable {
         self.value = string.uppercased()
     }
 }
+
+extension ISOCode: CustomStringConvertible {
+    public var description: String {
+        return value
+    }
+}

@@ -69,7 +69,8 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     var hasManifest: LazyResult<Bool, Swift.Error> = .idle
-    var hasRegionData: LazyResult<Bool, Swift.Error> = .idle
+    var currentRegion: LazyResult<ISOCode, Swift.Error> = .idle
+    var provisionedRegion: LazyResult<ISOCode, Swift.Error> = .idle
 
     var hasSDCard: LazyResult<Bool, Swift.Error> {
         guard let storage = flipper?.storage else { return .working }
@@ -111,6 +112,7 @@ class DeviceUpdateCardModel: ObservableObject {
         if oldValue?.state != .connected {
             verifyManifest()
             verifyRegionData()
+            detectCurrentRegion()
         }
 
         verifyUpdateResult()
@@ -118,7 +120,8 @@ class DeviceUpdateCardModel: ObservableObject {
 
     func resetState() {
         hasManifest = .idle
-        hasRegionData = .idle
+        currentRegion = .idle
+        provisionedRegion = .idle
     }
 
     func verifyManifest() {
@@ -129,22 +132,37 @@ class DeviceUpdateCardModel: ObservableObject {
                 _ = try await rpc.getSize(at: "/ext/Manifest")
                 hasManifest = .success(true)
             } catch {
-                logger.error("manifest doesn't exist: \(error)")
+                logger.error("verify manifest: \(error)")
                 hasManifest = .success(false)
             }
         }
     }
 
     func verifyRegionData() {
-        guard case .idle = hasRegionData else { return }
-        hasRegionData = .working
+        guard case .idle = provisionedRegion else { return }
+        provisionedRegion = .working
         Task {
             do {
-                _ = try await rpc.getSize(at: Provisioning.location)
-                hasRegionData = .success(true)
+                let bytes = try await rpc.readFile(at: Provisioning.location)
+                let region = try Provisioning.Region(decoding: bytes)
+                provisionedRegion = .success(region.code)
             } catch {
-                logger.error("region data doesn't exist: \(error)")
-                hasRegionData = .success(false)
+                logger.error("verify region: \(error)")
+                provisionedRegion = .failure(error)
+            }
+        }
+    }
+
+    func detectCurrentRegion() {
+        guard case .idle = currentRegion else { return }
+        currentRegion = .working
+        Task {
+            do {
+                let region = try await Provisioning().provideRegion().code
+                currentRegion = .success(region)
+            } catch {
+                logger.error("check region change: \(error)")
+                currentRegion = .failure(error)
             }
         }
     }
@@ -306,7 +324,7 @@ class DeviceUpdateCardModel: ObservableObject {
         guard checkInsalledFirmware() else { return }
 
         guard validateManifest() else { return }
-        guard validateRegionData() else { return }
+        guard validateRegion() else { return }
 
         state = .noUpdates
     }
@@ -354,15 +372,37 @@ class DeviceUpdateCardModel: ObservableObject {
         return true
     }
 
-    func validateRegionData() -> Bool {
-        guard case .success(let hasRegionData) = hasRegionData else {
+    func validateRegion() -> Bool {
+        let provisionedRegionCode: ISOCode
+        let currentRegionCode: ISOCode
+
+        switch provisionedRegion {
+        case .success(let region):
+            provisionedRegionCode = region
+        case .failure:
+            state = .versionUpdate
+            return false
+        default:
             state = .connecting
             return false
         }
-        guard hasRegionData else {
+
+        switch currentRegion {
+        case .success(let region):
+            currentRegionCode = region
+        case .failure:
+            state = .versionUpdate
+            return false
+        default:
+            state = .connecting
+            return false
+        }
+
+        guard currentRegionCode == provisionedRegionCode else {
             state = .versionUpdate
             return false
         }
+
         return true
     }
 

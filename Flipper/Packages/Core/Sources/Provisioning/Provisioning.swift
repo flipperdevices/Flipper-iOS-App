@@ -13,7 +13,7 @@ public class Provisioning {
     private let regionsBundleAPI: RegionsBundleAPI
 
     public struct Region: Equatable {
-        let code: ISOCode
+        public let code: ISOCode
         let bands: [Band]
     }
 
