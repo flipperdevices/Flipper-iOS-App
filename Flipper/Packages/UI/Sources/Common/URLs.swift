@@ -47,4 +47,8 @@ extension URL {
     static var helpToReboot: URL {
         .init(string: "https://flipp.dev/reboot")!
     }
+
+    static var helpToFactoryReset: URL {
+        .init(string: "https://flipp.dev/storage-repair")!
+    }
 }

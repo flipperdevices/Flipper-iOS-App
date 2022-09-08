@@ -21,6 +21,11 @@ struct DeviceUpdateView: View {
             case .black: return "FlipperDeadBlack"
             default: return "FlipperDeadWhite"
             }
+        case .storageError:
+            switch viewModel.deviceColor {
+            case .black: return "FlipperFlashIssueBlack"
+            default: return "FlipperFlashIssueWhite"
+            }
         default:
             switch viewModel.deviceColor {
             case .black: return "FlipperUpdatingBlack"
@@ -43,6 +48,7 @@ struct DeviceUpdateView: View {
             switch viewModel.state {
             case .noInternet: NoInternetView(viewModel: viewModel)
             case .noDevice: NoDeviceView(viewModel: viewModel)
+            case .storageError: StorageErrorView(viewModel: viewModel)
             case .outdatedAppVersion: OutdatedAppView(viewModel: viewModel)
             default: UpdateProgressView(viewModel: viewModel)
             }

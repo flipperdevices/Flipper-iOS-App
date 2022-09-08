@@ -34,6 +34,7 @@ class DeviceUpdateViewModel: ObservableObject {
         case noInternet
         case noDevice
         case noCard
+        case storageError
         case outdatedAppVersion
     }
 
@@ -121,6 +122,11 @@ class DeviceUpdateViewModel: ObservableObject {
                 logger.error("provisioning: \(error)")
                 onFailure(.failedPrepearing)
                 self.state = .outdatedAppVersion
+            } catch let error as Peripheral.Error
+                where error == .storage(.internal) {
+                logger.error("update: \(error)")
+                onFailure(.failedUploading)
+                self.state = .storageError
             } catch {
                 logger.error("update: \(error)")
                 onFailure(.failedUploading)
@@ -205,8 +211,10 @@ class DeviceUpdateViewModel: ObservableObject {
     }
 
     func readMore() {
-        if let url = URL(string: "https://docs.flipperzero.one/basics/reboot") {
-            UIApplication.shared.open(url)
-        }
+        UIApplication.shared.open(.helpToReboot)
+    }
+
+    func howToFactoryReset() {
+        UIApplication.shared.open(.helpToFactoryReset)
     }
 }
