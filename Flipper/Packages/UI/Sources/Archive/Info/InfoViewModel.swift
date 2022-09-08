@@ -21,6 +21,7 @@ class InfoViewModel: ObservableObject {
 
     @Inject var rpc: RPC
     @Published var appState: AppState = .shared
+    var archive: Archive { appState.archive }
     var dismissPublisher = PassthroughSubject<Void, Never>()
     var disposeBag = DisposeBag()
 
@@ -43,9 +44,21 @@ class InfoViewModel: ObservableObject {
         appState.$status
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.isConnected = ($0 == .connected || $0 == .synchronized)
+                guard let self = self else { return }
+                self.isConnected = ($0 == .connected || $0 == .synchronized)
+                self.updateItemStatus(deviceStatus: $0)
             }
             .store(in: &disposeBag)
+    }
+
+    func updateItemStatus(deviceStatus: DeviceStatus) {
+        if deviceStatus == .synchronizing {
+            self.item.status = .synchronizing
+        } else {
+            withAnimation {
+                self.item.status = self.archive.status(for: self.item)
+            }
+        }
     }
 
     func toggleFavorite() {
@@ -106,11 +119,7 @@ class InfoViewModel: ObservableObject {
                 withAnimation {
                     isEditing = false
                 }
-                item.status = .synchronizing
                 try await appState.synchronize()
-                withAnimation {
-                    item.status = appState.archive.status(for: item)
-                }
             } catch {
                 logger.error("saving changes: \(error)")
                 item.status = .error

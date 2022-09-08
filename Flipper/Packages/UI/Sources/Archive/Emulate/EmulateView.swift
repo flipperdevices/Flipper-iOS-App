@@ -230,14 +230,14 @@ struct EmulateDescription: View {
 
     var text: String {
         switch viewModel.status {
-        case .connected:
+        case .connected, .synchronized:
             guard viewModel.item.status == .synchronized else {
                 return "Not synced. Unable to send from Flipper."
             }
             return viewModel.item.kind == .subghz ? sendText : emulateText
         case .connecting:
             return "Connecting..."
-        case .synchronizing, .synchronized:
+        case .synchronizing:
             return "Syncing..."
         default:
             return "Flipper Not Connected"

@@ -22,13 +22,12 @@ class EmulateViewModel: ObservableObject {
 
     var showProgressButton: Bool {
         status == .connecting ||
-        status == .synchronizing ||
-        status == .synchronized
+        status == .synchronizing
     }
 
     var canEmulate: Bool {
-        status == .connected &&
-        item.status == .synchronized
+        (status == .connected || status == .synchronized)
+            && item.status == .synchronized
     }
 
     var forceStop = false
