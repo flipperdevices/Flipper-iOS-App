@@ -209,6 +209,12 @@ extension Archive {
         return favorites.contains(path)
     }
 
+    private func upsertFavorite(for path: Path) async throws {
+        var favorites = try await mobileFavorites.read()
+        favorites.upsert(path)
+        try await mobileFavorites.write(favorites)
+    }
+
     private func removeFavorite(for path: Path) async throws {
         var favorites = try await mobileFavorites.read()
         favorites.delete(path)
@@ -229,6 +235,10 @@ extension Archive {
             try await mobileArchive.delete(item.path)
             if let shadowPath = item.shadowPath {
                 try? await mobileArchive.delete(shadowPath)
+            }
+            if item.isFavorite {
+                try await removeFavorite(for: item.path)
+                try await upsertFavorite(for: newItem.path)
             }
             try await mobileNotes.delete(item.path)
             try await mobileArchive.upsert(newItem.content, at: newItem.path)

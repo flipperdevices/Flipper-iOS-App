@@ -109,7 +109,8 @@ extension ArchiveItem {
             name: name,
             kind: kind,
             properties: properties,
-            shadowCopy: shadowCopy)
+            shadowCopy: shadowCopy,
+            isFavorite: isFavorite)
     }
 }
 
