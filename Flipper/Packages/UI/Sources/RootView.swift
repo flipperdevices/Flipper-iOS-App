@@ -32,6 +32,9 @@ public struct RootView: View {
                 alertController.alert
             }
         }
+        .customAlert(isPresented: $viewModel.isPairingIssue) {
+            PairingIssueAlert(isPresented: $viewModel.isPairingIssue)
+        }
         .environmentObject(alertController)
         .environmentObject(hexKeyboardController)
         .onOpenURL { url in
@@ -39,9 +42,6 @@ public struct RootView: View {
         }
         .onContinueUserActivity("PlayAlertIntent") { _ in
             viewModel.playAlert()
-        }
-        .customAlert(isPresented: $viewModel.isPairingIssue) {
-            PairingIssueAlert(isPresented: $viewModel.isPairingIssue)
         }
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
