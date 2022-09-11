@@ -48,7 +48,7 @@ struct FileManagerView: View {
         .fileImporter(
             isPresented: $viewModel.isFilePickerDisplayed,
             allowedContentTypes: viewModel.allowedContentTypes
-        ) { result in viewModel.importFile(url: try? result.get())}
+        ) { result in viewModel.importFile(url: try? result.get()) }
         .onAppear {
             viewModel.update()
         }

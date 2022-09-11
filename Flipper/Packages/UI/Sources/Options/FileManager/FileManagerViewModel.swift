@@ -25,7 +25,7 @@ class FileManagerViewModel: ObservableObject {
     }
     @Published var text: String = ""
     @Published var name: String = ""
-    @Published var isFilePickerDisplayed: Bool = false
+    @Published var isFilePickerDisplayed = false
 
     var supportedExtensions: [String] = [
         ".ibtn", ".nfc", ".shd", ".sub", ".rfid", ".ir", ".fmf", ".txt"
@@ -139,10 +139,10 @@ class FileManagerViewModel: ObservableObject {
                 let path = path.appending(name)
                 var bytes = [UInt8](repeating: 0, count: data.count)
                 data.copyBytes(to: &bytes, count: data.count)
-            
+
                 try await rpc.writeFile(at: path, bytes: bytes)
                 await listDirectory()
-            
+
                 do {
                     url.stopAccessingSecurityScopedResource()
                 }
