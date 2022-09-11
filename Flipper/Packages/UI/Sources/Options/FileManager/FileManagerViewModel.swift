@@ -4,6 +4,8 @@ import Analytics
 import Peripheral
 import Combine
 import Logging
+import UIKit
+import UniformTypeIdentifiers
 
 import struct Foundation.Date
 
@@ -23,10 +25,14 @@ class FileManagerViewModel: ObservableObject {
     }
     @Published var text: String = ""
     @Published var name: String = ""
+    @Published var isFilePickerDisplayed: Bool = false
 
     var supportedExtensions: [String] = [
         ".ibtn", ".nfc", ".shd", ".sub", ".rfid", ".ir", ".fmf", ".txt"
     ]
+    var allowedContentTypes: [UTType] {
+        supportedExtensions.compactMap { UTType(filenameExtension: String($0.dropFirst(1)), conformingTo: .text) }
+    }
 
     enum Content {
         case list([Element])
@@ -109,6 +115,39 @@ class FileManagerViewModel: ObservableObject {
                 self.content = .file(text)
             } catch {
                 logger.error("save file: \(error)")
+                self.content = .error(String(describing: error))
+            }
+        }
+    }
+
+    // MARK: Import
+
+    func importFile(url: URL?) {
+        Task {
+            do {
+                guard let url = url else {
+                    fatalError("url is nil")
+                }
+                guard let name = url.pathComponents.last else {
+                    fatalError("couldn't extract file name from \(url)")
+                }
+                guard url.startAccessingSecurityScopedResource() else {
+                    fatalError("unable to access scoped resouce via \(url)")
+                }
+
+                let data = try Data(contentsOf: url)
+                let path = path.appending(name)
+                var bytes = [UInt8](repeating: 0, count: data.count)
+                data.copyBytes(to: &bytes, count: data.count)
+            
+                try await rpc.writeFile(at: path, bytes: bytes)
+                await listDirectory()
+            
+                do {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            } catch {
+                logger.error("import file: \(error)")
                 self.content = .error(String(describing: error))
             }
         }

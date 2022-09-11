@@ -33,12 +33,22 @@ struct FileManagerView: View {
                     } label: {
                         Text("Folder")
                     }
+
+                    Button {
+                        viewModel.isFilePickerDisplayed = true
+                    } label: {
+                        Text("Import")
+                    }
                 } label: {
                     Image(systemName: "plus")
                         .foregroundColor(.primary)
                 }
             }
         }
+        .fileImporter(
+            isPresented: $viewModel.isFilePickerDisplayed,
+            allowedContentTypes: viewModel.allowedContentTypes
+        ) { result in viewModel.importFile(url: try? result.get())}
         .onAppear {
             viewModel.update()
         }
