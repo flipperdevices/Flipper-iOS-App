@@ -36,7 +36,19 @@ struct FileManagerView: View {
                     }
 
                     Button {
-                        viewModel.isFilePickerDisplayed = true
+                        /*
+                            File picker won't be shown if hidden by a swipe down
+                            instead of the Cancel button, so we use this workaround.
+                            Apple knows about this but so hopefully it'll be fixed soon.
+                         */
+                        if viewModel.isFilePickerDisplayed {
+                            viewModel.isFilePickerDisplayed = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                viewModel.isFilePickerDisplayed = true
+                            }
+                        } else {
+                            viewModel.isFilePickerDisplayed = true
+                        }
                     } label: {
                         Text("Import")
                     }
