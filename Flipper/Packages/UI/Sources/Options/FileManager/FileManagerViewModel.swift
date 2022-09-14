@@ -4,7 +4,6 @@ import Analytics
 import Peripheral
 import Combine
 import Logging
-import UIKit
 import UniformTypeIdentifiers
 
 import struct Foundation.Date
@@ -30,9 +29,6 @@ class FileManagerViewModel: ObservableObject {
     var supportedExtensions: [String] = [
         ".ibtn", ".nfc", ".shd", ".sub", ".rfid", ".ir", ".fmf", ".txt"
     ]
-    var allowedContentTypes: [UTType] {
-        supportedExtensions.compactMap { UTType(filenameExtension: String($0.dropFirst(1)), conformingTo: .text) }
-    }
 
     enum Content {
         case list([Element])

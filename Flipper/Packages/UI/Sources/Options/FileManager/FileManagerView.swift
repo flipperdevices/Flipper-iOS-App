@@ -1,6 +1,7 @@
 import Core
 import SwiftUI
 import Peripheral
+import UniformTypeIdentifiers
 
 struct FileManagerView: View {
     @StateObject var viewModel: FileManagerViewModel
@@ -47,7 +48,7 @@ struct FileManagerView: View {
         }
         .fileImporter(
             isPresented: $viewModel.isFilePickerDisplayed,
-            allowedContentTypes: viewModel.allowedContentTypes
+            allowedContentTypes: [UTType.item]
         ) { result in viewModel.importFile(url: try? result.get()) }
         .onAppear {
             viewModel.update()
