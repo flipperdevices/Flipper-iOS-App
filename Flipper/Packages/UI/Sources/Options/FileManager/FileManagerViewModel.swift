@@ -58,8 +58,13 @@ class FileManagerViewModel: ObservableObject {
         recordFileManager()
     }
 
+    func showProgressView() {
+        self.content = nil
+    }
+
     func update() {
         Task {
+            showProgressView()
             switch self.mode {
             case .list: await listDirectory()
             case .edit: await readFile()
@@ -70,8 +75,7 @@ class FileManagerViewModel: ObservableObject {
 
     // MARK: Directory
 
-    func listDirectory() async {
-        content = nil
+    private func listDirectory() async {
         do {
             let items = try await rpc.listDirectory(at: path)
             self.content = .list(items)
@@ -89,7 +93,7 @@ class FileManagerViewModel: ObservableObject {
         }
     }
 
-    func readFile() async {
+    private func readFile() async {
         do {
             let bytes = try await rpc.readFile(at: path)
             self.content = .file(.init(decoding: bytes, as: UTF8.self))
@@ -101,9 +105,8 @@ class FileManagerViewModel: ObservableObject {
 
     func save() {
         Task {
-            let text = text
-            self.content = nil
             do {
+                showProgressView()
                 try await rpc.writeFile(at: path, string: text)
                 self.content = .file(text)
             } catch {
@@ -147,6 +150,7 @@ class FileManagerViewModel: ObservableObject {
                     url.stopAccessingSecurityScopedResource()
                 }
 
+                showProgressView()
                 let path = path.appending(name)
                 let bytes = try [UInt8](Data(contentsOf: url))
                 try await rpc.writeFile(at: path, bytes: bytes)
@@ -166,6 +170,7 @@ class FileManagerViewModel: ObservableObject {
 
     func cancel() {
         Task {
+            showProgressView()
             await listDirectory()
         }
     }
@@ -177,12 +182,11 @@ class FileManagerViewModel: ObservableObject {
                 return
             }
 
-            content = nil
-
             let path = path.appending(name)
             name = ""
 
             do {
+                showProgressView()
                 try await rpc.createFile(at: path, isDirectory: isDirectory)
                 await listDirectory()
             } catch {
@@ -222,6 +226,7 @@ class FileManagerViewModel: ObservableObject {
                 return
             }
             do {
+                showProgressView()
                 try await rpc.deleteFile(at: path, force: true)
                 await listDirectory()
             } catch {
