@@ -1,11 +1,9 @@
 import Core
 import Inject
+import Logging
 import Analytics
 import Peripheral
-import Combine
-import Logging
-
-import struct Foundation.Date
+import Foundation
 
 @MainActor
 class FileManagerViewModel: ObservableObject {
@@ -23,6 +21,7 @@ class FileManagerViewModel: ObservableObject {
     }
     @Published var text: String = ""
     @Published var name: String = ""
+    @Published var isFileImporterPresented = false
 
     var supportedExtensions: [String] = [
         ".ibtn", ".nfc", ".shd", ".sub", ".rfid", ".ir", ".fmf", ".txt"
@@ -59,8 +58,13 @@ class FileManagerViewModel: ObservableObject {
         recordFileManager()
     }
 
+    func showProgressView() {
+        self.content = nil
+    }
+
     func update() {
         Task {
+            showProgressView()
             switch self.mode {
             case .list: await listDirectory()
             case .edit: await readFile()
@@ -71,8 +75,7 @@ class FileManagerViewModel: ObservableObject {
 
     // MARK: Directory
 
-    func listDirectory() async {
-        content = nil
+    private func listDirectory() async {
         do {
             let items = try await rpc.listDirectory(at: path)
             self.content = .list(items)
@@ -90,7 +93,7 @@ class FileManagerViewModel: ObservableObject {
         }
     }
 
-    func readFile() async {
+    private func readFile() async {
         do {
             let bytes = try await rpc.readFile(at: path)
             self.content = .file(.init(decoding: bytes, as: UTF8.self))
@@ -102,13 +105,58 @@ class FileManagerViewModel: ObservableObject {
 
     func save() {
         Task {
-            let text = text
-            self.content = nil
             do {
+                showProgressView()
                 try await rpc.writeFile(at: path, string: text)
                 self.content = .file(text)
             } catch {
                 logger.error("save file: \(error)")
+                self.content = .error(String(describing: error))
+            }
+        }
+    }
+
+    // MARK: Import
+
+    func showFileImporter() {
+        /*
+            File picker won't be shown if hidden by a swipe down
+            instead of the Cancel button, so we use this workaround.
+            Apple knows about this but so hopefully it'll be fixed soon.
+            UPD: Fixed in iOS16
+        */
+        if isFileImporterPresented {
+            isFileImporterPresented = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.isFileImporterPresented = true
+            }
+        } else {
+            isFileImporterPresented = true
+        }
+    }
+
+    func importFile(url: URL) {
+        Task {
+            do {
+                guard let name = url.pathComponents.last else {
+                    logger.error("import file: invalid url \(url)")
+                    return
+                }
+                guard url.startAccessingSecurityScopedResource() else {
+                    logger.error("import file: unable to access \(url)")
+                    return
+                }
+                defer {
+                    url.stopAccessingSecurityScopedResource()
+                }
+
+                showProgressView()
+                let path = path.appending(name)
+                let bytes = try [UInt8](Data(contentsOf: url))
+                try await rpc.writeFile(at: path, bytes: bytes)
+                await listDirectory()
+            } catch {
+                logger.error("import file: \(error)")
                 self.content = .error(String(describing: error))
             }
         }
@@ -122,6 +170,7 @@ class FileManagerViewModel: ObservableObject {
 
     func cancel() {
         Task {
+            showProgressView()
             await listDirectory()
         }
     }
@@ -133,12 +182,11 @@ class FileManagerViewModel: ObservableObject {
                 return
             }
 
-            content = nil
-
             let path = path.appending(name)
             name = ""
 
             do {
+                showProgressView()
                 try await rpc.createFile(at: path, isDirectory: isDirectory)
                 await listDirectory()
             } catch {
@@ -178,6 +226,7 @@ class FileManagerViewModel: ObservableObject {
                 return
             }
             do {
+                showProgressView()
                 try await rpc.deleteFile(at: path, force: true)
                 await listDirectory()
             } catch {

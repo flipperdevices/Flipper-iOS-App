@@ -1,6 +1,7 @@
 import Core
 import SwiftUI
 import Peripheral
+import UniformTypeIdentifiers
 
 struct FileManagerView: View {
     @StateObject var viewModel: FileManagerViewModel
@@ -33,10 +34,24 @@ struct FileManagerView: View {
                     } label: {
                         Text("Folder")
                     }
+
+                    Button {
+                        viewModel.showFileImporter()
+                    } label: {
+                        Text("Import")
+                    }
                 } label: {
                     Image(systemName: "plus")
                         .foregroundColor(.primary)
                 }
+            }
+        }
+        .fileImporter(
+            isPresented: $viewModel.isFileImporterPresented,
+            allowedContentTypes: [UTType.item]
+        ) { result in
+            if case .success(let url) = result {
+                viewModel.importFile(url: url)
             }
         }
         .onAppear {
