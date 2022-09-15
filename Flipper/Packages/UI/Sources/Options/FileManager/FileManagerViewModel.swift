@@ -1,12 +1,9 @@
 import Core
 import Inject
+import Logging
 import Analytics
 import Peripheral
-import Combine
-import Logging
-import UniformTypeIdentifiers
-
-import struct Foundation.Date
+import Foundation
 
 @MainActor
 class FileManagerViewModel: ObservableObject {
@@ -24,7 +21,7 @@ class FileManagerViewModel: ObservableObject {
     }
     @Published var text: String = ""
     @Published var name: String = ""
-    @Published var isFilePickerDisplayed = false
+    @Published var isFileImporterPresented = false
 
     var supportedExtensions: [String] = [
         ".ibtn", ".nfc", ".shd", ".sub", ".rfid", ".ir", ".fmf", ".txt"
@@ -118,30 +115,42 @@ class FileManagerViewModel: ObservableObject {
 
     // MARK: Import
 
-    func importFile(url: URL?) {
+    func showFileImporter() {
+        /*
+            File picker won't be shown if hidden by a swipe down
+            instead of the Cancel button, so we use this workaround.
+            Apple knows about this but so hopefully it'll be fixed soon.
+            UPD: Fixed in iOS16
+        */
+        if isFileImporterPresented {
+            isFileImporterPresented = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.isFileImporterPresented = true
+            }
+        } else {
+            isFileImporterPresented = true
+        }
+    }
+
+    func importFile(url: URL) {
         Task {
             do {
-                guard let url = url else {
-                    fatalError("url is nil")
-                }
                 guard let name = url.pathComponents.last else {
-                    fatalError("couldn't extract file name from \(url)")
+                    logger.error("import file: invalid url \(url)")
+                    return
                 }
                 guard url.startAccessingSecurityScopedResource() else {
-                    fatalError("unable to access scoped resouce via \(url)")
+                    logger.error("import file: unable to access \(url)")
+                    return
                 }
-
-                let data = try Data(contentsOf: url)
-                let path = path.appending(name)
-                var bytes = [UInt8](repeating: 0, count: data.count)
-                data.copyBytes(to: &bytes, count: data.count)
-
-                try await rpc.writeFile(at: path, bytes: bytes)
-                await listDirectory()
-
-                do {
+                defer {
                     url.stopAccessingSecurityScopedResource()
                 }
+
+                let path = path.appending(name)
+                let bytes = try [UInt8](Data(contentsOf: url))
+                try await rpc.writeFile(at: path, bytes: bytes)
+                await listDirectory()
             } catch {
                 logger.error("import file: \(error)")
                 self.content = .error(String(describing: error))
