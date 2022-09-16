@@ -4,7 +4,7 @@ import SwiftUI
 
 struct DeviceInfoView: View {
     @StateObject var viewModel: DeviceInfoViewModel
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView {

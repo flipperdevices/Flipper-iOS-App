@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ArchiveSearchView: View {
     @StateObject var viewModel: ArchiveSearchViewModel
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 0) {

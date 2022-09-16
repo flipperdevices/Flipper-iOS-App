@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 
 struct FileManagerView: View {
     @StateObject var viewModel: FileManagerViewModel
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack {
@@ -18,8 +18,19 @@ struct FileManagerView: View {
             case .none: ProgressView()
             }
         }
-        .navigationTitle(viewModel.title)
+        .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                BackButton {
+                    dismiss()
+                }
+            }
+            ToolbarItem(placement: .navigationBarLeading) {
+                Text(viewModel.title)
+                    .font(.system(size: 20, weight: .bold))
+            }
+        }
         .toolbar {
             if !viewModel.path.isEmpty, case .list = viewModel.content {
                 Menu {

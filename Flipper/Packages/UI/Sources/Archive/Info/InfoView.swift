@@ -3,7 +3,7 @@ import SwiftUI
 struct InfoView: View {
     @StateObject var viewModel: InfoViewModel
     @StateObject var alertController: AlertController = .init()
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ZStack {

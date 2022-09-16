@@ -3,7 +3,7 @@ import SwiftUI
 
 struct CategoryView: View {
     @StateObject var viewModel: CategoryViewModel
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ZStack {

@@ -3,6 +3,7 @@ import SwiftUI
 
 struct StressTestView: View {
     @StateObject var viewModel: StressTestViewModel
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack {
@@ -27,8 +28,19 @@ struct StressTestView: View {
             }
             .padding(.vertical, 20)
         }
-        .navigationTitle("Stress Test")
+        .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                BackButton {
+                    dismiss()
+                }
+            }
+            ToolbarItem(placement: .navigationBarLeading) {
+                Text("Stress Test")
+                    .font(.system(size: 20, weight: .bold))
+            }
+        }
         .onDisappear {
             viewModel.stop()
         }

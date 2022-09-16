@@ -3,7 +3,7 @@ import SwiftUI
 
 struct NFCEditorView: View {
     @StateObject var viewModel: NFCEditorViewModel
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
 
     @StateObject var hexKeyboardController: HexKeyboardController = .init()
 

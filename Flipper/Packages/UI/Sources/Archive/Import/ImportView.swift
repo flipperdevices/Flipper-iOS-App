@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ImportView: View {
     @StateObject var viewModel: ImportViewModel
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 0) {

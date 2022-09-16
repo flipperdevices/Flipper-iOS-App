@@ -5,6 +5,7 @@ import Peripheral
 struct RemoteContolView: View {
     @StateObject var viewModel: RemoteContolViewModel
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack {
@@ -19,9 +20,21 @@ struct RemoteContolView: View {
             DeviceControls(onButton: viewModel.onButton)
                 .padding(.bottom, 50)
         }
-        .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity)
         .background(Color.background)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                BackButton {
+                    dismiss()
+                }
+            }
+            ToolbarItem(placement: .navigationBarLeading) {
+                Text("Remote Control")
+                    .font(.system(size: 20, weight: .bold))
+            }
+        }
         .onAppear {
             viewModel.startStreaming()
         }

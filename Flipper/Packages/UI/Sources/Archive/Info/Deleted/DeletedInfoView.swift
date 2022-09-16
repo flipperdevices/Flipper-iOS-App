@@ -2,7 +2,7 @@ import SwiftUI
 
 struct DeletedInfoView: View {
     @StateObject var viewModel: DeletedInfoViewModel
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
