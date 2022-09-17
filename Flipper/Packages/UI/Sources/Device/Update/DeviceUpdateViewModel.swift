@@ -77,6 +77,15 @@ class DeviceUpdateViewModel: ObservableObject {
     @Published var state: State = .downloadingFirmware
     @Published var progress: Double = 0
 
+    var isUpdating: Bool {
+        switch state {
+        case .downloadingFirmware, .prepearingForUpdate, .uploadingFirmware:
+            return true
+        default:
+            return false
+        }
+    }
+
     init(
         isPresented: Binding<Bool>,
         channel: Update.Channel,
@@ -207,6 +216,10 @@ class DeviceUpdateViewModel: ObservableObject {
         appState.disconnect()
         appState.connect()
         onFailure(.canceled)
+        close()
+    }
+
+    func close() {
         isPresented = false
     }
 

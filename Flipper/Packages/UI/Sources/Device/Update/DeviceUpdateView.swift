@@ -55,9 +55,11 @@ struct DeviceUpdateView: View {
 
             Spacer()
             Button {
-                viewModel.confirmCancel()
+                viewModel.isUpdating
+                    ? viewModel.confirmCancel()
+                    : viewModel.close()
             } label: {
-                Text("Cancel")
+                Text(viewModel.isUpdating ? "Cancel" : "Close")
                     .font(.system(size: 16, weight: .medium))
             }
             .padding(.bottom, 8)
