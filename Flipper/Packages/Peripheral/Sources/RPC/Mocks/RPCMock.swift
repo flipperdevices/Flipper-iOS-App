@@ -8,6 +8,10 @@ class RPCMock: RPC {
         .init { _ in }
     }
 
+    func powerInfo() -> AsyncThrowingStream<(String, String), Swift.Error> {
+        .init { _ in }
+    }
+
     @discardableResult
     func ping(_ bytes: [UInt8]) async throws -> [UInt8] {
         .init()

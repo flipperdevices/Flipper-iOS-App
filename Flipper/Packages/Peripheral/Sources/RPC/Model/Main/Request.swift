@@ -11,7 +11,8 @@ public enum Request {
     case gui(GUI)
 
     public enum System {
-        case info
+        case deviceInfo
+        case powerInfo
         case alert
         case ping([UInt8])
         case getDate
@@ -61,9 +62,13 @@ extension Request {
 extension Request.System {
     func serialize() -> PB_Main {
         switch self {
-        case .info:
+        case .deviceInfo:
             return .with {
                 $0.systemDeviceInfoRequest = .init()
+            }
+        case .powerInfo:
+            return .with {
+                $0.systemPowerInfoRequest = .init()
             }
         case .alert:
             return .with {
@@ -313,7 +318,8 @@ extension Request: CustomStringConvertible {
 extension Request.System: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .info: return "info"
+        case .deviceInfo: return "deviceInfo"
+        case .powerInfo: return "powerInfo"
         case .alert: return "alert"
         case .ping(let bytes): return "ping(\(bytes.count) bytes)"
         case .getDate: return "info"

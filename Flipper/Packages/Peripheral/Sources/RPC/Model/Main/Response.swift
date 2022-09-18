@@ -9,8 +9,9 @@ public enum Response: Equatable {
     case storage(Storage)
 
     public enum System: Equatable {
+        case deviceInfo(String, String)
+        case powerInfo(String, String)
         case ping([UInt8])
-        case info(String, String)
         case dateTime(Date)
         case update(Update)
 
@@ -70,6 +71,8 @@ extension Response {
             self.init(decoding: response)
         case .systemDeviceInfoResponse(let response):
             self.init(decoding: response)
+        case .systemPowerInfoResponse(let response):
+            self.init(decoding: response)
         case .systemGetDatetimeResponse(let response):
             self.init(decoding: response)
         case .systemUpdateResponse(let response):
@@ -100,7 +103,11 @@ extension Response {
     }
 
     init(decoding response: PBSystem_DeviceInfoResponse) {
-        self = .system(.info(response.key, response.value))
+        self = .system(.deviceInfo(response.key, response.value))
+    }
+
+    init(decoding response: PBSystem_PowerInfoResponse) {
+        self = .system(.powerInfo(response.key, response.value))
     }
 
     init(decoding response: PBSystem_GetDateTimeResponse) {
@@ -167,7 +174,8 @@ extension Response.System: CustomStringConvertible {
     public var description: String {
         switch self {
         case let .ping(bytes): return "ping(\(bytes.count) bytes)"
-        case let .info(key, value): return "info(\(key): \(value))"
+        case let .deviceInfo(key, value): return "deviceInfo(\(key): \(value))"
+        case let .powerInfo(key, value): return "powerInfo(\(key): \(value))"
         case let .dateTime(date): return "dateTime(\(date))"
         case let .update(update): return "update(\(update))"
         }

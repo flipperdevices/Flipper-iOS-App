@@ -6,6 +6,7 @@ public protocol RPC {
     // MARK: System
 
     func deviceInfo() -> AsyncThrowingStream<(String, String), Swift.Error>
+    func powerInfo() -> AsyncThrowingStream<(String, String), Swift.Error>
     @discardableResult
     func ping(_ bytes: [UInt8]) async throws -> [UInt8]
     func reboot(to mode: Message.RebootMode) async throws

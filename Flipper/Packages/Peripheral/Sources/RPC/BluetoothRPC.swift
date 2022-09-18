@@ -82,9 +82,32 @@ extension BluetoothRPC {
                     guard let session = session else {
                         throw Error.unsupported(0)
                     }
-                    let streams = await session.send(.system(.info))
+                    let streams = await session.send(.system(.deviceInfo))
                     for try await next in streams.input {
-                        guard case let .system(.info(key, value)) = next else {
+                        guard case let .system(.deviceInfo(key, value)) = next else {
+                            throw Error.unexpectedResponse(next)
+                        }
+                        continuation.yield((key, value))
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+
+    public func powerInfo(
+    ) -> AsyncThrowingStream<(String, String), Swift.Error> {
+        .init { continuation in
+            Task {
+                do {
+                    guard let session = session else {
+                        throw Error.unsupported(0)
+                    }
+                    let streams = await session.send(.system(.powerInfo))
+                    for try await next in streams.input {
+                        guard case let .system(.powerInfo(key, value)) = next else {
                             throw Error.unexpectedResponse(next)
                         }
                         continuation.yield((key, value))
