@@ -39,6 +39,11 @@ struct DeviceInfoView: View {
                         "Radio Firmware": viewModel.radioFirmware
                     ]
                 )
+
+                DeviceInfoViewCard(
+                    title: "Other",
+                    values: viewModel.otherKeys
+                )
             }
             .padding(.vertical, 14)
         }

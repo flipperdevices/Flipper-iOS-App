@@ -3,6 +3,7 @@ import Inject
 import Combine
 import Peripheral
 import Foundation
+import Collections
 import Logging
 
 @MainActor
@@ -79,6 +80,47 @@ class DeviceInfoViewModel: ObservableObject {
         let typeString = RadioStackType(rawValue: type)?.description
             ?? "Unknown"
         return "\(major).\(minor).\(type) (\(typeString))"
+    }
+
+    private var usedKeys: [String] = [
+        "hardware_name",
+        "hardware_model",
+        "hardware_region",
+        "hardware_region_provisioned",
+        "hardware_ver",
+        "hardware_otp_ver",
+        "hardware_uid",
+        "firmware_commit",
+        "firmware_build_date",
+        "firmware_target",
+        "protobuf_version_major",
+        "protobuf_version_minor",
+        "radio_stack_major",
+        "radio_stack_minor",
+        "radio_stack_type"
+    ]
+
+    private func formatKey(_ key: String) -> String {
+        key
+            .replacingOccurrences(of: "_", with: " ")
+            .capitalized
+            .replacingOccurrences(of: "Ble", with: "BLE")
+            .replacingOccurrences(of: "Fus", with: "FUS")
+            .replacingOccurrences(of: "Sram", with: "SRAM")
+    }
+
+    var otherKeys: OrderedDictionary<String, String> {
+        var result: OrderedDictionary<String, String> = .init()
+
+        let keys = deviceInfo.keys
+            .filter { !usedKeys.contains($0) }
+            .sorted()
+
+        for key in keys {
+            result[formatKey(key)] = deviceInfo[key]
+        }
+
+        return result
     }
 
     init() {
