@@ -62,10 +62,12 @@ struct DeviceInfoView: View {
                     Image(systemName: "square.and.arrow.up")
                 }
                 .foregroundColor(.primary)
+                .disabled(!viewModel.isReady)
+                .opacity(viewModel.isReady ? 1 : 0.4)
             }
         }
-        .onAppear {
-            viewModel.getDeviceInfo()
+        .task {
+            await viewModel.getInfo()
         }
     }
 }

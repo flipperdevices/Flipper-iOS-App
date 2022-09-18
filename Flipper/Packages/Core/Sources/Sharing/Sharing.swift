@@ -48,3 +48,21 @@ public func share(_ key: ArchiveItem, as method: SharingMethod = .urlOrFile) {
 public func share(_ text: String) {
     share([text])
 }
+
+public func share(_ content: String, filename: String) {
+    let urls = FileManager.default.urls(
+        for: .cachesDirectory, in: .userDomainMask)
+
+    guard let publicDirectory = urls.first else {
+        return
+    }
+
+    let fileURL = publicDirectory.appendingPathComponent(filename)
+    let data = content.data(using: .utf8)
+
+    FileManager.default.createFile(atPath: fileURL.path, contents: data)
+
+    share([fileURL]) {_, _, _, _ in
+        try? FileManager.default.removeItem(at: fileURL)
+    }
+}

@@ -15,6 +15,8 @@ class DeviceInfoViewModel: ObservableObject {
 
     @Published var flipper: Flipper?
     @Published var deviceInfo: [String: String] = [:]
+    @Published var powerInfo: [String: String] = [:]
+    @Published var isReady = false
 
     enum RadioStackType: String, CustomStringConvertible {
         case bleFull = "1"
@@ -86,28 +88,61 @@ class DeviceInfoViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
-    func getDeviceInfo() {
-        Task {
-            do {
-                for try await (key, value) in rpc.deviceInfo() {
-                    deviceInfo[key] = value
-                }
-            } catch {
-                logger.error("device info: \(error)")
+    func getInfo() async {
+        await getDeviceInfo()
+        await getPowerInfo()
+        isReady = true
+    }
+
+    func getDeviceInfo() async {
+        do {
+            for try await (key, value) in rpc.deviceInfo() {
+                deviceInfo[key] = value
             }
+        } catch {
+            logger.error("device info: \(error)")
         }
     }
 
-    func share() {
-        let maxCount = deviceInfo.max {
-            $0.key.count < $1.key.count
-        }?.key.count ?? 1
+    func getPowerInfo() async {
+        do {
+            for try await (key, value) in rpc.powerInfo() {
+                powerInfo[key] = value
+            }
+        } catch {
+            logger.error("power info: \(error)")
+        }
+    }
 
-        let array = deviceInfo.map { key, value -> String in
-            let spaces = String(repeating: " ", count: maxCount - key.count + 1)
-            return "\(key)\(spaces): \(value)"
+    private let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+        return formatter
+    }()
+
+    func share() {
+        var array = deviceInfo.toArray().sorted()
+        array += powerInfo.toArray().sorted()
+
+        if let int = flipper?.storage?.internal {
+            array.append("int_available: \(int.free)")
+            array.append("int_total: \(int.total)")
+        }
+        if let ext = flipper?.storage?.external {
+            array.append("ext_available: \(ext.free)")
+            array.append("ext_total: \(ext.total)")
         }
 
-        Core.share(array.joined(separator: "\n"))
+        let name = flipper?.name ?? "unknown"
+        let content = array.joined(separator: "\n")
+        let filenname = "dump-\(name)-\(formatter.string(from: Date())).txt"
+
+        Core.share(content, filename: filenname)
+    }
+}
+
+private extension Dictionary where Key == String, Value == String {
+    func toArray() -> [String] {
+        self.map { "\($0): \($1)" }
     }
 }
