@@ -23,6 +23,9 @@ struct EmulateView: View {
                     SendButton(viewModel: viewModel)
                         .opacity(viewModel.showProgressButton ? 0 : 1)
                         .disabled(!viewModel.canEmulate)
+                    Bubble("Hold to send continuously")
+                        .offset(y: -34)
+                        .opacity(viewModel.showBubble ? 1 : 0)
                 }
                 EmulateDescription(viewModel: viewModel)
             default:

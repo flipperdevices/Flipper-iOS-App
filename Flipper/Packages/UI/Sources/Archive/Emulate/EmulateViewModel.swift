@@ -19,6 +19,7 @@ class EmulateViewModel: ObservableObject {
     @Published var isFlipperAppStarted = false
     @Published var isFlipperAppCancellation = false
     @Published var isFlipperAppSystemLocked = false
+    @Published var showBubble = false
 
     var showProgressButton: Bool {
         status == .connecting ||
@@ -95,6 +96,7 @@ class EmulateViewModel: ObservableObject {
     func startEmulate() {
         guard !isEmulating else { return }
         isEmulating = true
+        showBubbleIfNeeded()
         emulateTask = Task {
             do {
                 try await startApp()
@@ -112,6 +114,19 @@ class EmulateViewModel: ObservableObject {
             emulateTask = nil
         }
         recordEmulate()
+    }
+
+    func showBubbleIfNeeded() {
+        guard !showBubble else { return }
+        Task {
+            withAnimation(.linear(duration: 0.3)) {
+                showBubble = true
+            }
+            try await Task.sleep(seconds: 2)
+            withAnimation(.linear(duration: 1)) {
+                showBubble = false
+            }
+        }
     }
 
     // Emulated since button pressed (ms)
