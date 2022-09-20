@@ -168,6 +168,8 @@ public class AppState {
         status = .synchronizing
         let time = try await measure {
             try await archive.synchronize { progress in
+                // FIXME: find the issue (very rare)
+                guard progress.isNormal else { return }
                 self.syncProgress = Int(progress * 100)
             }
         }
