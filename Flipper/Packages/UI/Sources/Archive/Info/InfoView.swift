@@ -76,7 +76,7 @@ struct InfoView: View {
             }
         }
         .fullScreenCover(isPresented: $viewModel.showDumpEditor) {
-            NFCEditorView(viewModel: .init(item: viewModel.item))
+            NFCEditorView(viewModel: .init(item: $viewModel.item))
         }
         .alert(isPresented: $viewModel.isError) {
             Alert(title: Text(viewModel.error))

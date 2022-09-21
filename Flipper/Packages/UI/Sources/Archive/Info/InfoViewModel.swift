@@ -74,6 +74,7 @@ class InfoViewModel: ObservableObject {
     }
 
     func edit() {
+        backup = item
         withAnimation {
             isEditing = true
         }
@@ -115,7 +116,6 @@ class InfoViewModel: ObservableObject {
                     try await appState.archive.rename(backup.id, to: item.name)
                 }
                 try await appState.archive.upsert(item)
-                backup = item
                 withAnimation {
                     isEditing = false
                 }

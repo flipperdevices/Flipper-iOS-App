@@ -1,26 +1,48 @@
 import Core
 import Combine
+import SwiftUI
 
 @MainActor
 class NFCEditorViewModel: ObservableObject {
-    var item: ArchiveItem
+    var item: Binding<ArchiveItem>
 
     let appState: AppState = .shared
     var archive: Archive { appState.archive }
 
     @Published var bytes: [UInt8?]
+    @Published var showSaveAs = false
+    @Published var showSaveChanges = false
+    var dismissPublisher = PassthroughSubject<Void, Never>()
 
-    init(item: ArchiveItem) {
+    init(item: Binding<ArchiveItem>) {
         self.item = item
-        self.bytes = item.nfcBlocks
+        self.bytes = item.wrappedValue.nfcBlocks
+    }
+
+    func cancel() {
+        if item.wrappedValue.nfcBlocks == bytes {
+            dismiss()
+        } else {
+            showSaveChanges = true
+        }
     }
 
     func save() {
-        item.nfcBlocks = bytes
+        item.wrappedValue.nfcBlocks = bytes
         Task {
-            try await archive.upsert(item)
+            try await archive.upsert(item.wrappedValue)
             try await appState.synchronize()
         }
+        dismiss()
+    }
+
+    func saveAs() {
+        item.wrappedValue.nfcBlocks = bytes
+        showSaveAs = true
+    }
+
+    func dismiss() {
+        dismissPublisher.send()
     }
 }
 
