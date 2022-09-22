@@ -62,10 +62,9 @@ struct KeyboardButton: View {
             onPressed(key)
         } label: {
             Text(key)
-                .padding(.vertical, 15)
-                .padding(.horizontal, 20)
-                .foregroundColor(.primary)
+                .frame(height: 51)
                 .frame(maxWidth: .infinity)
+                .foregroundColor(.primary)
         }
         .background(Color.keyboardButton)
         .cornerRadius(8)
