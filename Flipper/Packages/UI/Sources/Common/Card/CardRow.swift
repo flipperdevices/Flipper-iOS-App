@@ -2,7 +2,16 @@ import SwiftUI
 
 struct CardRow: View {
     let name: String
-    let value: String
+    let value: AttributedString
+
+    init(name: String, value: String) {
+        self.init(name: name, value: .init(value))
+    }
+
+    init(name: String, value: AttributedString) {
+        self.name = name
+        self.value = value
+    }
 
     var body: some View {
         HStack {
@@ -11,8 +20,8 @@ struct CardRow: View {
                 .multilineTextAlignment(.leading)
                 .foregroundColor(.black30)
             Spacer()
-            if !value.isEmpty {
-                Text("\(value)")
+            if !value.description.isEmpty {
+                Text(value)
                     .font(.system(size: 14, weight: .regular))
                     .multilineTextAlignment(.trailing)
             } else {
