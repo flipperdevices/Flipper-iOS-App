@@ -1,18 +1,28 @@
 import Core
-import Combine
 import Inject
+import Combine
+import Logging
 import SwiftUI
 import OrderedCollections
 
 @MainActor
 class ArchiveViewModel: ObservableObject {
+    private let logger = Logger(label: "archive-vm")
+
     @Environment(\.dismiss) private var dismiss
     let appState: AppState = .shared
+
+    let pullToRefreshThreshold: Double = 1000
 
     @Published var items: [ArchiveItem] = []
     @Published var deleted: [ArchiveItem] = []
     @Published var status: DeviceStatus = .noDevice
     @Published var syncProgress: Int = 0
+
+    var canPullToRefresh: Bool {
+        status == .connected ||
+        status == .synchronized
+    }
 
     var sortedItems: [ArchiveItem] {
         items.sorted { $0.date < $1.date }
@@ -76,5 +86,15 @@ class ArchiveViewModel: ObservableObject {
     func onItemSelected(item: ArchiveItem) {
         selectedItem = item
         showInfoView = true
+    }
+
+    func refresh() {
+        Task {
+            do {
+                try await appState.synchronize()
+            } catch {
+                logger.error("pull to refresh: \(error)")
+            }
+        }
     }
 }

@@ -27,7 +27,10 @@ struct ArchiveView: View {
                         .foregroundColor(.black30)
                     }
                 } else {
-                    ScrollView {
+                    RefreshableScrollView(
+                        isEnabled: viewModel.canPullToRefresh,
+                        action: viewModel.refresh
+                    ) {
                         CategoryCard(
                             groups: viewModel.groups,
                             deletedCount: viewModel.deleted.count

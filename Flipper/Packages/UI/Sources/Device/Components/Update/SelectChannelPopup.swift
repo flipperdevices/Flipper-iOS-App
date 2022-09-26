@@ -110,12 +110,12 @@ struct SelectChannelButton: View {
     }
 }
 
-struct SelectChannelOffsetKey: PreferenceKey {
+private struct SelectChannelOffsetKey: PreferenceKey {
     typealias Value = Double
 
     static var defaultValue = Double.zero
 
     static func reduce(value: inout Value, nextValue: () -> Value) {
-        value += nextValue()
+        value = nextValue()
     }
 }
