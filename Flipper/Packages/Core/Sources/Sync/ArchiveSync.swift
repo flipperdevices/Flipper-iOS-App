@@ -1,7 +1,8 @@
 import Inject
+import Logging
 import Peripheral
 import Foundation
-import Logging
+import OrderedCollections
 
 class ArchiveSync: ArchiveSyncProtocol {
     private let logger = Logger(label: "archive_synchronization")
@@ -55,7 +56,11 @@ class ArchiveSync: ArchiveSyncProtocol {
             progress(currentProgress + syncItemFactor * itemProgress)
         }
 
-        for (path, action) in actions {
+        // NOTE: Flipper's filesystem is case-insensitive,
+        // so we should delete the key first
+        let sortedActions = sortActions(actions)
+
+        for (path, action) in sortedActions {
             guard state != .canceled else {
                 break
             }
@@ -77,6 +82,21 @@ class ArchiveSync: ArchiveSyncProtocol {
         }
 
         manifestStorage.manifest = try await mobileArchive.getManifest()
+    }
+
+    private func sortActions(
+        _ actions: [Path: Action]
+    ) -> OrderedDictionary<Path, Action> {
+        var orderedActions = OrderedDictionary<Path, Action>(
+            uniqueKeysWithValues: actions
+        )
+        orderedActions.sort { first, second in
+            switch (first.value, second.value) {
+            case (.delete, _): return true
+            default: return false
+            }
+        }
+        return orderedActions
     }
 
     func cancel() {
