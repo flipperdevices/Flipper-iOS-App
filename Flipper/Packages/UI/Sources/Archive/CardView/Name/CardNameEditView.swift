@@ -45,11 +45,10 @@ extension CardView {
 private extension StringProtocol {
     var allowedCharacters: String {
         #"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"# +
-        #"!#\$%&'()-@^_`{}~"#
+        #"!#\$%&'()-@^_`{}~ "#
     }
 
     func filtered() -> String {
-        self.replacingOccurrences(of: " ", with: "_")
-            .filter { allowedCharacters.contains($0) }
+        .init(filter { allowedCharacters.contains($0) })
     }
 }
