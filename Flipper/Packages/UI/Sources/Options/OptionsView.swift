@@ -49,9 +49,17 @@ struct OptionsView: View {
                             Text("Disable provisioning")
                         }
                         Button("Reset App") {
-                            viewModel.resetApp()
+                            viewModel.showResetApp = true
                         }
                         .foregroundColor(.sRed)
+                        .actionSheet(isPresented: $viewModel.showResetApp) {
+                            .init(title: Text("Are you sure?"), buttons: [
+                                .destructive(Text("Reset App")) {
+                                    viewModel.resetApp()
+                                },
+                                .cancel()
+                            ])
+                        }
                     }
                 }
 

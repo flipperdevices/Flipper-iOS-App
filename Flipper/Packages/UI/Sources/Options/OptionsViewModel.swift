@@ -16,6 +16,7 @@ class OptionsViewModel: ObservableObject {
 
     @Published var isOnline = false
     @Published var hasKeys = false
+    @Published var showResetApp = false
 
     @AppStorage(.isDebugMode) var isDebugMode = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
