@@ -2,10 +2,15 @@ import SwiftUI
 import NotificationCenter
 
 class TodayViewController: UIViewController, NCWidgetProviding {
+    let compactModeHeight = 110.0
+    @ObservedObject var viewModel: ContentViewModel = .init()
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Enable expanded mode
+        self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
         // Add SwiftUI
-        let hostingController = UIHostingController(rootView: ContentView())
+        let hostingController = UIHostingController(rootView: ContentView(viewModel: viewModel))
         addChild(hostingController)
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
@@ -22,6 +27,18 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         // If there's an update, use NCUpdateResult.NewData
 
         completionHandler(.newData)
+    }
+
+    func widgetActiveDisplayModeDidChange(
+        _ activeDisplayMode: NCWidgetDisplayMode,
+        withMaximumSize maxSize: CGSize
+    ) {
+        viewModel.isExpanded = activeDisplayMode == .expanded
+        switch activeDisplayMode {
+        case .compact: preferredContentSize.height = compactModeHeight
+        case .expanded: preferredContentSize.height = compactModeHeight * 2
+        @unknown default: break
+        }
     }
 }
 
