@@ -1,16 +1,18 @@
+import UI
 import SwiftUI
 import NotificationCenter
 
 class TodayViewController: UIViewController, NCWidgetProviding {
     let compactModeHeight = 110.0
-    @ObservedObject var viewModel: ContentViewModel = .init()
+    @ObservedObject var viewModel: WidgetViewModel = .init()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Enable expanded mode
         self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
         // Add SwiftUI
-        let hostingController = UIHostingController(rootView: ContentView(viewModel: viewModel))
+        let widgetView = WidgetView(viewModel: viewModel)
+        let hostingController = UIHostingController(rootView: widgetView)
         addChild(hostingController)
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)

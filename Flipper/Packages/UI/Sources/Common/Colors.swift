@@ -1,6 +1,6 @@
 import SwiftUI
 
-extension Color {
+public extension Color {
 
     // MARK: Main
 

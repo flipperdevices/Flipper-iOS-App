@@ -1,9 +1,14 @@
+import UI
 import SwiftUI
 
-struct ContentView: View {
-    @ObservedObject var viewModel: ContentViewModel
+public struct WidgetView: View {
+    @ObservedObject var viewModel: WidgetViewModel
 
-    var body: some View {
+    public init(viewModel: WidgetViewModel) {
+        self.viewModel = viewModel
+    }
+
+    public var body: some View {
         VStack(spacing: 0) {
             Divider()
                 .foregroundColor(.black4)
