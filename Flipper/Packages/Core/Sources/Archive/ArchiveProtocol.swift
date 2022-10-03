@@ -6,7 +6,8 @@ protocol ArchiveProtocol {
         progress: (Double) -> Void
     ) async throws -> Manifest
 
-    func read(_ path: Path,
+    func read(
+        _ path: Path,
         progress: (Double) -> Void
     ) async throws -> String
 
