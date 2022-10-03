@@ -166,18 +166,25 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
 
-    var isProvisioningEnabled: Bool {
+    var canDisableProvisioning: Bool {
+        get async {
+            (try? await hardwareRegion) == 0
+        }
+    }
+
+    var shouldProvideRegion: Bool {
         get async throws {
-            if isProvisioningDisabled, let region = try await hardwareRegion {
-                return region == 0
+            if isProvisioningDisabled, await canDisableProvisioning {
+                return false
+            } else {
+                return true
             }
-            return false
         }
     }
 
     func provideSubGHzRegion() async throws {
         state = .prepearingForUpdate
-        guard try await isProvisioningEnabled else {
+        guard try await shouldProvideRegion else {
             return
         }
         try await rpc.writeFile(
