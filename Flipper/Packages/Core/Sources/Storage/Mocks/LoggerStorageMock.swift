@@ -10,7 +10,7 @@ class LoggerStorageMock: LoggerStorage {
 
     private let formatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "YYYY-MM-dd"
+        formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
 

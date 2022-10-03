@@ -10,7 +10,7 @@ class PlainLoggerStorage: LoggerStorage {
 
     private let formatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss dd-MM-YYYY"
+        formatter.dateFormat = "HH:mm:ss dd-MM-yyyy"
         return formatter
     }()
 
