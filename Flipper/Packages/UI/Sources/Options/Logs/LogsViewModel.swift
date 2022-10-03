@@ -17,8 +17,18 @@ class LogsViewModel: ObservableObject {
         Logger.Level.allCases
     }
 
+    private let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss dd-MM-yyyy"
+        return formatter
+    }()
+
     init() {
-        logs = loggerStorage.list().sorted()
+        logs = loggerStorage.list().sorted {
+            guard let first = formatter.date(from: $0) else { return false }
+            guard let second = formatter.date(from: $1) else { return false }
+            return first < second
+        }
     }
 
     func changeLogLevel(to level: Logger.Level) {
