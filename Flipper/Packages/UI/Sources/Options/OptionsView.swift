@@ -43,6 +43,12 @@ struct OptionsView: View {
             }
             .disabled(!viewModel.isOnline)
 
+            Section {
+                NavigationLink("Widget Settings") {
+                    WidgetSettingsView(viewModel: .init())
+                }
+            }
+
             if viewModel.isDebugMode {
                 Section(header: Text("Debug")) {
                     Toggle(isOn: $viewModel.isProvisioningDisabled) {

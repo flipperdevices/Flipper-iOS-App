@@ -224,6 +224,9 @@ public class AppState {
 
     public func onOpenURL(_ url: URL) async {
         do {
+            guard url != .widgetSettings else {
+                return
+            }
             switch url.pathExtension {
             case "tgz": try await onOpenUpdateBundle(url)
             default: try await onOpenKeyURL(url)

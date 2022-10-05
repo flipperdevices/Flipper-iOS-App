@@ -2,11 +2,11 @@ import Peripheral
 import Foundation
 
 class FileStorage {
+    // swiftlint:disable force_unwrapping
     var baseURL: URL {
-        let paths = FileManager.default.urls(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask)
-        return paths[0]
+        FileManager
+            .default
+            .containerURL(forSecurityApplicationGroupIdentifier: .appGroup)!
     }
 
     init() {}

@@ -1,10 +1,21 @@
 import UI
 import SwiftUI
 import NotificationCenter
+import Core
+
+var registerDependenciesOnce: Void = {
+    Core.registerDependencies()
+}()
 
 class TodayViewController: UIViewController, NCWidgetProviding {
     let compactModeHeight = 110.0
-    @ObservedObject var viewModel: WidgetViewModel = .init()
+    @ObservedObject var viewModel: WidgetViewModel
+
+    required init?(coder: NSCoder) {
+        _ = registerDependenciesOnce
+        viewModel = .init()
+        super.init(coder: coder)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,8 +48,11 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     ) {
         viewModel.isExpanded = activeDisplayMode == .expanded
         switch activeDisplayMode {
-        case .compact: preferredContentSize.height = compactModeHeight
-        case .expanded: preferredContentSize.height = compactModeHeight * 2
+        case .compact:
+            preferredContentSize.height = compactModeHeight
+        case .expanded:
+            let rowsCount = ((UserDefaults.widget?.keys.count ?? 1) / 2 + 1)
+            preferredContentSize.height = compactModeHeight * Double(rowsCount)
         @unknown default: break
         }
     }

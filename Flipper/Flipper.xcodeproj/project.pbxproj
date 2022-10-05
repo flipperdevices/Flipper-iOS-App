@@ -11,12 +11,16 @@
 		8B7064CC26E27429006CB4A8 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B7064CB26E27429006CB4A8 /* UI */; };
 		8B7480DE2807483500692304 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
 		8B77A9CD26CAA43300A3DF9F /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B77A9CC26CAA43300A3DF9F /* Core */; };
-		8B828B2228EC4E2600A1E827 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B828B2128EC4E2600A1E827 /* UI */; };
 		8BA57F1D273AD21D00A3A33B /* nfc.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F18273AD21D00A3A33B /* nfc.png */; };
 		8BA57F1E273AD21D00A3A33B /* ibutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F19273AD21D00A3A33B /* ibutton.png */; };
 		8BA57F1F273AD21D00A3A33B /* rfid.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1A273AD21D00A3A33B /* rfid.png */; };
 		8BA57F20273AD21D00A3A33B /* subhz.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1B273AD21D00A3A33B /* subhz.png */; };
 		8BA57F21273AD21D00A3A33B /* irda.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1C273AD21D00A3A33B /* irda.png */; };
+		8BB7DF2C29115FC3005C38C9 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8BB7DF2B29115FC3005C38C9 /* UI */; };
+		8BB7DF2E29115FC7005C38C9 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8BB7DF2D29115FC7005C38C9 /* Core */; };
+		8BB7DF3029119296005C38C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
+		8BB7DF3129119CED005C38C9 /* HaxrCorpNeue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */; };
+		8BB7DF3229119CED005C38C9 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
 		8BCB0168278F135C00DA66F5 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8BCB0167278F135C00DA66F5 /* Intents.intentdefinition */; };
 		8BCE39EB289D47EA00FB5704 /* HaxrCorpNeue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */; };
 		8BCFDDDF277A2405002DA4CD /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BCFDDDE277A2405002DA4CD /* QuickLook.framework */; platformFilter = maccatalyst; };
@@ -91,6 +95,7 @@
 		8BA57F1A273AD21D00A3A33B /* rfid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rfid.png; sourceTree = "<group>"; };
 		8BA57F1B273AD21D00A3A33B /* subhz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = subhz.png; sourceTree = "<group>"; };
 		8BA57F1C273AD21D00A3A33B /* irda.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = irda.png; sourceTree = "<group>"; };
+		8BB7DF2F2911922D005C38C9 /* TodayWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodayWidget.entitlements; sourceTree = "<group>"; };
 		8BC4791227FB2D9400863945 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Peripheral/Sources/RPC/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
 		8BCB0167278F135C00DA66F5 /* Intents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Intents.intentdefinition; sourceTree = "<group>"; };
 		8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HaxrCorpNeue.ttf; sourceTree = "<group>"; };
@@ -127,7 +132,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B828B2228EC4E2600A1E827 /* UI in Frameworks */,
+				8BB7DF2C29115FC3005C38C9 /* UI in Frameworks */,
+				8BB7DF2E29115FC7005C38C9 /* Core in Frameworks */,
 				8BF9CECA28E21A4400CD5D31 /* NotificationCenter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -271,6 +277,7 @@
 		8BF9CECB28E21A4400CD5D31 /* TodayWidget */ = {
 			isa = PBXGroup;
 			children = (
+				8BB7DF2F2911922D005C38C9 /* TodayWidget.entitlements */,
 				8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */,
 				8BF9CECE28E21A4400CD5D31 /* MainInterface.storyboard */,
 				8BF9CED128E21A4400CD5D31 /* Info.plist */,
@@ -358,7 +365,8 @@
 			);
 			name = TodayWidget;
 			packageProductDependencies = (
-				8B828B2128EC4E2600A1E827 /* UI */,
+				8BB7DF2B29115FC3005C38C9 /* UI */,
+				8BB7DF2D29115FC7005C38C9 /* Core */,
 			);
 			productName = TodayWidget;
 			productReference = 8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */;
@@ -442,6 +450,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BB7DF3129119CED005C38C9 /* HaxrCorpNeue.ttf in Resources */,
+				8BB7DF3229119CED005C38C9 /* Born2bSportyV2.ttf in Resources */,
+				8BB7DF3029119296005C38C9 /* Assets.xcassets in Resources */,
 				8BF9CED028E21A4400CD5D31 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -599,6 +610,7 @@
 		8BF9CED528E21A4400CD5D31 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TodayWidget/TodayWidget.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 0;
@@ -623,6 +635,7 @@
 		8BF9CED628E21A4400CD5D31 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TodayWidget/TodayWidget.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 0;
@@ -873,9 +886,13 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Core;
 		};
-		8B828B2128EC4E2600A1E827 /* UI */ = {
+		8BB7DF2B29115FC3005C38C9 /* UI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = UI;
+		};
+		8BB7DF2D29115FC7005C38C9 /* Core */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Core;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
