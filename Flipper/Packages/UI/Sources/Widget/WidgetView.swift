@@ -66,6 +66,7 @@ public struct WidgetView: View {
             viewModel.connect()
         }
         .onDisappear {
+            viewModel.stopEmulate()
             viewModel.disconnect()
         }
         .edgesIgnoringSafeArea(.all)
