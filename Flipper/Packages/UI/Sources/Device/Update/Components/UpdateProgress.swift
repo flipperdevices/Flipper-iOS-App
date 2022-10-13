@@ -1,4 +1,5 @@
 import SwiftUI
+import MarkdownUI
 
 extension DeviceUpdateView {
     struct UpdateProgressView: View {
@@ -17,6 +18,10 @@ extension DeviceUpdateView {
             default:
                 return ""
             }
+        }
+
+        var changelog: Document {
+            (try? .init(markdown: viewModel.changelog)) ?? .init(blocks: [])
         }
 
         var body: some View {
@@ -43,9 +48,23 @@ extension DeviceUpdateView {
                             .font(.system(size: 18, weight: .bold))
                             .padding(.top, 24)
 
-                        Text(viewModel.changelog)
-                            .font(.system(size: 15))
+                        Markdown(changelog)
                             .padding(.vertical, 14)
+                            .markdownStyle(
+                                MarkdownStyle(
+                                    font: .system(size: 15),
+                                    measurements: .init(
+                                        headingScales: .init(
+                                            h1: 1.0,
+                                            h2: 1.0,
+                                            h3: 1.0,
+                                            h4: 1.0,
+                                            h5: 1.0,
+                                            h6: 1.0),
+                                        headingSpacing: 0.3
+                                    )
+                                )
+                            )
                     }
                     .padding(.horizontal, 14)
                 }

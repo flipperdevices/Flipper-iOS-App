@@ -23,7 +23,11 @@ let package = Package(
         .package(
             name: "Lottie",
             url: "https://github.com/airbnb/lottie-ios.git",
-            from: "3.3.0")
+            from: "3.3.0"),
+        .package(
+            name: "MarkdownUI",
+            url: "https://github.com/tonyfreeman/MarkdownUI.git",
+            from: "1.1.1")
     ],
     targets: [
         .target(
@@ -31,7 +35,8 @@ let package = Package(
             dependencies: [
                 "Core",
                 "Lottie",
-                "Analytics"
+                "Analytics",
+                "MarkdownUI"
             ],
             path: "Sources"),
         .testTarget(
