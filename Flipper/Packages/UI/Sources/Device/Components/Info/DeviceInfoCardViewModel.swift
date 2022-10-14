@@ -76,7 +76,7 @@ class DeviceInfoCardViewModel: ObservableObject {
         var result = NSMutableAttributedString(string: int.description)
         if int.free < 20_000 {
             result.addAttributes(
-                [.foregroundColor: UIColor.systemRed],
+                [.foregroundColor: Color.sRed],
                 range: NSRange(location: 0, length: result.length)
             )
         }
