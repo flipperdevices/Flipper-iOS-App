@@ -4,7 +4,7 @@ import SwiftUI
 
 struct SpeedTestView: View {
     @StateObject var viewModel: SpeedTestViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var body: some View {
         VStack {
@@ -42,7 +42,7 @@ struct SpeedTestView: View {
         .toolbar {
             LeadingToolbarItems {
                 BackButton {
-                    dismiss()
+                    presentationMode.wrappedValue.dismiss()
                 }
                 Title("Speed Test")
             }

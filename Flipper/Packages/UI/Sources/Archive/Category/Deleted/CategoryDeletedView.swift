@@ -3,7 +3,7 @@ import SwiftUI
 
 struct CategoryDeletedView: View {
     @StateObject var viewModel: CategoryDeletedViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var restoreSheetTitle: String {
         "All deleted keys will be restored and synced with Flipper"
@@ -38,7 +38,7 @@ struct CategoryDeletedView: View {
         .toolbar {
             LeadingToolbarItems {
                 BackButton {
-                    dismiss()
+                    presentationMode.wrappedValue.dismiss()
                 }
                 Title("Deleted")
             }

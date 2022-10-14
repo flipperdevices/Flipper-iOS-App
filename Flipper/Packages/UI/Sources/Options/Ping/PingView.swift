@@ -2,7 +2,7 @@ import SwiftUI
 
 struct PingView: View {
     @StateObject var viewModel: PingViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
     @State var entered: String = ""
 
     var body: some View {
@@ -55,7 +55,7 @@ struct PingView: View {
         .toolbar {
             LeadingToolbarItems {
                 BackButton {
-                    dismiss()
+                    presentationMode.wrappedValue.dismiss()
                 }
                 Title("Ping")
             }

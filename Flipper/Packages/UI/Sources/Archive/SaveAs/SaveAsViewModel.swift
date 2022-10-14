@@ -30,8 +30,13 @@ class SaveAsViewModel: ObservableObject {
         Task {
             do {
                 // (ノಠ益ಠ)ノ彡┻━┻
+<<<<<<< HEAD
                 guard archive.get(item.id) == nil else {
                     showError(Archive.Error.alreadyExists)
+=======
+                guard archive.get(item.wrappedValue.id) == nil else {
+                    showError(Archive.Error.alredyExists)
+>>>>>>> 8183363 (iOS 14 lazy backport)
                     return
                 }
                 try await archive.upsert(item.wrappedValue)

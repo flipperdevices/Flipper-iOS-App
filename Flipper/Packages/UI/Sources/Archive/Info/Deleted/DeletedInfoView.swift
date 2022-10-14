@@ -3,7 +3,7 @@ import SwiftUI
 @MainActor
 struct DeletedInfoView: View {
     @StateObject var viewModel: DeletedInfoViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -51,7 +51,7 @@ struct DeletedInfoView: View {
             Alert(title: Text(viewModel.error))
         }
         .onReceive(viewModel.dismissPublisher) {
-            dismiss()
+            presentationMode.wrappedValue.dismiss()
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)

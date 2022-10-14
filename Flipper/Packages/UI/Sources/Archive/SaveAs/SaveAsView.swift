@@ -3,7 +3,7 @@ import SwiftUI
 struct SaveAsView: View {
     @StateObject var viewModel: SaveAsViewModel
     @StateObject var alertController: AlertController = .init()
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var body: some View {
         ZStack {
@@ -11,7 +11,7 @@ struct SaveAsView: View {
                 ZStack {
                     HStack {
                         BackButton {
-                            dismiss()
+                            presentationMode.wrappedValue.dismiss()
                         }
                         Spacer()
                     }

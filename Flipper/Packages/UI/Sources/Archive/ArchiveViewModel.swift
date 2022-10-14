@@ -9,7 +9,6 @@ import OrderedCollections
 class ArchiveViewModel: ObservableObject {
     private let logger = Logger(label: "archive-vm")
 
-    @Environment(\.dismiss) private var dismiss
     let appState: AppState = .shared
 
     let pullToRefreshThreshold: Double = 1000

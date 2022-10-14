@@ -2,7 +2,6 @@ import SwiftUI
 
 struct EmulateView: View {
     @StateObject var viewModel: EmulateViewModel
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 4) {
@@ -111,11 +110,11 @@ private struct EmulateButton: View {
         .foregroundColor(.white)
         .background(buttonColor)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay {
+        .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(borderBackgroundColor, lineWidth: 4)
                 .opacity(viewModel.isEmulating ? 1 : 0)
-        }
+        )
         .overlay(
             EmulateBorder(cornerRadius: 12)
                 .trim(from: trimFrom, to: trimTo)
@@ -200,11 +199,11 @@ private struct SendButton: View {
         .foregroundColor(.white)
         .background(buttonColor)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay {
+        .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(borderBackgroundColor, lineWidth: 4)
                 .opacity(viewModel.isEmulating ? 1 : 0)
-        }
+        )
         .overlay(
             SendBorder(cornerRadius: 12)
                 .trim(from: trimFrom, to: trimTo)

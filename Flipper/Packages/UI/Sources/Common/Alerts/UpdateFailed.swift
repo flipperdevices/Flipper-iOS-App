@@ -1,18 +1,30 @@
 import SwiftUI
+import AttributedText
 
 struct UpdateFailedAlert: View {
     @Binding var isPresented: Bool
 
     let firmwareVersion: String
 
-    var message: AttributedString {
-        var version = AttributedString(firmwareVersion)
-        version.foregroundColor = .primary
-        var message = AttributedString(
-            " wasn’t installed on your Flipper." +
+    var message: NSAttributedString {
+        var version = NSMutableAttributedString(string: firmwareVersion)
+        version.addAttributes(
+            [.foregroundColor: Color.primary],
+            range: NSRange(location: 0, length: version.length)
+        )
+        var message = NSMutableAttributedString(
+            string: " wasn’t installed on your Flipper." +
             " Try to install it again")
-        message.foregroundColor = .init(uiColor: .init(.black40))
-        return version + message
+        
+        message.addAttributes(
+            [.foregroundColor: Color.black40],
+            range: NSRange(location: 0, length: message.length)
+        )
+        
+        var result = NSMutableAttributedString()
+        result.append(version)
+        result.append(message)
+        return result
     }
 
     var body: some View {
@@ -25,7 +37,7 @@ struct UpdateFailedAlert: View {
                 .foregroundColor(.sRed)
                 .padding(.top, 24)
 
-            Text(message)
+            AttributedText(message)
                 .font(.system(size: 14, weight: .medium))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 12)

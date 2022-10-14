@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ImportView: View {
     @StateObject var viewModel: ImportViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var body: some View {
         VStack(spacing: 0) {
@@ -46,7 +46,7 @@ struct ImportView: View {
             Alert(title: Text(viewModel.error))
         }
         .onReceive(viewModel.dismissPublisher) {
-            dismiss()
+            presentationMode.wrappedValue.dismiss()
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)

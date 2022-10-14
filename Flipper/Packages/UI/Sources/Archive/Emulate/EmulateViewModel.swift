@@ -32,7 +32,7 @@ class EmulateViewModel: ObservableObject {
     }
 
     var forceStop = false
-    var emulateStarted: Date = .now
+    var emulateStarted: Date = Date()
     private var emulateTask: Task<Void, Swift.Error>?
 
     @Published var appState: AppState = .shared
@@ -105,7 +105,7 @@ class EmulateViewModel: ObservableObject {
                 feedback(style: .soft)
                 if item.kind == .subghz {
                     try await rpc.appButtonPress()
-                    emulateStarted = .now
+                    emulateStarted = Date()
                 }
             } catch {
                 logger.error("emilating key: \(error)")

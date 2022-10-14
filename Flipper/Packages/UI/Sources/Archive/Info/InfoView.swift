@@ -3,7 +3,7 @@ import SwiftUI
 struct InfoView: View {
     @StateObject var viewModel: InfoViewModel
     @StateObject var alertController: AlertController = .init()
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var body: some View {
         ZStack {
@@ -83,7 +83,7 @@ struct InfoView: View {
             Alert(title: Text(viewModel.error))
         }
         .onReceive(viewModel.dismissPublisher) {
-            dismiss()
+            presentationMode.wrappedValue.dismiss()
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)

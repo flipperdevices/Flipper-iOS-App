@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ConnectionView: View {
     @StateObject var viewModel: ConnectionViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var body: some View {
         VStack(spacing: 0) {
@@ -76,7 +76,7 @@ struct ConnectionView: View {
         .toolbar {
             LeadingToolbarItems {
                 BackButton {
-                    dismiss()
+                    presentationMode.wrappedValue.dismiss()
                 }
             }
             ToolbarItem(placement: .principal) {

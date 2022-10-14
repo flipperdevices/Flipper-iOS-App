@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct HelpView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var body: some View {
         VStack {
             HStack(alignment: .top, spacing: 8) {
                 Spacer()
                 Button {
-                    dismiss()
+                    presentationMode.wrappedValue.dismiss()
                 } label: {
                     Image(systemName: "xmark")
                 }
