@@ -165,28 +165,29 @@ struct DeviceUpdateCard: View {
                 }
             }
         }
-        .customAlert(isPresented: $viewModel.showConfirmUpdate) {
-            VStack(spacing: 0) {
-                Text("Update firmware?")
-                Text(
+        .alert(isPresented: $viewModel.showConfirmUpdate) {
+            Alert(
+                title: Text("Update firmware?"),
+                message: Text(
                     "New Firmware \(viewModel.availableFirmware ?? "") " +
-                    "will be installed")
-                Button("Cancel") { }
-                Button("Update") {
+                    "will be installed"),
+                primaryButton: .default(Text("Update")) {
                     viewModel.update()
-                }
-            }
+                },
+                secondaryButton: .default(Text("Cancel")) {}
+            )
         }
-        .customAlert(isPresented: $viewModel.showPauseSync) {
-            VStack(spacing: 0) {
-                Text("Pause Synchronization?")
-                Text("Firmware update is not possible during synchronization. " +
-                     "Wait for sync to finish or pause it.")
-                Button("Continue") { }
-                Button("Pause") {
+        .alert(isPresented: $viewModel.showPauseSync) {
+            Alert(
+                title: Text("Pause Synchronization?"),
+                message: Text(
+                    "Firmware update is not possible during synchronization. " +
+                    "Wait for sync to finish or pause it."),
+                primaryButton: .default(Text("Pause")) {
                     viewModel.pauseSync()
-                }
-            }
+                },
+                secondaryButton: .default(Text("Continue")) {}
+            )
         }
         .customAlert(isPresented: $viewModel.showCharge) {
             LowBatteryAlert(isPresented: $viewModel.showCharge)
