@@ -171,10 +171,10 @@ struct DeviceUpdateCard: View {
                 message: Text(
                     "New Firmware \(viewModel.availableFirmware ?? "") " +
                     "will be installed"),
-                primaryButton: .default(Text("Update")) {
+                primaryButton: .default(Text("Cancel")) {},
+                secondaryButton: .default(Text("Update")) {
                     viewModel.update()
-                },
-                secondaryButton: .default(Text("Cancel")) {}
+                }
             )
         }
         .alert(isPresented: $viewModel.showPauseSync) {
@@ -183,10 +183,10 @@ struct DeviceUpdateCard: View {
                 message: Text(
                     "Firmware update is not possible during synchronization. " +
                     "Wait for sync to finish or pause it."),
-                primaryButton: .default(Text("Pause")) {
+                primaryButton: .default(Text("Continue")) {},
+                secondaryButton: .default(Text("Pause")) {
                     viewModel.pauseSync()
-                },
-                secondaryButton: .default(Text("Continue")) {}
+                }
             )
         }
         .customAlert(isPresented: $viewModel.showCharge) {
