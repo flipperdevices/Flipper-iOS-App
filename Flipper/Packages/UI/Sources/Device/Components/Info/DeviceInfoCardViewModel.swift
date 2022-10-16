@@ -73,7 +73,7 @@ class DeviceInfoCardViewModel: ObservableObject {
         guard let int = device?.storage?.internal else {
             return NSAttributedString(string: "")
         }
-        var result = NSMutableAttributedString(string: int.description)
+        let result = NSMutableAttributedString(string: int.description)
         if int.free < 20_000 {
             result.addAttributes(
                 [.foregroundColor: Color.sRed],

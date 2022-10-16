@@ -7,21 +7,21 @@ struct UpdateFailedAlert: View {
     let firmwareVersion: String
 
     var message: NSAttributedString {
-        var version = NSMutableAttributedString(string: firmwareVersion)
+        let version = NSMutableAttributedString(string: firmwareVersion)
         version.addAttributes(
             [.foregroundColor: Color.primary],
             range: NSRange(location: 0, length: version.length)
         )
-        var message = NSMutableAttributedString(
+        let message = NSMutableAttributedString(
             string: " wasn’t installed on your Flipper." +
             " Try to install it again")
-        
+
         message.addAttributes(
             [.foregroundColor: Color.black40],
             range: NSRange(location: 0, length: message.length)
         )
-        
-        var result = NSMutableAttributedString()
+
+        let result = NSMutableAttributedString()
         result.append(version)
         result.append(message)
         return result

@@ -32,7 +32,7 @@ class EmulateViewModel: ObservableObject {
     }
 
     var forceStop = false
-    var emulateStarted: Date = Date()
+    var emulateStarted = Date()
     private var emulateTask: Task<Void, Swift.Error>?
 
     @Published var appState: AppState = .shared

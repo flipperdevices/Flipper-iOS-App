@@ -7,18 +7,18 @@ struct UpdateSucceededAlert: View {
     let firmwareVersion: String
 
     var message: NSAttributedString {
-        var version = NSMutableAttributedString(string: firmwareVersion)
+        let version = NSMutableAttributedString(string: firmwareVersion)
         version.addAttributes(
             [.foregroundColor: Color.primary],
             range: NSRange(location: 0, length: version.length)
         )
-        var message = NSMutableAttributedString(string: " was installed on your Flipper")
+        let message = NSMutableAttributedString(string: " was installed on your Flipper")
         message.addAttributes(
             [.foregroundColor: Color.black40],
             range: NSRange(location: 0, length: message.length)
         )
-        
-        var result = NSMutableAttributedString()
+
+        let result = NSMutableAttributedString()
         result.append(version)
         result.append(message)
         return result
