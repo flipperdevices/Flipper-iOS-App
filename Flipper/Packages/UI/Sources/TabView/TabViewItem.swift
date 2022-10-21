@@ -16,6 +16,7 @@ struct TabViewItem: View {
                     .padding(.bottom, 4)
                     .padding(.horizontal, 12)
             }
+            .frame(minWidth: 69)
             .background(isSelected ? Color.black4 : Color.clear)
             .cornerRadius(8)
         }

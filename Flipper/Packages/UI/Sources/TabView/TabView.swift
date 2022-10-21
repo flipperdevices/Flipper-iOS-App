@@ -9,7 +9,7 @@ struct TabView: View {
     enum Tab: String {
         case device
         case archive
-        case options
+        case hub
     }
 
     func color(for tab: Tab) -> Color {
@@ -42,13 +42,13 @@ struct TabView: View {
                 Spacer()
 
                 TabViewItem(
-                    image: .init(Image(optionsImageName)),
-                    name: "Options",
-                    isSelected: selected == .options
+                    image: .init(Image(hubImageName)),
+                    name: "Hub",
+                    isSelected: selected == .hub
                 ) {
-                    self.selected = .options
+                    self.selected = .hub
                 }
-                .foregroundColor(optionsColor)
+                .foregroundColor(hubColor)
             }
             .padding(.top, 6)
             .padding(.horizontal, 8)
@@ -98,8 +98,8 @@ extension TabView {
         selected == .archive ? .black80 : .black30
     }
 
-    var optionsColor: Color {
-        selected == .options ? .black80 : .black30
+    var hubColor: Color {
+        selected == .hub ? .black80 : .black30
     }
 }
 
@@ -139,7 +139,7 @@ extension TabView {
         selected == .archive ? "archive_filled_icon" : "archive_line_icon"
     }
 
-    var optionsImageName: String {
-        selected == .options ? "options_filled_icon" : "options_line_icon"
+    var hubImageName: String {
+        selected == .hub ? "hub_filled_icon" : "hub_line_icon"
     }
 }
