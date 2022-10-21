@@ -2,7 +2,7 @@ import XCTest
 
 @testable import Core
 
-// swiftlint:disable force_unwrapping function_body_length
+// swiftlint:disable force_unwrapping
 
 class CorrectBundleTests: XCTestCase {
     func testBundle() async throws {
