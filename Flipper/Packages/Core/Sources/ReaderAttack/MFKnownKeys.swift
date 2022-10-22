@@ -10,14 +10,14 @@ public class MFKnownKeys {
     public init() {}
 
     private var flipperKeysExist: Bool {
-        get async {
-            (try? await rpc.getSize(at: flipperKeysPath)) != nil
+        get async throws {
+            try await rpc.fileExists(at: flipperKeysPath)
         }
     }
 
     private var userKeysExist: Bool {
-        get async {
-            (try? await rpc.getSize(at: userKeysPath)) != nil
+        get async throws {
+            try await rpc.fileExists(at: userKeysPath)
         }
     }
 
@@ -39,13 +39,13 @@ public class MFKnownKeys {
     }
 
     public func readFlipperKeys() async throws -> Set<MFKey64> {
-        await flipperKeysExist
+        try await flipperKeysExist
             ? try await readKeys(at: flipperKeysPath)
             : []
     }
 
     public func readUserKeys() async throws -> Set<MFKey64> {
-        await userKeysExist
+        try await userKeysExist
             ? try await readKeys(at: userKeysPath)
             : []
     }
