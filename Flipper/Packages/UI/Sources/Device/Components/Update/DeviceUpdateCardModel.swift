@@ -189,7 +189,7 @@ class DeviceUpdateCardModel: ObservableObject {
         switch error {
         case .canceled: result = .canceled
         case .failedDownloading: result = .failedDownload
-        case .failedPrepearing: result = .failedPrepare
+        case .failedPreparing: result = .failedPrepare
         case .failedUploading: result = .failedUpload
         }
         analytics.flipperUpdateResult(

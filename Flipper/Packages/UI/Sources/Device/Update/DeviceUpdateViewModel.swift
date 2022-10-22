@@ -46,7 +46,7 @@ class DeviceUpdateViewModel: ObservableObject {
     enum UpdateError {
         case canceled
         case failedDownloading
-        case failedPrepearing
+        case failedPreparing
         case failedUploading
     }
 
@@ -129,7 +129,7 @@ class DeviceUpdateViewModel: ObservableObject {
                 self.state = .noInternet
             } catch where error is Provisioning.Error {
                 logger.error("provisioning: \(error)")
-                onFailure(.failedPrepearing)
+                onFailure(.failedPreparing)
                 self.state = .outdatedAppVersion
             } catch let error as Peripheral.Error
                 where error == .storage(.internal) {
