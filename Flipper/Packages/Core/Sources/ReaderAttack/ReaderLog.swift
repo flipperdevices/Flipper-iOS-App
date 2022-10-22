@@ -52,25 +52,25 @@ public struct ReaderLog {
             guard let keyType = KeyType(rawValue: keyTypeString) else {
                 throw Error(line: number, source: .keyType)
             }
-            guard let uid = UInt32(uidString, radix: 16) else {
+            guard let uid = MFKey32(hexValue: uidString) else {
                 throw Error(line: number, source: .uid)
             }
-            guard let nt0 = UInt32(nt0String, radix: 16) else {
+            guard let nt0 = MFKey32(hexValue: nt0String) else {
                 throw Error(line: number, source: .nt0)
             }
-            guard let nr0 = UInt32(nr0String, radix: 16) else {
+            guard let nr0 = MFKey32(hexValue: nr0String) else {
                 throw Error(line: number, source: .nr0)
             }
-            guard let ar0 = UInt32(ar0String, radix: 16) else {
+            guard let ar0 = MFKey32(hexValue: ar0String) else {
                 throw Error(line: number, source: .ar0)
             }
-            guard let nt1 = UInt32(nt1String, radix: 16) else {
+            guard let nt1 = MFKey32(hexValue: nt1String) else {
                 throw Error(line: number, source: .nt1)
             }
-            guard let nr1 = UInt32(nr1String, radix: 16) else {
+            guard let nr1 = MFKey32(hexValue: nr1String) else {
                 throw Error(line: number, source: .nr1)
             }
-            guard let ar1 = UInt32(ar1String, radix: 16) else {
+            guard let ar1 = MFKey32(hexValue: ar1String) else {
                 throw Error(line: number, source: .ar1)
             }
 
@@ -79,13 +79,13 @@ public struct ReaderLog {
                 sector: sector,
                 keyType: keyType,
                 readerData: .init(
-                    uid: uid,
-                    nt0: nt0,
-                    nr0: nr0,
-                    ar0: ar0,
-                    nt1: nt1,
-                    nr1: nr1,
-                    ar1: ar1)))
+                    uid: uid.value,
+                    nt0: nt0.value,
+                    nr0: nr0.value,
+                    ar0: ar0.value,
+                    nt1: nt1.value,
+                    nr1: nr1.value,
+                    ar1: ar1.value)))
         }
 
         self.lines = result

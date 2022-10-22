@@ -3,7 +3,7 @@ import MFKey32v2
 public enum ReaderAttack {
     public struct Result: Sendable {
         public let origin: ReaderLog.Line
-        public let key: UInt64?
+        public let key: MFKey64?
     }
 
     public static func recoverKeys(from log: ReaderLog) -> AsyncStream<Result> {
@@ -26,9 +26,10 @@ public enum ReaderAttack {
 
     static func recoverKey(from line: ReaderLog.Line) async -> Result {
         await Task(priority: .background) {
-            .init(
-                origin: line,
-                key: MFKey32v2.recover(from: line.readerData))
+            guard let key = MFKey32v2.recover(from: line.readerData) else {
+                return .init(origin: line, key: nil)
+            }
+            return .init(origin: line, key: .init(value: key))
         }.value
     }
 }
