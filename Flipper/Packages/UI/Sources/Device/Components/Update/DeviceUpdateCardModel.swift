@@ -34,7 +34,7 @@ class DeviceUpdateCardModel: ObservableObject {
     @Published var showConfirmUpdate = false
     @Published var showUpdateView = false
     @Published var showUpdateFailed = false
-    @Published var showUpdateSuccessed = false
+    @Published var showUpdateSucceeded = false
     @Published var showPauseSync = false
     @Published var showCharge = false
 
@@ -223,7 +223,7 @@ class DeviceUpdateCardModel: ObservableObject {
 
             if installedFirmware == updateToVersion {
                 logger.info("update success: \(updateFromToVersion)")
-                showUpdateSuccessed = true
+                showUpdateSucceeded = true
 
                 analytics.flipperUpdateResult(
                     id: updateID,

@@ -194,9 +194,9 @@ struct DeviceUpdateCard: View {
         .customAlert(isPresented: $viewModel.showCharge) {
             LowBatteryAlert(isPresented: $viewModel.showCharge)
         }
-        .customAlert(isPresented: $viewModel.showUpdateSuccessed) {
-            UpdateSuccessedAlert(
-                isPresented: $viewModel.showUpdateSuccessed,
+        .customAlert(isPresented: $viewModel.showUpdateSucceeded) {
+            UpdateSucceededAlert(
+                isPresented: $viewModel.showUpdateSucceeded,
                 firmwareVersion: viewModel.alertVersion)
         }
         .customAlert(isPresented: $viewModel.showUpdateFailed) {
