@@ -6,8 +6,14 @@ public enum ReaderAttack {
         public let key: MFKey64?
     }
 
+    private static var forceStop = false
+
     public static func recoverKeys(from log: ReaderLog) -> AsyncStream<Result> {
-        .init { continuation in
+        forceStop = false
+        return .init { continuation in
+            continuation.onTermination = { _ in
+                forceStop = true
+            }
             Task {
                 await withTaskGroup(of: Result.self) { group in
                     for line in log.lines {
@@ -16,6 +22,7 @@ public enum ReaderAttack {
                         }
                     }
                     for await value in group {
+                        guard !forceStop else { break }
                         continuation.yield(value)
                     }
                     continuation.finish()
@@ -24,8 +31,11 @@ public enum ReaderAttack {
         }
     }
 
-    static func recoverKey(from line: ReaderLog.Line) async -> Result {
+    private static func recoverKey(from line: ReaderLog.Line) async -> Result {
         await Task(priority: .background) {
+            guard !forceStop else {
+                return .init(origin: line, key: nil)
+            }
             guard let key = MFKey32v2.recover(from: line.readerData) else {
                 return .init(origin: line, key: nil)
             }
