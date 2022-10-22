@@ -23,10 +23,10 @@ extension Flipper.DeviceInformation {
             return .candidate
         }
 
-        let varsionParts = parts[1].split(separator: ".")
+        let versionParts = parts[1].split(separator: ".")
         guard
-            varsionParts.count == 3,
-            varsionParts.allSatisfy({ $0.allSatisfy { $0.isNumber } })
+            versionParts.count == 3,
+            versionParts.allSatisfy({ $0.allSatisfy { $0.isNumber } })
         else {
             return .development
         }
