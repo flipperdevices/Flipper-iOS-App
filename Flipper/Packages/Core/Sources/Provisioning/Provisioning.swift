@@ -8,7 +8,7 @@ public class Provisioning {
 
     @Inject private var analytics: Analytics
 
-    private let cellurarRegionProvider: RegionProvider
+    private let cellularRegionProvider: RegionProvider
     private let localeRegionProvider: RegionProvider
     private let regionsBundleAPI: RegionsBundleAPI
 
@@ -30,25 +30,25 @@ public class Provisioning {
     }
 
     public init() {
-        self.cellurarRegionProvider = CellurarRegionProvider()
+        self.cellularRegionProvider = CellularRegionProvider()
         self.localeRegionProvider = LocaleRegionProvider()
         self.regionsBundleAPI = RegionsBundleAPIv0()
     }
 
     // @testable
     init(
-        cellurarRegionProvider: RegionProvider,
+        cellularRegionProvider: RegionProvider,
         localeRegionProvider: RegionProvider,
         regionsBundleAPI: RegionsBundleAPI
     ) {
-        self.cellurarRegionProvider = cellurarRegionProvider
+        self.cellularRegionProvider = cellularRegionProvider
         self.localeRegionProvider = localeRegionProvider
         self.regionsBundleAPI = regionsBundleAPI
     }
 
     public func provideRegion() async throws -> Region {
         let bundle = try await regionsBundleAPI.get()
-        let code = cellurarRegionProvider.regionCode
+        let code = cellularRegionProvider.regionCode
             ?? bundle.geoIP
             ?? localeRegionProvider.regionCode
             ?? .default
@@ -62,7 +62,7 @@ public class Provisioning {
 fileprivate extension Provisioning {
     func reportProvisioning(geoIP: ISOCode?, provided: ISOCode) {
         analytics.subghzProvisioning(
-            sim1: cellurarRegionProvider.regionCode?.value ?? "",
+            sim1: cellularRegionProvider.regionCode?.value ?? "",
             sim2: "",
             ip: geoIP?.value ?? "",
             system: localeRegionProvider.regionCode?.value ?? "",
@@ -71,7 +71,7 @@ fileprivate extension Provisioning {
     }
 
     func detectSource(geoIP: ISOCode?) -> RegionSource {
-        cellurarRegionProvider.regionCode != nil
+        cellularRegionProvider.regionCode != nil
             ? .sim
             : geoIP != nil
                 ? .geoIP

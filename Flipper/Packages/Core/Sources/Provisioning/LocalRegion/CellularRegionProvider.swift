@@ -2,7 +2,7 @@ import CoreTelephony
 
 // swiftlint:disable discouraged_optional_collection
 
-public class CellurarRegionProvider: RegionProvider {
+public class CellularRegionProvider: RegionProvider {
     private let codesProvider: () -> [String]?
 
     public init() {
