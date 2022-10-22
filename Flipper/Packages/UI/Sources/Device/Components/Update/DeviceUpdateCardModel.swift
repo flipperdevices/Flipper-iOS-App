@@ -55,7 +55,7 @@ class DeviceUpdateCardModel: ObservableObject {
     var channelColor: Color {
         switch channel {
         case .development: return .development
-        case .canditate: return .candidate
+        case .candidate: return .candidate
         case .release: return .release
         case .custom: return .custom
         }
@@ -277,7 +277,7 @@ class DeviceUpdateCardModel: ObservableObject {
         showChannelSelector = false
         switch channel {
         case "Release": self.channel = .release
-        case "Release-Candidate": self.channel = .canditate
+        case "Release-Candidate": self.channel = .candidate
         case "Development": self.channel = .development
         default: break
         }
@@ -305,7 +305,7 @@ class DeviceUpdateCardModel: ObservableObject {
         self.availableFirmwareVersion = version
         switch channel {
         case .development: availableFirmware = "Dev \(version.version)"
-        case .canditate: availableFirmware = "RC \(version.version.dropLast(3))"
+        case .candidate: availableFirmware = "RC \(version.version.dropLast(3))"
         case .release: availableFirmware = "Release \(version.version)"
         case .custom(let url): availableFirmware = "Custom \(url.lastPathComponent)"
         }
