@@ -31,7 +31,7 @@ struct OptionsView: View {
 
                 Section(header: Text("Remote")) {
                     NavigationLink("Screen Streaming") {
-                        RemoteContolView(viewModel: .init())
+                        RemoteControlView(viewModel: .init())
                     }
                     NavigationLink("File Manager") {
                         FileManagerView(viewModel: .init())
