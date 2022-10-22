@@ -290,7 +290,7 @@ public class AppState {
 
     func reportGATTInfo() {
         analytics.flipperGATTInfo(
-            flipperVersion: flipper?.information?.softwareRevision ?? "ukwnown")
+            flipperVersion: flipper?.information?.softwareRevision ?? "unknown")
     }
 
     func reportRPCInfo() {
