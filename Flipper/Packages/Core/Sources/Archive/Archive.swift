@@ -25,7 +25,7 @@ public class Archive: ObservableObject {
     private var disposeBag: DisposeBag = .init()
 
     public enum Error: String, Swift.Error {
-        case alredyExists
+        case alreadyExists
     }
 
     private init() {
@@ -230,7 +230,7 @@ extension Archive {
         if let item = get(id) {
             let newItem = item.rename(to: name)
             guard get(newItem.id) == nil else {
-                throw Error.alredyExists
+                throw Error.alreadyExists
             }
             try await mobileArchive.delete(item.path)
             if let shadowPath = item.shadowPath {
@@ -283,7 +283,7 @@ extension Archive {
 extension Archive.Error: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .alredyExists:
+        case .alreadyExists:
             return "The name is already taken. Please choose a different name."
         }
     }

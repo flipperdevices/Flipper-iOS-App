@@ -31,7 +31,7 @@ class SaveAsViewModel: ObservableObject {
             do {
                 // (ノಠ益ಠ)ノ彡┻━┻
                 guard archive.get(item.id) == nil else {
-                    showError(Archive.Error.alredyExists)
+                    showError(Archive.Error.alreadyExists)
                     return
                 }
                 try await archive.upsert(item.wrappedValue)
