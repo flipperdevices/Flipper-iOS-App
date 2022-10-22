@@ -28,7 +28,7 @@ class DeviceUpdateViewModel: ObservableObject {
 
     enum State {
         case downloadingFirmware
-        case prepearingForUpdate
+        case preparingForUpdate
         case uploadingFirmware
         case canceling
         case noInternet
@@ -79,7 +79,7 @@ class DeviceUpdateViewModel: ObservableObject {
 
     var isUpdating: Bool {
         switch state {
-        case .downloadingFirmware, .prepearingForUpdate, .uploadingFirmware:
+        case .downloadingFirmware, .preparingForUpdate, .uploadingFirmware:
             return true
         default:
             return false
@@ -183,7 +183,7 @@ class DeviceUpdateViewModel: ObservableObject {
     }
 
     func provideSubGHzRegion() async throws {
-        state = .prepearingForUpdate
+        state = .preparingForUpdate
         guard try await shouldProvideRegion else {
             return
         }
@@ -195,11 +195,11 @@ class DeviceUpdateViewModel: ObservableObject {
     func uploadFirmware(
         _ firmware: Update.Firmware
     ) async throws -> Peripheral.Path {
-        state = .prepearingForUpdate
+        state = .preparingForUpdate
         progress = 0
         return try await updater.uploadFirmware(firmware) { progress in
             DispatchQueue.main.async {
-                if self.state == .prepearingForUpdate {
+                if self.state == .preparingForUpdate {
                     self.state = .uploadingFirmware
                 }
                 self.progress = progress
