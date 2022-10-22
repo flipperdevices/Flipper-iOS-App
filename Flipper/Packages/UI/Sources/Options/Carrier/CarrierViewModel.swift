@@ -4,7 +4,7 @@ import CoreTelephony
 class CarrierViewModel: ObservableObject {
     let carriers: [Carrier]
     var regionCode: String {
-        Locale.current.regionCode ?? "unkwnown"
+        Locale.current.regionCode ?? "unknown"
     }
 
     struct Carrier: Identifiable {
