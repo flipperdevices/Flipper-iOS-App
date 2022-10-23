@@ -38,7 +38,7 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     var discovered: SafePublisher<[BluetoothPeripheral]> {
         _discovered.eraseToAnyPublisher()
     }
-    let _discovered: SafeValueSubject<[BluetoothPeripheral]> =  {
+    let _discovered: SafeValueSubject<[BluetoothPeripheral]> = {
         .init([])
     }()
 
