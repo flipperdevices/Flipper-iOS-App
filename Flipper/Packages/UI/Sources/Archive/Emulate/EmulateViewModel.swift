@@ -200,9 +200,11 @@ class EmulateViewModel: ObservableObject {
     }
 
     func toggleEmulate() {
-        isEmulating
-            ? stopEmulate()
-            : startEmulate()
+        if isEmulating {
+            stopEmulate()
+        } else {
+            startEmulate()
+        }
     }
 
     func resetEmulate() {
