@@ -51,7 +51,7 @@ class MainViewModel: ObservableObject {
 
         switch rootViewController.children[index] {
         case let controller as UINavigationController:
-            controller.popToRootViewController(animated: true)
+            _ = controller.popToRootViewController(animated: true)
         case let controller as UISplitViewController:
             controller.popToRootViewController(animated: true)
         default:
