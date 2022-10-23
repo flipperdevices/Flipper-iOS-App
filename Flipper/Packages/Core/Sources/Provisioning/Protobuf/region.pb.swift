@@ -8,7 +8,6 @@ import SwiftProtobuf
 // swiftlint:disable trailing_comma
 // swiftlint:disable line_length
 // swiftlint:disable nesting
-// swiftlint:disable closure_spacing
 // swiftlint:disable indentation_width
 // swiftlint:disable redundant_type_annotation
 
