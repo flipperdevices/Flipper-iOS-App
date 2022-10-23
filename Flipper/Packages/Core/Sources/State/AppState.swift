@@ -239,7 +239,8 @@ public class AppState {
 
     private func onOpenKeyURL(_ url: URL) async throws {
         let item = try await Sharing.importKey(from: url)
-        importQueue = [item]
+        let newItem = try await archive.copyIfExists(item)
+        importQueue = [newItem]
         logger.info("key url opened")
     }
 

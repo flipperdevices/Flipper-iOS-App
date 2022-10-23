@@ -37,7 +37,7 @@ class ArchiveViewModel: ObservableObject {
     @Published var showSearchView = false
     @Published var hasImportedItem = false
 
-    var importedItem: ArchiveItem? {
+    var importedItem: ArchiveItem {
         appState.importQueue.removeFirst()
     }
 

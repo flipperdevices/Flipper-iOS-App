@@ -47,10 +47,13 @@ extension ArchiveProtocol {
         // format: name_{Int}.type
         let parts = name.value.split(separator: "_")
 
-        let namePrefix = parts.count >= 2
+        var hasNumberSuffix: Bool {
+            parts.count >= 2 && Int(parts.last.unsafelyUnwrapped) != nil
+        }
+        let namePrefix = hasNumberSuffix
             ? parts.dropLast().joined(separator: "_")
             : parts.joined(separator: "_")
-        var number = parts.count >= 2
+        var number = hasNumberSuffix
             ? Int(parts.last.unsafelyUnwrapped) ?? 1
             : 1
 

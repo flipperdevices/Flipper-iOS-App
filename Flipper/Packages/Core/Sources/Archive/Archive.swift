@@ -162,15 +162,19 @@ extension Archive {
         deletedItems.append(item)
     }
 
-    public func restore(_ item: ArchiveItem) async throws {
-        let newPath = try await mobileArchive.nextAvailablePath(for: item.path)
-        var newItem = try ArchiveItem(
-            filename: newPath.lastComponent ?? "",
+    public func copyIfExists(_ item: ArchiveItem) async throws -> ArchiveItem {
+        let path = try await mobileArchive.nextAvailablePath(for: item.path)
+        return try ArchiveItem(
+            filename: path.lastComponent ?? "",
             properties: item.properties,
             shadowCopy: item.shadowCopy)
-        newItem.status = status(for: newItem)
-        try await upsert(newItem)
-        try await wipe(newItem)
+    }
+
+    public func restore(_ item: ArchiveItem) async throws {
+        var item = try await copyIfExists(item)
+        item.status = status(for: item)
+        try await upsert(item)
+        try await wipe(item)
     }
 
     public func restoreAll() async throws {

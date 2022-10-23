@@ -20,9 +20,9 @@ class ImportViewModel: ObservableObject {
     let appState: AppState = .shared
     var dismissPublisher = PassthroughSubject<Void, Never>()
 
-    init(item: ArchiveItem?) {
-        self.item = item ?? .none
-        self.backup = item ?? .none
+    init(item: ArchiveItem) {
+        self.item = item
+        self.backup = item
         recordImport()
     }
 
