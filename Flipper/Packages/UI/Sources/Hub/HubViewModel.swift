@@ -13,13 +13,12 @@ class HubViewModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
-    @Published var isOnline = false
+    @Published var hasMFLog = false
 
     init() {
-        appState.$status
+        appState.$hasMFLog
             .receive(on: DispatchQueue.main)
-            .map(\.isOnline)
-            .assign(to: \.isOnline, on: self)
+            .assign(to: \.hasMFLog, on: self)
             .store(in: &disposeBag)
     }
 }

@@ -11,7 +11,7 @@ struct NFCToolsView: View {
                 NavigationLink {
                     ReaderAttackView(viewModel: .init())
                 } label: {
-                    ReaderAttackCard(hasNotification: true)
+                    ReaderAttackCard(hasNotification: viewModel.hasMFLog)
                 }
             }
             .padding(14)

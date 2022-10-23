@@ -11,7 +11,7 @@ struct HubView: View {
                     NavigationLink {
                         NFCToolsView(viewModel: .init())
                     } label: {
-                        NFCToolsCard(hasNotification: true)
+                        NFCToolsCard(hasNotification: viewModel.hasMFLog)
                     }
                 }
                 .padding(14)

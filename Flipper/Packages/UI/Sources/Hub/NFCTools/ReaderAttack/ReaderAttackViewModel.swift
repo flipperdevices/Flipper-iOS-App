@@ -22,8 +22,6 @@ class ReaderAttackViewModel: ObservableObject {
     @Published var flipperDuplicatedKeys: Set<MFKey64> = .init()
     @Published var userDuplicatedKeys: Set<MFKey64> = .init()
 
-    private let logPath: Path = "/ext/nfc/.mfkey32.log"
-
     private var forceStop = false
     private let mfKnownKeys = MFKnownKeys()
     private var flipperKnownKeys: Set<MFKey64> = .init()
@@ -70,7 +68,7 @@ class ReaderAttackViewModel: ObservableObject {
     func start() {
         task = Task {
             do {
-                guard try await rpc.fileExists(at: logPath) else {
+                guard try await rpc.fileExists(at: .mfKey32Log) else {
                     state = .noLog
                     return
                 }
@@ -98,7 +96,7 @@ class ReaderAttackViewModel: ObservableObject {
 
     func readLog() async throws -> String {
         try Task.checkCancellation()
-        return try await rpc.readFile(at: logPath) { progress in
+        return try await rpc.readFile(at: .mfKey32Log) { progress in
             Task { @MainActor in
                 self.progress = progress
             }
@@ -106,7 +104,8 @@ class ReaderAttackViewModel: ObservableObject {
     }
 
     func deleteLog() async throws {
-        try await rpc.deleteFile(at: logPath)
+        try await rpc.deleteFile(at: .mfKey32Log)
+        appState.hasMFLog = false
     }
 
     func calculateKeys(_ logFile: String) async throws {

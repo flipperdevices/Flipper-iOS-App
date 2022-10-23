@@ -2,9 +2,8 @@ import SwiftUI
 import Core
 
 struct TabView: View {
+    @StateObject var viewModel: TabViewModel
     @Binding var selected: Tab
-    let status: DeviceStatus
-    @Binding var progress: Int
 
     enum Tab: String {
         case device
@@ -22,7 +21,8 @@ struct TabView: View {
                 TabViewItem(
                     image: deviceImage,
                     name: deviceTabName,
-                    isSelected: selected == .device
+                    isSelected: selected == .device,
+                    hasNotification: false
                 ) {
                     self.selected = .device
                 }
@@ -33,7 +33,8 @@ struct TabView: View {
                 TabViewItem(
                     image: .init(Image(archiveImageName)),
                     name: "Archive",
-                    isSelected: selected == .archive
+                    isSelected: selected == .archive,
+                    hasNotification: false
                 ) {
                     self.selected = .archive
                 }
@@ -44,7 +45,8 @@ struct TabView: View {
                 TabViewItem(
                     image: .init(Image(hubImageName)),
                     name: "Hub",
-                    isSelected: selected == .hub
+                    isSelected: selected == .hub,
+                    hasNotification: viewModel.hasMFLog
                 ) {
                     self.selected = .hub
                 }
@@ -60,13 +62,13 @@ struct TabView: View {
 
 extension TabView {
     var deviceTabName: String {
-        switch status {
+        switch viewModel.status {
         case .noDevice: return "No Device"
         case .unsupportedDevice: return "Unsupported"
         case .connecting: return "Connecting..."
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"
-        case .synchronizing: return "Syncing \(progress)%"
+        case .synchronizing: return "Syncing \(viewModel.syncProgress)%"
         case .synchronized: return "Synced!"
         case .updating: return "Connecting..."
         case .invalidPairing: return "Pairing Failed"
@@ -80,7 +82,7 @@ extension TabView {
         guard selected == .device else {
             return .black30
         }
-        switch status {
+        switch viewModel.status {
         case .noDevice: return .black40
         case .unsupportedDevice: return .sRed
         case .connecting: return .black40
@@ -105,7 +107,7 @@ extension TabView {
 
 extension TabView {
     var deviceImage: AnyView {
-        switch status {
+        switch viewModel.status {
         case .connecting, .synchronizing:
             return .init(
                 Animation(deviceImageName + "_animated")
@@ -119,7 +121,7 @@ extension TabView {
         var name = "device_"
         name += selected == .device ? "filled_" : "line_"
 
-        switch status {
+        switch viewModel.status {
         case .noDevice: name += "no_device"
         case .unsupportedDevice: name += "unsupported"
         case .connecting: name += "connecting"

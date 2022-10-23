@@ -20,9 +20,8 @@ struct MainView: View {
 
             if !tabViewController.isHidden {
                 TabView(
-                    selected: $viewModel.selectedTab,
-                    status: viewModel.status,
-                    progress: $viewModel.syncProgress
+                    viewModel: .init(),
+                    selected: $viewModel.selectedTab
                 )
                 .transition(.move(edge: .bottom))
             }

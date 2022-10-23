@@ -4,20 +4,17 @@ import Peripheral
 public class MFKnownKeys {
     @Inject var rpc: RPC
 
-    var flipperKeysPath: Path = "/ext/nfc/assets/mf_classic_dict.nfc"
-    var userKeysPath: Path = "/ext/nfc/assets/mf_classic_dict_user.nfc"
-
     public init() {}
 
     private var flipperKeysExist: Bool {
         get async throws {
-            try await rpc.fileExists(at: flipperKeysPath)
+            try await rpc.fileExists(at: .mfClassicDict)
         }
     }
 
     private var userKeysExist: Bool {
         get async throws {
-            try await rpc.fileExists(at: userKeysPath)
+            try await rpc.fileExists(at: .mfClassicDictUser)
         }
     }
 
@@ -40,13 +37,13 @@ public class MFKnownKeys {
 
     public func readFlipperKeys() async throws -> Set<MFKey64> {
         try await flipperKeysExist
-            ? try await readKeys(at: flipperKeysPath)
+            ? try await readKeys(at: .mfClassicDict)
             : []
     }
 
     public func readUserKeys() async throws -> Set<MFKey64> {
         try await userKeysExist
-            ? try await readKeys(at: userKeysPath)
+            ? try await readKeys(at: .mfClassicDictUser)
             : []
     }
 
@@ -55,6 +52,6 @@ public class MFKnownKeys {
     }
 
     public func writeUserKeys(_ keys: Set<MFKey64>) async throws {
-        try await writeKeys(keys, at: userKeysPath)
+        try await writeKeys(keys, at: .mfClassicDictUser)
     }
 }
