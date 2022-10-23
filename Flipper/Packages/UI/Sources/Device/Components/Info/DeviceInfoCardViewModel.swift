@@ -69,9 +69,8 @@ class DeviceInfoCardViewModel: ObservableObject {
     }
 
     var internalSpace: AttributedString {
-        guard isConnected else { return "" }
-        guard let int = device?.storage?.internal else {
-            return .init("")
+        guard isConnected, let int = device?.storage?.internal else {
+            return ""
         }
         var result = AttributedString(int.description)
         if int.free < 20_000 {
@@ -80,10 +79,18 @@ class DeviceInfoCardViewModel: ObservableObject {
         return result
     }
 
-    var externalSpace: String {
-        guard isConnected else { return "" }
-        guard device?.storage?.internal != nil else { return "" }
-        return device?.storage?.external?.description ?? "—"
+    var externalSpace: AttributedString {
+        guard isConnected, device?.storage?.internal != nil else {
+            return ""
+        }
+        guard let ext = device?.storage?.external else {
+            return "—"
+        }
+        var result = AttributedString(ext.description)
+        if ext.free < 100_000 {
+            result.foregroundColor = .sRed
+        }
+        return result
     }
 
     init() {
