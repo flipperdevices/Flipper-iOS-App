@@ -155,7 +155,7 @@ struct ReaderAttackView: View {
             viewModel.start()
         }
         .onDisappear {
-            print("on dissapear")
+            print("on disappear")
             viewModel.stop()
         }
     }
