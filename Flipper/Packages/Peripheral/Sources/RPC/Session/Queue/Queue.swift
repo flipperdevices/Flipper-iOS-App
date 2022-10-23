@@ -65,7 +65,7 @@ actor Queue {
 
         let commandId = Int(nextMain.commandID)
         guard let continuation = onResponse[commandId] else {
-            throw Error.unexpectedResponse(nil)
+            throw Error.unexpectedResponse(try? Response(decoding: nextMain))
         }
 
         do {
