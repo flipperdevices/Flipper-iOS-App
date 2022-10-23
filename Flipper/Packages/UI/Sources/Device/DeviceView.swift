@@ -33,6 +33,16 @@ struct DeviceView: View {
                         }
 
                         VStack(spacing: 24) {
+                            VStack(spacing: 0) {
+                                NavigationButton(
+                                    image: "Options",
+                                    title: "Options"
+                                ) {
+                                    OptionsView(viewModel: .init())
+                                }
+                            }
+                            .cornerRadius(10)
+
                             if viewModel.status != .noDevice {
                                 VStack(spacing: 0) {
                                     ActionButton(

@@ -28,6 +28,8 @@ public class AppState {
     @Published public var importQueue: [ArchiveItem] = []
     @Published public var customFirmwareURL: URL?
 
+    @Published public var hasMFLog = false
+
     public init() {
         logger.info("app version: \(Bundle.fullVersion)")
         logger.info("log level: \(UserDefaultsStorage.shared.logLevel)")
@@ -162,6 +164,15 @@ public class AppState {
     // MARK: Synchronization
 
     public func synchronize() async throws {
+        try await checkMFLogFile()
+        try await syncronizeArchive()
+    }
+
+    private func checkMFLogFile() async throws {
+        hasMFLog = try await rpc.fileExists(at: .mfKey32Log)
+    }
+
+    private func syncronizeArchive() async throws {
         guard flipper?.state == .connected else { return }
         guard status != .unsupportedDevice else { return }
         guard status != .synchronizing else { return }

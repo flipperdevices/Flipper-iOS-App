@@ -86,19 +86,18 @@ extension Update {
         guard case let .directory(directory) = firmware.entries.first else {
             throw Error.invalidFirmware
         }
-        let basePath = Path("/ext/update")
-        let updatePath = basePath.appending(directory)
-        try? await rpc.createDirectory(at: basePath)
-        try? await rpc.createDirectory(at: updatePath)
+        let firmwareUpdatePath = Path.update.appending(directory)
+        try? await rpc.createDirectory(at: .update)
+        try? await rpc.createDirectory(at: firmwareUpdatePath)
 
-        let files = await filterExising(firmware.files, at: basePath)
+        let files = await filterExising(firmware.files, at: .update)
 
         if !files.isEmpty {
             progress(0)
-            try await uploadFiles(files, at: basePath, progress: progress)
+            try await uploadFiles(files, at: .update, progress: progress)
         }
 
-        return updatePath
+        return firmwareUpdatePath
     }
 
     private func uploadFiles(

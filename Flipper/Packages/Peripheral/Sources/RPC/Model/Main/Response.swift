@@ -60,7 +60,6 @@ extension Response {
 }
 
 extension Response {
-    // swiftlint:disable cyclomatic_complexity
     init(decoding content: PB_Main.OneOf_Content) {
         switch content {
         // Empty

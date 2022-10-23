@@ -3,6 +3,8 @@ excluded:
  - Protobuf
 
 disabled_rules:
+ - cyclomatic_complexity
+ - function_body_length
  - identifier_name
  - type_name
  - nesting

@@ -53,7 +53,6 @@ public enum Error: Equatable, Swift.Error {
 // MARK: Initializer
 
 extension Error {
-    // swiftlint:disable cyclomatic_complexity function_body_length
     init(_ source: PB_CommandStatus) {
 
         switch source {

@@ -63,29 +63,32 @@ struct CategoryRow: View {
     let count: Int
 
     var body: some View {
-        HStack(spacing: 0) {
-            if let image = image {
-                image
-                    .resizable()
-                    .renderingMode(.template)
+        HStack {
+            HStack(spacing: 8) {
+                if let image = image {
+                    image
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(.primary)
+                        .frame(width: 24, height: 24)
+                }
+                Text(name)
+                    .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.primary)
-                    .frame(width: 24, height: 24)
-                    .padding(.trailing, 8)
             }
-            Text(name)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.primary)
+
             Spacer()
-            // swiftlint:disable empty_count
-            Text(count == 0 ? "" : "\(count)")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.black30)
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(.black30)
-                .padding(.leading, 7)
+
+            HStack(spacing: 2) {
+                // swiftlint:disable empty_count
+                Text(count == 0 ? "" : "\(count)")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black30)
+                Image("ChevronRight")
+            }
         }
-        .padding(.horizontal, 12)
         .frame(height: 44, alignment: .center)
+        .padding(.leading, 12)
+        .padding(.trailing, 9)
     }
 }

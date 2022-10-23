@@ -2,8 +2,6 @@ import SwiftProtobuf
 import struct Foundation.Date
 import struct Foundation.Data
 
-// swiftlint:disable function_body_length
-
 public enum Request {
     case system(System)
     case storage(Storage)

@@ -100,35 +100,11 @@ extension DeviceUpdateView {
         }
 
         var body: some View {
-            ZStack {
-                RoundedRectangle(cornerRadius: 9)
-                    .stroke(color, lineWidth: 3)
-
-                GeometryReader { reader in
-                    color.frame(width: reader.size.width * viewModel.progress)
-                }
-
-                HStack {
-                    Image(image)
-                        .padding([.leading, .top, .bottom], 9)
-
-                    Spacer()
-
-                    Text(text)
-                        .foregroundColor(.white)
-                        .font(.haxrCorpNeue(size: 40))
-                        .padding(.bottom, 4)
-
-                    Spacer()
-
-                    Image(image)
-                        .padding([.leading, .top, .bottom], 9)
-                        .opacity(0)
-                }
-            }
-            .frame(height: 46)
-            .background(color.opacity(0.54))
-            .cornerRadius(9)
+            ProgressBarView(
+                image: image,
+                text: text,
+                color: color,
+                progress: viewModel.progress)
         }
     }
 }

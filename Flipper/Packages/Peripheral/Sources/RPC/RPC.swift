@@ -84,3 +84,48 @@ public extension RPC {
         try await appButtonPress("")
     }
 }
+
+public extension RPC {
+    func fileExists(at path: Path) async throws -> Bool {
+        do {
+            _ = try await getSize(at: path)
+            return true
+        } catch let error as Error where error == .storage(.doesNotExist) {
+            return false
+        }
+    }
+
+    func readFile(
+        at path: Path,
+        progress: (Double) -> Void
+    ) async throws -> String {
+        let size = try await getSize(at: path)
+        guard size > 0 else {
+            progress(1)
+            return ""
+        }
+        var bytes: [UInt8] = []
+        for try await next in readFile(at: path) {
+            bytes += next
+            progress(Double(bytes.count) / Double(size))
+        }
+        return .init(decoding: bytes, as: UTF8.self)
+    }
+
+    func writeFile(
+        at path: Path,
+        string: String,
+        progress: (Double) -> Void
+    ) async throws {
+        let bytes = [UInt8](string.utf8)
+        guard !bytes.isEmpty else {
+            progress(1)
+            return
+        }
+        var sent = 0
+        for try await next in writeFile(at: path, bytes: bytes) {
+            sent += next
+            progress(Double(sent) / Double(bytes.count))
+        }
+    }
+}

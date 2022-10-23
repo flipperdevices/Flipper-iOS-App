@@ -2,14 +2,13 @@ import SwiftUI
 import Core
 
 struct TabView: View {
+    @StateObject var viewModel: TabViewModel
     @Binding var selected: Tab
-    let status: DeviceStatus
-    @Binding var progress: Int
 
     enum Tab: String {
         case device
         case archive
-        case options
+        case hub
     }
 
     func color(for tab: Tab) -> Color {
@@ -22,7 +21,8 @@ struct TabView: View {
                 TabViewItem(
                     image: deviceImage,
                     name: deviceTabName,
-                    isSelected: selected == .device
+                    isSelected: selected == .device,
+                    hasNotification: false
                 ) {
                     self.selected = .device
                 }
@@ -33,7 +33,8 @@ struct TabView: View {
                 TabViewItem(
                     image: .init(Image(archiveImageName)),
                     name: "Archive",
-                    isSelected: selected == .archive
+                    isSelected: selected == .archive,
+                    hasNotification: false
                 ) {
                     self.selected = .archive
                 }
@@ -42,13 +43,14 @@ struct TabView: View {
                 Spacer()
 
                 TabViewItem(
-                    image: .init(Image(optionsImageName)),
-                    name: "Options",
-                    isSelected: selected == .options
+                    image: .init(Image(hubImageName)),
+                    name: "Hub",
+                    isSelected: selected == .hub,
+                    hasNotification: viewModel.hasMFLog
                 ) {
-                    self.selected = .options
+                    self.selected = .hub
                 }
-                .foregroundColor(optionsColor)
+                .foregroundColor(hubColor)
             }
             .padding(.top, 6)
             .padding(.horizontal, 8)
@@ -60,13 +62,13 @@ struct TabView: View {
 
 extension TabView {
     var deviceTabName: String {
-        switch status {
+        switch viewModel.status {
         case .noDevice: return "No Device"
         case .unsupportedDevice: return "Unsupported"
         case .connecting: return "Connecting..."
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"
-        case .synchronizing: return "Syncing \(progress)%"
+        case .synchronizing: return "Syncing \(viewModel.syncProgress)%"
         case .synchronized: return "Synced!"
         case .updating: return "Connecting..."
         case .invalidPairing: return "Pairing Failed"
@@ -80,7 +82,7 @@ extension TabView {
         guard selected == .device else {
             return .black30
         }
-        switch status {
+        switch viewModel.status {
         case .noDevice: return .black40
         case .unsupportedDevice: return .sRed
         case .connecting: return .black40
@@ -98,14 +100,14 @@ extension TabView {
         selected == .archive ? .black80 : .black30
     }
 
-    var optionsColor: Color {
-        selected == .options ? .black80 : .black30
+    var hubColor: Color {
+        selected == .hub ? .black80 : .black30
     }
 }
 
 extension TabView {
     var deviceImage: AnyView {
-        switch status {
+        switch viewModel.status {
         case .connecting, .synchronizing:
             return .init(
                 Animation(deviceImageName + "_animated")
@@ -119,7 +121,7 @@ extension TabView {
         var name = "device_"
         name += selected == .device ? "filled_" : "line_"
 
-        switch status {
+        switch viewModel.status {
         case .noDevice: name += "no_device"
         case .unsupportedDevice: name += "unsupported"
         case .connecting: name += "connecting"
@@ -139,7 +141,7 @@ extension TabView {
         selected == .archive ? "archive_filled_icon" : "archive_line_icon"
     }
 
-    var optionsImageName: String {
-        selected == .options ? "options_filled_icon" : "options_line_icon"
+    var hubImageName: String {
+        selected == .hub ? "hub_filled_icon" : "hub_line_icon"
     }
 }

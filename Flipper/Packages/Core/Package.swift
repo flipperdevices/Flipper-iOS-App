@@ -24,6 +24,9 @@ let package = Package(
             name: "Peripheral",
             path: "../Peripheral"),
         .package(
+            name: "MFKey32v2",
+            path: "../MFKey32v2"),
+        .package(
             name: "Collections",
             url: "https://github.com/apple/swift-collections.git",
             .upToNextMajor(from: "1.0.0")),
@@ -47,6 +50,7 @@ let package = Package(
                 "Inject",
                 "Analytics",
                 "Peripheral",
+                "MFKey32v2",
                 "SwiftProtobuf",
                 "DCompression",
                 "Collections",

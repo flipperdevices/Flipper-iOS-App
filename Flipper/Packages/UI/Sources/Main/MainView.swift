@@ -11,8 +11,8 @@ struct MainView: View {
                     .opacity(viewModel.selectedTab == .device ? 1 : 0)
                 ArchiveView(viewModel: .init())
                     .opacity(viewModel.selectedTab == .archive ? 1 : 0)
-                OptionsView(viewModel: .init())
-                    .opacity(viewModel.selectedTab == .options ? 1 : 0)
+                HubView(viewModel: .init())
+                    .opacity(viewModel.selectedTab == .hub ? 1 : 0)
 
                 ImportedBanner(itemName: viewModel.importedName)
                     .opacity(viewModel.importedOpacity)
@@ -20,9 +20,8 @@ struct MainView: View {
 
             if !tabViewController.isHidden {
                 TabView(
-                    selected: $viewModel.selectedTab,
-                    status: viewModel.status,
-                    progress: $viewModel.syncProgress
+                    viewModel: .init(),
+                    selected: $viewModel.selectedTab
                 )
                 .transition(.move(edge: .bottom))
             }

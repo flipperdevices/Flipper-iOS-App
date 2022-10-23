@@ -129,7 +129,7 @@ class DeviceUpdateCardModel: ObservableObject {
         hasManifest = .working
         Task {
             do {
-                _ = try await rpc.getSize(at: "/ext/Manifest")
+                _ = try await rpc.getSize(at: .manifest)
                 hasManifest = .success(true)
             } catch {
                 logger.error("verify manifest: \(error)")
