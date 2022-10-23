@@ -46,9 +46,11 @@ public class RootViewModel: ObservableObject {
                     return
                 }
                 if self.isFirstLaunch != isFirstLaunch {
-                    isFirstLaunch
-                        ? self.showWelcomeScreen()
-                        : self.hideWelcomeScreen()
+                    if isFirstLaunch {
+                        self.showWelcomeScreen()
+                    } else {
+                        self.hideWelcomeScreen()
+                    }
                 }
             }
             .store(in: &disposeBag)
