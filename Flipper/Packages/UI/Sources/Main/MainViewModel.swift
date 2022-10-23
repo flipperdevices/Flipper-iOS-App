@@ -6,7 +6,13 @@ import SwiftUI
 
 @MainActor
 class MainViewModel: ObservableObject {
-    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
+    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device {
+        didSet {
+            if oldValue == selectedTab {
+                popToRootView()
+            }
+        }
+    }
 
     @Published var importedName = ""
     @Published var importedOpacity = 0.0
@@ -26,6 +32,31 @@ class MainViewModel: ObservableObject {
                 self?.onItemAdded(item: item)
             }
             .store(in: &disposeBag)
+    }
+
+    // 🪄🪄🪄🪄🪄🪄🪄
+    func popToRootView() {
+        let rootViewController = UIApplication
+            .shared
+            .currentUIWindow()?
+            .rootViewController?
+            .firstChild(withChildrenCount: TabView.Tab.allCases.count)
+
+        guard
+            let rootViewController = rootViewController,
+            let index = TabView.Tab.allCases.firstIndex(of: selectedTab)
+        else {
+            return
+        }
+
+        switch rootViewController.children[index] {
+        case let controller as UINavigationController:
+            controller.popToRootViewController(animated: true)
+        case let controller as UISplitViewController:
+            controller.popToRootViewController(animated: true)
+        default:
+            break
+        }
     }
 
     func onItemAdded(item: ArchiveItem) {

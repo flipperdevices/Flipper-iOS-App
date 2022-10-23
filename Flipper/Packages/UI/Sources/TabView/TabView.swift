@@ -5,7 +5,7 @@ struct TabView: View {
     @StateObject var viewModel: TabViewModel
     @Binding var selected: Tab
 
-    enum Tab: String {
+    enum Tab: String, CaseIterable {
         case device
         case archive
         case hub

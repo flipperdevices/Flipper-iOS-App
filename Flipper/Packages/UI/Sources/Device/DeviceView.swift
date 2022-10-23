@@ -131,9 +131,9 @@ struct DeviceView: View {
                     )
                 }
             }
-            .navigationViewStyle(.stack)
             .navigationBarHidden(true)
-            .navigationBarColors(foreground: .primary, background: .a1)
         }
+        .navigationViewStyle(.stack)
+        .navigationBarColors(foreground: .primary, background: .a1)
     }
 }
