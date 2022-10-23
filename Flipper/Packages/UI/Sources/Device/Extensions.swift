@@ -9,7 +9,7 @@ extension Flipper.DeviceInformation {
 
         switch channel {
         case .release: return "Release \(String(parts[1]))"
-        case .canditate: return "RC \(parts[1].dropLast(3))"
+        case .candidate: return "RC \(parts[1].dropLast(3))"
         case .development: return "Dev \(parts[0])"
         default: fatalError("unreachable")
         }
@@ -20,13 +20,13 @@ extension Flipper.DeviceInformation {
         guard parts.count >= 2 else { return nil }
 
         guard !parts[1].hasSuffix("-rc") else {
-            return .canditate
+            return .candidate
         }
 
-        let varsionParts = parts[1].split(separator: ".")
+        let versionParts = parts[1].split(separator: ".")
         guard
-            varsionParts.count == 3,
-            varsionParts.allSatisfy({ $0.allSatisfy { $0.isNumber } })
+            versionParts.count == 3,
+            versionParts.allSatisfy({ $0.allSatisfy { $0.isNumber } })
         else {
             return .development
         }

@@ -27,7 +27,7 @@ class ProvisioningTests: XCTestCase {
 
     func testSim() async throws {
         let provisioning = Provisioning(
-            cellurarRegionProvider: TestRegion(.ae),
+            cellularRegionProvider: TestRegion(.ae),
             localeRegionProvider: TestRegion(.ad),
             regionsBundleAPI: TestBundle(.init(geoIP: .us, bands: .testBands)))
 
@@ -39,7 +39,7 @@ class ProvisioningTests: XCTestCase {
 
     func testGeoIP() async throws {
         let provisioning = Provisioning(
-            cellurarRegionProvider: TestRegion(nil),
+            cellularRegionProvider: TestRegion(nil),
             localeRegionProvider: TestRegion(.ad),
             regionsBundleAPI: TestBundle(.init(geoIP: .us, bands: .testBands)))
 
@@ -51,7 +51,7 @@ class ProvisioningTests: XCTestCase {
 
     func testLocale() async throws {
         let provisioning = Provisioning(
-            cellurarRegionProvider: TestRegion(nil),
+            cellularRegionProvider: TestRegion(nil),
             localeRegionProvider: TestRegion(.ad),
             regionsBundleAPI: TestBundle(.init(geoIP: nil, bands: .testBands)))
 
@@ -63,7 +63,7 @@ class ProvisioningTests: XCTestCase {
 
     func testDefault() async throws {
         let provisioning = Provisioning(
-            cellurarRegionProvider: TestRegion(nil),
+            cellularRegionProvider: TestRegion(nil),
             localeRegionProvider: TestRegion(nil),
             regionsBundleAPI: TestBundle(.init(geoIP: nil, bands: .testBands)))
 

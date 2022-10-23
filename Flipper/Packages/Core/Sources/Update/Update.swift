@@ -10,7 +10,7 @@ public class Update {
 
     public enum Channel {
         case development
-        case canditate
+        case candidate
         case release
         case custom(URL)
     }
@@ -42,7 +42,7 @@ extension Update.Channel: RawRepresentable {
     public var rawValue: String {
         switch self {
         case .release: return "release"
-        case .canditate: return "canditate"
+        case .candidate: return "canditate"
         default: return "development"
         }
     }
@@ -50,7 +50,7 @@ extension Update.Channel: RawRepresentable {
     public init(rawValue: String) {
         switch rawValue {
         case "release": self = .release
-        case "canditate": self = .canditate
+        case "canditate": self = .candidate
         default: self = .development
         }
     }

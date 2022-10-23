@@ -2,8 +2,8 @@ import Core
 import SwiftUI
 import Peripheral
 
-struct RemoteContolView: View {
-    @StateObject var viewModel: RemoteContolViewModel
+struct RemoteControlView: View {
+    @StateObject var viewModel: RemoteControlViewModel
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dismiss) private var dismiss
 

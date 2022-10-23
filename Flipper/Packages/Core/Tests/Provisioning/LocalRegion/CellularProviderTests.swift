@@ -2,29 +2,29 @@ import XCTest
 
 @testable import Core
 
-class CellurarProviderTests: XCTestCase {
+class CellularProviderTests: XCTestCase {
     func testNil() {
-        let provider = CellurarRegionProvider { nil }
+        let provider = CellularRegionProvider { nil }
         XCTAssertNil(provider.regionCode)
     }
 
     func testEmpty() {
-        let provider = CellurarRegionProvider { [] }
+        let provider = CellularRegionProvider { [] }
         XCTAssertNil(provider.regionCode)
     }
 
     func testOneSim() {
-        let provider = CellurarRegionProvider { ["AD"] }
+        let provider = CellularRegionProvider { ["AD"] }
         XCTAssertEqual(provider.regionCode, ISOCode("AD"))
     }
 
     func testTwoEqualSim() {
-        let provider = CellurarRegionProvider { ["AD", "AD"] }
+        let provider = CellularRegionProvider { ["AD", "AD"] }
         XCTAssertEqual(provider.regionCode, ISOCode("AD"))
     }
 
     func testTwoNotEqualSim() {
-        let provider = CellurarRegionProvider { ["AD", "AE"] }
+        let provider = CellularRegionProvider { ["AD", "AE"] }
         XCTAssertNil(provider.regionCode)
     }
 }

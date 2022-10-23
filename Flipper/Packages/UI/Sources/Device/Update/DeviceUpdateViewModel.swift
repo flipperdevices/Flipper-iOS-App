@@ -28,7 +28,7 @@ class DeviceUpdateViewModel: ObservableObject {
 
     enum State {
         case downloadingFirmware
-        case prepearingForUpdate
+        case preparingForUpdate
         case uploadingFirmware
         case canceling
         case noInternet
@@ -46,7 +46,7 @@ class DeviceUpdateViewModel: ObservableObject {
     enum UpdateError {
         case canceled
         case failedDownloading
-        case failedPrepearing
+        case failedPreparing
         case failedUploading
     }
 
@@ -54,7 +54,7 @@ class DeviceUpdateViewModel: ObservableObject {
         guard let firmware = firmware else { return "" }
         switch channel {
         case .development: return "Dev \(firmware.version)"
-        case .canditate: return "RC \(firmware.version.dropLast(3))"
+        case .candidate: return "RC \(firmware.version.dropLast(3))"
         case .release: return "Release \(firmware.version)"
         case .custom(let url): return "Custom \(url.lastPathComponent)"
         }
@@ -68,7 +68,7 @@ class DeviceUpdateViewModel: ObservableObject {
     var availableFirmwareColor: Color {
         switch channel {
         case .development: return .development
-        case .canditate: return .candidate
+        case .candidate: return .candidate
         case .release: return .release
         case .custom: return .custom
         }
@@ -79,7 +79,7 @@ class DeviceUpdateViewModel: ObservableObject {
 
     var isUpdating: Bool {
         switch state {
-        case .downloadingFirmware, .prepearingForUpdate, .uploadingFirmware:
+        case .downloadingFirmware, .preparingForUpdate, .uploadingFirmware:
             return true
         default:
             return false
@@ -129,7 +129,7 @@ class DeviceUpdateViewModel: ObservableObject {
                 self.state = .noInternet
             } catch where error is Provisioning.Error {
                 logger.error("provisioning: \(error)")
-                onFailure(.failedPrepearing)
+                onFailure(.failedPreparing)
                 self.state = .outdatedAppVersion
             } catch let error as Peripheral.Error
                 where error == .storage(.internal) {
@@ -183,7 +183,7 @@ class DeviceUpdateViewModel: ObservableObject {
     }
 
     func provideSubGHzRegion() async throws {
-        state = .prepearingForUpdate
+        state = .preparingForUpdate
         guard try await shouldProvideRegion else {
             return
         }
@@ -195,11 +195,11 @@ class DeviceUpdateViewModel: ObservableObject {
     func uploadFirmware(
         _ firmware: Update.Firmware
     ) async throws -> Peripheral.Path {
-        state = .prepearingForUpdate
+        state = .preparingForUpdate
         progress = 0
         return try await updater.uploadFirmware(firmware) { progress in
             DispatchQueue.main.async {
-                if self.state == .prepearingForUpdate {
+                if self.state == .preparingForUpdate {
                     self.state = .uploadingFirmware
                 }
                 self.progress = progress

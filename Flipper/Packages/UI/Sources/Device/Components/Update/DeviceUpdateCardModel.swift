@@ -34,7 +34,7 @@ class DeviceUpdateCardModel: ObservableObject {
     @Published var showConfirmUpdate = false
     @Published var showUpdateView = false
     @Published var showUpdateFailed = false
-    @Published var showUpdateSuccessed = false
+    @Published var showUpdateSucceeded = false
     @Published var showPauseSync = false
     @Published var showCharge = false
 
@@ -55,7 +55,7 @@ class DeviceUpdateCardModel: ObservableObject {
     var channelColor: Color {
         switch channel {
         case .development: return .development
-        case .canditate: return .candidate
+        case .candidate: return .candidate
         case .release: return .release
         case .custom: return .custom
         }
@@ -189,7 +189,7 @@ class DeviceUpdateCardModel: ObservableObject {
         switch error {
         case .canceled: result = .canceled
         case .failedDownloading: result = .failedDownload
-        case .failedPrepearing: result = .failedPrepare
+        case .failedPreparing: result = .failedPrepare
         case .failedUploading: result = .failedUpload
         }
         analytics.flipperUpdateResult(
@@ -223,7 +223,7 @@ class DeviceUpdateCardModel: ObservableObject {
 
             if installedFirmware == updateToVersion {
                 logger.info("update success: \(updateFromToVersion)")
-                showUpdateSuccessed = true
+                showUpdateSucceeded = true
 
                 analytics.flipperUpdateResult(
                     id: updateID,
@@ -277,7 +277,7 @@ class DeviceUpdateCardModel: ObservableObject {
         showChannelSelector = false
         switch channel {
         case "Release": self.channel = .release
-        case "Release-Candidate": self.channel = .canditate
+        case "Release-Candidate": self.channel = .candidate
         case "Development": self.channel = .development
         default: break
         }
@@ -305,7 +305,7 @@ class DeviceUpdateCardModel: ObservableObject {
         self.availableFirmwareVersion = version
         switch channel {
         case .development: availableFirmware = "Dev \(version.version)"
-        case .canditate: availableFirmware = "RC \(version.version.dropLast(3))"
+        case .candidate: availableFirmware = "RC \(version.version.dropLast(3))"
         case .release: availableFirmware = "Release \(version.version)"
         case .custom(let url): availableFirmware = "Custom \(url.lastPathComponent)"
         }

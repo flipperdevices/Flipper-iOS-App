@@ -9,7 +9,7 @@ extension DeviceUpdateView {
             switch viewModel.state {
             case .downloadingFirmware:
                 return "Downloading from update server..."
-            case .prepearingForUpdate:
+            case .preparingForUpdate:
                 return "Preparing for update..."
             case .uploadingFirmware:
                 return "Uploading firmware to Flipper..."
@@ -86,7 +86,7 @@ extension DeviceUpdateView {
         }
 
         var text: String {
-            viewModel.state == .prepearingForUpdate
+            viewModel.state == .preparingForUpdate
                 ? "..."
                 : "\(Int(viewModel.progress * 100))%"
         }
@@ -94,7 +94,7 @@ extension DeviceUpdateView {
         var color: Color {
             switch viewModel.state {
             case .downloadingFirmware: return .sGreenUpdate
-            case .prepearingForUpdate, .uploadingFirmware, .canceling: return .a2
+            case .preparingForUpdate, .uploadingFirmware, .canceling: return .a2
             default: return .clear
             }
         }

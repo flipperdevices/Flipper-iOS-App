@@ -4,10 +4,10 @@ func share(
     _ items: [Any],
     completion: UIActivityViewController.CompletionWithItemsHandler? = nil
 ) {
-    let activityContoller = UIActivityViewController(
+    let activityController = UIActivityViewController(
         activityItems: items,
         applicationActivities: nil)
-    activityContoller.completionWithItemsHandler = completion
+    activityController.completionWithItemsHandler = completion
 
     (UIApplication
         .shared
@@ -25,5 +25,5 @@ func share(
         .windows
         .first?
         .rootViewController?
-        .present(activityContoller, animated: true, completion: nil)
+        .present(activityController, animated: true, completion: nil)
 }

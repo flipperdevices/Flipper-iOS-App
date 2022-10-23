@@ -7,7 +7,7 @@ import Combine
 import Logging
 
 @MainActor
-class RemoteContolViewModel: ObservableObject {
+class RemoteControlViewModel: ObservableObject {
     private let logger = Logger(label: "remote")
 
     @Inject var rpc: RPC

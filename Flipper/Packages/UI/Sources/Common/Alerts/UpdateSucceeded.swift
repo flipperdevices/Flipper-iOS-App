@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct UpdateSuccessedAlert: View {
+struct UpdateSucceededAlert: View {
     @Binding var isPresented: Bool
 
     let firmwareVersion: String
@@ -15,7 +15,7 @@ struct UpdateSuccessedAlert: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Image("UpdateSuccessed")
+            Image("UpdateSucceeded")
                 .renderingMode(.template)
                 .foregroundColor(.blackBlack20)
                 .padding(.top, 17)

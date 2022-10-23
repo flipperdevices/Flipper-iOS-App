@@ -28,7 +28,7 @@ class ImportViewModel: ObservableObject {
 
     func add() {
         guard appState.archive.get(item.id) == nil else {
-            showError(Archive.Error.alredyExists)
+            showError(Archive.Error.alreadyExists)
             return
         }
         Task {

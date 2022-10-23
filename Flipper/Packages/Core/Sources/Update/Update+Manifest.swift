@@ -72,7 +72,7 @@ extension Update.Manifest {
     public func version(for channel: Update.Channel) -> Version? {
         switch channel {
         case .development: return development
-        case .canditate: return candidate
+        case .candidate: return candidate
         case .release: return release
         case .custom(let url): return .init(url: url)
         }
