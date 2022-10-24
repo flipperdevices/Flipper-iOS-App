@@ -25,9 +25,7 @@ public func registerMockDependencies() {
     container.register(NotesStorageMock.init, as: MobileNotesStorage.self, isSingleton: true)
     container.register(DeletedStorageMock.init, as: DeletedArchiveStorage.self, isSingleton: true)
     // manifests
-    container.register(MobileManifestStorageMock.init, as: MobileManifestStorage.self, isSingleton: true)
-    container.register(DeletedManifestStorageMock.init, as: DeletedManifestStorage.self, isSingleton: true)
-    container.register(SyncedManifestStorageMock.init, as: SyncedManifestStorage.self, isSingleton: true)
+    container.register(SyncedItemsMock.init, as: SyncedItemsProcotol.self, isSingleton: true)
     // favorites
     container.register(MobileFavoritesMock.init, as: MobileFavoritesProtocol.self, isSingleton: true)
     container.register(FlipperFavoritesMock.init, as: FlipperFavoritesProtocol.self, isSingleton: true)

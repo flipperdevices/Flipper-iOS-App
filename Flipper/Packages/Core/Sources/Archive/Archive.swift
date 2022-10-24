@@ -15,7 +15,7 @@ public class Archive: ObservableObject {
     @Inject var mobileArchive: MobileArchiveProtocol
     @Inject var mobileNotes: MobileNotesStorage
     @Inject var deletedArchive: DeletedArchiveProtocol
-    @Inject var manifestStorage: SyncedManifestStorage
+    @Inject var syncedItems: SyncedItemsProcotol
 
     @Published public var items: [ArchiveItem] = []
     @Published public var deletedItems: [ArchiveItem] = []
@@ -260,7 +260,7 @@ extension Archive {
 
 extension Archive {
     public func status(for item: ArchiveItem) -> ArchiveItem.Status {
-        guard let hash = manifestStorage.manifest?[item.path] else {
+        guard let hash = syncedItems.manifest?[item.path] else {
             return .imported
         }
         return hash == item.hash ? .synchronized : .modified

@@ -1,8 +1,8 @@
 import Peripheral
 
-class PlainDeletedManifestStorage: DeletedManifestStorage {
+class PlainSyncedItemsStorage: SyncedItemsProcotol {
     let storage: FileStorage = .init()
-    let filename = "deleted_manifest.txt"
+    let filename = "synced_manifest.txt"
     var manifestPath: Path { .init(string: filename) }
 
     var manifest: Manifest? {

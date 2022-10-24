@@ -7,9 +7,9 @@ import OrderedCollections
 class ArchiveSync: ArchiveSyncProtocol {
     private let logger = Logger(label: "archive_synchronization")
 
-    @Inject private var manifestStorage: SyncedManifestStorage
     @Inject private var flipperArchive: FlipperArchiveProtocol
     @Inject private var mobileArchive: MobileArchiveProtocol
+    @Inject private var syncedItems: SyncedItemsProcotol
 
     private var state: State = .idle
     private var eventsSubject: SafeSubject<Event> = .init()
@@ -33,7 +33,7 @@ class ArchiveSync: ArchiveSyncProtocol {
     var syncProgressFactor: Double { 1.0 - manifestProgressFactor }
 
     private func sync(_ progress: (Double) -> Void) async throws {
-        let lastManifest = manifestStorage.manifest ?? .init()
+        let lastManifest = syncedItems.manifest ?? .init()
 
         let mobileChanges = try await mobileArchive
             .getManifest()
@@ -81,7 +81,7 @@ class ArchiveSync: ArchiveSyncProtocol {
             currentProgress += syncItemFactor
         }
 
-        manifestStorage.manifest = try await mobileArchive.getManifest()
+        syncedItems.manifest = try await mobileArchive.getManifest()
     }
 
     private func sortActions(

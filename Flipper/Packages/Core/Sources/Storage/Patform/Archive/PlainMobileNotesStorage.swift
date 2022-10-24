@@ -2,8 +2,15 @@ import Inject
 import Peripheral
 import Foundation
 
-class PlainDeletedArchiveStorage: DeletedArchiveStorage {
+class PlainMobileNotesStorage: MobileNotesStorage {
     let storage: FileStorage = .init()
+    private let root: Path = "notes"
+
+    var manifest: Manifest {
+        get async throws {
+            try await storage.getManifest(at: root)
+        }
+    }
 
     init() {}
 
@@ -23,6 +30,6 @@ class PlainDeletedArchiveStorage: DeletedArchiveStorage {
     }
 
     private func makePath(for path: Path) -> Path {
-        .init(string: "/deleted/\(path.string)")
+        root.appending(path.string)
     }
 }

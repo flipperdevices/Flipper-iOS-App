@@ -70,7 +70,7 @@ extension Archive {
     // FIXME:
     private func originPath(forShadow path: Path) -> Path? {
         let originPath = Path(string: "\(path.string.dropLast(3))nfc")
-        guard manifestStorage.manifest?[originPath] != nil else {
+        guard syncedItems.manifest?[originPath] != nil else {
             return nil
         }
         return originPath

@@ -1,6 +1,10 @@
 import Peripheral
 import Foundation
 
+class SyncedItemsMock: SyncedItemsProcotol {
+    var manifest: Manifest?
+}
+
 public class ArchiveStorageMock: MobileArchiveStorage {
     public var manifest: Manifest { .init() }
 
@@ -17,16 +21,6 @@ public class ArchiveStorageMock: MobileArchiveStorage {
     public func compress() -> URL? {
         nil
     }
-}
-
-class DeletedManifestStorageMock: DeletedManifestStorage {
-    var manifest: Manifest?
-}
-class MobileManifestStorageMock: MobileManifestStorage {
-    var manifest: Manifest?
-}
-class SyncedManifestStorageMock: SyncedManifestStorage {
-    var manifest: Manifest?
 }
 
 class DeletedStorageMock: ArchiveStorageMock, DeletedArchiveStorage {}

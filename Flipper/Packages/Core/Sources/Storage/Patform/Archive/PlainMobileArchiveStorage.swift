@@ -4,7 +4,13 @@ import Foundation
 
 class PlainMobileArchiveStorage: MobileArchiveStorage {
     let storage: FileStorage = .init()
-    private let directory = "mobile"
+    private let root: Path = "mobile"
+
+    var manifest: Manifest {
+        get async throws {
+            try await storage.getManifest(at: root)
+        }
+    }
 
     init() {}
 
@@ -24,10 +30,10 @@ class PlainMobileArchiveStorage: MobileArchiveStorage {
     }
 
     private func makePath(for path: Path) -> Path {
-        .init(string: "/\(directory)/\(path.string)")
+        root.appending(path.string)
     }
 
     func compress() -> URL? {
-        storage.archive(directory, to: "archive.zip")
+        storage.archive(root.string, to: "archive.zip")
     }
 }

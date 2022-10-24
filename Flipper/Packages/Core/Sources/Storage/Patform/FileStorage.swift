@@ -15,6 +15,10 @@ class FileStorage {
         makeURL(for: path).isExists
     }
 
+    func isDirectory(_ path: Path) -> Bool {
+        makeURL(for: path).isDirectory
+    }
+
     func makeDirectory(for path: Path) throws {
         let subdirectory = path.removingLastComponent
         let directory = baseURL.appendingPathComponent(subdirectory.string)
@@ -69,9 +73,11 @@ class FileStorage {
         }
     }
 
-    func list(at path: Path) throws -> [String] {
+    func list(at path: Path) throws -> [Path] {
         let path = baseURL.appendingPathComponent(path.string).path
-        return try FileManager.default.contentsOfDirectory(atPath: path)
+        return try FileManager.default.contentsOfDirectory(atPath: path).map {
+            .init(string: $0)
+        }
     }
 
     func archive(
@@ -109,5 +115,13 @@ class FileStorage {
 extension URL {
     var isExists: Bool {
         FileManager.default.fileExists(atPath: path)
+    }
+
+    var isDirectory: Bool {
+        var isDirectory: ObjCBool = .init(false)
+        let fileExists = FileManager
+            .default
+            .fileExists(atPath: path, isDirectory: &isDirectory)
+        return isDirectory.boolValue
     }
 }

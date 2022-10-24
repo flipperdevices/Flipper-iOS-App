@@ -21,7 +21,7 @@ class PlainLoggerStorage: LoggerStorage {
     }
 
     func list() -> [String] {
-        (try? storage.list(at: directory)) ?? []
+        (try? storage.list(at: directory).map { $0.string }) ?? []
     }
 
     func read(_ name: String) -> [String] {

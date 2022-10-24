@@ -9,6 +9,10 @@ public struct Path: Equatable, Hashable {
         components.last
     }
 
+    public var removingFirstComponent: Path {
+        .init(components: .init(components.dropFirst()))
+    }
+
     public var removingLastComponent: Path {
         .init(components: components.dropLast())
     }
