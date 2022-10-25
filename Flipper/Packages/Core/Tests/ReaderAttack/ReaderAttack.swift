@@ -15,6 +15,6 @@ class ReaderAttackTests: XCTestCase {
             XCTFail("No keys found")
             return
         }
-        XCTAssertEqual(result.key, 176616078812325)
+        XCTAssertEqual(result.key, .init(value: 176616078812325))
     }
 }

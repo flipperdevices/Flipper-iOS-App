@@ -7,12 +7,13 @@ class ReaderLogTests: XCTestCase {
 
     func testReaderLog() throws {
         let readerLog = try ReaderLog(log)
-        XCTAssertEqual(readerLog.lines.count, 20)
+        XCTAssertEqual(readerLog.lines.count, 3)
     }
 
     func testReaderLogLine() throws {
         let readerLog = try ReaderLog(log)
-        guard readerLog.lines.count == 20 else {
+        guard readerLog.lines.count == 3 else {
+            XCTFail("invalid log")
             return
         }
         let line = readerLog.lines[2]
