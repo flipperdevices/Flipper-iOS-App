@@ -8,7 +8,7 @@ extension ReaderAttackView {
         var body: some View {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 4) {
-                    Text("Calculateded Keys")
+                    Text("Calculated Keys")
                         .font(.system(size: 16, weight: .bold))
 
                     if results.isEmpty {

@@ -321,7 +321,7 @@ class DeviceUpdateCardModel: ObservableObject {
         guard validateAvailableFirmware() else { return }
 
         guard checkSelectedChannel() else { return }
-        guard checkInsalledFirmware() else { return }
+        guard checkInstalledFirmware() else { return }
 
         guard validateManifest() else { return }
         guard validateRegion() else { return }
@@ -421,7 +421,7 @@ class DeviceUpdateCardModel: ObservableObject {
         return true
     }
 
-    func checkInsalledFirmware() -> Bool {
+    func checkInstalledFirmware() -> Bool {
         guard let installedFirmware = installedFirmware else {
             return false
         }
