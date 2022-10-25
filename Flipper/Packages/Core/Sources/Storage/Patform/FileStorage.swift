@@ -119,7 +119,7 @@ extension URL {
 
     var isDirectory: Bool {
         var isDirectory: ObjCBool = .init(false)
-        let fileExists = FileManager
+        _ = FileManager
             .default
             .fileExists(atPath: path, isDirectory: &isDirectory)
         return isDirectory.boolValue
