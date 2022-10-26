@@ -147,7 +147,7 @@ struct ReaderAttackView: View {
                 }
             }
             ToolbarItem(placement: .navigationBarLeading) {
-                Text("Mfkey32 (Reader Attack)")
+                Text("Mfkey32 (Detect Reader)")
                     .font(.system(size: 20, weight: .bold))
             }
         }

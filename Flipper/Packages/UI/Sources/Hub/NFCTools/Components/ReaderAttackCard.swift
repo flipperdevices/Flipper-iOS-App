@@ -26,7 +26,7 @@ struct ReaderAttackCard: View {
                 )
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Mfkey32 (Reader Attack)")
+                    Text("Mfkey32 (Detect Reader)")
                         .font(.system(size: 16, weight: .bold))
                         .multilineTextAlignment(.leading)
                         .foregroundColor(.primary)
