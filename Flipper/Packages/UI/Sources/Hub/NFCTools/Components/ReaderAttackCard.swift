@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ReaderAttackCard: View {
     let hasNotification: Bool
-    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -19,11 +18,7 @@ struct ReaderAttackCard: View {
             }
 
             HStack(spacing: 8) {
-                Image(
-                    colorScheme == .light
-                        ? "DetectReader"
-                        : "DetectReaderBlack"
-                )
+                Image("DetectReader")
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Mfkey32 (Detect Reader)")

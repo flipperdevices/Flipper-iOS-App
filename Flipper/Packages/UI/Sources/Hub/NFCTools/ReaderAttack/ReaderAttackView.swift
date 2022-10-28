@@ -6,18 +6,12 @@ struct ReaderAttackView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        GeometryReader { proxy in
-            ScrollView {
+        ScrollView {
+            VStack(spacing: 18) {
                 VStack {
                     switch viewModel.state {
                     case .noLog:
-                        HStack {
-                            Spacer()
-                            Text("No reader log found")
-                                .font(.system(size: 18, weight: .bold))
-                                .offset(y: proxy.size.height / 2)
-                            Spacer()
-                        }
+                        ReaderDataNotFound(fliperColor: viewModel.flipperColor)
                     case .downloadingLog:
                         VStack(spacing: 18) {
                             Text("Calculation Started...")
@@ -132,11 +126,11 @@ struct ReaderAttackView: View {
                                 userKeys: viewModel.userDuplicatedKeys)
                         }
                     }
-                    .padding(.top, 18)
                 }
             }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 18)
         }
-        .padding(14)
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)

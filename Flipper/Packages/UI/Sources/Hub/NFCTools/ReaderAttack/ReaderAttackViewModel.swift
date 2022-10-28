@@ -13,7 +13,10 @@ class ReaderAttackViewModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
-    @Published var isOnline = false
+    @Published var flipper: Flipper?
+    var flipperColor: FlipperColor {
+        flipper?.color ?? .white
+    }
 
     @Published var state: State = .downloadingLog
     @Published var progress: Double = 0
@@ -56,10 +59,9 @@ class ReaderAttackViewModel: ObservableObject {
     }
 
     init() {
-        appState.$status
+        appState.$flipper
             .receive(on: DispatchQueue.main)
-            .map(\.isOnline)
-            .assign(to: \.isOnline, on: self)
+            .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)
     }
 
