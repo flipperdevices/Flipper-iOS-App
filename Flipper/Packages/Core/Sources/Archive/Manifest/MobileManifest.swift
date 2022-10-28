@@ -55,10 +55,10 @@ extension FileStorage {
             return []
         }
         return try list(at: path).compactMap { child in
-            guard !isDirectory(child) else {
+            guard !isDirectory(.init(string: child)) else {
                 return nil
             }
-            return child.string
+            return child
         }
     }
 

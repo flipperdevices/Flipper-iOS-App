@@ -73,11 +73,9 @@ class FileStorage {
         }
     }
 
-    func list(at path: Path) throws -> [Path] {
+    func list(at path: Path) throws -> [String] {
         let path = baseURL.appendingPathComponent(path.string).path
-        return try FileManager.default.contentsOfDirectory(atPath: path).map {
-            .init(string: $0)
-        }
+        return try FileManager.default.contentsOfDirectory(atPath: path)
     }
 
     func archive(
