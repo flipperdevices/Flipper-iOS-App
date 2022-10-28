@@ -45,6 +45,7 @@ struct DeviceInfoView: View {
                     values: viewModel.otherKeys
                 )
             }
+            .textSelection(.enabled)
             .padding(.vertical, 14)
         }
         .background(Color.background)
