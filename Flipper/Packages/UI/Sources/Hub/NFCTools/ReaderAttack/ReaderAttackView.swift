@@ -81,9 +81,16 @@ struct ReaderAttackView: View {
                             Text("New Keys Collected: \(viewModel.newKeys.count)")
                                 .font(.system(size: 18, weight: .bold))
                             VStack(spacing: 24) {
-                                Image("FlipperSuccess")
-                                    .renderingMode(.template)
-                                    .foregroundColor(.blackBlack20)
+                                Image(
+                                    viewModel.newKeys.isEmpty
+                                        ? "FlipperShrugging"
+                                        : "FlipperSuccess"
+                                )
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(.blackBlack20)
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: 92)
 
                                 RoundedButton("Done") {
                                     dismiss()
