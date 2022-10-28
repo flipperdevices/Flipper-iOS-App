@@ -25,9 +25,6 @@ struct ArchiveSearchView: View {
                 NothingFoundView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .customBackground(.background)
-                    .onTapGesture {
-                        resignFirstResponder()
-                    }
             } else {
                 ScrollView {
                     CategoryList(items: viewModel.filteredItems) { item in
