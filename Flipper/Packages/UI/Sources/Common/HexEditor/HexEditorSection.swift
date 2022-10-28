@@ -61,7 +61,7 @@ struct HexEditorSection: View {
     var byteWidth: Double { symbolWidth * 2 }
     var byteHeight: Double { byteWidth }
     var bytePadding: Double { symbolWidth / 6 }
-    var lineNumberWidth: Double { symbolWidth * 4 }
+    var lineNumberWidth: Double { symbolWidth * 3 }
 
     func isSelected(_ row: Int, _ column: Int) -> Bool {
         row * columnsCount + column == selectedIndex
@@ -128,47 +128,33 @@ struct HexEditorSection: View {
     }
 }
 
-struct LineNumber: View {
-    let number: Int
+private extension HexEditorSection {
+    struct LineNumber: View {
+        let number: Int
 
-    init(_ number: Int) {
-        self.number = number
-    }
+        init(_ number: Int) {
+            self.number = number
+        }
 
-    var body: some View {
-        HStack {
-            Spacer()
-            Text("\(number)")
+        var lineNumber: String {
+            let string = "\(number)"
+            guard string.count <= 3 else {
+                return string
+            }
+            return .init(repeating: " ", count: 3 - string.count) + string
+        }
+
+        var body: some View {
+            Text(lineNumber)
         }
     }
 }
 
-struct HexByte: View {
-    let byte: UInt8?
+private extension HexEditorSection {
+    struct HexByte: View {
+        let byte: UInt8?
 
-    var string: String {
-        guard let byte = byte else {
-            return "??"
-        }
-        if byte < 16 {
-            return "0" + String(byte, radix: 16).uppercased()
-        } else {
-            return String(byte, radix: 16).uppercased()
-        }
-    }
-
-    var body: some View {
-        Text(string)
-    }
-}
-
-struct HexByteEditor: View {
-    let byte: UInt8?
-
-    @Binding var input: String
-
-    var string: String {
-        if input.isEmpty {
+        var string: String {
             guard let byte = byte else {
                 return "??"
             }
@@ -177,12 +163,35 @@ struct HexByteEditor: View {
             } else {
                 return String(byte, radix: 16).uppercased()
             }
-        } else {
-            return input + " "
+        }
+
+        var body: some View {
+            Text(string)
         }
     }
 
-    var body: some View {
-        Text(string)
+    struct HexByteEditor: View {
+        let byte: UInt8?
+
+        @Binding var input: String
+
+        var string: String {
+            if input.isEmpty {
+                guard let byte = byte else {
+                    return "??"
+                }
+                if byte < 16 {
+                    return "0" + String(byte, radix: 16).uppercased()
+                } else {
+                    return String(byte, radix: 16).uppercased()
+                }
+            } else {
+                return input + " "
+            }
+        }
+
+        var body: some View {
+            Text(string)
+        }
     }
 }

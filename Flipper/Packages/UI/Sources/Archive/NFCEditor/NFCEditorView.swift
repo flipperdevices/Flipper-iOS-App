@@ -29,18 +29,16 @@ struct NFCEditorView: View {
                         hexKeyboardController.onKey(.ok)
                     })
 
-                    GeometryReader { proxy in
-                        ScrollView {
-                            VStack(spacing: 24) {
-                                NFCCard(item: viewModel.item)
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            NFCCard(item: viewModel.item)
 
-                                HexEditor(
-                                    bytes: $viewModel.bytes,
-                                    width: proxy.size.width - 33
-                                )
-                            }
-                            .padding(.top, 14)
+                            HexEditor(
+                                bytes: $viewModel.bytes,
+                                width: UIScreen.main.bounds.width - 28
+                            )
                         }
+                        .padding(14)
                     }
 
                     NavigationLink("", isActive: $viewModel.showSaveAs) {
