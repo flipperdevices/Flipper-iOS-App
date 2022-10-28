@@ -22,6 +22,7 @@ struct UTextField: View {
                 TextField("", text: $text) { focused in
                     focusedField = focused ? title : ""
                 }
+                .submitLabel(.done)
                 .disableAutocorrection(true)
             }
             .padding(.top, 4)

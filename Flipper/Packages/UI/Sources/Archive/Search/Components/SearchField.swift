@@ -19,6 +19,7 @@ struct SearchField: View {
 
                 TextField("", text: _predicate)
                     .lineLimit(1)
+                    .submitLabel(.done)
                     .font(.system(size: 17))
                     .padding(.trailing, 6)
                     .padding(.vertical, 7)
