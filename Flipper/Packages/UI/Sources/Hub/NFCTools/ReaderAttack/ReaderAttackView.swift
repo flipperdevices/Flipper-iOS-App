@@ -144,12 +144,19 @@ struct ReaderAttackView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 BackButton {
-                    dismiss()
+                    viewModel.attackInProgress
+                        ? viewModel.showCancelAttack = true
+                        : dismiss()
                 }
             }
             ToolbarItem(placement: .navigationBarLeading) {
                 Text("Mfkey32 (Detect Reader)")
                     .font(.system(size: 20, weight: .bold))
+            }
+        }
+        .customAlert(isPresented: $viewModel.showCancelAttack) {
+            CancelAttackAlert(isPresented: $viewModel.showCancelAttack) {
+                dismiss()
             }
         }
         .onAppear {

@@ -18,7 +18,12 @@ class ReaderAttackViewModel: ObservableObject {
         flipper?.color ?? .white
     }
 
+    var attackInProgress: Bool {
+        !(state == .finished || state == .noLog)
+    }
+
     @Published var state: State = .downloadingLog
+    @Published var showCancelAttack = false
     @Published var progress: Double = 0
     @Published var results: [ReaderAttack.Result] = []
     @Published var newKeys: Set<MFKey64> = .init()
