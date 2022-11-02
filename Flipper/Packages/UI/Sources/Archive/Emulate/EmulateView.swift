@@ -34,8 +34,8 @@ struct EmulateView: View {
         }
         .padding(.horizontal, 24)
         .padding(.top, 18)
-        .customAlert(isPresented: $viewModel.isFlipperAppSystemLocked) {
-            FlipperBusyAlert(isPresented: $viewModel.isFlipperAppSystemLocked)
+        .customAlert(isPresented: $viewModel.showAppLocked) {
+            FlipperBusyAlert(isPresented: $viewModel.showAppLocked)
         }
         .onDisappear {
             viewModel.forceStopEmulate()
@@ -138,6 +138,7 @@ private struct SendButton: View {
     @ObservedObject var viewModel: EmulateViewModel
     @Environment(\.isEnabled) var isEnabled
 
+    @State var isPressed = false
     @State var trimFrom: Double = 0
     @State var trimTo: Double = 0
 
@@ -162,9 +163,7 @@ private struct SendButton: View {
     }
 
     var animationDuration: Double {
-        viewModel.item.isRaw
-            ? Double(viewModel.emulateRawMinimum + 333) / 1000
-            : Double(viewModel.emulateMinimum + 333) / 1000
+        Double(viewModel.emulateDuration + 333) / 1000
     }
 
     func startAnimation() {
@@ -214,14 +213,19 @@ private struct SendButton: View {
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
-                    if viewModel.isFlipperAppCancellation {
-                        viewModel.forceStopEmulate()
-                    } else {
-                        startAnimation()
-                        viewModel.startEmulate()
+                    guard !isPressed else {
+                        return
                     }
+                    isPressed = true
+                    guard !viewModel.isEmulating else {
+                        viewModel.forceStopEmulate()
+                        return
+                    }
+                    startAnimation()
+                    viewModel.startEmulate()
                 }
                 .onEnded { _ in
+                    isPressed = false
                     viewModel.stopEmulate()
                 }
         )
@@ -232,7 +236,7 @@ struct EmulateDescription: View {
     @StateObject var viewModel: EmulateViewModel
 
     var text: String {
-        switch viewModel.status {
+        switch viewModel.deviceStatus {
         case .connected, .synchronized:
             guard viewModel.item.status == .synchronized else {
                 return "Not synced. Unable to send from Flipper."
@@ -269,10 +273,10 @@ struct EmulateDescription: View {
 
     var isError: Bool {
         (viewModel.item.status != .synchronized) ||
-            (viewModel.status != .connected &&
-            viewModel.status != .connecting &&
-            viewModel.status != .synchronized &&
-            viewModel.status != .synchronizing)
+            (viewModel.deviceStatus != .connected &&
+            viewModel.deviceStatus != .connecting &&
+            viewModel.deviceStatus != .synchronized &&
+            viewModel.deviceStatus != .synchronizing)
     }
 
     var body: some View {

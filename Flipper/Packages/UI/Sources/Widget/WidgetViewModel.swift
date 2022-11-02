@@ -15,7 +15,8 @@ public class WidgetViewModel: ObservableObject {
     var container: UserDefaults? { .widget }
     @Published public var isExpanded = false
 
-    @Inject var rpc: RPC
+    var emulate: Emulate = .init()
+
     @Inject var analytics: Analytics
     @Inject var storage: DeviceStorage
     @Inject var pairedDevice: PairedDevice
@@ -26,28 +27,14 @@ public class WidgetViewModel: ObservableObject {
     }
 
     @Published var keys: [WidgetKey] = []
-    @Published var emulatingIndex: Int?
-
-    var item: ArchiveItem {
-        guard let index = emulatingIndex else {
-            return .none
-        }
-        let key = keys[index]
-        let item = AppState.shared.archive.items.first {
-            $0.name == key.name && $0.kind == key.kind
-        }
-        return item ?? .none
-    }
-
     @Published var isEmulating = false
-    @Published var isFileLoaded = false
-    @Published var isFlipperAppStarted = false
-    @Published var isFlipperAppCancellation = false
-    @Published var isFlipperAppSystemLocked = false
+    @Published var showAppLocked = false
 
-    var forceStop = false
-    var emulateStarted: Date = .now
-    private var emulateTask: Task<Void, Swift.Error>?
+    var emulatingIndex: Int? {
+        didSet {
+            isEmulating = emulatingIndex != nil
+        }
+    }
 
     private var observer: NSKeyValueObservation?
 
@@ -57,6 +44,7 @@ public class WidgetViewModel: ObservableObject {
                 \.widgetKeysData,
                 options: [.initial, .new]
             ) { defaults, _ in
+                print(defaults.keys)
                 self.keys = defaults.keys
             }
 
@@ -65,10 +53,20 @@ public class WidgetViewModel: ObservableObject {
             .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)
 
-        rpc.onAppStateChanged { [weak self] state in
+        emulate.onStateChanged = { [weak self] state in
             guard let self = self else { return }
             Task { @MainActor in
-                self.onAppStateChanged(state)
+                print("state", state)
+                if state == .closed {
+                    self.emulatingIndex = nil
+                }
+                if state == .locked {
+                    self.emulatingIndex = nil
+                    self.showAppLocked = true
+                }
+                if state == .staring || state == .started || state == .closed {
+                    feedback(style: .soft)
+                }
             }
         }
     }
@@ -98,136 +96,31 @@ public class WidgetViewModel: ObservableObject {
         #endif
     }
 
-    func onAppStateChanged(_ state: Message.AppState) {
-        isFlipperAppStarted = state == .started
-        if state == .closed {
-            resetEmulate()
-        }
-        logger.info("flipper app \(state)")
-    }
-
-    func waitForAppStartedEvent() async throws {
-        while !isFlipperAppStarted {
-            try await Task.sleep(nanoseconds: 100 * 1_000_000)
-        }
-    }
-
-    func startApp(_ application: String) async throws {
-        while !isFlipperAppCancellation {
-            do {
-                try await rpc.appStart(application, args: "RPC")
-                return
-            } catch let error as Error {
-                if error == .application(.systemLocked) {
-                    isFlipperAppSystemLocked = true
-                }
-                throw error
-            }
-        }
-    }
-
-    func loadFile(_ path: Peripheral.Path) async throws {
-        try await rpc.appLoadFile(path)
-        isFileLoaded = true
-    }
-
     func startEmulate(at index: Int) {
         guard !isEmulating else { return }
-        isEmulating = true
-        emulatingIndex = index
-        emulateTask = Task {
-            do {
-                let item = keys[index]
-                try await startApp(item.kind.application)
-                try await waitForAppStartedEvent()
-                try await loadFile(item.path)
-                feedback(style: .soft)
-                if item.kind == .subghz {
-                    try await rpc.appButtonPress()
-                    emulateStarted = .now
-                }
-            } catch {
-                logger.error("emilating key: \(error)")
-                resetEmulate()
-            }
-            emulateTask = nil
+        guard let item = item(for: keys[index]) else {
+            print("key not found")
+            return
         }
+        emulatingIndex = index
+        emulate.startEmulate(item)
         recordEmulate()
     }
 
-    // Emulated since button pressed (ms)
-    var emulateDuration: Int {
-        Date().timeIntervalSince(emulateStarted).ms
-    }
-
-    // Minimum for known SubGHz protocols (ms)
-    var emulateMinimum: Int {
-        500
-    }
-    var emulateDurationRemains: Int {
-        max(0, emulateMinimum - emulateDuration)
-    }
-
-    // Minimum for RAW SubGHz in ms
-    var emulateRawMinimum: Int {
-        let durationMicroseconds = item.properties
-            .filter { $0.key == "RAW_Data" }
-            .map { $0.value.split(separator: " ").compactMap { Int($0) } }
-            .reduce(into: []) { $0.append(contentsOf: $1) }
-            .map { abs($0) }
-            .reduce(0, +)
-        return durationMicroseconds / 1000
-    }
-
-    var emulateRawDurationRemains: Int {
-        max(0, emulateRawMinimum - emulateDuration)
+    func item(for key: WidgetKey) -> ArchiveItem? {
+        AppState.shared.archive.items.first {
+            $0.name == key.name && $0.kind == key.kind
+        }
     }
 
     func stopEmulate() {
-        guard let index = emulatingIndex else {
-            return
-        }
-        let item = keys[index]
-
-        guard isEmulating, !isFlipperAppCancellation else { return }
-        isFlipperAppCancellation = true
-        Task {
-            // Wait for task to complete
-            _ = await emulateTask?.result
-            // Try to release button
-            do {
-                if isEmulating, item.kind == .subghz {
-                    try await waitForEmulateMinimumDuration()
-                    try await rpc.appButtonRelease()
-                }
-            } catch {
-                logger.error("release button: \(error)")
-            }
-            // Try to exit the app
-            do {
-                feedback(style: .soft)
-                try await rpc.appExit()
-            } catch {
-                logger.error("app exit: \(error)")
-            }
-        }
-    }
-
-    func waitForEmulateMinimumDuration() async throws {
-        let delayMilliseconds = item.isRaw
-            ? emulateRawDurationRemains
-            : emulateDurationRemains
-        for _ in 0..<(delayMilliseconds / 10) {
-            guard !forceStop else { break }
-            try await Task.sleep(milliseconds: 10)
-        }
+        guard isEmulating else { return }
+        emulate.stopEmulate()
     }
 
     func forceStopEmulate() {
-        forceStop = true
-        if isEmulating {
-            stopEmulate()
-        }
+        guard isEmulating else { return }
+        emulate.forceStopEmulate()
     }
 
     func toggleEmulate(at index: Int) {
@@ -238,11 +131,7 @@ public class WidgetViewModel: ObservableObject {
 
     func resetEmulate() {
         emulatingIndex = nil
-        forceStop = false
-        isEmulating = false
-        isFileLoaded = false
-        isFlipperAppStarted = false
-        isFlipperAppCancellation = false
+        emulate.resetEmulate()
     }
 
     // Analytics

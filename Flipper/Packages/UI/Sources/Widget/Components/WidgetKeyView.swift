@@ -72,6 +72,8 @@ struct WidgetSendButton: View {
     let state: WidgetKeyState
     let viewModel: WidgetViewModel
 
+    @State var isPressed = false
+
     var color: Color {
         state == .disabled ? .black8 : .a1
     }
@@ -96,13 +98,18 @@ struct WidgetSendButton: View {
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
-                    if viewModel.isFlipperAppCancellation {
-                        viewModel.forceStopEmulate()
-                    } else {
-                        viewModel.startEmulate(at: index)
+                    guard !isPressed else {
+                        return
                     }
+                    isPressed = true
+                    guard !viewModel.isEmulating else {
+                        viewModel.forceStopEmulate()
+                        return
+                    }
+                    viewModel.startEmulate(at: index)
                 }
                 .onEnded { _ in
+                    isPressed = false
                     viewModel.stopEmulate()
                 }
         )
