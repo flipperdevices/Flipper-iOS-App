@@ -44,9 +44,10 @@ struct OptionsView: View {
             .disabled(!viewModel.isOnline)
 
             Section {
-                NavigationLink("Widget Settings") {
-                    WidgetSettingsView(viewModel: .init())
+                Button("Widget Settings") {
+                    viewModel.showWidgetSettings()
                 }
+                .foregroundColor(.primary)
             }
 
             if viewModel.isDebugMode {

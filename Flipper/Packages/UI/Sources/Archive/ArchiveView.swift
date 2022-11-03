@@ -74,6 +74,10 @@ struct ArchiveView: View {
             .fullScreenCover(isPresented: $viewModel.showSearchView) {
                 ArchiveSearchView(viewModel: .init())
             }
+            .fullScreenCover(isPresented: $viewModel.showWidgetSettings) {
+                WidgetSettingsView(viewModel: .init())
+            }
+            .navigationTitle("")
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)

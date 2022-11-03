@@ -29,6 +29,7 @@ public class AppState {
     @Published public var customFirmwareURL: URL?
 
     @Published public var hasMFLog = false
+    @Published public var showWidgetSettings = false
 
     public init() {
         logger.info("app version: \(Bundle.fullVersion)")
@@ -225,6 +226,7 @@ public class AppState {
     public func onOpenURL(_ url: URL) async {
         do {
             guard url != .widgetSettings else {
+                showWidgetSettings = true
                 return
             }
             switch url.pathExtension {

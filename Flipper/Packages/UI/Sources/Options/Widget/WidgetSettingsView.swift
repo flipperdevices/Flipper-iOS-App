@@ -9,77 +9,84 @@ struct WidgetSettingsView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                ForEach(rows, id: \.self) { row in
-                    HStack {
-                        let i1 = row * 2
-                        let i2 = i1 + 1
+        VStack(spacing: 0) {
+            ZStack(alignment: .center) {
+                Text("Widget Settings")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.primary)
 
-                        if i1 < viewModel.keys.count {
-                            SettingsWidgetKeyView(key: viewModel.keys[i1]) {
-                                viewModel.delete(at: i1)
-                            }
-                            .padding(11)
-                        } else {
-                            SettingsAddKeyView() {
-                                viewModel.showAddKey()
-                            }
-                            .padding(11)
-                        }
-
-                        Divider()
-
-                        if i2 < viewModel.keys.count {
-                            SettingsWidgetKeyView(key: viewModel.keys[i2]) {
-                                viewModel.delete(at: i2)
-                            }
-                            .padding(11)
-                        } else if i1 < viewModel.keys.count {
-                            SettingsAddKeyView {
-                                viewModel.showAddKey()
-                            }
-                            .padding(11)
-                        } else {
-                            SettingsAddKeyView {
-                                viewModel.showAddKey()
-                            }
-                            .padding(11)
-                            .opacity(0)
-                        }
-                    }
-
-                    if row + 1 < rows.endIndex {
-                        Divider()
+                HStack {
+                    Spacer()
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("Done")
+                            .font(.system(size: 17, weight: .regular))
                     }
                 }
             }
-            .sheet(isPresented: $viewModel.showAddKeyView) {
-                SettingsSelectKeyView(viewModel: .init(
-                    widgetKeys: viewModel.keys
-                ) {
-                    viewModel.addKey($0)
-                })
-            }
-            .background(Color.groupedBackground)
-            .cornerRadius(22)
-            .padding(14)
+            .padding(.vertical, 10.5)
+            .padding(.horizontal, 14)
 
-            Spacer()
+            ScrollView {
+                VStack(spacing: 0) {
+                    ForEach(rows, id: \.self) { row in
+                        HStack {
+                            let i1 = row * 2
+                            let i2 = i1 + 1
+
+                            if i1 < viewModel.keys.count {
+                                SettingsWidgetKeyView(key: viewModel.keys[i1]) {
+                                    viewModel.delete(at: i1)
+                                }
+                                .padding(11)
+                            } else {
+                                SettingsAddKeyView() {
+                                    viewModel.showAddKey()
+                                }
+                                .padding(11)
+                            }
+
+                            Divider()
+
+                            if i2 < viewModel.keys.count {
+                                SettingsWidgetKeyView(key: viewModel.keys[i2]) {
+                                    viewModel.delete(at: i2)
+                                }
+                                .padding(11)
+                            } else if i1 < viewModel.keys.count {
+                                SettingsAddKeyView {
+                                    viewModel.showAddKey()
+                                }
+                                .padding(11)
+                            } else {
+                                SettingsAddKeyView {
+                                    viewModel.showAddKey()
+                                }
+                                .padding(11)
+                                .opacity(0)
+                            }
+                        }
+
+                        if row + 1 < rows.endIndex {
+                            Divider()
+                        }
+                    }
+                }
+                .sheet(isPresented: $viewModel.showAddKeyView) {
+                    SettingsSelectKeyView(viewModel: .init(
+                        widgetKeys: viewModel.keys
+                    ) {
+                        viewModel.addKey($0)
+                    })
+                }
+                .background(Color.groupedBackground)
+                .cornerRadius(22)
+                .padding(14)
+
+                Spacer()
+            }
         }
         .background(Color.background)
-        .navigationBarBackButtonHidden(true)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                BackButton {
-                    dismiss()
-                }
-            }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text("Widget Settings")
-                    .font(.system(size: 20, weight: .bold))
-            }
-        }
     }
 }

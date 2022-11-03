@@ -39,6 +39,10 @@ class OptionsViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
+    func showWidgetSettings() {
+        appState.showWidgetSettings = true
+    }
+
     func rebootFlipper() {
         Task {
             do {

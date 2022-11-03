@@ -36,6 +36,13 @@ class ArchiveViewModel: ObservableObject {
     @Published var showInfoView = false
     @Published var showSearchView = false
     @Published var hasImportedItem = false
+    @Published var showWidgetSettings = false {
+        didSet {
+            if appState.showWidgetSettings != showWidgetSettings {
+                appState.showWidgetSettings = showWidgetSettings
+            }
+        }
+    }
 
     var importedItem: ArchiveItem {
         appState.importQueue.removeFirst()
@@ -80,6 +87,11 @@ class ArchiveViewModel: ObservableObject {
         appState.$syncProgress
             .receive(on: DispatchQueue.main)
             .assign(to: \.syncProgress, on: self)
+            .store(in: &disposeBag)
+
+        appState.$showWidgetSettings
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.showWidgetSettings, on: self)
             .store(in: &disposeBag)
     }
 
