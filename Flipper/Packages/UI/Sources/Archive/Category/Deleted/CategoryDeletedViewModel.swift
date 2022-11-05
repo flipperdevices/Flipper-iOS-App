@@ -8,7 +8,7 @@ class CategoryDeletedViewModel: ObservableObject {
     private let logger = Logger(label: "category-deleted-vm")
 
     @Published var items: [ArchiveItem] = []
-    var selectedItem: ArchiveItem?
+    var selectedItem: ArchiveItem = .none
     @Published var showInfoView = false
     @Published var showRestoreSheet = false
     @Published var showDeleteSheet = false

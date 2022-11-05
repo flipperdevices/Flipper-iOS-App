@@ -16,8 +16,8 @@ class DeletedInfoViewModel: ObservableObject {
     let appState: AppState = .shared
     var dismissPublisher = PassthroughSubject<Void, Never>()
 
-    init(item: ArchiveItem?) {
-        self.item = item ?? .none
+    init(item: ArchiveItem) {
+        self.item = item
     }
 
     func restore() {

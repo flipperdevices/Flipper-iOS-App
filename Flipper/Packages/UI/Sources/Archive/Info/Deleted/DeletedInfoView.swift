@@ -1,12 +1,16 @@
 import SwiftUI
 
+@MainActor
 struct DeletedInfoView: View {
     @StateObject var viewModel: DeletedInfoViewModel
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            SheetHeader(title: "Key Info") {
+            SheetHeader(
+                title: viewModel.item.isNFC ? "Card Info" : "Key Info",
+                description: viewModel.item.name.value
+            ) {
                 viewModel.dismiss()
             }
 
