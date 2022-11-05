@@ -38,7 +38,7 @@ struct InfoView: View {
                             .opacity(viewModel.isEditing ? 0 : 1)
                             .environmentObject(alertController)
 
-                        VStack(alignment: .leading, spacing: 20) {
+                        VStack(alignment: .leading, spacing: 2) {
                             if viewModel.item.isEditableNFC {
                                 InfoButton(
                                     image: "HexEditor",
@@ -55,12 +55,15 @@ struct InfoView: View {
                                 longPressAction: { viewModel.shareAsFile() }
                             )
                             .foregroundColor(.primary)
-                            InfoButton(image: "Delete", title: "Delete") {
+                            InfoButton(
+                                image: "Delete",
+                                title: "Delete"
+                            ) {
                                 viewModel.delete()
                             }
                             .foregroundColor(.sRed)
                         }
-                        .padding(.top, 24)
+                        .padding(.top, 8)
                         .padding(.horizontal, 24)
                         .opacity(viewModel.isEditing ? 0 : 1)
 
@@ -114,6 +117,8 @@ struct InfoButton: View {
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
             }
+            .frame(minWidth: 44, minHeight: 44)
+            .padding(.trailing, 44)
         }
         .simultaneousGesture(LongPressGesture().onEnded { _ in
             longPressAction()
