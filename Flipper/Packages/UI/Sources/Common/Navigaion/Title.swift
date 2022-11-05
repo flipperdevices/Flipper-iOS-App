@@ -12,9 +12,11 @@ struct Title: View {
     var body: some View {
         VStack(spacing: 0) {
             Text(title)
+                .lineLimit(1)
                 .font(.system(size: 18, weight: .bold))
             if let description = description {
                 Text(description)
+                    .lineLimit(1)
                     .font(.system(size: 12, weight: .medium))
             }
         }
