@@ -15,7 +15,7 @@ struct UpdateSucceededAlert: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Image("UpdateSucceeded")
+            Image("FlipperSuccess")
                 .renderingMode(.template)
                 .foregroundColor(.blackBlack20)
                 .padding(.top, 17)

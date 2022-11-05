@@ -30,8 +30,8 @@ struct ReaderDataNotFound: View {
             VStack(spacing: 34) {
                 Image(
                     fliperColor == .white
-                        ? "DetectReaderFlipperWhite"
-                        : "DetectReaderFlipperBlack"
+                        ? "FlipperDetectReaderWhite"
+                        : "FlipperDetectReaderBlack"
                 )
                 .resizable()
                 .aspectRatio(contentMode: .fit)

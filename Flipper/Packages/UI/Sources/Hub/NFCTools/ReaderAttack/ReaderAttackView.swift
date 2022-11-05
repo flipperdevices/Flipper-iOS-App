@@ -249,7 +249,7 @@ extension ReaderAttackView {
 
         var body: some View {
             HStack(spacing: 6) {
-                Image("Key")
+                Image("FoundKey")
                 Text(key.hexValue.uppercased())
                     .foregroundColor(.primary.opacity(0.8))
                     .font(.system(
