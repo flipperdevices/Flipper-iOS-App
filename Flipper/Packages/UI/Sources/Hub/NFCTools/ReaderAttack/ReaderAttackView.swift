@@ -12,6 +12,8 @@ struct ReaderAttackView: View {
                 switch viewModel.state {
                 case .noLog:
                     ReaderDataNotFound(fliperColor: viewModel.flipperColor)
+                case .noDevice:
+                    AttackConnectionError(fliperColor: viewModel.flipperColor)
                 case .downloadingLog:
                     VStack(spacing: 18) {
                         Text("Calculation Started...")
@@ -133,7 +135,7 @@ struct ReaderAttackView: View {
                 }
             }
 
-            if viewModel.state != .noLog {
+            if !viewModel.isError {
                 VStack(alignment: .leading, spacing: 32) {
                     CalculatedKeys(results: viewModel.results)
                     if viewModel.hasNewKeys {
@@ -159,15 +161,15 @@ struct ReaderAttackView: View {
                     Spacer()
                 }
 
-                if viewModel.attackInProgress || viewModel.state == .noLog {
+                if viewModel.state != .finished {
                     HStack {
                         Spacer()
                         Button {
-                            viewModel.attackInProgress
+                            viewModel.isAttackInProgress
                                 ? viewModel.showCancelAttack = true
                                 : dismiss()
                         } label: {
-                            Text(viewModel.state == .noLog ? "Close" : "Cancel")
+                            Text(viewModel.isError ? "Close" : "Cancel")
                                 .font(.system(size: 16, weight: .medium))
                                 .padding(.horizontal, 8)
                                 .tappableFrame()

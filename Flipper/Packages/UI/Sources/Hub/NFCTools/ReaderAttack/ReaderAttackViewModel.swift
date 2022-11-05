@@ -13,13 +13,23 @@ class ReaderAttackViewModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
-    @Published var flipper: Flipper?
+    @Published var flipper: Flipper? {
+        didSet {
+            if flipper?.state != .connected {
+                state = .noDevice
+            }
+        }
+    }
     var flipperColor: FlipperColor {
         flipper?.color ?? .white
     }
 
-    var attackInProgress: Bool {
-        !(state == .finished || state == .noLog)
+    var isAttackInProgress: Bool {
+        !isError && state != .finished
+    }
+
+    var isError: Bool {
+        state == .noLog || state == .noDevice
     }
 
     @Published var state: State = .downloadingLog
@@ -56,6 +66,7 @@ class ReaderAttackViewModel: ObservableObject {
 
     enum State {
         case noLog
+        case noDevice
         case downloadingLog
         case calculating
         case checkingKeys
