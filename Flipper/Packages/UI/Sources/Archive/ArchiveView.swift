@@ -53,22 +53,18 @@ struct ArchiveView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Text("Archive")
-                        .font(.system(size: 20, weight: .bold))
+                LeadingToolbarItems {
+                    Title("Archive")
+                        .padding(.leading, 8)
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
+                TrailingToolbarItems {
+                    SearchButton {
                         viewModel.showSearchView = true
-                    } label: {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 18, weight: .bold))
                     }
-                    .foregroundColor(.primary)
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $viewModel.showInfoView) {
                 InfoView(viewModel: .init(item: viewModel.selectedItem))
             }
@@ -78,7 +74,6 @@ struct ArchiveView: View {
             .fullScreenCover(isPresented: $viewModel.showSearchView) {
                 ArchiveSearchView(viewModel: .init())
             }
-            .navigationTitle("")
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)

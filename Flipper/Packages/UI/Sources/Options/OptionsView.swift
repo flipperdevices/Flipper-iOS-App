@@ -88,14 +88,11 @@ struct OptionsView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
-            }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text("Options")
-                    .font(.system(size: 20, weight: .bold))
+                Title("Options")
             }
         }
     }

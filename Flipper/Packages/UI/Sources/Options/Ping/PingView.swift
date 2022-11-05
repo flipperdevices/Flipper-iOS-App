@@ -53,14 +53,11 @@ struct PingView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
-            }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text("Ping")
-                    .font(.system(size: 20, weight: .bold))
+                Title("Ping")
             }
         }
     }

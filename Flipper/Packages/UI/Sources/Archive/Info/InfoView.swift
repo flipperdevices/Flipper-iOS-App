@@ -15,7 +15,6 @@ struct InfoView: View {
                         onSave: viewModel.saveChanges,
                         onCancel: viewModel.undoChanges
                     )
-                    .padding(.bottom, 6)
                 } else {
                     SheetHeader(
                         title: viewModel.item.isNFC ? "Card Info" : "Key Info",
@@ -23,7 +22,6 @@ struct InfoView: View {
                     ) {
                         viewModel.dismiss()
                     }
-                    .padding(.bottom, 6)
                 }
 
                 ScrollView {
@@ -33,7 +31,7 @@ struct InfoView: View {
                             isEditing: $viewModel.isEditing,
                             kind: .existing
                         )
-                        .padding(.top, 14)
+                        .padding(.top, 6)
                         .padding(.horizontal, 24)
 
                         EmulateView(viewModel: .init(item: viewModel.item))

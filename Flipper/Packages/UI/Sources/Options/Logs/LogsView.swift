@@ -16,18 +16,16 @@ struct LogsView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
+                Title("Logs")
             }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text("Logs")
-                    .font(.system(size: 20, weight: .bold))
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Menu {
+            TrailingToolbarItems {
+                NavBarMenu {
                     ForEach(viewModel.logLevels, id: \.self) { level in
                         Button {
                             viewModel.changeLogLevel(to: level)
@@ -43,19 +41,18 @@ struct LogsView: View {
                 } label: {
                     Text("Log level")
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.primary)
+                        .padding(.horizontal, 4)
                 }
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
+
+                NavBarButton {
                     viewModel.deleteAll()
                 } label: {
-                    Text("Delete all")
+                    Text("Delete All")
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.primary)
+                        .padding(.horizontal, 4)
                 }
+                .padding(.trailing, 4)
             }
         }
-        .navigationBarTitleDisplayMode(.inline)
     }
 }

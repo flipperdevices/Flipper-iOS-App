@@ -19,9 +19,9 @@ struct HubView: View {
             .background(Color.background)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Text("Hub")
-                        .font(.system(size: 20, weight: .bold))
+                LeadingToolbarItems {
+                    Title("Hub")
+                        .padding(.leading, 8)
                 }
             }
         }

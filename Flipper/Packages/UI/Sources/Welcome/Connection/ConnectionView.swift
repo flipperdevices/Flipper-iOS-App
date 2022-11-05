@@ -69,11 +69,12 @@ struct ConnectionView: View {
             .padding(.bottom, onMac ? 140 : 8)
             .disabled(viewModel.isConnecting)
         }
-        .navigationBarTitleDisplayMode(.inline)
         .padding(.horizontal, 16)
         .background(Color.background)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
@@ -90,7 +91,6 @@ struct ConnectionView: View {
         .onDisappear {
             viewModel.stopScan()
         }
-        .navigationBarBackButtonHidden(true)
         .navigationBarColors(foreground: .primary, background: Color.background)
     }
 

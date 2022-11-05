@@ -21,13 +21,12 @@ struct CategoryView: View {
         }
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
-            }
-            ToolbarItem(placement: .navigationBarLeading) {
                 Text(viewModel.name)
                     .font(.system(size: 20, weight: .bold))
             }

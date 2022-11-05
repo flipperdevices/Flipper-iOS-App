@@ -142,16 +142,13 @@ struct ReaderAttackView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     viewModel.attackInProgress
                         ? viewModel.showCancelAttack = true
                         : dismiss()
                 }
-            }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text("Mfkey32 (Detect Reader)")
-                    .font(.system(size: 20, weight: .bold))
+                Title("Mfkey32 (Detect Reader)")
             }
         }
         .customAlert(isPresented: $viewModel.showCancelAttack) {

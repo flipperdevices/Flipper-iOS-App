@@ -8,10 +8,9 @@ struct BackButton: View {
     }
 
     var body: some View {
-        Button(action: action) {
+        NavBarButton(action: action) {
             Image(systemName: "chevron.backward")
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundColor(.primary)
+                .font(.system(size: 18, weight: .medium))
         }
     }
 }

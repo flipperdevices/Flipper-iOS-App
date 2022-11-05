@@ -21,39 +21,35 @@ struct FileManagerView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
+                Title(viewModel.title)
             }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text(viewModel.title)
-                    .font(.system(size: 20, weight: .bold))
-            }
-        }
-        .toolbar {
-            if !viewModel.path.isEmpty, case .list = viewModel.content {
-                Menu {
-                    Button {
-                        viewModel.newElement(isDirectory: false)
-                    } label: {
-                        Text("File")
-                    }
+            TrailingToolbarItems {
+                if !viewModel.path.isEmpty, case .list = viewModel.content {
+                    NavBarMenu {
+                        Button {
+                            viewModel.newElement(isDirectory: false)
+                        } label: {
+                            Text("File")
+                        }
 
-                    Button {
-                        viewModel.newElement(isDirectory: true)
-                    } label: {
-                        Text("Folder")
-                    }
+                        Button {
+                            viewModel.newElement(isDirectory: true)
+                        } label: {
+                            Text("Folder")
+                        }
 
-                    Button {
-                        viewModel.showFileImporter()
+                        Button {
+                            viewModel.showFileImporter()
+                        } label: {
+                            Text("Import")
+                        }
                     } label: {
-                        Text("Import")
+                        Image(systemName: "plus")
                     }
-                } label: {
-                    Image(systemName: "plus")
-                        .foregroundColor(.primary)
                 }
             }
         }

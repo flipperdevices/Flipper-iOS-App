@@ -20,14 +20,11 @@ struct NFCToolsView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
-            }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text("NFCTools")
-                    .font(.system(size: 20, weight: .bold))
+                Title("NFCTools")
             }
         }
     }

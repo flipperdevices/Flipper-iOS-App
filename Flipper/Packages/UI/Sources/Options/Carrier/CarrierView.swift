@@ -22,14 +22,11 @@ struct CarrierView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
-            }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text("I'm watching you")
-                    .font(.system(size: 20, weight: .bold))
+                Title("I'm watching you")
             }
         }
     }

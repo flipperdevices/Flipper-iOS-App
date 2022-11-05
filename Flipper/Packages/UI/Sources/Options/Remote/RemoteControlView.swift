@@ -25,14 +25,11 @@ struct RemoteControlView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
-            }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text("Remote Control")
-                    .font(.system(size: 20, weight: .bold))
+                Title("Remote Control")
             }
         }
         .onAppear {

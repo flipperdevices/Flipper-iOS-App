@@ -31,14 +31,11 @@ struct StressTestView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
-            }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text("Stress Test")
-                    .font(.system(size: 20, weight: .bold))
+                Title("Stress Test")
             }
         }
         .onDisappear {

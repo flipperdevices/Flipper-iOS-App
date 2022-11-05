@@ -19,28 +19,29 @@ struct SheetEditHeader: View {
     }
 
     var body: some View {
-        HStack {
-            Button("Cancel") {
-                onCancel()
-            }
-            .frame(width: 66)
-            Spacer()
-            VStack(spacing: 0) {
-                Text(title)
-                    .font(.system(size: 18, weight: .bold))
-                if let description = description {
-                    Text(description)
-                        .font(.system(size: 12, weight: .medium))
+        NavBar(
+            leading: {
+                NavBarButton {
+                    onCancel()
+                } label: {
+                    Text("Cancel")
+                        .font(.system(size: 14, weight: .medium))
+                        .padding(.horizontal, 8)
+                }
+            },
+            principal: {
+                Title(title, description: description)
+            },
+            trailing: {
+                NavBarButton {
+                    onSave()
+                } label: {
+                    Text("Save")
+                        .font(.system(size: 14, weight: .medium))
+                        .padding(.horizontal, 8)
                 }
             }
-            Spacer()
-            Button("Save") {
-                onSave()
-            }
-            .frame(width: 66)
-        }
-        .padding(.horizontal, 11)
-        .padding(.top, 17)
-        .padding(.bottom, 6)
+        )
+        .padding(8)
     }
 }

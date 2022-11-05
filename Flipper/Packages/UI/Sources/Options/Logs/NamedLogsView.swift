@@ -13,22 +13,16 @@ struct NamedLogsView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
+                Title(viewModel.name)
             }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text(viewModel.name)
-                    .font(.system(size: 20, weight: .bold))
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
+            TrailingToolbarItems {
+                ShareButton {
                     viewModel.share()
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
                 }
-                .foregroundColor(.primary)
             }
         }
     }

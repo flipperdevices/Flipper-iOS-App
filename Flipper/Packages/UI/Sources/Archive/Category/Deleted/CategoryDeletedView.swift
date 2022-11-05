@@ -34,18 +34,16 @@ struct CategoryDeletedView: View {
 
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
+                Title("Deleted")
             }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text("Deleted")
-                    .font(.system(size: 20, weight: .bold))
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
+            TrailingToolbarItems {
+                NavBarButton {
                     viewModel.showRestoreSheet = true
                 } label: {
                     Text("Restore All")
@@ -61,10 +59,8 @@ struct CategoryDeletedView: View {
                         .cancel()
                     ])
                 }
-            }
 
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
+                NavBarButton {
                     viewModel.showDeleteSheet = true
                 } label: {
                     Text("Delete All")

@@ -52,22 +52,16 @@ struct DeviceInfoView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            LeadingToolbarItems {
                 BackButton {
                     dismiss()
                 }
+                Title("Device Info")
             }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Text("Device Info")
-                    .font(.system(size: 20, weight: .bold))
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
+            TrailingToolbarItems {
+                ShareButton {
                     viewModel.share()
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
                 }
-                .foregroundColor(.primary)
                 .disabled(!viewModel.isReady)
                 .opacity(viewModel.isReady ? 1 : 0.4)
             }

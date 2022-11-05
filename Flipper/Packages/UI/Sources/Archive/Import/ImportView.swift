@@ -23,7 +23,7 @@ struct ImportView: View {
                 isEditing: $viewModel.isEditing,
                 kind: .imported
             )
-            .padding(.top, 14)
+            .padding(.top, 6)
             .padding(.horizontal, 24)
 
             HStack {

@@ -49,12 +49,16 @@ class ImportViewModel: ObservableObject {
 
     func saveChanges() {
         backup = item
-        isEditing = false
+        withAnimation {
+            isEditing = false
+        }
     }
 
     func undoChanges() {
         item = backup
-        isEditing = false
+        withAnimation {
+            isEditing = false
+        }
     }
 
     func showError(_ error: Swift.Error) {

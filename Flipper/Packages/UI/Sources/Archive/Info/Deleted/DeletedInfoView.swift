@@ -15,7 +15,7 @@ struct DeletedInfoView: View {
                 isEditing: $viewModel.isEditing,
                 kind: .existing
             )
-            .padding(.top, 14)
+            .padding(.top, 6)
             .padding(.horizontal, 24)
 
             VStack(alignment: .leading, spacing: 20) {
