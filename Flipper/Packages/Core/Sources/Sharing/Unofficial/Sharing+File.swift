@@ -24,7 +24,10 @@ extension FileImporter {
         logger.debug("importing internal key: \(filename)")
 
         let data = try Data(contentsOf: url)
-        try FileManager.default.removeItem(at: url)
+        // remove item passed from another app
+        if url.path.starts(with: "/private") {
+            try FileManager.default.removeItem(at: url)
+        }
         return try .init(filename: filename, data: data)
     }
 }
