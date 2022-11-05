@@ -17,6 +17,7 @@ class EmulateViewModel: ObservableObject {
     @Published var isEmulating = false
     @Published var showBubble = false
     @Published var showAppLocked = false
+    @Published var showRestricted = false
 
     var showProgressButton: Bool {
         deviceStatus == .connecting ||
@@ -57,6 +58,10 @@ class EmulateViewModel: ObservableObject {
                 if state == .locked {
                     self.isEmulating = false
                     self.showAppLocked = true
+                }
+                if state == .restricted {
+                    self.isEmulating = false
+                    self.showRestricted = true
                 }
                 if state == .staring || state == .started || state == .closed {
                     feedback(style: .soft)

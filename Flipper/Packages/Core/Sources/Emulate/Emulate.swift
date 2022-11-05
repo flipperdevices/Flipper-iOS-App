@@ -31,6 +31,7 @@ public class Emulate: ObservableObject {
         case closing
         case closed
         case locked
+        case restricted
     }
 
     private var stop = false
@@ -67,6 +68,7 @@ public class Emulate: ObservableObject {
                 try await startLoaded(item)
             } catch {
                 logger.error("emilating key: \(error)")
+                resetEmulate()
             }
             emulateTask = nil
         }
@@ -100,35 +102,6 @@ public class Emulate: ObservableObject {
         forceStop = true
     }
 
-    func startLoaded(_ item: ArchiveItem) async throws {
-        if item.kind == .subghz {
-            try await rpc.appButtonPress()
-            emulateStarted = .now
-        }
-        try await waitForMinimumDuration(for: item)
-    }
-
-    func stopLoaded(_ item: ArchiveItem) async throws {
-        if item.kind == .subghz {
-            try await rpc.appButtonRelease()
-        }
-    }
-
-    func exitApp() async throws {
-        applicationState = .closing
-        try await rpc.appExit()
-    }
-
-    private func waitForMinimumDuration(for item: ArchiveItem) async throws {
-        let stepMilliseconds = 10
-        var delayMilliseconds = duration(for: item)
-
-        while delayMilliseconds > 0, !forceStop {
-            delayMilliseconds -= stepMilliseconds
-            try await Task.sleep(milliseconds: stepMilliseconds)
-        }
-    }
-
     public func resetEmulate() {
         item = nil
         stop = false
@@ -136,18 +109,16 @@ public class Emulate: ObservableObject {
     }
 
     private func startApp(_ name: String) async throws {
-        while !stop {
-            do {
-                applicationState = .staring
-                try await rpc.appStart(name, args: "RPC")
-                try await waitForAppStartedEvent()
-                return
-            } catch let error as Error {
-                if error == .application(.systemLocked) {
-                    applicationState = .locked
-                }
-                throw error
+        do {
+            applicationState = .staring
+            try await rpc.appStart(name, args: "RPC")
+            try await waitForAppStartedEvent()
+            return
+        } catch let error as Error {
+            if error == .application(.systemLocked) {
+                applicationState = .locked
             }
+            throw error
         }
     }
 
@@ -161,6 +132,54 @@ public class Emulate: ObservableObject {
         applicationState = .loading
         try await rpc.appLoadFile(path)
         applicationState = .loaded
+    }
+
+    private func startLoaded(_ item: ArchiveItem) async throws {
+        guard applicationState == .loaded else {
+            return
+        }
+        if item.kind == .subghz {
+            do {
+                try await rpc.appButtonPress()
+            } catch let error as Error where error == .application(.cmdError) {
+                applicationState = .restricted
+                throw error
+            }
+            emulateStarted = .now
+        }
+        applicationState = .emulating
+        try await waitForMinimumDuration(for: item)
+    }
+
+    private func waitForMinimumDuration(for item: ArchiveItem) async throws {
+        let stepMilliseconds = 10
+        var delayMilliseconds = duration(for: item)
+
+        while delayMilliseconds > 0, !forceStop {
+            delayMilliseconds -= stepMilliseconds
+            try await Task.sleep(milliseconds: stepMilliseconds)
+        }
+    }
+
+    private func stopLoaded(_ item: ArchiveItem) async throws {
+        guard applicationState == .emulating else {
+            return
+        }
+        if item.kind == .subghz {
+            try await rpc.appButtonRelease()
+        }
+    }
+
+    private func exitApp() async throws {
+        guard
+            applicationState != .closing,
+            applicationState != .closed,
+            applicationState != .locked
+        else {
+            return
+        }
+        applicationState = .closing
+        try await rpc.appExit()
     }
 }
 
