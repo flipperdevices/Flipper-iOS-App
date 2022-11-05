@@ -10,16 +10,10 @@ struct BluetoothOffView: View {
             Text("Turn On Bluetooth")
                 .font(.system(size: 16, weight: .medium))
 
-            Text(
-                """
-                We need Bluetooth access to
-                confirm the connection between
-                your phone and Flipper Device
-                """
-            )
-            .multilineTextAlignment(.center)
-            .font(.system(size: 14, weight: .medium))
-            .foregroundColor(.black40)
+            Text("Bluetooth on your phone is turned off")
+                .multilineTextAlignment(.center)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.black40)
 
             RoundedButton("Go to Settings") {
                 Application.openSystemSettings()
