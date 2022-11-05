@@ -18,25 +18,29 @@ struct ImportView: View {
                 }
             }
 
-            CardView(
-                item: $viewModel.item,
-                isEditing: $viewModel.isEditing,
-                kind: .imported
-            )
-            .padding(.top, 6)
-            .padding(.horizontal, 24)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    CardView(
+                        item: $viewModel.item,
+                        isEditing: $viewModel.isEditing,
+                        kind: .imported
+                    )
+                    .padding(.top, 6)
+                    .padding(.horizontal, 24)
 
-            Button {
-                viewModel.add()
-            } label: {
-                Text("Save to Archive")
-                    .roundedButtonStyle(maxWidth: .infinity)
+                    Button {
+                        viewModel.add()
+                    } label: {
+                        Text("Save to Archive")
+                            .roundedButtonStyle(maxWidth: .infinity)
+                    }
+                    .padding(.top, 18)
+                    .padding(.horizontal, 24)
+                    .opacity(viewModel.isEditing ? 0 : 1)
+
+                    Spacer()
+                }
             }
-            .padding(.top, 18)
-            .padding(.horizontal, 24)
-            .opacity(viewModel.isEditing ? 0 : 1)
-
-            Spacer()
         }
         .alert(isPresented: $viewModel.isError) {
             Alert(title: Text(viewModel.error))
