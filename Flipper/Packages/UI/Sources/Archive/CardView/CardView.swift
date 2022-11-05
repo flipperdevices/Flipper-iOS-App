@@ -10,6 +10,7 @@ struct CardView: View {
     enum Kind {
         case existing
         case imported
+        case deleted
     }
 
     init(item: Binding<ArchiveItem>, isEditing: Binding<Bool>, kind: Kind) {

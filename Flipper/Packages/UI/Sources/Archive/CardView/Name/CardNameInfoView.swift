@@ -27,7 +27,7 @@ extension CardView {
                             .renderingMode(.template)
                             .frame(width: 24, height: 24)
                             .foregroundColor(.primary)
-                            .opacity(kind == .existing ? 1 : 0)
+                            .opacity(kind != .deleted ? 1 : 0)
                     }
                 }
 

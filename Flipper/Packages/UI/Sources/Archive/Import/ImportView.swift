@@ -26,16 +26,8 @@ struct ImportView: View {
             .padding(.top, 6)
             .padding(.horizontal, 24)
 
-            HStack {
-                Button("Edit") {
-                    viewModel.edit()
-                }
-                .foregroundColor(.black30)
-                .font(.system(size: 14, weight: .bold))
-                Spacer()
-                RoundedButton("Add") {
-                    viewModel.add()
-                }
+            RoundedButton("Add") {
+                viewModel.add()
             }
             .padding(.top, 18)
             .padding(.horizontal, 60)
