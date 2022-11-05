@@ -4,6 +4,7 @@ import SwiftUI
 extension ReaderAttackView {
     struct CalculatedKeys: View {
         let results: [ReaderAttack.Result]
+        let showProgress: Bool
 
         var body: some View {
             VStack(alignment: .leading, spacing: 14) {
@@ -11,11 +12,11 @@ extension ReaderAttackView {
                     Text("Calculated Keys")
                         .font(.system(size: 16, weight: .bold))
 
-                    if results.isEmpty {
+                    if showProgress {
                         ProgressView()
                     } else {
                         Text("(\(results.count))")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 16, weight: .bold))
                     }
                     Spacer()
                 }

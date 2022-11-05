@@ -6,6 +6,15 @@ struct ReaderAttackView: View {
     @StateObject var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
 
+    var title: String {
+        guard !viewModel.newKeys.isEmpty else {
+            return "New Keys Not Found"
+        }
+        let keysCount = viewModel.newKeys.count
+        let s = keysCount == 1 ? "" : "s"
+        return "\(keysCount) New Key\(s) added to User Dict."
+    }
+
     var content: some View {
         VStack(spacing: 18) {
             VStack {
@@ -87,8 +96,8 @@ struct ReaderAttackView: View {
                         Divider()
                     }
                 case .finished:
-                    VStack(spacing: 18) {
-                        Text("New Keys Collected: \(viewModel.newKeys.count)")
+                    VStack(spacing: 14) {
+                        Text(title)
                             .font(.system(size: 18, weight: .bold))
                         VStack(spacing: 24) {
                             Image(
@@ -102,42 +111,32 @@ struct ReaderAttackView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 92)
 
+                            if !viewModel.newKeys.isEmpty {
+                                KeysView(.init(viewModel.newKeys))
+                            }
+
                             Button {
                                 dismiss()
                             } label: {
                                 Text("Done")
-                                    .roundedButtonStyle(maxWidth: .infinity)
-                            }
-                            .padding(.horizontal, 10)
-
-                            VStack(spacing: 8) {
-                                if !viewModel.newKeys.isEmpty {
-                                    Text("Keys have been added to User Dict.")
-                                        .font(.system(
-                                            size: 14,
-                                            weight: .medium))
-                                }
-
-                                ForEach(
-                                    [MFKey64](viewModel.newKeys),
-                                    id: \.self
-                                ) { key in
-                                    Text(key.hexValue)
-                                        .foregroundColor(.black40)
-                                        .font(.system(
-                                            size: 12,
-                                            weight: .medium))
-                                }
+                                    .roundedButtonStyle(
+                                        height: 47,
+                                        maxWidth: .infinity)
                             }
                         }
+                        .padding(.horizontal, 10)
+
+                        Divider()
                     }
-                    Divider()
                 }
             }
 
             if !viewModel.isError {
                 VStack(alignment: .leading, spacing: 32) {
-                    CalculatedKeys(results: viewModel.results)
+                    CalculatedKeys(
+                        results: viewModel.results,
+                        showProgress: viewModel.showCalculatedKeysSpinner
+                    )
                     if viewModel.hasNewKeys {
                         UniqueKeys(keys: viewModel.newKeys)
                     }
@@ -206,6 +205,62 @@ extension ReaderLog.KeyType {
         switch self {
         case .a: return .sGreenUpdate
         case .b: return .a2
+        }
+    }
+}
+
+extension ReaderAttackView {
+    struct KeysView: View {
+        let keys: [MFKey64]
+
+        var rows: Range<Int> {
+            0 ..< ((keys.count + 1) / 2)
+        }
+
+        init(_ keys: [MFKey64]) {
+            self.keys = keys
+        }
+
+        var body: some View {
+            VStack(spacing: 10) {
+                ForEach(rows, id: \.self) { row in
+                    HStack {
+                        if keys.indices.contains(row * 2 + 1) {
+                            KeyView(keys[row * 2])
+                            Spacer()
+                            KeyView(keys[row * 2 + 1])
+                        } else {
+                            Spacer()
+                            KeyView(keys[row * 2])
+                            Spacer()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    struct KeyView: View {
+        let key: MFKey64
+
+        init(_ key: MFKey64) {
+            self.key = key
+        }
+
+        var body: some View {
+            HStack(spacing: 6) {
+                Image("Key")
+                Text(key.hexValue.uppercased())
+                    .foregroundColor(.primary.opacity(0.8))
+                    .font(.system(
+                        size: 12,
+                        weight: .medium))
+            }
+            .padding(.leading, 10)
+            .padding(.trailing, 12)
+            .padding(.vertical, 12)
+            .background(Color.groupedBackground)
+            .cornerRadius(10)
         }
     }
 }

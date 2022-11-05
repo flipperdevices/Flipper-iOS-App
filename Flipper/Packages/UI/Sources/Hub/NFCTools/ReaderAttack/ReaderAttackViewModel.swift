@@ -52,6 +52,10 @@ class ReaderAttackViewModel: ObservableObject {
         "\(Int(progress * 100)) %"
     }
 
+    var showCalculatedKeysSpinner: Bool {
+        results.isEmpty && state != .finished
+    }
+
     var hasNewKeys: Bool {
         !newKeys.isEmpty
     }

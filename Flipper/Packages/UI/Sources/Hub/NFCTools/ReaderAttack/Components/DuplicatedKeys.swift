@@ -17,7 +17,7 @@ extension ReaderAttackView {
                         .font(.system(size: 16, weight: .bold))
 
                     Text("(\(_count))")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.system(size: 16, weight: .bold))
 
                     Spacer()
                 }
