@@ -21,8 +21,11 @@ struct BluetoothAccessView: View {
             .font(.system(size: 14, weight: .medium))
             .foregroundColor(.black40)
 
-            RoundedButton("Go to Settings") {
+            Button {
                 Application.openSettings()
+            } label: {
+                Text("Go to Settings")
+                    .roundedButtonStyle()
             }
             .padding(.top, 12)
 

@@ -22,8 +22,11 @@ struct ScanTimeoutView: View {
             .font(.system(size: 14, weight: .medium))
             .foregroundColor(.black40)
 
-            RoundedButton("Retry") {
+            Button {
                 retry()
+            } label: {
+                Text("Retry")
+                    .roundedButtonStyle()
             }
             .padding(.top, 12)
 

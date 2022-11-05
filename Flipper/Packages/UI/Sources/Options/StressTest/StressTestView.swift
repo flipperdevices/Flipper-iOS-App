@@ -21,9 +21,19 @@ struct StressTestView: View {
 
             HStack {
                 Spacer()
-                RoundedButton("Start", action: viewModel.start)
+                Button {
+                    viewModel.start()
+                } label: {
+                    Text("Start")
+                        .roundedButtonStyle(maxWidth: .infinity)
+                }
                 Spacer()
-                RoundedButton("Stop", action: viewModel.stop)
+                Button {
+                    viewModel.stop()
+                } label: {
+                    Text("Stop")
+                        .roundedButtonStyle(maxWidth: .infinity)
+                }
                 Spacer()
             }
             .padding(.vertical, 20)

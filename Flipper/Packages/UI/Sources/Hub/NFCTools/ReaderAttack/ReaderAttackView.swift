@@ -92,9 +92,13 @@ struct ReaderAttackView: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(height: 92)
 
-                                RoundedButton("Done") {
+                                Button {
                                     dismiss()
+                                } label: {
+                                    Text("Done")
+                                        .roundedButtonStyle(maxWidth: .infinity)
                                 }
+                                .padding(.horizontal, 10)
 
                                 VStack(spacing: 8) {
                                     if !viewModel.newKeys.isEmpty {

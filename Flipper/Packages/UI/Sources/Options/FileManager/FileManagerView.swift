@@ -139,12 +139,18 @@ struct FileManagerView: View {
 
             HStack {
                 Spacer()
-                RoundedButton("Close") {
+                Button {
                     dismiss()
+                } label: {
+                    Text("Close")
+                        .roundedButtonStyle(maxWidth: .infinity)
                 }
                 Spacer()
-                RoundedButton("Save") {
+                Button {
                     viewModel.save()
+                } label: {
+                    Text("Save")
+                        .roundedButtonStyle(maxWidth: .infinity)
                 }
                 Spacer()
             }
@@ -163,9 +169,19 @@ struct FileManagerView: View {
 
             HStack {
                 Spacer()
-                RoundedButton("Cancel", action: viewModel.cancel)
+                Button {
+                    viewModel.cancel()
+                } label: {
+                    Text("Cancel")
+                        .roundedButtonStyle(maxWidth: .infinity)
+                }
                 Spacer()
-                RoundedButton("Create", action: viewModel.create)
+                Button {
+                    viewModel.create()
+                } label: {
+                    Text("Create")
+                        .roundedButtonStyle(maxWidth: .infinity)
+                }
                 Spacer()
             }
         }
@@ -178,15 +194,19 @@ struct FileManagerView: View {
                 .font(.title)
             HStack {
                 Spacer()
-                RoundedButton(
-                    "Cancel",
-                    action: viewModel.cancel)
+                Button {
+                    viewModel.cancel()
+                } label: {
+                    Text("Cancel")
+                        .roundedButtonStyle(maxWidth: .infinity)
+                }
                 Spacer()
-                RoundedButton(
-                    "Force delete",
-                    isDanger: true,
-                    action: viewModel.forceDelete
-                )
+                Button {
+                    viewModel.forceDelete()
+                } label: {
+                    Text("Force delete")
+                        .roundedButtonStyle(maxWidth: .infinity, isDanger: true)
+                }
                 Spacer()
             }
         }

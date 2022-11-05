@@ -74,13 +74,7 @@ struct PairingIssueAlert: View {
                     isPresented.wrappedValue = false
                 } label: {
                     Text("Go to Settings")
-                        .frame(height: 41)
-                        .frame(maxWidth: .infinity)
-                        .font(.system(size: 14, weight: .bold))
-                        .padding(.horizontal, 38)
-                        .foregroundColor(.white)
-                        .background(Color.a2)
-                        .cornerRadius(30)
+                        .roundedButtonStyle(maxWidth: .infinity)
                 }
             }
             .padding(.top, 30)

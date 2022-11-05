@@ -119,10 +119,14 @@ struct ConnectionView: View {
                     ProgressView()
                         .padding(.trailing, 14)
                 default:
-                    ConnectButton("Connect") {
+                    Button {
                         if flipper.state != .connected {
                             viewModel.connect(to: flipper.id)
                         }
+                    } label: {
+                        Text("Connect")
+                            .roundedButtonStyle(horizontalPadding: 20)
+                            .lineLimit(1)
                     }
                     .disabled(viewModel.isConnecting)
                     .padding(.trailing, 14)
@@ -171,30 +175,6 @@ struct ConnectPlaceholderView: View {
                 .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.black40)
             Spacer()
-        }
-    }
-}
-
-// TODO: Use RoundedButton or iOS15 buttons
-
-struct ConnectButton: View {
-    let text: String
-    let action: () -> Void
-
-    init(_ text: String, action: @escaping () -> Void) {
-        self.text = text
-        self.action = action
-    }
-
-    var body: some View {
-        Button(action: action) {
-            Text(text)
-                .lineLimit(1)
-                .frame(width: 89, height: 36, alignment: .center)
-                .font(.system(size: 12, weight: .bold))
-                .background(Color.accentColor)
-                .foregroundColor(Color.white)
-                .cornerRadius(18)
         }
     }
 }

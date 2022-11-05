@@ -31,12 +31,8 @@ struct InstructionView: View {
                     .customBackground(Color.background)
             } label: {
                 Text("Connect")
-                    .frame(height: 51)
-                    .frame(maxWidth: .infinity)
-                    .foregroundColor(.white)
-                    .background(Color.accentColor)
                     .font(.system(size: 16, weight: .bold))
-                    .cornerRadius(30)
+                    .roundedButtonStyle(height: 51, maxWidth: .infinity)
             }
             .padding(.horizontal, 18)
 

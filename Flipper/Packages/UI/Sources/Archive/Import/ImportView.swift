@@ -26,11 +26,14 @@ struct ImportView: View {
             .padding(.top, 6)
             .padding(.horizontal, 24)
 
-            RoundedButton("Add") {
+            Button {
                 viewModel.add()
+            } label: {
+                Text("Save to Archive")
+                    .roundedButtonStyle(maxWidth: .infinity)
             }
             .padding(.top, 18)
-            .padding(.horizontal, 60)
+            .padding(.horizontal, 24)
             .opacity(viewModel.isEditing ? 0 : 1)
 
             Spacer()
