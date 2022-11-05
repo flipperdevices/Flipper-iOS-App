@@ -8,8 +8,8 @@ struct NFCToolsView: View {
     var body: some View {
         ScrollView {
             VStack {
-                NavigationLink {
-                    ReaderAttackView(viewModel: .init())
+                Button {
+                    viewModel.showReaderAttackView = true
                 } label: {
                     ReaderAttackCard(hasNotification: viewModel.hasMFLog)
                 }
@@ -26,6 +26,9 @@ struct NFCToolsView: View {
                 }
                 Title("NFCTools")
             }
+        }
+        .fullScreenCover(isPresented: $viewModel.showReaderAttackView) {
+            ReaderAttackView(viewModel: .init())
         }
     }
 }

@@ -13,6 +13,7 @@ class NFCToolsViewModel: ObservableObject {
     private let appState: AppState = .shared
     private var disposeBag: DisposeBag = .init()
 
+    @Published var showReaderAttackView = false
     @Published var hasMFLog = false
 
     init() {
