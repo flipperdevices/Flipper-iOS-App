@@ -4,22 +4,21 @@ import Combine
 import Foundation
 
 class WidgetSettingsViewModel: ObservableObject {
-    private var container: UserDefaults? { .widget }
-
     @Inject private var appState: AppState
     @Inject private var archive: Archive
+    @Inject private var storage: TodayWidgetStorage
     private var disposeBag: DisposeBag = .init()
 
     @Published var keys: [WidgetKey] = [] {
         didSet {
-            container?.keys = keys
-            container?.synchronize()
+            storage.keys = keys
         }
     }
     @Published var showAddKeyView = false
 
     init() {
-        self.keys = container?.keys ?? []
+        keys = storage.keys
+
         archive.items
             .receive(on: DispatchQueue.main)
             .sink { items in

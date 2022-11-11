@@ -26,6 +26,7 @@ public func registerMobileDependencies() {
     container.register(PlainMobileArchiveStorage.init, as: MobileArchiveStorage.self, isSingleton: true)
     container.register(PlainMobileNotesStorage.init, as: MobileNotesStorage.self, isSingleton: true)
     container.register(PlainDeletedArchiveStorage.init, as: DeletedArchiveStorage.self, isSingleton: true)
+    container.register(JSONTodayWidgetStorage.init, as: TodayWidgetStorage.self, isSingleton: true)
     // manifests
     container.register(PlainSyncedItemsStorage.init, as: SyncedItemsProcotol.self, isSingleton: true)
     // favorites

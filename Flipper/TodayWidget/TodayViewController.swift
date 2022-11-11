@@ -51,7 +51,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         case .compact:
             preferredContentSize.height = compactModeHeight
         case .expanded:
-            let rowsCount = ((UserDefaults.widget?.keys.count ?? 1) / 2 + 1)
+            let rowsCount = viewModel.keys.count / 2 + 1
             preferredContentSize.height = compactModeHeight * Double(rowsCount)
         @unknown default: break
         }

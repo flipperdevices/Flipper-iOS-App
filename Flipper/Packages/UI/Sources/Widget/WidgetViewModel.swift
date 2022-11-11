@@ -12,14 +12,13 @@ import Foundation
 public class WidgetViewModel: ObservableObject {
     private let logger = Logger(label: "emulate-widget-vm")
 
-    var container: UserDefaults? { .widget }
     @Published public var isExpanded = false
 
     var emulate: Emulate = .init()
 
     @Inject private var archive: Archive
+    @Inject private var storage: TodayWidgetStorage
     @Inject private var analytics: Analytics
-    @Inject private var storage: DeviceStorage
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
@@ -28,7 +27,7 @@ public class WidgetViewModel: ObservableObject {
     }
 
     var items: [ArchiveItem] = []
-    @Published var keys: [WidgetKey] = []
+    @Published public private(set) var keys: [WidgetKey] = []
     @Published var isEmulating = false
     @Published var showAppLocked = false
 
@@ -41,14 +40,14 @@ public class WidgetViewModel: ObservableObject {
     private var observer: NSKeyValueObservation?
 
     public init() {
-        observer = container?
-            .observe(
-                \.widgetKeysData,
-                options: [.initial, .new]
-            ) { defaults, _ in
-                print(defaults.keys)
-                self.keys = defaults.keys
+        loadKeys()
+
+        storage.didChange
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.loadKeys()
             }
+            .store(in: &disposeBag)
 
         archive.items
             .receive(on: DispatchQueue.main)
@@ -63,7 +62,6 @@ public class WidgetViewModel: ObservableObject {
         emulate.onStateChanged = { [weak self] state in
             guard let self = self else { return }
             Task { @MainActor in
-                print("state", state)
                 if state == .closed {
                     self.emulatingIndex = nil
                 }
@@ -76,6 +74,10 @@ public class WidgetViewModel: ObservableObject {
                 }
             }
         }
+    }
+
+    func loadKeys() {
+        keys = storage.keys
     }
 
     func connect() {
