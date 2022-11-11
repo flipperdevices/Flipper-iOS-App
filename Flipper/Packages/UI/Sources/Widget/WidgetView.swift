@@ -18,48 +18,14 @@ public struct WidgetView: View {
             Divider()
                 .foregroundColor(.black4)
 
-            ForEach(rows, id: \.self) { row in
-                HStack(spacing: 0) {
-                    let i1 = row * 2
-                    let i2 = i1 + 1
-
-                    ZStack {
-                        if i1 < viewModel.keys.count {
-                            WidgetKeyView(
-                                index: i1,
-                                state: viewModel.state(at: i1),
-                                viewModel: viewModel)
-                        } else {
-                            Button {
-                                viewModel.addKey()
-                            } label: {
-                                AddKeyView(viewModel: viewModel)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 11)
-                    .padding(.bottom, 4)
-
-                    Divider()
-
-                    ZStack {
-                        if i2 < viewModel.keys.count {
-                            WidgetKeyView(
-                                index: i2,
-                                state: viewModel.state(at: i2),
-                                viewModel: viewModel)
-                        } else {
-                            AddKeyView(viewModel: viewModel)
-                                .opacity(i1 < viewModel.keys.count ? 1 : 0)
-                        }
-                    }
-                    .padding(.horizontal, 11)
-                    .padding(.bottom, 4)
-                }
-
-                if row + 1 < rows.endIndex {
-                    Divider()
-                }
+            if viewModel.showAppLocked {
+                WidgetError(
+                    text: "Flipper is Busy",
+                    image: "WidgetFlipperBusy",
+                    isPresented: $viewModel.showAppLocked
+                )
+            } else {
+                self.keys
             }
         }
         .onAppear {
@@ -70,5 +36,51 @@ public struct WidgetView: View {
             viewModel.disconnect()
         }
         .edgesIgnoringSafeArea(.all)
+    }
+
+    var keys: some View {
+        ForEach(rows, id: \.self) { row in
+            HStack(spacing: 0) {
+                let i1 = row * 2
+                let i2 = i1 + 1
+
+                ZStack {
+                    if i1 < viewModel.keys.count {
+                        WidgetKeyView(
+                            index: i1,
+                            state: viewModel.state(at: i1),
+                            viewModel: viewModel)
+                    } else {
+                        Button {
+                            viewModel.addKey()
+                        } label: {
+                            AddKeyView(viewModel: viewModel)
+                        }
+                    }
+                }
+                .padding(.horizontal, 11)
+                .padding(.bottom, 4)
+
+                Divider()
+
+                ZStack {
+                    if i2 < viewModel.keys.count {
+                        WidgetKeyView(
+                            index: i2,
+                            state: viewModel.state(at: i2),
+                            viewModel: viewModel)
+                    } else {
+                        AddKeyView(viewModel: viewModel)
+                            .opacity(i1 < viewModel.keys.count ? 1 : 0)
+                    }
+                }
+                .padding(.horizontal, 11)
+                .padding(.bottom, 4)
+            }
+
+            if row + 1 < rows.endIndex {
+                Divider()
+            }
+        }
     }
 }
