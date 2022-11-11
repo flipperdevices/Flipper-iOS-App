@@ -19,9 +19,9 @@ class InfoViewModel: ObservableObject {
     @Published var isError = false
     var error = ""
 
-    @Inject var rpc: RPC
-    @Published var appState: AppState = .shared
-    var archive: Archive { appState.archive }
+    @Inject private var rpc: RPC
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
     var dismissPublisher = PassthroughSubject<Void, Never>()
     var disposeBag = DisposeBag()
 
@@ -66,7 +66,7 @@ class InfoViewModel: ObservableObject {
         guard !isEditing else { return }
         Task {
             do {
-                try await appState.archive.onIsFavoriteToggle(item.path)
+                try await archive.onIsFavoriteToggle(item.path)
             } catch {
                 logger.error("toggling favorite: \(error)")
             }
@@ -94,7 +94,7 @@ class InfoViewModel: ObservableObject {
     func delete() {
         Task {
             do {
-                try await appState.archive.delete(item.id)
+                try await archive.delete(item.id)
                 try await appState.synchronize()
             } catch {
                 logger.error("deleting item: \(error)")
@@ -113,9 +113,9 @@ class InfoViewModel: ObservableObject {
         Task {
             do {
                 if backup.name != item.name {
-                    try await appState.archive.rename(backup.id, to: item.name)
+                    try await archive.rename(backup.id, to: item.name)
                 }
-                try await appState.archive.upsert(item)
+                try await archive.upsert(item)
                 withAnimation {
                     isEditing = false
                 }

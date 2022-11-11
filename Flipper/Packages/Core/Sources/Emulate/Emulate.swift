@@ -8,7 +8,7 @@ import Foundation
 public class Emulate: ObservableObject {
     private let logger = Logger(label: "emulate")
 
-    @Inject var rpc: RPC
+    @Inject private var rpc: RPC
 
     var item: ArchiveItem?
     public var onStateChanged: (ApplicationState) -> Void = { _ in }

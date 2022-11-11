@@ -13,8 +13,8 @@ class SaveAsViewModel: ObservableObject {
     @Published var isError = false
     var error = ""
 
-    var appState: AppState = .shared
-    var archive: Archive { appState.archive }
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
 
     var dismissPublisher: PassthroughSubject<Void, Never>
 

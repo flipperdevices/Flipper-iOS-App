@@ -10,7 +10,7 @@ struct FlipperApp: App {
         #endif
 
         #if !targetEnvironment(simulator)
-        Core.registerDependencies()
+        Core.registerMobileDependencies()
         #else
         Core.registerMockDependencies()
         #endif

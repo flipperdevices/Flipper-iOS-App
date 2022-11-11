@@ -31,7 +31,7 @@ class EmulateViewModel: ObservableObject {
 
     var emulateDuration: Int
 
-    @Published var appState: AppState = .shared
+    @Inject private var appState: AppState
     var disposeBag = DisposeBag()
 
     init(item: ArchiveItem) {

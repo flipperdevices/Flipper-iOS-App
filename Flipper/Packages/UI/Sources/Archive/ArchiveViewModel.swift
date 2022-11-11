@@ -10,7 +10,9 @@ class ArchiveViewModel: ObservableObject {
     private let logger = Logger(label: "archive-vm")
 
     @Environment(\.dismiss) private var dismiss
-    let appState: AppState = .shared
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
+    private var disposeBag: DisposeBag = .init()
 
     let pullToRefreshThreshold: Double = 1000
 
@@ -48,9 +50,6 @@ class ArchiveViewModel: ObservableObject {
         appState.importQueue.removeFirst()
     }
 
-    var archive: Archive { appState.archive }
-    var disposeBag: DisposeBag = .init()
-
     var groups: OrderedDictionary<ArchiveItem.Kind, Int> {
         [
             .subghz: items.filter { $0.kind == .subghz }.count,
@@ -62,12 +61,12 @@ class ArchiveViewModel: ObservableObject {
     }
 
     init() {
-        archive.$items
+        archive.items
             .receive(on: DispatchQueue.main)
             .assign(to: \.items, on: self)
             .store(in: &disposeBag)
 
-        archive.$deletedItems
+        archive.deletedItems
             .receive(on: DispatchQueue.main)
             .assign(to: \.deleted, on: self)
             .store(in: &disposeBag)

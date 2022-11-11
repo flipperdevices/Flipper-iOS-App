@@ -17,15 +17,17 @@ public class WidgetViewModel: ObservableObject {
 
     var emulate: Emulate = .init()
 
-    @Inject var analytics: Analytics
-    @Inject var storage: DeviceStorage
-    @Inject var pairedDevice: PairedDevice
+    @Inject private var archive: Archive
+    @Inject private var analytics: Analytics
+    @Inject private var storage: DeviceStorage
+    @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
     @Published public var flipper: Flipper? {
         didSet { onFlipperChanged(oldValue) }
     }
 
+    var items: [ArchiveItem] = []
     @Published var keys: [WidgetKey] = []
     @Published var isEmulating = false
     @Published var showAppLocked = false
@@ -47,6 +49,11 @@ public class WidgetViewModel: ObservableObject {
                 print(defaults.keys)
                 self.keys = defaults.keys
             }
+
+        archive.items
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.items, on: self)
+            .store(in: &disposeBag)
 
         pairedDevice.flipper
             .receive(on: DispatchQueue.main)
@@ -108,7 +115,7 @@ public class WidgetViewModel: ObservableObject {
     }
 
     func item(for key: WidgetKey) -> ArchiveItem? {
-        AppState.shared.archive.items.first {
+        items.first {
             $0.name == key.name && $0.kind == key.kind
         }
     }

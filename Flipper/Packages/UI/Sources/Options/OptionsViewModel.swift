@@ -10,8 +10,9 @@ import Logging
 class OptionsViewModel: ObservableObject {
     private let logger = Logger(label: "options-vm")
 
-    @Inject var rpc: RPC
-    private let appState: AppState = .shared
+    @Inject private var rpc: RPC
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
     private var disposeBag: DisposeBag = .init()
 
     @Published var isOnline = false
@@ -32,7 +33,7 @@ class OptionsViewModel: ObservableObject {
             .assign(to: \.isOnline, on: self)
             .store(in: &disposeBag)
 
-        appState.archive.$items
+        archive.items
             .receive(on: DispatchQueue.main)
             .map { !$0.isEmpty }
             .assign(to: \.hasKeys, on: self)
@@ -58,7 +59,7 @@ class OptionsViewModel: ObservableObject {
     }
 
     func backupKeys() {
-        appState.archive.backupKeys()
+        archive.backupKeys()
     }
 
     var versionTapCount = 0

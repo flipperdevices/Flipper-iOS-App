@@ -1,11 +1,13 @@
 import Core
+import Inject
 import Combine
 import Foundation
 
 class WidgetSettingsViewModel: ObservableObject {
     private var container: UserDefaults? { .widget }
 
-    private var archive: Archive { AppState.shared.archive }
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
     private var disposeBag: DisposeBag = .init()
 
     @Published var keys: [WidgetKey] = [] {
@@ -18,7 +20,7 @@ class WidgetSettingsViewModel: ObservableObject {
 
     init() {
         self.keys = container?.keys ?? []
-        archive.$items
+        archive.items
             .receive(on: DispatchQueue.main)
             .sink { items in
                 self.keys = self.keys.filter(items.contains)

@@ -4,7 +4,7 @@ import NotificationCenter
 import Core
 
 var registerDependenciesOnce: Void = {
-    Core.registerDependencies()
+    Core.registerWidgetDependencies()
 }()
 
 class TodayViewController: UIViewController, NCWidgetProviding {

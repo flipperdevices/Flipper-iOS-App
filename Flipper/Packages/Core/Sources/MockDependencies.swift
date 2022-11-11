@@ -13,6 +13,7 @@ public func registerMockDependencies() {
     Analytics.registerMockDependencies()
     Peripheral.registerMockDependencies()
 
+    container.register(AppState.init, as: AppState.self, isSingleton: true)
     // device
     container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
     // archive

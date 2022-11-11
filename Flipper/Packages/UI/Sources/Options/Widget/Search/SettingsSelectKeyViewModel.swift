@@ -6,15 +6,18 @@ import OrderedCollections
 
 @MainActor
 class SettingsSelectKeyViewModel: ObservableObject {
-    let appState: AppState = .shared
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
+    private var disposeBag: DisposeBag = .init()
 
     var widgetKeys: [WidgetKey]
     var onItemSelected: (ArchiveItem) -> Void
 
     @Published var predicate = ""
 
+    @Published var items: [ArchiveItem] = []
     var filteredItems: [ArchiveItem] {
-        appState.archive.items.filter { item in
+        items.filter { item in
             guard item.isAllowed else {
                 return false
             }
@@ -35,6 +38,12 @@ class SettingsSelectKeyViewModel: ObservableObject {
     ) {
         self.widgetKeys = widgetKeys
         self.onItemSelected = onItemSelected
+
+        archive
+            .items
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.items, on: self)
+            .store(in: &disposeBag)
     }
 }
 

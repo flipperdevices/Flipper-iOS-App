@@ -10,7 +10,7 @@ import Logging
 class RemoteControlViewModel: ObservableObject {
     private let logger = Logger(label: "remote")
 
-    @Inject var rpc: RPC
+    @Inject private var rpc: RPC
     @Inject var analytics: Analytics
 
     @Published var frame: ScreenFrame = .init()

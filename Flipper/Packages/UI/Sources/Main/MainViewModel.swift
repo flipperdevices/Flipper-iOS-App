@@ -19,7 +19,7 @@ class MainViewModel: ObservableObject {
 
     @Inject var central: BluetoothCentral
 
-    let appState: AppState = .shared
+    @Inject private var appState: AppState
     var disposeBag: DisposeBag = .init()
 
     init() {

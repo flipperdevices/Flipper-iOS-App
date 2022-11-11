@@ -6,7 +6,6 @@ import Combine
 import Logging
 
 public class AppState {
-    public static let shared: AppState = .init()
     private let logger = Logger(label: "appstate")
 
     @Published public var isFirstLaunch: Bool {
@@ -14,6 +13,7 @@ public class AppState {
     }
 
     @Inject private var rpc: RPC
+    @Inject private var archive: Archive
     @Inject private var analytics: Analytics
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
@@ -21,7 +21,6 @@ public class AppState {
     @Published public var flipper: Flipper? {
         didSet { onFlipperChanged(oldValue) }
     }
-    @Published public var archive: Archive = .shared
     @Published public var status: DeviceStatus = .noDevice
     @Published public var syncProgress: Int = 0
 
@@ -322,11 +321,11 @@ public class AppState {
 
     func reportSynchronizationResult(time: Int) {
         analytics.syncronizationResult(
-            subGHzCount: archive.items.count { $0.kind == .subghz },
-            rfidCount: archive.items.count { $0.kind == .rfid },
-            nfcCount: archive.items.count { $0.kind == .nfc },
-            infraredCount: archive.items.count { $0.kind == .infrared },
-            iButtonCount: archive.items.count { $0.kind == .ibutton },
+            subGHzCount: archive._items.value.count { $0.kind == .subghz },
+            rfidCount: archive._items.value.count { $0.kind == .rfid },
+            nfcCount: archive._items.value.count { $0.kind == .nfc },
+            infraredCount: archive._items.value.count { $0.kind == .infrared },
+            iButtonCount: archive._items.value.count { $0.kind == .ibutton },
             synchronizationTime: time)
     }
 }

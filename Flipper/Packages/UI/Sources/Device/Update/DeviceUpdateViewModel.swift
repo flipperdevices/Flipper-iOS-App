@@ -9,10 +9,10 @@ import Logging
 class DeviceUpdateViewModel: ObservableObject {
     private let logger = Logger(label: "update-vm")
 
-    private let appState: AppState = .shared
+    @Inject private var appState: AppState
     private var disposeBag: DisposeBag = .init()
 
-    @Inject var rpc: RPC
+    @Inject private var rpc: RPC
 
     @Binding var isPresented: Bool
     @Published var deviceStatus: DeviceStatus = .noDevice

@@ -1,4 +1,5 @@
 import Core
+import Inject
 import Combine
 import Dispatch
 
@@ -9,14 +10,14 @@ class CategoryViewModel: ObservableObject {
     var selectedItem: ArchiveItem = .none
     @Published var showInfoView = false
 
-    let appState: AppState = .shared
-    var archive: Archive { appState.archive }
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
     var disposeBag = DisposeBag()
 
     init(name: String, kind: ArchiveItem.Kind) {
         self.name = name
 
-        appState.archive.$items
+        archive.items
             .map { $0.filter { $0.kind == kind } }
             .receive(on: DispatchQueue.main)
             .assign(to: \.items, on: self)
