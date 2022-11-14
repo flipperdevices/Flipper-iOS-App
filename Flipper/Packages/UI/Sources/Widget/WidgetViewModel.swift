@@ -30,6 +30,13 @@ public class WidgetViewModel: ObservableObject {
     @Published public private(set) var keys: [WidgetKey] = []
     @Published var isEmulating = false
     @Published var showAppLocked = false
+    @Published var showCantConnect = false {
+        didSet {
+            if showCantConnect == false {
+                setupTimeoutTimer()
+            }
+        }
+    }
 
     var emulatingIndex: Int? {
         didSet {
@@ -38,6 +45,7 @@ public class WidgetViewModel: ObservableObject {
     }
 
     private var observer: NSKeyValueObservation?
+    var timeoutTask: Task<Void, Swift.Error>?
 
     public init() {
         loadKeys()
@@ -82,6 +90,7 @@ public class WidgetViewModel: ObservableObject {
 
     func connect() {
         pairedDevice.connect()
+        setupTimeoutTimer()
     }
 
     func disconnect() {
@@ -89,6 +98,10 @@ public class WidgetViewModel: ObservableObject {
     }
 
     func onFlipperChanged(_ oldValue: Flipper?) {
+        if oldValue?.state != .connected, flipper?.state == .connected {
+            print("starting emulate")
+            startEmulateOnConnect()
+        }
         print(oldValue?.state, flipper?.state)
     }
 
@@ -106,12 +119,19 @@ public class WidgetViewModel: ObservableObject {
     }
 
     func startEmulate(at index: Int) {
-        guard !isEmulating else { return }
+        guard emulatingIndex == nil else { return }
+        emulatingIndex = index
+        startEmulateOnConnect()
+    }
+
+    func startEmulateOnConnect() {
+        guard flipper?.state == .connected, let index = emulatingIndex else {
+            return
+        }
         guard let item = item(for: keys[index]) else {
             print("key not found")
             return
         }
-        emulatingIndex = index
         emulate.startEmulate(item)
         recordEmulate()
     }
@@ -159,5 +179,23 @@ enum WidgetKeyState {
 fileprivate extension Double {
     var ms: Int {
         Int(self * 1000)
+    }
+}
+
+extension WidgetViewModel {
+    var timeoutNanoseconds: UInt64 { 3 * 1_000 * 1_000_000 }
+
+    func setupTimeoutTimer() {
+        if let current = timeoutTask {
+            current.cancel()
+        }
+        timeoutTask = Task {
+            try await Task.sleep(nanoseconds: timeoutNanoseconds)
+            guard self.flipper?.state != .connected else { return }
+            self.logger.debug("widget connection time is out")
+            Task { @MainActor in
+                self.showCantConnect = true
+            }
+        }
     }
 }

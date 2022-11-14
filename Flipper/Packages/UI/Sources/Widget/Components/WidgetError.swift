@@ -7,7 +7,7 @@ struct WidgetError: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            HStack(spacing: 2) {
+            VStack(spacing: 2) {
                 Image(image)
                 Text(text)
                     .font(.system(size: 14, weight: .medium))

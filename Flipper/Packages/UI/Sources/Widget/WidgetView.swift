@@ -24,6 +24,12 @@ public struct WidgetView: View {
                     image: "WidgetFlipperBusy",
                     isPresented: $viewModel.showAppLocked
                 )
+            } else if viewModel.showCantConnect {
+                WidgetError(
+                    text: "Can’t Connect to Flipper",
+                    image: "WidgetCantConnect",
+                    isPresented: $viewModel.showCantConnect
+                )
             } else {
                 self.keys
             }
