@@ -47,6 +47,12 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         withMaximumSize maxSize: CGSize
     ) {
         viewModel.isExpanded = activeDisplayMode == .expanded
+
+        guard !viewModel.isError else {
+            preferredContentSize.height = compactModeHeight
+            return
+        }
+
         switch activeDisplayMode {
         case .compact:
             preferredContentSize.height = compactModeHeight

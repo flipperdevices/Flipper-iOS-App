@@ -13,6 +13,9 @@ public class WidgetViewModel: ObservableObject {
     private let logger = Logger(label: "emulate-widget-vm")
 
     @Published public var isExpanded = false
+    public var isError: Bool {
+        showAppLocked || showNotSynced || showCantConnect
+    }
 
     var emulate: Emulate = .init()
 
