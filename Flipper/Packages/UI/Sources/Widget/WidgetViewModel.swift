@@ -30,6 +30,7 @@ public class WidgetViewModel: ObservableObject {
     @Published public private(set) var keys: [WidgetKey] = []
     @Published var isEmulating = false
     @Published var showAppLocked = false
+    @Published var showNotSynced = false
     @Published var showCantConnect = false {
         didSet {
             if showCantConnect == false {
@@ -129,7 +130,14 @@ public class WidgetViewModel: ObservableObject {
             return
         }
         guard let item = item(for: keys[index]) else {
-            print("key not found")
+            logger.error("the key is not found")
+            resetEmulate()
+            return
+        }
+        guard item.status == .synchronized else {
+            logger.error("the key is not synced")
+            showNotSynced = true
+            resetEmulate()
             return
         }
         emulate.startEmulate(item)

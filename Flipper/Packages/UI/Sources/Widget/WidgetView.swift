@@ -24,12 +24,21 @@ public struct WidgetView: View {
                     image: "WidgetFlipperBusy",
                     isPresented: $viewModel.showAppLocked
                 )
+                .padding(.vertical, 14)
             } else if viewModel.showCantConnect {
                 WidgetError(
                     text: "Can’t Connect to Flipper",
                     image: "WidgetCantConnect",
                     isPresented: $viewModel.showCantConnect
                 )
+                .padding(.vertical, 14)
+            } else if viewModel.showNotSynced {
+                WidgetError(
+                    text: "This Key is Not Synced",
+                    image: "WidgetKeyNotSynced",
+                    isPresented: $viewModel.showNotSynced
+                )
+                .padding(.vertical, 14)
             } else {
                 self.keys
             }

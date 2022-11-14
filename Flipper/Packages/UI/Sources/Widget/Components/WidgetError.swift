@@ -12,7 +12,6 @@ struct WidgetError: View {
                 Text(text)
                     .font(.system(size: 14, weight: .medium))
             }
-            .padding(.top, 14)
 
             HStack {
                 Spacer()
