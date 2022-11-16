@@ -29,7 +29,7 @@ class ReaderAttackViewModel: ObservableObject {
     }
 
     var isError: Bool {
-        state == .noLog || state == .noDevice
+        state == .noLog || state == .noDevice || state == .noSDCard
     }
 
     @Published var state: State = .downloadingLog
@@ -71,6 +71,7 @@ class ReaderAttackViewModel: ObservableObject {
     enum State {
         case noLog
         case noDevice
+        case noSDCard
         case downloadingLog
         case calculating
         case checkingKeys
@@ -98,11 +99,16 @@ class ReaderAttackViewModel: ObservableObject {
                 let log = try await readLog()
                 state = .calculating
                 try await calculateKeys(log)
-                state = .checkingKeys
-                try await checkKeys()
-                state = .uploadingKeys
-                try await uploadKeys()
-                try await deleteLog()
+                do {
+                    state = .checkingKeys
+                    try await checkKeys()
+                    state = .uploadingKeys
+                    try await uploadKeys()
+                    try await deleteLog()
+                } catch let error as Error where error == .storage(.internal) {
+                    self.state = .noSDCard
+                    throw error
+                }
                 state = .finished
             } catch where error is CancellationError {
                 logger.error("mfkey32 attack canceled")

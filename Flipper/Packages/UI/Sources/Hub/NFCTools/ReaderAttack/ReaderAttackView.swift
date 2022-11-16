@@ -23,6 +23,8 @@ struct ReaderAttackView: View {
                     ReaderDataNotFound(fliperColor: viewModel.flipperColor)
                 case .noDevice:
                     AttackConnectionError(fliperColor: viewModel.flipperColor)
+                case .noSDCard:
+                    AttackStorageError(fliperColor: viewModel.flipperColor)
                 case .downloadingLog:
                     VStack(spacing: 18) {
                         Text("Calculation Started...")
