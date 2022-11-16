@@ -11,20 +11,19 @@ extension ReaderAttackView {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 4) {
                     Text("Unique")
-                        .font(.system(size: 16, weight: .bold))
 
                     Text("(\(keys.count))")
-                        .font(.system(size: 16, weight: .bold))
 
                     Spacer()
                 }
+                .font(.system(size: 14, weight: .bold, design: .monospaced))
 
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(_keys, id: \.self) { key in
-                        Text(key.hexValue)
-                            .font(.system(size: 12, weight: .medium))
+                        Text(key.hexValue.uppercased())
                     }
                 }
+                .font(.system(size: 12, weight: .medium, design: .monospaced))
             }
         }
     }

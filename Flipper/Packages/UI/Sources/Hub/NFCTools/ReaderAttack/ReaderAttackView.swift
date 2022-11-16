@@ -121,6 +121,7 @@ struct ReaderAttackView: View {
                                 dismiss()
                             } label: {
                                 Text("Done")
+                                    .font(.system(size: 16, weight: .bold))
                                     .roundedButtonStyle(
                                         height: 47,
                                         maxWidth: .infinity)
@@ -256,13 +257,14 @@ extension ReaderAttackView {
                     .foregroundColor(.primary.opacity(0.8))
                     .font(.system(
                         size: 12,
-                        weight: .medium))
+                        weight: .medium,
+                        design: .monospaced))
             }
             .padding(.leading, 10)
             .padding(.trailing, 12)
             .padding(.vertical, 12)
             .background(Color.groupedBackground)
-            .cornerRadius(10)
+            .cornerRadius(30)
         }
     }
 }

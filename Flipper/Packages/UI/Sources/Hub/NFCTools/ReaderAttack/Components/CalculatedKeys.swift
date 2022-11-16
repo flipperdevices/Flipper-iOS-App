@@ -10,16 +10,15 @@ extension ReaderAttackView {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 4) {
                     Text("Calculated Keys")
-                        .font(.system(size: 16, weight: .bold))
 
                     if showProgress {
                         ProgressView()
                     } else {
                         Text("(\(results.count))")
-                            .font(.system(size: 16, weight: .bold))
                     }
                     Spacer()
                 }
+                .font(.system(size: 14, weight: .bold, design: .monospaced))
 
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(results, id: \.origin.number) { result in
@@ -34,14 +33,15 @@ extension ReaderAttackView {
                             Text(" — ")
 
                             if let key = result.key {
-                                Text(key.hexValue)
+                                Text(key.hexValue.uppercased())
                             } else {
                                 Text("Not found")
+                                    .foregroundColor(.black30)
                             }
                         }
-                        .font(.system(size: 12, weight: .medium))
                     }
                 }
+                .font(.system(size: 12, weight: .medium, design: .monospaced))
             }
         }
     }
