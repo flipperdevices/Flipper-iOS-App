@@ -1,11 +1,11 @@
 import SwiftUI
 
-struct SubGHzRestrictedAlert: View {
+struct TransmissionRestrictedAlert: View {
     @Binding var isPresented: Bool
 
     var body: some View {
         VStack(spacing: 0) {
-            Image("FlipperShrugging")
+            Image("FlipperAlert")
                 .renderingMode(.template)
                 .foregroundColor(.blackBlack20)
                 .aspectRatio(contentMode: .fit)

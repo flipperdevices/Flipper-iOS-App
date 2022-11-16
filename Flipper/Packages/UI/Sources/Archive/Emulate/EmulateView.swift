@@ -38,7 +38,7 @@ struct EmulateView: View {
             FlipperBusyAlert(isPresented: $viewModel.showAppLocked)
         }
         .customAlert(isPresented: $viewModel.showRestricted) {
-            SubGHzRestrictedAlert(isPresented: $viewModel.showRestricted)
+            TransmissionRestrictedAlert(isPresented: $viewModel.showRestricted)
         }
         .onDisappear {
             viewModel.forceStopEmulate()
