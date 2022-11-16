@@ -10,8 +10,8 @@ import Logging
 class DeviceInfoViewModel: ObservableObject {
     private let logger = Logger(label: "device-info-vm")
 
-    @Inject var rpc: RPC
-    let appState: AppState = .shared
+    @Inject private var rpc: RPC
+    @Inject private var appState: AppState
     var disposeBag = DisposeBag()
 
     @Published var flipper: Flipper?

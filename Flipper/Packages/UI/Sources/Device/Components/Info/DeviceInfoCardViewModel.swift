@@ -7,7 +7,7 @@ import SwiftUI
 
 @MainActor
 class DeviceInfoCardViewModel: ObservableObject {
-    private let appState: AppState = .shared
+    @Inject private var appState: AppState
     private var disposeBag: DisposeBag = .init()
 
     @Published var device: Flipper?

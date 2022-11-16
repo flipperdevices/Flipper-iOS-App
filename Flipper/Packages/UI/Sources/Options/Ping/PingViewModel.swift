@@ -8,7 +8,7 @@ import Foundation
 @MainActor
 class PingViewModel: ObservableObject {
     private let logger = Logger(label: "ping")
-    @Inject var rpc: RPC
+    @Inject private var rpc: RPC
 
     @Published var payloadSize: Double = 1024
     @Published var requestTimestamp: Int = .init()

@@ -1,11 +1,9 @@
 import Inject
-import Combine
 import Foundation
 import Peripheral
 import Logging
 
-public class Archive: ObservableObject {
-    public static let shared: Archive = .init()
+public class Archive {
     let logger = Logger(label: "archive")
 
     @Inject var archiveSync: ArchiveSyncProtocol
@@ -15,12 +13,8 @@ public class Archive: ObservableObject {
     @Inject var mobileArchive: MobileArchiveProtocol
     @Inject var mobileNotes: MobileNotesStorage
     @Inject var deletedArchive: DeletedArchiveProtocol
+
     @Inject var syncedItems: SyncedItemsProcotol
-
-    @Published public var items: [ArchiveItem] = []
-    @Published public var deletedItems: [ArchiveItem] = []
-
-    @Published public var isLoading = false
 
     private var disposeBag: DisposeBag = .init()
 
@@ -28,7 +22,23 @@ public class Archive: ObservableObject {
         case alreadyExists
     }
 
-    private init() {
+    public var items: SafePublisher<[ArchiveItem]> {
+        _items.eraseToAnyPublisher()
+    }
+    var _items: SafeValueSubject<[ArchiveItem]> = {
+        .init([])
+    }()
+
+    public var deletedItems: SafePublisher<[ArchiveItem]> {
+        _deletedItems.eraseToAnyPublisher()
+    }
+    var _deletedItems: SafeValueSubject<[ArchiveItem]> = {
+        .init([])
+    }()
+
+    var isLoading = false
+
+    init() {
         archiveSync.events
             .sink { [weak self] in
                 self?.onSyncEvent($0)
@@ -42,10 +52,10 @@ public class Archive: ObservableObject {
         isLoading = true
         Task {
             do {
-                items = try await loadItems(
+                _items.value = try await loadItems(
                     from: mobileArchive,
                     loadItem: loadArchiveItem)
-                deletedItems = try await loadItems(
+                _deletedItems.value = try await loadItems(
                     from: deletedArchive,
                     loadItem: loadDeletedItem)
                 isLoading = false
@@ -115,7 +125,7 @@ public class Archive: ObservableObject {
 
 extension Archive {
     public func get(_ id: ArchiveItem.ID) -> ArchiveItem? {
-        items.first { $0.id == id }
+        _items.value.first { $0.id == id }
     }
 
     public func upsert(_ item: ArchiveItem) async throws {
@@ -126,14 +136,14 @@ extension Archive {
                 : try await mobileArchive.upsert(item.shadowContent, at: path)
         }
         try await mobileNotes.upsert(item.note, at: item.path)
-        items.removeAll { $0.path == item.path }
-        items.append(item)
+        _items.value.removeAll { $0.path == item.path }
+        _items.value.append(item)
     }
 
     public func reload(_ id: ArchiveItem.ID) async throws {
         let item = try await loadArchiveItem(at: id.path, from: mobileArchive)
-        items.removeAll { $0.path == item.path }
-        items.append(item)
+        _items.value.removeAll { $0.path == item.path }
+        _items.value.append(item)
     }
 
     public func delete(_ id: ArchiveItem.ID) async throws {
@@ -147,7 +157,7 @@ extension Archive {
             if let shadowPath = item.shadowPath {
                 try await mobileArchive.delete(shadowPath)
             }
-            items.removeAll { $0.path == item.path }
+            _items.value.removeAll { $0.path == item.path }
         }
     }
 
@@ -158,8 +168,8 @@ extension Archive {
         if let shadowPath = item.shadowPath {
             try await deletedArchive.upsert(item.shadowContent, at: shadowPath)
         }
-        deletedItems.removeAll { $0.path == item.path }
-        deletedItems.append(item)
+        _deletedItems.value.removeAll { $0.path == item.path }
+        _deletedItems.value.append(item)
     }
 
     public func copyIfExists(_ item: ArchiveItem) async throws -> ArchiveItem {
@@ -178,7 +188,7 @@ extension Archive {
     }
 
     public func restoreAll() async throws {
-        for item in deletedItems {
+        for item in _deletedItems.value {
             try await restore(item)
         }
     }
@@ -188,20 +198,20 @@ extension Archive {
         if let shadowPath = item.shadowPath {
             try await deletedArchive.delete(shadowPath)
         }
-        deletedItems.removeAll { $0.path == item.path }
+        _deletedItems.value.removeAll { $0.path == item.path }
     }
 
     public func wipeAll() async throws {
-        for item in deletedItems {
+        for item in _deletedItems.value {
             try await wipe(item)
         }
     }
 
     public func onIsFavoriteToggle(_ path: Path) async throws {
-        guard let index = items.firstIndex(where: { $0.path == path }) else {
+        guard let index = _items.value.firstIndex(where: { $0.path == path }) else {
             return
         }
-        items[index].isFavorite = try await toggleFavorite(for: path)
+        _items.value[index].isFavorite = try await toggleFavorite(for: path)
         try await favoritesSync.run()
     }
 
@@ -234,7 +244,7 @@ extension Archive {
         if let item = get(id) {
             let newItem = item.rename(to: name)
             guard get(newItem.id) == nil else {
-                throw Error.alreadyExists
+                throw Archive.Error.alreadyExists
             }
             try await mobileArchive.delete(item.path)
             if let shadowPath = item.shadowPath {
@@ -252,8 +262,8 @@ extension Archive {
                     newItem.shadowContent,
                     at: shadowPath)
             }
-            items.removeAll { $0.path == item.path }
-            items.append(newItem)
+            _items.value.removeAll { $0.path == item.path }
+            _items.value.append(newItem)
         }
     }
 }
@@ -270,15 +280,15 @@ extension Archive {
         _ status: ArchiveItem.Status,
         for id: ArchiveItem.ID
     ) {
-        if let index = items.firstIndex(where: { $0.path == id.path }) {
-            items[index].status = status
+        if let index = _items.value.firstIndex(where: { $0.path == id.path }) {
+            _items.value[index].status = status
         }
     }
 }
 
 extension Archive {
     func importKey(_ item: ArchiveItem) async throws {
-        if !items.contains(where: { item.path == $0.path }) {
+        if !_items.value.contains(where: { item.path == $0.path }) {
             try await upsert(item)
         }
     }

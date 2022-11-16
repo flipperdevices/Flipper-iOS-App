@@ -5,7 +5,7 @@ import SwiftUI
 
 @MainActor
 class InstructionViewModel: ObservableObject {
-    private let appState: AppState = .shared
+    @Inject private var appState: AppState
     private var handle: AnyCancellable?
 
     @Published var isConnected = false

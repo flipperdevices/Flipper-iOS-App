@@ -2,7 +2,7 @@ import Inject
 import Peripheral
 
 public class MFKnownKeys {
-    @Inject var rpc: RPC
+    @Inject private var rpc: RPC
 
     public init() {}
 

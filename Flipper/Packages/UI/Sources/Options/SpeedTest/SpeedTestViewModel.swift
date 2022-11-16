@@ -8,7 +8,7 @@ import struct Foundation.Date
 @MainActor
 class SpeedTestViewModel: ObservableObject {
     private let logger = Logger(label: "speedtest")
-    @Inject var rpc: RPC
+    @Inject private var rpc: RPC
 
     let defaultPacketSize = 444
     let maximumPacketSize = 1024

@@ -2,7 +2,7 @@ import Inject
 import Peripheral
 
 class FlipperFavorites: FlipperFavoritesProtocol {
-    @Inject var rpc: RPC
+    @Inject private var rpc: RPC
     let filename = "favorites.txt"
     var path: Path { .init(components: ["any", filename]) }
 

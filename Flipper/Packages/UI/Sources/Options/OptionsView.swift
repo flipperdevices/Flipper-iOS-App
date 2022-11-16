@@ -43,6 +43,13 @@ struct OptionsView: View {
             }
             .disabled(!viewModel.isOnline)
 
+            Section {
+                Button("Widget Settings") {
+                    viewModel.showWidgetSettings()
+                }
+                .foregroundColor(.primary)
+            }
+
             if viewModel.isDebugMode {
                 Section(header: Text("Debug")) {
                     Toggle(isOn: $viewModel.isProvisioningDisabled) {

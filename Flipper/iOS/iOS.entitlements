@@ -14,6 +14,10 @@
 	<true/>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.flipperdevices.main</string>
+	</array>
 	<key>com.apple.security.device.bluetooth</key>
 	<true/>
 	<key>com.apple.security.device.usb</key>

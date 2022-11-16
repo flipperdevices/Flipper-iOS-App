@@ -5,7 +5,7 @@ import Peripheral
 public class StressTest {
     static let shared: StressTest = .init()
 
-    @Inject var rpc: RPC
+    @Inject private var rpc: RPC
     @Inject var connector: BluetoothConnector
     var disposeBag: DisposeBag = .init()
 

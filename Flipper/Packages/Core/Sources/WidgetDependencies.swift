@@ -4,7 +4,7 @@ import Logging
 import func Analytics.registerDependencies
 import func Peripheral.registerDependencies
 
-public func registerDependencies() {
+public func registerWidgetDependencies() {
     let container = Container.shared
 
     LoggingSystem.bootstrap(FileLogHandler.factory)
@@ -13,6 +13,7 @@ public func registerDependencies() {
     Analytics.registerDependencies()
     Peripheral.registerDependencies()
 
+    container.register(Archive.init, as: Archive.self, isSingleton: true)
     // device
     container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
     // archive
@@ -24,6 +25,8 @@ public func registerDependencies() {
     container.register(PlainMobileArchiveStorage.init, as: MobileArchiveStorage.self, isSingleton: true)
     container.register(PlainMobileNotesStorage.init, as: MobileNotesStorage.self, isSingleton: true)
     container.register(PlainDeletedArchiveStorage.init, as: DeletedArchiveStorage.self, isSingleton: true)
+    container.register(JSONTodayWidgetStorage.init, as: TodayWidgetStorage.self, isSingleton: true)
+
     // manifests
     container.register(PlainSyncedItemsStorage.init, as: SyncedItemsProcotol.self, isSingleton: true)
     // favorites

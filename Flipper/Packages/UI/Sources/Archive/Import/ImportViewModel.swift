@@ -17,7 +17,8 @@ class ImportViewModel: ObservableObject {
     @Published var isError = false
     var error = ""
 
-    let appState: AppState = .shared
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
     var dismissPublisher = PassthroughSubject<Void, Never>()
 
     init(item: ArchiveItem) {
@@ -27,7 +28,7 @@ class ImportViewModel: ObservableObject {
     }
 
     func add() {
-        guard appState.archive.get(item.id) == nil else {
+        guard archive.get(item.id) == nil else {
             showError(Archive.Error.alreadyExists)
             return
         }

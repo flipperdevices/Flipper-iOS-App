@@ -23,7 +23,7 @@ extension Archive {
 
     func updateFavoriteItems() async throws {
         let favorites = try await mobileFavorites.read()
-        items = items.map {
+        _items.value = _items.value.map {
             var item = $0
             item.isFavorite = favorites.contains($0.path)
             return item

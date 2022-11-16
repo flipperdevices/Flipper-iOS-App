@@ -9,8 +9,8 @@ import Logging
 class ReaderAttackViewModel: ObservableObject {
     private let logger = Logger(label: "reader-attack-vm")
 
-    @Inject var rpc: RPC
-    private let appState: AppState = .shared
+    @Inject private var rpc: RPC
+    @Inject private var appState: AppState
     private var disposeBag: DisposeBag = .init()
 
     @Published var flipper: Flipper? {

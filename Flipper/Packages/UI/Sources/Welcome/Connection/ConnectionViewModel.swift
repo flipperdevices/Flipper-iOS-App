@@ -6,7 +6,7 @@ import Peripheral
 
 @MainActor
 class ConnectionViewModel: ObservableObject {
-    let appState: AppState = .shared
+    @Inject private var appState: AppState
 
     @Inject private var central: BluetoothCentral
     @Inject private var connector: BluetoothConnector

@@ -58,8 +58,8 @@ struct DeviceInfoHeader: View {
                 : "FlipperNoDeviceWhite"
         }
         return flipper.color == .black
-            ? "FlipperBlack"
-            : "FlipperWhite"
+            ? "FlipperDeviceBlack"
+            : "FlipperDeviceWhite"
     }
 
     var batteryColor: Color {

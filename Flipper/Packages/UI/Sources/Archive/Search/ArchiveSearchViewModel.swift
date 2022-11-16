@@ -6,24 +6,33 @@ import OrderedCollections
 
 @MainActor
 class ArchiveSearchViewModel: ObservableObject {
-    let appState: AppState = .shared
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
+
+    var items: [ArchiveItem] = []
+    var disposeBag: DisposeBag = .init()
+    var selectedItem: ArchiveItem = .none
+
+    @Published var predicate = ""
+    @Published var showInfoView = false
 
     var filteredItems: [ArchiveItem] {
         guard !predicate.isEmpty else {
-            return appState.archive.items
+            return items
         }
-        return appState.archive.items.filter {
+        return items.filter {
             $0.name.value.lowercased().contains(predicate.lowercased()) ||
             $0.note.lowercased().contains(predicate.lowercased())
         }
     }
 
-    @Published var predicate = ""
-
-    var selectedItem: ArchiveItem = .none
-    @Published var showInfoView = false
-
-    init() {}
+    init() {
+        archive
+            .items
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.items, on: self)
+            .store(in: &disposeBag)
+    }
 
     func onItemSelected(item: ArchiveItem) {
         selectedItem = item

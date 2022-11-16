@@ -28,11 +28,38 @@ public func migration() {
         resetStorage()
         return
     }
+
+    // migrate storage to group
+    if previousBuild <= 127 {
+        try? migrateStorage()
+    }
 }
 
 private func resetStorage() {
     UserDefaultsStorage.shared.reset()
     try? FileStorage().reset()
+}
+
+func migrateStorage() throws {
+    let oldBaseURL = FileManager.default.urls(
+        for: .applicationSupportDirectory,
+        in: .userDomainMask)[0]
+
+    guard let newBaseURL = FileManager.default.containerURL(
+        forSecurityApplicationGroupIdentifier: .appGroup
+    ) else {
+        return
+    }
+
+    let contents = try FileManager
+        .default
+        .contentsOfDirectory(atPath: oldBaseURL.path)
+
+    for path in contents {
+        let old = oldBaseURL.appendingPathComponent(path)
+        let new = newBaseURL.appendingPathComponent(path)
+        try FileManager.default.moveItem(at: old, to: new)
+    }
 }
 
 extension UserDefaults {

@@ -1,9 +1,10 @@
 import Core
+import Inject
 import Combine
 import Foundation
 
 class TabViewModel: ObservableObject {
-    private let appState: AppState = .shared
+    @Inject private var appState: AppState
     private var disposeBag: DisposeBag = .init()
 
     @Published var status: DeviceStatus = .noDevice
