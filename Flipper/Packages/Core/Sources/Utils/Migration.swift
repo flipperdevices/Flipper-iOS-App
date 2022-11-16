@@ -30,7 +30,9 @@ public func migration() {
     }
 
     // migrate storage to group
-    try? migrateStorage()
+    if previousBuild <= 127 {
+        try? migrateStorage()
+    }
 }
 
 private func resetStorage() {
