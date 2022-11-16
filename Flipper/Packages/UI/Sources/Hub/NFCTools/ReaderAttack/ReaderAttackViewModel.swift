@@ -32,6 +32,12 @@ class ReaderAttackViewModel: ObservableObject {
         state == .noLog || state == .noDevice || state == .noSDCard
     }
 
+    var hasMFKey32Log: Bool {
+        get async {
+            (try? await rpc.fileExists(at: .mfKey32Log)) == true
+        }
+    }
+
     @Published var state: State = .downloadingLog
     @Published var showCancelAttack = false
     @Published var progress: Double = 0
@@ -91,7 +97,7 @@ class ReaderAttackViewModel: ObservableObject {
     func start() {
         task = Task {
             do {
-                guard try await rpc.fileExists(at: .mfKey32Log) else {
+                guard await hasMFKey32Log else {
                     state = .noLog
                     return
                 }
