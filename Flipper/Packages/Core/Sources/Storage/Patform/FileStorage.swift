@@ -108,7 +108,7 @@ class FileStorage {
 
         for path in contents {
             let url = baseURL.appendingPathComponent(path)
-            try FileManager.default.removeItem(at: url)
+            try? FileManager.default.removeItem(at: url)
         }
     }
 
