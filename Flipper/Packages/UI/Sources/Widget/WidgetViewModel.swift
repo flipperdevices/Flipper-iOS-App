@@ -26,8 +26,12 @@ public class WidgetViewModel: ObservableObject {
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
-    @Published public var flipper: Flipper? {
-        didSet { onFlipperChanged(oldValue) }
+    @Published public var flipperState: FlipperState? {
+        didSet {
+            if oldValue != flipperState {
+                onFlipperStatusChanged(oldValue)
+            }
+        }
     }
 
     var items: [ArchiveItem] = []
@@ -74,7 +78,8 @@ public class WidgetViewModel: ObservableObject {
 
         pairedDevice.flipper
             .receive(on: DispatchQueue.main)
-            .assign(to: \.flipper, on: self)
+            .map(\.?.state)
+            .assign(to: \.flipperState, on: self)
             .store(in: &disposeBag)
 
         connector.status
@@ -115,12 +120,14 @@ public class WidgetViewModel: ObservableObject {
         pairedDevice.disconnect()
     }
 
-    func onFlipperChanged(_ oldValue: Flipper?) {
-        if oldValue?.state != .connected, flipper?.state == .connected {
-            print("starting emulate")
+    func onFlipperStatusChanged(_ oldValue: FlipperState?) {
+        guard flipperState == .connected else {
+            connect()
+            return
+        }
+        if oldValue != .connected {
             startEmulateOnConnect()
         }
-        print(oldValue?.state, flipper?.state)
     }
 
     func state(at index: Int) -> WidgetKeyState {
@@ -150,7 +157,7 @@ public class WidgetViewModel: ObservableObject {
     }
 
     func startEmulateOnConnect() {
-        guard flipper?.state == .connected, let index = emulatingIndex else {
+        guard flipperState == .connected, let index = emulatingIndex else {
             return
         }
         guard let item = item(for: keys[index]) else {
@@ -223,7 +230,7 @@ extension WidgetViewModel {
         }
         timeoutTask = Task {
             try await Task.sleep(nanoseconds: timeoutNanoseconds)
-            guard self.flipper?.state != .connected else { return }
+            guard self.flipperState != .connected else { return }
             self.logger.debug("widget connection time is out")
             Task { @MainActor in
                 self.showCantConnect = true
