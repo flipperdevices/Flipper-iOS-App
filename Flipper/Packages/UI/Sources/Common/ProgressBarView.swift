@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ProgressBarView: View {
     let image: String
-    let text: String
+    @State var text: String
     let color: Color
     let progress: Double
 
@@ -36,5 +36,13 @@ struct ProgressBarView: View {
         .frame(height: 46)
         .background(color.opacity(0.54))
         .cornerRadius(9)
+        .task {
+            if text == "..." {
+                while !Task.isCancelled {
+                    try? await Task.sleep(milliseconds: 333)
+                    text = String(repeating: ".", count: text.count % 3 + 1)
+                }
+            }
+        }
     }
 }
