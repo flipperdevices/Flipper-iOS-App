@@ -39,6 +39,13 @@ public struct WidgetView: View {
                     isPresented: $viewModel.showNotSynced
                 )
                 .padding(.vertical, 14)
+            } else if viewModel.showBTTurnedOff {
+                WidgetError(
+                    text: "iPhone’s Bluetooth is Turned Off",
+                    image: "WidgetBTTurnedOff",
+                    isPresented: $viewModel.showBTTurnedOff
+                )
+                .padding(.vertical, 14)
             } else {
                 self.keys
             }

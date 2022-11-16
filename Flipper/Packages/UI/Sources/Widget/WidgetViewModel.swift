@@ -21,6 +21,7 @@ public class WidgetViewModel: ObservableObject {
 
     @Inject private var archive: Archive
     @Inject private var storage: TodayWidgetStorage
+    @Inject private var connector: BluetoothConnector
     @Inject private var analytics: Analytics
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
@@ -34,6 +35,7 @@ public class WidgetViewModel: ObservableObject {
     @Published var isEmulating = false
     @Published var showAppLocked = false
     @Published var showNotSynced = false
+    @Published var showBTTurnedOff = false
     @Published var showCantConnect = false {
         didSet {
             if showCantConnect == false {
@@ -50,6 +52,10 @@ public class WidgetViewModel: ObservableObject {
 
     private var observer: NSKeyValueObservation?
     var timeoutTask: Task<Void, Swift.Error>?
+
+    var isBTTurnedOff = false {
+        didSet { showBTTurnedOff = isBTTurnedOff }
+    }
 
     public init() {
         loadKeys()
@@ -69,6 +75,14 @@ public class WidgetViewModel: ObservableObject {
         pairedDevice.flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
+            .store(in: &disposeBag)
+
+        connector.status
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                guard let self = self else { return }
+                self.isBTTurnedOff = status == .notReady(.poweredOff)
+            }
             .store(in: &disposeBag)
 
         emulate.onStateChanged = { [weak self] state in
@@ -123,7 +137,14 @@ public class WidgetViewModel: ObservableObject {
     }
 
     func startEmulate(at index: Int) {
-        guard emulatingIndex == nil else { return }
+        guard !isBTTurnedOff else {
+            showBTTurnedOff = true
+            return
+        }
+        guard emulatingIndex == nil else {
+            logger.critical("emulate item index is nil")
+            return
+        }
         emulatingIndex = index
         startEmulateOnConnect()
     }
