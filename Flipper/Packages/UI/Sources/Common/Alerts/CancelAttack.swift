@@ -11,7 +11,7 @@ struct CancelAttackAlert: View {
                     .font(.system(size: 14, weight: .bold))
                     .padding(.top, 25)
 
-                Text("Exit the current app on Flipper to use this feature")
+                Text("You can restart it later")
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)
