@@ -16,6 +16,12 @@ struct ShareView: View {
 
             VStack {
                 switch viewModel.state {
+                case .noInternet:
+                    NoInternetError()
+                case .cantConnect:
+                    CantConnectError {
+                        viewModel.retry()
+                    }
                 case .select:
                     HStack(alignment: .top) {
                         Spacer()
@@ -85,6 +91,40 @@ struct ShareView: View {
                     Text("Export File")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.primary)
+                }
+            }
+        }
+    }
+
+    struct NoInternetError: View {
+        var body: some View {
+            VStack(spacing: 2) {
+                Image("SharingNoInternet")
+                Text("No Internet Connection")
+                    .font(.system(size: 14, weight: .medium))
+                Text("Unable to share this link")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black40)
+            }
+        }
+    }
+
+    struct CantConnectError: View {
+        var action: () -> Void
+
+        var body: some View {
+            VStack(spacing: 2) {
+                Image("SharingCantConnect")
+                Text("Can't Connect to the Server")
+                    .font(.system(size: 14, weight: .medium))
+                Text("Unable to share this link")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black40)
+                Button {
+                    action()
+                } label: {
+                    Text("Retry")
+                        .font(.system(size: 16, weight: .medium))
                 }
             }
         }

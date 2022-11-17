@@ -1,12 +1,16 @@
 import Core
 import Inject
+import Logging
 import Analytics
 import SwiftUI
 import Combine
+import Network
 import CryptoKit
 
 @MainActor
 class ShareViewModel: ObservableObject {
+    private let logger = Logger(label: "share-vm")
+
     @Inject var analytics: Analytics
 
     let item: ArchiveItem
@@ -16,6 +20,8 @@ class ShareViewModel: ObservableObject {
     enum State {
         case select
         case uploading
+        case noInternet
+        case cantConnect
     }
 
     var name: String {
@@ -30,6 +36,30 @@ class ShareViewModel: ObservableObject {
         } catch {
             self.isTempLink = true
         }
+        monitorNetworkStatus()
+    }
+
+    func monitorNetworkStatus() {
+        let monitor = NWPathMonitor()
+        var lastStatus: NWPath.Status?
+        monitor.pathUpdateHandler = { [weak self] path in
+            guard lastStatus != path.status else { return }
+            self?.onNetworkStatusChanged(path.status)
+            lastStatus = path.status
+        }
+        monitor.start(queue: .main)
+    }
+
+    func onNetworkStatusChanged(_ status: NWPath.Status) {
+        if status == .unsatisfied {
+            self.state = .noInternet
+        } else {
+            self.state = .select
+        }
+    }
+
+    func retry() {
+        self.state = .select
     }
 
     func share() {
@@ -48,7 +78,8 @@ class ShareViewModel: ObservableObject {
                     Core.share([url])
                 }
             } catch {
-                print(error)
+                state = .cantConnect
+                logger.error("sharing: \(error)")
             }
         }
     }
