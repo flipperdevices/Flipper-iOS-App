@@ -50,10 +50,10 @@ struct InfoView: View {
                             }
                             InfoButton(
                                 image: "Share",
-                                title: "Share",
-                                action: { viewModel.share() },
-                                longPressAction: { viewModel.shareAsFile() }
-                            )
+                                title: "Share"
+                            ) {
+                                viewModel.share()
+                            }
                             .foregroundColor(.primary)
                             InfoButton(
                                 image: "Delete",
@@ -76,6 +76,11 @@ struct InfoView: View {
                 alertController.alert
             }
         }
+        .sheet(isPresented: $viewModel.showShareView) {
+            ShareView(viewModel: .init(item: viewModel.item))
+                .presentationDetents([.height(261)])
+                .presentationDragIndicator(.visible)
+        }
         .fullScreenCover(isPresented: $viewModel.showDumpEditor) {
             NFCEditorView(viewModel: .init(item: $viewModel.item))
         }
@@ -87,6 +92,7 @@ struct InfoView: View {
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
+        .environmentObject(alertController)
     }
 }
 
@@ -94,7 +100,6 @@ struct InfoButton: View {
     let image: String
     let title: String
     let action: () -> Void
-    let longPressAction: () -> Void
 
     init(
         image: String,
@@ -105,7 +110,6 @@ struct InfoButton: View {
         self.image = image
         self.title = title
         self.action = action
-        self.longPressAction = longPressAction
     }
 
     var body: some View {
@@ -120,9 +124,6 @@ struct InfoButton: View {
             .frame(minWidth: 44, minHeight: 44)
             .padding(.trailing, 44)
         }
-        .simultaneousGesture(LongPressGesture().onEnded { _ in
-            longPressAction()
-        })
         .simultaneousGesture(TapGesture().onEnded {
             action()
         })
