@@ -54,10 +54,6 @@ class ReaderAttackViewModel: ObservableObject {
         flipperKnownKeys.union(userKnownKeys)
     }
 
-    var progressString: String {
-        "\(Int(progress * 100)) %"
-    }
-
     var showCalculatedKeysSpinner: Bool {
         results.isEmpty && state != .finished
     }

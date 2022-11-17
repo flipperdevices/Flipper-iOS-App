@@ -31,9 +31,8 @@ struct ReaderAttackView: View {
                             .font(.system(size: 18, weight: .bold))
                         VStack(spacing: 8) {
                             ProgressBarView(
-                                image: "ProgressDownload",
-                                text: viewModel.progressString,
                                 color: .a2,
+                                image: "ProgressDownload",
                                 progress: viewModel.progress
                             )
                             .padding(.horizontal, 18)
@@ -49,9 +48,8 @@ struct ReaderAttackView: View {
                             .font(.system(size: 18, weight: .bold))
                         VStack(spacing: 8) {
                             ProgressBarView(
-                                image: "ProgressKey",
-                                text: viewModel.progressString,
                                 color: .a1,
+                                image: "ProgressKey",
                                 progress: viewModel.progress
                             )
                             .padding(.horizontal, 18)
@@ -67,10 +65,10 @@ struct ReaderAttackView: View {
                             .font(.system(size: 18, weight: .bold))
                         VStack(spacing: 8) {
                             ProgressBarView(
-                                image: "ProgressKey",
-                                text: "...",
                                 color: .a1,
-                                progress: 1
+                                image: "ProgressKey",
+                                progress: 1,
+                                text: "..."
                             )
                             .padding(.horizontal, 18)
                             Text("Checking keys in dictionaries...")
@@ -85,10 +83,10 @@ struct ReaderAttackView: View {
                             .font(.system(size: 18, weight: .bold))
                         VStack(spacing: 8) {
                             ProgressBarView(
-                                image: "ProgressKey",
-                                text: "...",
                                 color: .a1,
-                                progress: 1
+                                image: "ProgressKey",
+                                progress: 1,
+                                text: "..."
                             )
                             .padding(.horizontal, 18)
                             Text("Syncing with Flipper...")
