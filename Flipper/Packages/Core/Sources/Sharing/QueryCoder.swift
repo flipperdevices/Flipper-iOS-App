@@ -1,5 +1,5 @@
 enum KeyCoder {
-    static func encode(query: String) -> String? {
+    static func encode<Query: StringProtocol>(query: Query) -> String? {
         var query = query
             .replacingOccurrences(of: "+", with: "%2B")
             .replacingOccurrences(of: " ", with: "+")
@@ -12,7 +12,7 @@ enum KeyCoder {
             .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
     }
 
-    static func decode(query: String) -> String? {
+    static func decode<Query: StringProtocol>(query: Query) -> String? {
         query
             .replacingOccurrences(of: "+", with: " ")
             .removingPercentEncoding

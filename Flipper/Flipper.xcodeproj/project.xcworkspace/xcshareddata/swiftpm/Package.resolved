@@ -65,6 +65,15 @@
         }
       },
       {
+        "package": "Radix",
+        "repositoryURL": "https://github.com/swiftstack/radix.git",
+        "state": {
+          "branch": "dev",
+          "revision": "e360536509fe13c740184ba2496d7d9a5f434f46",
+          "version": null
+        }
+      },
+      {
         "package": "Stream",
         "repositoryURL": "https://github.com/swiftstack/stream.git",
         "state": {

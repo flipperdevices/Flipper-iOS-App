@@ -1,5 +1,6 @@
-import Foundation
+import Base64
 import CryptoKit
+import Foundation
 
 public class TempLinkSharing {
     let baseURL: URL = "https://dev.flpr.app/sf"
@@ -7,34 +8,43 @@ public class TempLinkSharing {
     public init() {}
 
     public func shareKey(_ item: ArchiveItem) async throws -> URL? {
-        let key = SymmetricKey(size: .bits192)
+        let key = SymmetricKey(size: .bits128)
         let encrypted = try Cryptor().encrypt(content: item.content, using: key)
         let code = try await Tranfser().upload(data: encrypted)
-        var pathString = item.path.removingFirstComponent.string
-        if pathString.starts(with: "/") {
-            pathString.removeFirst()
+        let path = trimPath(item.path.string)
+        guard let encodedPath = KeyCoder.encode(query: path) else {
+            return nil
         }
-        let keyString = key.base64EncodedString()
-        return makeURL(code: code, path: pathString, key: keyString)
+        let encodedKey = key.base64URLEncodedString()
+        return makeURL(code: code, path: encodedPath, key: encodedKey)
+    }
+
+    // TODO: remove /any/ from item.id
+    func trimPath(_ path: String) -> String {
+        var path = path
+        if path.starts(with: "/any/") {
+            path.removeFirst("/any/".count)
+        }
+        return path
     }
 
     func makeURL(code: String, path: String, key: String) -> URL? {
-        let urlString = "\(baseURL)/\(code)#path=\(path)&key=\(key)"
-        return .init(string: urlString)
+        return .init(string: "\(baseURL)/\(code)#path=\(path)&key=\(key)")
     }
 
     public func importKey(url: URL) async throws -> ArchiveItem? {
-        guard let (code, pathString, keyString) = parseURL(url) else {
+        guard let (code, encodedPath, encodedKey) = parseURL(url) else {
             return nil
         }
-        print(code, pathString, keyString)
-        guard let keyData = Data(base64Encoded: keyString) else {
+        guard let path = KeyCoder.decode(query: encodedPath) else {
             return nil
         }
-        let key = SymmetricKey(data: keyData)
+        guard let key = SymmetricKey(base64URLEncoded: encodedKey) else {
+            return nil
+        }
         let encrypted = try await Tranfser().download(code: code)
         let decrypted = try Cryptor().decrypt(data: encrypted, using: key)
-        return try .init(path: .init(string: pathString), content: decrypted)
+        return try .init(path: .init(string: path), content: decrypted)
     }
 
     // swiftlint:disable large_tuple
@@ -51,13 +61,21 @@ public class TempLinkSharing {
         }
         let pathParts = parts[0].split(separator: "=")
         let keyParts = parts[1].split(separator: "=")
-        guard pathParts.count == 2, pathParts[0] == "path" else {
+        guard
+            pathParts.count == 2,
+            pathParts.first == "path",
+            let encodedPath = pathParts.last
+        else {
             return nil
         }
-        guard keyParts.count == 2, keyParts[0] == "key" else {
+        guard
+            keyParts.count == 2,
+            keyParts.first == "key",
+            let encodedKey = keyParts.last
+        else {
             return nil
         }
-        return (code, String(pathParts[1]), String(keyParts[1]))
+        return (code, .init(encodedPath), .init(encodedKey))
     }
 }
 
@@ -130,6 +148,30 @@ class Cryptor {
 
 extension SymmetricKey {
     func base64EncodedString() -> String {
-        withUnsafeBytes { Data(Array($0)).base64EncodedString() }
+        withUnsafeBytes {
+            Data(Array($0)).base64EncodedString()
+        }
+    }
+
+    func base64URLEncodedString() -> String {
+        base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
+    }
+}
+
+extension SymmetricKey {
+    init?(base64URLEncoded: String) {
+        let base64Encoded = base64URLEncoded
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+
+        // NOTE: Data(base64Encoded:) require padding character
+        guard let data = [UInt8](decodingBase64: base64Encoded) else {
+            return nil
+        }
+
+        self.init(data: data)
     }
 }
