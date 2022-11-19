@@ -14,6 +14,7 @@ class InfoViewModel: ObservableObject {
 
     var backup: ArchiveItem
     @Published var item: ArchiveItem
+    @Published var showShareView = false
     @Published var showDumpEditor = false
     @Published var isEditing = false
     @Published var isError = false
@@ -82,13 +83,7 @@ class InfoViewModel: ObservableObject {
     }
 
     func share() {
-        Core.share(item)
-        recordShare()
-    }
-
-    func shareAsFile() {
-        Core.share(item, as: .file)
-        recordShare()
+        showShareView = true
     }
 
     func delete() {
@@ -148,10 +143,6 @@ class InfoViewModel: ObservableObject {
 
     func recordEdit() {
         analytics.appOpen(target: .keyEdit)
-    }
-
-    func recordShare() {
-        analytics.appOpen(target: .keyShare)
     }
 }
 

@@ -48,7 +48,7 @@ extension FileImporter {
 
 // MARK: Sharing
 
-func shareFile(_ key: ArchiveItem) {
+public func shareAsFile(_ key: ArchiveItem) {
     let urls = FileManager.default.urls(
         for: .cachesDirectory, in: .userDomainMask)
 

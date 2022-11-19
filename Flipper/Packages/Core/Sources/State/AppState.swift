@@ -24,7 +24,7 @@ public class AppState {
     @Published public var status: DeviceStatus = .noDevice
     @Published public var syncProgress: Int = 0
 
-    @Published public var importQueue: [ArchiveItem] = []
+    @Published public var importQueue: [URL] = []
     @Published public var customFirmwareURL: URL?
 
     @Published public var hasMFLog = false
@@ -242,9 +242,7 @@ public class AppState {
     }
 
     private func onOpenKeyURL(_ url: URL) async throws {
-        let item = try await Sharing.importKey(from: url)
-        let newItem = try await archive.copyIfExists(item)
-        importQueue = [newItem]
+        importQueue = [url]
         logger.info("key url opened")
     }
 

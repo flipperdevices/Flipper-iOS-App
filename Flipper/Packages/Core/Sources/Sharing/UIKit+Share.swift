@@ -1,6 +1,6 @@
 import UIKit
 
-func share(
+public func share(
     _ items: [Any],
     completion: UIActivityViewController.CompletionWithItemsHandler? = nil
 ) {
