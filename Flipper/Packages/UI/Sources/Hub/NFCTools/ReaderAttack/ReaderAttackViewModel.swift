@@ -33,8 +33,8 @@ class ReaderAttackViewModel: ObservableObject {
     }
 
     var hasMFKey32Log: Bool {
-        get async {
-            (try? await rpc.fileExists(at: .mfKey32Log)) == true
+        get async throws {
+            try await rpc.fileExists(at: .mfKey32Log)
         }
     }
 
@@ -91,12 +91,12 @@ class ReaderAttackViewModel: ObservableObject {
     var task: Task<Void, Never>?
 
     func start() {
-        guard flipper?.state == .connected else {
-            return
-        }
         task = Task {
             do {
-                guard await hasMFKey32Log else {
+                guard flipper?.state == .connected else {
+                    return
+                }
+                guard try await hasMFKey32Log else {
                     state = .noLog
                     return
                 }
@@ -104,17 +104,15 @@ class ReaderAttackViewModel: ObservableObject {
                 let log = try await readLog()
                 state = .calculating
                 try await calculateKeys(log)
-                do {
-                    state = .checkingKeys
-                    try await checkKeys()
-                    state = .uploadingKeys
-                    try await uploadKeys()
-                    try await deleteLog()
-                } catch let error as Error where error == .storage(.internal) {
-                    self.state = .noSDCard
-                    throw error
-                }
+                state = .checkingKeys
+                try await checkKeys()
+                state = .uploadingKeys
+                try await uploadKeys()
+                try await deleteLog()
                 state = .finished
+            } catch let error as Error where error == .storage(.internal) {
+                state = .noSDCard
+                logger.error("mfkey32 attack: no sd card")
             } catch where error is CancellationError {
                 logger.error("mfkey32 attack canceled")
             } catch {
