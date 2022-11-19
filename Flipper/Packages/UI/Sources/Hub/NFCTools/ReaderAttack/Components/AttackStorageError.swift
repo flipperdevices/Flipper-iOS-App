@@ -6,7 +6,7 @@ struct AttackStorageError: View {
 
     var body: some View {
         VStack(spacing: 18) {
-            Text("SD Card is Full or Not Accessible")
+            Text("SD Card is Not Accessible")
                 .font(.system(size: 18, weight: .bold))
 
             Image(
@@ -16,12 +16,12 @@ struct AttackStorageError: View {
             )
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .padding(.horizontal, 14)
 
             Text(
-                "Unable to save keys. " +
-                "The SD Card is not accessible or there is not enough space"
+                "Unable to access reader keys. " +
+                "Please verify that SD Card is present and has some space on it"
             )
+            .padding(.horizontal, 14)
             .font(.system(size: 16, weight: .medium))
             .foregroundColor(.black40)
         }
