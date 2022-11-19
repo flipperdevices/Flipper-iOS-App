@@ -39,6 +39,10 @@ let package = Package(
             url: "https://github.com/apple/swift-log.git",
             from: "1.4.2"),
         .package(
+            name: "Base64",
+            url: "https://github.com/swiftstack/radix.git",
+            branch: "dev"),
+        .package(
             name: "DCompression",
             url: "https://github.com/swiftstack/dcompression.git",
             branch: "dev")
@@ -51,8 +55,9 @@ let package = Package(
                 "Analytics",
                 "Peripheral",
                 "MFKey32v2",
-                "SwiftProtobuf",
+                "Base64",
                 "DCompression",
+                "SwiftProtobuf",
                 "Collections",
                 "Logging"
             ],

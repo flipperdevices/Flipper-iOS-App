@@ -9,25 +9,60 @@ import Logging
 class ImportViewModel: ObservableObject {
     private let logger = Logger(label: "import-vm")
 
-    @Inject var analytics: Analytics
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
+    @Inject private var analytics: Analytics
+    var dismissPublisher = PassthroughSubject<Void, Never>()
 
-    var backup: ArchiveItem
-    @Published var item: ArchiveItem
+    let url: URL
+    @Published var state: State = .loading
     @Published var isEditing = false
     @Published var isError = false
     var error = ""
 
-    let appState: AppState = .shared
-    var dismissPublisher = PassthroughSubject<Void, Never>()
+    enum State {
+        case loading
+        case imported
+        case error(Error)
+    }
 
-    init(item: ArchiveItem) {
-        self.item = item
-        self.backup = item
+    enum Error: String {
+        case noInternet
+        case cantConnect
+    }
+
+    @Published var item: ArchiveItem = .none
+    var backup: ArchiveItem = .none
+
+    init(url: URL) {
+        self.url = url
+        loadItem()
         recordImport()
     }
 
+    func loadItem() {
+        self.state = .loading
+        Task { @MainActor in
+            do {
+                let item = try await Sharing.importKey(from: url)
+                let newItem = try await archive.copyIfExists(item)
+                self.item = newItem
+                self.state = .imported
+            } catch let error as URLError {
+                switch error.code {
+                case .dataNotAllowed: state = .error(.noInternet)
+                default: state = .error(.cantConnect)
+                }
+            }
+        }
+    }
+
+    func retry() {
+        loadItem()
+    }
+
     func add() {
-        guard appState.archive.get(item.id) == nil else {
+        guard archive.get(item.id) == nil else {
             showError(Archive.Error.alreadyExists)
             return
         }

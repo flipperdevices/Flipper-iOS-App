@@ -23,15 +23,16 @@ struct ReaderAttackView: View {
                     ReaderDataNotFound(fliperColor: viewModel.flipperColor)
                 case .noDevice:
                     AttackConnectionError(fliperColor: viewModel.flipperColor)
+                case .noSDCard:
+                    AttackStorageError(fliperColor: viewModel.flipperColor)
                 case .downloadingLog:
                     VStack(spacing: 18) {
                         Text("Calculation Started...")
                             .font(.system(size: 18, weight: .bold))
                         VStack(spacing: 8) {
                             ProgressBarView(
-                                image: "ProgressDownload",
-                                text: viewModel.progressString,
                                 color: .a2,
+                                image: "ProgressDownload",
                                 progress: viewModel.progress
                             )
                             .padding(.horizontal, 18)
@@ -47,9 +48,8 @@ struct ReaderAttackView: View {
                             .font(.system(size: 18, weight: .bold))
                         VStack(spacing: 8) {
                             ProgressBarView(
-                                image: "ProgressKey",
-                                text: viewModel.progressString,
                                 color: .a1,
+                                image: "ProgressKey",
                                 progress: viewModel.progress
                             )
                             .padding(.horizontal, 18)
@@ -65,10 +65,10 @@ struct ReaderAttackView: View {
                             .font(.system(size: 18, weight: .bold))
                         VStack(spacing: 8) {
                             ProgressBarView(
-                                image: "ProgressKey",
-                                text: "...",
                                 color: .a1,
-                                progress: 1
+                                image: "ProgressKey",
+                                progress: 1,
+                                text: "..."
                             )
                             .padding(.horizontal, 18)
                             Text("Checking keys in dictionaries...")
@@ -83,10 +83,10 @@ struct ReaderAttackView: View {
                             .font(.system(size: 18, weight: .bold))
                         VStack(spacing: 8) {
                             ProgressBarView(
-                                image: "ProgressKey",
-                                text: "...",
                                 color: .a1,
-                                progress: 1
+                                image: "ProgressKey",
+                                progress: 1,
+                                text: "..."
                             )
                             .padding(.horizontal, 18)
                             Text("Syncing with Flipper...")
@@ -119,6 +119,7 @@ struct ReaderAttackView: View {
                                 dismiss()
                             } label: {
                                 Text("Done")
+                                    .font(.system(size: 16, weight: .bold))
                                     .roundedButtonStyle(
                                         height: 47,
                                         maxWidth: .infinity)
@@ -249,18 +250,19 @@ extension ReaderAttackView {
 
         var body: some View {
             HStack(spacing: 6) {
-                Image("Key")
+                Image("FoundKey")
                 Text(key.hexValue.uppercased())
                     .foregroundColor(.primary.opacity(0.8))
                     .font(.system(
                         size: 12,
-                        weight: .medium))
+                        weight: .medium,
+                        design: .monospaced))
             }
             .padding(.leading, 10)
             .padding(.trailing, 12)
             .padding(.vertical, 12)
             .background(Color.groupedBackground)
-            .cornerRadius(10)
+            .cornerRadius(30)
         }
     }
 }

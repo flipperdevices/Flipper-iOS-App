@@ -5,10 +5,10 @@ struct NavBarButton<Label: View>: View {
     @ViewBuilder var label: () -> Label
 
     var body: some View {
-        Button(action: action) {
-            label()
-                .tappableFrame()
-        }
-        .foregroundColor(.primary)
+        label()
+            .tappableFrame()
+            .onTapGesture {
+                action()
+            }
     }
 }

@@ -10,8 +10,8 @@ public class RootViewModel: ObservableObject {
     private let logger = Logger(label: "root")
 
     @Inject var analytics: Analytics
-    @Inject var rpc: RPC
-    let appState: AppState = .shared
+    @Inject private var rpc: RPC
+    @Inject private var appState: AppState
 
     var disposeBag: DisposeBag = .init()
 

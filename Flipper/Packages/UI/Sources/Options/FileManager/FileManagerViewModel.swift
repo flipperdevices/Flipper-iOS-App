@@ -9,7 +9,7 @@ import Foundation
 class FileManagerViewModel: ObservableObject {
     private let logger = Logger(label: "file-manager-vm")
 
-    @Inject var rpc: RPC
+    @Inject private var rpc: RPC
     @Inject var analytics: Analytics
 
     @Published var content: Content? {

@@ -9,7 +9,10 @@ import OrderedCollections
 class ArchiveViewModel: ObservableObject {
     private let logger = Logger(label: "archive-vm")
 
-    let appState: AppState = .shared
+    @Environment(\.dismiss) private var dismiss
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
+    private var disposeBag: DisposeBag = .init()
 
     let pullToRefreshThreshold: Double = 1000
 
@@ -35,13 +38,17 @@ class ArchiveViewModel: ObservableObject {
     @Published var showInfoView = false
     @Published var showSearchView = false
     @Published var hasImportedItem = false
-
-    var importedItem: ArchiveItem {
-        appState.importQueue.removeFirst()
+    @Published var showWidgetSettings = false {
+        didSet {
+            if appState.showWidgetSettings != showWidgetSettings {
+                appState.showWidgetSettings = showWidgetSettings
+            }
+        }
     }
 
-    var archive: Archive { appState.archive }
-    var disposeBag: DisposeBag = .init()
+    var importedItem: URL {
+        appState.importQueue.removeFirst()
+    }
 
     var groups: OrderedDictionary<ArchiveItem.Kind, Int> {
         [
@@ -54,12 +61,12 @@ class ArchiveViewModel: ObservableObject {
     }
 
     init() {
-        archive.$items
+        archive.items
             .receive(on: DispatchQueue.main)
             .assign(to: \.items, on: self)
             .store(in: &disposeBag)
 
-        archive.$deletedItems
+        archive.deletedItems
             .receive(on: DispatchQueue.main)
             .assign(to: \.deleted, on: self)
             .store(in: &disposeBag)
@@ -79,6 +86,11 @@ class ArchiveViewModel: ObservableObject {
         appState.$syncProgress
             .receive(on: DispatchQueue.main)
             .assign(to: \.syncProgress, on: self)
+            .store(in: &disposeBag)
+
+        appState.$showWidgetSettings
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.showWidgetSettings, on: self)
             .store(in: &disposeBag)
     }
 

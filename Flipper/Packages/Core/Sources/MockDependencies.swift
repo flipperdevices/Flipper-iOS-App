@@ -13,6 +13,7 @@ public func registerMockDependencies() {
     Analytics.registerMockDependencies()
     Peripheral.registerMockDependencies()
 
+    container.register(AppState.init, as: AppState.self, isSingleton: true)
     // device
     container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
     // archive
@@ -24,6 +25,7 @@ public func registerMockDependencies() {
     container.register(ArchiveStorageMock.init, as: MobileArchiveStorage.self, isSingleton: true)
     container.register(NotesStorageMock.init, as: MobileNotesStorage.self, isSingleton: true)
     container.register(DeletedStorageMock.init, as: DeletedArchiveStorage.self, isSingleton: true)
+    container.register(TodayWidgetStorageMock.init, as: TodayWidgetStorage.self, isSingleton: true)
     // manifests
     container.register(SyncedItemsMock.init, as: SyncedItemsProcotol.self, isSingleton: true)
     // favorites

@@ -9,8 +9,8 @@ import Logging
 class DeviceViewModel: ObservableObject {
     private let logger = Logger(label: "device-vm")
 
-    @Inject var rpc: RPC
-    private let appState: AppState = .shared
+    @Inject private var rpc: RPC
+    @Inject private var appState: AppState
     private var disposeBag: DisposeBag = .init()
 
     @Published var showForgetAction = false

@@ -96,6 +96,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>COUNTLY_APP_KEY</key>
+	<string>$(CI_COUNTLY_APP_KEY)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
@@ -257,7 +259,5 @@
 			</dict>
 		</dict>
 	</array>
-	<key>COUNTLY_APP_KEY</key>
-	<string>$(CI_COUNTLY_APP_KEY)</string>
 </dict>
 </plist>

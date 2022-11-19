@@ -1,4 +1,5 @@
 import Core
+import Inject
 import Combine
 import SwiftUI
 
@@ -6,8 +7,8 @@ import SwiftUI
 class NFCEditorViewModel: ObservableObject {
     var item: Binding<ArchiveItem>
 
-    let appState: AppState = .shared
-    var archive: Archive { appState.archive }
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
 
     @Published var bytes: [UInt8?]
     @Published var showSaveAs = false

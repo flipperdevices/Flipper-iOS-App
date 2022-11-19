@@ -2,7 +2,7 @@ import Inject
 import Peripheral
 
 class FlipperArchive: FlipperArchiveProtocol {
-    @Inject var rpc: RPC
+    @Inject private var rpc: RPC
 
     init() {}
 

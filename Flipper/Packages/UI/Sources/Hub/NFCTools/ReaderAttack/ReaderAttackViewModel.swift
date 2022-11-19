@@ -9,8 +9,8 @@ import Logging
 class ReaderAttackViewModel: ObservableObject {
     private let logger = Logger(label: "reader-attack-vm")
 
-    @Inject var rpc: RPC
-    private let appState: AppState = .shared
+    @Inject private var rpc: RPC
+    @Inject private var appState: AppState
     private var disposeBag: DisposeBag = .init()
 
     @Published var flipper: Flipper? {
@@ -29,7 +29,13 @@ class ReaderAttackViewModel: ObservableObject {
     }
 
     var isError: Bool {
-        state == .noLog || state == .noDevice
+        state == .noLog || state == .noDevice || state == .noSDCard
+    }
+
+    var hasMFKey32Log: Bool {
+        get async throws {
+            try await rpc.fileExists(at: .mfKey32Log)
+        }
     }
 
     @Published var state: State = .downloadingLog
@@ -46,10 +52,6 @@ class ReaderAttackViewModel: ObservableObject {
     private var userKnownKeys: Set<MFKey64> = .init()
     private var allKnownKeys: Set<MFKey64> {
         flipperKnownKeys.union(userKnownKeys)
-    }
-
-    var progressString: String {
-        "\(Int(progress * 100)) %"
     }
 
     var showCalculatedKeysSpinner: Bool {
@@ -71,6 +73,7 @@ class ReaderAttackViewModel: ObservableObject {
     enum State {
         case noLog
         case noDevice
+        case noSDCard
         case downloadingLog
         case calculating
         case checkingKeys
@@ -90,7 +93,10 @@ class ReaderAttackViewModel: ObservableObject {
     func start() {
         task = Task {
             do {
-                guard try await rpc.fileExists(at: .mfKey32Log) else {
+                guard flipper?.state == .connected else {
+                    return
+                }
+                guard try await hasMFKey32Log else {
                     state = .noLog
                     return
                 }
@@ -104,6 +110,9 @@ class ReaderAttackViewModel: ObservableObject {
                 try await uploadKeys()
                 try await deleteLog()
                 state = .finished
+            } catch let error as Error where error == .storage(.internal) {
+                state = .noSDCard
+                logger.error("mfkey32 attack: no sd card")
             } catch where error is CancellationError {
                 logger.error("mfkey32 attack canceled")
             } catch {

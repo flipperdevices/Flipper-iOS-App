@@ -116,7 +116,7 @@ extension FlipperSession {
 // MARK: Timeout
 
 extension FlipperSession {
-    var timeoutNanoseconds: UInt64 { 6 * 1_000 * 1_000_000 }
+    var timeoutNanoseconds: UInt64 { 30 * 1_000 * 1_000_000 }
 
     func setupTimeoutTimer() {
         if let current = timeoutTask {

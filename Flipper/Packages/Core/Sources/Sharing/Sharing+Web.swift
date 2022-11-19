@@ -9,9 +9,25 @@ class WebImporter: Importer {
         case invalidProperties
         case invalidPathKey
         case invalidPath
+        case serverError
     }
 
     func importKey(from url: URL) async throws -> ArchiveItem {
+        if url.pathComponents.contains("sf") {
+            return try await importKey(serverKey: url)
+        } else {
+            return try await importKey(shortURL: url)
+        }
+    }
+
+    func importKey(serverKey url: URL) async throws -> ArchiveItem {
+        guard let item = try await TempLinkSharing().importKey(url: url) else {
+            throw Error.serverError
+        }
+        return item
+    }
+
+    func importKey(shortURL url: URL) async throws -> ArchiveItem {
         guard let encodedQuery = url.fragment else {
             throw Error.invalidURLFragment
         }
@@ -40,7 +56,7 @@ class WebImporter: Importer {
     }
 }
 
-public func shareWeb(_ key: ArchiveItem) throws {
+public func makeShareURL(for key: ArchiveItem) throws -> String {
     let baseURL = "https://flpr.app/s#"
 
     var query: String? {
@@ -52,9 +68,13 @@ public func shareWeb(_ key: ArchiveItem) throws {
         throw Sharing.Error.encodingError
     }
 
-    let url = baseURL + query
+    return baseURL + query
+}
 
-    guard url.count <= 2000 else {
+public func shareAsURL(_ key: ArchiveItem) throws {
+    let url = try makeShareURL(for: key)
+
+    guard url.count <= 200 else {
         throw Sharing.Error.urlIsTooLong
     }
 
@@ -91,6 +111,7 @@ extension WebImporter.Error: CustomStringConvertible {
         case .invalidProperties: return "invalid properties"
         case .invalidPathKey: return "invalid path key"
         case .invalidPath: return "invalid path"
+        case .serverError: return "server error"
         }
     }
 }

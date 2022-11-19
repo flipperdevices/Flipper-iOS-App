@@ -1,4 +1,5 @@
 import Core
+import Inject
 import Combine
 import SwiftUI
 import Logging
@@ -7,13 +8,15 @@ import Logging
 class DeletedInfoViewModel: ObservableObject {
     private let logger = Logger(label: "deleted-info-vm")
 
+    @Inject private var archive: Archive
+
     @Published var item: ArchiveItem
     @Published var showDeleteSheet = false
     @Published var isEditing = false
     @Published var isError = false
     var error = ""
 
-    let appState: AppState = .shared
+    @Inject private var appState: AppState
     var dismissPublisher = PassthroughSubject<Void, Never>()
 
     init(item: ArchiveItem) {
@@ -23,7 +26,7 @@ class DeletedInfoViewModel: ObservableObject {
     func restore() {
         Task {
             do {
-                try await appState.archive.restore(item)
+                try await archive.restore(item)
                 dismiss()
                 try await appState.synchronize()
             } catch {
@@ -36,7 +39,7 @@ class DeletedInfoViewModel: ObservableObject {
     func delete() {
         Task {
             do {
-                try await appState.archive.wipe(item)
+                try await archive.wipe(item)
                 dismiss()
             } catch {
                 logger.error("wipe item: \(error)")

@@ -9,8 +9,8 @@ import Logging
 class HubViewModel: ObservableObject {
     private let logger = Logger(label: "hub-vm")
 
-    @Inject var rpc: RPC
-    private let appState: AppState = .shared
+    @Inject private var rpc: RPC
+    @Inject private var appState: AppState
     private var disposeBag: DisposeBag = .init()
 
     @Published var hasMFLog = false

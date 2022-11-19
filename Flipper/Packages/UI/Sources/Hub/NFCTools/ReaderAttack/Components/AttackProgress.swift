@@ -11,10 +11,10 @@ extension ReaderAttackView {
             }
         }
 
-        var text: String {
+        var text: String? {
             viewModel.state == .preparingForUpdate
                 ? "..."
-                : "\(Int(viewModel.progress * 100))%"
+                : nil
         }
 
         var color: Color {
@@ -27,10 +27,10 @@ extension ReaderAttackView {
 
         var body: some View {
             ProgressBarView(
-                image: image,
-                text: text,
                 color: color,
-                progress: viewModel.progress)
+                image: image,
+                progress: viewModel.progress,
+                text: text)
         }
     }
 }

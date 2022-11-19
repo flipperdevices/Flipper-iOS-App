@@ -2,7 +2,7 @@ import Peripheral
 import Logging
 
 extension ArchiveItem {
-    public enum Kind: Hashable, Comparable, CaseIterable {
+    public enum Kind: Codable, Hashable, Comparable, CaseIterable {
         case subghz
         case rfid
         case nfc
@@ -39,7 +39,7 @@ extension ArchiveItem.Kind {
         }
     }
 
-    var `extension`: String {
+    public var `extension`: String {
         switch self {
         case .rfid: return FileType.rfid.extension
         case .subghz: return FileType.subghz.extension

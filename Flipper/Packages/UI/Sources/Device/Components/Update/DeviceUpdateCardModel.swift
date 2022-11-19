@@ -12,9 +12,9 @@ import Logging
 class DeviceUpdateCardModel: ObservableObject {
     private let logger = Logger(label: "update-vm")
 
-    @Inject var rpc: RPC
+    @Inject private var rpc: RPC
     @Inject var analytics: Analytics
-    private let appState: AppState = .shared
+    @Inject private var appState: AppState
     private var disposeBag: DisposeBag = .init()
 
     @Published var state: State = .disconnected

@@ -2,11 +2,11 @@ import Peripheral
 import Foundation
 
 class FileStorage {
+    // swiftlint:disable force_unwrapping
     var baseURL: URL {
-        let paths = FileManager.default.urls(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask)
-        return paths[0]
+        FileManager
+            .default
+            .containerURL(forSecurityApplicationGroupIdentifier: .appGroup)!
     }
 
     init() {}
@@ -34,14 +34,53 @@ class FileStorage {
     }
 
     func read(_ path: Path) throws -> String {
+        var content = ""
         let url = makeURL(for: path)
-        return try .init(contentsOf: url)
+        var readError: Swift.Error?
+        var nsReadError: NSError?
+        let coord = NSFileCoordinator(filePresenter: nil)
+        coord.coordinate(readingItemAt: url, error: &nsReadError) { readURL in
+            do {
+                content = try .init(contentsOf: url)
+            } catch {
+                readError = error
+            }
+        }
+        if let error = readError {
+            throw error
+        }
+        if let error = nsReadError {
+            throw error
+        }
+        return content
     }
 
     func write(_ content: String, at path: Path) throws {
         try makeDirectory(for: path)
         let url = makeURL(for: path)
-        try content.write(to: url, atomically: true, encoding: .utf8)
+        var writeError: Swift.Error?
+        var nsWriteError: NSError?
+        let coord = NSFileCoordinator(filePresenter: nil)
+        coord.coordinate(
+            writingItemAt: url,
+            options: .forReplacing,
+            error: &nsWriteError
+        ) { writeURL in
+            do {
+                try content.write(
+                    to: writeURL,
+                    atomically: true,
+                    encoding: .utf8)
+            } catch {
+                writeError = error
+            }
+        }
+        if let error = writeError {
+            throw error
+        }
+        if let error = nsWriteError {
+            throw error
+        }
     }
 
     func append(_ content: String, at path: Path) throws {
@@ -69,7 +108,7 @@ class FileStorage {
 
         for path in contents {
             let url = baseURL.appendingPathComponent(path)
-            try FileManager.default.removeItem(at: url)
+            try? FileManager.default.removeItem(at: url)
         }
     }
 

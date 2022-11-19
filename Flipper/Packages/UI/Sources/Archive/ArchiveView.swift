@@ -69,11 +69,15 @@ struct ArchiveView: View {
                 InfoView(viewModel: .init(item: viewModel.selectedItem))
             }
             .sheet(isPresented: $viewModel.hasImportedItem) {
-                ImportView(viewModel: .init(item: viewModel.importedItem))
+                ImportView(viewModel: .init(url: viewModel.importedItem))
             }
             .fullScreenCover(isPresented: $viewModel.showSearchView) {
                 ArchiveSearchView(viewModel: .init())
             }
+            .fullScreenCover(isPresented: $viewModel.showWidgetSettings) {
+                WidgetSettingsView(viewModel: .init())
+            }
+            .navigationTitle("")
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
