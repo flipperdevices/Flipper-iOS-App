@@ -3,7 +3,7 @@ import CryptoKit
 import Foundation
 
 public class TempLinkSharing {
-    let baseURL: URL = "https://dev.flpr.app/sf"
+    let baseURL: URL = "https://flpr.app/sf"
 
     public init() {}
 
