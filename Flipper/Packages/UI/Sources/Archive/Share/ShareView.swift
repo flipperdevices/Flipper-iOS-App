@@ -49,10 +49,9 @@ struct ShareView: View {
                     }
                 }
             }
-            .padding(.vertical, 42)
+            .padding(.top, 42)
+            .padding(.bottom, 64)
         }
-        .background(.background)
-        .cornerRadius(30, corners: [.topLeft, .topRight])
     }
 
     struct ShareAsLinkButton: View {

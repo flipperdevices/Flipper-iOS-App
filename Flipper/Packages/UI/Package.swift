@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "UI",
     platforms: [
-        .iOS("16"),
+        .iOS(.v15),
         .macOS(.v12),
         .tvOS(.v15)
     ],

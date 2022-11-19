@@ -76,10 +76,8 @@ struct InfoView: View {
                 alertController.alert
             }
         }
-        .sheet(isPresented: $viewModel.showShareView) {
+        .bottomSheet(isPresented: $viewModel.showShareView) {
             ShareView(viewModel: .init(item: viewModel.item))
-                .presentationDetents([.height(261)])
-                .presentationDragIndicator(.visible)
         }
         .fullScreenCover(isPresented: $viewModel.showDumpEditor) {
             NFCEditorView(viewModel: .init(item: $viewModel.item))
