@@ -37,7 +37,7 @@ public class Emulate: ObservableObject {
     private var stop = false
     private var forceStop = false
     private var emulateTask: Task<Void, Swift.Error>?
-    private var emulateStarted: Date = .now
+    private var emulateStarted = Date()
 
     public init() {
         rpc.onAppStateChanged { [weak self] state in
@@ -145,7 +145,7 @@ public class Emulate: ObservableObject {
                 applicationState = .restricted
                 throw error
             }
-            emulateStarted = .now
+            emulateStarted = Date()
         }
         applicationState = .emulating
         try await waitForMinimumDuration(for: item)

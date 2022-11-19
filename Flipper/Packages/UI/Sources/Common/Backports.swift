@@ -35,6 +35,14 @@ extension View {
             self
         }
     }
+    
+    @ViewBuilder func backgroundIfAvailable<S>(_ style: S, ignoresSafeAreaEdges edges: Edge.Set = .all) -> some View where S : ShapeStyle {
+        if #available(iOS 15, *) {
+            background(style, ignoresSafeAreaEdges: edges)
+        } else {
+            self
+        }
+    }
 }
 
 extension EnvironmentValues {
