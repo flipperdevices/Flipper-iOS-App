@@ -2,7 +2,7 @@ import SwiftUI
 
 struct NamedLogsView: View {
     @StateObject var viewModel: NamedLogsViewModel
-    @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         List {
@@ -15,7 +15,7 @@ struct NamedLogsView: View {
         .toolbar {
             LeadingToolbarItems {
                 BackButton {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
                 Title(viewModel.name)
             }

@@ -5,7 +5,7 @@ import Peripheral
 struct RemoteControlView: View {
     @StateObject var viewModel: RemoteControlViewModel
     @Environment(\.scenePhase) private var scenePhase
-    @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack {
@@ -27,7 +27,7 @@ struct RemoteControlView: View {
         .toolbar {
             LeadingToolbarItems {
                 BackButton {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
                 Title("Remote Control")
             }

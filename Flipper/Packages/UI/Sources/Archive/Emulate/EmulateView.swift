@@ -2,6 +2,7 @@ import SwiftUI
 
 struct EmulateView: View {
     @StateObject var viewModel: EmulateViewModel
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 4) {

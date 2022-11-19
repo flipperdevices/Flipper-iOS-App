@@ -3,7 +3,7 @@ import SwiftUI
 
 struct StressTestView: View {
     @StateObject var viewModel: StressTestViewModel
-    @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack {
@@ -43,7 +43,7 @@ struct StressTestView: View {
         .toolbar {
             LeadingToolbarItems {
                 BackButton {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
                 Title("Stress Test")
             }

@@ -3,7 +3,7 @@ import SwiftUI
 
 struct CategoryView: View {
     @StateObject var viewModel: CategoryViewModel
-    @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ZStack {
@@ -25,7 +25,7 @@ struct CategoryView: View {
         .toolbar {
             LeadingToolbarItems {
                 BackButton {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
                 Text(viewModel.name)
                     .font(.system(size: 20, weight: .bold))

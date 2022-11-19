@@ -4,7 +4,7 @@ import SwiftUI
 
 struct DeviceInfoView: View {
     @StateObject var viewModel: DeviceInfoViewModel
-    @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView {
@@ -45,7 +45,7 @@ struct DeviceInfoView: View {
                     values: viewModel.otherKeys
                 )
             }
-            .textSelection(.enabled)
+            .enableTextSelectionIfAvailable()
             .padding(.vertical, 14)
         }
         .background(Color.background)
@@ -54,7 +54,7 @@ struct DeviceInfoView: View {
         .toolbar {
             LeadingToolbarItems {
                 BackButton {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
                 Title("Device Info")
             }

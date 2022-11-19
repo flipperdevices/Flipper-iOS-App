@@ -18,7 +18,7 @@ extension NFCEditorView {
             Image("NFCCard")
                 .resizable()
                 .scaledToFit()
-                .overlay {
+                .overlay(
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(spacing: 4) {
                             Text("MIFARE Classic \(mifareType)")
@@ -64,7 +64,7 @@ extension NFCEditorView {
                     }
                     .padding(14)
                     .foregroundColor(.white)
-                }
+                )
         }
     }
 }

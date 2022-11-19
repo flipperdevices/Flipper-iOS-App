@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CarrierView: View {
     @StateObject var viewModel: CarrierViewModel
-    @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -24,7 +24,7 @@ struct CarrierView: View {
         .toolbar {
             LeadingToolbarItems {
                 BackButton {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }
                 Title("I'm watching you")
             }
