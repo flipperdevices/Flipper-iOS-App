@@ -69,8 +69,7 @@ class DeviceInfoCardViewModel: ObservableObject {
     }
 
     var internalSpace: NSAttributedString {
-        guard isConnected else { return NSAttributedString(string: "") }
-        guard let int = device?.storage?.internal else {
+        guard isConnected, let int = device?.storage?.internal else {
             return NSAttributedString(string: "")
         }
         let result = NSMutableAttributedString(string: int.description)
@@ -83,10 +82,21 @@ class DeviceInfoCardViewModel: ObservableObject {
         return result
     }
 
-    var externalSpace: String {
-        guard isConnected else { return "" }
-        guard device?.storage?.internal != nil else { return "" }
-        return device?.storage?.external?.description ?? "—"
+    var externalSpace: NSAttributedString {
+        guard isConnected, device?.storage?.internal != nil else {
+            return NSAttributedString(string: "")
+        }
+        guard let ext = device?.storage?.external else {
+            return NSAttributedString(string: "—")
+        }
+        let result = NSMutableAttributedString(string: ext.description)
+        if ext.free < 100_000 {
+            result.addAttributes(
+                [.foregroundColor: Color.sRed],
+                range: NSRange(location: 0, length: result.length)
+            )
+        }
+        return result
     }
 
     init() {
