@@ -81,7 +81,7 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     private func _onError(_ error: CBError) {
         switch error.code {
         case .peerRemovedPairingInformation: state = .invalidPairing
-        case .encryptionTimedOut: state = .disconnected
+        case .encryptionTimedOut: state = .invalidPairing
         default: logger.error("unknown error type: \(error)")
         }
     }
