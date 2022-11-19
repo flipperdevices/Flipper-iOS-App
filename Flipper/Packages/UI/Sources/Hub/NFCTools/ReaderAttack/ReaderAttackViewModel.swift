@@ -91,6 +91,9 @@ class ReaderAttackViewModel: ObservableObject {
     var task: Task<Void, Never>?
 
     func start() {
+        guard flipper?.state == .connected else {
+            return
+        }
         task = Task {
             do {
                 guard await hasMFKey32Log else {
