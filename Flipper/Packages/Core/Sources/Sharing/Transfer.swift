@@ -9,7 +9,7 @@ public class TempLinkSharing {
 
     public func shareKey(_ item: ArchiveItem) async throws -> URL? {
         let key = SymmetricKey(size: .bits128)
-        let encrypted = try Cryptor().encrypt(content: item.content, using: key)
+        let encrypted = try Cryptor().encrypt(content: pack(item), using: key)
         let code = try await Tranfser().upload(data: encrypted)
         let path = trimPath(item.path.string)
         guard let encodedPath = KeyCoder.encode(query: path) else {
@@ -17,6 +17,15 @@ public class TempLinkSharing {
         }
         let encodedKey = key.base64URLEncodedString()
         return makeURL(code: code, path: encodedPath, key: encodedKey)
+    }
+
+    // NOTE:
+    // We might want to pack original
+    // file with shadow and share as tar
+    func pack(_ item: ArchiveItem) -> String {
+        item.shadowCopy.isEmpty
+            ? item.content
+            : item.shadowContent
     }
 
     // TODO: remove /any/ from item.id
