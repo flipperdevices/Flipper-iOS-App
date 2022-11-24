@@ -49,6 +49,6 @@ class SettingsSelectKeyViewModel: ObservableObject {
 
 private extension ArchiveItem {
     var isAllowed: Bool {
-        kind == .subghz || kind == .nfc || kind == .rfid
+        kind == .subghz || kind == .nfc || kind == .rfid || kind == .ibutton
     }
 }

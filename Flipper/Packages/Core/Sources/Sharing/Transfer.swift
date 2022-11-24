@@ -9,7 +9,7 @@ public class TempLinkSharing {
 
     public func shareKey(_ item: ArchiveItem) async throws -> URL? {
         let key = SymmetricKey(size: .bits128)
-        let encrypted = try Cryptor().encrypt(content: item.content, using: key)
+        let encrypted = try Cryptor().encrypt(content: pack(item), using: key)
         let code = try await Tranfser().upload(data: encrypted)
         let path = trimPath(item.path.string)
         guard let encodedPath = KeyCoder.encode(query: path) else {
@@ -17,6 +17,15 @@ public class TempLinkSharing {
         }
         let encodedKey = key.base64URLEncodedString()
         return makeURL(code: code, path: encodedPath, key: encodedKey)
+    }
+
+    // NOTE:
+    // We might want to pack original
+    // file with shadow and share as tar
+    func pack(_ item: ArchiveItem) -> String {
+        item.shadowCopy.isEmpty
+            ? item.content
+            : item.shadowContent
     }
 
     // TODO: remove /any/ from item.id
@@ -29,7 +38,7 @@ public class TempLinkSharing {
     }
 
     func makeURL(code: String, path: String, key: String) -> URL? {
-        return .init(string: "\(baseURL)/\(code)#path=\(path)&key=\(key)")
+        return .init(string: "\(baseURL)#path=\(path)&id=\(code)&key=\(key)")
     }
 
     public func importKey(url: URL) async throws -> ArchiveItem? {
@@ -49,33 +58,19 @@ public class TempLinkSharing {
 
     // swiftlint:disable large_tuple
     func parseURL(_ url: URL) -> (code: String, path: String, key: String)? {
-        guard let code = url.pathComponents.last else {
-            return nil
-        }
-        guard let frarment = url.fragment else {
-            return nil
-        }
-        let parts = frarment.split(separator: "&")
-        guard parts.count == 2 else {
-            return nil
-        }
-        let pathParts = parts[0].split(separator: "=")
-        let keyParts = parts[1].split(separator: "=")
-        guard
-            pathParts.count == 2,
-            pathParts.first == "path",
-            let encodedPath = pathParts.last
-        else {
+        var components = URLComponents()
+        components.query = url.fragment
+        guard let items = components.queryItems, items.count == 3 else {
             return nil
         }
         guard
-            keyParts.count == 2,
-            keyParts.first == "key",
-            let encodedKey = keyParts.last
+            let code = items.first(where: { $0.name == "id" })?.value,
+            let encodedPath = items.first(where: { $0.name == "path" })?.value,
+            let encodedKey = items.first(where: { $0.name == "key" })?.value
         else {
             return nil
         }
-        return (code, .init(encodedPath), .init(encodedKey))
+        return (code, encodedPath, encodedKey)
     }
 }
 

@@ -32,7 +32,7 @@ struct ReaderAttackCard: View {
                         .foregroundColor(.black30)
                 }
 
-                Spacer()
+                Spacer(minLength: 0)
 
                 HStack(spacing: 6) {
                     Circle()

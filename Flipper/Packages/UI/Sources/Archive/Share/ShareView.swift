@@ -34,6 +34,7 @@ struct ShareView: View {
                         }
                         Spacer()
                     }
+                    .padding(.bottom, 64)
                 case .uploading:
                     VStack(spacing: 18) {
                         Animation("Loading")
@@ -50,8 +51,10 @@ struct ShareView: View {
                 }
             }
             .padding(.top, 42)
-            .padding(.bottom, 64)
+
+            Spacer()
         }
+        .frame(height: 258)
     }
 
     struct ShareAsLinkButton: View {
