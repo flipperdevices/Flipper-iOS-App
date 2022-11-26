@@ -19,6 +19,7 @@ public protocol RPC {
     func getStorageInfo(at path: Path) async throws -> StorageSpace
     func listDirectory(at path: Path) async throws -> [Element]
     func getSize(at path: Path) async throws -> Int
+    func getTimestamp(at path: Path) async throws -> Date
     func createFile(at path: Path, isDirectory: Bool) async throws
     func deleteFile(at path: Path, force: Bool) async throws
     func readFile(at path: Path) -> AsyncThrowingStream<[UInt8], Swift.Error>

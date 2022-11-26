@@ -195,6 +195,16 @@ extension BluetoothRPC {
         return size
     }
 
+    public func getTimestamp(at path: Path) async throws -> Date {
+        let response = try await session?
+            .send(.storage(.timestamp(path)))
+            .response
+        guard case .storage(.timestamp(let timestamp)) = response else {
+            throw Error.unexpectedResponse(response)
+        }
+        return timestamp
+    }
+
     public func createFile(at path: Path, isDirectory: Bool) async throws {
         let response = try await session?
             .send(.storage(.create(path, isDirectory: isDirectory)))
