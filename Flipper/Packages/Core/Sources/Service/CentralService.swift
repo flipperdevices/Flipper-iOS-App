@@ -1,18 +1,16 @@
-import Core
-import Combine
 import Inject
-import Foundation
 import Peripheral
 
+import Combine
+import Foundation
+
 @MainActor
-class ConnectionViewModel: ObservableObject {
-    @Inject private var appState: AppState
+public class CentralService: ObservableObject {
     @Inject private var central: BluetoothCentral
     @Inject private var connector: BluetoothConnector
-    @Inject private var pairedDevice: PairedDevice
     private var disposeBag = DisposeBag()
 
-    @Published private(set) var state: BluetoothStatus = .notReady(.preparing) {
+    @Published public private(set) var state: BluetoothStatus = .preparing {
         didSet {
             switch state {
             case .ready: startScan()
@@ -21,24 +19,15 @@ class ConnectionViewModel: ObservableObject {
         }
     }
 
-    @Published var showHelpSheet = false
-
     let scanTimeoutInSeconds = 30
-    @Published var isScanTimeout = false
+    @Published public var isScanTimeout = false
 
     let connectTimeoutInSeconds = 30
-    @Published var isConnectTimeout = false
+    @Published public var isConnectTimeout = false
 
     var uuid: UUID?
-    @Published var isCanceledOrInvalidPin = false {
-        didSet { pairedDevice.forget() }
-    }
 
-    @Published var isPairingIssue = false {
-        didSet { pairedDevice.forget() }
-    }
-
-    @Published var flippers: [Flipper] = []
+    @Published public var flippers: [Flipper] = []
 
     private var bluetoothPeripherals: [BluetoothPeripheral] = [] {
         didSet { updateFlippers() }
@@ -48,11 +37,11 @@ class ConnectionViewModel: ObservableObject {
         didSet { updateFlippers() }
     }
 
-    var isConnecting: Bool {
+    public var isConnecting: Bool {
         !connectedPeripherals.isEmpty
     }
 
-    init() {
+    public init() {
         central.status
             .receive(on: DispatchQueue.main)
             .assign(to: \.state, on: self)
@@ -68,31 +57,9 @@ class ConnectionViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .assign(to: \.connectedPeripherals, on: self)
             .store(in: &disposeBag)
-
-        appState.$status
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
-                switch status {
-                case .invalidPairing: self?.isPairingIssue = true
-                case .pairingFailed: self?.isCanceledOrInvalidPin = true
-                case .connected: self?.disposeBag.removeAll()
-                default: break
-                }
-            }
-            .store(in: &disposeBag)
     }
 
-    func reconnect() {
-        if let uuid = uuid {
-            connect(to: uuid)
-        }
-    }
-
-    func skipConnection() {
-        appState.skipPairing()
-    }
-
-    func updateFlippers() {
+    private func updateFlippers() {
         var flippers = bluetoothPeripherals.map(Flipper.init)
         for next in connectedPeripherals {
             if let index = flippers.firstIndex(where: { $0.id == next.id }) {
@@ -102,19 +69,19 @@ class ConnectionViewModel: ObservableObject {
         self.flippers = flippers
     }
 
-    func startScan() {
+    public func startScan() {
         central.startScanForPeripherals()
         startScanTimer()
     }
 
-    func stopScan() {
+    public func stopScan() {
         central.stopScanForPeripherals()
         flippers.removeAll()
         stopScanTimer()
         stopConnectTimer()
     }
 
-    func connect(to uuid: UUID) {
+    public func connect(to uuid: UUID) {
         self.uuid = uuid
         connector.connect(to: uuid)
         startConnectTimer()
@@ -124,7 +91,7 @@ class ConnectionViewModel: ObservableObject {
 
     private var scanTimeoutTask: Task<Void, Swift.Error>?
 
-    func startScanTimer() {
+    private func startScanTimer() {
         stopScanTimer()
         scanTimeoutTask = Task {
             try await Task.sleep(seconds: scanTimeoutInSeconds)
@@ -135,7 +102,7 @@ class ConnectionViewModel: ObservableObject {
         }
     }
 
-    func stopScanTimer() {
+    private func stopScanTimer() {
         scanTimeoutTask?.cancel()
         scanTimeoutTask = nil
         isScanTimeout = false
@@ -145,7 +112,7 @@ class ConnectionViewModel: ObservableObject {
 
     private var connectTimeoutTask: Task<Void, Swift.Error>?
 
-    func startConnectTimer() {
+    private func startConnectTimer() {
         stopConnectTimer()
         connectTimeoutTask = Task {
             try await Task.sleep(seconds: connectTimeoutInSeconds)
@@ -156,7 +123,7 @@ class ConnectionViewModel: ObservableObject {
         }
     }
 
-    func stopConnectTimer() {
+    private func stopConnectTimer() {
         connectTimeoutTask?.cancel()
         connectTimeoutTask = nil
         isConnectTimeout = false

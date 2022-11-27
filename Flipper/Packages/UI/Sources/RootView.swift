@@ -12,6 +12,7 @@ public struct RootView: View {
     public var body: some View {
         RootViewImpl()
             .environmentObject(appState)
+            .environmentObject(CentralService())
     }
 }
 

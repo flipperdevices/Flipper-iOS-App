@@ -8,4 +8,8 @@ public enum BluetoothStatus: Equatable {
 
     case ready
     case notReady(NotReadyReason)
+
+    public static var preparing: BluetoothStatus {
+        .notReady(.preparing)
+    }
 }

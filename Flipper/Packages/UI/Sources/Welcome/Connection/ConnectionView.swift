@@ -2,12 +2,17 @@ import Core
 import SwiftUI
 
 struct ConnectionView: View {
-    @StateObject var viewModel: ConnectionViewModel
+    @EnvironmentObject var central: CentralService
+    @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) private var dismiss
+
+    @State private var showHelpSheet = false
+    @State private var isCanceledOrInvalidPin = false
+    @State private var lastUUID: UUID?
 
     var body: some View {
         VStack(spacing: 0) {
-            switch self.viewModel.state {
+            switch central.state {
             case .notReady(let reason):
                 if reason == .unauthorized {
                     BluetoothAccessView()
@@ -20,14 +25,14 @@ struct ConnectionView: View {
                         Text("Searching")
                         ProgressView()
                     }
-                    .opacity(viewModel.isScanTimeout ? 0 : 1)
+                    .opacity(central.isScanTimeout ? 0 : 1)
 
                     alertsHack()
 
                     Spacer()
 
                     Button {
-                        viewModel.showHelpSheet = true
+                        showHelpSheet = true
                     } label: {
                         HStack(spacing: 7) {
                             Text("Help")
@@ -42,10 +47,10 @@ struct ConnectionView: View {
                 .padding(.bottom, 32)
                 .padding(.top, 74)
 
-                if viewModel.flippers.isEmpty {
-                    if viewModel.isScanTimeout {
+                if central.flippers.isEmpty {
+                    if central.isScanTimeout {
                         ScanTimeoutView {
-                            viewModel.startScan()
+                            central.startScan()
                         }
                     } else {
                         ConnectPlaceholderView()
@@ -54,8 +59,14 @@ struct ConnectionView: View {
                 } else {
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 14) {
-                            ForEach(viewModel.flippers) { flipper in
-                                row(for: flipper)
+                            ForEach(central.flippers) { flipper in
+                                ConnectionRow(
+                                    flipper: flipper,
+                                    isConnecting: central.isConnecting
+                                ) {
+                                    lastUUID = flipper.id
+                                    central.connect(to: flipper.id)
+                                }
                             }
                         }
                     }
@@ -64,15 +75,16 @@ struct ConnectionView: View {
 
             Spacer()
             Button("Skip connection") {
-                viewModel.skipConnection()
+                appState.skipPairing()
             }
             .padding(.bottom, onMac ? 140 : 8)
-            .disabled(viewModel.isConnecting)
+            .disabled(central.isConnecting)
         }
         .padding(.horizontal, 16)
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarColors(foreground: .primary, background: Color.background)
         .toolbar {
             LeadingToolbarItems {
                 BackButton {
@@ -84,100 +96,41 @@ struct ConnectionView: View {
                     .font(.system(size: 22, weight: .bold))
             }
         }
-        .sheet(isPresented: $viewModel.showHelpSheet) {
+        .sheet(isPresented: $showHelpSheet) {
             HelpView()
                 .customBackground(Color.background)
         }
         .onDisappear {
-            viewModel.stopScan()
+            central.stopScan()
         }
-        .navigationBarColors(foreground: .primary, background: Color.background)
-    }
-
-    func row(for flipper: Flipper) -> some View {
-        HStack(spacing: 0) {
-            HStack(spacing: 0) {
-                VStack(spacing: 6) {
-                    Image("DeviceConnect")
-                    Text("Flipper Zero")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(.black30)
-                }
-                .padding(.horizontal, 14)
-
-                Divider()
-
-                Text(flipper.name)
-                    .lineLimit(1)
-                    .font(.system(size: 14, weight: .medium))
-                    .padding(.leading, 14)
-
-                Spacer(minLength: 0)
-
-                switch flipper.state {
-                case .connecting, .connected:
-                    ProgressView()
-                        .padding(.trailing, 14)
-                default:
-                    Button {
-                        if flipper.state != .connected {
-                            viewModel.connect(to: flipper.id)
-                        }
-                    } label: {
-                        Text("Connect")
-                            .font(.system(size: 12, weight: .bold))
-                            .roundedButtonStyle(
-                                height: 36,
-                                horizontalPadding: 16)
-                            .lineLimit(1)
-                    }
-                    .disabled(viewModel.isConnecting)
-                    .padding(.trailing, 14)
-                }
+        .onChange(of: appState.status) { status in
+            if status == .pairingFailed {
+                isCanceledOrInvalidPin = true
             }
-        }
-        .background(Color.groupedBackground)
-        .frame(height: 64)
-        .cornerRadius(10)
-        .shadow(color: .shadow, radius: 16, x: 0, y: 4)
-    }
-
-    // TODO: Replace with new API on iOS15
-    func alertsHack() -> some View {
-        HStack {
-            Spacer()
-                .alert(isPresented: $viewModel.isConnectTimeout) {
-                    .connectionTimeout {
-                        viewModel.stopScan()
-                        viewModel.startScan()
-                    }
-                }
-            Spacer()
-                .alert(isPresented: $viewModel.isCanceledOrInvalidPin) {
-                    .canceledOrIncorrectPin {
-                        viewModel.reconnect()
-                    }
-                }
         }
     }
 }
 
-struct ConnectPlaceholderView: View {
-    var body: some View {
-        VStack(spacing: 28) {
+// TODO: Replace with new API on iOS15
+
+extension ConnectionView {
+    func alertsHack() -> some View {
+        HStack {
             Spacer()
-            HStack {
-                Image("PhonePlaceholder")
-                Animation("Dots")
-                    .frame(width: 32, height: 32)
-                    .padding(.horizontal, 8)
-                Image("DevicePlaceholder")
-            }
-            .frame(width: 208)
-            Text("Turn On Bluetooth on your Flipper")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.black40)
+                .alert(isPresented: $central.isConnectTimeout) {
+                    .connectionTimeout {
+                        central.stopScan()
+                        central.startScan()
+                    }
+                }
             Spacer()
+                .alert(isPresented: $isCanceledOrInvalidPin) {
+                    .canceledOrIncorrectPin {
+                        if let uuid = lastUUID {
+                            central.connect(to: uuid)
+                        }
+                    }
+                }
         }
     }
 }
