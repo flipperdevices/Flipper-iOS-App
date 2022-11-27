@@ -18,7 +18,7 @@ struct FlipperApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView(viewModel: .init())
+            RootView()
         }
     }
 }

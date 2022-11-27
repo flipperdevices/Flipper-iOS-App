@@ -3,6 +3,7 @@ import Inject
 import Combine
 import Foundation
 
+@MainActor
 class TabViewModel: ObservableObject {
     @Inject private var appState: AppState
     private var disposeBag: DisposeBag = .init()

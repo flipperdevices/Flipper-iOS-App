@@ -4,6 +4,7 @@ import Logging
 import func Analytics.registerDependencies
 import func Peripheral.registerDependencies
 
+@MainActor
 public func registerMobileDependencies() {
     let container = Container.shared
 

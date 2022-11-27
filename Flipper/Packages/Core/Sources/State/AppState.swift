@@ -5,16 +5,17 @@ import Foundation
 import Combine
 import Logging
 
-public class AppState {
+@MainActor
+public class AppState: ObservableObject {
     private let logger = Logger(label: "appstate")
 
     @Inject private var rpc: RPC
     @Inject private var archive: Archive
-    @Inject private var analytics: Analytics
+    @Inject public var analytics: Analytics
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
-    public var firstLaunch: FirstLaunch { .shared }
+    @Published public var firstLaunch: FirstLaunch = .shared
 
     @Published public var flipper: Flipper? {
         didSet { onFlipperChanged(oldValue) }
@@ -41,6 +42,7 @@ public class AppState {
     // MARK: Welcome Screen
 
     public func pairDevice() {
+        self.objectWillChange.send()
         firstLaunch.showWelcomeScreen()
     }
 
@@ -234,18 +236,20 @@ public class AppState {
 
     // MARK: Sharing
 
-    public func onOpenURL(_ url: URL) async {
-        do {
-            guard url != .widgetSettings else {
-                showWidgetSettings = true
-                return
+    public func onOpenURL(_ url: URL) {
+        Task {
+            do {
+                guard url != .widgetSettings else {
+                    showWidgetSettings = true
+                    return
+                }
+                switch url.pathExtension {
+                case "tgz": try await onOpenUpdateBundle(url)
+                default: try await onOpenKeyURL(url)
+                }
+            } catch {
+                logger.error("open url: \(error)")
             }
-            switch url.pathExtension {
-            case "tgz": try await onOpenUpdateBundle(url)
-            default: try await onOpenKeyURL(url)
-            }
-        } catch {
-            logger.error("open url: \(error)")
         }
     }
 
@@ -275,6 +279,18 @@ public class AppState {
     public func onUpdateStarted() {
         logger.info("update started")
         status = .updating
+    }
+
+    // MARK: Utils
+
+    public func playAlert() {
+        Task {
+            do {
+                try await rpc.playAlert()
+            } catch {
+                logger.error("play alert intent: \(error)")
+            }
+        }
     }
 
     // MARK: Background

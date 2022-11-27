@@ -1,22 +1,44 @@
+import Core
+import Inject
 import SwiftUI
 
-public struct RootView: View {
-    @Environment(\.scenePhase) var scenePhase
-    @ObservedObject var viewModel: RootViewModel
-    @StateObject var alertController: AlertController = .init()
-    @StateObject var hexKeyboardController: HexKeyboardController = .init()
+// TODO: use environmentObject(AppState()) on RootView when we get rid of Inject
 
-    public init(viewModel: RootViewModel) {
-        self.viewModel = viewModel
-    }
+public struct RootView: View {
+    @Inject var appState: AppState
+
+    public init() {}
 
     public var body: some View {
+        RootViewImpl()
+            .environmentObject(appState)
+    }
+}
+
+private struct RootViewImpl: View {
+    @EnvironmentObject var appState: AppState
+    @StateObject var alertController: AlertController = .init()
+    @StateObject var hexKeyboardController: HexKeyboardController = .init()
+    @Environment(\.scenePhase) var scenePhase
+
+    @State var isFirstLaunch = false
+    @State var isPairingIssue = false
+
+    @State var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
+
+    init() {}
+
+    var body: some View {
         ZStack {
-            if viewModel.isFirstLaunch {
-                WelcomeView(viewModel: .init())
-            } else {
-                MainView(viewModel: .init())
+            ZStack {
+                if appState.firstLaunch.isFirstLaunch {
+                    WelcomeView(viewModel: .init())
+                } else {
+                    MainView(viewModel: .init())
+                }
             }
+            .animation(.linear, value: appState.firstLaunch.isFirstLaunch)
+            .transition(.opacity)
 
             VStack {
                 Spacer()
@@ -32,23 +54,70 @@ public struct RootView: View {
                 alertController.alert
             }
         }
-        .customAlert(isPresented: $viewModel.isPairingIssue) {
-            PairingIssueAlert(isPresented: $viewModel.isPairingIssue)
+        .customAlert(isPresented: $isPairingIssue) {
+            PairingIssueAlert(isPresented: $isPairingIssue)
         }
         .environmentObject(alertController)
         .environmentObject(hexKeyboardController)
         .onOpenURL { url in
-            viewModel.onOpenURL(url)
+            appState.onOpenURL(url)
         }
         .onContinueUserActivity("PlayAlertIntent") { _ in
-            viewModel.playAlert()
+            appState.playAlert()
+        }
+        .onChange(of: appState.status) {
+            if $0 == .invalidPairing {
+                isPairingIssue = true
+            }
+            if $0 == .connected || $0 == .unsupportedDevice {
+                appState.firstLaunch.hideWelcomeScreen()
+            }
         }
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
-            case .active: viewModel.onActive()
-            case .inactive: viewModel.onInactive()
+            case .active: onActive()
+            case .inactive: onInactive()
             default: break
             }
         }
+        .onAppear {
+            recordAppOpen()
+        }
+    }
+
+    func onActive() {
+        guard backgroundTaskID != .invalid else {
+            return
+        }
+        endBackgroundTask()
+        appState.onActive()
+    }
+
+    func onInactive() {
+        guard backgroundTaskID == .invalid else {
+            return
+        }
+        Task {
+            backgroundTaskID = startBackgroundTask()
+            try await appState.onInactive()
+            endBackgroundTask()
+        }
+    }
+
+    private func startBackgroundTask() -> UIBackgroundTaskIdentifier {
+        UIApplication.shared.beginBackgroundTask {
+            self.endBackgroundTask()
+        }
+    }
+
+    private func endBackgroundTask() {
+        UIApplication.shared.endBackgroundTask(backgroundTaskID)
+        backgroundTaskID = .invalid
+    }
+
+    // Analytics
+
+    func recordAppOpen() {
+        appState.analytics.appOpen(target: .app)
     }
 }

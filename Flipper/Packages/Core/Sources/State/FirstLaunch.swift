@@ -1,9 +1,10 @@
 import Combine
 
+@MainActor
 public class FirstLaunch: ObservableObject {
     public static let shared = FirstLaunch()
 
-    @Published public private(set) var isFirstLaunch: Bool {
+    @Published public var isFirstLaunch: Bool {
         didSet { UserDefaultsStorage.shared.isFirstLaunch = isFirstLaunch }
     }
 
