@@ -73,7 +73,7 @@ fileprivate extension String {
 }
 
 fileprivate extension Flipper.DeviceInformation {
-    init?(_ service: FlipperService) {
+    init?(_ service: Peripheral.FlipperService) {
         guard service.id == .deviceInformation else { return nil }
 
         let manufacturerName = service.characteristics
@@ -102,7 +102,7 @@ fileprivate extension String {
 }
 
 fileprivate extension Flipper.Battery {
-    init?(_ service: FlipperService) {
+    init?(_ service: Peripheral.FlipperService) {
         guard service.id == .battery else {
             return nil
         }

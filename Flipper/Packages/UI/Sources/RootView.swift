@@ -13,13 +13,18 @@ public struct RootView: View {
         RootViewImpl()
             .environmentObject(appState)
             .environmentObject(CentralService())
+            .environmentObject(FlipperService())
+            .environmentObject(ArchiveService())
     }
 }
 
 private struct RootViewImpl: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var flipperService: FlipperService
+
     @StateObject var alertController: AlertController = .init()
     @StateObject var hexKeyboardController: HexKeyboardController = .init()
+
     @Environment(\.scenePhase) var scenePhase
 
     @State var isFirstLaunch = false
@@ -64,7 +69,7 @@ private struct RootViewImpl: View {
             appState.onOpenURL(url)
         }
         .onContinueUserActivity("PlayAlertIntent") { _ in
-            appState.playAlert()
+            flipperService.playAlert()
         }
         .onChange(of: appState.status) {
             if $0 == .invalidPairing {

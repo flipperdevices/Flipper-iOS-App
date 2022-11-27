@@ -38,7 +38,7 @@ struct DeviceView: View {
                                     image: "Options",
                                     title: "Options"
                                 ) {
-                                    OptionsView(viewModel: .init())
+                                    OptionsView()
                                 }
                             }
                             .cornerRadius(10)

@@ -290,18 +290,6 @@ public class AppState: ObservableObject {
         status = .updating
     }
 
-    // MARK: Utils
-
-    public func playAlert() {
-        Task {
-            do {
-                try await rpc.playAlert()
-            } catch {
-                logger.error("play alert intent: \(error)")
-            }
-        }
-    }
-
     // MARK: Background
 
     var backgroundTask: Task<Void, Swift.Error>?
