@@ -36,8 +36,7 @@ let package = Package(
                 "Core",
                 "Lottie",
                 "Analytics",
-                "MarkdownUI",
-                "AttributedText"
+                "MarkdownUI"
             ],
             path: "Sources"),
         .testTarget(
