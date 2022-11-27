@@ -1,6 +1,4 @@
 import SwiftUI
-import AttributedText
-import UIKit
 
 struct CardRow: View {
     let name: String

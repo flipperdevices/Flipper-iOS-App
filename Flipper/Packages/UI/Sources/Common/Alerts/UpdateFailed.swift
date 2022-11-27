@@ -1,30 +1,25 @@
 import SwiftUI
-import AttributedText
 
 struct UpdateFailedAlert: View {
     @Binding var isPresented: Bool
 
     let firmwareVersion: String
 
-    var message: NSAttributedString {
-        let version = NSMutableAttributedString(string: firmwareVersion)
-        version.addAttributes(
-            [.foregroundColor: Color.primary],
-            range: NSRange(location: 0, length: version.length)
-        )
-        let message = NSMutableAttributedString(
-            string: " wasn’t installed on your Flipper." +
-            " Try to install it again")
+    var commonMessagePart =
+        " wasn’t installed on your Flipper." +
+        " Try to install it again"
 
-        message.addAttributes(
-            [.foregroundColor: Color.black40],
-            range: NSRange(location: 0, length: message.length)
-        )
+    var message: String {
+        firmwareVersion + commonMessagePart
+    }
 
-        let result = NSMutableAttributedString()
-        result.append(version)
-        result.append(message)
-        return result
+    @available(iOS 15, *)
+    var messageAttributed: AttributedString {
+        var version = AttributedString(firmwareVersion)
+        version.foregroundColor = .primary
+        var message = AttributedString(commonMessagePart)
+        message.foregroundColor = .init(uiColor: .init(.black40))
+        return version + message
     }
 
     var body: some View {
@@ -37,7 +32,7 @@ struct UpdateFailedAlert: View {
                 .foregroundColor(.sRed)
                 .padding(.top, 24)
 
-            AttributedText(message)
+            messageView
                 .font(.system(size: 14, weight: .medium))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 12)
@@ -55,6 +50,14 @@ struct UpdateFailedAlert: View {
                     .cornerRadius(30)
             }
             .padding(.top, 24)
+        }
+    }
+
+    var messageView: some View {
+        if #available(iOS 15, *) {
+            return Text(messageAttributed)
+        } else {
+            return Text(message)
         }
     }
 }

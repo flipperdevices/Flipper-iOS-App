@@ -27,11 +27,7 @@ let package = Package(
         .package(
             name: "MarkdownUI",
             url: "https://github.com/tonyfreeman/MarkdownUI.git",
-            from: "1.1.1"),
-        .package(
-            name: "AttributedText",
-            url: "https://github.com/gonzalezreal/AttributedText.git",
-            from: "1.0.0")
+            from: "1.1.1")
     ],
     targets: [
         .target(

@@ -1,27 +1,23 @@
 import SwiftUI
-import AttributedText
 
 struct UpdateSucceededAlert: View {
     @Binding var isPresented: Bool
 
     let firmwareVersion: String
 
-    var message: NSAttributedString {
-        let version = NSMutableAttributedString(string: firmwareVersion)
-        version.addAttributes(
-            [.foregroundColor: Color.primary],
-            range: NSRange(location: 0, length: version.length)
-        )
-        let message = NSMutableAttributedString(string: " was installed on your Flipper")
-        message.addAttributes(
-            [.foregroundColor: Color.black40],
-            range: NSRange(location: 0, length: message.length)
-        )
+    var commonMessagePart = " was installed on your Flipper"
 
-        let result = NSMutableAttributedString()
-        result.append(version)
-        result.append(message)
-        return result
+    var message: String {
+        firmwareVersion + commonMessagePart
+    }
+
+    @available(iOS 15, *)
+    var messageAttributed: AttributedString {
+        var version = AttributedString(firmwareVersion)
+        version.foregroundColor = .primary
+        var message = AttributedString(commonMessagePart)
+        message.foregroundColor = .init(.black40)
+        return version + message
     }
 
     var body: some View {
@@ -36,7 +32,7 @@ struct UpdateSucceededAlert: View {
                 .foregroundColor(.sGreenUpdate)
                 .padding(.top, 24)
 
-            AttributedText(message)
+            messageView
                 .font(.system(size: 14, weight: .medium))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 12)
@@ -54,6 +50,14 @@ struct UpdateSucceededAlert: View {
                     .cornerRadius(30)
             }
             .padding(.top, 24)
+        }
+    }
+
+    var messageView: some View {
+        if #available(iOS 15, *) {
+            return Text(messageAttributed)
+        } else {
+            return Text(message)
         }
     }
 }
