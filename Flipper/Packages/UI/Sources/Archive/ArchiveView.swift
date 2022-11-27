@@ -75,7 +75,7 @@ struct ArchiveView: View {
                 ArchiveSearchView(viewModel: .init())
             }
             .fullScreenCover(isPresented: $viewModel.showWidgetSettings) {
-                WidgetSettingsView(viewModel: .init())
+                WidgetSettingsView()
             }
             .navigationTitle("")
         }

@@ -1,11 +1,15 @@
+import Core
 import SwiftUI
 
 struct WidgetSettingsView: View {
-    @StateObject var viewModel: WidgetSettingsViewModel
+    @EnvironmentObject private var widgetService: WidgetService
     @Environment(\.dismiss) private var dismiss
 
+    @State var showAddKeyView = false
+    @State var showWidgetHelpView = false
+
     var rows: Range<Int> {
-        (0..<(viewModel.keys.count / 2 + 1))
+        (0..<(widgetService.keys.count / 2 + 1))
     }
 
     var body: some View {
@@ -35,33 +39,33 @@ struct WidgetSettingsView: View {
                             let i1 = row * 2
                             let i2 = i1 + 1
 
-                            if i1 < viewModel.keys.count {
-                                SettingsWidgetKeyView(key: viewModel.keys[i1]) {
-                                    viewModel.delete(at: i1)
+                            if i1 < widgetService.keys.count {
+                                WidgetAddedItem(key: widgetService.keys[i1]) {
+                                    widgetService.delete(at: i1)
                                 }
                                 .padding(11)
                             } else {
-                                SettingsAddKeyView() {
-                                    viewModel.showAddKey()
+                                WidgetAddButton() {
+                                    showAddKeyView = true
                                 }
                                 .padding(11)
                             }
 
                             Divider()
 
-                            if i2 < viewModel.keys.count {
-                                SettingsWidgetKeyView(key: viewModel.keys[i2]) {
-                                    viewModel.delete(at: i2)
+                            if i2 < widgetService.keys.count {
+                                WidgetAddedItem(key: widgetService.keys[i2]) {
+                                    widgetService.delete(at: i2)
                                 }
                                 .padding(11)
-                            } else if i1 < viewModel.keys.count {
-                                SettingsAddKeyView {
-                                    viewModel.showAddKey()
+                            } else if i1 < widgetService.keys.count {
+                                WidgetAddButton {
+                                    showAddKeyView = true
                                 }
                                 .padding(11)
                             } else {
-                                SettingsAddKeyView {
-                                    viewModel.showAddKey()
+                                WidgetAddButton {
+                                    showAddKeyView = true
                                 }
                                 .padding(11)
                                 .opacity(0)
@@ -73,12 +77,10 @@ struct WidgetSettingsView: View {
                         }
                     }
                 }
-                .sheet(isPresented: $viewModel.showAddKeyView) {
-                    SettingsSelectKeyView(viewModel: .init(
-                        widgetKeys: viewModel.keys
-                    ) {
-                        viewModel.addKey($0)
-                    })
+                .sheet(isPresented: $showAddKeyView) {
+                    WidgetAddKeyView(widgetKeys: widgetService.keys) {
+                        widgetService.add($0)
+                    }
                 }
                 .background(Color.groupedBackground)
                 .cornerRadius(22)
@@ -94,11 +96,11 @@ struct WidgetSettingsView: View {
                     .frame(width: 18, height: 18)
             }
             .onTapGesture {
-                viewModel.showHelp()
+                showWidgetHelpView = true
             }
             .padding(14)
         }
-        .sheet(isPresented: $viewModel.showWidgetHelpView) {
+        .sheet(isPresented: $showWidgetHelpView) {
             SettingsWidgetHelpView()
         }
         .background(Color.background)

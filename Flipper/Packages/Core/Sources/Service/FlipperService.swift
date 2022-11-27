@@ -1,10 +1,11 @@
 import Inject
 import Peripheral
-import Combine
+
 import Logging
+import Combine
 
 public class FlipperService: ObservableObject {
-    private let logger = Logger(label: "device-service")
+    private let logger = Logger(label: "flipper-service")
 
     @Inject var rpc: RPC
 

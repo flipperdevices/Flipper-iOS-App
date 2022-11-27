@@ -204,7 +204,9 @@ public class AppState: ObservableObject {
             try await archive.synchronize { progress in
                 // FIXME: find the issue (very rare)
                 guard progress.isNormal else { return }
-                self.syncProgress = Int(progress * 100)
+                Task { @MainActor in
+                    self.syncProgress = Int(progress * 100)
+                }
             }
         }
         reportSynchronizationResult(time: time)

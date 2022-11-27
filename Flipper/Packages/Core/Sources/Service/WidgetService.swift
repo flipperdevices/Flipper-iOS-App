@@ -1,23 +1,24 @@
-import Core
 import Inject
+import Peripheral
+
+import Logging
 import Combine
 import Foundation
 
-class WidgetSettingsViewModel: ObservableObject {
-    @Inject private var appState: AppState
+public class WidgetService: ObservableObject {
+    private let logger = Logger(label: "widget-service")
+
     @Inject private var archive: Archive
     @Inject private var storage: TodayWidgetStorage
-    private var disposeBag: DisposeBag = .init()
+    private var disposeBag = DisposeBag()
 
-    @Published var keys: [WidgetKey] = [] {
+    @Published public private(set) var keys: [WidgetKey] = [] {
         didSet {
             storage.keys = keys
         }
     }
-    @Published var showAddKeyView = false
-    @Published var showWidgetHelpView = false
 
-    init() {
+    public init() {
         keys = storage.keys
 
         archive.items
@@ -28,20 +29,12 @@ class WidgetSettingsViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
-    func delete(at index: Int) {
-        keys.remove(at: index)
-    }
-
-    func showAddKey() {
-        showAddKeyView = true
-    }
-    
-    func showHelp() {
-        showWidgetHelpView = true
-    }
-
-    func addKey(_ key: ArchiveItem) {
+    public func add(_ key: ArchiveItem) {
         keys.append(.init(name: key.name, kind: key.kind))
+    }
+
+    public func delete(at index: Int) {
+        keys.remove(at: index)
     }
 }
 

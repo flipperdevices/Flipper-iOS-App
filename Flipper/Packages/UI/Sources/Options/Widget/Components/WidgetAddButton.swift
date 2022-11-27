@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SettingsAddKeyView: View {
+struct WidgetAddButton: View {
     var action: () -> Void
 
     var body: some View {

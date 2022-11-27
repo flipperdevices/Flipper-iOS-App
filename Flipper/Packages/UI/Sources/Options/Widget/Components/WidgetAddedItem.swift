@@ -1,7 +1,7 @@
 import Core
 import SwiftUI
 
-struct SettingsWidgetKeyView: View {
+struct WidgetAddedItem: View {
     let key: WidgetKey
 
     var onDelete: () -> Void

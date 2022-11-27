@@ -15,6 +15,7 @@ public struct RootView: View {
             .environmentObject(CentralService())
             .environmentObject(FlipperService())
             .environmentObject(ArchiveService())
+            .environmentObject(WidgetService())
     }
 }
 
