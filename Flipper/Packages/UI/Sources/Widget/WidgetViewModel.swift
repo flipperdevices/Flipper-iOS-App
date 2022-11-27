@@ -85,13 +85,13 @@ public class WidgetViewModel: ObservableObject {
         connector.status
             .receive(on: DispatchQueue.main)
             .sink { [weak self] status in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.isBTTurnedOff = status == .notReady(.poweredOff)
             }
             .store(in: &disposeBag)
 
         emulate.onStateChanged = { [weak self] state in
-            guard let self = self else { return }
+            guard let self else { return }
             Task { @MainActor in
                 if state == .closed {
                     self.emulatingIndex = nil

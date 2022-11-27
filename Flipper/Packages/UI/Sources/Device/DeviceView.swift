@@ -29,7 +29,7 @@ struct DeviceView: View {
                                     .padding(.top, 24)
                                     .padding(.horizontal, 14)
                             }
-                            .disabled(!viewModel.status.isOnline)
+                            .disabled(!viewModel.status.isAvailable)
                         }
 
                         VStack(spacing: 24) {

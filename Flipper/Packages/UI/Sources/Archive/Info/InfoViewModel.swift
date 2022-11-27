@@ -45,7 +45,7 @@ class InfoViewModel: ObservableObject {
         appState.$status
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.isConnected = ($0 == .connected || $0 == .synchronized)
                 self.updateItemStatus(deviceStatus: $0)
             }

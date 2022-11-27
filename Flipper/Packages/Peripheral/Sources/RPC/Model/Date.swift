@@ -39,3 +39,9 @@ extension Date {
         self = date
     }
 }
+
+extension Date {
+    init(_ source: PBStorage_TimestampResponse) {
+        self.init(timeIntervalSince1970: .init(source.timestamp))
+    }
+}

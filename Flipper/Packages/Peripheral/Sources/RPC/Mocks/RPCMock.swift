@@ -42,6 +42,10 @@ class RPCMock: RPC {
         0
     }
 
+    func getTimestamp(at path: Path) async throws -> Date {
+        .init()
+    }
+
     func createFile(at path: Path, isDirectory: Bool) async throws {
     }
 

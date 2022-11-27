@@ -23,14 +23,18 @@ struct NFCToolsCard: View {
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.black30)
 
-                    Spacer()
+                    Spacer(minLength: 8)
 
-                    Circle()
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(.a1)
-                        .opacity(hasNotification ? 1 : 0)
+                    HStack(spacing: 2) {
+                        Circle()
+                            .frame(width: 14, height: 14)
+                            .foregroundColor(.a1)
+                            .opacity(hasNotification ? 1 : 0)
 
-                    Image("ChevronRight")
+                        Image("ChevronRight")
+                            .resizable()
+                            .frame(width: 14, height: 14)
+                    }
                 }
             }
         }

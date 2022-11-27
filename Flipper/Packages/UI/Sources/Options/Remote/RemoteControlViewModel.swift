@@ -17,7 +17,7 @@ class RemoteControlViewModel: ObservableObject {
 
     init() {
         rpc.onScreenFrame { [weak self] frame in
-            guard let self = self else { return }
+            guard let self else { return }
             Task { @MainActor in
                 self.frame = frame
             }

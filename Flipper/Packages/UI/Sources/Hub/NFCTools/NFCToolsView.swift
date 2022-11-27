@@ -24,7 +24,7 @@ struct NFCToolsView: View {
                 BackButton {
                     dismiss()
                 }
-                Title("NFCTools")
+                Title("NFC Tools")
             }
         }
         .fullScreenCover(isPresented: $viewModel.showReaderAttackView) {

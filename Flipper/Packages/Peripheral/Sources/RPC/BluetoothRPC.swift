@@ -26,7 +26,7 @@ public class BluetoothRPC: RPC {
     private func peripheralDidChange() {
         peripheralHandle = peripheral?.info
             .sink { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 Task { await self.updateSession() }
             }
     }
@@ -193,6 +193,16 @@ extension BluetoothRPC {
             throw Error.unexpectedResponse(response)
         }
         return size
+    }
+
+    public func getTimestamp(at path: Path) async throws -> Date {
+        let response = try await session?
+            .send(.storage(.timestamp(path)))
+            .response
+        guard case .storage(.timestamp(let timestamp)) = response else {
+            throw Error.unexpectedResponse(response)
+        }
+        return timestamp
     }
 
     public func createFile(at path: Path, isDirectory: Bool) async throws {

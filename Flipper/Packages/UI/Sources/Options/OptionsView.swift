@@ -11,15 +11,15 @@ struct OptionsView: View {
                 NavigationLink("Ping") {
                     PingView(viewModel: .init())
                 }
-                .disabled(!viewModel.isOnline)
+                .disabled(!viewModel.isAvailable)
                 NavigationLink("Stress Test") {
                     StressTestView(viewModel: .init())
                 }
-                .disabled(!viewModel.isOnline)
+                .disabled(!viewModel.isAvailable)
                 NavigationLink("Speed Test") {
                     SpeedTestView(viewModel: .init())
                 }
-                .disabled(!viewModel.isOnline)
+                .disabled(!viewModel.isAvailable)
                 NavigationLink("Logs") {
                     LogsView(viewModel: .init())
                 }
@@ -39,9 +39,9 @@ struct OptionsView: View {
                 Button("Reboot Flipper") {
                     viewModel.rebootFlipper()
                 }
-                .foregroundColor(viewModel.isOnline ? .accentColor : .gray)
+                .foregroundColor(viewModel.isAvailable ? .accentColor : .gray)
             }
-            .disabled(!viewModel.isOnline)
+            .disabled(!viewModel.isAvailable)
 
             Section {
                 Button("Widget Settings") {
