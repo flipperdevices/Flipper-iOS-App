@@ -45,6 +45,7 @@ struct DeviceUpdateCard: View {
                             .font(.system(size: 14, weight: .medium))
                         HStack {
                             Text(description)
+                                .fixedSize(horizontal: false, vertical: true)
                                 .font(.system(size: 14, weight: .medium))
                                 .multilineTextAlignment(.center)
                                 .foregroundColor(.black30)
@@ -69,6 +70,7 @@ struct DeviceUpdateCard: View {
                             .font(.system(size: 14, weight: .medium))
                         HStack {
                             Text(description)
+                                .fixedSize(horizontal: false, vertical: true)
                                 .font(.system(size: 14, weight: .medium))
                                 .multilineTextAlignment(.center)
                                 .foregroundColor(.black30)
@@ -90,6 +92,7 @@ struct DeviceUpdateCard: View {
                     VStack(spacing: 2) {
                         Image("UpdateNoDevice")
                         Text(description)
+                            .fixedSize(horizontal: false, vertical: true)
                             .font(.system(size: 14, weight: .medium))
                             .multilineTextAlignment(.center)
                             .foregroundColor(.black30)
@@ -127,6 +130,7 @@ struct DeviceUpdateCard: View {
 
                     VStack {
                         Text(description)
+                            .fixedSize(horizontal: false, vertical: true)
                             .font(.system(size: 14, weight: .medium))
                             .multilineTextAlignment(.center)
                             .foregroundColor(.black30)
@@ -155,6 +159,7 @@ struct DeviceUpdateCard: View {
 
                     VStack {
                         Text(description)
+                            .fixedSize(horizontal: false, vertical: true)
                             .font(.system(size: 12, weight: .medium))
                             .multilineTextAlignment(.center)
                             .foregroundColor(.black16)
