@@ -180,6 +180,7 @@ public class AppState {
     }
 
     private func checkMFLogFile() async throws {
+        guard status == .connected else { return }
         hasMFLog = try await rpc.fileExists(at: .mfKey32Log)
     }
 
