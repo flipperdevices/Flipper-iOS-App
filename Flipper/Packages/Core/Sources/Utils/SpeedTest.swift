@@ -1,33 +1,30 @@
-import Core
 import Inject
-import Combine
 import Logging
+import Foundation
 import Peripheral
-import struct Foundation.Date
 
 @MainActor
-class SpeedTestViewModel: ObservableObject {
+public class SpeedTest: ObservableObject {
     private let logger = Logger(label: "speedtest")
     @Inject private var rpc: RPC
 
-    let defaultPacketSize = 444
-    let maximumPacketSize = 1024
+    public let defaultPacketSize = 444
+    public let maximumPacketSize = 1024
 
-    @Published var packetSize: Double = 444.0
-    @Published private(set) var isRunning = false
-    @Published var bps: Int = 0 {
+    @Published public var packetSize: Double = 444.0
+    @Published public private(set) var isRunning = false
+    @Published public var bps: Int = 0 {
         willSet {
             bpsMin = bpsMin == 0 ? bps : min(bpsMin, newValue)
             bpsMax = bpsMax == 0 ? bps : max(bpsMax, newValue)
         }
     }
-    @Published var bpsMin: Int = 0
-    @Published var bpsMax: Int = 0
-    private var disposeBag: DisposeBag = .init()
+    @Published public var bpsMin: Int = 0
+    @Published public var bpsMax: Int = 0
 
-    init() {}
+    public init() {}
 
-    func runSpeedTest() async throws {
+    public func runSpeedTest() async throws {
         while isRunning {
             do {
                 let sent = [UInt8].random(size: Int(packetSize))
@@ -48,7 +45,7 @@ class SpeedTestViewModel: ObservableObject {
         }
     }
 
-    func start() {
+    public func start() {
         guard !isRunning else { return }
         isRunning = true
         Task {
@@ -60,7 +57,7 @@ class SpeedTestViewModel: ObservableObject {
         }
     }
 
-    func stop() {
+    public func stop() {
         guard isRunning else { return }
         isRunning = false
     }

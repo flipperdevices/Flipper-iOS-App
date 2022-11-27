@@ -28,7 +28,7 @@ struct OptionsView: View {
                 }
                 .disabled(!isDeviceAvailable)
                 NavigationLink("Speed Test") {
-                    SpeedTestView(viewModel: .init())
+                    SpeedTestView()
                 }
                 .disabled(!isDeviceAvailable)
                 NavigationLink("Logs") {
