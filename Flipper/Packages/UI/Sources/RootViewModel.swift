@@ -26,9 +26,7 @@ public class RootViewModel: ObservableObject {
         appState.$status
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                guard let self = self else {
-                    return
-                }
+                guard let self else { return }
                 if $0 == .invalidPairing {
                     self.isPairingIssue = true
                 }
@@ -42,9 +40,7 @@ public class RootViewModel: ObservableObject {
         appState.$isFirstLaunch
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isFirstLaunch in
-                guard let self = self else {
-                    return
-                }
+                guard let self else { return }
                 if self.isFirstLaunch != isFirstLaunch {
                     isFirstLaunch
                         ? self.showWelcomeScreen()

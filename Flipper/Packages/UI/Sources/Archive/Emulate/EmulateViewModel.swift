@@ -41,7 +41,7 @@ class EmulateViewModel: ObservableObject {
         appState.$status
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.deviceStatus = $0
                 if self.deviceStatus == .disconnected {
                     self.resetEmulate()
@@ -50,7 +50,7 @@ class EmulateViewModel: ObservableObject {
             .store(in: &disposeBag)
 
         emulate.onStateChanged = { [weak self] state in
-            guard let self = self else { return }
+            guard let self else { return }
             Task { @MainActor in
                 if state == .closed {
                     self.isEmulating = false

@@ -26,7 +26,7 @@ public class BluetoothRPC: RPC {
     private func peripheralDidChange() {
         peripheralHandle = peripheral?.info
             .sink { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 Task { await self.updateSession() }
             }
     }
