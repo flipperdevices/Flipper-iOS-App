@@ -146,8 +146,6 @@ extension FlipperCentral {
         didConnect(peripheral)
     }
 
-    // FIXME: Not triggered anymore for some reason
-
     func centralManager(
         _ central: CBCentralManager,
         didDisconnectPeripheral peripheral: CBPeripheral,
