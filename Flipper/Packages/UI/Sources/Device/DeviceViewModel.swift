@@ -63,13 +63,9 @@ class DeviceViewModel: ObservableObject {
             .store(in: &disposeBag)
     }
 
-    func showWelcomeScreen() {
-        appState.isFirstLaunch = true
-    }
-
     func connect() {
         if status == .noDevice {
-            showWelcomeScreen()
+            appState.pairDevice()
         } else {
             appState.connect()
         }

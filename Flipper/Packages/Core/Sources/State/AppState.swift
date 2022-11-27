@@ -8,15 +8,13 @@ import Logging
 public class AppState {
     private let logger = Logger(label: "appstate")
 
-    @Published public var isFirstLaunch: Bool {
-        didSet { UserDefaultsStorage.shared.isFirstLaunch = isFirstLaunch }
-    }
-
     @Inject private var rpc: RPC
     @Inject private var archive: Archive
     @Inject private var analytics: Analytics
     @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
+
+    public var firstLaunch: FirstLaunch { .shared }
 
     @Published public var flipper: Flipper? {
         didSet { onFlipperChanged(oldValue) }
@@ -34,13 +32,24 @@ public class AppState {
         logger.info("app version: \(Bundle.fullVersion)")
         logger.info("log level: \(UserDefaultsStorage.shared.logLevel)")
 
-        isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
-
         pairedDevice.flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)
     }
+
+    // MARK: Welcome Screen
+
+    public func pairDevice() {
+        firstLaunch.showWelcomeScreen()
+    }
+
+    public func skipPairing() {
+        forgetDevice()
+        firstLaunch.hideWelcomeScreen()
+    }
+
+    // MARK: Device Events
 
     func onFlipperChanged(_ oldValue: Flipper?) {
         updateState(oldValue?.state)
@@ -134,17 +143,6 @@ public class AppState {
         return true
     }
 
-    var reconnectOnDisconnect = true
-
-    func didDisconnect() {
-        logger.info("disconnected")
-        guard reconnectOnDisconnect else {
-            return
-        }
-        logger.debug("reconnecting")
-        connect()
-    }
-
     // MARK: Connection
 
     public func connect() {
@@ -159,6 +157,19 @@ public class AppState {
 
     public func forgetDevice() {
         pairedDevice.forget()
+    }
+
+    // MARK: Disconnect event
+
+    var reconnectOnDisconnect = true
+
+    func didDisconnect() {
+        logger.info("disconnected")
+        guard reconnectOnDisconnect else {
+            return
+        }
+        logger.debug("reconnecting")
+        connect()
     }
 
     // MARK: Synchronization

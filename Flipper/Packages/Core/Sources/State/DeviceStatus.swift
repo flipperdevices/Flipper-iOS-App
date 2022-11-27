@@ -12,9 +12,9 @@ public enum DeviceStatus: CustomStringConvertible {
     case invalidPairing
     case pairingFailed
 
-    public var isOnline: Bool {
+    public var isAvailable: Bool {
         switch self {
-        case .connected, .synchronized, .synchronizing: return true
+        case .connected, .synchronized: return true
         default: return false
         }
     }

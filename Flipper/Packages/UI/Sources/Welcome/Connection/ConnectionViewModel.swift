@@ -7,7 +7,6 @@ import Peripheral
 @MainActor
 class ConnectionViewModel: ObservableObject {
     @Inject private var appState: AppState
-
     @Inject private var central: BluetoothCentral
     @Inject private var connector: BluetoothConnector
     @Inject private var pairedDevice: PairedDevice
@@ -90,8 +89,7 @@ class ConnectionViewModel: ObservableObject {
     }
 
     func skipConnection() {
-        pairedDevice.forget()
-        appState.isFirstLaunch = false
+        appState.skipPairing()
     }
 
     func updateFlippers() {

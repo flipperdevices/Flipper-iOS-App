@@ -9,9 +9,9 @@ import Logging
 public class RootViewModel: ObservableObject {
     private let logger = Logger(label: "root")
 
-    @Inject var analytics: Analytics
     @Inject private var rpc: RPC
     @Inject private var appState: AppState
+    @Inject var analytics: Analytics
 
     var disposeBag: DisposeBag = .init()
 
@@ -21,7 +21,7 @@ public class RootViewModel: ObservableObject {
     public init() {
         recordAppOpen()
 
-        isFirstLaunch = appState.isFirstLaunch
+        isFirstLaunch = appState.firstLaunch.isFirstLaunch
 
         appState.$status
             .receive(on: DispatchQueue.main)
@@ -31,33 +31,26 @@ public class RootViewModel: ObservableObject {
                     self.isPairingIssue = true
                 }
                 if $0 == .connected || $0 == .unsupportedDevice {
-                    self.appState.isFirstLaunch = false
-                    self.hideWelcomeScreen()
+                    self.appState.firstLaunch.hideWelcomeScreen()
                 }
             }
             .store(in: &disposeBag)
 
-        appState.$isFirstLaunch
+        appState.firstLaunch.$isFirstLaunch
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isFirstLaunch in
                 guard let self else { return }
                 if self.isFirstLaunch != isFirstLaunch {
-                    isFirstLaunch
-                        ? self.showWelcomeScreen()
-                        : self.hideWelcomeScreen()
+                    withAnimation {
+                        self.isFirstLaunch = isFirstLaunch
+                    }
                 }
             }
             .store(in: &disposeBag)
     }
 
-    func showWelcomeScreen() {
-        isFirstLaunch = true
-    }
-
-    func hideWelcomeScreen() {
-        withAnimation {
-            self.isFirstLaunch = false
-        }
+    func skipConnection() {
+        appState.skipPairing()
     }
 
     func onOpenURL(_ url: URL) {
