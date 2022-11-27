@@ -1,17 +1,23 @@
 import SwiftUI
 import AttributedText
+import UIKit
 
 struct CardRow: View {
     let name: String
-    let value: NSAttributedString
+    let formattedValue: Any?
+    let plainStringValue: String
 
     init(name: String, value: String) {
-        self.init(name: name, value: NSAttributedString(string: value))
+        self.name = name
+        self.formattedValue = nil
+        self.plainStringValue = value
     }
 
-    init(name: String, value: NSAttributedString) {
+    @available(iOS 15.0, *)
+    init(name: String, value: AttributedString) {
         self.name = name
-        self.value = value
+        self.formattedValue = value
+        self.plainStringValue = value.description
     }
 
     var body: some View {
@@ -21,10 +27,16 @@ struct CardRow: View {
                 .multilineTextAlignment(.leading)
                 .foregroundColor(.black30)
             Spacer()
-            if !value.description.isEmpty {
-                AttributedText(value)
-                    .font(.system(size: 14, weight: .regular))
-                    .multilineTextAlignment(.trailing)
+            if !plainStringValue.description.isEmpty {
+                if #available(iOS 15, *), let value = formattedValue as? AttributedString {
+                    Text(value)
+                        .font(.system(size: 14, weight: .regular))
+                        .multilineTextAlignment(.trailing)
+                } else {
+                    Text(plainStringValue)
+                        .font(.system(size: 14, weight: .regular))
+                        .multilineTextAlignment(.trailing)
+                }
             } else {
                 AnimatedPlaceholder()
                     .frame(width: 50, height: 17)

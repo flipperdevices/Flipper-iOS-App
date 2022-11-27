@@ -68,33 +68,44 @@ class DeviceInfoCardViewModel: ObservableObject {
         return .init(build)
     }
 
-    var internalSpace: NSAttributedString {
+    var internalSpace: String {
         guard isConnected, let int = device?.storage?.internal else {
-            return NSAttributedString(string: "")
+            return ""
         }
-        let result = NSMutableAttributedString(string: int.description)
-        if int.free < 20_000 {
-            result.addAttributes(
-                [.foregroundColor: Color.sRed],
-                range: NSRange(location: 0, length: result.length)
-            )
+        return int.description
+    }
+    
+    @available(iOS 15, *)
+    var internalSpaceAttributed: AttributedString {
+        var result = AttributedString(internalSpace)
+        guard let int = device?.storage?.internal else {
+            return result
+        }
+        
+        if (int.free < 20_000) {
+            result.foregroundColor = .sRed
         }
         return result
     }
 
-    var externalSpace: NSAttributedString {
+    var externalSpace: String {
         guard isConnected, device?.storage?.internal != nil else {
-            return NSAttributedString(string: "")
+            return ""
         }
         guard let ext = device?.storage?.external else {
-            return NSAttributedString(string: "—")
+            return "—"
         }
-        let result = NSMutableAttributedString(string: ext.description)
+        return ext.description
+    }
+    
+    @available(iOS 15, *)
+    var externalSpaceAttributed: AttributedString {
+        var result = AttributedString(externalSpace)
+        guard let ext = device?.storage?.external else {
+            return result
+        }
         if ext.free < 100_000 {
-            result.addAttributes(
-                [.foregroundColor: Color.sRed],
-                range: NSRange(location: 0, length: result.length)
-            )
+            result.foregroundColor = .sRed
         }
         return result
     }

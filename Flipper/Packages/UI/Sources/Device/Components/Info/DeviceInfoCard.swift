@@ -53,18 +53,33 @@ struct DeviceInfoCard: View {
                         .padding(.horizontal, 12)
 
                         Divider()
-                        CardRow(
-                            name: "Int. Flash (Used/Total)",
-                            value: viewModel.internalSpace
-                        )
-                        .padding(.horizontal, 12)
-
+                        if #available(iOS 15, *) {
+                            CardRow(
+                                name: "Int. Flash (Used/Total)",
+                                value: viewModel.internalSpaceAttributed
+                            )
+                            .padding(.horizontal, 12)
+                        } else {
+                            CardRow(
+                                name: "Int. Flash (Used/Total)",
+                                value: viewModel.internalSpace
+                            )
+                            .padding(.horizontal, 12)
+                        }
                         Divider()
-                        CardRow(
-                            name: "SD Card (Used/Total)",
-                            value: viewModel.externalSpace
-                        )
-                        .padding(.horizontal, 12)
+                        if #available(iOS 15, *) {
+                            CardRow(
+                                name: "SD Card (Used/Total)",
+                                value: viewModel.externalSpaceAttributed
+                            )
+                            .padding(.horizontal, 12)
+                        } else {
+                            CardRow(
+                                name: "SD Card (Used/Total)",
+                                value: viewModel.externalSpace
+                            )
+                            .padding(.horizontal, 12)
+                        }
 
                         HStack {
                             Text("Full info")
