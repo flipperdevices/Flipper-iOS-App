@@ -21,7 +21,7 @@ struct Popup<Content: View>: View {
     @ViewBuilder var content: () -> Content
 
     var body: some View {
-        EmptyView().onChange(of: isPresented) { newValue in
+        ZStack {}.onChange(of: isPresented) { newValue in
             if newValue {
                 alertController.show {
                     ZStack(alignment: .top) {

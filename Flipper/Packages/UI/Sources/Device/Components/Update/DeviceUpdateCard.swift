@@ -165,7 +165,7 @@ struct DeviceUpdateCard: View {
                 }
             }
         }
-        .alert(isPresented: $viewModel.showConfirmUpdate) {
+        .alertBackport(isPresented: $viewModel.showConfirmUpdate) {
             Alert(
                 title: Text("Update firmware?"),
                 message: Text(
@@ -177,7 +177,7 @@ struct DeviceUpdateCard: View {
                 }
             )
         }
-        .alert(isPresented: $viewModel.showPauseSync) {
+        .alertBackport(isPresented: $viewModel.showPauseSync) {
             Alert(
                 title: Text("Pause Synchronization?"),
                 message: Text(

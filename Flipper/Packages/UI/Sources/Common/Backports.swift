@@ -50,3 +50,12 @@ extension EnvironmentValues {
         { presentationMode.wrappedValue.dismiss() }
     }
 }
+
+extension View {
+    public func alertBackport(isPresented: Binding<Bool>, content: () -> Alert) -> some View {
+        self.overlay(
+            EmptyView().alert(isPresented: isPresented, content: content),
+            alignment: .bottomTrailing
+        )
+    }
+}
