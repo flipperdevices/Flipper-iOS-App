@@ -34,11 +34,8 @@ struct MainView: View {
             }
 
             if !tabViewController.isHidden {
-                TabView(
-                    viewModel: .init(),
-                    selected: $selectedTab
-                )
-                .transition(.move(edge: .bottom))
+                TabView(selected: $selectedTab)
+                    .transition(.move(edge: .bottom))
             }
         }
         .edgesIgnoringSafeArea(.bottom)

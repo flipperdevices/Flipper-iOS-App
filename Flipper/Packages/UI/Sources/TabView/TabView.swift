@@ -1,8 +1,8 @@
-import SwiftUI
 import Core
+import SwiftUI
 
 struct TabView: View {
-    @StateObject var viewModel: TabViewModel
+    @EnvironmentObject var appState: AppState
     @Binding var selected: Tab
 
     enum Tab: String, CaseIterable {
@@ -46,7 +46,7 @@ struct TabView: View {
                     image: .init(Image(hubImageName)),
                     name: "Hub",
                     isSelected: selected == .hub,
-                    hasNotification: viewModel.hasMFLog
+                    hasNotification: appState.hasMFLog
                 ) {
                     self.selected = .hub
                 }
@@ -62,13 +62,13 @@ struct TabView: View {
 
 extension TabView {
     var deviceTabName: String {
-        switch viewModel.status {
+        switch appState.status {
         case .noDevice: return "No Device"
         case .unsupportedDevice: return "Unsupported"
         case .connecting: return "Connecting..."
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"
-        case .synchronizing: return "Syncing \(viewModel.syncProgress)%"
+        case .synchronizing: return "Syncing \(appState.syncProgress)%"
         case .synchronized: return "Synced!"
         case .updating: return "Connecting..."
         case .invalidPairing: return "Pairing Failed"
@@ -82,7 +82,7 @@ extension TabView {
         guard selected == .device else {
             return .black30
         }
-        switch viewModel.status {
+        switch appState.status {
         case .noDevice: return .black40
         case .unsupportedDevice: return .sRed
         case .connecting: return .black40
@@ -107,7 +107,7 @@ extension TabView {
 
 extension TabView {
     var deviceImage: AnyView {
-        switch viewModel.status {
+        switch appState.status {
         case .connecting, .synchronizing:
             return .init(
                 Animation(deviceImageName + "_animated")
@@ -121,7 +121,7 @@ extension TabView {
         var name = "device_"
         name += selected == .device ? "filled_" : "line_"
 
-        switch viewModel.status {
+        switch appState.status {
         case .noDevice: name += "no_device"
         case .unsupportedDevice: name += "unsupported"
         case .connecting: name += "connecting"
