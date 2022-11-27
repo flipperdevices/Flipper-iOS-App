@@ -24,7 +24,7 @@ struct OptionsView: View {
                 }
                 .disabled(!isDeviceAvailable)
                 NavigationLink("Stress Test") {
-                    StressTestView(viewModel: .init())
+                    StressTestView()
                 }
                 .disabled(!isDeviceAvailable)
                 NavigationLink("Speed Test") {

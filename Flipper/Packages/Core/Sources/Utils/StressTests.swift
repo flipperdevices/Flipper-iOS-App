@@ -2,9 +2,8 @@ import Inject
 import Foundation
 import Peripheral
 
-public class StressTest {
-    static let shared: StressTest = .init()
-
+@MainActor
+public class StressTest: ObservableObject {
     @Inject private var rpc: RPC
     @Inject var connector: BluetoothConnector
     var disposeBag: DisposeBag = .init()
