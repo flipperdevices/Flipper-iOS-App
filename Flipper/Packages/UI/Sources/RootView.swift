@@ -32,7 +32,7 @@ private struct RootViewImpl: View {
         ZStack {
             ZStack {
                 if appState.firstLaunch.isFirstLaunch {
-                    WelcomeView(viewModel: .init())
+                    WelcomeView()
                 } else {
                     MainView()
                 }
