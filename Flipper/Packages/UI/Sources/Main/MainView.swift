@@ -1,64 +1,63 @@
+import Core
 import SwiftUI
 
+import Inject
+import Peripheral
+
 struct MainView: View {
-    @StateObject var viewModel: MainViewModel
+    @EnvironmentObject var appState: AppState
     @StateObject var tabViewController: TabViewController = .init()
+
+    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device {
+        didSet {
+            if oldValue == selectedTab {
+                tabViewController.popToRootView(for: selectedTab)
+            }
+        }
+    }
+
+    @State var importedName = ""
+    @State var importedOpacity = 0.0
 
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
                 DeviceView(viewModel: .init())
-                    .opacity(viewModel.selectedTab == .device ? 1 : 0)
+                    .opacity(selectedTab == .device ? 1 : 0)
                 ArchiveView(viewModel: .init())
-                    .opacity(viewModel.selectedTab == .archive ? 1 : 0)
+                    .opacity(selectedTab == .archive ? 1 : 0)
                 HubView(viewModel: .init())
-                    .opacity(viewModel.selectedTab == .hub ? 1 : 0)
+                    .opacity(selectedTab == .hub ? 1 : 0)
 
-                ImportedBanner(itemName: viewModel.importedName)
-                    .opacity(viewModel.importedOpacity)
+                ImportedBanner(itemName: importedName)
+                    .opacity(importedOpacity)
             }
 
             if !tabViewController.isHidden {
                 TabView(
                     viewModel: .init(),
-                    selected: $viewModel.selectedTab
+                    selected: $selectedTab
                 )
                 .transition(.move(edge: .bottom))
             }
         }
         .edgesIgnoringSafeArea(.bottom)
         .environmentObject(tabViewController)
-    }
-}
-
-struct ImportedBanner: View {
-    let itemName: String
-    @Environment(\.colorScheme) var colorScheme
-
-    var backgroundColor: Color {
-        colorScheme == .light ? .black4 : .black80
-    }
-
-    var body: some View {
-        VStack {
-            Spacer()
-            HStack(spacing: 12) {
-                Image("Done")
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(itemName)
-                        .lineLimit(1)
-                        .font(.system(size: 12, weight: .bold))
-                    Text("saved to Archive")
-                        .font(.system(size: 12, weight: .medium))
-                }
-                Spacer()
-            }
-            .padding(12)
-            .frame(height: 48)
-            .frame(maxWidth: .infinity)
-            .background(backgroundColor)
-            .cornerRadius(8)
+        .onReceive(appState.imported) { item in
+            onItemAdded(item: item)
         }
-        .padding(12)
+        .onAppear {
+            appState.kickBluetoothCentral()
+        }
+    }
+
+    func onItemAdded(item: ArchiveItem) {
+        importedName = item.name.value
+        Task { @MainActor in
+            try await Task.sleep(milliseconds: 200)
+            withAnimation { importedOpacity = 1.0 }
+            try await Task.sleep(seconds: 3)
+            withAnimation { importedOpacity = 0 }
+        }
     }
 }

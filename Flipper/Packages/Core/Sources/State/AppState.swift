@@ -11,8 +11,10 @@ public class AppState: ObservableObject {
 
     @Inject private var rpc: RPC
     @Inject private var archive: Archive
-    @Inject public var analytics: Analytics
+    @Inject private var central: BluetoothCentral
     @Inject private var pairedDevice: PairedDevice
+
+    @Inject public var analytics: Analytics
     private var disposeBag: DisposeBag = .init()
 
     @Published public var firstLaunch: FirstLaunch = .shared
@@ -49,6 +51,13 @@ public class AppState: ObservableObject {
     public func skipPairing() {
         forgetDevice()
         firstLaunch.hideWelcomeScreen()
+    }
+
+    // MARK: Main Screen
+
+    public func kickBluetoothCentral() {
+        central.startScanForPeripherals()
+        central.stopScanForPeripherals()
     }
 
     // MARK: Device Events

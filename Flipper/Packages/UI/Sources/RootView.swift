@@ -34,7 +34,7 @@ private struct RootViewImpl: View {
                 if appState.firstLaunch.isFirstLaunch {
                     WelcomeView(viewModel: .init())
                 } else {
-                    MainView(viewModel: .init())
+                    MainView()
                 }
             }
             .animation(.linear, value: appState.firstLaunch.isFirstLaunch)
