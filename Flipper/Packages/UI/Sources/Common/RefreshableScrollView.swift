@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct RefreshableScrollView<Content: View>: View {
+    @State private var isTriggered = false
     @State private var offset: Double = 0
     private let threshold: Double = 150.0
 
@@ -48,7 +49,11 @@ struct RefreshableScrollView<Content: View>: View {
             }
             .onPreferenceChange(OffsetPreferenceKey.self) { offset in
                 self.offset = offset
-                if offset > threshold {
+                if offset == 0 {
+                    isTriggered = false
+                } else if offset > threshold, !isTriggered {
+                    isTriggered = true
+                    feedback(style: .soft)
                     refreshAction()
                 }
             }
