@@ -2,7 +2,7 @@ import SwiftUI
 
 struct RefreshableScrollView<Content: View>: View {
     @State private var offset: Double = 0
-    private let threshold: Double = 50.0
+    private let threshold: Double = 150.0
 
     var pullProgress: Double {
         min(1.0, offset / threshold)
