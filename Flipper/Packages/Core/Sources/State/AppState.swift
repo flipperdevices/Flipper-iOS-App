@@ -248,28 +248,24 @@ public class AppState: ObservableObject {
     // MARK: Sharing
 
     public func onOpenURL(_ url: URL) {
-        Task {
-            do {
-                guard url != .widgetSettings else {
-                    showWidgetSettings = true
-                    return
-                }
-                switch url.pathExtension {
-                case "tgz": try await onOpenUpdateBundle(url)
-                default: try await onOpenKeyURL(url)
-                }
-            } catch {
-                logger.error("open url: \(error)")
-            }
+        guard url != .widgetSettings else {
+            showWidgetSettings = true
+            return
+        }
+        switch url.pathExtension {
+        case "tgz": onOpenUpdateBundle(url)
+        default: onOpenKeyURL(url)
         }
     }
 
-    private func onOpenUpdateBundle(_ url: URL) async throws {
+    private func onOpenUpdateBundle(_ url: URL) {
         customFirmwareURL = url
     }
 
-    private func onOpenKeyURL(_ url: URL) async throws {
-        importQueue = [url]
+    private func onOpenKeyURL(_ url: URL) {
+        Task { @MainActor in
+            importQueue = [url]
+        }
         logger.info("key url opened")
     }
 

@@ -17,6 +17,9 @@ public class BluetoothRPC: RPC {
     private var onScreenFrame: ((ScreenFrame) -> Void)?
     private var onAppStateChanged: ((Message.AppState) -> Void)?
 
+    // TODO: send as single packet
+    private var pressButtonInProgress = false
+
     init() {
         connectorHandle = connector.connected
             .map { $0.first }
@@ -371,6 +374,10 @@ extension BluetoothRPC {
     }
 
     public func pressButton(_ button: InputKey) async throws {
+        guard !pressButtonInProgress else { return }
+        pressButtonInProgress = true
+        defer { pressButtonInProgress = false }
+
         func send(_ type: InputType) async throws -> Response? {
             try await session?.send(.gui(.button(button, type))).response
         }

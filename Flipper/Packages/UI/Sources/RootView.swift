@@ -122,7 +122,7 @@ private struct RootViewImpl: View {
         backgroundTaskID = .invalid
     }
 
-    // Analytics
+    // MARK: Analytics
 
     func recordAppOpen() {
         appState.analytics.appOpen(target: .app)
