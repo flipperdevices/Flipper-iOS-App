@@ -72,7 +72,7 @@ struct OptionsView: View {
                         Text("Disable provisioning")
                     }
                     NavigationLink("I'm watching you") {
-                        CarrierView(viewModel: .init())
+                        CarrierView()
                     }
                     Button("Reset App") {
                         showResetApp = true
