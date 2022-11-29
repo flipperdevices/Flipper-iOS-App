@@ -10,7 +10,7 @@ struct HubView: View {
             ScrollView {
                 VStack {
                     NavigationLink {
-                        NFCToolsView(viewModel: .init())
+                        NFCToolsView()
                     } label: {
                         NFCToolsCard(hasNotification: hasMFLog)
                     }
