@@ -26,7 +26,7 @@ struct MainView: View {
                     .opacity(selectedTab == .device ? 1 : 0)
                 ArchiveView(viewModel: .init())
                     .opacity(selectedTab == .archive ? 1 : 0)
-                HubView(viewModel: .init())
+                HubView()
                     .opacity(selectedTab == .hub ? 1 : 0)
 
                 ImportedBanner(itemName: importedName)
