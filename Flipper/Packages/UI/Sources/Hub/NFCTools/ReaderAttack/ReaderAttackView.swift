@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct ReaderAttackView: View {
-    @StateObject var viewModel: ReaderAttackViewModel
+    @StateObject var viewModel: ReaderAttackRefactoring = .init()
     @StateObject var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
 

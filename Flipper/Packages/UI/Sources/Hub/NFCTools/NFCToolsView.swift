@@ -31,7 +31,7 @@ struct NFCToolsView: View {
             }
         }
         .fullScreenCover(isPresented: $showReaderAttackView) {
-            ReaderAttackView(viewModel: .init())
+            ReaderAttackView()
         }
         .onChange(of: appState.hasMFLog) {
             self.hasMFLog = $0
