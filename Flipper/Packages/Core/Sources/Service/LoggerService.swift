@@ -1,21 +1,25 @@
-import Core
 import Inject
+import Peripheral
+
+import Logging
 import Combine
 import Foundation
-import Logging
-import SwiftUI
 
-@MainActor
-class LogsViewModel: ObservableObject {
-    private let logger = Logger(label: "logs-vm")
+public class LoggerService: ObservableObject {
+    private let logger = Logger(label: "logger-service")
+
     @Inject private var loggerStorage: LoggerStorage
 
-    @Published var logs: [String] = []
-    @AppStorage(.logLevelKey) var logLevel: Logger.Level = .debug
+    public var logLevel: Logger.Level {
+        get { UserDefaultsStorage.shared.logLevel }
+        set { UserDefaultsStorage.shared.logLevel = newValue }
+    }
 
-    var logLevels: [Logger.Level] {
+    public var logLevels: [Logger.Level] {
         Logger.Level.allCases
     }
+
+    @Published public var logs: [String] = []
 
     private let formatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -23,7 +27,11 @@ class LogsViewModel: ObservableObject {
         return formatter
     }()
 
-    init() {
+    public init() {
+        reload()
+    }
+
+    public func reload() {
         logs = loggerStorage.list().sorted {
             guard let first = formatter.date(from: $0) else { return false }
             guard let second = formatter.date(from: $1) else { return false }
@@ -31,17 +39,16 @@ class LogsViewModel: ObservableObject {
         }
     }
 
-    func changeLogLevel(to level: Logger.Level) {
-        logLevel = level
-        logger.info("log level changed to \(level)")
+    public func read(_ name: String) -> [String] {
+        loggerStorage.read(name)
     }
 
-    func deleteAll() {
+    public func deleteAll() {
         logs.forEach(loggerStorage.delete)
         logs = loggerStorage.list().sorted()
     }
 
-    func delete(at indexSet: IndexSet) {
+    public func delete(at indexSet: IndexSet) {
         if let index = indexSet.first {
             loggerStorage.delete(logs[index])
             logs.remove(at: index)

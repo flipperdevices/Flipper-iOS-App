@@ -1,18 +1,20 @@
+import Core
+import Logging
 import SwiftUI
 
 struct LogsView: View {
-    @StateObject var viewModel: LogsViewModel
+    @EnvironmentObject var loggerService: LoggerService
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         List {
-            ForEach(viewModel.logs, id: \.self) { name in
+            ForEach(loggerService.logs, id: \.self) { name in
                 NavigationLink(name) {
-                    NamedLogsView(viewModel: .init(name: name))
+                    NamedLogsView(name: name)
                 }
             }
             .onDelete { indexSet in
-                viewModel.delete(at: indexSet)
+                loggerService.delete(at: indexSet)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -26,13 +28,13 @@ struct LogsView: View {
             }
             TrailingToolbarItems {
                 NavBarMenu {
-                    ForEach(viewModel.logLevels, id: \.self) { level in
+                    ForEach(loggerService.logLevels, id: \.self) { level in
                         Button {
-                            viewModel.changeLogLevel(to: level)
+                            loggerService.logLevel = level
                         } label: {
                             HStack {
                                 Text(level.rawValue)
-                                if level == viewModel.logLevel {
+                                if level == loggerService.logLevel {
                                     Image(systemName: "checkmark")
                                 }
                             }
@@ -45,7 +47,7 @@ struct LogsView: View {
                 }
 
                 NavBarButton {
-                    viewModel.deleteAll()
+                    loggerService.deleteAll()
                 } label: {
                     Text("Delete All")
                         .font(.system(size: 14, weight: .bold))

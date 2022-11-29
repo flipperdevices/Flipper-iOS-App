@@ -32,7 +32,7 @@ struct OptionsView: View {
                 }
                 .disabled(!isDeviceAvailable)
                 NavigationLink("Logs") {
-                    LogsView(viewModel: .init())
+                    LogsView()
                 }
                 Button("Backup Keys") {
                     archiveService.backupKeys()

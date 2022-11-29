@@ -1,12 +1,16 @@
+import Core
 import SwiftUI
 
 struct NamedLogsView: View {
-    @StateObject var viewModel: NamedLogsViewModel
+    @EnvironmentObject var loggerService: LoggerService
     @Environment(\.dismiss) private var dismiss
+
+    let name: String
+    @State var messages: [String] = []
 
     var body: some View {
         List {
-            ForEach(viewModel.messages, id: \.self) { message in
+            ForEach(messages, id: \.self) { message in
                 Text(message)
             }
         }
@@ -17,13 +21,16 @@ struct NamedLogsView: View {
                 BackButton {
                     dismiss()
                 }
-                Title(viewModel.name)
+                Title(name)
             }
             TrailingToolbarItems {
                 ShareButton {
-                    viewModel.share()
+                    shareLogs(name: name, messages: messages)
                 }
             }
+        }
+        .task {
+            messages = loggerService.read(name)
         }
     }
 }
