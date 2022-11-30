@@ -205,13 +205,13 @@ struct DeviceUpdateCard: View {
                 firmwareVersion: viewModel.alertVersion)
         }
         .fullScreenCover(isPresented: $viewModel.showUpdateView) {
-            DeviceUpdateView(viewModel: .init(
+            DeviceUpdateView(
                 isPresented: $viewModel.showUpdateView,
                 channel: viewModel.channel,
                 firmware: viewModel.availableFirmwareVersion,
                 onSuccess: viewModel.onUpdateStarted,
                 onFailure: viewModel.onUpdateFailed
-            ))
+            )
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {

@@ -1,17 +1,21 @@
+import Core
 import SwiftUI
 import MarkdownUI
 
 extension DeviceUpdateView {
     struct UpdateProgressView: View {
-        @StateObject var viewModel: DeviceUpdateViewModel
+        let state: DeviceUpdateRefactoring.State.Update
+        let changelog: String
+        let availableFirmware: String
+        let availableFirmwareColor: Color
 
         var description: String {
-            switch viewModel.state {
-            case .downloadingFirmware:
+            switch state {
+            case .downloading:
                 return "Downloading from update server..."
-            case .preparingForUpdate:
+            case .preparing:
                 return "Preparing for update..."
-            case .uploadingFirmware:
+            case .uploading:
                 return "Uploading firmware to Flipper..."
             case .canceling:
                 return "Canceling..."
@@ -22,11 +26,11 @@ extension DeviceUpdateView {
 
         var body: some View {
             VStack(spacing: 0) {
-                Text(viewModel.availableFirmware)
+                Text(availableFirmware)
                     .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(viewModel.availableFirmwareColor)
+                    .foregroundColor(availableFirmwareColor)
                     .padding(.top, 14)
-                UpdateProgress(viewModel: viewModel)
+                UpdateProgress(state: state)
                     .padding(.top, 8)
                     .padding(.horizontal, 24)
                 Text(description)
@@ -44,7 +48,7 @@ extension DeviceUpdateView {
                             .font(.system(size: 18, weight: .bold))
                             .padding(.top, 24)
 
-                        GitHubMarkdown(viewModel.changelog)
+                        GitHubMarkdown(changelog)
                             .padding(.vertical, 14)
                             .markdownStyle(
                                 MarkdownStyle(
@@ -72,26 +76,34 @@ extension DeviceUpdateView {
     }
 
     struct UpdateProgress: View {
-        @StateObject var viewModel: DeviceUpdateViewModel
+        let state: DeviceUpdateRefactoring.State.Update
 
         var image: String {
-            switch viewModel.state {
-            case .downloadingFirmware: return "DownloadingUpdate"
+            switch state {
+            case .downloading: return "DownloadingUpdate"
             default: return "UploadingUpdate"
             }
         }
 
         var text: String? {
-            viewModel.state == .preparingForUpdate
+            state == .preparing
                 ? "..."
                 : nil
         }
 
         var color: Color {
-            switch viewModel.state {
-            case .downloadingFirmware: return .sGreenUpdate
-            case .preparingForUpdate, .uploadingFirmware, .canceling: return .a2
+            switch state {
+            case .downloading: return .sGreenUpdate
+            case .preparing, .uploading, .canceling: return .a2
             default: return .clear
+            }
+        }
+
+        var progress: Double {
+            switch state {
+            case .downloading(let progress): return progress
+            case .uploading(let progress): return progress
+            default: return 0
             }
         }
 
@@ -99,7 +111,7 @@ extension DeviceUpdateView {
             ProgressBarView(
                 color: color,
                 image: image,
-                progress: viewModel.progress,
+                progress: progress,
                 text: text)
         }
     }

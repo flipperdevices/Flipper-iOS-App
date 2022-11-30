@@ -1,37 +1,82 @@
+import Core
+import Peripheral
 import SwiftUI
 
 struct DeviceUpdateView: View {
-    @StateObject var viewModel: DeviceUpdateViewModel
+    @EnvironmentObject var appState: AppState
+    @StateObject var viewModel: DeviceUpdateRefactoring = .init()
+
+    @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
+    @State var showCancelUpdate = false
+
+    @Binding var isPresented: Bool
+    let channel: Update.Channel
+    let firmware: Update.Manifest.Version?
+    let onSuccess: @MainActor () -> Void
+    let onFailure: @MainActor (DeviceUpdateRefactoring.State.Error) -> Void
+
+    var isUpdating: Bool {
+        switch viewModel.state {
+        case .update(.downloading), .update(.preparing), .update(.uploading):
+            return true
+        default:
+            return false
+        }
+    }
 
     var title: String {
         switch viewModel.state {
-        case .noInternet, .noCard: return "Update Not Started"
-        case .outdatedAppVersion: return "Unable to Update"
-        case .noDevice: return "Update Failed"
+        case .error(.noInternet), .error(.noCard): return "Update Not Started"
+        case .error(.outdatedApp): return "Unable to Update"
+        case .error(.noDevice): return "Update Failed"
         default: return "Updating your Flipper"
         }
     }
 
     var image: String {
         switch viewModel.state {
-        case .noCard:
+        case .error(.noCard):
             return "FlipperNoCard"
-        case .noInternet, .noDevice, .outdatedAppVersion:
-            switch viewModel.deviceColor {
+        case .error(.noInternet), .error(.noDevice), .error(.outdatedApp):
+            switch appState.flipper?.color {
             case .black: return "FlipperDeadBlack"
             default: return "FlipperDeadWhite"
             }
-        case .storageError:
-            switch viewModel.deviceColor {
+        case .error(.storageError):
+            switch appState.flipper?.color {
             case .black: return "FlipperFlashIssueBlack"
             default: return "FlipperFlashIssueWhite"
             }
         default:
-            switch viewModel.deviceColor {
+            switch appState.flipper?.color {
             case .black: return "FlipperUpdatingBlack"
             default: return "FlipperUpdatingWhite"
             }
         }
+    }
+
+    var availableFirmware: String {
+        guard let firmware = firmware else { return "" }
+        switch channel {
+        case .development: return "Dev \(firmware.version)"
+        case .candidate: return "RC \(firmware.version.dropLast(3))"
+        case .release: return "Release \(firmware.version)"
+        case .custom(let url): return "Custom \(url.lastPathComponent)"
+        }
+    }
+
+    var availableFirmwareColor: Color {
+        switch channel {
+        case .development: return .development
+        case .candidate: return .candidate
+        case .release: return .release
+        case .custom: return .custom
+        }
+    }
+
+    var changelog: String {
+        guard let firmware = firmware else { return "" }
+        return firmware.changelog
     }
 
     var body: some View {
@@ -46,32 +91,42 @@ struct DeviceUpdateView: View {
                 .padding(.top, 22)
 
             switch viewModel.state {
-            case .noInternet: NoInternetView(viewModel: viewModel)
-            case .noDevice: NoDeviceView(viewModel: viewModel)
-            case .storageError: StorageErrorView(viewModel: viewModel)
-            case .outdatedAppVersion: OutdatedAppView(viewModel: viewModel)
-            default: UpdateProgressView(viewModel: viewModel)
+            case .error(.failedDownloading): NoInternetView { update() }
+            case .error(.noInternet): NoInternetView { update() }
+            case .error(.noDevice): NoDeviceView()
+            case .error(.failedUploading): StorageErrorView()
+            case .error(.storageError): StorageErrorView()
+            case .error(.outdatedApp): OutdatedAppView()
+            case .update(let state):
+                UpdateProgressView(
+                    state: state,
+                    changelog: changelog,
+                    availableFirmware: availableFirmware,
+                    availableFirmwareColor: availableFirmwareColor)
+            default:
+                // TODO: should we handle other cases?
+                Text(String(describing: viewModel.state))
             }
 
             Spacer()
             Button {
-                viewModel.isUpdating
-                    ? viewModel.confirmCancel()
-                    : viewModel.close()
+                isUpdating
+                    ? confirmCancel()
+                    : close()
             } label: {
-                Text(viewModel.isUpdating ? "Cancel" : "Close")
+                Text(isUpdating ? "Cancel" : "Close")
                     .font(.system(size: 16, weight: .medium))
             }
             .padding(.bottom, 8)
         }
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
-            viewModel.update()
+            update()
         }
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
         }
-        .alert(isPresented: $viewModel.showCancelUpdate) {
+        .alert(isPresented: $showCancelUpdate) {
             Alert(
                 title: Text("Abort Update?"),
                 message: Text(
@@ -79,8 +134,39 @@ struct DeviceUpdateView: View {
                     "Flipper will still have the previous firmware version."),
                 primaryButton: .default(.init("Continue")),
                 secondaryButton: .default(.init("Abort")) {
-                    viewModel.cancel()
+                    cancel()
                 })
         }
+    }
+
+    func update() {
+        viewModel.update(
+            firmware: firmware,
+            isProvisioningDisabled: isProvisioningDisabled,
+            onSuccess: {
+                onSuccess()
+                close()
+            },
+            onFailure: { error in
+                onFailure(error)
+            })
+    }
+
+    func confirmCancel() {
+        showCancelUpdate = true
+    }
+
+    func cancel() {
+        Task {
+            try await viewModel.cancel()
+            appState.disconnect()
+            onFailure(.canceled)
+            appState.connect()
+            close()
+        }
+    }
+
+    func close() {
+        isPresented = false
     }
 }

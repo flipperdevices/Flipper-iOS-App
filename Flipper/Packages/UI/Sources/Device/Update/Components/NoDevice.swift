@@ -2,8 +2,6 @@ import SwiftUI
 
 extension DeviceUpdateView {
     struct NoDeviceView: View {
-        @StateObject var viewModel: DeviceUpdateViewModel
-
         var body: some View {
             VStack(spacing: 0) {
                 Image("NoDeviceAlert")
@@ -37,7 +35,7 @@ extension DeviceUpdateView {
                 .padding(.top, 14)
 
                 Button {
-                    viewModel.readMore()
+                    UIApplication.shared.open(.helpToReboot)
                 } label: {
                     Text("Read More")
                         .font(.system(size: 14, weight: .medium))

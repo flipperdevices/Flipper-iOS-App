@@ -184,13 +184,14 @@ class DeviceUpdateCardModel: ObservableObject {
             to: updateToVersion ?? "unknown")
     }
 
-    func onUpdateFailed(_ error: DeviceUpdateViewModel.UpdateError) {
+    func onUpdateFailed(_ error: DeviceUpdateRefactoring.State.Error) {
         let result: UpdateResult
         switch error {
         case .canceled: result = .canceled
         case .failedDownloading: result = .failedDownload
         case .failedPreparing: result = .failedPrepare
         case .failedUploading: result = .failedUpload
+        default: result = .failed
         }
         analytics.flipperUpdateResult(
             id: updateID,

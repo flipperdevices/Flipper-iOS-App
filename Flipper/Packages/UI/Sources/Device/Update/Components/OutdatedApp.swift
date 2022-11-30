@@ -2,8 +2,6 @@ import SwiftUI
 
 extension DeviceUpdateView {
     struct OutdatedAppView: View {
-        @StateObject var viewModel: DeviceUpdateViewModel
-
         var body: some View {
             VStack(spacing: 0) {
                 Image("OutdatedApp")
