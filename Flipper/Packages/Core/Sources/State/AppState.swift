@@ -185,9 +185,15 @@ public class AppState: ObservableObject {
 
     // MARK: Synchronization
 
-    public func synchronize() async throws {
-        try await checkMFLogFile()
-        try await synchronizeArchive()
+    public func synchronize() {
+        Task {
+            do {
+                try await checkMFLogFile()
+                try await synchronizeArchive()
+            } catch {
+                logger.error("synchronize: \(error)")
+            }
+        }
     }
 
     private func checkMFLogFile() async throws {

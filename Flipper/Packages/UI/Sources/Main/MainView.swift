@@ -22,7 +22,7 @@ struct MainView: View {
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
-                DeviceView(viewModel: .init())
+                DeviceView()
                     .opacity(selectedTab == .device ? 1 : 0)
                 ArchiveView(viewModel: .init())
                     .opacity(selectedTab == .archive ? 1 : 0)
