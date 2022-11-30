@@ -20,7 +20,7 @@ struct OptionsView: View {
         List {
             Section(header: Text("Utils")) {
                 NavigationLink("Ping") {
-                    PingView(viewModel: .init())
+                    PingView()
                 }
                 .disabled(!isDeviceAvailable)
                 NavigationLink("Stress Test") {
