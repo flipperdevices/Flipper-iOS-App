@@ -56,8 +56,8 @@ class InfoViewModel: ObservableObject {
         if deviceStatus == .synchronizing {
             self.item.status = .synchronizing
         } else {
-            withAnimation {
-                self.item.status = self.archive.status(for: self.item)
+            Task { @MainActor in
+                item.status = try await archive.status(for: item)
             }
         }
     }
