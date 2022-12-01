@@ -162,7 +162,7 @@ extension SymmetricKey {
             .replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
 
-        // NOTE: Data(base64Encoded:) require padding character
+        // NOTE: Data(base64Encoded:) requires padding character
         guard let data = [UInt8](decodingBase64: base64Encoded) else {
             return nil
         }
