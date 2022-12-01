@@ -7,10 +7,10 @@ struct ShareView: View {
         VStack {
             VStack(spacing: 2) {
                 Text("Share")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.system(size: 14, weight: .medium))
 
                 Text(viewModel.name)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 18, weight: .medium))
             }
             .padding(.top, 4)
 
@@ -42,7 +42,7 @@ struct ShareView: View {
                         VStack(spacing: 2) {
                             Text("via Secure Link")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.primary)
+                                .foregroundColor(.a1)
                             Text("Expires in 30 days")
                                 .font(.system(size: 10, weight: .medium))
                                 .foregroundColor(.black30)
@@ -70,7 +70,7 @@ struct ShareView: View {
                     VStack(spacing: 2) {
                         Text("via Secure Link")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.primary)
+                            .foregroundColor(.a1)
                         Text("Expires in 30 days")
                             .font(.system(size: 10, weight: .medium))
                             .foregroundColor(.black30)
@@ -92,7 +92,7 @@ struct ShareView: View {
                     Image("ShareAsFile")
                     Text("Export File")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.a1)
                 }
             }
         }
