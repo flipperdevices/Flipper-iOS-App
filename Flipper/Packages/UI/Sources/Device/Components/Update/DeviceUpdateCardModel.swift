@@ -61,13 +61,6 @@ class DeviceUpdateCardModel: ObservableObject {
         }
     }
 
-    enum LazyResult<Success, Failure> where Failure: Swift.Error {
-        case idle
-        case working
-        case success(Success)
-        case failure(Failure)
-    }
-
     var hasManifest: LazyResult<Bool, Swift.Error> = .idle
     var currentRegion: LazyResult<ISOCode, Swift.Error> = .idle
     var provisionedRegion: LazyResult<ISOCode, Swift.Error> = .idle
