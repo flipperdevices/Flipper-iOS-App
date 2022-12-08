@@ -5,23 +5,50 @@ import SwiftUI
 
 @MainActor
 class NFCEditorViewModel: ObservableObject {
-    var item: Binding<ArchiveItem>
+    @Binding var item: ArchiveItem
 
     @Inject private var appState: AppState
     @Inject private var archive: Archive
 
-    @Published var bytes: [UInt8?]
+    var mifareType: String {
+        guard let typeProperty = item.props.first(
+            where: { $0.key == "Mifare Classic type" }
+        ) else {
+            return "??"
+        }
+        return typeProperty.value
+    }
+
+    @Published var uid: [UInt8]
+    @Published var atqa: [UInt8]
+    @Published var sak: [UInt8]
+
+    @Published var bytes: [UInt8?] {
+        didSet {
+            updateUID()
+        }
+    }
     @Published var showSaveAs = false
     @Published var showSaveChanges = false
     var dismissPublisher = PassthroughSubject<Void, Never>()
 
     init(item: Binding<ArchiveItem>) {
-        self.item = item
+        self._item = item
+        self.uid = item.wrappedValue.uid
+        self.atqa = item.wrappedValue.atqa
+        self.sak = item.wrappedValue.sak
         self.bytes = item.wrappedValue.nfcBlocks
     }
 
+    func updateUID() {
+        guard !uid.isEmpty, bytes.count > uid.count else {
+            return
+        }
+        uid = .init(bytes.prefix(uid.count).map { $0 ?? 0 })
+    }
+
     func cancel() {
-        if item.wrappedValue.nfcBlocks == bytes {
+        if item.nfcBlocks == bytes {
             dismiss()
         } else {
             showSaveChanges = true
@@ -29,16 +56,18 @@ class NFCEditorViewModel: ObservableObject {
     }
 
     func save() {
-        item.wrappedValue.nfcBlocks = bytes
+        item.uid = uid
+        item.nfcBlocks = bytes
         Task {
-            try await archive.upsert(item.wrappedValue)
+            try await archive.upsert(item)
             try await appState.synchronize()
         }
         dismiss()
     }
 
     func saveAs() {
-        item.wrappedValue.nfcBlocks = bytes
+        item.uid = uid
+        item.nfcBlocks = bytes
         showSaveAs = true
     }
 
@@ -47,7 +76,58 @@ class NFCEditorViewModel: ObservableObject {
     }
 }
 
-extension ArchiveItem {
+private extension ArchiveItem {
+    var props: [Property] {
+        shadowCopy.isEmpty
+            ? self.properties
+            : self.shadowCopy
+    }
+
+    var uid: [UInt8] {
+        get {
+            guard let property = props.first(where: { $0.key == "UID" }) else {
+                return []
+            }
+            return .init(hexString: property.value)
+        }
+        set {
+            shadowCopy = props
+            if let index = shadowCopy.index(of: "UID") {
+                shadowCopy[index].value = newValue.hexString
+            }
+        }
+    }
+
+    var atqa: [UInt8] {
+        get {
+            guard let property = props.first(where: { $0.key == "ATQA" }) else {
+                return []
+            }
+            return .init(hexString: property.value)
+        }
+        set {
+            shadowCopy = props
+            if let index = shadowCopy.index(of: "ATQA") {
+                shadowCopy[index].value = newValue.hexString
+            }
+        }
+    }
+
+    var sak: [UInt8] {
+        get {
+            guard let property = props.first(where: { $0.key == "SAK" }) else {
+                return []
+            }
+            return .init(hexString: property.value)
+        }
+        set {
+            shadowCopy = props
+            if let index = shadowCopy.index(of: "SAK") {
+                shadowCopy[index].value = newValue.hexString
+            }
+        }
+    }
+
     var nfcBlocks: [UInt8?] {
         get {
             let properties = shadowCopy.isEmpty
@@ -93,8 +173,25 @@ extension ArchiveItem {
     }
 }
 
-fileprivate extension Array where Element == ArchiveItem.Property {
+private extension Array where Element == ArchiveItem.Property {
     func index(of key: String) -> Int? {
         self.firstIndex { $0.key == key }
+    }
+}
+
+private extension Array where Element == UInt8 {
+    var hexString: String {
+        self
+            .map {
+                String(format: "%02X", $0)
+            }
+            .joined(separator: " ")
+            .uppercased()
+    }
+
+    init(hexString: String) {
+        self = hexString
+            .split(separator: " ")
+            .map { UInt8($0, radix: 16) ?? 0 }
     }
 }
