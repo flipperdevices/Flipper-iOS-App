@@ -5,9 +5,12 @@ import Foundation
 import Combine
 import Logging
 
+
 @MainActor
 public class AppState: ObservableObject {
     private let logger = Logger(label: "appstate")
+
+    @Published public var update: Update = .init()
 
     @Inject private var rpc: RPC
     @Inject private var archive: Archive

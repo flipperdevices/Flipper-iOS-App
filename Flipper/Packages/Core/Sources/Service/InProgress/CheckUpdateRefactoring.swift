@@ -1,15 +1,16 @@
-import Core
 import Inject
 import Analytics
 import Peripheral
-import Foundation
-import Network
-import SwiftUI
+
 import Logging
+import Combine
+import Foundation
+
+// TODO: Refactor (ex DeviceUpdateCardModel)
 
 @MainActor
 // swiftlint:disable type_body_length
-class DeviceUpdateCardModel: ObservableObject {
+public class CheckUpdateRefactoring: ObservableObject {
     private let logger = Logger(label: "update-vm")
 
     @Inject private var rpc: RPC
@@ -17,11 +18,12 @@ class DeviceUpdateCardModel: ObservableObject {
     @Inject private var appState: AppState
     private var disposeBag: DisposeBag = .init()
 
-    @Published var state: State = .disconnected
+    @Published public var state: State = .disconnected
 
-    enum State {
+    public enum State {
         case noSDCard
         case noInternet
+        case cantConnect
         case disconnected
         case connecting
         case noUpdates
@@ -30,36 +32,15 @@ class DeviceUpdateCardModel: ObservableObject {
         case updateInProgress
     }
 
-    @Published var showChannelSelector = false
-    @Published var showConfirmUpdate = false
-    @Published var showUpdateView = false
-    @Published var showUpdateFailed = false
-    @Published var showUpdateSucceeded = false
-    @Published var showPauseSync = false
-    @Published var showCharge = false
+    public var updateResult: PassthroughSubject<UpdateResult, Never> = .init()
 
     @Published var flipper: Flipper? {
         didSet { onFlipperChanged(oldValue) }
     }
 
-    var channelSelectorOffset: Double = .zero
-
-    let updater = Update()
-
-    @AppStorage(.updateChannelKey) var channel: Update.Channel = .release
+    let update = Update()
 
     var manifest: Update.Manifest?
-    var availableFirmwareVersion: Update.Manifest.Version?
-
-    @Published var availableFirmware: String?
-    var channelColor: Color {
-        switch channel {
-        case .development: return .development
-        case .candidate: return .candidate
-        case .release: return .release
-        case .custom: return .custom
-        }
-    }
 
     var hasManifest: LazyResult<Bool, Swift.Error> = .idle
     var currentRegion: LazyResult<ISOCode, Swift.Error> = .idle
@@ -70,6 +51,11 @@ class DeviceUpdateCardModel: ObservableObject {
         return .success(storage.external != nil)
     }
 
+    public var hasBatteryCharged: Bool {
+        guard let battery = flipper?.battery else { return false }
+        return battery.level >= 10 || battery.state == .charging
+    }
+
     var installedChannel: Update.Channel? {
         flipper?.information?.firmwareChannel
     }
@@ -78,24 +64,19 @@ class DeviceUpdateCardModel: ObservableObject {
         flipper?.information?.shortSoftwareVersion
     }
 
-    init() {
+    public init() {
+        subscribeToPublishers()
+    }
+
+    func subscribeToPublishers() {
         appState.$flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)
-
-        appState.$customFirmwareURL
-            .receive(on: DispatchQueue.main)
-            .compactMap { $0 }
-            .map { .custom($0) }
-            .assign(to: \.channel, on: self)
-            .store(in: &disposeBag)
-
-        monitorNetworkStatus()
     }
 
     func onFlipperChanged(_ oldValue: Flipper?) {
-        updateState()
+        updateState(channel: appState.update.selectedChannel)
 
         guard flipper?.state == .connected else {
             resetState()
@@ -160,24 +141,29 @@ class DeviceUpdateCardModel: ObservableObject {
         }
     }
 
-    var updateID: Int = 0
-    var updateFromVersion: String?
-    var updateToVersion: String?
+    public func onUpdateStarted() {
+        guard
+            let installed = appState.update.installed,
+            let available = appState.update.available
+        else {
+            return
+        }
 
-    func onUpdateStarted() {
-        updateID = Int(Date().timeIntervalSince1970)
-        updateFromVersion = installedFirmware
-        updateToVersion = availableFirmware
+        appState.update.updateInProgress = .init(
+            id: Int(Date().timeIntervalSince1970),
+            from: installed,
+            to: available
+        )
 
         state = .updateInProgress
 
         analytics.flipperUpdateStart(
-            id: updateID,
-            from: updateFromVersion ?? "unknown",
-            to: updateToVersion ?? "unknown")
+            id: appState.update.updateInProgress?.id ?? 0,
+            from: appState.update.updateInProgress?.from.version.version ?? "unknown",
+            to: appState.update.updateInProgress?.to.version.version ?? "unknown")
     }
 
-    func onUpdateFailed(_ error: DeviceUpdateRefactoring.State.Error) {
+    public func onUpdateFailed(_ error: Update.State.Error) {
         let result: UpdateResult
         switch error {
         case .canceled: result = .canceled
@@ -187,57 +173,51 @@ class DeviceUpdateCardModel: ObservableObject {
         default: result = .failed
         }
         analytics.flipperUpdateResult(
-            id: updateID,
-            from: updateFromVersion ?? "unknown",
-            to: updateToVersion ?? "unknown",
+            id: appState.update.updateInProgress?.id ?? 0,
+            from: appState.update.updateInProgress?.from.version.version ?? "unknown",
+            to: appState.update.updateInProgress?.to.version.version ?? "unknown",
             status: result)
     }
 
-    var alertVersion: String = ""
-
     func verifyUpdateResult() {
         guard
-            installedFirmware != nil,
-            let updateFromVersion = updateFromVersion,
-            let updateToVersion = updateToVersion
+            let installed = appState.update.installed,
+            let inProgress = appState.update.updateInProgress
         else {
             return
         }
-        alertVersion = updateToVersion
-        self.updateFromVersion = nil
-        self.updateToVersion = nil
 
         var updateFromToVersion: String {
-            "from \(updateFromVersion) to \(updateToVersion)"
+            "from \(inProgress.from.version) to \(inProgress.to.version)"
         }
 
         Task {
             // FIXME: ignore GATT cache
             try await Task.sleep(milliseconds: 333)
 
-            if installedFirmware == updateToVersion {
+            if installed.version.version == inProgress.to.version.version {
                 logger.info("update success: \(updateFromToVersion)")
-                showUpdateSucceeded = true
+                updateResult.send(.completed)
 
                 analytics.flipperUpdateResult(
-                    id: updateID,
-                    from: updateFromVersion,
-                    to: updateToVersion,
+                    id: inProgress.id,
+                    from: inProgress.from.version.version,
+                    to: inProgress.to.version.version,
                     status: .completed)
             } else {
                 logger.info("update error: \(updateFromToVersion)")
-                showUpdateFailed = true
+                updateResult.send(.failed)
 
                 analytics.flipperUpdateResult(
-                    id: updateID,
-                    from: updateFromVersion,
-                    to: updateToVersion,
+                    id: inProgress.id,
+                    from: inProgress.from.version.version,
+                    to: inProgress.to.version.version,
                     status: .failed)
             }
         }
     }
 
-    func updateStorageInfo() {
+    public func updateStorageInfo() {
         Task { await updateStorageInfo() }
     }
 
@@ -247,74 +227,48 @@ class DeviceUpdateCardModel: ObservableObject {
         catch { logger.error("update storage info: \(error)") }
     }
 
-    func monitorNetworkStatus() {
-        let monitor = NWPathMonitor()
-        var lastStatus: NWPath.Status?
-        monitor.pathUpdateHandler = { [weak self] path in
-            guard lastStatus != path.status else { return }
-            self?.onNetworkStatusChanged(path.status)
-            lastStatus = path.status
-        }
-        monitor.start(queue: .main)
-    }
-
-    func onNetworkStatusChanged(_ status: NWPath.Status) {
-        if status == .unsatisfied {
-            self.state = .noInternet
-        } else {
-            self.state = .connecting
-            self.updateAvailableFirmware()
+    public func onNetworkStatusChanged(available: Bool) {
+        switch available {
+        case true: self.state = .connecting
+        case false: self.state = .noInternet
         }
     }
 
-    func onChannelSelected(_ channel: String) {
-        showChannelSelector = false
-        switch channel {
-        case "Release": self.channel = .release
-        case "Release-Candidate": self.channel = .candidate
-        case "Development": self.channel = .development
-        default: break
-        }
-        updateVersion()
-    }
-
-    func updateAvailableFirmware() {
+    public func updateAvailableFirmware(for channel: Update.Channel) {
         Task {
             do {
-                manifest = try await updater.downloadManifest()
-                updateVersion()
+                guard state != .noInternet else { return }
+                manifest = try await update.downloadManifest()
+                updateVersion(for: channel)
             } catch {
-                state = .noInternet
+                state = .cantConnect
                 logger.error("download manifest: \(error)")
             }
         }
     }
 
-    func updateVersion() {
+    public func updateVersion(for channel: Update.Channel) {
         guard let version = manifest?.version(for: channel) else {
-            availableFirmware = nil
-            availableFirmwareVersion = nil
+            appState.update.available = nil
             return
         }
-        self.availableFirmwareVersion = version
-        switch channel {
-        case .development: availableFirmware = "Dev \(version.version)"
-        case .candidate: availableFirmware = "RC \(version.version.dropLast(3))"
-        case .release: availableFirmware = "Release \(version.version)"
-        case .custom(let url): availableFirmware = "Custom \(url.lastPathComponent)"
-        }
-        updateState()
+
+        appState.update.available = .init(
+            channel: channel,
+            version: version)
+
+        updateState(channel: channel)
     }
 
     // Validating
 
-    func updateState() {
+    func updateState(channel: Update.Channel) {
         guard validateFlipperState() else { return }
         guard validateSDCard() else { return }
 
         guard validateAvailableFirmware() else { return }
 
-        guard checkSelectedChannel() else { return }
+        guard checkSelectedChannel(channel) else { return }
         guard checkInstalledFirmware() else { return }
 
         guard validateManifest() else { return }
@@ -401,10 +355,10 @@ class DeviceUpdateCardModel: ObservableObject {
     }
 
     func validateAvailableFirmware() -> Bool {
-        availableFirmware != nil
+        appState.update.available != nil
     }
 
-    func checkSelectedChannel() -> Bool {
+    func checkSelectedChannel(_ channel: Update.Channel) -> Bool {
         guard let installedChannel = installedChannel else {
             return false
         }
@@ -419,40 +373,10 @@ class DeviceUpdateCardModel: ObservableObject {
         guard let installedFirmware = installedFirmware else {
             return false
         }
-        guard installedFirmware == availableFirmware else {
+        guard installedFirmware == update.available?.version.version else {
             state = .versionUpdate
             return false
         }
         return true
-    }
-
-    // MARK: Confirm update
-
-    func confirmUpdate() {
-        guard let battery = flipper?.battery else { return }
-
-        guard battery.level >= 10 || battery.state == .charging else {
-            showCharge = true
-            return
-        }
-        guard appState.status != .synchronizing else {
-            showPauseSync = true
-            return
-        }
-        showConfirmUpdate = true
-    }
-
-    func update() {
-        Task {
-            await updateStorageInfo()
-            guard validateSDCard() else {
-                return
-            }
-            showUpdateView = true
-        }
-    }
-
-    func pauseSync() {
-        appState.cancelSync()
     }
 }

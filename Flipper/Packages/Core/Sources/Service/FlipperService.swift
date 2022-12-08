@@ -73,4 +73,46 @@ public class FlipperService: ObservableObject {
             }
         }
     }
+
+
+    private var isProvisioningDisabled: Bool {
+        get {
+            UserDefaultsStorage.shared.isProvisioningDisabled
+        }
+    }
+
+    private var hardwareRegion: Int? {
+        get async throws {
+            let info = try await rpc.deviceInfo()
+            return Int(info["hardware_region"] ?? "")
+        }
+    }
+
+    private var canDisableProvisioning: Bool {
+        get async {
+            (try? await hardwareRegion) == 0
+        }
+    }
+
+    public func provideSubGHzRegion() async throws {
+        if isProvisioningDisabled, await canDisableProvisioning {
+            return
+        }
+        try await rpc.writeFile(
+            at: Provisioning.location,
+            bytes: Provisioning().provideRegion().encode())
+    }
+
+    public func showUpdatingFrame() async throws {
+        try await rpc.startVirtualDisplay(with: .updateInProgress)
+    }
+
+    public func hideUpdatingFrame() async throws {
+        try await rpc.stopVirtualDisplay()
+    }
+
+    public func startUpdateProcess(from path: Path) async throws {
+        try await rpc.update(manifest: path.appending("update.fuf"))
+        try await rpc.reboot(to: .update)
+    }
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SelectChannelPopup: View {
-    let y: Double
+    let offset: Double
     let onChannelSelected: (String) -> Void
 
     var body: some View {
@@ -39,7 +39,7 @@ struct SelectChannelPopup: View {
             }
             .frame(width: 220)
         }
-        .offset(y: y - 14)
+        .offset(y: offset - 14)
         .padding(.trailing, 14)
     }
 }
@@ -74,48 +74,5 @@ struct ChannelMenuRow: View {
                 Spacer()
             }
         }
-    }
-}
-
-struct SelectChannelButton: View {
-    @StateObject var viewModel: DeviceUpdateCardModel
-
-    var body: some View {
-        Button {
-            viewModel.showChannelSelector = true
-        } label: {
-            HStack(spacing: 6) {
-                Spacer()
-                Text(viewModel.availableFirmware ?? "unknown")
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(viewModel.channelColor)
-                Image(systemName: "chevron.down")
-                    .foregroundColor(.black30)
-            }
-            .frame(height: 44)
-        }
-        .background(GeometryReader {
-            Color.clear.preference(
-                key: SelectChannelOffsetKey.self,
-                value: $0.frame(in: .global).origin.y)
-        })
-        .onPreferenceChange(SelectChannelOffsetKey.self) {
-            viewModel.channelSelectorOffset = $0
-        }
-        .popup(isPresented: $viewModel.showChannelSelector, hideOnTap: true) {
-            SelectChannelPopup(y: viewModel.channelSelectorOffset) {
-                viewModel.onChannelSelected($0)
-            }
-        }
-    }
-}
-
-private struct SelectChannelOffsetKey: PreferenceKey {
-    typealias Value = Double
-
-    static var defaultValue = Double.zero
-
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value = nextValue()
     }
 }

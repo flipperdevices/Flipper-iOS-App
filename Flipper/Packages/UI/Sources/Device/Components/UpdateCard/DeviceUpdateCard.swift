@@ -1,14 +1,40 @@
+import Core
 import SwiftUI
 
 struct DeviceUpdateCard: View {
-    @StateObject var viewModel: DeviceUpdateCardModel
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var networkService: NetworkService
+    @StateObject var viewModel: CheckUpdateRefactoring = .init()
     @Environment(\.scenePhase) private var scenePhase
+
+    var channel: Update.Channel {
+        get {
+            appState.update.selectedChannel
+        }
+        nonmutating set {
+            appState.update.selectedChannel = newValue
+        }
+    }
+
+    var availableFirmware: String {
+        appState.update.available?.description ?? "unknown"
+    }
+
+    @State var showUpdateView = false
+    @State var showConfirmUpdate = false
+    @State var showPauseSync = false
+    @State var showCharge = false
+
+    @State var showUpdateFailed = false
+    @State var showUpdateSucceeded = false
 
     var description: String {
         switch viewModel.state {
         case .noSDCard:
             return "Install SD card in Flipper to update firmware"
         case .noInternet:
+            return "Can’t connect to update server"
+        case .cantConnect:
             return "Can’t connect to update server"
         case .disconnected:
             return "Connect to Flipper to see available updates"
@@ -24,6 +50,15 @@ struct DeviceUpdateCard: View {
         case .updateInProgress:
             return "Flipper is updating in offline mode. " +
                 "Look at the device screen for info and wait for reconnection."
+        }
+    }
+
+    var channelColor: Color {
+        switch channel {
+        case .development: return .development
+        case .candidate: return .candidate
+        case .release: return .release
+        case .custom: return .custom
         }
     }
 
@@ -49,7 +84,6 @@ struct DeviceUpdateCard: View {
                                 .multilineTextAlignment(.center)
                                 .foregroundColor(.black30)
                         }
-                        .frame(height: 31)
                         .padding(.horizontal, 12)
                     }
                     .padding(.vertical, 4)
@@ -73,13 +107,35 @@ struct DeviceUpdateCard: View {
                                 .multilineTextAlignment(.center)
                                 .foregroundColor(.black30)
                         }
-                        .frame(height: 31)
                         .padding(.horizontal, 12)
                     }
                     .padding(.vertical, 4)
 
                     Button {
-                        viewModel.updateAvailableFirmware()
+                        viewModel.updateAvailableFirmware(for: channel)
+                    } label: {
+                        Text("Retry")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.a2)
+                    }
+                    .padding(.bottom, 8)
+                } else if viewModel.state == .cantConnect {
+                    VStack(spacing: 2) {
+                        Image("ServerError")
+                        Text("Unable to download firmware")
+                            .font(.system(size: 14, weight: .medium))
+                        HStack {
+                            Text(description)
+                                .font(.system(size: 14, weight: .medium))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.black30)
+                        }
+                        .padding(.horizontal, 12)
+                    }
+                    .padding(.vertical, 4)
+
+                    Button {
+                        viewModel.updateAvailableFirmware(for: channel)
                     } label: {
                         Text("Retry")
                             .font(.system(size: 16, weight: .medium))
@@ -140,10 +196,15 @@ struct DeviceUpdateCard: View {
 
                         Spacer()
 
-                        SelectChannelButton(viewModel: viewModel)
-                            .onTapGesture {
-                                viewModel.updateAvailableFirmware()
-                            }
+                        SelectChannel(
+                            firmware: availableFirmware,
+                            color: channelColor
+                        ) {
+                            onChannelSelected($0)
+                        }
+                        .onTapGesture {
+                            viewModel.updateAvailableFirmware(for: channel)
+                        }
                     }
                     .font(.system(size: 14))
                     .padding(.horizontal, 12)
@@ -151,7 +212,17 @@ struct DeviceUpdateCard: View {
 
                     Divider()
 
-                    UpdateButton(viewModel: viewModel)
+                    UpdateButton(state: viewModel.state) {
+                        guard viewModel.hasBatteryCharged else {
+                            showCharge = true
+                            return
+                        }
+                        guard appState.status != .synchronizing else {
+                            showPauseSync = true
+                            return
+                        }
+                        showConfirmUpdate = true
+                    }
 
                     VStack {
                         Text(description)
@@ -167,111 +238,87 @@ struct DeviceUpdateCard: View {
         }
         .alert(
             "Update Firmware?",
-            isPresented: $viewModel.showConfirmUpdate
+            isPresented: $showConfirmUpdate
         ) {
             Button("Cancel") { }
             Button("Update") {
-                viewModel.update()
+                showUpdateView = true
             }
         } message: {
             Text(
-                "New Firmware \(viewModel.availableFirmware ?? "") " +
+                "New Firmware \(availableFirmware) " +
                 "will be installed")
         }
         .alert(
             "Pause Synchronization?",
-            isPresented: $viewModel.showPauseSync
+            isPresented: $showPauseSync
         ) {
             Button("Continue") { }
             Button("Pause") {
-                viewModel.pauseSync()
+                appState.cancelSync()
             }
         } message: {
             Text(
                 "Firmware update is not possible during synchronization. " +
                 "Wait for sync to finish or pause it.")
         }
-        .customAlert(isPresented: $viewModel.showCharge) {
-            LowBatteryAlert(isPresented: $viewModel.showCharge)
+        .customAlert(isPresented: $showCharge) {
+            LowBatteryAlert(isPresented: $showCharge)
         }
-        .customAlert(isPresented: $viewModel.showUpdateSucceeded) {
+        .customAlert(isPresented: $showUpdateSucceeded) {
             UpdateSucceededAlert(
-                isPresented: $viewModel.showUpdateSucceeded,
-                firmwareVersion: viewModel.alertVersion)
+                isPresented: $showUpdateSucceeded,
+                firmwareVersion: appState.update.updateInProgress?.to.version.version ?? "unknown")
         }
-        .customAlert(isPresented: $viewModel.showUpdateFailed) {
+        .customAlert(isPresented: $showUpdateFailed) {
             UpdateFailedAlert(
-                isPresented: $viewModel.showUpdateFailed,
-                firmwareVersion: viewModel.alertVersion)
+                isPresented: $showUpdateFailed,
+                firmwareVersion: appState.update.updateInProgress?.to.version.version ?? "unknown")
         }
-        .fullScreenCover(isPresented: $viewModel.showUpdateView) {
+        .fullScreenCover(isPresented: $showUpdateView) {
             DeviceUpdateView(
-                isPresented: $viewModel.showUpdateView,
-                channel: viewModel.channel,
-                firmware: viewModel.availableFirmwareVersion,
+                isPresented: $showUpdateView,
+                channel: channel,
+                firmware: appState.update.available?.version,
                 onSuccess: viewModel.onUpdateStarted,
                 onFailure: viewModel.onUpdateFailed
             )
         }
+        .onReceive(viewModel.updateResult) { result in
+            switch result {
+            case .completed: showUpdateSucceeded = true
+            case .failed: showUpdateFailed = true
+            default: break
+            }
+        }
+        .onChange(of: viewModel.state) { state in
+            if state == .connecting {
+                viewModel.updateAvailableFirmware(for: channel)
+            }
+        }
+        .onChange(of: appState.customFirmwareURL) { url in
+            guard let url = url else {
+                return
+            }
+            self.channel = .custom(url)
+        }
         .onChange(of: scenePhase) { phase in
             if phase == .active {
-                viewModel.updateAvailableFirmware()
+                viewModel.updateAvailableFirmware(for: channel)
             }
         }
-    }
-}
-
-struct UpdateButton: View {
-    @StateObject var viewModel: DeviceUpdateCardModel
-
-    var title: String {
-        switch viewModel.state {
-        case .noUpdates: return "NO UPDATES"
-        case .versionUpdate: return "UPDATE"
-        case .channelUpdate: return "INSTALL"
-        default: return ""
+        .onChange(of: networkService.available) {
+            viewModel.onNetworkStatusChanged(available: $0)
         }
     }
 
-    var color: Color {
-        switch viewModel.state {
-        case .noUpdates: return .black20
-        case .versionUpdate: return .sGreenUpdate
-        case .channelUpdate: return .a1
-        default: return .clear
+    func onChannelSelected(_ channel: String) {
+        switch channel {
+        case "Release": self.channel = .release
+        case "Release-Candidate": self.channel = .candidate
+        case "Development": self.channel = .development
+        default: break
         }
-    }
-
-    var body: some View {
-        Button {
-            viewModel.confirmUpdate()
-        } label: {
-            HStack {
-                Spacer()
-                Text(title)
-                    .foregroundColor(.white)
-                    .font(.born2bSportyV2(size: 40))
-                Spacer()
-            }
-            .frame(height: 46)
-            .frame(maxWidth: .infinity)
-            .background(color)
-            .cornerRadius(9)
-            .padding(.horizontal, 12)
-            .padding(.top, 12)
-        }
-        // .disabled(viewModel.state == .noUpdates)
-    }
-}
-
-struct UpdateStartedImage: View {
-    @Environment(\.colorScheme) var colorScheme
-
-    var image: String {
-        colorScheme == .light ? "UpdateStartedLight" : "UpdateStartedDark"
-    }
-
-    var body: some View {
-        Image(image)
+        viewModel.updateVersion(for: self.channel)
     }
 }

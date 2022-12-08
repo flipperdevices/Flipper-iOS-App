@@ -4,7 +4,7 @@ import MarkdownUI
 
 extension DeviceUpdateView {
     struct UpdateProgressView: View {
-        let state: DeviceUpdateRefactoring.State.Update
+        let state: Update.State.Update
         let changelog: String
         let availableFirmware: String
         let availableFirmwareColor: Color
@@ -76,7 +76,7 @@ extension DeviceUpdateView {
     }
 
     struct UpdateProgress: View {
-        let state: DeviceUpdateRefactoring.State.Update
+        let state: Update.State.Update
 
         var image: String {
             switch state {

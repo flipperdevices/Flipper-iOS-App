@@ -1,7 +1,7 @@
 import Core
 
 extension Flipper.DeviceInformation {
-    var shortSoftwareVersion: String? {
+    public var shortSoftwareVersion: String? {
         guard let channel = firmwareChannel else {
             return nil
         }
@@ -15,7 +15,7 @@ extension Flipper.DeviceInformation {
         }
     }
 
-    var firmwareChannel: Update.Channel? {
+    public var firmwareChannel: Update.Channel? {
         let parts = softwareRevision.split(separator: " ")
         guard parts.count >= 2 else { return nil }
 

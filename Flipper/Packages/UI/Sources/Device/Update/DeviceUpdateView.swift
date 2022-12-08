@@ -4,7 +4,7 @@ import SwiftUI
 
 struct DeviceUpdateView: View {
     @EnvironmentObject var appState: AppState
-    @StateObject var viewModel: DeviceUpdateRefactoring = .init()
+    @EnvironmentObject var updateService: UpdateService
 
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
     @State var showCancelUpdate = false
@@ -13,10 +13,10 @@ struct DeviceUpdateView: View {
     let channel: Update.Channel
     let firmware: Update.Manifest.Version?
     let onSuccess: @MainActor () -> Void
-    let onFailure: @MainActor (DeviceUpdateRefactoring.State.Error) -> Void
+    let onFailure: @MainActor (Update.State.Error) -> Void
 
     var isUpdating: Bool {
-        switch viewModel.state {
+        switch appState.update.state {
         case .update(.downloading), .update(.preparing), .update(.uploading):
             return true
         default:
@@ -25,7 +25,7 @@ struct DeviceUpdateView: View {
     }
 
     var title: String {
-        switch viewModel.state {
+        switch appState.update.state {
         case .error(.noInternet), .error(.noCard): return "Update Not Started"
         case .error(.outdatedApp): return "Unable to Update"
         case .error(.noDevice): return "Update Failed"
@@ -34,7 +34,7 @@ struct DeviceUpdateView: View {
     }
 
     var image: String {
-        switch viewModel.state {
+        switch appState.update.state {
         case .error(.noCard):
             return "FlipperNoCard"
         case .error(.noInternet), .error(.noDevice), .error(.outdatedApp):
@@ -90,7 +90,7 @@ struct DeviceUpdateView: View {
                 .scaledToFit()
                 .padding(.top, 22)
 
-            switch viewModel.state {
+            switch appState.update.state {
             case .error(.failedDownloading): NoInternetView { update() }
             case .error(.noInternet): NoInternetView { update() }
             case .error(.noDevice): NoDeviceView()
@@ -105,7 +105,7 @@ struct DeviceUpdateView: View {
                     availableFirmwareColor: availableFirmwareColor)
             default:
                 // TODO: should we handle other cases?
-                Text(String(describing: viewModel.state))
+                Text(String(describing: appState.update.state))
             }
 
             Spacer()
@@ -140,7 +140,7 @@ struct DeviceUpdateView: View {
     }
 
     func update() {
-        viewModel.update(
+        updateService.update(
             firmware: firmware,
             isProvisioningDisabled: isProvisioningDisabled,
             onSuccess: {
@@ -158,11 +158,12 @@ struct DeviceUpdateView: View {
 
     func cancel() {
         Task {
-            try await viewModel.cancel()
+            updateService.cancel()
             appState.disconnect()
             onFailure(.canceled)
-            appState.connect()
             close()
+            try await Task.sleep(milliseconds: 100)
+            appState.connect()
         }
     }
 

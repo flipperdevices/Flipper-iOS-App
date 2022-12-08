@@ -45,7 +45,7 @@ struct DeviceView: View {
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         } else if appState.status != .noDevice {
-                            DeviceUpdateCard(viewModel: .init())
+                            DeviceUpdateCard()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         }

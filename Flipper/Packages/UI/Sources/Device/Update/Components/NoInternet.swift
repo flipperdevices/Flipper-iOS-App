@@ -6,7 +6,7 @@ extension DeviceUpdateView {
 
         var body: some View {
             VStack(spacing: 0) {
-                Image("NoInternetAlert")
+                Image("ServerError")
 
                 Text("Unable to download firmware")
                     .font(.system(size: 14, weight: .medium))
