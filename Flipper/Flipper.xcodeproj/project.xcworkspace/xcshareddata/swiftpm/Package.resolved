@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/gonzalezreal/AttributedText",
         "state": {
           "branch": null,
-          "revision": "2dc2d7864e0fee4b524a5850d7d7cf9a7eeda0fc",
-          "version": "1.0.0"
+          "revision": "0e811cb14de367bbd58a94d12259687e5ee08bea",
+          "version": "1.0.1"
         }
       },
       {
@@ -50,9 +50,9 @@
         "package": "MarkdownUI",
         "repositoryURL": "https://github.com/tonyfreeman/MarkdownUI.git",
         "state": {
-          "branch": null,
-          "revision": "6a33c60ad430772d69ac5278e35474d6b3e5d30a",
-          "version": "1.1.1"
+          "branch": "main",
+          "revision": "3c80d50712dcecf38ceb8d327969e644d5c37de6",
+          "version": null
         }
       },
       {

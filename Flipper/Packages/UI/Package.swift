@@ -27,7 +27,7 @@ let package = Package(
         .package(
             name: "MarkdownUI",
             url: "https://github.com/tonyfreeman/MarkdownUI.git",
-            from: "1.1.1")
+            .branch("main"))
     ],
     targets: [
         .target(
