@@ -49,7 +49,7 @@ struct CategoryDeletedLink: View {
 
     var body: some View {
         NavigationLink {
-            CategoryDeletedView(viewModel: .init())
+            CategoryDeletedView()
         } label: {
             CategoryRow(image: nil, name: "Deleted", count: count)
         }

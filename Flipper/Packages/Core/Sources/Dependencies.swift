@@ -2,8 +2,9 @@ import Inject
 import Combine
 
 @MainActor
-class Depencencies: ObservableObject {
-    @Inject var appState: AppState
+public class Depencencies: ObservableObject {
+    // TODO: refactor when we get rid of Inject
+    @Inject public var appState: AppState
 
     // MARK: Services
 
@@ -24,7 +25,7 @@ class Depencencies: ObservableObject {
     }()
 
     public lazy var archiveService: ArchiveService = {
-        .init()
+        .init(appState: appState)
     }()
 
     public lazy var updateService: UpdateService = {

@@ -2,43 +2,6 @@ import Core
 import Inject
 import SwiftUI
 
-// TODO: use environmentObject(AppState()) on RootView when we get rid of Inject
-
-@MainActor
-class Depencencies: ObservableObject {
-    @Inject var appState: AppState
-
-    lazy var loggerService: LoggerService = {
-        .init()
-    }()
-
-    lazy var networkService: NetworkService = {
-        .init()
-    }()
-
-    lazy var centralService: CentralService = {
-        .init()
-    }()
-
-    lazy var flipperService: FlipperService = {
-        .init()
-    }()
-
-    lazy var archiveService: ArchiveService = {
-        .init()
-    }()
-
-    lazy var updateService: UpdateService = {
-        .init(appState: appState, flipperService: flipperService)
-    }()
-
-    lazy var widgetService: WidgetService = {
-        .init()
-    }()
-
-    init() {}
-}
-
 public struct RootView: View {
     @StateObject var dependencies: Depencencies = .init()
 
