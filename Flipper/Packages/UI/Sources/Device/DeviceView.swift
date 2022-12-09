@@ -52,7 +52,7 @@ struct DeviceView: View {
 
                         if appState.status != .unsupportedDevice {
                             NavigationLink {
-                                DeviceInfoView(viewModel: .init())
+                                DeviceInfoView()
                             } label: {
                                 DeviceInfoCard()
                                     .padding(.top, 24)

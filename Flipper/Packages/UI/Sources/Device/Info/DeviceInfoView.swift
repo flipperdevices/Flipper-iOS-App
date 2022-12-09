@@ -3,8 +3,101 @@ import Collections
 import SwiftUI
 
 struct DeviceInfoView: View {
-    @StateObject var viewModel: DeviceInfoViewModel
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var flipperService: FlipperService
     @Environment(\.dismiss) private var dismiss
+
+    var deviceInfo: [String: String] {
+        flipperService.deviceInfo
+    }
+
+    var powerInfo: [String: String] {
+        flipperService.powerInfo
+    }
+
+    var deviceName: String {
+        deviceInfo["hardware_name"] ?? ""
+    }
+    var hardwareModel: String {
+        deviceInfo["hardware_model"] ?? ""
+    }
+    var hardwareRegion: String {
+        deviceInfo["hardware_region"] ?? ""
+    }
+    var hardwareRegionProvisioned: String {
+        deviceInfo["hardware_region_provisioned"] ?? ""
+    }
+
+    var hardwareVersion: String { deviceInfo["hardware_ver"] ?? "" }
+    var hardwareOTPVersion: String { deviceInfo["hardware_otp_ver"] ?? "" }
+    var serialNumber: String { deviceInfo["hardware_uid"] ?? "" }
+
+    var softwareRevision: String { deviceInfo["firmware_commit"] ?? "" }
+    var buildDate: String { deviceInfo["firmware_build_date"] ?? "" }
+    var firmwareTarget: String { deviceInfo["firmware_target"] ?? "" }
+    var protobufVersion: String {
+        guard
+            let major = deviceInfo["protobuf_version_major"],
+            let minor = deviceInfo["protobuf_version_minor"]
+        else {
+            return ""
+        }
+        return "\(major).\(minor)"
+    }
+
+    var radioFirmware: String {
+        guard
+            let major = deviceInfo["radio_stack_major"],
+            let minor = deviceInfo["radio_stack_minor"],
+            let type = deviceInfo["radio_stack_type"]
+        else {
+            return ""
+        }
+        let typeString = RadioStackType(rawValue: type)?.description
+            ?? "Unknown"
+        return "\(major).\(minor).\(type) (\(typeString))"
+    }
+
+    private var usedKeys: [String] = [
+        "hardware_name",
+        "hardware_model",
+        "hardware_region",
+        "hardware_region_provisioned",
+        "hardware_ver",
+        "hardware_otp_ver",
+        "hardware_uid",
+        "firmware_commit",
+        "firmware_build_date",
+        "firmware_target",
+        "protobuf_version_major",
+        "protobuf_version_minor",
+        "radio_stack_major",
+        "radio_stack_minor",
+        "radio_stack_type"
+    ]
+
+    private func formatKey(_ key: String) -> String {
+        key
+            .replacingOccurrences(of: "_", with: " ")
+            .capitalized
+            .replacingOccurrences(of: "Ble", with: "BLE")
+            .replacingOccurrences(of: "Fus", with: "FUS")
+            .replacingOccurrences(of: "Sram", with: "SRAM")
+    }
+
+    var otherKeys: OrderedDictionary<String, String> {
+        var result: OrderedDictionary<String, String> = .init()
+
+        let keys = deviceInfo.keys
+            .filter { !usedKeys.contains($0) }
+            .sorted()
+
+        for key in keys {
+            result[formatKey(key)] = deviceInfo[key]
+        }
+
+        return result
+    }
 
     var body: some View {
         ScrollView {
@@ -12,37 +105,37 @@ struct DeviceInfoView: View {
                 DeviceInfoViewCard(
                     title: "Flipper Device",
                     values: [
-                        "Device Name": viewModel.deviceName,
-                        "Hardware Model": viewModel.hardwareModel,
-                        "Hardware Region": viewModel.hardwareRegion,
+                        "Device Name": deviceName,
+                        "Hardware Model": hardwareModel,
+                        "Hardware Region": hardwareRegion,
                         "Hardware Region Provisioned":
-                            viewModel.hardwareRegionProvisioned,
-                        "Hardware Version": viewModel.hardwareVersion,
-                        "Hardware OTP Version": viewModel.hardwareOTPVersion,
-                        "Serial Number": viewModel.serialNumber
+                            hardwareRegionProvisioned,
+                        "Hardware Version": hardwareVersion,
+                        "Hardware OTP Version": hardwareOTPVersion,
+                        "Serial Number": serialNumber
                     ]
                 )
 
                 DeviceInfoViewCard(
                     title: "Firmware",
                     values: [
-                        "Software Revision": viewModel.softwareRevision,
-                        "Build Date": viewModel.buildDate,
-                        "Target": viewModel.firmwareTarget,
-                        "Protobuf Version": viewModel.protobufVersion
+                        "Software Revision": softwareRevision,
+                        "Build Date": buildDate,
+                        "Target": firmwareTarget,
+                        "Protobuf Version": protobufVersion
                     ]
                 )
 
                 DeviceInfoViewCard(
                     title: "Radio Stack",
                     values: [
-                        "Radio Firmware": viewModel.radioFirmware
+                        "Radio Firmware": radioFirmware
                     ]
                 )
 
                 DeviceInfoViewCard(
                     title: "Other",
-                    values: viewModel.otherKeys
+                    values: otherKeys
                 )
             }
             .textSelection(.enabled)
@@ -60,47 +153,46 @@ struct DeviceInfoView: View {
             }
             TrailingToolbarItems {
                 ShareButton {
-                    viewModel.share()
+                    share()
                 }
-                .disabled(!viewModel.isReady)
-                .opacity(viewModel.isReady ? 1 : 0.4)
+                .disabled(!flipperService.isInfoReady)
+                .opacity(flipperService.isInfoReady ? 1 : 0.4)
             }
         }
         .task {
-            await viewModel.getInfo()
+            await flipperService.getInfo()
         }
+    }
+
+    private let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+        return formatter
+    }()
+
+    private func share() {
+        var array = deviceInfo.toArray().sorted()
+        array += powerInfo.toArray().sorted()
+
+        if let int = appState.flipper?.storage?.internal {
+            array.append("int_available: \(int.free)")
+            array.append("int_total: \(int.total)")
+        }
+        if let ext = appState.flipper?.storage?.external {
+            array.append("ext_available: \(ext.free)")
+            array.append("ext_total: \(ext.total)")
+        }
+
+        let name = appState.flipper?.name ?? "unknown"
+        let content = array.joined(separator: "\n")
+        let filename = "dump-\(name)-\(formatter.string(from: Date())).txt"
+
+        Core.share(content, filename: filename)
     }
 }
 
-struct DeviceInfoViewCard: View {
-    let title: String
-    var values: OrderedDictionary<String, String>
-
-    var zippedIndexKey: [(Int, String)] {
-        .init(zip(values.keys.indices, values.keys))
-    }
-
-    var body: some View {
-        Card {
-            VStack(spacing: 12) {
-                HStack {
-                    Text(title)
-                        .font(.system(size: 16, weight: .bold))
-                    Spacer()
-                }
-                .padding(.bottom, 6)
-                .padding(.horizontal, 12)
-
-                ForEach(zippedIndexKey, id: \.0) { index, key in
-                    CardRow(name: key, value: values[key] ?? "")
-                        .padding(.horizontal, 12)
-                    if index + 1 < values.count {
-                        Divider()
-                    }
-                }
-            }
-            .padding(.vertical, 12)
-        }
-        .padding(.horizontal, 14)
+private extension Dictionary where Key == String, Value == String {
+    func toArray() -> [String] {
+        self.map { "\($0): \($1)" }
     }
 }

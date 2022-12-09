@@ -4,12 +4,17 @@ import Peripheral
 import Logging
 import Combine
 
+@MainActor
 public class FlipperService: ObservableObject {
     private let logger = Logger(label: "flipper-service")
 
     @Inject var rpc: RPC
 
     @Published public private(set) var frame: ScreenFrame = .init()
+
+    @Published public private(set) var deviceInfo: [String: String] = [:]
+    @Published public private(set) var powerInfo: [String: String] = [:]
+    @Published public private(set) var isInfoReady = false
 
     public init() {
         subscribeToPublishers()
@@ -114,5 +119,32 @@ public class FlipperService: ObservableObject {
     public func startUpdateProcess(from path: Path) async throws {
         try await rpc.update(manifest: path.appending("update.fuf"))
         try await rpc.reboot(to: .update)
+    }
+
+    public func getInfo() async {
+        isInfoReady = false
+        await getDeviceInfo()
+        await getPowerInfo()
+        isInfoReady = true
+    }
+
+    public func getDeviceInfo() async {
+        do {
+            for try await (key, value) in rpc.deviceInfo() {
+                deviceInfo[key] = value
+            }
+        } catch {
+            logger.error("device info: \(error)")
+        }
+    }
+
+    public func getPowerInfo() async {
+        do {
+            for try await (key, value) in rpc.powerInfo() {
+                powerInfo[key] = value
+            }
+        } catch {
+            logger.error("power info: \(error)")
+        }
     }
 }
