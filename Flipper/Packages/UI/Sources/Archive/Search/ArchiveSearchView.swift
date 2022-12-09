@@ -1,15 +1,29 @@
+import Core
 import SwiftUI
 
 struct ArchiveSearchView: View {
-    @StateObject var viewModel: ArchiveSearchViewModel
+    @EnvironmentObject var archiveService: ArchiveService
     @Environment(\.dismiss) private var dismiss
+
+    @State var predicate = ""
+    @State var selectedItem: ArchiveItem?
+
+    var filteredItems: [ArchiveItem] {
+        guard !predicate.isEmpty else {
+            return archiveService.items
+        }
+        return archiveService.items.filter {
+            $0.name.value.lowercased().contains(predicate.lowercased()) ||
+            $0.note.lowercased().contains(predicate.lowercased())
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 14) {
                 SearchField(
                     placeholder: "Search by name and note",
-                    predicate: $viewModel.predicate)
+                    predicate: $predicate)
 
                 Button {
                     dismiss()
@@ -21,22 +35,22 @@ struct ArchiveSearchView: View {
             .padding(.vertical, 14)
             .padding(.horizontal, 16)
 
-            if viewModel.filteredItems.isEmpty {
+            if filteredItems.isEmpty {
                 NothingFoundView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .customBackground(.background)
             } else {
                 ScrollView {
-                    CategoryList(items: viewModel.filteredItems) { item in
-                        viewModel.onItemSelected(item: item)
+                    CategoryList(items: filteredItems) { item in
+                        selectedItem = item
                     }
                     .padding(14)
                 }
                 .customBackground(.background)
             }
         }
-        .sheet(isPresented: $viewModel.showInfoView) {
-            InfoView(viewModel: .init(item: viewModel.selectedItem))
+        .sheet(item: $selectedItem) { item in
+            InfoView(viewModel: .init(item: item))
         }
     }
 }

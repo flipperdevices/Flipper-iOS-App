@@ -116,7 +116,7 @@ struct ArchiveView: View {
                 ImportView(viewModel: .init(url: item))
             }
             .fullScreenCover(isPresented: $showSearchView) {
-                ArchiveSearchView(viewModel: .init())
+                ArchiveSearchView()
             }
             .fullScreenCover(isPresented: $showWidgetSettings) {
                 WidgetSettingsView()
