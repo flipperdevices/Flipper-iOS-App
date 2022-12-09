@@ -2,19 +2,26 @@ import Core
 import SwiftUI
 
 struct CategoryView: View {
-    @StateObject var viewModel: CategoryViewModel
+    @EnvironmentObject var archiveService: ArchiveService
     @Environment(\.dismiss) private var dismiss
+
+    let kind: ArchiveItem.Kind
+    @State var selectedItem: ArchiveItem?
+
+    var items: [ArchiveItem] {
+        archiveService.items.filter { $0.kind == kind }
+    }
 
     var body: some View {
         ZStack {
             Text("You have no keys yet")
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(.black40)
-                .opacity(viewModel.items.isEmpty ? 1 : 0)
+                .opacity(items.isEmpty ? 1 : 0)
 
             ScrollView {
-                CategoryList(items: viewModel.items) { item in
-                    viewModel.onItemSelected(item: item)
+                CategoryList(items: items) { item in
+                    selectedItem = item
                 }
                 .padding(14)
             }
@@ -27,12 +34,12 @@ struct CategoryView: View {
                 BackButton {
                     dismiss()
                 }
-                Text(viewModel.name)
+                Text(kind.name)
                     .font(.system(size: 20, weight: .bold))
             }
         }
-        .sheet(isPresented: $viewModel.showInfoView) {
-            InfoView(viewModel: .init(item: viewModel.selectedItem))
+        .sheet(item: $selectedItem) { item in
+            InfoView(viewModel: .init(item: item))
         }
     }
 }
