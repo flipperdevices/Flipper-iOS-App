@@ -23,9 +23,13 @@ class NFCEditorViewModel: ObservableObject {
     @Published var atqa: [UInt8]
     @Published var sak: [UInt8]
 
+    let hasBCC: Bool
+
     @Published var bytes: [UInt8?] {
         didSet {
-            updateUID()
+            if oldValue != bytes {
+                updateUID()
+            }
         }
     }
     @Published var showSaveAs = false
@@ -38,13 +42,51 @@ class NFCEditorViewModel: ObservableObject {
         self.atqa = item.wrappedValue.atqa
         self.sak = item.wrappedValue.sak
         self.bytes = item.wrappedValue.nfcBlocks
+        self.hasBCC = item.wrappedValue.hasBCC
     }
 
     func updateUID() {
-        guard !uid.isEmpty, bytes.count > uid.count else {
-            return
+        var index = uid.count
+
+        // UID should be 4 or 7 bytes, Sector 0 should be 64 bytes
+        guard (index == 4 || index == 7), bytes.count >= 64 else { return }
+
+        // ATQA byte order depends on version
+        guard let version = item.version else { return }
+
+        // MARK: UID
+
+        let newUID = bytes
+            .prefix(upTo: index)
+            .map { $0 ?? 0 }
+
+        if uid != newUID {
+            uid = .init(newUID)
+            if hasBCC {
+                // NOTE: calculate BCC
+                bytes[index] = newUID.bcc
+            }
         }
-        uid = .init(bytes.prefix(uid.count).map { $0 ?? 0 })
+
+        if hasBCC {
+            index += 1
+        }
+
+        // MARK: SAK
+
+        sak = [bytes[index] ?? 0]
+        index += 1
+
+        // MARK: ATQA
+
+        let newATQA = bytes
+            .suffix(from: index)
+            .prefix(2)
+            .map { $0 ?? 0 }
+
+        atqa = version >= 3
+            ? newATQA.reversed()
+            : newATQA
     }
 
     func cancel() {
@@ -81,6 +123,25 @@ private extension ArchiveItem {
         shadowCopy.isEmpty
             ? self.properties
             : self.shadowCopy
+    }
+
+    var version: Int? {
+        guard let version = props.first(where: { $0.key == "Version" }) else {
+            return nil
+        }
+        return Int(version.value)
+    }
+
+    var hasBCC: Bool {
+        guard let block0 = props.first(where: { $0.key == "Block 0" }) else {
+            return false
+        }
+        let uid = uid
+        let bytes = [UInt8](hexString: block0.value)
+        guard !uid.isEmpty, bytes.count > uid.count else {
+            return false
+        }
+        return bytes[uid.count] == uid.bcc
     }
 
     var uid: [UInt8] {
@@ -193,5 +254,20 @@ private extension Array where Element == UInt8 {
         self = hexString
             .split(separator: " ")
             .map { UInt8($0, radix: 16) ?? 0 }
+    }
+}
+
+private extension Array where Element == UInt8 {
+    var bcc: UInt8? {
+        guard count == 4 || count == 7 else {
+            return nil
+        }
+        return reduce(0, ^)
+    }
+}
+
+private extension ArraySlice where Element == UInt8 {
+    var bcc: UInt8? {
+        [UInt8](self).bcc
     }
 }
