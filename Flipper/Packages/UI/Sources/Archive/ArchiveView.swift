@@ -1,52 +1,96 @@
 import Core
 import SwiftUI
 import Combine
+import OrderedCollections
 
 struct ArchiveView: View {
-    @StateObject var viewModel: ArchiveViewModel
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var archiveService: ArchiveService
+
+    @State var importedItem: URL?
+    @State var selectedItem: ArchiveItem?
+    @State var showSearchView = false
+    @State var showWidgetSettings = false {
+        didSet {
+            if appState.showWidgetSettings != showWidgetSettings {
+                appState.showWidgetSettings = showWidgetSettings
+            }
+        }
+    }
+
+    var canPullToRefresh: Bool {
+        appState.status == .connected ||
+        appState.status == .synchronized
+    }
+
+    var items: [ArchiveItem] {
+        archiveService.items
+    }
+
+    var sortedItems: [ArchiveItem] {
+        archiveService.items.sorted { $0.date < $1.date }
+    }
+
+    var favoriteItems: [ArchiveItem] {
+        sortedItems.filter { $0.isFavorite }
+    }
+
+    var groups: OrderedDictionary<ArchiveItem.Kind, Int> {
+        [
+            .subghz: items.filter { $0.kind == .subghz }.count,
+            .rfid: items.filter { $0.kind == .rfid }.count,
+            .nfc: items.filter { $0.kind == .nfc }.count,
+            .infrared: items.filter { $0.kind == .infrared }.count,
+            .ibutton: items.filter { $0.kind == .ibutton }.count
+        ]
+    }
 
     var body: some View {
         NavigationView {
             VStack {
-                if viewModel.status == .connecting {
+                if appState.status == .connecting {
                     VStack(spacing: 4) {
                         Spinner()
                         Text("Connecting to Flipper...")
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.black30)
                     }
-                } else if viewModel.status == .synchronizing {
+                } else if appState.status == .synchronizing {
                     VStack(spacing: 4) {
                         Spinner()
                         Text(
-                            viewModel.syncProgress == 0
+                            appState.syncProgress == 0
                                 ? "Syncing..."
-                                : "Syncing \(viewModel.syncProgress)%"
+                                : "Syncing \(appState.syncProgress)%"
                         )
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.black30)
                     }
                 } else {
                     RefreshableScrollView(
-                        isEnabled: viewModel.canPullToRefresh,
-                        action: viewModel.refresh
+                        isEnabled: canPullToRefresh,
+                        action: refresh
                     ) {
                         CategoryCard(
-                            groups: viewModel.groups,
-                            deletedCount: viewModel.deleted.count
+                            groups: groups,
+                            deletedCount: archiveService.deleted.count
                         )
                         .padding(14)
 
-                        if !viewModel.favoriteItems.isEmpty {
-                            FavoritesSection(viewModel: viewModel)
-                                .padding(.horizontal, 14)
-                                .padding(.bottom, 14)
+                        if !favoriteItems.isEmpty {
+                            FavoritesSection(items: favoriteItems) { item in
+                                selectedItem = item
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.bottom, 14)
                         }
 
-                        if !viewModel.items.isEmpty {
-                            AllItemsSection(viewModel: viewModel)
-                                .padding(.horizontal, 14)
-                                .padding(.bottom, 14)
+                        if !archiveService.items.isEmpty {
+                            AllItemsSection(items: sortedItems) { item in
+                                selectedItem = item
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.bottom, 14)
                         }
                     }
                 }
@@ -61,66 +105,41 @@ struct ArchiveView: View {
                 }
                 TrailingToolbarItems {
                     SearchButton {
-                        viewModel.showSearchView = true
+                        showSearchView = true
                     }
                 }
             }
-            .sheet(isPresented: $viewModel.showInfoView) {
-                InfoView(viewModel: .init(item: viewModel.selectedItem))
+            .sheet(item: $selectedItem) { item in
+                InfoView(viewModel: .init(item: item))
             }
-            .sheet(isPresented: $viewModel.hasImportedItem) {
-                ImportView(viewModel: .init(url: viewModel.importedItem))
+            .sheet(item: $importedItem) { item in
+                ImportView(viewModel: .init(url: item))
             }
-            .fullScreenCover(isPresented: $viewModel.showSearchView) {
+            .fullScreenCover(isPresented: $showSearchView) {
                 ArchiveSearchView(viewModel: .init())
             }
-            .fullScreenCover(isPresented: $viewModel.showWidgetSettings) {
+            .fullScreenCover(isPresented: $showWidgetSettings) {
                 WidgetSettingsView()
             }
             .navigationTitle("")
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
+        .onChange(of: appState.importQueue) { queue in
+            guard !queue.isEmpty else {
+                return
+            }
+            importedItem = appState.importQueue.removeFirst()
+        }
+    }
+
+    func refresh() {
+        appState.synchronize()
     }
 }
 
-extension ArchiveView {
-    struct FavoritesSection: View {
-        @StateObject var viewModel: ArchiveViewModel
-
-        var body: some View {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text("Favorites")
-                        .font(.system(size: 16, weight: .bold))
-                    Image("StarFilled")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(.sYellow)
-                }
-
-                CompactList(items: viewModel.favoriteItems) { item in
-                    viewModel.onItemSelected(item: item)
-                }
-            }
-        }
-    }
-
-    struct AllItemsSection: View {
-        @StateObject var viewModel: ArchiveViewModel
-
-        var body: some View {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text("All")
-                        .font(.system(size: 16, weight: .bold))
-                }
-
-                CompactList(items: viewModel.sortedItems) { item in
-                    viewModel.onItemSelected(item: item)
-                }
-            }
-        }
+extension URL: Identifiable {
+    public var id: URL {
+        self
     }
 }

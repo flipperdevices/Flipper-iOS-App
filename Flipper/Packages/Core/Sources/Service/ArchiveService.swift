@@ -11,11 +11,17 @@ public class ArchiveService: ObservableObject {
     private var disposeBag: DisposeBag = .init()
 
     @Published public private(set) var items: [ArchiveItem] = []
+    @Published public private(set) var deleted: [ArchiveItem] = []
 
     public init() {
         archive.items
             .receive(on: DispatchQueue.main)
             .assign(to: \.items, on: self)
+            .store(in: &disposeBag)
+
+        archive.deletedItems
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.deleted, on: self)
             .store(in: &disposeBag)
     }
 

@@ -24,7 +24,7 @@ struct MainView: View {
             ZStack {
                 DeviceView()
                     .opacity(selectedTab == .device ? 1 : 0)
-                ArchiveView(viewModel: .init())
+                ArchiveView()
                     .opacity(selectedTab == .archive ? 1 : 0)
                 HubView()
                     .opacity(selectedTab == .hub ? 1 : 0)
