@@ -54,7 +54,7 @@ struct DeviceView: View {
                             NavigationLink {
                                 DeviceInfoView(viewModel: .init())
                             } label: {
-                                DeviceInfoCard(viewModel: .init())
+                                DeviceInfoCard()
                                     .padding(.top, 24)
                                     .padding(.horizontal, 14)
                             }
