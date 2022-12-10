@@ -89,7 +89,7 @@ extension ArchiveItem {
         .init(components: ["any", kind.location, filename])
     }
 
-    var filename: String {
+    public var filename: String {
         "\(name).\(kind.extension)"
     }
 }

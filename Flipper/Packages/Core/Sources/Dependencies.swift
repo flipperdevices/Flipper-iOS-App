@@ -36,6 +36,10 @@ public class Depencencies: ObservableObject {
         .init()
     }()
 
+    public lazy var sharingService: SharingService = {
+        .init()
+    }()
+
     public lazy var widgetService: WidgetService = {
         .init()
     }()

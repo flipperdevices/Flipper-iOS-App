@@ -16,6 +16,7 @@ public struct RootView: View {
             .environmentObject(dependencies.flipperService)
             .environmentObject(dependencies.archiveService)
             .environmentObject(dependencies.updateService)
+            .environmentObject(dependencies.sharingService)
             .environmentObject(dependencies.emulateService)
             .environmentObject(dependencies.widgetService)
     }

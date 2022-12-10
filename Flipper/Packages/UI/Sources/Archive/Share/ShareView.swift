@@ -1,7 +1,21 @@
+import Core
 import SwiftUI
 
 struct ShareView: View {
-    @StateObject var viewModel: ShareViewModel
+    @EnvironmentObject var sharingService: SharingService
+    @EnvironmentObject var networkService: NetworkService
+
+    let item: ArchiveItem
+
+    @State private var state: SharingState = .select
+    @State private var isTempLink = false
+
+    enum SharingState {
+        case select
+        case uploading
+        case noInternet
+        case cantConnect
+    }
 
     var body: some View {
         VStack {
@@ -9,30 +23,30 @@ struct ShareView: View {
                 Text("Share")
                     .font(.system(size: 14, weight: .medium))
 
-                Text(viewModel.name)
+                Text(item.filename)
                     .font(.system(size: 18, weight: .medium))
             }
             .padding(.top, 4)
 
             VStack {
-                switch viewModel.state {
+                switch state {
                 case .noInternet:
                     NoInternetError()
                 case .cantConnect:
                     CantConnectError {
-                        viewModel.retry()
+                        retry()
                     }
                 case .select:
                     HStack(alignment: .top) {
                         Spacer()
-                        ShareAsLinkButton(isTempLink: viewModel.isTempLink) {
-                            viewModel.isTempLink
-                                ? viewModel.shareAsTempLink()
-                                : viewModel.shareAsShortLink()
+                        ShareAsLinkButton(isTempLink: isTempLink) {
+                            isTempLink
+                                ? shareAsTempLink()
+                                : shareAsShortLink()
                         }
                         Spacer()
-                        ShareAsFile {
-                            viewModel.shareAsFile()
+                        ShareAsFileButton {
+                            shareAsFile()
                         }
                         Spacer()
                     }
@@ -57,87 +71,39 @@ struct ShareView: View {
             Spacer()
         }
         .frame(height: 258)
+        .onChange(of: networkService.available) { available in
+            state = available ? .select : .noInternet
+        }
         .onAppear {
-            viewModel.recordShare()
+            sharingService.shareInitiated()
+        }
+        .task {
+            isTempLink = !sharingService.canEncodeToURL(item)
         }
     }
 
-    struct ShareAsLinkButton: View {
-        let isTempLink: Bool
-        var action: () -> Void
+    func retry() {
+        state = .select
+    }
 
-        var body: some View {
-            Button {
-                action()
-            } label: {
-                VStack(spacing: 12) {
-                    Image("ShareAsLink")
-                    VStack(spacing: 2) {
-                        Text("via Secure Link")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.a1)
-                        Text("Expires in 30 days")
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.black30)
-                            .opacity(isTempLink ? 1 : 0)
-                    }
-                }
+    func shareAsTempLink() {
+        withAnimation {
+            state = .uploading
+        }
+        Task {
+            do {
+                try await sharingService.shareAsTempLink(item: item)
+            } catch {
+                state = .cantConnect
             }
         }
     }
 
-    struct ShareAsFile: View {
-        var action: () -> Void
-
-        var body: some View {
-            Button {
-                action()
-            } label: {
-                VStack(spacing: 12) {
-                    Image("ShareAsFile")
-                    Text("Export File")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.a1)
-                }
-            }
-        }
+    func shareAsShortLink() {
+        sharingService.shareAsShortLink(item: item)
     }
 
-    struct NoInternetError: View {
-        var body: some View {
-            VStack(spacing: 2) {
-                Image("SharingNoInternet")
-                    .resizable()
-                    .frame(width: 83, height: 48)
-                Text("No Internet Connection")
-                    .font(.system(size: 14, weight: .medium))
-                Text("Unable to share this link")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.black40)
-            }
-        }
-    }
-
-    struct CantConnectError: View {
-        var action: () -> Void
-
-        var body: some View {
-            VStack(spacing: 2) {
-                Image("SharingCantConnect")
-                    .resizable()
-                    .frame(width: 84, height: 48)
-                Text("Can't Connect to the Server")
-                    .font(.system(size: 14, weight: .medium))
-                Text("Unable to share this link")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.black40)
-                Button {
-                    action()
-                } label: {
-                    Text("Retry")
-                        .font(.system(size: 16, weight: .medium))
-                }
-            }
-        }
+    func shareAsFile() {
+        sharingService.shareAsFile(item: item)
     }
 }

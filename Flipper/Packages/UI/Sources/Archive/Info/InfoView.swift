@@ -7,6 +7,9 @@ struct InfoView: View {
     @StateObject var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
 
+    @EnvironmentObject var sharingService: SharingService
+    @EnvironmentObject var networkService: NetworkService
+
     let item: ArchiveItem
 
     @State private var current: ArchiveItem = .none
@@ -88,7 +91,9 @@ struct InfoView: View {
             }
         }
         .bottomSheet(isPresented: $showShareView) {
-            ShareView(viewModel: .init(item: current))
+            ShareView(item: current)
+                .environmentObject(sharingService)
+                .environmentObject(networkService)
         }
         .fullScreenCover(isPresented: $showDumpEditor) {
             NFCEditorView(item: $current)
