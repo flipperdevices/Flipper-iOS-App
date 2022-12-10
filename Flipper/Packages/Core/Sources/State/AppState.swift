@@ -278,17 +278,7 @@ public class AppState: ObservableObject {
         logger.info("key url opened")
     }
 
-    public var imported: SafePublisher<ArchiveItem> {
-        importedSubject.eraseToAnyPublisher()
-    }
-    private let importedSubject = SafeSubject<ArchiveItem>()
-
-    public func importKey(_ item: ArchiveItem) async throws {
-        try await archive.importKey(item)
-        logger.info("key imported")
-        importedSubject.send(item)
-        try await synchronize()
-    }
+    public let imported = SafeSubject<ArchiveItem>()
 
     // MARK: Update
 

@@ -1,24 +1,53 @@
+import Core
 import SwiftUI
 
 struct ImportView: View {
-    @StateObject var viewModel: ImportViewModel
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var archiveService: ArchiveService
     @Environment(\.dismiss) private var dismiss
+
+    let url: URL
+
+    @State var state: ImportState = .loading
+
+    @State var item: ArchiveItem = .none
+    @State var backup: ArchiveItem = .none
+
+    @State var isEditing = false
+    @State var error: String?
+
+    enum ImportState {
+        case loading
+        case loaded
+        case error(Error)
+    }
+
+    enum Error: String {
+        case noInternet
+        case cantConnect
+        case invalidFile
+        case expiredLink
+    }
+
+    init(url: URL) {
+        self.url = url
+    }
 
     var body: some View {
         VStack(spacing: 0) {
-            if viewModel.isEditing {
+            if isEditing {
                 SheetEditHeader(
                     title: "Edit Key",
-                    onSave: viewModel.saveChanges,
-                    onCancel: viewModel.undoChanges
+                    onSave: saveChanges,
+                    onCancel: undoChanges
                 )
             } else {
                 SheetHeader(title: "Add Key") {
-                    viewModel.dismiss()
+                    dismiss()
                 }
             }
 
-            switch viewModel.state {
+            switch state {
             case .loading:
                 ScrollView {
                     VStack(spacing: 18) {
@@ -36,7 +65,7 @@ struct ImportView: View {
                 VStack {
                     Spacer()
                     NoInternetError {
-                        viewModel.retry()
+                        retry()
                     }
                     Spacer()
                 }
@@ -44,7 +73,7 @@ struct ImportView: View {
                 VStack {
                     Spacer()
                     CantConnectError {
-                        viewModel.retry()
+                        retry()
                     }
                     Spacer()
                 }
@@ -60,172 +89,111 @@ struct ImportView: View {
                     ExpiredLinkError()
                     Spacer()
                 }
-            case .imported:
+            case .loaded:
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
                         CardView(
-                            item: $viewModel.item,
-                            isEditing: $viewModel.isEditing,
+                            item: $item,
+                            isEditing: $isEditing,
                             kind: .imported
                         )
                         .padding(.top, 6)
                         .padding(.horizontal, 24)
 
                         Button {
-                            viewModel.add()
+                            add()
                         } label: {
                             Text("Save to Archive")
                                 .roundedButtonStyle(maxWidth: .infinity)
                         }
                         .padding(.top, 18)
                         .padding(.horizontal, 24)
-                        .opacity(viewModel.isEditing ? 0 : 1)
+                        .opacity(isEditing ? 0 : 1)
 
                         Spacer()
                     }
                 }
             }
         }
-        .alert(isPresented: $viewModel.isError) {
-            Alert(title: Text(viewModel.error))
-        }
-        .onReceive(viewModel.dismissPublisher) {
-            dismiss()
+        .alert(item: $error) { error in
+            Alert(title: Text(error))
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
+        .task {
+            await loadItem()
+        }
     }
 
-    struct CardPlaceholder: View {
-        @Environment(\.colorScheme) var colorScheme
-
-        var dividerColor: Color {
-            colorScheme == .dark ? .black60 : .black4
-        }
-
-        var body: some View {
-            VStack(alignment: .leading, spacing: 18) {
-                AnimatedPlaceholder()
-                    .frame(width: 114, height: 44)
-                    .cornerRadius(18, corners: [.bottomRight])
-                    .offset(x: -4, y: -4)
-
-                VStack(alignment: .leading, spacing: 14) {
-                    AnimatedPlaceholder()
-                        .frame(width: 128, height: 16)
-                    AnimatedPlaceholder()
-                        .frame(width: 96, height: 12)
-                }
-                .padding(.horizontal, 12)
-
-                Divider()
-                    .frame(height: 1)
-                    .background(dividerColor)
-
-                VStack(alignment: .leading, spacing: 14) {
-                    AnimatedPlaceholder()
-                        .frame(width: 64, height: 12)
-                    AnimatedPlaceholder()
-                        .frame(width: 64, height: 12)
-                }
-                .padding(.horizontal, 12)
-                .padding(.bottom, 18)
+    func loadItem() async {
+        self.state = .loading
+        do {
+            self.item = try await archiveService.loadItem(url: url)
+            self.state = .loaded
+        } catch let error as URLError {
+            switch error.code {
+            case .dataNotAllowed: state = .error(.noInternet)
+            case .fileDoesNotExist: state = .error(.expiredLink)
+            default: state = .error(.cantConnect)
             }
-            .background(Color.groupedBackground)
-            .cornerRadius(16)
-            .shadow(color: .shadow, radius: 16, x: 0, y: 4)
+        } catch {
+            self.state = .error(.invalidFile)
         }
     }
 
-    struct NoInternetError: View {
-        var action: () -> Void
+    func retry() {
+        Task { @MainActor in
+            await loadItem()
+        }
+    }
 
-        var body: some View {
-            VStack(spacing: 8) {
-                Image("SharingNoInternet")
-                    .resizable()
-                    .frame(width: 104, height: 60)
-
-                VStack(spacing: 4) {
-                    Text("No Internet Connection")
-                        .font(.system(size: 14, weight: .medium))
-                    Text("Unable to download this key")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.black30)
-                }
-
-                Button {
-                    action()
-                } label: {
-                    Text("Retry")
-                        .font(.system(size: 16, weight: .medium))
-                }
-                .padding(.top, 4)
+    func add() {
+        Task { @MainActor in
+            do {
+                try await archiveService.importKey(item)
+                dismiss()
+            } catch {
+                showError(error)
             }
         }
     }
 
-    struct CantConnectError: View {
-        var action: () -> Void
-
-        var body: some View {
-            VStack(spacing: 8) {
-                Image("SharingCantConnect")
-                    .resizable()
-                    .frame(width: 104, height: 60)
-
-                VStack(spacing: 4) {
-                    Text("Can't Connect to the Server")
-                        .font(.system(size: 14, weight: .medium))
-                    Text("Unable to download this key")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.black30)
-                }
-
-                Button {
-                    action()
-                } label: {
-                    Text("Retry")
-                        .font(.system(size: 16, weight: .medium))
-                }
-                .padding(.top, 4)
-            }
+    func edit() {
+        withAnimation {
+            isEditing = true
         }
     }
 
-    struct InvalidFileError: View {
-        var body: some View {
-            VStack(spacing: 8) {
-                Image("SharingInvalidFile")
-                    .resizable()
-                    .frame(width: 115, height: 86)
-
-                VStack(spacing: 4) {
-                    Text("Invalid File Format")
-                        .font(.system(size: 14, weight: .medium))
-                    Text("Unable to import this file")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.black30)
-                }
-            }
+    func saveChanges() {
+        backup = item
+        withAnimation {
+            isEditing = false
         }
     }
 
-    struct ExpiredLinkError: View {
-        var body: some View {
-            VStack(spacing: 8) {
-                Image("SharingExpiredLink")
-                    .resizable()
-                    .frame(width: 101, height: 60)
-
-                VStack(spacing: 4) {
-                    Text("Expired Link")
-                        .font(.system(size: 14, weight: .medium))
-                    Text("Unable to import file from this link")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.black30)
-                }
-            }
+    func undoChanges() {
+        item = backup
+        withAnimation {
+            isEditing = false
         }
     }
+
+    func showError(_ error: Swift.Error) {
+        self.error = String(describing: error)
+    }
+}
+
+extension ArchiveItem {
+    static var none: Self {
+        .init(
+            name: "",
+            kind: .ibutton,
+            properties: [],
+            shadowCopy: [])
+    }
+}
+
+// FIXME: Use Identifiable Error
+extension String: Identifiable {
+    public var id: Self { self }
 }

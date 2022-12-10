@@ -113,7 +113,8 @@ struct ArchiveView: View {
                 InfoView(viewModel: .init(item: item))
             }
             .sheet(item: $importedItem) { item in
-                ImportView(viewModel: .init(url: item))
+                ImportView(url: item)
+//                    .environmentObject(archiveService)
             }
             .fullScreenCover(isPresented: $showSearchView) {
                 ArchiveSearchView()
