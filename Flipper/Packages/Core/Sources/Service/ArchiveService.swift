@@ -34,6 +34,42 @@ public class ArchiveService: ObservableObject {
             .store(in: &disposeBag)
     }
 
+    public func save(
+        _ item: ArchiveItem,
+        as newItem: ArchiveItem
+    ) async throws {
+        do {
+            if item.name != newItem.name {
+                try await archive.rename(item.id, to: newItem.name)
+            }
+            try await archive.upsert(newItem)
+            recordEdit()
+            appState.synchronize()
+        } catch {
+            logger.error("saving changes: \(error)")
+            throw error
+        }
+    }
+
+    public func delete(_ item: ArchiveItem) async throws {
+        do {
+            try await archive.delete(item.id)
+            appState.synchronize()
+        } catch {
+            logger.error("deleting item: \(error)")
+            throw error
+        }
+    }
+
+    public func onIsFavoriteToggle(_ item: ArchiveItem) async throws {
+        do {
+            try await archive.onIsFavoriteToggle(item.path)
+        } catch {
+            logger.error("toggling favorite: \(error)")
+            throw error
+        }
+    }
+
     public func importKey(_ item: ArchiveItem) async throws {
         do {
             try await archive.importKey(item)
@@ -77,9 +113,13 @@ public class ArchiveService: ObservableObject {
         archive.backupKeys()
     }
 
-    // Analytics
+    // MARK: Analytics
+
+    func recordEdit() {
+        analytics.appOpen(target: .keyEdit)
+    }
 
     func recordImport() {
-         analytics.appOpen(target: .keyImport)
+        analytics.appOpen(target: .keyImport)
     }
 }

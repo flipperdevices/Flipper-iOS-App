@@ -50,7 +50,7 @@ struct ArchiveSearchView: View {
             }
         }
         .sheet(item: $selectedItem) { item in
-            InfoView(viewModel: .init(item: item))
+            InfoView(item: item)
         }
     }
 }

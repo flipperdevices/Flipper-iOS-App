@@ -110,7 +110,7 @@ struct ArchiveView: View {
                 }
             }
             .sheet(item: $selectedItem) { item in
-                InfoView(viewModel: .init(item: item))
+                InfoView(item: item)
             }
             .sheet(item: $importedItem) { item in
                 ImportView(url: item)

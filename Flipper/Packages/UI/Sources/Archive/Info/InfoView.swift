@@ -1,50 +1,61 @@
+import Core
 import SwiftUI
 
 struct InfoView: View {
-    @StateObject var viewModel: InfoViewModel
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var archiveService: ArchiveService
     @StateObject var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
+
+    let item: ArchiveItem
+
+    @State private var current: ArchiveItem = .none
+    @State private var backup: ArchiveItem = .none
+    @State private var showShareView = false
+    @State private var showDumpEditor = false
+    @State private var isEditing = false
+    @State private var error: String?
 
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 0) {
-                if viewModel.isEditing {
+                if isEditing {
                     SheetEditHeader(
                         title: "Editing",
-                        description: viewModel.item.name.value,
-                        onSave: viewModel.saveChanges,
-                        onCancel: viewModel.undoChanges
+                        description: current.name.value,
+                        onSave: saveChanges,
+                        onCancel: undoChanges
                     )
                 } else {
                     SheetHeader(
-                        title: viewModel.item.isNFC ? "Card Info" : "Key Info",
-                        description: viewModel.item.name.value
+                        title: current.isNFC ? "Card Info" : "Key Info",
+                        description: current.name.value
                     ) {
-                        viewModel.dismiss()
+                        dismiss()
                     }
                 }
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
                         CardView(
-                            item: $viewModel.item,
-                            isEditing: $viewModel.isEditing,
+                            item: $current,
+                            isEditing: $isEditing,
                             kind: .existing
                         )
                         .padding(.top, 6)
                         .padding(.horizontal, 24)
 
-                        EmulateView(viewModel: .init(item: viewModel.item))
-                            .opacity(viewModel.isEditing ? 0 : 1)
+                        EmulateView(viewModel: .init(item: item))
+                            .opacity(isEditing ? 0 : 1)
                             .environmentObject(alertController)
 
                         VStack(alignment: .leading, spacing: 2) {
-                            if viewModel.item.isEditableNFC {
+                            if current.isEditableNFC {
                                 InfoButton(
                                     image: "HexEditor",
                                     title: "Edit Dump"
                                 ) {
-                                    viewModel.showDumpEditor = true
+                                    showDumpEditor = true
                                 }
                                 .foregroundColor(.primary)
                             }
@@ -52,20 +63,20 @@ struct InfoView: View {
                                 image: "Share",
                                 title: "Share"
                             ) {
-                                viewModel.share()
+                                share()
                             }
                             .foregroundColor(.primary)
                             InfoButton(
                                 image: "Delete",
                                 title: "Delete"
                             ) {
-                                viewModel.delete()
+                                delete()
                             }
                             .foregroundColor(.sRed)
                         }
                         .padding(.top, 8)
                         .padding(.horizontal, 24)
-                        .opacity(viewModel.isEditing ? 0 : 1)
+                        .opacity(isEditing ? 0 : 1)
 
                         Spacer()
                     }
@@ -76,54 +87,110 @@ struct InfoView: View {
                 alertController.alert
             }
         }
-        .bottomSheet(isPresented: $viewModel.showShareView) {
-            ShareView(viewModel: .init(item: viewModel.item))
+        .bottomSheet(isPresented: $showShareView) {
+            ShareView(viewModel: .init(item: current))
         }
-        .fullScreenCover(isPresented: $viewModel.showDumpEditor) {
-            NFCEditorView(viewModel: .init(item: $viewModel.item))
+        .fullScreenCover(isPresented: $showDumpEditor) {
+            NFCEditorView(viewModel: .init(item: $current))
         }
-        .alert(isPresented: $viewModel.isError) {
-            Alert(title: Text(viewModel.error))
-        }
-        .onReceive(viewModel.dismissPublisher) {
-            dismiss()
+        .alert(item: $error) { error in
+            Alert(title: Text(error))
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
         .environmentObject(alertController)
+        .onChange(of: current.isFavorite) { _ in
+            toggleFavorite()
+        }
+        .onChange(of: archiveService.items) { items in
+            if let item = items.first(where: { $0.id == current.id }) {
+                self.current.status = item.status
+            }
+        }
+        .task {
+            self.current = item
+            self.backup = item
+        }
+    }
+
+    func toggleFavorite() {
+        Task {
+            do {
+                guard backup.isFavorite != current.isFavorite else { return }
+                guard !isEditing else { return }
+                backup.isFavorite = current.isFavorite
+                try await archiveService.onIsFavoriteToggle(current)
+            } catch {
+                showError(error)
+            }
+        }
+    }
+
+    func edit() {
+        backup = current
+        withAnimation {
+            isEditing = true
+        }
+    }
+
+    func share() {
+        showShareView = true
+    }
+
+    func delete() {
+        Task {
+            do {
+                try await archiveService.delete(current)
+                dismiss()
+            } catch {
+                showError(error)
+            }
+        }
+    }
+
+    func saveChanges() {
+        guard current != backup else {
+            withAnimation {
+                isEditing = false
+            }
+            return
+        }
+        Task {
+            do {
+                try await archiveService.save(backup, as: current)
+                withAnimation {
+                    isEditing = false
+                }
+            } catch {
+                current.status = .error
+                showError(error)
+            }
+        }
+    }
+
+    func undoChanges() {
+        current = backup
+        withAnimation {
+            isEditing = false
+        }
+    }
+
+    func showError(_ error: Swift.Error) {
+        self.error = String(describing: error)
     }
 }
 
-struct InfoButton: View {
-    let image: String
-    let title: String
-    let action: () -> Void
-
-    init(
-        image: String,
-        title: String,
-        action: @escaping () -> Void,
-        longPressAction: @escaping () -> Void = {}
-    ) {
-        self.image = image
-        self.title = title
-        self.action = action
+extension ArchiveItem {
+    var isNFC: Bool {
+        kind == .nfc
     }
 
-    var body: some View {
-        Button {
-        } label: {
-            HStack(spacing: 8) {
-                Image(image)
-                    .renderingMode(.template)
-                Text(title)
-                    .font(.system(size: 14, weight: .medium))
-            }
-            .frame(minWidth: 44, minHeight: 44)
-            .padding(.trailing, 44)
+    var isEditableNFC: Bool {
+        guard isNFC, let typeProperty = properties.first(
+            where: { $0.key == "Mifare Classic type" }
+        ) else {
+            return false
         }
-        .simultaneousGesture(TapGesture().onEnded {
-            action()
-        })
+        return typeProperty.value == "1K" || typeProperty.value == "4K"
     }
 }
