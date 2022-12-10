@@ -91,7 +91,7 @@ struct InfoView: View {
             ShareView(viewModel: .init(item: current))
         }
         .fullScreenCover(isPresented: $showDumpEditor) {
-            NFCEditorView(viewModel: .init(item: $current))
+            NFCEditorView(item: $current)
         }
         .alert(item: $error) { error in
             Alert(title: Text(error))

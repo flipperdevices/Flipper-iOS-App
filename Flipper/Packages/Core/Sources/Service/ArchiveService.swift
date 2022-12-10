@@ -89,15 +89,15 @@ public class ArchiveService: ObservableObject {
         }
     }
 
-    public func importKey(_ item: ArchiveItem) async throws {
+    public func add(_ item: ArchiveItem) async throws {
         do {
             try await archive.importKey(item)
-            logger.info("imported: \(item.filename)")
+            logger.info("added: \(item.filename)")
             appState.imported.send(item)
             recordImport()
             appState.synchronize()
         } catch {
-            logger.error("import: \(error)")
+            logger.error("add: \(error)")
             throw error
         }
     }

@@ -150,7 +150,7 @@ struct ImportView: View {
     func add() {
         Task { @MainActor in
             do {
-                try await archiveService.importKey(item)
+                try await archiveService.add(item)
                 dismiss()
             } catch {
                 showError(error)
