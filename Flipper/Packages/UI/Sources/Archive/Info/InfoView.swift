@@ -45,7 +45,7 @@ struct InfoView: View {
                         .padding(.top, 6)
                         .padding(.horizontal, 24)
 
-                        EmulateView(viewModel: .init(item: item))
+                        EmulateView(item: item)
                             .opacity(isEditing ? 0 : 1)
                             .environmentObject(alertController)
 

@@ -17,7 +17,7 @@ public class WidgetViewModel: ObservableObject {
         showAppLocked || showNotSynced || showCantConnect
     }
 
-    var emulate: Emulate = .init()
+    var emulate: EmulateService = .init()
 
     @Inject private var archive: Archive
     @Inject private var storage: TodayWidgetStorage
@@ -90,21 +90,22 @@ public class WidgetViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
 
-        emulate.onStateChanged = { [weak self] state in
-            guard let self else { return }
-            Task { @MainActor in
-                if state == .closed {
-                    self.emulatingIndex = nil
-                }
-                if state == .locked {
-                    self.emulatingIndex = nil
-                    self.showAppLocked = true
-                }
-                if state == .staring || state == .started || state == .closed {
-                    feedback(style: .soft)
+        emulate.$applicationState
+            .sink { [weak self] state in
+                guard let self else { return }
+                Task { @MainActor in
+                    if state == .closed {
+                        self.emulatingIndex = nil
+                    }
+                    if state == .locked {
+                        self.emulatingIndex = nil
+                        self.showAppLocked = true
+                    }
+                    if state == .staring || state == .started || state == .closed {
+                        feedback(style: .soft)
+                    }
                 }
             }
-        }
     }
 
     func loadKeys() {

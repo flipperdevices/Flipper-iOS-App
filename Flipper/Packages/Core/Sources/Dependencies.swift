@@ -32,6 +32,10 @@ public class Depencencies: ObservableObject {
         .init(appState: appState, flipperService: flipperService)
     }()
 
+    public lazy var emulateService: EmulateService = {
+        .init()
+    }()
+
     public lazy var widgetService: WidgetService = {
         .init()
     }()

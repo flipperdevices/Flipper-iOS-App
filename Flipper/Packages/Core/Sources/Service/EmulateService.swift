@@ -5,17 +5,17 @@ import Combine
 import Logging
 import Foundation
 
-public class Emulate: ObservableObject {
+@MainActor
+public class EmulateService: ObservableObject {
     private let logger = Logger(label: "emulate")
 
     @Inject private var rpc: RPC
+    @Inject private var analytics: Analytics
 
     var item: ArchiveItem?
-    public var onStateChanged: (ApplicationState) -> Void = { _ in }
 
     @Published public var applicationState: ApplicationState = .closed {
         didSet {
-            onStateChanged(applicationState)
             if applicationState == .closed {
                 resetEmulate()
             }
@@ -66,6 +66,7 @@ public class Emulate: ObservableObject {
                 try await startApp(item.kind.application)
                 try await loadFile(item.path)
                 try await startLoaded(item)
+                recordEmulate()
             } catch {
                 logger.error("emilating key: \(error)")
                 resetEmulate()
@@ -153,7 +154,7 @@ public class Emulate: ObservableObject {
 
     private func waitForMinimumDuration(for item: ArchiveItem) async throws {
         let stepMilliseconds = 10
-        var delayMilliseconds = duration(for: item)
+        var delayMilliseconds = item.duration
 
         while delayMilliseconds > 0, !forceStop {
             delayMilliseconds -= stepMilliseconds
@@ -181,33 +182,26 @@ public class Emulate: ObservableObject {
         applicationState = .closing
         try await rpc.appExit()
     }
+
+    // MARK: Analytics
+
+    func recordEmulate() {
+        analytics.appOpen(target: .keyEmulate)
+    }
 }
 
 // MARK: Durations
 
-extension Emulate {
-    public func duration(for item: ArchiveItem) -> Int {
-        item.isRaw
-            ? emulateRawMinimum(for: item)
+extension ArchiveItem {
+    public var duration:  Int {
+        isRaw
+            ? emulateRawMinimum
             : emulateMinimum
     }
 
-    // Emulated since button pressed (ms)
-    var emulateDuration: Int {
-        Date().timeIntervalSince(emulateStarted).ms
-    }
-
-    // Minimum for known SubGHz protocols (ms)
-    var emulateMinimum: Int {
-        500
-    }
-    var emulateDurationRemains: Int {
-        max(0, emulateMinimum - emulateDuration)
-    }
-
     // Minimum for RAW SubGHz in ms
-    func emulateRawMinimum(for item: ArchiveItem) -> Int {
-        let durationMicroseconds = item.properties
+    var emulateRawMinimum: Int {
+        let durationMicroseconds = properties
             .filter { $0.key == "RAW_Data" }
             .map { $0.value.split(separator: " ").compactMap { Int($0) } }
             .reduce(into: []) { $0.append(contentsOf: $1) }
@@ -216,8 +210,24 @@ extension Emulate {
         return durationMicroseconds / 1000
     }
 
+    // Minimum for known SubGHz protocols (ms)
+    var emulateMinimum: Int {
+        500
+    }
+}
+
+extension EmulateService {
+    // Emulated since button pressed (ms)
+    var emulateDuration: Int {
+        Date().timeIntervalSince(emulateStarted).ms
+    }
+
+    func emulateDurationRemains(for item: ArchiveItem) -> Int {
+        max(0, item.emulateMinimum - emulateDuration)
+    }
+
     func emulateRawDurationRemains(for item: ArchiveItem) -> Int {
-        max(0, emulateRawMinimum(for: item) - emulateDuration)
+        max(0, item.emulateRawMinimum - emulateDuration)
     }
 }
 
