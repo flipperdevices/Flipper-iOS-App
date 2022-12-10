@@ -1,24 +1,30 @@
+import Core
 import SwiftUI
 
 @MainActor
 struct DeletedInfoView: View {
-    @StateObject var viewModel: DeletedInfoViewModel
+    @EnvironmentObject var archiveService: ArchiveService
     @Environment(\.dismiss) private var dismiss
+
+    let item: ArchiveItem
+    @State private var showDeleteSheet = false
+    @State private var isEditing = false
+    @State private var error: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             SheetHeader(
-                title: viewModel.item.isNFC ? "Card Info" : "Key Info",
-                description: viewModel.item.name.value
+                title: item.isNFC ? "Card Info" : "Key Info",
+                description: item.name.value
             ) {
-                viewModel.dismiss()
+                dismiss()
             }
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     CardView(
-                        item: $viewModel.item,
-                        isEditing: $viewModel.isEditing,
+                        item: .init(get: { item }, set: { _ in }),
+                        isEditing: $isEditing,
                         kind: .deleted
                     )
                     .padding(.top, 6)
@@ -29,14 +35,14 @@ struct DeletedInfoView: View {
                             image: .init("Restore"),
                             title: "Restore"
                         ) {
-                            viewModel.restore()
+                            restore()
                         }
                         .foregroundColor(.primary)
                         InfoButton(
                             image: .init("Delete"),
                             title: "Delete Permanently"
                         ) {
-                            viewModel.delete()
+                            delete()
                         }
                         .foregroundColor(.sRed)
                     }
@@ -47,13 +53,36 @@ struct DeletedInfoView: View {
                 }
             }
         }
-        .alert(isPresented: $viewModel.isError) {
-            Alert(title: Text(viewModel.error))
-        }
-        .onReceive(viewModel.dismissPublisher) {
-            dismiss()
+        .alert(item: $error) { error in
+            Alert(title: Text(error))
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
+    }
+
+    func restore() {
+        Task {
+            do {
+                try await archiveService.restore(item)
+                dismiss()
+            } catch {
+                showError(error)
+            }
+        }
+    }
+
+    func delete() {
+        Task {
+            do {
+                try await archiveService.wipe(item)
+                dismiss()
+            } catch {
+                showError(error)
+            }
+        }
+    }
+
+    func showError(_ error: Swift.Error) {
+        self.error = String(describing: error)
     }
 }

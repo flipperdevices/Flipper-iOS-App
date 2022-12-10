@@ -85,7 +85,7 @@ struct CategoryDeletedView: View {
             }
         }
         .sheet(item: $selectedItem) { item in
-            DeletedInfoView(viewModel: .init(item: item))
+            DeletedInfoView(item: item)
         }
     }
 }

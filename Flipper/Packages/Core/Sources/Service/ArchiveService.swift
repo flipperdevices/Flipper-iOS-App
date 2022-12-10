@@ -61,6 +61,25 @@ public class ArchiveService: ObservableObject {
         }
     }
 
+    public func restore(_ item: ArchiveItem) async throws {
+        do {
+            try await archive.restore(item)
+            appState.synchronize()
+        } catch {
+            logger.error("restore item: \(error)")
+            throw error
+        }
+    }
+
+    public func wipe(_ item: ArchiveItem) async throws {
+        do {
+            try await archive.wipe(item)
+        } catch {
+            logger.error("wipe item: \(error)")
+            throw error
+        }
+    }
+
     public func onIsFavoriteToggle(_ item: ArchiveItem) async throws {
         do {
             try await archive.onIsFavoriteToggle(item.path)
