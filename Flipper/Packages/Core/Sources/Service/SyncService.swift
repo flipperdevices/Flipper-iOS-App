@@ -35,9 +35,11 @@ public class SyncService: ObservableObject {
     }
 
     func onStatusChanged(_ oldValue: DeviceStatus) {
+        #if !DEBUG
         if oldValue == .connecting, status == .connected {
             self.synchronize(syncDateTime: true)
         }
+        #endif
     }
 
     // MARK: Synchronization
