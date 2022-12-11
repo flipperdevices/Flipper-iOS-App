@@ -1,16 +1,30 @@
 import Core
+import Peripheral
 import SwiftUI
 
 struct ReaderAttackView: View {
-    @StateObject var viewModel: ReaderAttackRefactoring = .init()
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var readerAttackService: ReaderAttackService
     @StateObject var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
 
+    var readerAttack: ReaderAttackModel {
+        appState.readerAttack
+    }
+
+    var showCancelAttack: Binding<Bool> {
+        $appState.readerAttack.showCancelAttack
+    }
+
+    var flipperColor: FlipperColor {
+        appState.flipper?.color ?? .white
+    }
+
     var title: String {
-        guard !viewModel.newKeys.isEmpty else {
+        guard !readerAttack.newKeys.isEmpty else {
             return "New Keys Not Found"
         }
-        let keysCount = viewModel.newKeys.count
+        let keysCount = readerAttack.newKeys.count
         let s = keysCount == 1 ? "" : "s"
         return "\(keysCount) New Key\(s) added to User Dict."
     }
@@ -18,13 +32,13 @@ struct ReaderAttackView: View {
     var content: some View {
         VStack(spacing: 18) {
             VStack {
-                switch viewModel.state {
+                switch readerAttack.state {
                 case .noLog:
-                    ReaderDataNotFound(fliperColor: viewModel.flipperColor)
+                    ReaderDataNotFound(fliperColor: flipperColor)
                 case .noDevice:
-                    AttackConnectionError(fliperColor: viewModel.flipperColor)
+                    AttackConnectionError(fliperColor: flipperColor)
                 case .noSDCard:
-                    AttackStorageError(fliperColor: viewModel.flipperColor)
+                    AttackStorageError(fliperColor: flipperColor)
                 case .downloadingLog:
                     VStack(spacing: 18) {
                         Text("Calculation Started...")
@@ -33,7 +47,7 @@ struct ReaderAttackView: View {
                             ProgressBarView(
                                 color: .a2,
                                 image: "ProgressDownload",
-                                progress: viewModel.progress
+                                progress: readerAttack.progress
                             )
                             .padding(.horizontal, 18)
                             Text("Downloading raw file from Flipper...")
@@ -50,7 +64,7 @@ struct ReaderAttackView: View {
                             ProgressBarView(
                                 color: .a1,
                                 image: "ProgressKey",
-                                progress: viewModel.progress
+                                progress: readerAttack.progress
                             )
                             .padding(.horizontal, 18)
                             Text("Calculating...")
@@ -101,7 +115,7 @@ struct ReaderAttackView: View {
                             .font(.system(size: 18, weight: .bold))
                         VStack(spacing: 24) {
                             Image(
-                                viewModel.newKeys.isEmpty
+                                readerAttack.newKeys.isEmpty
                                 ? "FlipperShrugging"
                                 : "FlipperSuccess"
                             )
@@ -111,8 +125,8 @@ struct ReaderAttackView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 92)
 
-                            if !viewModel.newKeys.isEmpty {
-                                KeysView(.init(viewModel.newKeys))
+                            if !readerAttack.newKeys.isEmpty {
+                                KeysView(.init(readerAttack.newKeys))
                             }
 
                             Button {
@@ -132,19 +146,19 @@ struct ReaderAttackView: View {
                 }
             }
 
-            if !viewModel.isError {
+            if !readerAttack.isError {
                 VStack(alignment: .leading, spacing: 32) {
                     CalculatedKeys(
-                        results: viewModel.results,
-                        showProgress: viewModel.showCalculatedKeysSpinner
+                        results: readerAttack.results,
+                        showProgress: readerAttack.showCalculatedKeysSpinner
                     )
-                    if viewModel.hasNewKeys {
-                        UniqueKeys(keys: viewModel.newKeys)
+                    if readerAttack.hasNewKeys {
+                        UniqueKeys(keys: readerAttack.newKeys)
                     }
-                    if viewModel.hasDuplicatedKeys {
+                    if readerAttack.hasDuplicatedKeys {
                         DuplicatedKeys(
-                            flipperKeys: viewModel.flipperDuplicatedKeys,
-                            userKeys: viewModel.userDuplicatedKeys)
+                            flipperKeys: readerAttack.flipperDuplicatedKeys,
+                            userKeys: readerAttack.userDuplicatedKeys)
                     }
                 }
             }
@@ -161,15 +175,15 @@ struct ReaderAttackView: View {
                     Spacer()
                 }
 
-                if viewModel.state != .finished {
+                if readerAttack.state != .finished {
                     HStack {
                         Spacer()
                         Button {
-                            viewModel.isAttackInProgress
-                                ? viewModel.showCancelAttack = true
+                            readerAttack.inProgress
+                                ? readerAttackService.cancel()
                                 : dismiss()
                         } label: {
-                            Text(viewModel.isError ? "Close" : "Cancel")
+                            Text(readerAttack.isError ? "Close" : "Cancel")
                                 .font(.system(size: 16, weight: .medium))
                                 .padding(.horizontal, 8)
                                 .tappableFrame()
@@ -186,17 +200,17 @@ struct ReaderAttackView: View {
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
-        .customAlert(isPresented: $viewModel.showCancelAttack) {
-            CancelAttackAlert(isPresented: $viewModel.showCancelAttack) {
+        .customAlert(isPresented: showCancelAttack) {
+            CancelAttackAlert(isPresented: showCancelAttack) {
                 dismiss()
             }
         }
         .environmentObject(alertController)
         .onAppear {
-            viewModel.start()
+            readerAttackService.start()
         }
         .onDisappear {
-            viewModel.stop()
+            readerAttackService.stop()
         }
     }
 }
@@ -206,63 +220,6 @@ extension ReaderLog.KeyType {
         switch self {
         case .a: return .sGreenUpdate
         case .b: return .a2
-        }
-    }
-}
-
-extension ReaderAttackView {
-    struct KeysView: View {
-        let keys: [MFKey64]
-
-        var rows: Range<Int> {
-            0 ..< ((keys.count + 1) / 2)
-        }
-
-        init(_ keys: [MFKey64]) {
-            self.keys = keys
-        }
-
-        var body: some View {
-            VStack(spacing: 10) {
-                ForEach(rows, id: \.self) { row in
-                    HStack {
-                        if keys.indices.contains(row * 2 + 1) {
-                            KeyView(keys[row * 2])
-                            Spacer()
-                            KeyView(keys[row * 2 + 1])
-                        } else {
-                            Spacer()
-                            KeyView(keys[row * 2])
-                            Spacer()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    struct KeyView: View {
-        let key: MFKey64
-
-        init(_ key: MFKey64) {
-            self.key = key
-        }
-
-        var body: some View {
-            HStack(spacing: 6) {
-                Image("FoundKey")
-                Text(key.hexValue.uppercased())
-                    .foregroundColor(.primary.opacity(0.8))
-                    .font(.system(
-                        size: 12,
-                        weight: .medium,
-                        design: .monospaced))
-            }
-            .padding(.leading, 10)
-            .padding(.trailing, 12)
-            .padding(.vertical, 12)
-            .background(Color.groupedBackground)
-            .cornerRadius(30)
         }
     }
 }

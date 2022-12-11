@@ -21,6 +21,7 @@ public struct RootView: View {
             .environmentObject(dependencies.checkUpdateService)
             .environmentObject(dependencies.sharingService)
             .environmentObject(dependencies.emulateService)
+            .environmentObject(dependencies.readerAttackService)
             .environmentObject(dependencies.widgetService)
     }
 }

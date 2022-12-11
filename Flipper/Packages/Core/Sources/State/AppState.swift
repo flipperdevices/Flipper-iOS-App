@@ -11,6 +11,7 @@ public class AppState: ObservableObject {
 
     @Published public var update: Update = .init()
 
+    @Published public var readerAttack: ReaderAttackModel = .init()
 
     @Published public var firstLaunch: FirstLaunch = .shared
 
