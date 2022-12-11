@@ -86,7 +86,7 @@ struct EmulateView: View {
         .onDisappear {
             forceStopEmulate()
         }
-        .onChange(of: emulateService.applicationState) { state in
+        .onChange(of: appState.emulate.state) { state in
             if state == .closed {
                 self.isEmulating = false
             }

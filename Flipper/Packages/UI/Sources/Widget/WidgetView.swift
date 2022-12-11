@@ -1,107 +1,62 @@
+import Core
+import Inject
+
+import Logging
 import SwiftUI
 
 public struct WidgetView: View {
-    @ObservedObject var viewModel: WidgetViewModel
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var flipperService: FlipperService
+    @EnvironmentObject var widgetService: WidgetService
 
-    var rows: Range<Int> {
-        viewModel.isExpanded
-            ? (0..<(viewModel.keys.count / 2 + 1))
-            : (0..<1)
+    var widget: WidgetModel {
+        appState.widget
     }
 
-    public init(viewModel: WidgetViewModel) {
-        self.viewModel = viewModel
+    public var isError: Bool {
+        widget.isError
     }
+
+    public init() {}
 
     public var body: some View {
         VStack(spacing: 0) {
             Divider()
                 .foregroundColor(.black4)
 
-            if viewModel.showAppLocked {
-                WidgetError(
-                    text: "Flipper is Busy",
-                    image: "WidgetFlipperBusy",
-                    isPresented: $viewModel.showAppLocked
+            switch widget.state {
+            case .idle, .emulating:
+                WidgetKeysView(
+                    keys: widget.keys,
+                    keyToEmulate: widget.keyToEmulate,
+                    isExpanded: widgetService.isExpanded,
+                    onSendPressed: { widgetService.onSendPressed(for: $0) },
+                    onSendReleased: { widgetService.onSendReleased(for: $0) },
+                    onEmulateTapped: { widgetService.onEmulateTapped(for: $0) }
                 )
-                .padding(.vertical, 14)
-            } else if viewModel.showCantConnect {
-                WidgetError(
-                    text: "Can’t Connect to Flipper",
-                    image: "WidgetCantConnect",
-                    isPresented: $viewModel.showCantConnect
-                )
-                .padding(.vertical, 14)
-            } else if viewModel.showNotSynced {
-                WidgetError(
-                    text: "This Key is Not Synced",
-                    image: "WidgetKeyNotSynced",
-                    isPresented: $viewModel.showNotSynced
-                )
-                .padding(.vertical, 14)
-            } else if viewModel.showBTTurnedOff {
-                WidgetError(
-                    text: "iPhone’s Bluetooth is Turned Off",
-                    image: "WidgetBTTurnedOff",
-                    isPresented: $viewModel.showBTTurnedOff
-                )
-                .padding(.vertical, 14)
-            } else {
-                self.keys
+            case .loading:
+                Text("Loading")
+            case .error(let error):
+                ErrorView(error: error) {
+                    print("on back")
+                }
             }
         }
         .onAppear {
-            viewModel.connect()
+            flipperService.connect()
         }
         .onDisappear {
-            viewModel.stopEmulate()
-            viewModel.disconnect()
+            widgetService.stopEmulate()
+            flipperService.disconnect()
         }
         .edgesIgnoringSafeArea(.all)
-    }
-
-    var keys: some View {
-        ForEach(rows, id: \.self) { row in
-            HStack(spacing: 0) {
-                let i1 = row * 2
-                let i2 = i1 + 1
-
-                ZStack {
-                    if i1 < viewModel.keys.count {
-                        WidgetKeyView(
-                            index: i1,
-                            state: viewModel.state(at: i1),
-                            viewModel: viewModel)
-                    } else {
-                        Button {
-                            viewModel.addKey()
-                        } label: {
-                            AddKeyView(viewModel: viewModel)
-                        }
-                    }
-                }
-                .padding(.horizontal, 11)
-                .padding(.bottom, 4)
-
-                Divider()
-
-                ZStack {
-                    if i2 < viewModel.keys.count {
-                        WidgetKeyView(
-                            index: i2,
-                            state: viewModel.state(at: i2),
-                            viewModel: viewModel)
-                    } else {
-                        AddKeyView(viewModel: viewModel)
-                            .opacity(i1 < viewModel.keys.count ? 1 : 0)
-                    }
-                }
-                .padding(.horizontal, 11)
-                .padding(.bottom, 4)
-            }
-
-            if row + 1 < rows.endIndex {
-                Divider()
+        .onChange(of: appState.emulate.state) { state in
+            if
+                state == .staring ||
+                state == .started ||
+                state == .closed
+            {
+                feedback(style: .soft)
             }
         }
     }

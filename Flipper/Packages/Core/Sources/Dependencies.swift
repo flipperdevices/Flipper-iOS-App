@@ -46,7 +46,7 @@ public class Depencencies: ObservableObject {
     }()
 
     public lazy var emulateService: EmulateService = {
-        .init()
+        .init(appState: appState)
     }()
 
     public lazy var readerAttackService: ReaderAttackService = {
@@ -58,7 +58,7 @@ public class Depencencies: ObservableObject {
     }()
 
     public lazy var widgetService: WidgetService = {
-        .init()
+        .init(appState: appState, emulateService: emulateService)
     }()
 
     public init() {}

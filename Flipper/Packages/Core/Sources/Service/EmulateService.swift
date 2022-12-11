@@ -9,37 +9,30 @@ import Foundation
 public class EmulateService: ObservableObject {
     private let logger = Logger(label: "emulate")
 
+    let appState: AppState
+
+    var emulate: EmulateModel {
+        get { appState.emulate }
+        set { appState.emulate = newValue }
+    }
+
     @Inject private var rpc: RPC
     @Inject private var analytics: Analytics
+    private var disposeBag: DisposeBag = .init()
 
     var item: ArchiveItem?
-
-    @Published public var applicationState: ApplicationState = .closed {
-        didSet {
-            if applicationState == .closed {
-                resetEmulate()
-            }
-        }
-    }
-
-    public enum ApplicationState: Equatable {
-        case staring
-        case started
-        case loading
-        case loaded
-        case emulating
-        case closing
-        case closed
-        case locked
-        case restricted
-    }
 
     private var stop = false
     private var forceStop = false
     private var emulateTask: Task<Void, Swift.Error>?
     private var emulateStarted: Date = .now
 
-    public init() {
+    public init(appState: AppState) {
+        self.appState = appState
+        subscribeToPublishers()
+    }
+
+    func subscribeToPublishers() {
         rpc.onAppStateChanged { [weak self] state in
             guard let self else { return }
             Task { @MainActor in
@@ -50,8 +43,11 @@ public class EmulateService: ObservableObject {
 
     func onFlipperAppStateChanged(_ state: Message.AppState) {
         switch state {
-        case .started: self.applicationState = .started
-        case .closed: self.applicationState = .closed
+        case .started:
+            emulate.state = .started
+        case .closed:
+            emulate.state = .closed
+            resetEmulate()
         case .unknown: logger.critical("unknown app state")
         }
     }
@@ -111,44 +107,44 @@ public class EmulateService: ObservableObject {
 
     private func startApp(_ name: String) async throws {
         do {
-            applicationState = .staring
+            emulate.state = .staring
             try await rpc.appStart(name, args: "RPC")
             try await waitForAppStartedEvent()
             return
         } catch let error as Error {
             if error == .application(.systemLocked) {
-                applicationState = .locked
+                emulate.state = .locked
             }
             throw error
         }
     }
 
     private func waitForAppStartedEvent() async throws {
-        while applicationState == .staring {
+        while emulate.state == .staring {
             try await Task.sleep(nanoseconds: 100 * 1_000_000)
         }
     }
 
     private func loadFile(_ path: Peripheral.Path) async throws {
-        applicationState = .loading
+        emulate.state = .loading
         try await rpc.appLoadFile(path)
-        applicationState = .loaded
+        emulate.state = .loaded
     }
 
     private func startLoaded(_ item: ArchiveItem) async throws {
-        guard applicationState == .loaded else {
+        guard emulate.state == .loaded else {
             return
         }
         if item.kind == .subghz {
             do {
                 try await rpc.appButtonPress()
             } catch let error as Error where error == .application(.cmdError) {
-                applicationState = .restricted
+                emulate.state = .restricted
                 throw error
             }
             emulateStarted = .now
         }
-        applicationState = .emulating
+        emulate.state = .emulating
         try await waitForMinimumDuration(for: item)
     }
 
@@ -163,7 +159,7 @@ public class EmulateService: ObservableObject {
     }
 
     private func stopLoaded(_ item: ArchiveItem) async throws {
-        guard applicationState == .emulating else {
+        guard emulate.state == .emulating else {
             return
         }
         if item.kind == .subghz {
@@ -173,13 +169,13 @@ public class EmulateService: ObservableObject {
 
     private func exitApp() async throws {
         guard
-            applicationState != .closing,
-            applicationState != .closed,
-            applicationState != .locked
+            emulate.state != .closing,
+            emulate.state != .closed,
+            emulate.state != .locked
         else {
             return
         }
-        applicationState = .closing
+        emulate.state = .closing
         try await rpc.appExit()
     }
 

@@ -9,11 +9,25 @@ var registerDependenciesOnce: Void = {
 
 class TodayViewController: UIViewController, NCWidgetProviding {
     let compactModeHeight = 110.0
-    @ObservedObject var viewModel: WidgetViewModel
+
+    let dependencies: Depencencies
+
+    var appState: AppState {
+        dependencies.appState
+    }
+
+    var widget: WidgetModel {
+        get { appState.widget }
+        set { appState.widget = newValue }
+    }
+
+    var widgetService: WidgetService {
+        dependencies.widgetService
+    }
 
     required init?(coder: NSCoder) {
         _ = registerDependenciesOnce
-        viewModel = .init()
+        dependencies = .init()
         super.init(coder: coder)
     }
 
@@ -22,7 +36,13 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         // Enable expanded mode
         self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
         // Add SwiftUI
-        let widgetView = WidgetView(viewModel: viewModel)
+        let widgetView = WidgetView()
+            .environmentObject(dependencies.appState)
+            .environmentObject(dependencies.centralService)
+            .environmentObject(dependencies.flipperService)
+            .environmentObject(dependencies.archiveService)
+            .environmentObject(dependencies.emulateService)
+            .environmentObject(dependencies.widgetService)
         let hostingController = UIHostingController(rootView: widgetView)
         addChild(hostingController)
         view.addSubview(hostingController.view)
@@ -46,9 +66,9 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         _ activeDisplayMode: NCWidgetDisplayMode,
         withMaximumSize maxSize: CGSize
     ) {
-        viewModel.isExpanded = activeDisplayMode == .expanded
+        widget.isExpanded = activeDisplayMode == .expanded
 
-        guard !viewModel.isError else {
+        guard !widget.isError else {
             preferredContentSize.height = compactModeHeight
             return
         }
@@ -57,7 +77,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         case .compact:
             preferredContentSize.height = compactModeHeight
         case .expanded:
-            let rowsCount = viewModel.keys.count / 2 + 1
+            let rowsCount = widget.keys.count / 2 + 1
             preferredContentSize.height = compactModeHeight * Double(rowsCount)
         @unknown default: break
         }

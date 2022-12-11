@@ -3,7 +3,7 @@ import SwiftUI
 struct WidgetError: View {
     let text: String
     let image: String
-    @Binding var isPresented: Bool
+    let onBack: () -> Void
 
     var body: some View {
         VStack(spacing: 14) {
@@ -17,7 +17,7 @@ struct WidgetError: View {
                 Spacer()
 
                 Button {
-                    isPresented = false
+                    onBack()
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.backward")
