@@ -1,14 +1,26 @@
 import Inject
+import Analytics
 import Peripheral
 
 import Logging
 import Combine
+import Foundation
 
 @MainActor
 public class FlipperService: ObservableObject {
     private let logger = Logger(label: "flipper-service")
 
+    let appState: AppState
+
+    var flipper: Flipper? {
+        get { appState.flipper }
+        set { appState.flipper = newValue }
+    }
+
     @Inject var rpc: RPC
+    @Inject var pairedDevice: PairedDevice
+    @Inject var analytics: Analytics
+    private var disposeBag = DisposeBag()
 
     @Published public private(set) var frame: ScreenFrame = .init()
 
@@ -16,16 +28,176 @@ public class FlipperService: ObservableObject {
     @Published public private(set) var powerInfo: [String: String] = [:]
     @Published public private(set) var isInfoReady = false
 
-    public init() {
+    public init(appState: AppState) {
+        self.appState = appState
         subscribeToPublishers()
     }
 
     private func subscribeToPublishers() {
+        pairedDevice.flipper
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in
+                guard let self else { return }
+                let oldValue = self.flipper
+                self.flipper = newValue
+                self.onFlipperChanged(oldValue)
+            }
+            .store(in: &disposeBag)
+
         rpc.onScreenFrame { [weak self] frame in
             guard let self else { return }
             Task { @MainActor in
                 self.frame = frame
             }
+        }
+    }
+
+    // MARK: Welcome Screen
+
+    public func pairDevice() {
+        self.objectWillChange.send()
+        appState.firstLaunch.showWelcomeScreen()
+    }
+
+    public func skipPairing() {
+        forgetDevice()
+        appState.firstLaunch.hideWelcomeScreen()
+    }
+
+    // MARK: Device Events
+
+    func onFlipperChanged(_ oldValue: Flipper?) {
+        updateState(oldValue?.state)
+        if oldValue?.information != flipper?.information {
+            reportGATTInfo()
+        }
+    }
+
+    // MARK: Status
+
+    func updateState(_ oldValue: FlipperState?) {
+        guard let flipper = flipper else {
+            appState.status = .noDevice
+            return
+        }
+        guard flipper.state != oldValue else {
+            return
+        }
+
+        // We want to preserve unsupportedDevice state instead of disconnected
+        if
+            appState.status == .unsupportedDevice &&
+            flipper.state == .disconnected
+        {
+            return
+        }
+
+        // We want to preserve updating state instead of disconnected/connecting
+        if appState.status == .updating {
+            if flipper.state == .disconnected {
+                connect()
+                return
+            } else if flipper.state == .connecting {
+                return
+            }
+        }
+
+        switch flipper.state {
+        case .connected: didConnect()
+        case .disconnected: didDisconnect()
+        default: appState.status = .init(flipper.state)
+        }
+    }
+
+    func didConnect() {
+        Task {
+            do {
+                try await waitForProtobufVersion()
+                guard validateFirmwareVersion() else {
+                    disconnect()
+                    return
+                }
+                try await updateStorageInfo()
+                appState.status = .connected
+                logger.info("connected")
+            } catch {
+                logger.error("did connect: \(error)")
+            }
+        }
+    }
+
+    // MARK: Disconnect event
+
+    var reconnectOnDisconnect = true
+
+    func didDisconnect() {
+        logger.info("disconnected")
+        appState.status = .disconnected
+        guard reconnectOnDisconnect else {
+            return
+        }
+        logger.debug("reconnecting")
+        connect()
+    }
+
+    func waitForProtobufVersion() async throws {
+        while true {
+            try await Task.sleep(nanoseconds: 100 * 1_000_000)
+
+            guard flipper?.hasProtobufVersion != nil else { continue }
+            guard flipper?.hasProtobufVersion == true else { return }
+
+            guard let info = flipper?.information else { continue }
+            guard info.protobufRevision != .unknown else { continue }
+
+            return
+        }
+    }
+
+    func validateFirmwareVersion() -> Bool {
+        guard let version = flipper?.information?.protobufRevision else {
+            logger.error("can't validate firmware version")
+            appState.status = .disconnected
+            return false
+        }
+        guard version >= .v0_6 else {
+            logger.error("unsupported firmware version")
+            appState.status = .unsupportedDevice
+            return false
+        }
+        return true
+    }
+
+    // MARK: Connection
+
+    public func connect() {
+        reconnectOnDisconnect = true
+        pairedDevice.connect()
+    }
+
+    public func disconnect() {
+        reconnectOnDisconnect = false
+        pairedDevice.disconnect()
+    }
+
+    public func forgetDevice() {
+        pairedDevice.forget()
+    }
+
+    // MARK: API
+
+    public func updateStorageInfo() async throws {
+        var storageInfo = Flipper.StorageInfo()
+        defer {
+            pairedDevice.updateStorageInfo(storageInfo)
+            reportRPCInfo()
+        }
+        do {
+            storageInfo.internal = try await rpc.getStorageInfo(at: "/int")
+            storageInfo.external = try await rpc.getStorageInfo(at: "/ext")
+        } catch {
+            logger.error("updating storage info")
+            throw error
         }
     }
 
@@ -37,6 +209,7 @@ public class FlipperService: ObservableObject {
                 logger.error("start streaming: \(error)")
             }
         }
+        recordRemoteControl()
     }
 
     public func stopScreenStreaming() {
@@ -78,7 +251,6 @@ public class FlipperService: ObservableObject {
             }
         }
     }
-
 
     private var isProvisioningDisabled: Bool {
         get {
@@ -146,5 +318,29 @@ public class FlipperService: ObservableObject {
         } catch {
             logger.error("power info: \(error)")
         }
+    }
+}
+
+extension FlipperService {
+
+    // MARK: Analytics
+
+    func reportGATTInfo() {
+        analytics.flipperGATTInfo(
+            flipperVersion: flipper?.information?.softwareRevision ?? "unknown")
+    }
+
+    func reportRPCInfo() {
+        guard let storage = flipper?.storage else { return }
+        analytics.flipperRPCInfo(
+            sdcardIsAvailable: storage.external != nil,
+            internalFreeByte: storage.internal?.free ?? 0,
+            internalTotalByte: storage.internal?.total ?? 0,
+            externalFreeByte: storage.external?.free ?? 0,
+            externalTotalByte: storage.external?.total ?? 0)
+    }
+
+    func recordRemoteControl() {
+        analytics.appOpen(target: .remoteControl)
     }
 }

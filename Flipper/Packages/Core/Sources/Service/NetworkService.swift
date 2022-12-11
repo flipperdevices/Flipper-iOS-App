@@ -2,7 +2,7 @@ import Combine
 import Network
 
 public class NetworkService: ObservableObject {
-    @Published public private(set) var available: Bool = false
+    @Published public private(set) var available = false
 
     public init() {
         monitorNetworkStatus()

@@ -37,7 +37,6 @@ struct RemoteControlView: View {
         }
         .onAppear {
             flipperService.startScreenStreaming()
-            recordRemoteControl()
         }
         .onDisappear {
             flipperService.stopScreenStreaming()
@@ -50,11 +49,5 @@ struct RemoteControlView: View {
             @unknown default: break
             }
         }
-    }
-
-    // MARK: Analytics
-
-    func recordRemoteControl() {
-        appState.analytics.appOpen(target: .remoteControl)
     }
 }

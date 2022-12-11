@@ -2,8 +2,9 @@ import Core
 import SwiftUI
 
 struct ConnectionView: View {
-    @EnvironmentObject var central: CentralService
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var central: CentralService
+    @EnvironmentObject var flipperService: FlipperService
     @Environment(\.dismiss) private var dismiss
 
     @State private var showHelpSheet = false
@@ -75,7 +76,7 @@ struct ConnectionView: View {
 
             Spacer()
             Button("Skip connection") {
-                appState.skipPairing()
+                flipperService.skipPairing()
             }
             .padding(.bottom, onMac ? 140 : 8)
             .disabled(central.isConnecting)

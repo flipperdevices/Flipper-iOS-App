@@ -6,6 +6,7 @@ import OrderedCollections
 struct ArchiveView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var syncService: SyncService
 
     @State var importedItem: URL?
     @State var selectedItem: ArchiveItem?
@@ -114,7 +115,6 @@ struct ArchiveView: View {
             }
             .sheet(item: $importedItem) { item in
                 ImportView(url: item)
-//                    .environmentObject(archiveService)
             }
             .fullScreenCover(isPresented: $showSearchView) {
                 ArchiveSearchView()
@@ -135,7 +135,7 @@ struct ArchiveView: View {
     }
 
     func refresh() {
-        appState.synchronize()
+        syncService.synchronize()
     }
 }
 

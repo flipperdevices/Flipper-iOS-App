@@ -10,6 +10,8 @@ public class ArchiveService: ObservableObject {
     private let logger = Logger(label: "archive-service")
 
     let appState: AppState
+    let syncService: SyncService
+
     @Inject var archive: Archive
     @Inject var analytics: Analytics
     private var disposeBag: DisposeBag = .init()
@@ -17,8 +19,9 @@ public class ArchiveService: ObservableObject {
     @Published public private(set) var items: [ArchiveItem] = []
     @Published public private(set) var deleted: [ArchiveItem] = []
 
-    public init(appState: AppState) {
+    public init(appState: AppState, syncService: SyncService) {
         self.appState = appState
+        self.syncService = syncService
         subscribeToPublishers()
     }
 
@@ -44,7 +47,7 @@ public class ArchiveService: ObservableObject {
             }
             try await archive.upsert(newItem)
             recordEdit()
-            appState.synchronize()
+            syncService.synchronize()
         } catch {
             logger.error("saving changes: \(error)")
             throw error
@@ -54,7 +57,7 @@ public class ArchiveService: ObservableObject {
     public func delete(_ item: ArchiveItem) async throws {
         do {
             try await archive.delete(item.id)
-            appState.synchronize()
+            syncService.synchronize()
         } catch {
             logger.error("deleting item: \(error)")
             throw error
@@ -64,7 +67,7 @@ public class ArchiveService: ObservableObject {
     public func restore(_ item: ArchiveItem) async throws {
         do {
             try await archive.restore(item)
-            appState.synchronize()
+            syncService.synchronize()
         } catch {
             logger.error("restore item: \(error)")
             throw error
@@ -95,7 +98,7 @@ public class ArchiveService: ObservableObject {
             logger.info("added: \(item.filename)")
             appState.imported.send(item)
             recordImport()
-            appState.synchronize()
+            syncService.synchronize()
         } catch {
             logger.error("add: \(error)")
             throw error
@@ -111,7 +114,7 @@ public class ArchiveService: ObservableObject {
         Task {
             do {
                 try await archive.restoreAll()
-                appState.synchronize()
+                syncService.synchronize()
             } catch {
                 logger.error("restore all: \(error)")
             }

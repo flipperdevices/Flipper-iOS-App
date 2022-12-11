@@ -6,6 +6,7 @@ import Peripheral
 
 struct MainView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var centralService: CentralService
     @StateObject var tabViewController: TabViewController = .init()
 
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device {
@@ -44,7 +45,7 @@ struct MainView: View {
             onItemAdded(item: item)
         }
         .onAppear {
-            appState.kickBluetoothCentral()
+            centralService.kickBluetoothCentral()
         }
     }
 

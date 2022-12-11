@@ -10,12 +10,15 @@ public struct RootView: View {
     public var body: some View {
         RootViewImpl()
             .environmentObject(dependencies.appState)
+            .environmentObject(dependencies.applicationService)
             .environmentObject(dependencies.loggerService)
             .environmentObject(dependencies.networkService)
             .environmentObject(dependencies.centralService)
             .environmentObject(dependencies.flipperService)
             .environmentObject(dependencies.archiveService)
+            .environmentObject(dependencies.syncService)
             .environmentObject(dependencies.updateService)
+            .environmentObject(dependencies.checkUpdateService)
             .environmentObject(dependencies.sharingService)
             .environmentObject(dependencies.emulateService)
             .environmentObject(dependencies.widgetService)
@@ -24,6 +27,7 @@ public struct RootView: View {
 
 private struct RootViewImpl: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var applicationService: ApplicationService
     @EnvironmentObject var flipperService: FlipperService
 
     @StateObject var alertController: AlertController = .init()
@@ -31,7 +35,6 @@ private struct RootViewImpl: View {
 
     @Environment(\.scenePhase) var scenePhase
 
-    @State var isFirstLaunch = false
     @State var isPairingIssue = false
 
     @State var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
@@ -70,7 +73,7 @@ private struct RootViewImpl: View {
         .environmentObject(alertController)
         .environmentObject(hexKeyboardController)
         .onOpenURL { url in
-            appState.onOpenURL(url)
+            applicationService.onOpenURL(url)
         }
         .onContinueUserActivity("PlayAlertIntent") { _ in
             flipperService.playAlert()
@@ -90,9 +93,6 @@ private struct RootViewImpl: View {
             default: break
             }
         }
-        .onAppear {
-            recordAppOpen()
-        }
     }
 
     func onActive() {
@@ -100,7 +100,7 @@ private struct RootViewImpl: View {
             return
         }
         endBackgroundTask()
-        appState.onActive()
+        applicationService.onActive()
     }
 
     func onInactive() {
@@ -109,7 +109,7 @@ private struct RootViewImpl: View {
         }
         Task {
             backgroundTaskID = startBackgroundTask()
-            try await appState.onInactive()
+            try await applicationService.onInactive()
             endBackgroundTask()
         }
     }
@@ -123,11 +123,5 @@ private struct RootViewImpl: View {
     private func endBackgroundTask() {
         UIApplication.shared.endBackgroundTask(backgroundTaskID)
         backgroundTaskID = .invalid
-    }
-
-    // MARK: Analytics
-
-    func recordAppOpen() {
-        appState.analytics.appOpen(target: .app)
     }
 }

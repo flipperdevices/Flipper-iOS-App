@@ -13,9 +13,11 @@ import Foundation
 public class CheckUpdateRefactoring: ObservableObject {
     private let logger = Logger(label: "update-vm")
 
+    private let appState: AppState
+    private let flipperService: Core.FlipperService
+
     @Inject private var rpc: RPC
     @Inject var analytics: Analytics
-    @Inject private var appState: AppState
     private var disposeBag: DisposeBag = .init()
 
     @Published public var state: State = .disconnected
@@ -64,7 +66,9 @@ public class CheckUpdateRefactoring: ObservableObject {
         flipper?.information?.shortSoftwareVersion
     }
 
-    public init() {
+    public init(appState: AppState, flipperService: FlipperService) {
+        self.appState = appState
+        self.flipperService = flipperService
         subscribeToPublishers()
     }
 
@@ -223,7 +227,7 @@ public class CheckUpdateRefactoring: ObservableObject {
 
     func updateStorageInfo() async {
         // swiftlint:disable statement_position
-        do { try await appState.updateStorageInfo() }
+        do { try await flipperService.updateStorageInfo() }
         catch { logger.error("update storage info: \(error)") }
     }
 

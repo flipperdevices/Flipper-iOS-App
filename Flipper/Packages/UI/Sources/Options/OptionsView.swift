@@ -3,6 +3,7 @@ import SwiftUI
 
 struct OptionsView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var applicationService: ApplicationService
     @EnvironmentObject var flipperService: FlipperService
     @EnvironmentObject var archiveService: ArchiveService
     @Environment(\.dismiss) private var dismiss
@@ -81,7 +82,7 @@ struct OptionsView: View {
                     .actionSheet(isPresented: $showResetApp) {
                         .init(title: Text("Are you sure?"), buttons: [
                             .destructive(Text("Reset App")) {
-                                appState.reset()
+                                applicationService.reset()
                             },
                             .cancel()
                         ])

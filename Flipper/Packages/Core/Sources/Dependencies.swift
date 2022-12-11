@@ -8,6 +8,11 @@ public class Depencencies: ObservableObject {
 
     // MARK: Services
 
+    public lazy var applicationService: ApplicationService = {
+        .init(appState: appState, flipperService: flipperService)
+    }()
+    
+
     public lazy var loggerService: LoggerService = {
         .init()
     }()
@@ -21,14 +26,22 @@ public class Depencencies: ObservableObject {
     }()
 
     public lazy var flipperService: FlipperService = {
-        .init()
+        .init(appState: appState)
     }()
 
     public lazy var archiveService: ArchiveService = {
+        .init(appState: appState, syncService: syncService)
+    }()
+
+    public lazy var syncService: SyncService = {
         .init(appState: appState)
     }()
 
     public lazy var updateService: UpdateService = {
+        .init(appState: appState, flipperService: flipperService)
+    }()
+
+    public lazy var checkUpdateService: CheckUpdateRefactoring = {
         .init(appState: appState, flipperService: flipperService)
     }()
 

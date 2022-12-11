@@ -1,10 +1,10 @@
 import Core
-import Peripheral
 import SwiftUI
 
 struct DeviceUpdateView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var updateService: UpdateService
+    @EnvironmentObject var flipperService: FlipperService
 
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
     @State var showCancelUpdate = false
@@ -159,11 +159,11 @@ struct DeviceUpdateView: View {
     func cancel() {
         Task {
             updateService.cancel()
-            appState.disconnect()
+            flipperService.disconnect()
             onFailure(.canceled)
             close()
             try await Task.sleep(milliseconds: 100)
-            appState.connect()
+            flipperService.connect()
         }
     }
 

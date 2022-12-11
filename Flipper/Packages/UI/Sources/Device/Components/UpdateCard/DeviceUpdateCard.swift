@@ -4,20 +4,30 @@ import SwiftUI
 struct DeviceUpdateCard: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var networkService: NetworkService
-    @StateObject var viewModel: CheckUpdateRefactoring = .init()
+    @EnvironmentObject var checkUpdateService: CheckUpdateRefactoring
+    @EnvironmentObject var syncService: SyncService
     @Environment(\.scenePhase) private var scenePhase
+
+    var viewModel: CheckUpdateRefactoring {
+        checkUpdateService
+    }
+
+    var update: Update {
+        get { appState.update }
+        nonmutating set { appState.update = newValue }
+    }
 
     var channel: Update.Channel {
         get {
-            appState.update.selectedChannel
+            update.selectedChannel
         }
         nonmutating set {
-            appState.update.selectedChannel = newValue
+            update.selectedChannel = newValue
         }
     }
 
     var availableFirmware: String {
-        appState.update.available?.description ?? "unknown"
+        update.available?.description ?? "unknown"
     }
 
     @State var showUpdateView = false
@@ -255,7 +265,7 @@ struct DeviceUpdateCard: View {
         ) {
             Button("Continue") { }
             Button("Pause") {
-                appState.cancelSync()
+                syncService.cancelSync()
             }
         } message: {
             Text(
@@ -268,18 +278,18 @@ struct DeviceUpdateCard: View {
         .customAlert(isPresented: $showUpdateSucceeded) {
             UpdateSucceededAlert(
                 isPresented: $showUpdateSucceeded,
-                firmwareVersion: appState.update.updateInProgress?.to.version.version ?? "unknown")
+                firmwareVersion: update.updateInProgress?.to.version.version ?? "unknown")
         }
         .customAlert(isPresented: $showUpdateFailed) {
             UpdateFailedAlert(
                 isPresented: $showUpdateFailed,
-                firmwareVersion: appState.update.updateInProgress?.to.version.version ?? "unknown")
+                firmwareVersion: update.updateInProgress?.to.version.version ?? "unknown")
         }
         .fullScreenCover(isPresented: $showUpdateView) {
             DeviceUpdateView(
                 isPresented: $showUpdateView,
                 channel: channel,
-                firmware: appState.update.available?.version,
+                firmware: update.available?.version,
                 onSuccess: viewModel.onUpdateStarted,
                 onFailure: viewModel.onUpdateFailed
             )

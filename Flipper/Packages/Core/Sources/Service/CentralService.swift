@@ -69,6 +69,11 @@ public class CentralService: ObservableObject {
         self.flippers = flippers
     }
 
+    public func kickBluetoothCentral() {
+        central.startScanForPeripherals()
+        central.stopScanForPeripherals()
+    }
+
     public func startScan() {
         central.startScanForPeripherals()
         startScanTimer()

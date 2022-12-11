@@ -4,6 +4,7 @@ import SwiftUI
 struct DeviceView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var flipperService: FlipperService
+    @EnvironmentObject var syncService: SyncService
 
     @State var showForgetAction = false
     @State var showUnsupportedVersionAlert = false
@@ -78,7 +79,7 @@ struct DeviceView: View {
                                         image: "Sync",
                                         title: "Synchronize"
                                     ) {
-                                        appState.synchronize()
+                                        syncService.synchronize()
                                     }
                                     .disabled(!canSync)
 
@@ -153,7 +154,7 @@ struct DeviceView: View {
                         title: Text("This action won't delete your keys"),
                         buttons: [
                             .destructive(Text("Forget Flipper")) {
-                                appState.forgetDevice()
+                                flipperService.forgetDevice()
                             },
                             .cancel()
                         ]
@@ -173,13 +174,13 @@ struct DeviceView: View {
 
     func connect() {
         if appState.status == .noDevice {
-            appState.pairDevice()
+            flipperService.pairDevice()
         } else {
-            appState.connect()
+            flipperService.connect()
         }
     }
 
     func disconnect() {
-        appState.disconnect()
+        flipperService.disconnect()
     }
 }

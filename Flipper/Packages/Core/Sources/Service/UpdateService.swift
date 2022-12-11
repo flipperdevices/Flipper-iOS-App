@@ -102,6 +102,11 @@ public class UpdateService: ObservableObject {
         appState.update.state = .update(.preparing)
         try await flipperService.startUpdateProcess(from: directory)
         appState.update.state = .update(.started)
-        appState.onUpdateStarted()
+        onUpdateStarted()
+    }
+
+    public func onUpdateStarted() {
+        appState.status = .updating
+        logger.info("update started")
     }
 }
