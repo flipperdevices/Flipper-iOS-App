@@ -5,15 +5,18 @@ struct DeviceUpdateView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var updateService: UpdateService
     @EnvironmentObject var flipperService: FlipperService
+    @Environment(\.dismiss) var dismiss
 
-    @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
     @State var showCancelUpdate = false
 
-    @Binding var isPresented: Bool
-    let channel: Update.Channel
-    let firmware: Update.Manifest.Version?
-    let onSuccess: @MainActor () -> Void
-    let onFailure: @MainActor (Update.State.Error) -> Void
+    let intent: Update.Intent
+
+    var channel: Update.Channel {
+        intent.to.channel
+    }
+    var firmware: Update.Manifest.Version {
+        intent.to.firmware
+    }
 
     var isUpdating: Bool {
         switch appState.update.state {
@@ -27,7 +30,7 @@ struct DeviceUpdateView: View {
     var title: String {
         switch appState.update.state {
         case .error(.noInternet), .error(.noCard): return "Update Not Started"
-        case .error(.outdatedApp): return "Unable to Update"
+        case .error(.storageError): return "Unable to Update"
         case .error(.noDevice): return "Update Failed"
         default: return "Updating your Flipper"
         }
@@ -37,7 +40,7 @@ struct DeviceUpdateView: View {
         switch appState.update.state {
         case .error(.noCard):
             return "FlipperNoCard"
-        case .error(.noInternet), .error(.noDevice), .error(.outdatedApp):
+        case .error(.noInternet), .error(.noDevice), .error(.cantConnect):
             switch appState.flipper?.color {
             case .black: return "FlipperDeadBlack"
             default: return "FlipperDeadWhite"
@@ -56,7 +59,6 @@ struct DeviceUpdateView: View {
     }
 
     var availableFirmware: String {
-        guard let firmware = firmware else { return "" }
         switch channel {
         case .development: return "Dev \(firmware.version)"
         case .candidate: return "RC \(firmware.version.dropLast(3))"
@@ -75,8 +77,7 @@ struct DeviceUpdateView: View {
     }
 
     var changelog: String {
-        guard let firmware = firmware else { return "" }
-        return firmware.changelog
+        firmware.changelog
     }
 
     var body: some View {
@@ -91,28 +92,29 @@ struct DeviceUpdateView: View {
                 .padding(.top, 22)
 
             switch appState.update.state {
-            case .error(.failedDownloading): NoInternetView { update() }
-            case .error(.noInternet): NoInternetView { update() }
+            case .error(.cantConnect): NoInternetView { retry() }
+            case .error(.failedDownloading): NoInternetView { retry() }
+            case .error(.noInternet): NoInternetView { retry() }
             case .error(.noDevice): NoDeviceView()
+            case .error(.noCard): StorageErrorView()
+            case .error(.failedPreparing): StorageErrorView()
             case .error(.failedUploading): StorageErrorView()
             case .error(.storageError): StorageErrorView()
             case .error(.outdatedApp): OutdatedAppView()
+            case .error(.canceled): CanceledView()
             case .update(let state):
                 UpdateProgressView(
                     state: state,
                     changelog: changelog,
                     availableFirmware: availableFirmware,
                     availableFirmwareColor: availableFirmwareColor)
-            default:
-                // TODO: should we handle other cases?
-                Text(String(describing: appState.update.state))
             }
 
             Spacer()
             Button {
                 isUpdating
                     ? confirmCancel()
-                    : close()
+                    : dismiss()
             } label: {
                 Text(isUpdating ? "Cancel" : "Close")
                     .font(.system(size: 16, weight: .medium))
@@ -121,7 +123,6 @@ struct DeviceUpdateView: View {
         }
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
-            update()
         }
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
@@ -137,19 +138,15 @@ struct DeviceUpdateView: View {
                     cancel()
                 })
         }
+        .onChange(of: appState.update.state) { state in
+            if state == .update(.started) {
+                dismiss()
+            }
+        }
     }
 
-    func update() {
-        updateService.update(
-            firmware: firmware,
-            isProvisioningDisabled: isProvisioningDisabled,
-            onSuccess: {
-                onSuccess()
-                close()
-            },
-            onFailure: { error in
-                onFailure(error)
-            })
+    func retry() {
+        updateService.retry()
     }
 
     func confirmCancel() {
@@ -157,17 +154,7 @@ struct DeviceUpdateView: View {
     }
 
     func cancel() {
-        Task {
-            updateService.cancel()
-            flipperService.disconnect()
-            onFailure(.canceled)
-            close()
-            try await Task.sleep(milliseconds: 100)
-            flipperService.connect()
-        }
-    }
-
-    func close() {
-        isPresented = false
+        updateService.cancel()
+        dismiss()
     }
 }

@@ -6,43 +6,31 @@ import Logging
 import Combine
 import Foundation
 
-// TODO: Refactor (ex DeviceUpdateCardModel)
-
 @MainActor
 // swiftlint:disable type_body_length
-public class CheckUpdateRefactoring: ObservableObject {
-    private let logger = Logger(label: "update-vm")
+public class CheckUpdateService: ObservableObject {
+    private let logger = Logger(label: "check-update-service")
 
     private let appState: AppState
     private let flipperService: Core.FlipperService
+
+    var update: Update {
+        get { appState.update }
+        set { appState.update = newValue }
+    }
+
+    var updateAvailable: VersionUpdateModel {
+        get { appState.updateAvailable }
+        set { appState.updateAvailable = newValue }
+    }
 
     @Inject private var rpc: RPC
     @Inject var analytics: Analytics
     private var disposeBag: DisposeBag = .init()
 
-    @Published public var state: State = .disconnected
-
-    public enum State {
-        case noSDCard
-        case noInternet
-        case cantConnect
-        case disconnected
-        case connecting
-        case noUpdates
-        case versionUpdate
-        case channelUpdate
-        case updateInProgress
-    }
-
-    public var updateResult: PassthroughSubject<UpdateResult, Never> = .init()
-
     @Published var flipper: Flipper? {
         didSet { onFlipperChanged(oldValue) }
     }
-
-    let update = Update()
-
-    var manifest: Update.Manifest?
 
     var hasManifest: LazyResult<Bool, Swift.Error> = .idle
     var currentRegion: LazyResult<ISOCode, Swift.Error> = .idle
@@ -56,14 +44,6 @@ public class CheckUpdateRefactoring: ObservableObject {
     public var hasBatteryCharged: Bool {
         guard let battery = flipper?.battery else { return false }
         return battery.level >= 10 || battery.state == .charging
-    }
-
-    var installedChannel: Update.Channel? {
-        flipper?.information?.firmwareChannel
-    }
-
-    var installedFirmware: String? {
-        flipper?.information?.shortSoftwareVersion
     }
 
     public init(appState: AppState, flipperService: FlipperService) {
@@ -80,7 +60,7 @@ public class CheckUpdateRefactoring: ObservableObject {
     }
 
     func onFlipperChanged(_ oldValue: Flipper?) {
-        updateState(channel: appState.update.selectedChannel)
+        updateState(channel: updateAvailable.selectedChannel)
 
         guard flipper?.state == .connected else {
             resetState()
@@ -94,6 +74,21 @@ public class CheckUpdateRefactoring: ObservableObject {
         }
 
         verifyUpdateResult()
+    }
+
+    public func onUpdatePressed() {
+        guard
+            let installed = updateAvailable.installed,
+            let available = updateAvailable.available
+        else {
+            return
+        }
+
+        updateAvailable.intent = .init(
+            id: Int(Date().timeIntervalSince1970),
+            from: installed,
+            to: available
+        )
     }
 
     func resetState() {
@@ -145,84 +140,50 @@ public class CheckUpdateRefactoring: ObservableObject {
         }
     }
 
-    public func onUpdateStarted() {
-        guard
-            let installed = appState.update.installed,
-            let available = appState.update.available
-        else {
-            return
-        }
-
-        appState.update.updateInProgress = .init(
-            id: Int(Date().timeIntervalSince1970),
-            from: installed,
-            to: available
-        )
-
-        state = .updateInProgress
-
-        analytics.flipperUpdateStart(
-            id: appState.update.updateInProgress?.id ?? 0,
-            from: appState.update.updateInProgress?.from.version.version ?? "unknown",
-            to: appState.update.updateInProgress?.to.version.version ?? "unknown")
-    }
-
-    public func onUpdateFailed(_ error: Update.State.Error) {
-        let result: UpdateResult
-        switch error {
-        case .canceled: result = .canceled
-        case .failedDownloading: result = .failedDownload
-        case .failedPreparing: result = .failedPrepare
-        case .failedUploading: result = .failedUpload
-        default: result = .failed
-        }
-        analytics.flipperUpdateResult(
-            id: appState.update.updateInProgress?.id ?? 0,
-            from: appState.update.updateInProgress?.from.version.version ?? "unknown",
-            to: appState.update.updateInProgress?.to.version.version ?? "unknown",
-            status: result)
+    public func updateStorageInfo() {
+        Task { await updateStorageInfo() }
     }
 
     func verifyUpdateResult() {
         guard
-            let installed = appState.update.installed,
-            let inProgress = appState.update.updateInProgress
+            let intent = update.intent,
+            let installed = updateAvailable.installed
         else {
             return
         }
 
+        update.intent = nil
+
         var updateFromToVersion: String {
-            "from \(inProgress.from.version) to \(inProgress.to.version)"
+            "from \(intent.from) to \(intent.to)"
         }
 
         Task {
             // FIXME: ignore GATT cache
             try await Task.sleep(milliseconds: 333)
 
-            if installed.version.version == inProgress.to.version.version {
+            if intent.to.description == installed.description {
                 logger.info("update success: \(updateFromToVersion)")
-                updateResult.send(.completed)
+
+                update.result = .completed
 
                 analytics.flipperUpdateResult(
-                    id: inProgress.id,
-                    from: inProgress.from.version.version,
-                    to: inProgress.to.version.version,
+                    id: intent.id,
+                    from: intent.from.description,
+                    to: intent.to.description,
                     status: .completed)
             } else {
                 logger.info("update error: \(updateFromToVersion)")
-                updateResult.send(.failed)
+
+                update.result = .failed
 
                 analytics.flipperUpdateResult(
-                    id: inProgress.id,
-                    from: inProgress.from.version.version,
-                    to: inProgress.to.version.version,
+                    id: intent.id,
+                    from: intent.from.description,
+                    to: intent.to.description,
                     status: .failed)
             }
         }
-    }
-
-    public func updateStorageInfo() {
-        Task { await updateStorageInfo() }
     }
 
     func updateStorageInfo() async {
@@ -233,33 +194,35 @@ public class CheckUpdateRefactoring: ObservableObject {
 
     public func onNetworkStatusChanged(available: Bool) {
         switch available {
-        case true: self.state = .connecting
-        case false: self.state = .noInternet
+        case true: updateAvailable.state = .busy(.connecting)
+        case false: updateAvailable.state = .error(.noInternet)
         }
     }
 
     public func updateAvailableFirmware(for channel: Update.Channel) {
         Task {
             do {
-                guard state != .noInternet else { return }
-                manifest = try await update.downloadManifest()
+                guard update.state != .error(.noInternet) else { return }
+                updateAvailable.manifest = try await update.downloadManifest()
                 updateVersion(for: channel)
             } catch {
-                state = .cantConnect
+                update.state = .error(.cantConnect)
                 logger.error("download manifest: \(error)")
             }
         }
     }
 
     public func updateVersion(for channel: Update.Channel) {
-        guard let version = manifest?.version(for: channel) else {
-            appState.update.available = nil
+        guard
+            let firmware = updateAvailable.manifest?.version(for: channel)
+        else {
+            updateAvailable.available = nil
             return
         }
 
-        appState.update.available = .init(
+        updateAvailable.available = .init(
             channel: channel,
-            version: version)
+            firmware: firmware)
 
         updateState(channel: channel)
     }
@@ -270,6 +233,7 @@ public class CheckUpdateRefactoring: ObservableObject {
         guard validateFlipperState() else { return }
         guard validateSDCard() else { return }
 
+        guard validateInstalledFirmware() else { return }
         guard validateAvailableFirmware() else { return }
 
         guard checkSelectedChannel(channel) else { return }
@@ -278,7 +242,7 @@ public class CheckUpdateRefactoring: ObservableObject {
         guard validateManifest() else { return }
         guard validateRegion() else { return }
 
-        state = .noUpdates
+        updateAvailable.state = .ready(.noUpdates)
     }
 
     func validateFlipperState() -> Bool {
@@ -288,13 +252,16 @@ public class CheckUpdateRefactoring: ObservableObject {
         case .connected:
             return true
         case .connecting:
-            if state != .noInternet, state != .updateInProgress {
-                state = .connecting
+            if
+                updateAvailable.state != .error(.noInternet),
+                updateAvailable.state != .busy(.updateInProgress)
+            {
+                updateAvailable.state = .busy(.connecting)
             }
             return false
         default:
-            if state != .updateInProgress {
-                state = .disconnected
+            if updateAvailable.state != .busy(.updateInProgress) {
+                updateAvailable.state = .error(.noDevice)
             }
             return false
         }
@@ -302,11 +269,11 @@ public class CheckUpdateRefactoring: ObservableObject {
 
     func validateSDCard() -> Bool {
         guard case .success(let hasSDCard) = hasSDCard else {
-            state = .connecting
+            updateAvailable.state = .busy(.connecting)
             return false
         }
         guard hasSDCard else {
-            state = .noSDCard
+            updateAvailable.state = .error(.noCard)
             return false
         }
         return true
@@ -314,11 +281,11 @@ public class CheckUpdateRefactoring: ObservableObject {
 
     func validateManifest() -> Bool {
         guard case .success(let hasManifest) = hasManifest else {
-            state = .connecting
+            updateAvailable.state = .busy(.connecting)
             return false
         }
         guard hasManifest else {
-            state = .versionUpdate
+            updateAvailable.state = .ready(.versionUpdate)
             return false
         }
         return true
@@ -332,10 +299,10 @@ public class CheckUpdateRefactoring: ObservableObject {
         case .success(let region):
             provisionedRegionCode = region
         case .failure:
-            state = .versionUpdate
+            updateAvailable.state = .ready(.versionUpdate)
             return false
         default:
-            state = .connecting
+            updateAvailable.state = .busy(.connecting)
             return false
         }
 
@@ -343,42 +310,54 @@ public class CheckUpdateRefactoring: ObservableObject {
         case .success(let region):
             currentRegionCode = region
         case .failure:
-            state = .versionUpdate
+            updateAvailable.state = .ready(.versionUpdate)
             return false
         default:
-            state = .connecting
+            updateAvailable.state = .busy(.connecting)
             return false
         }
 
         guard currentRegionCode == provisionedRegionCode else {
-            state = .versionUpdate
+            updateAvailable.state = .ready(.versionUpdate)
             return false
         }
 
         return true
     }
 
+    func validateInstalledFirmware() -> Bool {
+        guard let installed = flipper?.information?.firmwareVersion else {
+            updateAvailable.installed = nil
+            return false
+        }
+        updateAvailable.installed = installed
+        return true
+    }
+
     func validateAvailableFirmware() -> Bool {
-        appState.update.available != nil
+        return updateAvailable.available != nil
     }
 
     func checkSelectedChannel(_ channel: Update.Channel) -> Bool {
-        guard let installedChannel = installedChannel else {
+        guard let installed = updateAvailable.installed else {
             return false
         }
-        guard installedChannel == channel else {
-            state = .channelUpdate
+        guard installed.channel == channel else {
+            updateAvailable.state = .ready(.channelUpdate)
             return false
         }
         return true
     }
 
     func checkInstalledFirmware() -> Bool {
-        guard let installedFirmware = installedFirmware else {
+        guard
+            let installed = updateAvailable.installed,
+            let available = updateAvailable.available
+        else {
             return false
         }
-        guard installedFirmware == update.available?.version.version else {
-            state = .versionUpdate
+        guard installed.description == available.description else {
+            updateAvailable.state = .ready(.versionUpdate)
             return false
         }
         return true

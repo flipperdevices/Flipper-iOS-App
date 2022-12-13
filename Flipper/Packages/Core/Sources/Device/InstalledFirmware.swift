@@ -1,21 +1,24 @@
-import Core
+// FIXME: Move somewhere
 
 extension Flipper.DeviceInformation {
-    public var shortSoftwareVersion: String? {
+    public var firmwareVersion: Update.Version? {
         guard let channel = firmwareChannel else {
             return nil
         }
         let parts = softwareRevision.split(separator: " ")
 
+        var version: String
         switch channel {
-        case .release: return "Release \(String(parts[1]))"
-        case .candidate: return "RC \(parts[1].dropLast(3))"
-        case .development: return "Dev \(parts[0])"
-        default: fatalError("unreachable")
+        case .release: version = "\(String(parts[1]))"
+        case .candidate: version = "\(parts[1].dropLast(3))"
+        case .development: version = "\(parts[0])"
+        default: return nil
         }
+
+        return .init(channel: channel, version: version)
     }
 
-    public var firmwareChannel: Update.Channel? {
+    private var firmwareChannel: Update.Channel? {
         let parts = softwareRevision.split(separator: " ")
         guard parts.count >= 2 else { return nil }
 

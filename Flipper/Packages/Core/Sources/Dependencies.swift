@@ -41,7 +41,7 @@ public class Depencencies: ObservableObject {
         .init(appState: appState, flipperService: flipperService)
     }()
 
-    public lazy var checkUpdateService: CheckUpdateRefactoring = {
+    public lazy var checkUpdateService: CheckUpdateService = {
         .init(appState: appState, flipperService: flipperService)
     }()
 

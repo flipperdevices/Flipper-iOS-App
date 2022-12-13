@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct UpdateButton: View {
-    let state: CheckUpdateRefactoring.State
+    let state: VersionUpdateModel.State.Ready
     var action: () -> Void
 
     var title: String {
@@ -10,7 +10,6 @@ struct UpdateButton: View {
         case .noUpdates: return "NO UPDATES"
         case .versionUpdate: return "UPDATE"
         case .channelUpdate: return "INSTALL"
-        default: return ""
         }
     }
 
@@ -19,7 +18,6 @@ struct UpdateButton: View {
         case .noUpdates: return .black20
         case .versionUpdate: return .sGreenUpdate
         case .channelUpdate: return .a1
-        default: return .clear
         }
     }
 

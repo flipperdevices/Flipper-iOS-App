@@ -36,7 +36,7 @@ struct DeviceInfoCard: View {
     var firmwareVersion: String {
         guard isConnected else { return "" }
         guard let info = appState.flipper?.information else { return "" }
-        return info.shortSoftwareVersion ?? "invalid"
+        return info.firmwareVersion?.description ?? "invalid"
     }
 
     var firmwareVersionColor: Color {

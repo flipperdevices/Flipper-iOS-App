@@ -1,4 +1,5 @@
 import Inject
+import Analytics
 import Peripheral
 
 import Logging
@@ -12,6 +13,13 @@ public class UpdateService: ObservableObject {
     let appState: AppState
     let flipperService: FlipperService
 
+    var update: Update {
+        get { appState.update }
+        set { appState.update = newValue }
+    }
+
+    @Inject var analytics: Analytics
+
     private var updateTaskHandle: Task<Void, Swift.Error>?
 
     public init(appState: AppState, flipperService: FlipperService) {
@@ -21,50 +29,44 @@ public class UpdateService: ObservableObject {
 
     public func cancel() {
         updateTaskHandle?.cancel()
+        Task {
+            flipperService.disconnect()
+            try await Task.sleep(milliseconds: 100)
+            flipperService.connect()
+        }
     }
 
-    public func update(
-        firmware: Update.Manifest.Version?,
-        isProvisioningDisabled: Bool,
-        onSuccess: @escaping @MainActor () -> Void,
-        onFailure: @escaping @MainActor (Update.State.Error) -> Void
-    ) {
-        appState.update.state = .update(.preparing)
+    public func start(_ intent: Update.Intent) {
+        update.intent = intent
+        process(intent: intent)
+    }
+
+    public func retry() {
+        guard let intent = update.intent else {
+            return
+        }
+        process(intent: intent)
+    }
+
+    private func process(intent: Update.Intent) {
+        recordUpdateStarted(intent: intent)
+        update.state = .update(.preparing)
         guard updateTaskHandle == nil else {
             logger.error("update in progress")
             return
         }
-        guard let firmware = firmware else {
-            logger.error("invalid firmware")
-            return
-        }
-        // swiftlint:disable closure_body_length
         updateTaskHandle = Task {
             do {
-                let archive = try await downloadFirmware(firmware)
-                try await flipperService.showUpdatingFrame()
-                appState.update.state = .update(.preparing)
-                try await flipperService.provideSubGHzRegion()
+                let archive = try await downloadFirmware(intent)
+                try await prepareForUpdate()
+                try await provideRegion()
                 let path = try await uploadFirmware(archive)
                 try await startUpdateProcess(path)
-                onSuccess()
-            } catch where error is URLError {
-                logger.error("no internet")
-                onFailure(.failedDownloading)
-                appState.update.state = .error(.noInternet)
-            } catch where error is Provisioning.Error {
-                logger.error("provisioning: \(error)")
-                onFailure(.failedPreparing)
-                appState.update.state = .error(.outdatedApp)
-            } catch let error as Peripheral.Error
-                where error == .storage(.internal) {
-                logger.error("update: \(error)")
-                onFailure(.failedUploading)
-                appState.update.state = .error(.storageError)
             } catch {
+                if case .error(let error) = update.state {
+                    recordUpdateFailed(intent: intent, error: error)
+                }
                 logger.error("update: \(error)")
-                onFailure(.failedUploading)
-                appState.update.state = .error(.noDevice)
             }
             try? await flipperService.hideUpdatingFrame()
             updateTaskHandle?.cancel()
@@ -72,41 +74,105 @@ public class UpdateService: ObservableObject {
         }
     }
 
+    private func prepareForUpdate() async throws {
+        update.state = .update(.preparing)
+        do {
+            try await flipperService.showUpdatingFrame()
+        } catch {
+            update.state = .error(.failedPreparing)
+            throw error
+        }
+    }
+
+    private func provideRegion() async throws {
+        do {
+            try await flipperService.provideSubGHzRegion()
+        } catch let error as Peripheral.Error
+            where error == .storage(.internal) {
+            logger.error("provide region: \(error)")
+            update.state = .error(.storageError)
+            throw error
+        }
+    }
+
     private func downloadFirmware(
-        _ firmware: Update.Manifest.Version
+        _ intent: Update.Intent
     ) async throws -> Update.Firmware {
-        appState.update.state = .update(.downloading(progress: 0))
-        return try await appState.update.downloadFirmware(firmware) { progress in
-            Task { @MainActor in
-                if case .update(.downloading) = self.appState.update.state {
-                    self.appState.update.state = .update(.downloading(progress: progress))
+        do {
+            update.state = .update(.downloading(progress: 0))
+            return try await update
+                .downloadFirmware(intent.to.firmware) { progress in
+                    Task { @MainActor in
+                        if case .update(.downloading) = self.update.state {
+                            self.update.state = .update(
+                                .downloading(progress: progress)
+                            )
+                        }
+                    }
                 }
-            }
+        } catch where error is URLError {
+            update.state = .error(.failedDownloading)
+            recordUpdateFailed(intent: intent, error: .failedDownloading)
+            logger.error("download firmware: \(error.localizedDescription)")
+            throw error
         }
     }
 
     private func uploadFirmware(
         _ firmware: Update.Firmware
     ) async throws -> Peripheral.Path {
-        appState.update.state = .update(.preparing)
-        return try await appState.update.uploadFirmware(firmware) { progress in
-            Task { @MainActor in
-                if case .update = self.appState.update.state {
-                    self.appState.update.state = .update(.uploading(progress: progress))
+        do {
+            update.state = .update(.preparing)
+            return try await update.uploadFirmware(firmware) { progress in
+                Task { @MainActor in
+                    if case .update = self.update.state {
+                        self.update.state = .update(
+                            .uploading(progress: progress)
+                        )
+                    }
                 }
             }
+        } catch let error as Peripheral.Error
+            where error == .storage(.internal) {
+            update.state = .error(.storageError)
+            logger.error("upload firmware: \(error)")
+            throw error
         }
     }
 
     private func startUpdateProcess(_ directory: Peripheral.Path) async throws {
-        appState.update.state = .update(.preparing)
+        update.state = .update(.preparing)
         try await flipperService.startUpdateProcess(from: directory)
-        appState.update.state = .update(.started)
-        onUpdateStarted()
-    }
-
-    public func onUpdateStarted() {
+        update.state = .update(.started)
         appState.status = .updating
         logger.info("update started")
+    }
+
+    // MARK: Analytics
+
+    func recordUpdateStarted(intent: Update.Intent) {
+        analytics.flipperUpdateStart(
+            id: intent.id,
+            from: intent.from.description,
+            to: intent.to.description)
+    }
+
+    func recordUpdateFailed(
+        intent: Update.Intent,
+        error: Update.State.Error
+    ) {
+        let result: UpdateResult
+        switch error {
+        case .canceled: result = .canceled
+        case .failedDownloading: result = .failedDownload
+        case .failedPreparing: result = .failedPrepare
+        case .failedUploading: result = .failedUpload
+        default: result = .failed
+        }
+        analytics.flipperUpdateResult(
+            id: intent.id,
+            from: intent.from.description,
+            to: intent.to.description,
+            status: result)
     }
 }

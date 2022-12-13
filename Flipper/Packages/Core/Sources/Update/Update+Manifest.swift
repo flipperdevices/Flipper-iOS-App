@@ -11,13 +11,13 @@ extension Update {
             public let versions: [Version]
         }
 
-        public struct Version: Decodable {
+        public struct Version: Equatable, Decodable {
             public let version: String
             public let changelog: String
             public let timestamp: Int
             public let files: [File]
 
-            public struct File: Decodable {
+            public struct File: Equatable, Decodable {
                 let url: URL
                 let target: String
                 let type: String

@@ -4,30 +4,28 @@ import SwiftUI
 struct DeviceUpdateCard: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var networkService: NetworkService
-    @EnvironmentObject var checkUpdateService: CheckUpdateRefactoring
+    @EnvironmentObject var checkUpdateService: CheckUpdateService
     @EnvironmentObject var syncService: SyncService
     @Environment(\.scenePhase) private var scenePhase
 
-    var viewModel: CheckUpdateRefactoring {
+    let update: (Update.Intent) -> Void
+
+    var viewModel: CheckUpdateService {
         checkUpdateService
     }
 
-    var update: Update {
-        get { appState.update }
-        nonmutating set { appState.update = newValue }
+    var updateAvailable: VersionUpdateModel {
+        get { appState.updateAvailable }
+        nonmutating set { appState.updateAvailable = newValue }
     }
 
     var channel: Update.Channel {
         get {
-            update.selectedChannel
+            updateAvailable.selectedChannel
         }
         nonmutating set {
-            update.selectedChannel = newValue
+            updateAvailable.selectedChannel = newValue
         }
-    }
-
-    var availableFirmware: String {
-        update.available?.description ?? "unknown"
     }
 
     @State var showUpdateView = false
@@ -35,32 +33,39 @@ struct DeviceUpdateCard: View {
     @State var showPauseSync = false
     @State var showCharge = false
 
+    @State var updateVersion = ""
     @State var showUpdateFailed = false
     @State var showUpdateSucceeded = false
 
     var description: String {
-        switch viewModel.state {
-        case .noSDCard:
-            return "Install SD card in Flipper to update firmware"
-        case .noInternet:
-            return "Can’t connect to update server"
-        case .cantConnect:
-            return "Can’t connect to update server"
-        case .disconnected:
-            return "Connect to Flipper to see available updates"
-        case .connecting:
+        switch updateAvailable.state {
+        case .busy(.connecting):
             return "Connecting to Flipper..."
-        case .noUpdates:
-            return "There are no updates in selected channel"
-        case .versionUpdate:
-            return "Update Flipper to the latest version"
-        case .channelUpdate:
-            return "Firmware on Flipper doesn’t match update channel. " +
-                "Selected version will be installed."
-        case .updateInProgress:
+        case .busy(.loadingManifest):
+            return "Connecting to Flipper..."
+        case .busy(.updateInProgress):
             return "Flipper is updating in offline mode. " +
                 "Look at the device screen for info and wait for reconnection."
+        case .ready(.noUpdates):
+            return "There are no updates in selected channel"
+        case .ready(.versionUpdate):
+            return "Update Flipper to the latest version"
+        case .ready(.channelUpdate):
+            return "Firmware on Flipper doesn’t match update channel. " +
+                "Selected version will be installed."
+        case .error(.noCard):
+            return "Install SD card in Flipper to update firmware"
+        case .error(.noInternet):
+            return "Can’t connect to update server"
+        case .error(.cantConnect):
+            return "Can’t connect to update server"
+        case .error(.noDevice):
+            return "Connect to Flipper to see available updates"
         }
+    }
+
+    var availableFirmware: String {
+        updateAvailable.available?.description ?? "unknown"
     }
 
     var channelColor: Color {
@@ -83,87 +88,8 @@ struct DeviceUpdateCard: View {
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
 
-                if viewModel.state == .noSDCard {
-                    VStack(spacing: 2) {
-                        Image("NoSDCard")
-                        Text("No SD сard")
-                            .font(.system(size: 14, weight: .medium))
-                        HStack {
-                            Text(description)
-                                .font(.system(size: 14, weight: .medium))
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.black30)
-                        }
-                        .padding(.horizontal, 12)
-                    }
-                    .padding(.vertical, 4)
-
-                    Button {
-                        viewModel.updateStorageInfo()
-                    } label: {
-                        Text("Retry")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.a2)
-                    }
-                    .padding(.bottom, 8)
-                } else if viewModel.state == .noInternet {
-                    VStack(spacing: 2) {
-                        Image("NoInternet")
-                        Text("No Internet connection")
-                            .font(.system(size: 14, weight: .medium))
-                        HStack {
-                            Text(description)
-                                .font(.system(size: 14, weight: .medium))
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.black30)
-                        }
-                        .padding(.horizontal, 12)
-                    }
-                    .padding(.vertical, 4)
-
-                    Button {
-                        viewModel.updateAvailableFirmware(for: channel)
-                    } label: {
-                        Text("Retry")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.a2)
-                    }
-                    .padding(.bottom, 8)
-                } else if viewModel.state == .cantConnect {
-                    VStack(spacing: 2) {
-                        Image("ServerError")
-                        Text("Unable to download firmware")
-                            .font(.system(size: 14, weight: .medium))
-                        HStack {
-                            Text(description)
-                                .font(.system(size: 14, weight: .medium))
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.black30)
-                        }
-                        .padding(.horizontal, 12)
-                    }
-                    .padding(.vertical, 4)
-
-                    Button {
-                        viewModel.updateAvailableFirmware(for: channel)
-                    } label: {
-                        Text("Retry")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.a2)
-                    }
-                    .padding(.bottom, 8)
-                } else if viewModel.state == .disconnected {
-                    VStack(spacing: 2) {
-                        Image("UpdateNoDevice")
-                        Text(description)
-                            .font(.system(size: 14, weight: .medium))
-                            .multilineTextAlignment(.center)
-                            .foregroundColor(.black30)
-                            .padding(.horizontal, 12)
-                    }
-                    .padding(.top, 26)
-                    .padding(.bottom, 26)
-                } else if viewModel.state == .connecting {
+                switch updateAvailable.state {
+                case .busy(.connecting), .busy(.loadingManifest):
                     HStack {
                         Text("Update Channel")
                             .foregroundColor(.black30)
@@ -183,7 +109,8 @@ struct DeviceUpdateCard: View {
                     AnimatedPlaceholder()
                         .frame(height: 46)
                         .padding(12)
-                } else if viewModel.state == .updateInProgress {
+
+                case .busy(.updateInProgress):
                     UpdateStartedImage()
                         .padding(.top, 12)
                         .padding(.horizontal, 12)
@@ -199,7 +126,7 @@ struct DeviceUpdateCard: View {
                     }
                     .padding(.vertical, 8)
                     .padding(.horizontal, 12)
-                } else {
+                case .ready(let state):
                     HStack {
                         Text("Update Channel")
                             .foregroundColor(.black30)
@@ -222,7 +149,7 @@ struct DeviceUpdateCard: View {
 
                     Divider()
 
-                    UpdateButton(state: viewModel.state) {
+                    UpdateButton(state: state) {
                         guard viewModel.hasBatteryCharged else {
                             showCharge = true
                             return
@@ -231,7 +158,7 @@ struct DeviceUpdateCard: View {
                             showPauseSync = true
                             return
                         }
-                        showConfirmUpdate = true
+                        checkUpdateService.onUpdatePressed()
                     }
 
                     VStack {
@@ -243,20 +170,106 @@ struct DeviceUpdateCard: View {
                     .padding(.top, 5)
                     .padding(.bottom, 8)
                     .padding(.horizontal, 12)
+                case .error(.noCard):
+                    VStack(spacing: 2) {
+                        Image("NoSDCard")
+                        Text("No SD сard")
+                            .font(.system(size: 14, weight: .medium))
+                        HStack {
+                            Text(description)
+                                .font(.system(size: 14, weight: .medium))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.black30)
+                        }
+                        .padding(.horizontal, 12)
+                    }
+                    .padding(.vertical, 4)
+
+                    Button {
+                        viewModel.updateStorageInfo()
+                    } label: {
+                        Text("Retry")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.a2)
+                    }
+                    .padding(.bottom, 8)
+
+                case .error(.noInternet):
+                    VStack(spacing: 2) {
+                        Image("NoInternet")
+                        Text("No Internet connection")
+                            .font(.system(size: 14, weight: .medium))
+                        HStack {
+                            Text(description)
+                                .font(.system(size: 14, weight: .medium))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.black30)
+                        }
+                        .padding(.horizontal, 12)
+                    }
+                    .padding(.vertical, 4)
+
+                    Button {
+                        viewModel.updateAvailableFirmware(for: channel)
+                    } label: {
+                        Text("Retry")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.a2)
+                    }
+                    .padding(.bottom, 8)
+
+                case .error(.cantConnect):
+                    VStack(spacing: 2) {
+                        Image("ServerError")
+                        Text("Unable to download firmware")
+                            .font(.system(size: 14, weight: .medium))
+                        HStack {
+                            Text(description)
+                                .font(.system(size: 14, weight: .medium))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.black30)
+                        }
+                        .padding(.horizontal, 12)
+                    }
+                    .padding(.vertical, 4)
+
+                    Button {
+                        viewModel.updateAvailableFirmware(for: channel)
+                    } label: {
+                        Text("Retry")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.a2)
+                    }
+                    .padding(.bottom, 8)
+
+                case .error(.noDevice):
+                    VStack(spacing: 2) {
+                        Image("UpdateNoDevice")
+                        Text(description)
+                            .font(.system(size: 14, weight: .medium))
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.black30)
+                            .padding(.horizontal, 12)
+                    }
+                    .padding(.top, 26)
+                    .padding(.bottom, 26)
                 }
             }
         }
         .alert(
             "Update Firmware?",
-            isPresented: $showConfirmUpdate
-        ) {
+            isPresented: $showConfirmUpdate,
+            presenting: updateAvailable.intent
+        ) { intent in
             Button("Cancel") { }
             Button("Update") {
-                showUpdateView = true
+                update(intent)
+                // FIXME: wait for event
+                updateAvailable.state = .busy(.updateInProgress)
             }
-        } message: {
+        } message: { intent in
             Text(
-                "New Firmware \(availableFirmware) " +
+                "New Firmware \(intent.to) " +
                 "will be installed")
         }
         .alert(
@@ -278,32 +291,24 @@ struct DeviceUpdateCard: View {
         .customAlert(isPresented: $showUpdateSucceeded) {
             UpdateSucceededAlert(
                 isPresented: $showUpdateSucceeded,
-                firmwareVersion: update.updateInProgress?.to.version.version ?? "unknown")
+                firmwareVersion: updateVersion)
         }
         .customAlert(isPresented: $showUpdateFailed) {
             UpdateFailedAlert(
                 isPresented: $showUpdateFailed,
-                firmwareVersion: update.updateInProgress?.to.version.version ?? "unknown")
+                firmwareVersion: updateVersion)
         }
-        .fullScreenCover(isPresented: $showUpdateView) {
-            DeviceUpdateView(
-                isPresented: $showUpdateView,
-                channel: channel,
-                firmware: update.available?.version,
-                onSuccess: viewModel.onUpdateStarted,
-                onFailure: viewModel.onUpdateFailed
-            )
+        .onChange(of: updateAvailable.intent) { intent in
+            if intent != nil {
+                showConfirmUpdate = true
+            }
         }
-        .onReceive(viewModel.updateResult) { result in
+        .onChange(of: appState.update.result) { result in
+            updateVersion = updateAvailable.intent?.to.description ?? "unknown"
             switch result {
             case .completed: showUpdateSucceeded = true
             case .failed: showUpdateFailed = true
             default: break
-            }
-        }
-        .onChange(of: viewModel.state) { state in
-            if state == .connecting {
-                viewModel.updateAvailableFirmware(for: channel)
             }
         }
         .onChange(of: appState.customFirmwareURL) { url in
@@ -319,6 +324,9 @@ struct DeviceUpdateCard: View {
         }
         .onChange(of: networkService.available) {
             viewModel.onNetworkStatusChanged(available: $0)
+        }
+        .task {
+            viewModel.updateAvailableFirmware(for: channel)
         }
     }
 
