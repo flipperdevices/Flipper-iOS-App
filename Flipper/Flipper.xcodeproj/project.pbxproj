@@ -478,7 +478,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		49CE8F942525E73200B9CBE4 /* Check code with SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -490,7 +490,7 @@
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "# Initiate lint\n${PROJECT_DIR}/perform_lint.sh\n";
 		};
