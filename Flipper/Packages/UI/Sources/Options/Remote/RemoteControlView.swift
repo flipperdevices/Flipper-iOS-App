@@ -55,11 +55,8 @@ struct DeviceScreen: View {
     var scaledWidth: Int { .screenWidth * .scale }
     var scaledHeight: Int { .screenHeight * .scale }
 
-    let orage = Pixel(a: 255, r: 255, g: 130, b: 0)
-    let black = Pixel(a: 255, r: 0, g: 0, b: 0)
-
-    var colorPixels: [Pixel] {
-        self.scaledPixels.map { $0 ? black : orage }
+    var colorPixels: [PixelColor] {
+        self.scaledPixels.map { $0 ? .black : .orage }
     }
 
     var uiImage: UIImage {
