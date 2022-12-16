@@ -25,7 +25,10 @@ let package = Package(
             from: "3.3.0"),
         .package(
             url: "https://github.com/gonzalezreal/swift-markdown-ui",
-            from: "2.0.2")
+            from: "2.0.2"),
+        .package(
+            url: "https://github.com/SVGKit/SVGKit.git",
+            from: "3.0.0")
     ],
     targets: [
         .target(
@@ -33,6 +36,7 @@ let package = Package(
             dependencies: [
                 "Core",
                 "Analytics",
+                .product(name: "SVGKit", package: "SVGKit"),
                 .product(name: "Lottie", package: "lottie-ios"),
                 .product(name: "MarkdownUI", package: "swift-markdown-ui")
             ],

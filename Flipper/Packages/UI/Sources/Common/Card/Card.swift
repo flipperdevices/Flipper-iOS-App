@@ -1,18 +1,14 @@
 import SwiftUI
 
 struct Card<Content>: View where Content: View {
-    let content: () -> Content
-
-    init(@ViewBuilder content: @escaping () -> Content) {
-        self.content = content
-    }
+    @ViewBuilder var content: () -> Content
 
     var body: some View {
-        VStack(spacing: 0) {
+        Group {
             content()
         }
-        .foregroundColor(.primary)
         .background(Color.groupedBackground)
+        .foregroundColor(.primary)
         .cornerRadius(10)
     }
 }

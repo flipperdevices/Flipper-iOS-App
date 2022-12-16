@@ -8,14 +8,14 @@ struct SearchField: View {
         HStack(spacing: 6) {
             Image(systemName: "magnifyingglass")
                 .padding(.leading, 6)
-                .foregroundColor(.gray)
+                .foregroundColor(.primary.opacity(0.7))
 
             ZStack(alignment: .leading) {
                 Text(placeholder)
                     .lineLimit(1)
                     .font(.system(size: 17))
                     .opacity(predicate.isEmpty ? 1 : 0)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.primary.opacity(0.7))
 
                 TextField("", text: _predicate)
                     .lineLimit(1)

@@ -13,6 +13,19 @@ struct LeadingToolbarItems<Content: View>: ToolbarContent {
     }
 }
 
+struct PrincipalToolbarItems<Content: View>: ToolbarContent {
+    @ViewBuilder var content: () -> Content
+
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .principal) {
+            HStack(spacing: 0) {
+                content()
+            }
+            .foregroundColor(.primary)
+        }
+    }
+}
+
 struct TrailingToolbarItems<Content: View>: ToolbarContent {
     @ViewBuilder var content: () -> Content
 
