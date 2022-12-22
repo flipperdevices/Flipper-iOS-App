@@ -62,12 +62,6 @@ class ShareViewModel: ObservableObject {
         self.state = .select
     }
 
-    func share() {
-        isTempLink
-            ? shareAsTempLink()
-            : shareAsShortLink()
-    }
-
     func shareAsTempLink() {
         withAnimation {
             state = .uploading
@@ -76,6 +70,7 @@ class ShareViewModel: ObservableObject {
             do {
                 if let url = try await TempLinkSharing().shareKey(item) {
                     Core.share([url])
+                    analytics.appOpen(target: .keyShareUpload)
                 }
             } catch {
                 state = .cantConnect
@@ -86,12 +81,12 @@ class ShareViewModel: ObservableObject {
 
     func shareAsShortLink() {
         try? Core.shareAsURL(item)
-        recordShare()
+        analytics.appOpen(target: .keyShareURL)
     }
 
     func shareAsFile() {
         Core.shareAsFile(item)
-        recordShare()
+        analytics.appOpen(target: .keyShareFile)
     }
 
     func recordShare() {

@@ -153,6 +153,9 @@ fileprivate extension Metric_Events_Open.OpenTarget {
         case .keyShare: self = .share
         case .fileManager: self = .experimentalFm
         case .remoteControl: self = .experimentalScreenstreaming
+        case .keyShareURL: self = .shareShortlink
+        case .keyShareUpload: self = .shareLonglink
+        case .keyShareFile: self = .shareFile
         }
     }
 }

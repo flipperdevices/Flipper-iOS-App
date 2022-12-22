@@ -45,6 +45,9 @@ public enum OpenTarget: Sendable {
     case keyShare
     case fileManager
     case remoteControl
+    case keyShareURL
+    case keyShareUpload
+    case keyShareFile
 }
 
 public enum UpdateResult: Sendable {
