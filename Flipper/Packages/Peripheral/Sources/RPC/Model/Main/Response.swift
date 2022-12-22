@@ -41,6 +41,7 @@ public enum Response: Equatable {
         case stat(Int)
         case file([UInt8])
         case hash(String)
+        case timestamp(Date)
     }
 }
 
@@ -78,6 +79,8 @@ extension Response {
             self.init(decoding: response)
         // Storage
         case .storageInfoResponse(let response):
+            self.init(decoding: response)
+        case .storageTimestampResponse(let response):
             self.init(decoding: response)
         case .storageListResponse(let response):
             self.init(decoding: response)
@@ -119,6 +122,10 @@ extension Response {
 
     init(decoding response: PBStorage_InfoResponse) {
         self = .storage(.info(.init(response)))
+    }
+
+    init(decoding response: PBStorage_TimestampResponse) {
+        self = .storage(.timestamp(.init(response)))
     }
 
     init(decoding response: PBStorage_ListResponse) {
@@ -197,6 +204,7 @@ extension Response.Storage: CustomStringConvertible {
         case let .stat(size): return "stat(\(size))"
         case let .file(bytes): return "file(\(bytes.count) bytes)"
         case let .hash(hash): return "hash(\(hash))"
+        case let .timestamp(hash): return "timestamp(\(hash))"
         }
     }
 }

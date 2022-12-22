@@ -9,7 +9,7 @@ struct SettingsWidgetKeyView: View {
     var color: Color {
         switch key.kind {
         case .subghz: return .a1
-        case .nfc, .rfid: return .a2
+        case .nfc, .rfid, .ibutton: return .a2
         default: return .clear
         }
     }
@@ -17,7 +17,7 @@ struct SettingsWidgetKeyView: View {
     var label: String {
         switch key.kind {
         case .subghz: return "Send"
-        case .nfc, .rfid: return "Emulate"
+        case .nfc, .rfid, .ibutton: return "Emulate"
         default: return ""
         }
     }

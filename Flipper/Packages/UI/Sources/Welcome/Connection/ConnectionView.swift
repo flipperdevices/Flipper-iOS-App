@@ -125,7 +125,10 @@ struct ConnectionView: View {
                         }
                     } label: {
                         Text("Connect")
-                            .roundedButtonStyle(horizontalPadding: 20)
+                            .font(.system(size: 12, weight: .bold))
+                            .roundedButtonStyle(
+                                height: 36,
+                                horizontalPadding: 16)
                             .lineLimit(1)
                     }
                     .disabled(viewModel.isConnecting)

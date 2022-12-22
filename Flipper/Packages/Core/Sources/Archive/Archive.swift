@@ -101,7 +101,7 @@ public class Archive {
         from archive: ArchiveProtocol
     ) async throws -> ArchiveItem {
         var item = try await readItem(at: path, from: archive)
-        item.status = status(for: item)
+        item.status = try await status(for: item)
         item.isFavorite = (try await mobileFavorites.read()).contains(item.path)
         item.note = try await loadNote(for: item.path)
         return item
@@ -182,7 +182,7 @@ extension Archive {
 
     public func restore(_ item: ArchiveItem) async throws {
         var item = try await copyIfExists(item)
-        item.status = status(for: item)
+        item.status = try await status(for: item)
         try await upsert(item)
         try await wipe(item)
     }
@@ -269,11 +269,19 @@ extension Archive {
 }
 
 extension Archive {
-    public func status(for item: ArchiveItem) -> ArchiveItem.Status {
-        guard let hash = syncedItems.manifest?[item.path] else {
+    public func status(
+        for item: ArchiveItem
+    ) async throws -> ArchiveItem.Status {
+        guard let synced = syncedItems.manifest?[item.path] else {
             return .imported
         }
-        return hash == item.hash ? .synchronized : .modified
+
+        let manifest = try await mobileArchive.getManifest()
+        guard let current = manifest[item.path] else {
+            return .imported
+        }
+
+        return synced == current ? .synchronized : .modified
     }
 
     public func setStatus(

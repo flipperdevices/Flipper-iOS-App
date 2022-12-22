@@ -43,38 +43,40 @@ struct CategoryDeletedView: View {
                 Title("Deleted")
             }
             TrailingToolbarItems {
-                NavBarButton {
-                    viewModel.showRestoreSheet = true
-                } label: {
-                    Text("Restore All")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(toolbarActionsColor)
-                }
-                .disabled(viewModel.items.isEmpty)
-                .actionSheet(isPresented: $viewModel.showRestoreSheet) {
-                    .init(title: Text(restoreSheetTitle), buttons: [
-                        .destructive(Text("Restore All")) {
-                            viewModel.restoreAll()
-                        },
-                        .cancel()
-                    ])
-                }
+                HStack(spacing: 8) {
+                    NavBarButton {
+                        viewModel.showRestoreSheet = true
+                    } label: {
+                        Text("Restore All")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(toolbarActionsColor)
+                    }
+                    .disabled(viewModel.items.isEmpty)
+                    .actionSheet(isPresented: $viewModel.showRestoreSheet) {
+                        .init(title: Text(restoreSheetTitle), buttons: [
+                            .destructive(Text("Restore All")) {
+                                viewModel.restoreAll()
+                            },
+                            .cancel()
+                        ])
+                    }
 
-                NavBarButton {
-                    viewModel.showDeleteSheet = true
-                } label: {
-                    Text("Delete All")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(toolbarActionsColor)
-                }
-                .disabled(viewModel.items.isEmpty)
-                .actionSheet(isPresented: $viewModel.showDeleteSheet) {
-                    .init(title: Text(deleteSheetTitle), buttons: [
-                        .destructive(Text("Delete All")) {
-                            viewModel.deleteAll()
-                        },
-                        .cancel()
-                    ])
+                    NavBarButton {
+                        viewModel.showDeleteSheet = true
+                    } label: {
+                        Text("Delete All")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(toolbarActionsColor)
+                    }
+                    .disabled(viewModel.items.isEmpty)
+                    .actionSheet(isPresented: $viewModel.showDeleteSheet) {
+                        .init(title: Text(deleteSheetTitle), buttons: [
+                            .destructive(Text("Delete All")) {
+                                viewModel.deleteAll()
+                            },
+                            .cancel()
+                        ])
+                    }
                 }
             }
         }

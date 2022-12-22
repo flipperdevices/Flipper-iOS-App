@@ -28,6 +28,7 @@ public enum Request {
         case delete(Path, isForce: Bool)
         case move(Path, Path)
         case hash(Path)
+        case timestamp(Path)
     }
 
     public enum Application {
@@ -162,6 +163,12 @@ extension Request.Storage {
         case let .hash(path):
             return .with {
                 $0.storageMd5SumRequest = .with {
+                    $0.path = path.string
+                }
+            }
+        case let .timestamp(path):
+            return .with {
+                $0.storageTimestampRequest = .with {
                     $0.path = path.string
                 }
             }
@@ -348,9 +355,12 @@ extension Request.Storage: CustomStringConvertible {
             return "move(\(from), \(to))"
         case let .hash(path):
             return "hash(\(path))"
+        case let .timestamp(path):
+            return "timestamp(\(path))"
         }
     }
 }
+
 
 extension Request.Application: CustomStringConvertible {
     public var description: String {

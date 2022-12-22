@@ -394,6 +394,22 @@ struct PB_Main {
     set {content = .storageInfoResponse(newValue)}
   }
 
+  var storageTimestampRequest: PBStorage_TimestampRequest {
+    get {
+      if case .storageTimestampRequest(let v)? = content {return v}
+      return PBStorage_TimestampRequest()
+    }
+    set {content = .storageTimestampRequest(newValue)}
+  }
+
+  var storageTimestampResponse: PBStorage_TimestampResponse {
+    get {
+      if case .storageTimestampResponse(let v)? = content {return v}
+      return PBStorage_TimestampResponse()
+    }
+    set {content = .storageTimestampResponse(newValue)}
+  }
+
   var storageStatRequest: PBStorage_StatRequest {
     get {
       if case .storageStatRequest(let v)? = content {return v}
@@ -697,6 +713,8 @@ struct PB_Main {
     case systemPowerInfoResponse(PBSystem_PowerInfoResponse)
     case storageInfoRequest(PBStorage_InfoRequest)
     case storageInfoResponse(PBStorage_InfoResponse)
+    case storageTimestampRequest(PBStorage_TimestampRequest)
+    case storageTimestampResponse(PBStorage_TimestampResponse)
     case storageStatRequest(PBStorage_StatRequest)
     case storageStatResponse(PBStorage_StatResponse)
     case storageListRequest(PBStorage_ListRequest)
@@ -817,6 +835,14 @@ struct PB_Main {
       }()
       case (.storageInfoResponse, .storageInfoResponse): return {
         guard case .storageInfoResponse(let l) = lhs, case .storageInfoResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.storageTimestampRequest, .storageTimestampRequest): return {
+        guard case .storageTimestampRequest(let l) = lhs, case .storageTimestampRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.storageTimestampResponse, .storageTimestampResponse): return {
+        guard case .storageTimestampResponse(let l) = lhs, case .storageTimestampResponse(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       case (.storageStatRequest, .storageStatRequest): return {
@@ -968,12 +994,46 @@ struct PB_Main {
   init() {}
 }
 
+struct PB_Region {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var countryCode: Data = Data()
+
+  var bands: [PB_Region.Band] = []
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  struct Band {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var start: UInt32 = 0
+
+    var end: UInt32 = 0
+
+    var powerLimit: Int32 = 0
+
+    var dutyCycle: UInt32 = 0
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+  }
+
+  init() {}
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension PB_CommandStatus: @unchecked Sendable {}
 extension PB_Empty: @unchecked Sendable {}
 extension PB_StopSession: @unchecked Sendable {}
 extension PB_Main: @unchecked Sendable {}
 extension PB_Main.OneOf_Content: @unchecked Sendable {}
+extension PB_Region: @unchecked Sendable {}
+extension PB_Region.Band: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -1074,6 +1134,8 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     45: .standard(proto: "system_power_info_response"),
     28: .standard(proto: "storage_info_request"),
     29: .standard(proto: "storage_info_response"),
+    59: .standard(proto: "storage_timestamp_request"),
+    60: .standard(proto: "storage_timestamp_response"),
     24: .standard(proto: "storage_stat_request"),
     25: .standard(proto: "storage_stat_response"),
     7: .standard(proto: "storage_list_request"),
@@ -1835,6 +1897,32 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .appStateResponse(v)
         }
       }()
+      case 59: try {
+        var v: PBStorage_TimestampRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .storageTimestampRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .storageTimestampRequest(v)
+        }
+      }()
+      case 60: try {
+        var v: PBStorage_TimestampResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .storageTimestampResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .storageTimestampResponse(v)
+        }
+      }()
       default: break
       }
     }
@@ -2075,6 +2163,14 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
       guard case .appStateResponse(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 58)
     }()
+    case .storageTimestampRequest?: try {
+      guard case .storageTimestampRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 59)
+    }()
+    case .storageTimestampResponse?: try {
+      guard case .storageTimestampResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 60)
+    }()
     case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -2085,6 +2181,94 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     if lhs.commandStatus != rhs.commandStatus {return false}
     if lhs.hasNext_p != rhs.hasNext_p {return false}
     if lhs.content != rhs.content {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PB_Region: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".Region"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "country_code"),
+    2: .same(proto: "bands"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.countryCode) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.bands) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.countryCode.isEmpty {
+      try visitor.visitSingularBytesField(value: self.countryCode, fieldNumber: 1)
+    }
+    if !self.bands.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.bands, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PB_Region, rhs: PB_Region) -> Bool {
+    if lhs.countryCode != rhs.countryCode {return false}
+    if lhs.bands != rhs.bands {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PB_Region.Band: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = PB_Region.protoMessageName + ".Band"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "start"),
+    2: .same(proto: "end"),
+    3: .standard(proto: "power_limit"),
+    4: .standard(proto: "duty_cycle"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.start) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.end) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.powerLimit) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.dutyCycle) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.start != 0 {
+      try visitor.visitSingularUInt32Field(value: self.start, fieldNumber: 1)
+    }
+    if self.end != 0 {
+      try visitor.visitSingularUInt32Field(value: self.end, fieldNumber: 2)
+    }
+    if self.powerLimit != 0 {
+      try visitor.visitSingularInt32Field(value: self.powerLimit, fieldNumber: 3)
+    }
+    if self.dutyCycle != 0 {
+      try visitor.visitSingularUInt32Field(value: self.dutyCycle, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PB_Region.Band, rhs: PB_Region.Band) -> Bool {
+    if lhs.start != rhs.start {return false}
+    if lhs.end != rhs.end {return false}
+    if lhs.powerLimit != rhs.powerLimit {return false}
+    if lhs.dutyCycle != rhs.dutyCycle {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

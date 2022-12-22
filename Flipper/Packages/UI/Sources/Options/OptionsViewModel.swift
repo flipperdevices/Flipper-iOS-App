@@ -15,7 +15,7 @@ class OptionsViewModel: ObservableObject {
     @Inject private var archive: Archive
     private var disposeBag: DisposeBag = .init()
 
-    @Published var isOnline = false
+    @Published var isAvailable = false
     @Published var hasKeys = false
     @Published var showResetApp = false
 
@@ -29,8 +29,8 @@ class OptionsViewModel: ObservableObject {
     init() {
         appState.$status
             .receive(on: DispatchQueue.main)
-            .map(\.isOnline)
-            .assign(to: \.isOnline, on: self)
+            .map(\.isAvailable)
+            .assign(to: \.isAvailable, on: self)
             .store(in: &disposeBag)
 
         archive.items

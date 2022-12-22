@@ -14,6 +14,7 @@ class InfoViewModel: ObservableObject {
 
     var backup: ArchiveItem
     @Published var item: ArchiveItem
+    @Published var showShareView = false
     @Published var showDumpEditor = false
     @Published var isEditing = false
     @Published var isError = false
@@ -44,7 +45,7 @@ class InfoViewModel: ObservableObject {
         appState.$status
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.isConnected = ($0 == .connected || $0 == .synchronized)
                 self.updateItemStatus(deviceStatus: $0)
             }
@@ -55,8 +56,8 @@ class InfoViewModel: ObservableObject {
         if deviceStatus == .synchronizing {
             self.item.status = .synchronizing
         } else {
-            withAnimation {
-                self.item.status = self.archive.status(for: self.item)
+            Task { @MainActor in
+                item.status = try await archive.status(for: item)
             }
         }
     }
@@ -82,13 +83,7 @@ class InfoViewModel: ObservableObject {
     }
 
     func share() {
-        Core.share(item)
-        recordShare()
-    }
-
-    func shareAsFile() {
-        Core.share(item, as: .file)
-        recordShare()
+        showShareView = true
     }
 
     func delete() {
@@ -148,10 +143,6 @@ class InfoViewModel: ObservableObject {
 
     func recordEdit() {
         analytics.appOpen(target: .keyEdit)
-    }
-
-    func recordShare() {
-        analytics.appOpen(target: .keyShare)
     }
 }
 

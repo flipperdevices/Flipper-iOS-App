@@ -46,7 +46,7 @@ class ArchiveViewModel: ObservableObject {
         }
     }
 
-    var importedItem: ArchiveItem {
+    var importedItem: URL {
         appState.importQueue.removeFirst()
     }
 

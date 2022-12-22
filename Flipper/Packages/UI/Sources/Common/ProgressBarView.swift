@@ -37,10 +37,12 @@ struct ProgressBarView: View {
         .background(color.opacity(0.54))
         .cornerRadius(9)
         .task {
-            if let text = text, text == "..." {
+            if text == "..." {
                 while !Task.isCancelled {
-                    try? await Task.sleep(milliseconds: 333)
-                    self.text = .init(repeating: ".", count: text.count % 3 + 1)
+                    try? await Task.sleep(milliseconds: 500)
+                    if let count = text?.count {
+                        self.text = .init(repeating: ".", count: count % 3 + 1)
+                    }
                 }
             }
         }

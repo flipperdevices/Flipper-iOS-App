@@ -149,6 +149,9 @@ fileprivate extension OpenTarget {
         case .keyShare: return 4
         case .fileManager: return 5
         case .remoteControl: return 6
+        case .keyShareURL: return 7
+        case .keyShareUpload: return 8
+        case .keyShareFile: return 9
         }
     }
 }

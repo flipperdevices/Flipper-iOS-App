@@ -9,22 +9,63 @@ import Logging
 class ImportViewModel: ObservableObject {
     private let logger = Logger(label: "import-vm")
 
-    @Inject var analytics: Analytics
+    @Inject private var appState: AppState
+    @Inject private var archive: Archive
+    @Inject private var analytics: Analytics
+    var dismissPublisher = PassthroughSubject<Void, Never>()
 
-    var backup: ArchiveItem
-    @Published var item: ArchiveItem
+    let url: URL
+    @Published var state: State = .loading
     @Published var isEditing = false
     @Published var isError = false
     var error = ""
 
-    @Inject private var appState: AppState
-    @Inject private var archive: Archive
-    var dismissPublisher = PassthroughSubject<Void, Never>()
+    enum State {
+        case loading
+        case imported
+        case error(Error)
+    }
 
-    init(item: ArchiveItem) {
-        self.item = item
-        self.backup = item
+    enum Error: String {
+        case noInternet
+        case cantConnect
+        case invalidFile
+        case expiredLink
+    }
+
+    @Published var item: ArchiveItem = .none
+    var backup: ArchiveItem = .none
+
+    init(url: URL) {
+        self.url = url
+        loadItem()
         recordImport()
+    }
+
+    func loadItem() {
+        self.state = .loading
+        Task { @MainActor in
+            do {
+                let item = try await Sharing.importKey(from: url)
+                let newItem = try await archive.copyIfExists(item)
+                self.item = newItem
+                self.state = .imported
+            } catch let error as URLError {
+                switch error.code {
+                case .dataNotAllowed: state = .error(.noInternet)
+                case .fileDoesNotExist: state = .error(.expiredLink)
+                default: state = .error(.cantConnect)
+                }
+                logger.error("load item: \(error)")
+            } catch {
+                self.state = .error(.invalidFile)
+                logger.error("load item: \(error)")
+            }
+        }
+    }
+
+    func retry() {
+        loadItem()
     }
 
     func add() {

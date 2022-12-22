@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/gonzalezreal/AttributedText",
         "state": {
           "branch": null,
-          "revision": "2dc2d7864e0fee4b524a5850d7d7cf9a7eeda0fc",
-          "version": "1.0.0"
+          "revision": "0e811cb14de367bbd58a94d12259687e5ee08bea",
+          "version": "1.0.1"
         }
       },
       {
@@ -50,9 +50,9 @@
         "package": "MarkdownUI",
         "repositoryURL": "https://github.com/tonyfreeman/MarkdownUI.git",
         "state": {
-          "branch": null,
-          "revision": "6a33c60ad430772d69ac5278e35474d6b3e5d30a",
-          "version": "1.1.1"
+          "branch": "main",
+          "revision": "3c80d50712dcecf38ceb8d327969e644d5c37de6",
+          "version": null
         }
       },
       {
@@ -62,6 +62,15 @@
           "branch": null,
           "revision": "c97f83e771c95186af80ef6118f158852a9e54be",
           "version": "4.0.1"
+        }
+      },
+      {
+        "package": "Radix",
+        "repositoryURL": "https://github.com/swiftstack/radix.git",
+        "state": {
+          "branch": "dev",
+          "revision": "e360536509fe13c740184ba2496d7d9a5f434f46",
+          "version": null
         }
       },
       {
