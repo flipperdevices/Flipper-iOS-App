@@ -1,5 +1,4 @@
 import Core
-import Inject
 import SwiftUI
 
 public struct RootView: View {

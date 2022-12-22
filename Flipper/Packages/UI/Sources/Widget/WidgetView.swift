@@ -1,6 +1,4 @@
 import Core
-import Inject
-
 import Logging
 import SwiftUI
 

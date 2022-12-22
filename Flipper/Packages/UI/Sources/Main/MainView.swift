@@ -1,9 +1,6 @@
 import Core
 import SwiftUI
 
-import Inject
-import Peripheral
-
 struct MainView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var centralService: CentralService
