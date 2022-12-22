@@ -46,7 +46,7 @@ struct OptionsView: View {
                     RemoteControlView()
                 }
                 NavigationLink("File Manager") {
-                    FileManagerView(viewModel: .init())
+                    FileManagerView()
                 }
                 Button("Reboot Flipper") {
                     flipperService.reboot()

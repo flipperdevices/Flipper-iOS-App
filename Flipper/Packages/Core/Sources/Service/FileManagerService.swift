@@ -1,33 +1,34 @@
-import Core
 import Inject
 import Logging
 import Analytics
 import Peripheral
 import Foundation
 
+// TODO: Refactor (ex. FileManagerViewModel)
+
 @MainActor
-class FileManagerViewModel: ObservableObject {
-    private let logger = Logger(label: "file-manager-vm")
+public class FileManagerService: ObservableObject {
+    private let logger = Logger(label: "filemanager-service")
 
     @Inject private var rpc: RPC
     @Inject var analytics: Analytics
 
-    @Published var content: Content? {
+    @Published public var content: Content? {
         didSet {
             if case .file(let text) = content {
                 self.text = text
             }
         }
     }
-    @Published var text: String = ""
-    @Published var name: String = ""
-    @Published var isFileImporterPresented = false
+    @Published public var text: String = ""
+    @Published public var name: String = ""
+    @Published public var isFileImporterPresented = false
 
     var supportedExtensions: [String] = [
         ".ibtn", ".nfc", ".shd", ".sub", ".rfid", ".ir", ".fmf", ".txt", "log"
     ]
 
-    enum Content {
+    public enum Content {
         case list([Element])
         case file(String)
         case create(isDirectory: Bool)
@@ -35,34 +36,34 @@ class FileManagerViewModel: ObservableObject {
         case error(String)
     }
 
-    enum PathMode {
+    public enum PathMode {
         case list
         case edit
         case error
     }
 
-    let path: Path
+    public let path: Path
     let mode: PathMode
 
-    var title: String {
+    public var title: String {
         path.string
     }
 
-    convenience init() {
+    public convenience init() {
         self.init(path: .init(string: "/"), mode: .list)
+        recordFileManager()
     }
 
-    init(path: Path, mode: PathMode) {
+    public init(path: Path, mode: PathMode) {
         self.path = path
         self.mode = mode
-        recordFileManager()
     }
 
     func showProgressView() {
         self.content = nil
     }
 
-    func update() {
+    public func update() {
         Task {
             showProgressView()
             switch self.mode {
@@ -87,7 +88,7 @@ class FileManagerViewModel: ObservableObject {
 
     // MARK: File
 
-    func canRead(_ file: File) -> Bool {
+    public func canRead(_ file: File) -> Bool {
         supportedExtensions.contains {
             file.name.hasSuffix($0)
         }
@@ -103,7 +104,7 @@ class FileManagerViewModel: ObservableObject {
         }
     }
 
-    func save() {
+    public func save() {
         Task {
             do {
                 showProgressView()
@@ -118,7 +119,7 @@ class FileManagerViewModel: ObservableObject {
 
     // MARK: Import
 
-    func showFileImporter() {
+    public func showFileImporter() {
         /*
             File picker won't be shown if hidden by a swipe down
             instead of the Cancel button, so we use this workaround.
@@ -135,7 +136,7 @@ class FileManagerViewModel: ObservableObject {
         }
     }
 
-    func importFile(url: URL) {
+    public func importFile(url: URL) {
         Task {
             do {
                 guard let name = url.pathComponents.last else {
@@ -164,18 +165,18 @@ class FileManagerViewModel: ObservableObject {
 
     // Create
 
-    func newElement(isDirectory: Bool) {
+    public func newElement(isDirectory: Bool) {
         content = .create(isDirectory: isDirectory)
     }
 
-    func cancel() {
+    public func cancel() {
         Task {
             showProgressView()
             await listDirectory()
         }
     }
 
-    func create() {
+    public func create() {
         Task {
             guard !name.isEmpty else { return }
             guard case .create(let isDirectory) = content else {
@@ -198,7 +199,7 @@ class FileManagerViewModel: ObservableObject {
 
     // Delete
 
-    func delete(at index: Int) {
+    public func delete(at index: Int) {
         Task {
             guard case .list(var elements) = content else {
                 return
@@ -220,7 +221,7 @@ class FileManagerViewModel: ObservableObject {
         }
     }
 
-    func forceDelete() {
+    public func forceDelete() {
         Task {
             guard case .forceDelete(let path) = content else {
                 return

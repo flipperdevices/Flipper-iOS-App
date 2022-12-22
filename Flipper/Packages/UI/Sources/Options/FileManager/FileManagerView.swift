@@ -4,7 +4,7 @@ import Peripheral
 import UniformTypeIdentifiers
 
 struct FileManagerView: View {
-    @StateObject var viewModel: FileManagerViewModel
+    @StateObject var viewModel: FileManagerService = .init()
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
