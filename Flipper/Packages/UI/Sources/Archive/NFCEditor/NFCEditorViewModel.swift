@@ -5,23 +5,92 @@ import SwiftUI
 
 @MainActor
 class NFCEditorViewModel: ObservableObject {
-    var item: Binding<ArchiveItem>
+    @Binding var item: ArchiveItem
 
     @Inject private var appState: AppState
     @Inject private var archive: Archive
 
-    @Published var bytes: [UInt8?]
+    var mifareType: String {
+        guard let typeProperty = item.props.first(
+            where: { $0.key == "Mifare Classic type" }
+        ) else {
+            return "??"
+        }
+        return typeProperty.value
+    }
+
+    @Published var uid: [UInt8]
+    @Published var atqa: [UInt8]
+    @Published var sak: [UInt8]
+
+    let hasBCC: Bool
+
+    @Published var bytes: [UInt8?] {
+        didSet {
+            if oldValue != bytes {
+                updateUID()
+            }
+        }
+    }
     @Published var showSaveAs = false
     @Published var showSaveChanges = false
     var dismissPublisher = PassthroughSubject<Void, Never>()
 
     init(item: Binding<ArchiveItem>) {
-        self.item = item
+        self._item = item
+        self.uid = item.wrappedValue.uid
+        self.atqa = item.wrappedValue.atqa
+        self.sak = item.wrappedValue.sak
         self.bytes = item.wrappedValue.nfcBlocks
+        self.hasBCC = item.wrappedValue.hasBCC
+    }
+
+    func updateUID() {
+        var index = uid.count
+
+        // UID should be 4 or 7 bytes, Sector 0 should be 64 bytes
+        guard (index == 4 || index == 7), bytes.count >= 64 else { return }
+
+        // ATQA byte order depends on version
+        guard let version = item.version else { return }
+
+        // MARK: UID
+
+        let newUID = bytes
+            .prefix(upTo: index)
+            .map { $0 ?? 0 }
+
+        if uid != newUID {
+            uid = .init(newUID)
+            if hasBCC {
+                // NOTE: calculate BCC
+                bytes[index] = newUID.bcc
+            }
+        }
+
+        if hasBCC {
+            index += 1
+        }
+
+        // MARK: SAK
+
+        sak = [bytes[index] ?? 0]
+        index += 1
+
+        // MARK: ATQA
+
+        let newATQA = bytes
+            .suffix(from: index)
+            .prefix(2)
+            .map { $0 ?? 0 }
+
+        atqa = version >= 3
+            ? newATQA.reversed()
+            : newATQA
     }
 
     func cancel() {
-        if item.wrappedValue.nfcBlocks == bytes {
+        if item.nfcBlocks == bytes {
             dismiss()
         } else {
             showSaveChanges = true
@@ -29,16 +98,18 @@ class NFCEditorViewModel: ObservableObject {
     }
 
     func save() {
-        item.wrappedValue.nfcBlocks = bytes
+        item.uid = uid
+        item.nfcBlocks = bytes
         Task {
-            try await archive.upsert(item.wrappedValue)
+            try await archive.upsert(item)
             try await appState.synchronize()
         }
         dismiss()
     }
 
     func saveAs() {
-        item.wrappedValue.nfcBlocks = bytes
+        item.uid = uid
+        item.nfcBlocks = bytes
         showSaveAs = true
     }
 
@@ -47,7 +118,77 @@ class NFCEditorViewModel: ObservableObject {
     }
 }
 
-extension ArchiveItem {
+private extension ArchiveItem {
+    var props: [Property] {
+        shadowCopy.isEmpty
+            ? self.properties
+            : self.shadowCopy
+    }
+
+    var version: Int? {
+        guard let version = props.first(where: { $0.key == "Version" }) else {
+            return nil
+        }
+        return Int(version.value)
+    }
+
+    var hasBCC: Bool {
+        guard let block0 = props.first(where: { $0.key == "Block 0" }) else {
+            return false
+        }
+        let uid = uid
+        let bytes = [UInt8](hexString: block0.value)
+        guard !uid.isEmpty, bytes.count > uid.count else {
+            return false
+        }
+        return bytes[uid.count] == uid.bcc
+    }
+
+    var uid: [UInt8] {
+        get {
+            guard let property = props.first(where: { $0.key == "UID" }) else {
+                return []
+            }
+            return .init(hexString: property.value)
+        }
+        set {
+            shadowCopy = props
+            if let index = shadowCopy.index(of: "UID") {
+                shadowCopy[index].value = newValue.hexString
+            }
+        }
+    }
+
+    var atqa: [UInt8] {
+        get {
+            guard let property = props.first(where: { $0.key == "ATQA" }) else {
+                return []
+            }
+            return .init(hexString: property.value)
+        }
+        set {
+            shadowCopy = props
+            if let index = shadowCopy.index(of: "ATQA") {
+                shadowCopy[index].value = newValue.hexString
+            }
+        }
+    }
+
+    var sak: [UInt8] {
+        get {
+            guard let property = props.first(where: { $0.key == "SAK" }) else {
+                return []
+            }
+            return .init(hexString: property.value)
+        }
+        set {
+            shadowCopy = props
+            if let index = shadowCopy.index(of: "SAK") {
+                shadowCopy[index].value = newValue.hexString
+            }
+        }
+    }
+
     var nfcBlocks: [UInt8?] {
         get {
             let properties = shadowCopy.isEmpty
@@ -93,8 +234,40 @@ extension ArchiveItem {
     }
 }
 
-fileprivate extension Array where Element == ArchiveItem.Property {
+private extension Array where Element == ArchiveItem.Property {
     func index(of key: String) -> Int? {
         self.firstIndex { $0.key == key }
+    }
+}
+
+private extension Array where Element == UInt8 {
+    var hexString: String {
+        self
+            .map {
+                String(format: "%02X", $0)
+            }
+            .joined(separator: " ")
+            .uppercased()
+    }
+
+    init(hexString: String) {
+        self = hexString
+            .split(separator: " ")
+            .map { UInt8($0, radix: 16) ?? 0 }
+    }
+}
+
+private extension Array where Element == UInt8 {
+    var bcc: UInt8? {
+        guard count == 4 || count == 7 else {
+            return nil
+        }
+        return reduce(0, ^)
+    }
+}
+
+private extension ArraySlice where Element == UInt8 {
+    var bcc: UInt8? {
+        [UInt8](self).bcc
     }
 }

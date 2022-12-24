@@ -14,6 +14,7 @@ public func registerMockDependencies() {
     Peripheral.registerMockDependencies()
 
     container.register(AppState.init, as: AppState.self, isSingleton: true)
+    container.register(Archive.init, as: Archive.self, isSingleton: true)
     // device
     container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
     // archive

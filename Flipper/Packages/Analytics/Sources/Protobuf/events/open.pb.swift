@@ -38,6 +38,9 @@ struct Metric_Events_Open {
     case share // = 4
     case experimentalFm // = 5
     case experimentalScreenstreaming // = 6
+    case shareShortlink // = 7
+    case shareLonglink // = 8
+    case shareFile // = 9
     case UNRECOGNIZED(Int)
 
     init() {
@@ -53,6 +56,9 @@ struct Metric_Events_Open {
       case 4: self = .share
       case 5: self = .experimentalFm
       case 6: self = .experimentalScreenstreaming
+      case 7: self = .shareShortlink
+      case 8: self = .shareLonglink
+      case 9: self = .shareFile
       default: self = .UNRECOGNIZED(rawValue)
       }
     }
@@ -66,6 +72,9 @@ struct Metric_Events_Open {
       case .share: return 4
       case .experimentalFm: return 5
       case .experimentalScreenstreaming: return 6
+      case .shareShortlink: return 7
+      case .shareLonglink: return 8
+      case .shareFile: return 9
       case .UNRECOGNIZED(let i): return i
       }
     }
@@ -87,6 +96,9 @@ extension Metric_Events_Open.OpenTarget: CaseIterable {
     .share,
     .experimentalFm,
     .experimentalScreenstreaming,
+    .shareShortlink,
+    .shareLonglink,
+    .shareFile,
   ]
 }
 
@@ -142,5 +154,8 @@ extension Metric_Events_Open.OpenTarget: SwiftProtobuf._ProtoNameProviding {
     4: .same(proto: "SHARE"),
     5: .same(proto: "EXPERIMENTAL_FM"),
     6: .same(proto: "EXPERIMENTAL_SCREENSTREAMING"),
+    7: .same(proto: "SHARE_SHORTLINK"),
+    8: .same(proto: "SHARE_LONGLINK"),
+    9: .same(proto: "SHARE_FILE"),
   ]
 }

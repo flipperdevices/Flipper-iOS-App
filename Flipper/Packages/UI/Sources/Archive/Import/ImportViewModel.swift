@@ -29,6 +29,8 @@ class ImportViewModel: ObservableObject {
     enum Error: String {
         case noInternet
         case cantConnect
+        case invalidFile
+        case expiredLink
     }
 
     @Published var item: ArchiveItem = .none
@@ -51,8 +53,13 @@ class ImportViewModel: ObservableObject {
             } catch let error as URLError {
                 switch error.code {
                 case .dataNotAllowed: state = .error(.noInternet)
+                case .fileDoesNotExist: state = .error(.expiredLink)
                 default: state = .error(.cantConnect)
                 }
+                logger.error("load item: \(error)")
+            } catch {
+                self.state = .error(.invalidFile)
+                logger.error("load item: \(error)")
             }
         }
     }

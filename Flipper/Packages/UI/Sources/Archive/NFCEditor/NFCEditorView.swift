@@ -14,7 +14,7 @@ struct NFCEditorView: View {
                 VStack(spacing: 0) {
                     Header(
                         title: "Edit Dump",
-                        description: viewModel.item.wrappedValue.name.value,
+                        description: viewModel.item.name.value,
                         onCancel: {
                             viewModel.cancel()
                         },
@@ -31,7 +31,11 @@ struct NFCEditorView: View {
 
                     ScrollView {
                         VStack(spacing: 24) {
-                            NFCCard(item: viewModel.item)
+                            NFCCard(
+                                mifareType: viewModel.mifareType,
+                                uid: viewModel.uid,
+                                atqa: viewModel.atqa,
+                                sak: viewModel.sak)
 
                             HexEditor(
                                 bytes: $viewModel.bytes,
@@ -43,7 +47,7 @@ struct NFCEditorView: View {
 
                     NavigationLink("", isActive: $viewModel.showSaveAs) {
                         SaveAsView(viewModel: .init(
-                            item: viewModel.item,
+                            item: $viewModel.item,
                             dismissPublisher: viewModel.dismissPublisher
                         ))
                     }

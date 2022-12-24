@@ -3,16 +3,10 @@ import SwiftUI
 
 extension NFCEditorView {
     struct NFCCard: View {
-        @Binding var item: ArchiveItem
-
-        var mifareType: String {
-            guard let typeProperty = item.properties.first(
-                where: { $0.key == "Mifare Classic type" }
-            ) else {
-                return "??"
-            }
-            return typeProperty.value
-        }
+        var mifareType: String
+        var uid: [UInt8]
+        var atqa: [UInt8]
+        var sak: [UInt8]
 
         var body: some View {
             Image("NFCCard")
@@ -40,7 +34,7 @@ extension NFCEditorView {
                             HStack {
                                 Text("UID:")
                                     .fontWeight(.bold)
-                                Text(item.properties["UID"] ?? "")
+                                Text(uid.hexString)
                                     .fontWeight(.medium)
                             }
 
@@ -48,14 +42,14 @@ extension NFCEditorView {
                                 HStack {
                                     Text("ATQA:")
                                         .fontWeight(.bold)
-                                    Text(item.properties["ATQA"] ?? "")
+                                    Text(atqa.hexString)
                                         .fontWeight(.medium)
                                 }
 
                                 HStack {
                                     Text("SAK:")
                                         .fontWeight(.bold)
-                                    Text(item.properties["SAK"] ?? "")
+                                    Text(sak.hexString)
                                         .fontWeight(.medium)
                                 }
                             }
@@ -66,5 +60,16 @@ extension NFCEditorView {
                     .foregroundColor(.white)
                 )
         }
+    }
+}
+
+private extension Array where Element == UInt8 {
+    var hexString: String {
+        self
+            .map {
+                String(format: "%02X", $0)
+            }
+            .joined(separator: " ")
+            .uppercased()
     }
 }

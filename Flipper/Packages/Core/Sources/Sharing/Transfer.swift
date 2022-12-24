@@ -78,21 +78,16 @@ class Tranfser {
     let baseURL: URL = "https://transfer.flpr.app"
     let fileName: String = "hakuna-matata"
 
-    enum Error: Swift.Error {
-        case invalidURL
-        case invalidResponse
-    }
-
     func makeUploadURL() throws -> URL {
         guard let url = URL(string: "\(baseURL)/\(fileName)") else {
-            throw Error.invalidURL
+            throw URLError(.badURL)
         }
         return url
     }
 
     func makeDownloadURL(with code: String) throws -> URL {
         guard let url = URL(string: "\(baseURL)/\(code)/\(fileName)") else {
-            throw Error.invalidURL
+            throw URLError(.badURL)
         }
         return url
     }
@@ -104,7 +99,7 @@ class Tranfser {
         request.httpBody = .init(data)
         let (data, response) = try await URLSession.shared.data(for: request)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {
-            throw Error.invalidResponse
+            throw URLError(.badServerResponse)
         }
         let responseContent = String(decoding: data, as: UTF8.self)
         return code(from: responseContent)
@@ -115,7 +110,12 @@ class Tranfser {
         let request = URLRequest(url: downloadURL)
         let (data, response) = try await URLSession.shared.data(for: request)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {
-            throw Error.invalidResponse
+            switch (response as? HTTPURLResponse)?.statusCode {
+            case 404: throw URLError(.fileDoesNotExist)
+            // TODO: Remove after fixing the server
+            case 500: throw URLError(.fileDoesNotExist)
+            default: throw URLError(.badServerResponse)
+            }
         }
         return .init(data)
     }
@@ -162,7 +162,7 @@ extension SymmetricKey {
             .replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
 
-        // NOTE: Data(base64Encoded:) require padding character
+        // NOTE: Data(base64Encoded:) requires padding character
         guard let data = [UInt8](decodingBase64: base64Encoded) else {
             return nil
         }

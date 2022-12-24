@@ -26,7 +26,9 @@ struct ShareView: View {
                     HStack(alignment: .top) {
                         Spacer()
                         ShareAsLinkButton(isTempLink: viewModel.isTempLink) {
-                            viewModel.share()
+                            viewModel.isTempLink
+                                ? viewModel.shareAsTempLink()
+                                : viewModel.shareAsShortLink()
                         }
                         Spacer()
                         ShareAsFile {
@@ -55,6 +57,9 @@ struct ShareView: View {
             Spacer()
         }
         .frame(height: 258)
+        .onAppear {
+            viewModel.recordShare()
+        }
     }
 
     struct ShareAsLinkButton: View {

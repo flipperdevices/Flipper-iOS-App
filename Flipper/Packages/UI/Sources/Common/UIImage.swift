@@ -1,21 +1,24 @@
 import UIKit
 
-public struct Pixel {
+public struct PixelColor {
     var a: UInt8
     var r: UInt8
     var g: UInt8
     var b: UInt8
+
+    static var orage: PixelColor { .init(a: 255, r: 255, g: 130, b: 0) }
+    static var black: PixelColor { .init(a: 255, r: 0, g: 0, b: 0) }
 }
 
 extension UIImage {
-    convenience init?(pixels: [Pixel], width: Int, height: Int) {
+    convenience init?(pixels: [PixelColor], width: Int, height: Int) {
         guard width > 0 && height > 0, pixels.count == width * height else {
             return nil
         }
         var pixels = pixels
         let data = Data(
             bytes: &pixels,
-            count: pixels.count * MemoryLayout<Pixel>.size) as CFData
+            count: pixels.count * MemoryLayout<PixelColor>.size) as CFData
         guard let provider = CGDataProvider(data: data) else {
             return nil
         }
@@ -24,7 +27,7 @@ extension UIImage {
             height: height,
             bitsPerComponent: 8,
             bitsPerPixel: 32,
-            bytesPerRow: width * MemoryLayout<Pixel>.size,
+            bytesPerRow: width * MemoryLayout<PixelColor>.size,
             space: CGColorSpaceCreateDeviceRGB(),
             bitmapInfo: CGBitmapInfo(
                 rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue),

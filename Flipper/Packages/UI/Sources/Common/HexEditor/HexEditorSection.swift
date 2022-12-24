@@ -68,7 +68,6 @@ struct HexEditorSection: View {
     }
 
     func makeSelected(_ row: Int, _ column: Int) {
-        guard row != 0 else { return }
         selectedIndex = row * columnsCount + column
     }
 
