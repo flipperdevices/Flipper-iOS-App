@@ -4,6 +4,9 @@ This is a work-in-progress iOS 15+ app to rule all the Flipper family.
 
 Please use our [forum](https://forum.flipperzero.one/c/mobile/14) to submit an issue or feature request.
 
+[<img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="TestFlight" width="175"/>](https://apps.apple.com/app/flipper-mobile-app/id1534655259)
+[<img src="https://askyourself.app/assets/testflight.png" alt="TestFlight" width="175"/>](https://testflight.apple.com/join/oLyR7YeT)
+
 ## Features
 
 ### Implemented
