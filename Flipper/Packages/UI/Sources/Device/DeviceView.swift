@@ -4,7 +4,6 @@ import SwiftUI
 struct DeviceView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var flipperService: FlipperService
-    @EnvironmentObject var updateService: UpdateService
     @EnvironmentObject var syncService: SyncService
 
     @State var showForgetAction = false
@@ -47,11 +46,9 @@ struct DeviceView: View {
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         } else if appState.status != .noDevice {
-                            DeviceUpdateCard { intent in
-                                updateService.start(intent)
-                            }
-                            .padding(.top, 24)
-                            .padding(.horizontal, 14)
+                            DeviceUpdateCard()
+                                .padding(.top, 24)
+                                .padding(.horizontal, 14)
                         }
 
                         if appState.status != .unsupportedDevice {
@@ -172,9 +169,6 @@ struct DeviceView: View {
             if status == .unsupportedDevice {
                 showUnsupportedVersionAlert = true
             }
-        }
-        .fullScreenCover(item: $appState.update.intent) { intent in
-            DeviceUpdateView(intent: intent)
         }
     }
 

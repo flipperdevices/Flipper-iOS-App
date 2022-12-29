@@ -1,47 +1,26 @@
 import Foundation
 
 extension Update {
-    public struct Manifest: Decodable {
-        public let channels: [Channel]
-
-        public struct Channel: Decodable {
-            public let id: String
-            public let title: String
-            public let description: String
-            public let versions: [Version]
-        }
-
-        public struct Version: Equatable, Decodable {
-            public let version: String
-            public let changelog: String
-            public let timestamp: Int
-            public let files: [File]
-
-            public struct File: Equatable, Decodable {
-                let url: URL
-                let target: String
-                let type: String
-                let sha256: String
-            }
-        }
-    }
+    
 }
 
 // MARK: Downloading
 
-extension Update {
-    var manifestURL: URL {
+extension Update.Manifest {
+    private static var manifestURL: URL {
         .init(string: "https://update.flipperzero.one/firmware/directory.json")
         .unsafelyUnwrapped
     }
 
-    public func downloadManifest(
+    public static func download(
         progress: @escaping (Double) -> Void = { _ in }
-    ) async throws -> Manifest {
+    ) async throws -> Update.Manifest {
         let data = URLSessionData(from: manifestURL) {
             progress($0.fractionCompleted)
         }
-        return try await JSONDecoder().decode(Manifest.self, from: data.result)
+        return try await JSONDecoder().decode(
+            Update.Manifest.self,
+            from: data.result)
     }
 }
 

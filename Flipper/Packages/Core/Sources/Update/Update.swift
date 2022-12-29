@@ -5,69 +5,39 @@ import Peripheral
 import Foundation
 import Logging
 
-public struct Update {
-    let logger = Logger(label: "update")
-    @Inject var rpc: RPC
-
-    public var state: State = .update(.preparing)
-
-    public enum State: Equatable {
-        case update(Update)
-        case error(Error)
-
-        public enum Update: Equatable {
-            case preparing
-            case downloading(progress: Double)
-            case uploading(progress: Double)
-            case started
-            case canceling
-        }
-
-        public enum Error: Equatable {
-            case cantConnect
-            case noInternet
-            case noDevice
-            case noCard
-            case storageError
-            case outdatedApp
-            case failedDownloading
-            case failedPreparing
-            case failedUploading
-            case canceled
-        }
-    }
-
-    public var intent: Intent?
-    public var result: Result?
-
-    public struct Version: Equatable, CustomStringConvertible {
+public class Update {
+    public struct Version: Equatable {
         public var channel: Channel
         public var firmware: Manifest.Version
-
-        public var description: String {
-            switch channel {
-            case .development: return "Dev \(firmware.version)"
-            case .candidate: return "RC \(firmware.version.dropLast(3))"
-            case .release: return "Release \(firmware.version)"
-            case .custom(let url): return "Custom \(url.lastPathComponent)"
-            }
-        }
 
         public init(channel: Channel, firmware: Manifest.Version) {
             self.channel = channel
             self.firmware = firmware
         }
+    }
 
-        public init(channel: Channel, version: String) {
-            self.init(
-                channel: channel,
-                firmware: .init(
-                    version: version,
-                    changelog: "",
-                    timestamp: 0,
-                    files: []
-                )
-            )
+    public struct Manifest: Decodable {
+        public let channels: [Channel]
+
+        public struct Channel: Decodable {
+            public let id: String
+            public let title: String
+            public let description: String
+            public let versions: [Version]
+        }
+
+        public struct Version: Equatable, Decodable {
+            public let version: String
+            public let changelog: String
+            public let timestamp: Int
+            public let files: [File]
+
+            public struct File: Equatable, Decodable {
+                let url: URL
+                let target: String
+                let type: String
+                let sha256: String
+            }
         }
     }
 
@@ -90,20 +60,34 @@ public struct Update {
         }
     }
 
-    public enum Result: Sendable {
-        case completed
-        case canceled
-        case failedDownload
-        case failedPrepare
-        case failedUpload
-        case failed
-    }
-
     public enum Error: Swift.Error {
         case invalidFirmware
         case invalidFirmwareURL
         case invalidFirmwareURLString
         case invalidFirmwareCloudDocument
+    }
+}
+
+extension Update.Version: CustomStringConvertible {
+    public var description: String {
+        switch channel {
+        case .development: return "Dev \(firmware.version)"
+        case .candidate: return "RC \(firmware.version.dropLast(3))"
+        case .release: return "Release \(firmware.version)"
+        case .custom(let url): return "Custom \(url.lastPathComponent)"
+        }
+    }
+
+    public init(channel: Update.Channel, version: String) {
+        self.init(
+            channel: channel,
+            firmware: .init(
+                version: version,
+                changelog: "",
+                timestamp: 0,
+                files: []
+            )
+        )
     }
 }
 

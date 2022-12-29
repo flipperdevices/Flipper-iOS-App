@@ -92,9 +92,9 @@ struct DeviceUpdateView: View {
                 .padding(.top, 22)
 
             switch appState.update.state {
-            case .error(.cantConnect): NoInternetView { retry() }
-            case .error(.failedDownloading): NoInternetView { retry() }
-            case .error(.noInternet): NoInternetView { retry() }
+            case .error(.cantConnect): NoInternetView { start() }
+            case .error(.failedDownloading): NoInternetView { start() }
+            case .error(.noInternet): NoInternetView { start() }
             case .error(.noDevice): NoDeviceView()
             case .error(.noCard): StorageErrorView()
             case .error(.failedPreparing): StorageErrorView()
@@ -121,12 +121,6 @@ struct DeviceUpdateView: View {
             }
             .padding(.bottom, 8)
         }
-        .onAppear {
-            UIApplication.shared.isIdleTimerDisabled = true
-        }
-        .onDisappear {
-            UIApplication.shared.isIdleTimerDisabled = false
-        }
         .alert(isPresented: $showCancelUpdate) {
             Alert(
                 title: Text("Abort Update?"),
@@ -143,10 +137,17 @@ struct DeviceUpdateView: View {
                 dismiss()
             }
         }
+        .onAppear {
+            UIApplication.shared.isIdleTimerDisabled = true
+            start()
+        }
+        .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
     }
 
-    func retry() {
-        updateService.retry()
+    func start() {
+        updateService.start(intent)
     }
 
     func confirmCancel() {

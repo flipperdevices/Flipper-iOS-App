@@ -11,7 +11,6 @@ public class Depencencies: ObservableObject {
     public lazy var applicationService: ApplicationService = {
         .init(appState: appState, flipperService: flipperService)
     }()
-    
 
     public lazy var loggerService: LoggerService = {
         .init()
@@ -42,7 +41,7 @@ public class Depencencies: ObservableObject {
     }()
 
     public lazy var checkUpdateService: CheckUpdateService = {
-        .init(appState: appState, flipperService: flipperService)
+        .init(appState: appState)
     }()
 
     public lazy var emulateService: EmulateService = {

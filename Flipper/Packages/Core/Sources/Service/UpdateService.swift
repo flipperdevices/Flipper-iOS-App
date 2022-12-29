@@ -10,19 +10,23 @@ import Foundation
 public class UpdateService: ObservableObject {
     private let logger = Logger(label: "update-service")
 
+    @Inject var rpc: RPC
+    @Inject var analytics: Analytics
+
     let appState: AppState
     let flipperService: FlipperService
 
-    var update: Update {
+    var update: UpdateModel {
         get { appState.update }
         set { appState.update = newValue }
     }
 
-    @Inject var analytics: Analytics
-
     private var updateTaskHandle: Task<Void, Swift.Error>?
 
-    public init(appState: AppState, flipperService: FlipperService) {
+    public init(
+        appState: AppState,
+        flipperService: FlipperService
+    ) {
         self.appState = appState
         self.flipperService = flipperService
     }
@@ -37,14 +41,6 @@ public class UpdateService: ObservableObject {
     }
 
     public func start(_ intent: Update.Intent) {
-        update.intent = intent
-        process(intent: intent)
-    }
-
-    public func retry() {
-        guard let intent = update.intent else {
-            return
-        }
         process(intent: intent)
     }
 
@@ -100,16 +96,15 @@ public class UpdateService: ObservableObject {
     ) async throws -> Update.Firmware {
         do {
             update.state = .update(.downloading(progress: 0))
-            return try await update
-                .downloadFirmware(intent.to.firmware) { progress in
-                    Task { @MainActor in
-                        if case .update(.downloading) = self.update.state {
-                            self.update.state = .update(
-                                .downloading(progress: progress)
-                            )
-                        }
+            return try await downloadFirmware(intent.to.firmware) { progress in
+                Task { @MainActor in
+                    if case .update(.downloading) = self.update.state {
+                        self.update.state = .update(
+                            .downloading(progress: progress)
+                        )
                     }
                 }
+            }
         } catch where error is URLError {
             update.state = .error(.failedDownloading)
             recordUpdateFailed(intent: intent, error: .failedDownloading)
@@ -123,7 +118,7 @@ public class UpdateService: ObservableObject {
     ) async throws -> Peripheral.Path {
         do {
             update.state = .update(.preparing)
-            return try await update.uploadFirmware(firmware) { progress in
+            return try await uploadFirmware(firmware) { progress in
                 Task { @MainActor in
                     if case .update = self.update.state {
                         self.update.state = .update(
@@ -144,8 +139,6 @@ public class UpdateService: ObservableObject {
         update.state = .update(.preparing)
         try await flipperService.startUpdateProcess(from: directory)
         update.state = .update(.started)
-        appState.status = .updating
-        logger.info("update started")
     }
 
     // MARK: Analytics
@@ -159,7 +152,7 @@ public class UpdateService: ObservableObject {
 
     func recordUpdateFailed(
         intent: Update.Intent,
-        error: Update.State.Error
+        error: UpdateModel.State.Error
     ) {
         let result: UpdateResult
         switch error {
@@ -174,5 +167,117 @@ public class UpdateService: ObservableObject {
             from: intent.from.description,
             to: intent.to.description,
             status: result)
+    }
+}
+
+extension UpdateService {
+    public func downloadFirmware(
+        _ version: Update.Manifest.Version,
+        progress: @escaping (Double) -> Void
+    ) async throws -> Update.Firmware {
+        guard let url = version.f7UpdateBundle?.url else {
+            throw Update.Error.invalidFirmwareURL
+        }
+
+        let bytes = url.isFileURL
+            ? try await readCustomFirmwareData(url, progress: progress)
+            : try await downloadFirmwareData(url, progress: progress)
+
+        let entries = try await [Update.Firmware.Entry](unpacking: bytes)
+        return .init(version: version, entries: entries)
+    }
+
+    func downloadFirmwareData(
+        _ url: URL,
+        progress: @escaping (Double) -> Void
+    ) async throws -> [UInt8] {
+        logger.info("downloading firmware \(url)")
+        return try await URLSessionData(from: url) {
+            progress($0.fractionCompleted)
+        }.bytes
+    }
+
+    func readCustomFirmwareData(
+        _ url: URL,
+        progress: @escaping (Double) -> Void
+    ) async throws -> [UInt8] {
+        defer { progress(1.0) }
+        switch try? Data(contentsOf: url) {
+        case .some: return try await readLocalFirmware(from: url)
+        case .none: return try await readCloudFirmware(from: url)
+        }
+    }
+
+    private func readLocalFirmware(from url: URL) async throws -> [UInt8] {
+        logger.debug("reading local firmware file: \(url.lastPathComponent)")
+        let data = try Data(contentsOf: url)
+        try FileManager.default.removeItem(at: url)
+        return .init(data)
+    }
+
+    private  func readCloudFirmware(from url: URL) async throws -> [UInt8] {
+        logger.debug("reading cloud firmware file: \(url.lastPathComponent)")
+        let doc = CloudDocument(fileURL: url)
+        guard await doc.open(), let data = doc.data else {
+            throw Update.Error.invalidFirmwareCloudDocument
+        }
+        return .init(data)
+    }
+
+    public func uploadFirmware(
+        _ firmware: Update.Firmware,
+        progress: @escaping (Double) -> Void
+    ) async throws -> Path {
+        guard case let .directory(directory) = firmware.entries.first else {
+            throw Update.Error.invalidFirmware
+        }
+        let firmwareUpdatePath = Path.update.appending(directory)
+        try? await rpc.createDirectory(at: .update)
+        try? await rpc.createDirectory(at: firmwareUpdatePath)
+
+        let files = await filterExisting(firmware.files, at: .update)
+
+        if !files.isEmpty {
+            progress(0)
+            try await uploadFiles(files, at: .update, progress: progress)
+        }
+
+        return firmwareUpdatePath
+    }
+
+    private func uploadFiles(
+        _ files: [Update.Firmware.File],
+        at path: Path,
+        progress: (Double) -> Void
+    ) async throws {
+        let totalSize = files.reduce(0) { $0 + $1.data.count }
+        var totalSent = 0
+
+        for file in files {
+            let path = path.appending(file.name)
+            for try await sent in rpc.writeFile(at: path, bytes: file.data) {
+                totalSent += sent
+                progress(Double(totalSent) / Double(totalSize))
+            }
+        }
+    }
+
+    private func filterExisting(
+        _ files: [Update.Firmware.File],
+        at path: Path
+    ) async -> [Update.Firmware.File] {
+        var result = [Update.Firmware.File]()
+        for file in files {
+            let path = path.appending(file.name)
+            if let hash = await hash(for: path), hash.value == file.data.md5 {
+                continue
+            }
+            result.append(file)
+        }
+        return result
+    }
+
+    private func hash(for path: Path) async -> Hash? {
+        try? await rpc.calculateFileHash(at: path)
     }
 }

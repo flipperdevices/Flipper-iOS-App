@@ -9,7 +9,7 @@ import Logging
 public class AppState: ObservableObject {
     private let logger = Logger(label: "app-state")
 
-    @Published public var update: Update = .init()
+    @Published public var update: UpdateModel = .init()
     @Published public var updateAvailable: VersionUpdateModel = .init()
 
     @Published public var emulate: EmulateModel = .init()

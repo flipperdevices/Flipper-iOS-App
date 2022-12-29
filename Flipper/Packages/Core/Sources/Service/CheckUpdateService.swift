@@ -12,9 +12,8 @@ public class CheckUpdateService: ObservableObject {
     private let logger = Logger(label: "check-update-service")
 
     private let appState: AppState
-    private let flipperService: Core.FlipperService
 
-    var update: Update {
+    var update: UpdateModel {
         get { appState.update }
         set { appState.update = newValue }
     }
@@ -46,9 +45,8 @@ public class CheckUpdateService: ObservableObject {
         return battery.level >= 10 || battery.state == .charging
     }
 
-    public init(appState: AppState, flipperService: FlipperService) {
+    public init(appState: AppState) {
         self.appState = appState
-        self.flipperService = flipperService
         subscribeToPublishers()
     }
 
@@ -89,6 +87,13 @@ public class CheckUpdateService: ObservableObject {
             from: installed,
             to: available
         )
+    }
+
+    public func onUpdateStarted(_ intent: Update.Intent) {
+        // FIXME: wait for event
+        updateAvailable.state = .busy(.updateInProgress(intent))
+        // FIXME: reuse updateAvailable.state
+        update.inProgress = intent
     }
 
     func resetState() {
@@ -140,19 +145,15 @@ public class CheckUpdateService: ObservableObject {
         }
     }
 
-    public func updateStorageInfo() {
-        Task { await updateStorageInfo() }
-    }
-
     func verifyUpdateResult() {
         guard
-            let intent = update.intent,
+            let intent = update.inProgress,
             let installed = updateAvailable.installed
         else {
             return
         }
 
-        update.intent = nil
+        update.inProgress = nil
 
         var updateFromToVersion: String {
             "from \(intent.from) to \(intent.to)"
@@ -165,7 +166,7 @@ public class CheckUpdateService: ObservableObject {
             if intent.to.description == installed.description {
                 logger.info("update success: \(updateFromToVersion)")
 
-                update.result = .completed
+                update.result.send(.success)
 
                 analytics.flipperUpdateResult(
                     id: intent.id,
@@ -175,7 +176,7 @@ public class CheckUpdateService: ObservableObject {
             } else {
                 logger.info("update error: \(updateFromToVersion)")
 
-                update.result = .failed
+                update.result.send(.failure)
 
                 analytics.flipperUpdateResult(
                     id: intent.id,
@@ -186,12 +187,6 @@ public class CheckUpdateService: ObservableObject {
         }
     }
 
-    func updateStorageInfo() async {
-        // swiftlint:disable statement_position
-        do { try await flipperService.updateStorageInfo() }
-        catch { logger.error("update storage info: \(error)") }
-    }
-
     public func onNetworkStatusChanged(available: Bool) {
         switch available {
         case true: updateAvailable.state = .busy(.connecting)
@@ -199,12 +194,26 @@ public class CheckUpdateService: ObservableObject {
         }
     }
 
-    public func updateAvailableFirmware(for channel: Update.Channel) {
+    public func onChannelSelected(_ channel: String) {
+        switch channel {
+        case "Release": updateAvailable.selectedChannel = .release
+        case "Release-Candidate":  updateAvailable.selectedChannel = .candidate
+        case "Development":  updateAvailable.selectedChannel = .development
+        default: break
+        }
+        updateVersion(for:  updateAvailable.selectedChannel)
+    }
+
+    public func onCustomURLOpened(url: URL) {
+        updateAvailable.selectedChannel = .custom(url)
+    }
+
+    public func updateAvailableFirmware() {
         Task {
             do {
                 guard update.state != .error(.noInternet) else { return }
-                updateAvailable.manifest = try await update.downloadManifest()
-                updateVersion(for: channel)
+                updateAvailable.manifest = try await Update.Manifest.download()
+                updateVersion(for: updateAvailable.selectedChannel)
             } catch {
                 update.state = .error(.cantConnect)
                 logger.error("download manifest: \(error)")
@@ -252,24 +261,26 @@ public class CheckUpdateService: ObservableObject {
         case .connected:
             return true
         case .connecting:
-            if
-                updateAvailable.state != .error(.noInternet),
-                updateAvailable.state != .busy(.updateInProgress)
-            {
+            switch updateAvailable.state {
+            case .error(.noCard), .busy(.updateInProgress):
+                return false
+            default:
                 updateAvailable.state = .busy(.connecting)
+                return false
             }
-            return false
         default:
-            if updateAvailable.state != .busy(.updateInProgress) {
+            switch updateAvailable.state {
+            case .busy(.updateInProgress):
+                return false
+            default:
                 updateAvailable.state = .error(.noDevice)
+                return false
             }
-            return false
         }
     }
 
     func validateSDCard() -> Bool {
         guard case .success(let hasSDCard) = hasSDCard else {
-            updateAvailable.state = .busy(.connecting)
             return false
         }
         guard hasSDCard else {
@@ -281,7 +292,6 @@ public class CheckUpdateService: ObservableObject {
 
     func validateManifest() -> Bool {
         guard case .success(let hasManifest) = hasManifest else {
-            updateAvailable.state = .busy(.connecting)
             return false
         }
         guard hasManifest else {
@@ -302,7 +312,6 @@ public class CheckUpdateService: ObservableObject {
             updateAvailable.state = .ready(.versionUpdate)
             return false
         default:
-            updateAvailable.state = .busy(.connecting)
             return false
         }
 
@@ -313,7 +322,6 @@ public class CheckUpdateService: ObservableObject {
             updateAvailable.state = .ready(.versionUpdate)
             return false
         default:
-            updateAvailable.state = .busy(.connecting)
             return false
         }
 

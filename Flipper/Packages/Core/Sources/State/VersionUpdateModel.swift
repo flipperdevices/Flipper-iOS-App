@@ -41,7 +41,7 @@ import Logging
             public enum Busy: Equatable {
                 case connecting
                 case loadingManifest
-                case updateInProgress
+                case updateInProgress(Update.Intent)
             }
 
             public enum Ready: Equatable {

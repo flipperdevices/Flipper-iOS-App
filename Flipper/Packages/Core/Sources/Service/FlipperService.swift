@@ -291,6 +291,7 @@ public class FlipperService: ObservableObject {
     public func startUpdateProcess(from path: Path) async throws {
         try await rpc.update(manifest: path.appending("update.fuf"))
         try await rpc.reboot(to: .update)
+        logger.info("update started")
     }
 
     public func getInfo() async {
