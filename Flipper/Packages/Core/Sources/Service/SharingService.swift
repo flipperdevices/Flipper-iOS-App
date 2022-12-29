@@ -20,6 +20,7 @@ public class SharingService: ObservableObject {
         do {
             if let url = try await TempLinkSharing().shareKey(item) {
                 Core.share([url])
+                analytics.appOpen(target: .keyShareUpload)
             }
         } catch {
             logger.error("sharing: \(error)")
