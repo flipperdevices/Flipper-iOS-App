@@ -126,16 +126,21 @@ struct ArchiveView: View {
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
-        .onChange(of: appState.importQueue) { queue in
-            guard !queue.isEmpty else {
-                return
+        .onOpenURL { url in
+            if url.isKeyURL, importedItem == nil {
+                importedItem = url
             }
-            importedItem = appState.importQueue.removeFirst()
         }
     }
 
     func refresh() {
         syncService.synchronize()
+    }
+}
+
+private extension URL {
+    var isKeyURL: Bool {
+        path == "/s" || path == "/sf"
     }
 }
 

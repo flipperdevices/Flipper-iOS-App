@@ -72,9 +72,6 @@ private struct RootViewImpl: View {
         }
         .environmentObject(alertController)
         .environmentObject(hexKeyboardController)
-        .onOpenURL { url in
-            applicationService.onOpenURL(url)
-        }
         .onContinueUserActivity("PlayAlertIntent") { _ in
             flipperService.playAlert()
         }

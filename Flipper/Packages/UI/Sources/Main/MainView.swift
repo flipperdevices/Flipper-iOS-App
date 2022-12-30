@@ -41,6 +41,11 @@ struct MainView: View {
         .onReceive(appState.imported) { item in
             onItemAdded(item: item)
         }
+        .onOpenURL { url in
+            if url == .widgetSettings {
+                appState.widget.showSettings = true
+            }
+        }
         .onAppear {
             centralService.kickBluetoothCentral()
         }

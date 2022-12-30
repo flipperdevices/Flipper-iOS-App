@@ -92,9 +92,10 @@ struct DeviceUpdateCard: View {
             case .failure: showUpdateFailed = true
             }
         }
-        .onChange(of: appState.customFirmwareURL) { url in
-            guard let url = url else { return }
-            checkUpdateService.onCustomURLOpened(url: url)
+        .onOpenURL { url in
+            if url.isFirmwareURL {
+                checkUpdateService.onCustomURLOpened(url: url)
+            }
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {
@@ -110,5 +111,11 @@ struct DeviceUpdateCard: View {
         .task {
             checkUpdateService.updateAvailableFirmware()
         }
+    }
+}
+
+private extension URL {
+    var isFirmwareURL: Bool {
+        pathExtension == "tgz"
     }
 }

@@ -46,30 +46,6 @@ public class ApplicationService: ObservableObject {
         backgroundTask = nil
     }
 
-    // MARK: Sharing
-
-    public func onOpenURL(_ url: URL) {
-        guard url != .widgetSettings else {
-            appState.showWidgetSettings = true
-            return
-        }
-        switch url.pathExtension {
-        case "tgz": onOpenUpdateBundle(url)
-        default: onOpenKeyURL(url)
-        }
-    }
-
-    private func onOpenUpdateBundle(_ url: URL) {
-        appState.customFirmwareURL = url
-    }
-
-    private func onOpenKeyURL(_ url: URL) {
-        Task { @MainActor in
-            appState.importQueue = [url]
-        }
-        logger.info("key url opened")
-    }
-
     // MARK: App Reset
 
     public func reset() {

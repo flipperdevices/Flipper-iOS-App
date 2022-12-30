@@ -23,9 +23,6 @@ public class AppState: ObservableObject {
     @Published public var status: DeviceStatus = .noDevice
     @Published public var syncProgress: Int = 0
 
-    @Published public var importQueue: [URL] = []
-    @Published public var customFirmwareURL: URL?
-
     @Published public var hasMFLog = false
     @Published public var showWidgetSettings = false
 
