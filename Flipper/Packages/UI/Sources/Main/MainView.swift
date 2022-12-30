@@ -46,6 +46,9 @@ struct MainView: View {
                 appState.widget.showSettings = true
             }
         }
+        .fullScreenCover(isPresented: $appState.widget.showSettings) {
+            WidgetSettingsView()
+        }
         .onAppear {
             centralService.kickBluetoothCentral()
         }

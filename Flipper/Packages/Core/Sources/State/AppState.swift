@@ -23,8 +23,6 @@ public class AppState: ObservableObject {
     @Published public var status: DeviceStatus = .noDevice
 
     @Published public var hasMFLog = false
-    @Published public var showWidgetSettings = false
-
     public let imported = SafeSubject<ArchiveItem>()
 
     public init() {

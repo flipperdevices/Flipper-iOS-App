@@ -4,6 +4,8 @@ public struct WidgetModel {
 
     public var isExpanded = false
 
+    public var showSettings = false
+
     public var state: State = .idle
 
     public var isEmulating: Bool {

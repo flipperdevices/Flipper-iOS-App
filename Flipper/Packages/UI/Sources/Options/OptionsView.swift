@@ -57,7 +57,7 @@ struct OptionsView: View {
 
             Section {
                 Button("Widget Settings") {
-                    appState.showWidgetSettings = true
+                    appState.widget.showSettings = true
                 }
                 .foregroundColor(.primary)
             }

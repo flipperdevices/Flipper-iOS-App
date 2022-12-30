@@ -11,13 +11,6 @@ struct ArchiveView: View {
     @State var importedItem: URL?
     @State var selectedItem: ArchiveItem?
     @State var showSearchView = false
-    @State var showWidgetSettings = false {
-        didSet {
-            if appState.showWidgetSettings != showWidgetSettings {
-                appState.showWidgetSettings = showWidgetSettings
-            }
-        }
-    }
 
     var canPullToRefresh: Bool {
         appState.status == .connected ||
@@ -118,9 +111,6 @@ struct ArchiveView: View {
             }
             .fullScreenCover(isPresented: $showSearchView) {
                 ArchiveSearchView()
-            }
-            .fullScreenCover(isPresented: $showWidgetSettings) {
-                WidgetSettingsView()
             }
             .navigationTitle("")
         }
