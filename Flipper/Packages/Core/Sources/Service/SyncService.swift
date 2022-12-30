@@ -13,6 +13,8 @@ public class SyncService: ObservableObject {
     let appState: AppState
     var status: DeviceStatus = .disconnected
 
+    @Published public var syncProgress: Int = 0
+
     @Inject var rpc: RPC
     @Inject var archive: Archive
     @Inject var analytics: Analytics
@@ -51,7 +53,7 @@ public class SyncService: ObservableObject {
                 logger.info("synchronize")
                 appState.status = .synchronizing
 
-                appState.syncProgress = 0
+                syncProgress = 0
                 if syncDateTime {
                     try await self.synchronizeDateTime()
                 }
@@ -78,7 +80,7 @@ public class SyncService: ObservableObject {
                 // FIXME: find the issue (very rare)
                 guard progress.isNormal else { return }
                 Task { @MainActor in
-                    appState.syncProgress = Int(progress * 100)
+                    syncProgress = Int(progress * 100)
                 }
             }
         }

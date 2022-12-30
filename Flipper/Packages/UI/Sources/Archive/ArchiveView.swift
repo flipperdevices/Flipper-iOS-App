@@ -60,9 +60,9 @@ struct ArchiveView: View {
                     VStack(spacing: 4) {
                         Spinner()
                         Text(
-                            appState.syncProgress == 0
+                            syncService.syncProgress == 0
                                 ? "Syncing..."
-                                : "Syncing \(appState.syncProgress)%"
+                                : "Syncing \(syncService.syncProgress)%"
                         )
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.black30)
