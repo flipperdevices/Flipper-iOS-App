@@ -61,8 +61,10 @@ class DeviceUpdateViewModel: ObservableObject {
     }
 
     var changelog: String {
-        guard let firmware = firmware else { return "" }
-        return firmware.changelog
+        (firmware?.changelog ?? "")
+            .replacingPullRequestURLs
+            .replacingCompareURLs
+            .replacingURLs
     }
 
     var availableFirmwareColor: Color {
@@ -236,5 +238,31 @@ class DeviceUpdateViewModel: ObservableObject {
 
     func howToFactoryReset() {
         UIApplication.shared.open(.helpToFactoryReset)
+    }
+}
+
+private extension String {
+
+    // (^| ) - is simple guard against matching valid markdown link
+
+    var replacingPullRequestURLs: String {
+        replacingOccurrences(
+            of: #"(^| )(https://github.com/[^\s]+/pull/([0-9]+))"#,
+            with: "$1[#$3]($2)",
+            options: [.regularExpression])
+    }
+
+    var replacingCompareURLs: String {
+        replacingOccurrences(
+            of: #"(^| )(https://github.com/[^\s]+/compare/([^\s]+))"#,
+            with: "$1[$3]($2)",
+            options: [.regularExpression])
+    }
+
+    var replacingURLs: String {
+        replacingOccurrences(
+            of: #"(^| )(https://[^\s]+)"#,
+            with: "$1[$2]($2)",
+            options: [.regularExpression])
     }
 }
