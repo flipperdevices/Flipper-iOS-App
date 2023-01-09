@@ -60,12 +60,12 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
 
-    var changelog: String {
-        (firmware?.changelog ?? "")
+    lazy var changelog: String = {
+        return (firmware?.changelog ?? "")
             .replacingPullRequestURLs
             .replacingCompareURLs
             .replacingURLs
-    }
+    }()
 
     var availableFirmwareColor: Color {
         switch channel {
