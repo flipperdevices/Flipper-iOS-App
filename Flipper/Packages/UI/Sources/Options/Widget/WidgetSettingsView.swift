@@ -85,15 +85,13 @@ struct WidgetSettingsView: View {
                 .padding(14)
             }
 
-            HStack {
+            HStack(spacing: 4) {
                 Text("How to add widget on iPhone")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.black40)
-                Spacer()
-                        .frame(width: 4)
-                Image("WidgetQuestion")
-                        .resizable()
-                        .frame(width: 18, height: 18)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black40)
+                Image("WidgetHelpQuestion")
+                    .resizable()
+                    .frame(width: 18, height: 18)
             }
             .onTapGesture {
                 viewModel.showHelp()
@@ -101,7 +99,7 @@ struct WidgetSettingsView: View {
             .padding(14)
         }
         .sheet(isPresented: $viewModel.showWidgetHelpView) {
-            WidgetHelp()
+            SettingsWidgetHelpView()
         }
         .background(Color.background)
     }
