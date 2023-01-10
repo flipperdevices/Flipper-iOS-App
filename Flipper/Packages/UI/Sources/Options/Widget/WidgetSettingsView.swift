@@ -90,8 +90,10 @@ struct WidgetSettingsView: View {
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.black40)
                 Spacer()
-                        .frame(width: 2)
+                        .frame(width: 4)
                 Image("WidgetQuestion")
+                        .resizable()
+                        .frame(width: 18, height: 18)
             }
             .onTapGesture {
                 viewModel.showHelp()
