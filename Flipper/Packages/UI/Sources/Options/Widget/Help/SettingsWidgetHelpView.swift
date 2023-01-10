@@ -43,6 +43,7 @@ struct SettingsWidgetHelpView: View {
                     )
                 }
                 .padding(.horizontal, 14)
+                .padding(.bottom, 14)
             }
         }
     }
@@ -58,6 +59,8 @@ struct SettingsWidgetHelpView: View {
 
                 if let image = image {
                     Image(image)
+                        .resizable()
+                        .scaledToFit()
                 }
             }
         }
