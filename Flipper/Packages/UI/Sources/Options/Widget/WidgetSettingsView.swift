@@ -83,10 +83,34 @@ struct WidgetSettingsView: View {
                 .background(Color.groupedBackground)
                 .cornerRadius(22)
                 .padding(14)
-
-                Spacer()
             }
+
+            WidgetHelperInfo(onClick: viewModel.showHelp)
+                    .padding(14)
+        }
+        .sheet(isPresented: $viewModel.showWidgetHelpView) {
+            WidgetHelp()
         }
         .background(Color.background)
+    }
+}
+
+
+
+struct WidgetHelperInfo : View {
+    let onClick: () -> Void
+
+    var body: some View {
+        HStack {
+            Text("How to add widget on iPhone")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.black40)
+            Spacer()
+                    .frame(width: 2)
+            Image("WidgetQuestion")
+        }
+        .onTapGesture {
+            onClick()
+        }
     }
 }
