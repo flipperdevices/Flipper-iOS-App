@@ -4,12 +4,12 @@ struct SettingsWidgetHelpView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        ScrollView {
-            VStack {
-                SheetHeader(title: "How to Add Widget") {
-                    dismiss()
-                }
+        VStack(spacing: 0) {
+            SheetHeader(title: "How to Add Widget") {
+                dismiss()
+            }
 
+            ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     WidgetHelpPoint(
                         text: "1. Swipe right from the left edge of " +
