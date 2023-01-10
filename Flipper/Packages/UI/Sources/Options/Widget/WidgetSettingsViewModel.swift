@@ -15,6 +15,7 @@ class WidgetSettingsViewModel: ObservableObject {
         }
     }
     @Published var showAddKeyView = false
+    @Published var showWidgetHelpView = false
 
     init() {
         keys = storage.keys
@@ -33,6 +34,10 @@ class WidgetSettingsViewModel: ObservableObject {
 
     func showAddKey() {
         showAddKeyView = true
+    }
+    
+    func showHelp() {
+        showWidgetHelpView = true
     }
 
     func addKey(_ key: ArchiveItem) {
