@@ -22,6 +22,7 @@ struct GitHubMarkdown: View {
             .replacingPullRequestURLs
             .replacingCompareURLs
             .replacingURLs
+            .replacingUsers
         document = try? .init(markdown: markdown)
     }
 }
@@ -32,22 +33,29 @@ private extension String {
 
     var replacingPullRequestURLs: String {
         replacingOccurrences(
-            of: #"(^| )(https://github.com/[^\s]+/pull/([0-9]+))"#,
+            of: #"(^|\s)(https://github.com/\S+/pull/([0-9]+))"#,
             with: "$1[#$3]($2)",
             options: [.regularExpression])
     }
 
     var replacingCompareURLs: String {
         replacingOccurrences(
-            of: #"(^| )(https://github.com/[^\s]+/compare/([^\s]+))"#,
+            of: #"(^|\s)(https://github.com/\S+/compare/(\S+))"#,
             with: "$1[$3]($2)",
             options: [.regularExpression])
     }
 
     var replacingURLs: String {
         replacingOccurrences(
-            of: #"(^| )(https://[^\s]+)"#,
+            of: #"(^|\s)(https://\S+)"#,
             with: "$1[$2]($2)",
+            options: [.regularExpression])
+    }
+
+    var replacingUsers: String {
+        replacingOccurrences(
+            of: #"(^|\s)@(\S+)"#,
+            with: "$1**@$2**",
             options: [.regularExpression])
     }
 }
