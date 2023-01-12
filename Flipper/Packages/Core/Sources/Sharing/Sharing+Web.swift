@@ -5,7 +5,7 @@ import Logging
 class WebImporter: Importer {
     enum Error: Swift.Error {
         case invalidURLFragment
-        case invalidQueryEncoding
+        case invalidPercentEncoding
         case invalidProperties
         case invalidPathKey
         case invalidPath
@@ -28,13 +28,13 @@ class WebImporter: Importer {
     }
 
     func importKey(shortURL url: URL) async throws -> ArchiveItem {
-        guard let encodedQuery = url.fragment else {
+        guard let query = url.fragment else {
             throw Error.invalidURLFragment
         }
-        guard let query = KeyCoder.decode(query: encodedQuery) else {
-            throw Error.invalidQueryEncoding
+        guard let items = [URLQueryItem](plusPercentEncoded: query) else {
+            throw Error.invalidPercentEncoding
         }
-        guard let properties = [ArchiveItem.Property](queryString: query) else {
+        guard let properties = [ArchiveItem.Property](queryItems: items) else {
             throw Error.invalidProperties
         }
         guard let path = properties.first, path.key == "path" else {
@@ -56,45 +56,51 @@ class WebImporter: Importer {
     }
 }
 
-public func makeShareURL(for key: ArchiveItem) throws -> String {
-    let baseURL = "https://flpr.app/s#"
+public func makeShareURL(for key: ArchiveItem) -> URL? {
+    var queryItems = [URLQueryItem]()
+    queryItems.append(name: "path", value: key.path.string.dropFirst())
+    queryItems.append(contentsOf: key.properties.map {
+        .init(name: $0.key, value: $0.value)
+    })
 
-    var query: String? {
-        let path = "path=\(key.path.string.dropFirst())"
-        return KeyCoder.encode(query: "\(path)&\(key.properties.queryString)")
-    }
-
-    guard let query = query else {
-        throw Sharing.Error.encodingError
-    }
-
-    return baseURL + query
+    var components = URLComponents()
+    components.fragment = queryItems.plusPercentEncoded
+    return components.url(relativeTo: .shareBaseURL)
 }
 
 public func shareAsURL(_ key: ArchiveItem) throws {
-    let url = try makeShareURL(for: key)
+    guard let url = makeShareURL(for: key) else {
+        throw Sharing.Error.encodingError
+    }
 
-    guard url.count <= 200 else {
+    guard url.isShort else {
         throw Sharing.Error.urlIsTooLong
     }
 
     share([url])
 }
 
+extension URL {
+    public var isShort: Bool {
+        absoluteString.count <= 200
+    }
+}
+
 fileprivate extension Array where Element == ArchiveItem.Property {
-    var queryString: String {
-        self.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
+    var queryItems: [URLQueryItem] {
+        self.map { .init(name: $0.key, value: $0.value) }
     }
 
-    init?(queryString: String) {
+    init?(queryItems: [URLQueryItem]) {
         var properties = [ArchiveItem.Property]()
 
-        for keyValue in queryString.split(separator: "&") {
-            let parts = keyValue.split(separator: "=", maxSplits: 1)
-            guard parts.count == 2 else { return nil }
+        for queryItem in queryItems {
+            guard let value = queryItem.value else {
+                return nil
+            }
             properties.append(.init(
-                key: String(parts[0].trimmingCharacters(in: .whitespaces)),
-                value: String(parts[1].trimmingCharacters(in: .whitespaces))))
+                key: queryItem.name.trimmingCharacters(in: .whitespaces),
+                value: value.trimmingCharacters(in: .whitespaces)))
         }
 
         self = properties
@@ -107,7 +113,7 @@ extension WebImporter.Error: CustomStringConvertible {
     var description: String {
         switch self {
         case .invalidURLFragment: return "invalid url fragment"
-        case .invalidQueryEncoding: return "invalid query encoding"
+        case .invalidPercentEncoding: return "invalid percent encoding"
         case .invalidProperties: return "invalid properties"
         case .invalidPathKey: return "invalid path key"
         case .invalidPath: return "invalid path"

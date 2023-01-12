@@ -30,10 +30,9 @@ class ShareViewModel: ObservableObject {
 
     init(item: ArchiveItem) {
         self.item = item
-        do {
-            let url = try makeShareURL(for: item)
-            self.isTempLink = url.count > 200
-        } catch {
+        if let url = makeShareURL(for: item) {
+            self.isTempLink = !url.isShort
+        } else {
             self.isTempLink = true
         }
         monitorNetworkStatus()

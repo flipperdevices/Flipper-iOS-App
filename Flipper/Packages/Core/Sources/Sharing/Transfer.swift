@@ -3,20 +3,17 @@ import CryptoKit
 import Foundation
 
 public class TempLinkSharing {
-    let baseURL: URL = "https://flpr.app/sf"
-
     public init() {}
 
+    var keySize: SymmetricKeySize { .bits128 }
+
     public func shareKey(_ item: ArchiveItem) async throws -> URL? {
-        let key = SymmetricKey(size: .bits128)
+        let key = SymmetricKey(size: keySize)
         let encrypted = try Cryptor().encrypt(content: pack(item), using: key)
         let code = try await Tranfser().upload(data: encrypted)
         let path = trimPath(item.path.string)
-        guard let encodedPath = KeyCoder.encode(query: path) else {
-            return nil
-        }
-        let encodedKey = key.base64URLEncodedString()
-        return makeURL(code: code, path: encodedPath, key: encodedKey)
+        let base64Key = key.base64URLEncodedString()
+        return makeURL(code: code, path: path, key: base64Key)
     }
 
     // NOTE:
@@ -38,17 +35,21 @@ public class TempLinkSharing {
     }
 
     func makeURL(code: String, path: String, key: String) -> URL? {
-        return .init(string: "\(baseURL)#path=\(path)&id=\(code)&key=\(key)")
+        var queryItems = [URLQueryItem]()
+        queryItems.append(name: "path", value: path)
+        queryItems.append(name: "id", value: code)
+        queryItems.append(name: "key", value: key)
+
+        var components = URLComponents()
+        components.fragment = queryItems.plusPercentEncoded
+        return components.url(relativeTo: .shareFileBaseURL)
     }
 
     public func importKey(url: URL) async throws -> ArchiveItem? {
-        guard let (code, encodedPath, encodedKey) = parseURL(url) else {
+        guard let (code, path, base64Key) = parseURL(url) else {
             return nil
         }
-        guard let path = KeyCoder.decode(query: encodedPath) else {
-            return nil
-        }
-        guard let key = SymmetricKey(base64URLEncoded: encodedKey) else {
+        guard let key = SymmetricKey(base64URLEncoded: base64Key) else {
             return nil
         }
         let encrypted = try await Tranfser().download(code: code)
@@ -58,25 +59,22 @@ public class TempLinkSharing {
 
     // swiftlint:disable large_tuple
     func parseURL(_ url: URL) -> (code: String, path: String, key: String)? {
-        var components = URLComponents()
-        components.query = url.fragment
-        guard let items = components.queryItems, items.count == 3 else {
-            return nil
-        }
         guard
-            let code = items.first(where: { $0.name == "id" })?.value,
-            let encodedPath = items.first(where: { $0.name == "path" })?.value,
-            let encodedKey = items.first(where: { $0.name == "key" })?.value
+            let fragment = url.fragment,
+            let items = [URLQueryItem](plusPercentEncoded: fragment),
+            let code = items["id"],
+            let path = items["path"],
+            let key = items["key"]
         else {
             return nil
         }
-        return (code, encodedPath, encodedKey)
+        return (code, path, key)
     }
 }
 
 class Tranfser {
-    let baseURL: URL = "https://transfer.flpr.app"
-    let fileName: String = "hakuna-matata"
+    var baseURL: URL { .transferBaseURL }
+    var fileName: String { "hakuna-matata" }
 
     func makeUploadURL() throws -> URL {
         guard let url = URL(string: "\(baseURL)/\(fileName)") else {

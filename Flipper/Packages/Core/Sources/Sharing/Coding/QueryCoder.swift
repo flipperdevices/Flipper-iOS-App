@@ -1,19 +1,19 @@
-enum KeyCoder {
-    static func encode<Query: StringProtocol>(query: Query) -> String? {
-        var query = query
+enum QueryCoder {
+    static func encode<T: StringProtocol>(_ string: T) -> String? {
+        var string = string
             .replacingOccurrences(of: "+", with: "%2B")
             .replacingOccurrences(of: " ", with: "+")
 
-        if query.last == "?" {
-            query += "+"
+        if string.last == "?" {
+            string += "+"
         }
 
-        return query
+        return string
             .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
     }
 
-    static func decode<Query: StringProtocol>(query: Query) -> String? {
-        query
+    static func decode<T: StringProtocol>(_ string: T) -> String? {
+        string
             .replacingOccurrences(of: "+", with: " ")
             .removingPercentEncoding
     }
