@@ -3,8 +3,7 @@ import Combine
 
 @MainActor
 public class Depencencies: ObservableObject {
-    // TODO: refactor when we get rid of Inject
-    @Inject public var appState: AppState
+    public let appState: AppState = .init()
 
     // MARK: Services
 
