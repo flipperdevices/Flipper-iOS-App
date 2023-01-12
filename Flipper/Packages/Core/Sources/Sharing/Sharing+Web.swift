@@ -82,7 +82,7 @@ public func shareAsURL(_ key: ArchiveItem) throws {
 
 extension URL {
     public var isShort: Bool {
-        absoluteString.count <= 200
+        absoluteString.count <= 256
     }
 }
 
