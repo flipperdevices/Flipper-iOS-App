@@ -19,7 +19,7 @@ public protocol Analytics {
         to: String,
         status: UpdateResult
     )
-    func syncronizationResult(
+    func synchronizationResult(
         subGHzCount: Int,
         rfidCount: Int,
         nfcCount: Int,

@@ -56,7 +56,7 @@ extension WantMoarAnalytics: Analytics {
         }
     }
 
-    func syncronizationResult(
+    func synchronizationResult(
         subGHzCount: Int,
         rfidCount: Int,
         nfcCount: Int,
@@ -65,7 +65,7 @@ extension WantMoarAnalytics: Analytics {
         synchronizationTime: Int
     ) {
         analytics.forEach {
-            $0.syncronizationResult(
+            $0.synchronizationResult(
                 subGHzCount: subGHzCount,
                 rfidCount: rfidCount,
                 nfcCount: nfcCount,

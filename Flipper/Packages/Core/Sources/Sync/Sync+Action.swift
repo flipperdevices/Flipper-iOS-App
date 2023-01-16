@@ -70,7 +70,7 @@ extension ArchiveSync.Action: CustomStringConvertible {
         switch self {
         case .update(let target): return "update: \(target)"
         case .delete(let target): return "delete \(target)"
-        case .conflict: return "confilct"
+        case .conflict: return "conflict"
         }
     }
 }

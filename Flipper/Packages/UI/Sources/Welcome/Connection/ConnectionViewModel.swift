@@ -141,7 +141,7 @@ class ConnectionViewModel: ObservableObject {
         isScanTimeout = false
     }
 
-    // MARK: Connect timout
+    // MARK: Connect timeout
 
     private var connectTimeoutTask: Task<Void, Swift.Error>?
 

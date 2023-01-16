@@ -176,7 +176,7 @@ public class AppState {
 
     public func synchronize() async throws {
         try await checkMFLogFile()
-        try await syncronizeArchive()
+        try await synhcronizeArchive()
     }
 
     private func checkMFLogFile() async throws {
@@ -184,7 +184,7 @@ public class AppState {
         hasMFLog = try await rpc.fileExists(at: .mfKey32Log)
     }
 
-    private func syncronizeArchive() async throws {
+    private func synhcronizeArchive() async throws {
         guard flipper?.state == .connected else { return }
         guard status != .unsupportedDevice else { return }
         guard status != .synchronizing else { return }
@@ -330,7 +330,7 @@ public class AppState {
     }
 
     func reportSynchronizationResult(time: Int) {
-        analytics.syncronizationResult(
+        analytics.synchronizationResult(
             subGHzCount: archive._items.value.count { $0.kind == .subghz },
             rfidCount: archive._items.value.count { $0.kind == .rfid },
             nfcCount: archive._items.value.count { $0.kind == .nfc },
