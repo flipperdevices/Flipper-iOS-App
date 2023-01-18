@@ -11,7 +11,6 @@ public class FileManagerService: ObservableObject {
     private let logger = Logger(label: "filemanager-service")
 
     @Inject private var rpc: RPC
-    @Inject var analytics: Analytics
 
     @Published public var content: Content? {
         didSet {

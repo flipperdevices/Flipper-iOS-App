@@ -17,7 +17,6 @@ public class EmulateService: ObservableObject {
     }
 
     @Inject private var rpc: RPC
-    @Inject private var analytics: Analytics
     private var disposeBag: DisposeBag = .init()
 
     var item: ArchiveItem?

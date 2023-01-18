@@ -1,7 +1,6 @@
 import Inject
 import Logging
 
-import func Analytics.registerMockDependencies
 import func Peripheral.registerMockDependencies
 
 public func registerMockDependencies() {
@@ -10,7 +9,6 @@ public func registerMockDependencies() {
     LoggingSystem.bootstrap(FileLogHandler.factory)
     container.register(LoggerStorageMock.init, as: LoggerStorage.self, isSingleton: true)
 
-    Analytics.registerMockDependencies()
     Peripheral.registerMockDependencies()
 
     container.register(Archive.init, as: Archive.self, isSingleton: true)

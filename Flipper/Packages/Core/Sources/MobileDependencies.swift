@@ -1,7 +1,7 @@
 import Inject
 import Logging
+import Analytics
 
-import func Analytics.registerDependencies
 import func Peripheral.registerDependencies
 
 public func registerMobileDependencies() {
@@ -10,7 +10,8 @@ public func registerMobileDependencies() {
     LoggingSystem.bootstrap(FileLogHandler.factory)
     container.register(PlainLoggerStorage.init, as: LoggerStorage.self, isSingleton: true)
 
-    Analytics.registerDependencies()
+    AnalyticsSystem.bootstrap([CountlyAnalytics(), ClickhouseAnalytics()])
+
     Peripheral.registerDependencies()
 
     container.register(Archive.init, as: Archive.self, isSingleton: true)

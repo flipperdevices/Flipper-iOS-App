@@ -6,8 +6,6 @@ import Foundation
 public class Provisioning {
     public static let location: Path = "/int/.region_data"
 
-    @Inject private var analytics: Analytics
-
     private let cellularRegionProvider: RegionProvider
     private let localeRegionProvider: RegionProvider
     private let regionsBundleAPI: RegionsBundleAPI

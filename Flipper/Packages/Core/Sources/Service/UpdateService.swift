@@ -11,7 +11,6 @@ public class UpdateService: ObservableObject {
     private let logger = Logger(label: "update-service")
 
     @Inject var rpc: RPC
-    @Inject var analytics: Analytics
 
     let appState: AppState
     let flipperService: FlipperService

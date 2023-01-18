@@ -9,7 +9,6 @@ import Foundation
 public class ApplicationService: ObservableObject {
     private let logger = Logger(label: "application-service")
 
-    @Inject var analytics: Analytics
     private var disposeBag: DisposeBag = .init()
 
     public init() {

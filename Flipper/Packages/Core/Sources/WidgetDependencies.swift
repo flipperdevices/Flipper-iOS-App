@@ -1,7 +1,7 @@
 import Inject
 import Logging
+import Analytics
 
-import func Analytics.registerDependencies
 import func Peripheral.registerDependencies
 
 public func registerWidgetDependencies() {
@@ -10,7 +10,8 @@ public func registerWidgetDependencies() {
     LoggingSystem.bootstrap(FileLogHandler.factory)
     container.register(PlainLoggerStorage.init, as: LoggerStorage.self, isSingleton: true)
 
-    Analytics.registerDependencies()
+    AnalyticsSystem.bootstrap([CountlyAnalytics(), ClickhouseAnalytics()])
+
     Peripheral.registerDependencies()
 
     container.register(Archive.init, as: Archive.self, isSingleton: true)
@@ -26,7 +27,6 @@ public func registerWidgetDependencies() {
     container.register(PlainMobileNotesStorage.init, as: MobileNotesStorage.self, isSingleton: true)
     container.register(PlainDeletedArchiveStorage.init, as: DeletedArchiveStorage.self, isSingleton: true)
     container.register(JSONTodayWidgetStorage.init, as: TodayWidgetStorage.self, isSingleton: true)
-
     // manifests
     container.register(PlainSyncedItemsStorage.init, as: SyncedItemsProtocol.self, isSingleton: true)
     // favorites

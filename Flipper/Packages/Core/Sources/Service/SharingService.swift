@@ -8,8 +8,6 @@ import Foundation
 public class SharingService: ObservableObject {
     private let logger = Logger(label: "sharing-service")
 
-    @Inject var analytics: Analytics
-
     public init() {}
 
     public func canEncodeToURL(_ item: ArchiveItem) -> Bool {

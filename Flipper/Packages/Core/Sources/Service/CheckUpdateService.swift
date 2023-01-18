@@ -24,7 +24,6 @@ public class CheckUpdateService: ObservableObject {
     }
 
     @Inject private var rpc: RPC
-    @Inject var analytics: Analytics
     private var disposeBag: DisposeBag = .init()
 
     @Published var flipper: Flipper? {

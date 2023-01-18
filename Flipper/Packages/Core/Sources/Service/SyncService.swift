@@ -17,7 +17,6 @@ public class SyncService: ObservableObject {
 
     @Inject var rpc: RPC
     @Inject var archive: Archive
-    @Inject var analytics: Analytics
     private var disposeBag: DisposeBag = .init()
 
     public init(appState: AppState) {

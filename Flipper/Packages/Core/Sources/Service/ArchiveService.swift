@@ -13,7 +13,6 @@ public class ArchiveService: ObservableObject {
     let syncService: SyncService
 
     @Inject var archive: Archive
-    @Inject var analytics: Analytics
     private var disposeBag: DisposeBag = .init()
 
     @Published public private(set) var items: [ArchiveItem] = []

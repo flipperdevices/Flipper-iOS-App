@@ -2,11 +2,13 @@ import Logging
 import Foundation
 import SwiftProtobuf
 
-class ClickhouseAnalytics {
+public class ClickhouseAnalytics {
     private let logger = Logger(label: "clickhouse-analytics")
 
     private let host = "https://metric.flipperdevices.com/report"
     private var hostURL: URL { .init(string: host).unsafelyUnwrapped }
+
+    public init() {}
 
     private func report(metric: Metric_MetricReportRequest) {
         #if !DEBUG
@@ -37,8 +39,8 @@ class ClickhouseAnalytics {
     }
 }
 
-extension ClickhouseAnalytics: Analytics {
-    func appOpen(target: OpenTarget) {
+extension ClickhouseAnalytics: EventHandler {
+    public func appOpen(target: OpenTarget) {
         report(event: .with {
             $0.open = .with {
                 $0.target = .init(target)
@@ -46,7 +48,7 @@ extension ClickhouseAnalytics: Analytics {
         })
     }
 
-    func flipperGATTInfo(flipperVersion: String) {
+    public func flipperGATTInfo(flipperVersion: String) {
         report(event: .with {
             $0.flipperGattInfo = .with {
                 $0.flipperVersion = flipperVersion
@@ -54,7 +56,7 @@ extension ClickhouseAnalytics: Analytics {
         })
     }
 
-    func flipperRPCInfo(
+    public func flipperRPCInfo(
         sdcardIsAvailable: Bool,
         internalFreeByte: Int,
         internalTotalByte: Int,
@@ -72,7 +74,7 @@ extension ClickhouseAnalytics: Analytics {
         })
     }
 
-    func flipperUpdateStart(
+    public func flipperUpdateStart(
         id: Int,
         from: String,
         to: String
@@ -86,7 +88,7 @@ extension ClickhouseAnalytics: Analytics {
         })
     }
 
-    func flipperUpdateResult(
+    public func flipperUpdateResult(
         id: Int,
         from: String,
         to: String,
@@ -102,7 +104,7 @@ extension ClickhouseAnalytics: Analytics {
         })
     }
 
-    func synchronizationResult(
+    public func synchronizationResult(
         subGHzCount: Int,
         rfidCount: Int,
         nfcCount: Int,
@@ -122,7 +124,7 @@ extension ClickhouseAnalytics: Analytics {
         })
     }
 
-    func subghzProvisioning(
+    public func subghzProvisioning(
         sim1: String,
         sim2: String,
         ip: String,

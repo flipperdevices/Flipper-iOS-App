@@ -19,7 +19,6 @@ public class FlipperService: ObservableObject {
 
     @Inject var rpc: RPC
     @Inject var pairedDevice: PairedDevice
-    @Inject var analytics: Analytics
     private var disposeBag = DisposeBag()
 
     @Published public private(set) var frame: ScreenFrame = .init()
