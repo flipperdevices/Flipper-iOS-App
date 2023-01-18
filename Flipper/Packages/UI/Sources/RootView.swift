@@ -35,9 +35,10 @@ private struct RootViewImpl: View {
 
     @Environment(\.scenePhase) var scenePhase
 
-    @State var isPairingIssue = false
+    @State private var isPairingIssue = false
 
-    @State var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
+    @State private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
+    @State private var backgroundTask: Task<Void, Swift.Error>?
 
     init() {}
 
@@ -97,7 +98,10 @@ private struct RootViewImpl: View {
             return
         }
         endBackgroundTask()
-        applicationService.onActive()
+        backgroundTask?.cancel()
+        if appState.status == .disconnected {
+            flipperService.connect()
+        }
     }
 
     func onInactive() {
@@ -106,7 +110,13 @@ private struct RootViewImpl: View {
         }
         Task {
             backgroundTaskID = startBackgroundTask()
-            try await applicationService.onInactive()
+            backgroundTask = Task {
+                try await Task.sleep(seconds: 3)
+                //logger.info("disconnecting due to inactivity")
+                flipperService.disconnect()
+            }
+            _ = await backgroundTask?.result
+            backgroundTask = nil
             endBackgroundTask()
         }
     }

@@ -8,7 +8,7 @@ public class Depencencies: ObservableObject {
     // MARK: Services
 
     public lazy var applicationService: ApplicationService = {
-        .init(appState: appState, flipperService: flipperService)
+        .init()
     }()
 
     public lazy var loggerService: LoggerService = {
