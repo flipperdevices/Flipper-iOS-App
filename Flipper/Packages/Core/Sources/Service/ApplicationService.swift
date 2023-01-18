@@ -24,7 +24,7 @@ public class ApplicationService: ObservableObject {
 
     // MARK: Analytics
 
-    func recordAppOpen() {
+    public func recordAppOpen() {
         analytics.appOpen(target: .app)
     }
 }

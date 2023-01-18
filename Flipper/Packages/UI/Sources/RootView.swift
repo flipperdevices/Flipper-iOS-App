@@ -99,6 +99,7 @@ private struct RootViewImpl: View {
         }
         endBackgroundTask()
         backgroundTask?.cancel()
+        applicationService.recordAppOpen()
         if appState.status == .disconnected {
             flipperService.connect()
         }
