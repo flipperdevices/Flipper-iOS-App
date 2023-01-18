@@ -3,8 +3,6 @@ import Foundation
 import SwiftProtobuf
 
 public class ClickhouseAnalytics {
-    private let logger = Logger(label: "clickhouse-analytics")
-
     private let host = "https://metric.flipperdevices.com/report"
     private var hostURL: URL { .init(string: host).unsafelyUnwrapped }
 
@@ -19,7 +17,7 @@ public class ClickhouseAnalytics {
                 request.httpBody = try metric.serializedData()
                 _ = try await URLSession.shared.data(for: request)
             } catch {
-                logger.error("ch report: \(error)")
+                logger.error("clickhouse: \(error)")
             }
         }
         #endif

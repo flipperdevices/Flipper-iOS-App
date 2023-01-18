@@ -7,8 +7,6 @@ import Foundation
 
 @MainActor
 public class ApplicationService: ObservableObject {
-    private let logger = Logger(label: "application-service")
-
     private var disposeBag: DisposeBag = .init()
 
     public init() {

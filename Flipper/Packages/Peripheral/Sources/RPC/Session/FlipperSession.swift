@@ -3,8 +3,6 @@ import Foundation
 import Logging
 
 class FlipperSession: Session {
-    private let logger = Logger(label: "session")
-
     private let peripheral: BluetoothPeripheral
     private var subscriptions = [AnyCancellable]()
 
@@ -126,7 +124,7 @@ extension FlipperSession {
             try await Task.sleep(nanoseconds: timeoutNanoseconds)
             guard self.peripheral.state == .connected else { return }
             guard await queue.isBusy else { return }
-            self.logger.debug("time is out")
+            logger.debug("time is out")
             Task { @MainActor in
                 self.onError?(.timeout)
             }

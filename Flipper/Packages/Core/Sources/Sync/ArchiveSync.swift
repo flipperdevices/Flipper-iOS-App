@@ -5,8 +5,6 @@ import Foundation
 import OrderedCollections
 
 class ArchiveSync: ArchiveSyncProtocol {
-    private let logger = Logger(label: "archive_synchronization")
-
     @Inject private var flipperArchive: FlipperArchiveProtocol
     @Inject private var mobileArchive: MobileArchiveProtocol
     @Inject private var syncedItems: SyncedItemsProtocol

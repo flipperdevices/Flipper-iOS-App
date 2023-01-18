@@ -4,7 +4,6 @@ import Logging
 
 class AppReset {
     private let storage: FileStorage = .init()
-    private let logger = Logger(label: "reset")
 
     func reset() {
         do {

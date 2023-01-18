@@ -6,8 +6,6 @@ import Combine
 import Foundation
 
 public class LoggerService: ObservableObject {
-    private let logger = Logger(label: "logger-service")
-
     @Inject private var loggerStorage: LoggerStorage
 
     public var logLevel: Logger.Level {

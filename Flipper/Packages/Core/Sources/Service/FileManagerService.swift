@@ -8,8 +8,6 @@ import Foundation
 
 @MainActor
 public class FileManagerService: ObservableObject {
-    private let logger = Logger(label: "filemanager-service")
-
     @Inject private var rpc: RPC
 
     @Published public var content: Content? {

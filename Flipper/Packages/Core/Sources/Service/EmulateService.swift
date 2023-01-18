@@ -7,8 +7,6 @@ import Foundation
 
 @MainActor
 public class EmulateService: ObservableObject {
-    private let logger = Logger(label: "emulate")
-
     let appState: AppState
 
     var emulate: EmulateModel {

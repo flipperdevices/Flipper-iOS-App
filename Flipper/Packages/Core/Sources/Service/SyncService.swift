@@ -8,8 +8,6 @@ import Foundation
 
 @MainActor
 public class SyncService: ObservableObject {
-    private let logger = Logger(label: "sync-service")
-
     let appState: AppState
     var status: DeviceStatus = .disconnected
 

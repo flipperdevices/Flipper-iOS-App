@@ -8,8 +8,6 @@ import Foundation
 
 @MainActor
 public class FlipperService: ObservableObject {
-    private let logger = Logger(label: "flipper-service")
-
     let appState: AppState
 
     var flipper: Flipper? {

@@ -2,8 +2,6 @@ import Countly
 import Logging
 
 public class CountlyAnalytics {
-    private let logger = Logger(label: "countly-analytics")
-
     private let hostURL = "https://countly.flipp.dev/"
 
     public init() {
@@ -12,7 +10,7 @@ public class CountlyAnalytics {
             .main
             .object(forInfoDictionaryKey: "COUNTLY_APP_KEY") as? String
         else {
-            logger.error("COUNTLY_APP_KEY not found")
+            logger.error("countly: COUNTLY_APP_KEY not found")
             return
         }
         let config = CountlyConfig()

@@ -4,8 +4,6 @@ import Logging
 import struct Foundation.Date
 
 public class BluetoothRPC: RPC {
-    private let logger = Logger(label: "rpc")
-
     @Inject private var connector: BluetoothConnector
     private var connectorHandle: AnyCancellable?
     private var peripheralHandle: AnyCancellable?

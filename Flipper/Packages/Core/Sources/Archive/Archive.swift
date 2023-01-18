@@ -4,8 +4,6 @@ import Peripheral
 import Logging
 
 public class Archive {
-    let logger = Logger(label: "archive")
-
     @Inject var archiveSync: ArchiveSyncProtocol
     @Inject var favoritesSync: FavoritesSyncProtocol
 

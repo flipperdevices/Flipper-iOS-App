@@ -7,8 +7,6 @@ import Foundation
 
 @MainActor
 public class ReaderAttackService: ObservableObject {
-    private let logger = Logger(label: "reader-attack-service")
-
     let appState: AppState
 
     var readerAttack: ReaderAttackModel {

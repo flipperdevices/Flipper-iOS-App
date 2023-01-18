@@ -5,7 +5,6 @@ import Peripheral
 
 @MainActor
 public class SpeedTest: ObservableObject {
-    private let logger = Logger(label: "speedtest")
     @Inject private var rpc: RPC
 
     public let defaultPacketSize = 444

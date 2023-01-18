@@ -3,8 +3,6 @@ import CoreBluetooth
 import Logging
 
 class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
-    private let logger = Logger(label: "central")
-
     private lazy var manager: CBCentralManager = {
         let manager = CBCentralManager()
         manager.delegate = self

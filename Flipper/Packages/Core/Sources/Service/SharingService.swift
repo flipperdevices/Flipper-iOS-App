@@ -6,8 +6,6 @@ import Foundation
 
 @MainActor
 public class SharingService: ObservableObject {
-    private let logger = Logger(label: "sharing-service")
-
     public init() {}
 
     public func canEncodeToURL(_ item: ArchiveItem) -> Bool {

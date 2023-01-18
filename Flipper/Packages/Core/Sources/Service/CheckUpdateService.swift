@@ -9,8 +9,6 @@ import Foundation
 @MainActor
 // swiftlint:disable type_body_length
 public class CheckUpdateService: ObservableObject {
-    private let logger = Logger(label: "check-update-service")
-
     private let appState: AppState
 
     var update: UpdateModel {

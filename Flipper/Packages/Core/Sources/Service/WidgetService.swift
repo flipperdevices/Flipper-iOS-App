@@ -7,8 +7,6 @@ import Foundation
 
 @MainActor
 public class WidgetService: ObservableObject {
-    private let logger = Logger(label: "widget-service")
-
     let appState: AppState
     let emulateService: EmulateService
 
@@ -102,7 +100,7 @@ public class WidgetService: ObservableObject {
         timeoutTask = Task {
             try await Task.sleep(nanoseconds: timeoutNanoseconds)
             guard appState.flipper?.state != .connected else { return }
-            self.logger.debug("widget connection time is out")
+            logger.debug("widget connection time is out")
             Task { @MainActor in
                 widget.state = .error(.cantConnect)
             }

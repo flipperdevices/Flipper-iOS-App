@@ -7,8 +7,6 @@ import Logging
 
 @MainActor
 public class AppState: ObservableObject {
-    private let logger = Logger(label: "app-state")
-
     @Published public var firstLaunch: FirstLaunch = .shared
 
     @Published public var flipper: Flipper?

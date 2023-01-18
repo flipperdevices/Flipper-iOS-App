@@ -3,8 +3,6 @@ import Logging
 import Foundation
 
 class FileImporter: Importer {
-    let logger = Logger(label: "file-importer")
-
     enum Error: String, Swift.Error {
         case cantOpenKey = "error opening key"
     }

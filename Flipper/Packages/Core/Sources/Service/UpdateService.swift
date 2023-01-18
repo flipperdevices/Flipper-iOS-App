@@ -8,8 +8,6 @@ import Foundation
 
 @MainActor
 public class UpdateService: ObservableObject {
-    private let logger = Logger(label: "update-service")
-
     @Inject var rpc: RPC
 
     let appState: AppState

@@ -6,8 +6,6 @@ import Logging
 import struct Foundation.UUID
 
 class PairedFlipper: PairedDevice, ObservableObject {
-    private let logger = Logger(label: "paired_flipper")
-
     @Inject var storage: DeviceStorage
     @Inject var connector: BluetoothConnector
     private var disposeBag: DisposeBag = .init()

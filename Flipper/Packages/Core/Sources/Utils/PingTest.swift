@@ -9,7 +9,6 @@ import Foundation
 
 @MainActor
 public class PingTest: ObservableObject {
-    private let logger = Logger(label: "ping")
     @Inject private var rpc: RPC
 
     @Published public var payloadSize: Double = 1024

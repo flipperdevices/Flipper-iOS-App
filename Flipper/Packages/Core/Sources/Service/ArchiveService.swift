@@ -7,8 +7,6 @@ import Foundation
 
 @MainActor
 public class ArchiveService: ObservableObject {
-    private let logger = Logger(label: "archive-service")
-
     let appState: AppState
     let syncService: SyncService
 

@@ -3,8 +3,6 @@ import Combine
 import Logging
 
 class FlipperPeripheral: NSObject, BluetoothPeripheral {
-    private let logger = Logger(label: "peripheral")
-
     private var peripheral: CBPeripheral
     private var serialWrite: CBCharacteristic?
 
