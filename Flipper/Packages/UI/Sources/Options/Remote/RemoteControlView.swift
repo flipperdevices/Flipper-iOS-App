@@ -56,7 +56,7 @@ struct DeviceScreen: View {
     var scaledHeight: Double { Double(.screenHeight * .scale) }
 
     var colorPixels: [PixelColor] {
-        self.pixels.map { $0 ? .black : .orage }
+        self.pixels.map { $0 ? .black : .orange }
     }
 
     var uiImage: UIImage {
