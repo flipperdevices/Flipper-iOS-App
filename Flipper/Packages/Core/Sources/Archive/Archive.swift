@@ -14,7 +14,7 @@ public class Archive {
     @Inject var mobileNotes: MobileNotesStorage
     @Inject var deletedArchive: DeletedArchiveProtocol
 
-    @Inject var syncedItems: SyncedItemsProcotol
+    @Inject var syncedItems: SyncedItemsProtocol
 
     private var disposeBag: DisposeBag = .init()
 

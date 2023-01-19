@@ -1,6 +1,6 @@
 import Peripheral
 
-class PlainSyncedItemsStorage: SyncedItemsProcotol {
+class PlainSyncedItemsStorage: SyncedItemsProtocol {
     let storage: FileStorage = .init()
     let filename = "synced_manifest.txt"
     var manifestPath: Path { .init(string: filename) }
