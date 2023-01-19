@@ -176,7 +176,7 @@ public class AppState {
 
     public func synchronize() async throws {
         try await checkMFLogFile()
-        try await synhcronizeArchive()
+        try await synchronizeArchive()
     }
 
     private func checkMFLogFile() async throws {
@@ -184,7 +184,7 @@ public class AppState {
         hasMFLog = try await rpc.fileExists(at: .mfKey32Log)
     }
 
-    private func synhcronizeArchive() async throws {
+    private func synchronizeArchive() async throws {
         guard flipper?.state == .connected else { return }
         guard status != .unsupportedDevice else { return }
         guard status != .synchronizing else { return }
