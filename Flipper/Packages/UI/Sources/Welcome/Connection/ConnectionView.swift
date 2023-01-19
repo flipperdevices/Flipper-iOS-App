@@ -5,6 +5,7 @@ struct ConnectionView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var central: CentralService
     @EnvironmentObject var flipperService: FlipperService
+    @EnvironmentObject var applicationService: ApplicationService
     @Environment(\.dismiss) private var dismiss
 
     @State private var showHelpSheet = false
@@ -77,7 +78,7 @@ struct ConnectionView: View {
             Spacer()
             Button("Skip connection") {
                 flipperService.forgetDevice()
-                appState.firstLaunch.hideWelcomeScreen()
+                applicationService.hideWelcomeScreen()
             }
             .padding(.bottom, onMac ? 140 : 8)
             .disabled(central.isConnecting)

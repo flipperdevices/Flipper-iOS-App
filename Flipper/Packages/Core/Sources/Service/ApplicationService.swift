@@ -7,6 +7,10 @@ import Foundation
 
 @MainActor
 public class ApplicationService: ObservableObject {
+    @Published var firstLaunch: FirstLaunch = .init()
+
+    public var isFirstLanuch: Bool { firstLaunch.isFirstLaunch }
+
     private var disposeBag: DisposeBag = .init()
 
     public init() {
@@ -14,6 +18,16 @@ public class ApplicationService: ObservableObject {
     }
 
     func subscribeToPublishers() {
+    }
+
+    // Welcome Screen
+
+    public func showWelcomeScreen() {
+        firstLaunch.showWelcomeScreen()
+    }
+
+    public func hideWelcomeScreen() {
+        firstLaunch.hideWelcomeScreen()
     }
 
     // MARK: App Reset

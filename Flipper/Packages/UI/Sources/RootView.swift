@@ -45,13 +45,13 @@ private struct RootViewImpl: View {
     var body: some View {
         ZStack {
             ZStack {
-                if appState.firstLaunch.isFirstLaunch {
+                if applicationService.isFirstLanuch {
                     WelcomeView()
                 } else {
                     MainView()
                 }
             }
-            .animation(.linear, value: appState.firstLaunch.isFirstLaunch)
+            .animation(.linear, value: applicationService.isFirstLanuch)
             .transition(.opacity)
 
             VStack {
@@ -81,7 +81,7 @@ private struct RootViewImpl: View {
                 isPairingIssue = true
             }
             if $0 == .connected || $0 == .unsupportedDevice {
-                appState.firstLaunch.hideWelcomeScreen()
+                applicationService.hideWelcomeScreen()
             }
         }
         .onChange(of: scenePhase) { newPhase in

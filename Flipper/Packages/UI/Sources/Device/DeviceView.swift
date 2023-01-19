@@ -4,6 +4,7 @@ import SwiftUI
 struct DeviceView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var flipperService: FlipperService
+    @EnvironmentObject var applicationService: ApplicationService
     @EnvironmentObject var syncService: SyncService
 
     @State var showForgetAction = false
@@ -178,7 +179,7 @@ struct DeviceView: View {
 
     func connect() {
         if appState.status == .noDevice {
-            appState.firstLaunch.showWelcomeScreen()
+            applicationService.showWelcomeScreen()
         } else {
             flipperService.connect()
         }

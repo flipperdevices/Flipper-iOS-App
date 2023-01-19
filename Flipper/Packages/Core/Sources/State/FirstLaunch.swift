@@ -1,22 +1,19 @@
 import Combine
 
-@MainActor
-public class FirstLaunch: ObservableObject {
-    public static let shared = FirstLaunch()
-
-    @Published public var isFirstLaunch: Bool {
+struct FirstLaunch {
+    var isFirstLaunch: Bool {
         didSet { UserDefaultsStorage.shared.isFirstLaunch = isFirstLaunch }
     }
 
-    private init() {
+    init() {
         isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
     }
 
-    public func showWelcomeScreen() {
+    mutating func showWelcomeScreen() {
         isFirstLaunch = true
     }
 
-    public func hideWelcomeScreen() {
+    mutating func hideWelcomeScreen() {
         isFirstLaunch = false
     }
 }
