@@ -20,6 +20,8 @@ public class WidgetService: ObservableObject {
         set { widget.isExpanded = newValue }
     }
 
+    @Published public var flipper: Flipper?
+
     @Inject private var archive: Archive
     @Inject private var pairedDevice: PairedDevice
     @Inject private var storage: TodayWidgetStorage
@@ -61,6 +63,11 @@ public class WidgetService: ObservableObject {
                 }
             }
             .store(in: &disposeBag)
+
+        pairedDevice.flipper
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.flipper, on: self)
+            .store(in: &disposeBag)
     }
 
     public func add(_ key: ArchiveItem) {
@@ -99,7 +106,7 @@ public class WidgetService: ObservableObject {
         }
         timeoutTask = Task {
             try await Task.sleep(nanoseconds: timeoutNanoseconds)
-            guard appState.flipper?.state != .connected else { return }
+            guard flipper?.state != .connected else { return }
             logger.debug("widget connection time is out")
             Task { @MainActor in
                 widget.state = .error(.cantConnect)
@@ -134,7 +141,7 @@ public class WidgetService: ObservableObject {
 
     func startEmulateOnConnect() {
         guard
-            appState.flipper?.state == .connected,
+            flipper?.state == .connected,
             let key = widget.keyToEmulate
         else {
             return

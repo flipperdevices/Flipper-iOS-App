@@ -15,6 +15,7 @@ public class ReaderAttackService: ObservableObject {
     }
 
     @Inject private var rpc: RPC
+    @Inject var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
     @Published public var flipper: Flipper? {
@@ -40,7 +41,7 @@ public class ReaderAttackService: ObservableObject {
     }
 
     func subscribeToPublishers() {
-        appState.$flipper
+        pairedDevice.flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)

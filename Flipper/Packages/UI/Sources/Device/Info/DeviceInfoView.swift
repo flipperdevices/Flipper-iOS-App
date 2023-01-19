@@ -3,7 +3,6 @@ import Collections
 import SwiftUI
 
 struct DeviceInfoView: View {
-    @EnvironmentObject var appState: AppState
     @EnvironmentObject var flipperService: FlipperService
     @Environment(\.dismiss) private var dismiss
 
@@ -174,16 +173,16 @@ struct DeviceInfoView: View {
         var array = deviceInfo.toArray().sorted()
         array += powerInfo.toArray().sorted()
 
-        if let int = appState.flipper?.storage?.internal {
+        if let int = flipperService.flipper?.storage?.internal {
             array.append("int_available: \(int.free)")
             array.append("int_total: \(int.total)")
         }
-        if let ext = appState.flipper?.storage?.external {
+        if let ext = flipperService.flipper?.storage?.external {
             array.append("ext_available: \(ext.free)")
             array.append("ext_total: \(ext.total)")
         }
 
-        let name = appState.flipper?.name ?? "unknown"
+        let name = flipperService.flipper?.name ?? "unknown"
         let content = array.joined(separator: "\n")
         let filename = "dump-\(name)-\(formatter.string(from: Date())).txt"
 

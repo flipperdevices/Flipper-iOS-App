@@ -10,15 +10,11 @@ import Foundation
 public class FlipperService: ObservableObject {
     let appState: AppState
 
-    var flipper: Flipper? {
-        get { appState.flipper }
-        set { appState.flipper = newValue }
-    }
-
     @Inject var rpc: RPC
     @Inject var pairedDevice: PairedDevice
     private var disposeBag = DisposeBag()
 
+    @Published public var flipper: Flipper?
     @Published public private(set) var frame: ScreenFrame = .init()
 
     @Published public private(set) var deviceInfo: [String: String] = [:]
@@ -47,18 +43,6 @@ public class FlipperService: ObservableObject {
                 self.frame = frame
             }
         }
-    }
-
-    // MARK: Welcome Screen
-
-    public func pairDevice() {
-        self.objectWillChange.send()
-        appState.firstLaunch.showWelcomeScreen()
-    }
-
-    public func skipPairing() {
-        forgetDevice()
-        appState.firstLaunch.hideWelcomeScreen()
     }
 
     // MARK: Device Events

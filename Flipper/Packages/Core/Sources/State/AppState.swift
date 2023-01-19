@@ -9,7 +9,6 @@ import Logging
 public class AppState: ObservableObject {
     @Published public var firstLaunch: FirstLaunch = .shared
 
-    @Published public var flipper: Flipper?
     @Published public var status: DeviceStatus = .noDevice
 
     @Published public var update: UpdateModel = .init()

@@ -22,6 +22,7 @@ public class CheckUpdateService: ObservableObject {
     }
 
     @Inject private var rpc: RPC
+    @Inject private var pairedDevice: PairedDevice
     private var disposeBag: DisposeBag = .init()
 
     @Published var flipper: Flipper? {
@@ -48,7 +49,7 @@ public class CheckUpdateService: ObservableObject {
     }
 
     func subscribeToPublishers() {
-        appState.$flipper
+        pairedDevice.flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
             .store(in: &disposeBag)

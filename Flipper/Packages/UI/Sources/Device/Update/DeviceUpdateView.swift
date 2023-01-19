@@ -41,17 +41,17 @@ struct DeviceUpdateView: View {
         case .error(.noCard):
             return "FlipperNoCard"
         case .error(.noInternet), .error(.noDevice), .error(.cantConnect):
-            switch appState.flipper?.color {
+            switch flipperService.flipper?.color {
             case .black: return "FlipperDeadBlack"
             default: return "FlipperDeadWhite"
             }
         case .error(.storageError):
-            switch appState.flipper?.color {
+            switch flipperService.flipper?.color {
             case .black: return "FlipperFlashIssueBlack"
             default: return "FlipperFlashIssueWhite"
             }
         default:
-            switch appState.flipper?.color {
+            switch flipperService.flipper?.color {
             case .black: return "FlipperUpdatingBlack"
             default: return "FlipperUpdatingWhite"
             }

@@ -76,7 +76,8 @@ struct ConnectionView: View {
 
             Spacer()
             Button("Skip connection") {
-                flipperService.skipPairing()
+                flipperService.forgetDevice()
+                appState.firstLaunch.hideWelcomeScreen()
             }
             .padding(.bottom, onMac ? 140 : 8)
             .disabled(central.isConnecting)

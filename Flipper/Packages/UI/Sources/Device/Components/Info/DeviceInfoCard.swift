@@ -1,30 +1,37 @@
 import Core
-import Peripheral
 import SwiftUI
+
+import struct Peripheral.ProtobufVersion
+import struct Peripheral.StorageSpace
 
 struct DeviceInfoCard: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var flipperService: FlipperService
+
+    var flipper: Flipper? {
+        flipperService.flipper
+    }
 
     var isConnecting: Bool {
-        appState.flipper?.state == .connecting
+        flipper?.state == .connecting
     }
     var isConnected: Bool {
-        appState.flipper?.state == .connected
+        flipper?.state == .connected
     }
     var isDisconnected: Bool {
-        appState.flipper?.state == .disconnected ||
-        appState.flipper?.state == .pairingFailed ||
-        appState.flipper?.state == .invalidPairing
+        flipper?.state == .disconnected ||
+        flipper?.state == .pairingFailed ||
+        flipper?.state == .invalidPairing
     }
     var isNoDevice: Bool {
-        appState.flipper == nil
+        flipper == nil
     }
     var isUpdating: Bool {
         appState.status == .updating
     }
 
     var _protobufVersion: ProtobufVersion? {
-        appState.flipper?.information?.protobufRevision
+        flipper?.information?.protobufRevision
     }
 
     var protobufVersion: String {
@@ -35,7 +42,7 @@ struct DeviceInfoCard: View {
 
     var firmwareVersion: String {
         guard isConnected else { return "" }
-        guard let info = appState.flipper?.information else { return "" }
+        guard let info = flipper?.information else { return "" }
         return info.firmwareVersion?.description ?? "invalid"
     }
 
@@ -50,7 +57,7 @@ struct DeviceInfoCard: View {
 
     var firmwareBuild: String {
         guard isConnected else { return "" }
-        guard let info = appState.flipper?.information else { return "" }
+        guard let info = flipper?.information else { return "" }
 
         let build = info
             .softwareRevision
@@ -62,7 +69,7 @@ struct DeviceInfoCard: View {
     }
 
     var internalSpace: AttributedString {
-        guard isConnected, let int = appState.flipper?.storage?.internal else {
+        guard isConnected, let int = flipper?.storage?.internal else {
             return ""
         }
         var result = AttributedString(int.description)
@@ -73,10 +80,10 @@ struct DeviceInfoCard: View {
     }
 
     var externalSpace: AttributedString {
-        guard isConnected, appState.flipper?.storage?.internal != nil else {
+        guard isConnected, flipper?.storage?.internal != nil else {
             return ""
         }
-        guard let ext = appState.flipper?.storage?.external else {
+        guard let ext = flipper?.storage?.external else {
             return "—"
         }
         var result = AttributedString(ext.description)

@@ -9,25 +9,29 @@ struct DeviceView: View {
     @State var showForgetAction = false
     @State var showUnsupportedVersionAlert = false
 
+    var flipper: Flipper? {
+        flipperService.flipper
+    }
+
     var canSync: Bool {
         appState.status == .connected
     }
 
     var canPlayAlert: Bool {
-        appState.flipper?.state == .connected &&
+        flipper?.state == .connected &&
         appState.status != .unsupportedDevice
     }
 
     var canConnect: Bool {
-        appState.flipper?.state == .disconnected ||
-        appState.flipper?.state == .disconnecting ||
-        appState.flipper?.state == .pairingFailed ||
-        appState.flipper?.state == .invalidPairing
+        flipper?.state == .disconnected ||
+        flipper?.state == .disconnecting ||
+        flipper?.state == .pairingFailed ||
+        flipper?.state == .invalidPairing
     }
 
     var canDisconnect: Bool {
-        appState.flipper?.state == .connected ||
-        appState.flipper?.state == .connecting
+        flipper?.state == .connected ||
+        flipper?.state == .connecting
     }
 
     var canForget: Bool {
@@ -37,7 +41,7 @@ struct DeviceView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                DeviceHeader(device: appState.flipper)
+                DeviceHeader(device: flipper)
 
                 ScrollView {
                     VStack(spacing: 0) {
@@ -174,7 +178,7 @@ struct DeviceView: View {
 
     func connect() {
         if appState.status == .noDevice {
-            flipperService.pairDevice()
+            appState.firstLaunch.showWelcomeScreen()
         } else {
             flipperService.connect()
         }
