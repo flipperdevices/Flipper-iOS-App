@@ -6,7 +6,7 @@ public struct PixelColor {
     var g: UInt8
     var b: UInt8
 
-    static var orage: PixelColor { .init(a: 255, r: 255, g: 130, b: 0) }
+    static var orange: PixelColor { .init(a: 255, r: 255, g: 130, b: 0) }
     static var black: PixelColor { .init(a: 255, r: 0, g: 0, b: 0) }
 }
 

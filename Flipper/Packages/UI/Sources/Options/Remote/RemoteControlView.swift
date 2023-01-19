@@ -52,39 +52,23 @@ struct RemoteControlView: View {
 struct DeviceScreen: View {
     var pixels: [Bool]
 
-    var scaledWidth: Int { .screenWidth * .scale }
-    var scaledHeight: Int { .screenHeight * .scale }
+    var scaledWidth: Double { Double(.screenWidth * .scale) }
+    var scaledHeight: Double { Double(.screenHeight * .scale) }
 
     var colorPixels: [PixelColor] {
-        self.scaledPixels.map { $0 ? .black : .orage }
+        self.pixels.map { $0 ? .black : .orange }
     }
 
     var uiImage: UIImage {
-        UIImage(pixels: colorPixels, width: scaledWidth, height: scaledHeight)
+        UIImage(pixels: colorPixels, width: .screenWidth, height: .screenHeight)
             ?? .init()
     }
 
     var body: some View {
         Image(uiImage: uiImage)
-    }
-
-    // sucks but works
-    var scaledPixels: [Bool] {
-        let newSize = pixels.count * (.scale * .scale)
-        var scaled = [Bool](repeating: false, count: newSize)
-        for x in 0..<(.screenWidth) {
-            for y in 0..<(.screenHeight) {
-                let scaledX = x * .scale
-                let scaledY = y * .scale
-                for newX in scaledX..<(scaledX + .scale) {
-                    for newY in scaledY..<(scaledY + .scale) {
-                        scaled[newY * scaledWidth + newX] =
-                            pixels[y * .screenWidth + x]
-                    }
-                }
-            }
-        }
-        return scaled
+            .resizable()
+            .interpolation(.none)
+            .frame(width: scaledWidth, height: scaledHeight)
     }
 }
 
