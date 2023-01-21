@@ -6,6 +6,7 @@ import enum Peripheral.FlipperColor
 struct ReaderAttackView: View {
     @EnvironmentObject private var flipperService: FlipperService
     @StateObject private var readerAttack: ReaderAttackService = .init()
+
     @StateObject private var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
 
