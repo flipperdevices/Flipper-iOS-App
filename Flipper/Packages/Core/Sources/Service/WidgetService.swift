@@ -10,14 +10,35 @@ public class WidgetService: ObservableObject {
     let appState: AppState
     let emulateService: EmulateService
 
-    var widget: WidgetModel {
-        get { appState.widget }
-        set { appState.widget = newValue }
+    @Published public var state: State = .idle
+    @Published public var keys: [WidgetKey] = []
+    @Published public var keyToEmulate: WidgetKey?
+
+    @Published public var isExpanded = false
+
+    public var isEmulating: Bool {
+        state == .emulating
     }
 
-    public var isExpanded: Bool {
-        get { widget.isExpanded }
-        set { widget.isExpanded = newValue }
+    public var isError: Bool {
+        switch state {
+        case .error: return true
+        default: return false
+        }
+    }
+
+    public enum State: Equatable {
+        case idle
+        case loading
+        case emulating
+        case error(Error)
+
+        public enum Error: Equatable {
+            case appLocked
+            case notSynced
+            case cantConnect
+            case bluetoothOff
+        }
     }
 
     @Published public var flipper: Flipper?
@@ -30,6 +51,7 @@ public class WidgetService: ObservableObject {
     public init(appState: AppState, emulateService: EmulateService) {
         self.appState = appState
         self.emulateService = emulateService
+        self.keys = storage.keys
         subscribeToPublishers()
     }
 
@@ -38,7 +60,7 @@ public class WidgetService: ObservableObject {
             .didChange
             .sink { [weak self] in
                 guard let self else { return }
-                self.widget.keys = self.storage.keys
+                self.keys = self.storage.keys
             }
             .store(in: &disposeBag)
 
@@ -46,7 +68,7 @@ public class WidgetService: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { items in
                 // remove deleted items
-                self.widget.keys = self.widget.keys.filter(items.contains)
+                self.keys = self.keys.filter(items.contains)
             }
             .store(in: &disposeBag)
 
@@ -55,11 +77,11 @@ public class WidgetService: ObservableObject {
             .sink { [weak self] emulate in
                 guard let self else { return }
                 if emulate.state == .closed {
-                    self.widget.keyToEmulate = nil
+                    self.keyToEmulate = nil
                 }
                 if emulate.state == .locked {
-                    self.widget.keyToEmulate = nil
-                    self.widget.state = .error(.appLocked)
+                    self.keyToEmulate = nil
+                    self.state = .error(.appLocked)
                 }
             }
             .store(in: &disposeBag)
@@ -109,13 +131,13 @@ public class WidgetService: ObservableObject {
             guard flipper?.state != .connected else { return }
             logger.debug("widget connection time is out")
             Task { @MainActor in
-                widget.state = .error(.cantConnect)
+                state = .error(.cantConnect)
             }
         }
     }
 
     public func onSendPressed(for key: WidgetKey) {
-        guard !widget.isEmulating else {
+        guard !isEmulating else {
             emulateService.forceStopEmulate()
             return
         }
@@ -131,30 +153,30 @@ public class WidgetService: ObservableObject {
     }
 
     func startEmulate(_ key: WidgetKey) {
-        guard widget.keyToEmulate == nil else {
+        guard keyToEmulate == nil else {
             logger.critical("keyToEmulate should be nil")
             return
         }
-        widget.keyToEmulate = key
+        keyToEmulate = key
         startEmulateOnConnect()
     }
 
     func startEmulateOnConnect() {
         guard
             flipper?.state == .connected,
-            let key = widget.keyToEmulate
+            let key = keyToEmulate
         else {
             return
         }
         guard let item = item(for: key) else {
             logger.error("the key is not found")
-            widget.state = .error(.notSynced)
+            state = .error(.notSynced)
             resetEmulate()
             return
         }
         guard item.status == .synchronized else {
             logger.error("the key is not synced")
-            widget.state = .error(.notSynced)
+            state = .error(.notSynced)
             resetEmulate()
             return
         }
@@ -170,23 +192,23 @@ public class WidgetService: ObservableObject {
     }
 
     public func stopEmulate() {
-        guard widget.isEmulating else { return }
+        guard isEmulating else { return }
         emulateService.stopEmulate()
     }
 
     func forceStopEmulate() {
-        guard widget.isEmulating else { return }
+        guard isEmulating else { return }
         emulateService.forceStopEmulate()
     }
 
     func toggleEmulate(_ key: WidgetKey) {
-        widget.isEmulating
+        isEmulating
             ? stopEmulate()
             : startEmulate(key)
     }
 
     func resetEmulate() {
-        appState.widget.keyToEmulate = nil
+        keyToEmulate = nil
         emulateService.resetEmulate()
     }
 }

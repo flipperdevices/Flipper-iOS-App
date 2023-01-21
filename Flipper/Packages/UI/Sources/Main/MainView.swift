@@ -18,6 +18,8 @@ struct MainView: View {
     @State var importedName = ""
     @State var importedOpacity = 0.0
 
+    @State var showWidgetSettings = false
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -44,10 +46,10 @@ struct MainView: View {
         }
         .onOpenURL { url in
             if url == .widgetSettings {
-                appState.widget.showSettings = true
+                showWidgetSettings = true
             }
         }
-        .fullScreenCover(isPresented: $appState.widget.showSettings) {
+        .fullScreenCover(isPresented: $showWidgetSettings) {
             WidgetSettingsView()
         }
         .onAppear {

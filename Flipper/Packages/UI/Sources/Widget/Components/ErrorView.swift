@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct ErrorView: View {
-    let error: WidgetModel.State.Error
+    let error: WidgetService.State.Error
     let onBack: () -> Void
 
     var body: some View {

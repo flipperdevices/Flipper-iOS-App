@@ -1,21 +1,19 @@
 import Core
 import Logging
 import SwiftUI
+import NotificationCenter
 
 public struct WidgetView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var flipperService: FlipperService
-    @EnvironmentObject var widgetService: WidgetService
-
-    var widget: WidgetModel {
-        appState.widget
-    }
+    @EnvironmentObject var widget: WidgetService
 
     public var isError: Bool {
         widget.isError
     }
 
-    public init() {}
+    public init() {
+    }
 
     public var body: some View {
         VStack(spacing: 0) {
@@ -24,14 +22,7 @@ public struct WidgetView: View {
 
             switch widget.state {
             case .idle, .emulating:
-                WidgetKeysView(
-                    keys: widget.keys,
-                    keyToEmulate: widget.keyToEmulate,
-                    isExpanded: widgetService.isExpanded,
-                    onSendPressed: { widgetService.onSendPressed(for: $0) },
-                    onSendReleased: { widgetService.onSendReleased(for: $0) },
-                    onEmulateTapped: { widgetService.onEmulateTapped(for: $0) }
-                )
+                WidgetKeysView()
             case .loading:
                 Text("Loading")
             case .error(let error):
@@ -44,7 +35,7 @@ public struct WidgetView: View {
             flipperService.connect()
         }
         .onDisappear {
-            widgetService.stopEmulate()
+            widget.stopEmulate()
             flipperService.disconnect()
         }
         .edgesIgnoringSafeArea(.all)

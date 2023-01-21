@@ -1,19 +1,18 @@
 import Core
 import SwiftUI
+import NotificationCenter
 
 struct WidgetKeysView: View {
-    let keys: [WidgetKey]
-    let keyToEmulate: WidgetKey?
-    let isExpanded: Bool
-
-    var onSendPressed: (WidgetKey) -> Void
-    var onSendReleased: (WidgetKey) -> Void
-    var onEmulateTapped: (WidgetKey) -> Void
+    @EnvironmentObject var widget: WidgetService
 
     var rows: Range<Int> {
-        isExpanded
+        widget.isExpanded
             ? (0..<(keys.count / 2 + 1))
             : (0..<1)
+    }
+
+    var keys: [WidgetKey] {
+        widget.keys
     }
 
     var body: some View {
@@ -24,13 +23,7 @@ struct WidgetKeysView: View {
 
                 ZStack {
                     if i1 < keys.count {
-                        WidgetKeyView(
-                            key: keys[i1],
-                            state: state(for: keys[i1]),
-                            onSendPressed: { onSendPressed(keys[i1]) },
-                            onSendReleased: { onSendReleased(keys[i1]) },
-                            onEmulateTapped: { onEmulateTapped(keys[i1]) }
-                        )
+                        WidgetKeyView(key: keys[i1])
                     } else {
                         AddKeyButton()
                     }
@@ -42,13 +35,7 @@ struct WidgetKeysView: View {
 
                 ZStack {
                     if i2 < keys.count {
-                        WidgetKeyView(
-                            key: keys[i2],
-                            state: state(for: keys[i1]),
-                            onSendPressed: { onSendPressed(keys[i2]) },
-                            onSendReleased: { onSendReleased(keys[i2]) },
-                            onEmulateTapped: { onEmulateTapped(keys[i2]) }
-                        )
+                        WidgetKeyView(key: keys[i2])
                     } else {
                         AddKeyButton()
                             .opacity(i1 < keys.count ? 1 : 0)
@@ -62,12 +49,5 @@ struct WidgetKeysView: View {
                 Divider()
             }
         }
-    }
-
-    func state(for key: WidgetKey) -> WidgetKeyState {
-        guard let keyToEmulate = keyToEmulate else {
-            return .idle
-        }
-        return key == keyToEmulate ? .emulating : .disabled
     }
 }

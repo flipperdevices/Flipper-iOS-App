@@ -12,19 +12,6 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
     let dependencies: Depencencies
 
-    var appState: AppState {
-        dependencies.appState
-    }
-
-    var widget: WidgetModel {
-        get { appState.widget }
-        set { appState.widget = newValue }
-    }
-
-    var widgetService: WidgetService {
-        dependencies.widgetService
-    }
-
     required init?(coder: NSCoder) {
         _ = registerDependenciesOnce
         dependencies = .init()
@@ -38,7 +25,6 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         // Add SwiftUI
         let widgetView = WidgetView()
             .environmentObject(dependencies.appState)
-            .environmentObject(dependencies.centralService)
             .environmentObject(dependencies.flipperService)
             .environmentObject(dependencies.archiveService)
             .environmentObject(dependencies.emulateService)
@@ -66,9 +52,10 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         _ activeDisplayMode: NCWidgetDisplayMode,
         withMaximumSize maxSize: CGSize
     ) {
-        widget.isExpanded = activeDisplayMode == .expanded
+        dependencies.widgetService.objectWillChange.send()
+        dependencies.widgetService.isExpanded = activeDisplayMode == .expanded
 
-        guard !widget.isError else {
+        guard !dependencies.widgetService.isError else {
             preferredContentSize.height = compactModeHeight
             return
         }
@@ -77,7 +64,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         case .compact:
             preferredContentSize.height = compactModeHeight
         case .expanded:
-            let rowsCount = widget.keys.count / 2 + 1
+            let rowsCount = dependencies.widgetService.keys.count / 2 + 1
             preferredContentSize.height = compactModeHeight * Double(rowsCount)
         @unknown default: break
         }

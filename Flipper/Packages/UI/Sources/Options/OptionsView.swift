@@ -15,6 +15,8 @@ struct OptionsView: View {
     @State var showResetApp = false
     @State var versionTapCount = 0
 
+    @State var showWidgetSettings = false
+
     var appVersion: String { Bundle.releaseVersion }
 
     var body: some View {
@@ -57,7 +59,7 @@ struct OptionsView: View {
 
             Section {
                 Button("Widget Settings") {
-                    appState.widget.showSettings = true
+                    showWidgetSettings = true
                 }
                 .foregroundColor(.primary)
             }
@@ -121,6 +123,9 @@ struct OptionsView: View {
         }
         .onReceive(appState.$status) { status in
             isDeviceAvailable = status.isAvailable
+        }
+        .fullScreenCover(isPresented: $showWidgetSettings) {
+            WidgetSettingsView()
         }
     }
 

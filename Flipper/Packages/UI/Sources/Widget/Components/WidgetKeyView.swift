@@ -3,12 +3,16 @@ import SwiftUI
 
 @MainActor
 struct WidgetKeyView: View {
-    let key: WidgetKey
-    var state: WidgetKeyState
+    @EnvironmentObject var widget: WidgetService
 
-    var onSendPressed: () -> Void
-    var onSendReleased: () -> Void
-    var onEmulateTapped: () -> Void
+    let key: WidgetKey
+
+    var state: WidgetKeyState {
+        guard let keyToEmulate = widget.keyToEmulate else {
+            return .idle
+        }
+        return key == keyToEmulate ? .emulating : .disabled
+    }
 
     var color: Color {
         guard state != .disabled else {
@@ -56,14 +60,14 @@ struct WidgetKeyView: View {
             if key.kind == .subghz {
                 WidgetSendButton(
                     state: state,
-                    onPress: onSendPressed,
-                    onRelease: onSendReleased
+                    onPress: { widget.onSendPressed(for: key) },
+                    onRelease: { widget.onSendReleased(for: key) }
                 )
             } else {
                 WidgetEmulateButton(
                     state: state,
-                    onTapGesture: onEmulateTapped,
-                    onLongPressGesture: onEmulateTapped
+                    onTapGesture: { widget.onEmulateTapped(for: key) },
+                    onLongPressGesture: { widget.onEmulateTapped(for: key) }
                 )
             }
         }

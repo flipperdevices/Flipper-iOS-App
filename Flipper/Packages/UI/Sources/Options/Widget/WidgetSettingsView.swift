@@ -1,20 +1,30 @@
 import Core
 import SwiftUI
 
+import NotificationCenter
+
+public struct WidgetDisplayModeKey: EnvironmentKey {
+    public static let defaultValue: NCWidgetDisplayMode = .compact
+}
+
+extension EnvironmentValues {
+    public var widgetDisplayMode: NCWidgetDisplayMode {
+        get { self[WidgetDisplayModeKey.self] }
+        set { self[WidgetDisplayModeKey.self] = newValue }
+    }
+}
+
 struct WidgetSettingsView: View {
     @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var widgetService: WidgetService
+    @EnvironmentObject private var widget: WidgetService
     @Environment(\.dismiss) private var dismiss
 
     @State var showAddKeyView = false
     @State var showWidgetHelpView = false
 
-    var widget: WidgetModel {
-        appState.widget
-    }
-
     var rows: Range<Int> {
-        (0..<(widget.keys.count / 2 + 1))
+        print(widget.keys.count)
+        return (0..<(widget.keys.count / 2 + 1))
     }
 
     var body: some View {
@@ -46,7 +56,7 @@ struct WidgetSettingsView: View {
 
                             if i1 < widget.keys.count {
                                 WidgetAddedItem(key: widget.keys[i1]) {
-                                    widgetService.delete(at: i1)
+                                    widget.delete(at: i1)
                                 }
                                 .padding(11)
                             } else {
@@ -61,7 +71,7 @@ struct WidgetSettingsView: View {
                             Group {
                                 if i2 < widget.keys.count {
                                     WidgetAddedItem(key: widget.keys[i2]) {
-                                        widgetService.delete(at: i2)
+                                        widget.delete(at: i2)
                                     }
                                 } else if i1 < widget.keys.count {
                                     WidgetAddButton {
@@ -84,7 +94,7 @@ struct WidgetSettingsView: View {
                 }
                 .sheet(isPresented: $showAddKeyView) {
                     WidgetAddKeyView(widgetKeys: widget.keys) {
-                        widgetService.add($0)
+                        widget.add($0)
                     }
                 }
                 .background(Color.groupedBackground)
