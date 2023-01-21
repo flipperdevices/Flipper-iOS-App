@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct AddKeyButton: View {
+    @Environment(\.openURL) private var openURL
+
     var body: some View {
         Button {
             addKey()
@@ -13,7 +15,7 @@ struct AddKeyButton: View {
 
     func addKey() {
         #if os(iOS)
-        UIApplication.shared.open(.widgetSettings)
+        openURL(.widgetSettings)
         #endif
     }
 }

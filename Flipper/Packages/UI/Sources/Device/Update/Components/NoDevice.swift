@@ -2,6 +2,8 @@ import SwiftUI
 
 extension DeviceUpdateView {
     struct NoDeviceView: View {
+        @Environment(\.openURL) private var openURL
+
         var body: some View {
             VStack(spacing: 0) {
                 Image("NoDeviceAlert")
@@ -35,7 +37,7 @@ extension DeviceUpdateView {
                 .padding(.top, 14)
 
                 Button {
-                    UIApplication.shared.open(.helpToReboot)
+                    openURL(.helpToReboot)
                 } label: {
                     Text("Read More")
                         .font(.system(size: 14, weight: .medium))

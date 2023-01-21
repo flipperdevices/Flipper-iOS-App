@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct UnsupportedDevice: View {
+    @Environment(\.openURL) private var openURL
+
     var body: some View {
         VStack {
             VStack(spacing: 0) {
@@ -25,7 +27,7 @@ struct UnsupportedDevice: View {
                     .padding(.top, 4)
 
                 Button {
-                    UIApplication.shared.open(.helpToInstallFirmware)
+                    openURL(.helpToInstallFirmware)
                 } label: {
                     Text("How to update Flipper")
                         .underline()
