@@ -40,6 +40,7 @@ extension DeviceUpdateCard {
 
     struct CardNoInternetError: View {
         @EnvironmentObject var checkUpdateService: CheckUpdateService
+        let channel: Update.Channel
 
         var body: some View {
             VStack(spacing: 2) {
@@ -57,7 +58,7 @@ extension DeviceUpdateCard {
             .padding(.vertical, 4)
 
             Button {
-                checkUpdateService.updateAvailableFirmware()
+                checkUpdateService.updateAvailableFirmware(for: channel)
             } label: {
                 Text("Retry")
                     .font(.system(size: 16, weight: .medium))
@@ -69,6 +70,7 @@ extension DeviceUpdateCard {
 
     struct CardCantConnectError: View {
         @EnvironmentObject var checkUpdateService: CheckUpdateService
+        let channel: Update.Channel
 
         var body: some View {
             VStack(spacing: 2) {
@@ -86,7 +88,7 @@ extension DeviceUpdateCard {
             .padding(.vertical, 4)
 
             Button {
-                checkUpdateService.updateAvailableFirmware()
+                checkUpdateService.updateAvailableFirmware(for: channel)
             } label: {
                 Text("Retry")
                     .font(.system(size: 16, weight: .medium))

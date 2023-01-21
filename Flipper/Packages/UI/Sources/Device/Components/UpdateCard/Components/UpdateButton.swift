@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct UpdateButton: View {
-    let state: VersionUpdateModel.State.Ready
+    let state: CheckUpdateService.State.Ready
     var action: () -> Void
 
     var title: String {

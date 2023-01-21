@@ -3,7 +3,9 @@ import SwiftUI
 
 extension DeviceUpdateCard {
     struct CardStateReady: View {
-        let state: VersionUpdateModel.State.Ready
+        let state: CheckUpdateService.State.Ready
+
+        @Binding var channel: Update.Channel
 
         @EnvironmentObject var appState: AppState
         @EnvironmentObject var syncService: SyncService
@@ -12,16 +14,12 @@ extension DeviceUpdateCard {
         @State var showPauseSync = false
         @State var showCharge = false
 
-        var updateAvailable: VersionUpdateModel {
-            appState.updateAvailable
-        }
-
         var availableFirmware: String {
-            updateAvailable.available?.description ?? "unknown"
+            checkUpdateService.available?.description ?? "unknown"
         }
 
         var channelColor: Color {
-            switch updateAvailable.selectedChannel {
+            switch channel {
             case .development: return .development
             case .candidate: return .candidate
             case .release: return .release
@@ -53,10 +51,10 @@ extension DeviceUpdateCard {
                         firmware: availableFirmware,
                         color: channelColor
                     ) {
-                        checkUpdateService.onChannelSelected($0)
+                        onChannelSelected($0)
                     }
                     .onTapGesture {
-                        checkUpdateService.updateAvailableFirmware()
+                        checkUpdateService.updateAvailableFirmware(for: channel)
                     }
                 }
                 .font(.system(size: 14))
@@ -103,6 +101,16 @@ extension DeviceUpdateCard {
             .customAlert(isPresented: $showCharge) {
                 LowBatteryAlert(isPresented: $showCharge)
             }
+        }
+
+        func onChannelSelected(_ name: String) {
+            switch name {
+            case "Release": channel = .release
+            case "Release-Candidate": channel = .candidate
+            case "Development": channel = .development
+            default: break
+            }
+            checkUpdateService.updateVersion(for: channel)
         }
     }
 }

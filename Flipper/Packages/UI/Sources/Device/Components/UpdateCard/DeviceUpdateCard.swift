@@ -8,12 +8,10 @@ struct DeviceUpdateCard: View {
     @EnvironmentObject var checkUpdateService: CheckUpdateService
     @Environment(\.scenePhase) private var scenePhase
 
-    var updateAvailable: VersionUpdateModel {
-        appState.updateAvailable
-    }
+    @AppStorage(.updateChannel) var channel: Update.Channel = .release
 
     var updateVersion: String {
-        updateAvailable.intent?.to.description ?? "unknown"
+        checkUpdateService.intent?.to.description ?? "unknown"
     }
 
     @State var intent: Update.Intent? = nil
@@ -33,7 +31,7 @@ struct DeviceUpdateCard: View {
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
 
-                switch updateAvailable.state {
+                switch checkUpdateService.state {
                 case .busy(.connecting), .busy(.loadingManifest):
                     CardStateBusy()
 
@@ -41,16 +39,16 @@ struct DeviceUpdateCard: View {
                     CardStateInProgress()
 
                 case .ready(let state):
-                    CardStateReady(state: state)
+                    CardStateReady(state: state, channel: $channel)
 
                 case .error(.noCard):
                     CardNoSDError()
 
                 case .error(.noInternet):
-                    CardNoInternetError()
+                    CardNoInternetError(channel: channel)
 
                 case .error(.cantConnect):
-                    CardCantConnectError()
+                    CardCantConnectError(channel: channel)
 
                 case .error(.noDevice):
                     CardNoDeviceError()
@@ -60,7 +58,7 @@ struct DeviceUpdateCard: View {
         .alert(
             "Update Firmware?",
             isPresented: $showConfirmUpdate,
-            presenting: updateAvailable.intent
+            presenting: checkUpdateService.intent
         ) { intent in
             Button("Cancel") { }
             Button("Update") {
@@ -82,7 +80,7 @@ struct DeviceUpdateCard: View {
                 isPresented: $showUpdateFailed,
                 firmwareVersion: updateVersion)
         }
-        .onChange(of: updateAvailable.intent) { intent in
+        .onChange(of: checkUpdateService.intent) { intent in
             if intent != nil {
                 showConfirmUpdate = true
             }
@@ -95,12 +93,12 @@ struct DeviceUpdateCard: View {
         }
         .onOpenURL { url in
             if url.isFirmwareURL {
-                checkUpdateService.onCustomURLOpened(url: url)
+                onCustomURLOpened(url: url)
             }
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {
-                checkUpdateService.updateAvailableFirmware()
+                checkUpdateService.updateAvailableFirmware(for: channel)
             }
         }
         .onChange(of: networkService.available) {
@@ -110,8 +108,13 @@ struct DeviceUpdateCard: View {
             DeviceUpdateView(intent: intent)
         }
         .task {
-            checkUpdateService.updateAvailableFirmware()
+            checkUpdateService.updateAvailableFirmware(for: channel)
         }
+    }
+
+    func onCustomURLOpened(url: URL) {
+        channel = .custom(url)
+        checkUpdateService.updateVersion(for: channel)
     }
 }
 

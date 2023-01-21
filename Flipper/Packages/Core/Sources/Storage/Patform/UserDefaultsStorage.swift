@@ -16,8 +16,8 @@ public class UserDefaultsStorage {
     }
 
     public var updateChannel: String {
-        get { storage.value(forKey: .updateChannelKey) as? String ?? "" }
-        set { storage.set(newValue, forKey: .updateChannelKey) }
+        get { storage.value(forKey: .updateChannel) as? String ?? "" }
+        set { storage.set(newValue, forKey: .updateChannel) }
     }
 
     public var logLevel: Logger.Level {
@@ -53,7 +53,7 @@ public class UserDefaultsStorage {
     func reset() {
         storage.removeObject(forKey: .isFirstLaunchKey)
         storage.removeObject(forKey: .selectedTabKey)
-        storage.removeObject(forKey: .updateChannelKey)
+        storage.removeObject(forKey: .updateChannel)
         storage.removeObject(forKey: .logLevelKey)
         storage.removeObject(forKey: .hasReaderLog)
         storage.removeObject(forKey: .isDebugMode)
@@ -64,7 +64,7 @@ public class UserDefaultsStorage {
 public extension String {
     static var isFirstLaunchKey: String { "isFirstLaunch" }
     static var selectedTabKey: String { "selectedTab" }
-    static var updateChannelKey: String { "updateChannel" }
+    static var updateChannel: String { "updateChannel" }
     static var logLevelKey: String { "logLevel" }
     static var hasReaderLog: String { "hasReaderLog" }
 
