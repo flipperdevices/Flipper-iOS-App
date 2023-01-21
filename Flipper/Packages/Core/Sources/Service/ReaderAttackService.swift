@@ -7,11 +7,61 @@ import Foundation
 
 @MainActor
 public class ReaderAttackService: ObservableObject {
-    let appState: AppState
+    @Published public var state: State = .downloadingLog
+    var flipperKnownKeys: Set<MFKey64> = .init()
+    var userKnownKeys: Set<MFKey64> = .init()
 
-    var readerAttack: ReaderAttackModel {
-        get { appState.readerAttack }
-        set { appState.readerAttack = newValue }
+    var newUserKnownKeys: Set<MFKey64> {
+        userKnownKeys.union(newKeys)
+    }
+
+    public enum State {
+        case noLog
+        case noDevice
+        case noSDCard
+        case downloadingLog
+        case calculating
+        case checkingKeys
+        case uploadingKeys
+        case finished
+    }
+
+    public var progress: Double = 0
+    public var showCancelAttack = false
+    public var results: [ReaderAttack.Result] = []
+
+    public var inProgress: Bool {
+        !isError && state != .finished
+    }
+
+    public var isError: Bool {
+        state == .noLog || state == .noDevice || state == .noSDCard
+    }
+
+    public var showCalculatedKeysSpinner: Bool {
+        results.isEmpty && state != .finished
+    }
+
+    public var hasNewKeys: Bool {
+        !newKeys.isEmpty
+    }
+
+    public var hasDuplicatedKeys: Bool {
+        !(flipperDuplicatedKeys.isEmpty && userDuplicatedKeys.isEmpty)
+    }
+
+    public var keysFound: [MFKey64] {
+        results.compactMap { $0.key }
+    }
+
+    public var newKeys: Set<MFKey64> {
+        Set(keysFound).subtracting(flipperKnownKeys.union(userKnownKeys))
+    }
+    public var flipperDuplicatedKeys: Set<MFKey64> {
+        Set(keysFound).intersection(flipperKnownKeys)
+    }
+    public var userDuplicatedKeys: Set<MFKey64> {
+        Set(keysFound).intersection(userKnownKeys)
     }
 
     @Inject private var rpc: RPC
@@ -21,7 +71,7 @@ public class ReaderAttackService: ObservableObject {
     @Published public var flipper: Flipper? {
         didSet {
             if flipper?.state != .connected {
-                readerAttack.state = .noDevice
+                state = .noDevice
             }
         }
     }
@@ -34,8 +84,7 @@ public class ReaderAttackService: ObservableObject {
     private var forceStop = false
     private let mfKnownKeys = MFKnownKeys()
 
-    public init(appState: AppState) {
-        self.appState = appState
+    public init() {
         subscribeToPublishers()
     }
 
@@ -60,10 +109,6 @@ public class ReaderAttackService: ObservableObject {
         }
     }
 
-    public func cancel() {
-        readerAttack.showCancelAttack = true
-    }
-
     private func start() async throws {
         do {
             guard flipper?.state == .connected else {
@@ -71,22 +116,21 @@ public class ReaderAttackService: ObservableObject {
             }
             await checkLog()
             guard hasReaderLog else {
-                readerAttack.state = .noLog
+                state = .noLog
                 return
             }
-            readerAttack = .init()
-            readerAttack.state = .downloadingLog
+            state = .downloadingLog
             let log = try await readLog()
-            readerAttack.state = .calculating
+            state = .calculating
             try await calculateKeys(log)
-            readerAttack.state = .checkingKeys
+            state = .checkingKeys
             try await checkKeys()
-            readerAttack.state = .uploadingKeys
+            state = .uploadingKeys
             try await uploadKeys()
             try await deleteLog()
-            readerAttack.state = .finished
+            state = .finished
         } catch let error as Error where error == .storage(.internal) {
-            readerAttack.state = .noSDCard
+            state = .noSDCard
             logger.error("mfkey32 attack: no sd card")
         }
     }
@@ -107,7 +151,7 @@ public class ReaderAttackService: ObservableObject {
         try Task.checkCancellation()
         return try await rpc.readFile(at: .mfKey32Log) { progress in
             Task { @MainActor in
-                readerAttack.progress = progress
+                self.progress = progress
             }
         }
     }
@@ -120,22 +164,22 @@ public class ReaderAttackService: ObservableObject {
     private func calculateKeys(_ logFile: String) async throws {
         let readerLog = try ReaderLog(logFile)
         let total = Double(readerLog.lines.count)
-        readerAttack.progress = 0
+        progress = 0
         for await result in ReaderAttack.recoverKeys(from: readerLog) {
-            readerAttack.results.append(result)
-            readerAttack.progress = Double(readerAttack.results.count) / total
+            results.append(result)
+            progress = Double(results.count) / total
         }
     }
 
     private func checkKeys() async throws {
         try Task.checkCancellation()
-        readerAttack.flipperKnownKeys = try await mfKnownKeys.readFlipperKeys()
+        flipperKnownKeys = try await mfKnownKeys.readFlipperKeys()
         try Task.checkCancellation()
-        readerAttack.userKnownKeys = try await mfKnownKeys.readUserKeys()
+        userKnownKeys = try await mfKnownKeys.readUserKeys()
     }
 
     private func uploadKeys() async throws {
         try Task.checkCancellation()
-        try await mfKnownKeys.writeUserKeys(readerAttack.newUserKnownKeys)
+        try await mfKnownKeys.writeUserKeys(newUserKnownKeys)
     }
 }

@@ -9,8 +9,6 @@ import Logging
 public class AppState: ObservableObject {
     @Published public var status: DeviceStatus = .noDevice
 
-    @Published public var readerAttack: ReaderAttackModel = .init()
-
     public init() {
         logger.info("app version: \(Bundle.fullVersion)")
         logger.info("log level: \(UserDefaultsStorage.shared.logLevel)")

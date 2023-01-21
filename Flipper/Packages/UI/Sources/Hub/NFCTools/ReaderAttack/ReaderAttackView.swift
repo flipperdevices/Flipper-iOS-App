@@ -4,19 +4,12 @@ import SwiftUI
 import enum Peripheral.FlipperColor
 
 struct ReaderAttackView: View {
-    @EnvironmentObject var appState: AppState
-    @EnvironmentObject var flipperService: FlipperService
-    @EnvironmentObject var readerAttackService: ReaderAttackService
-    @StateObject var alertController: AlertController = .init()
+    @EnvironmentObject private var flipperService: FlipperService
+    @StateObject private var readerAttack: ReaderAttackService = .init()
+    @StateObject private var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
 
-    var readerAttack: ReaderAttackModel {
-        appState.readerAttack
-    }
-
-    var showCancelAttack: Binding<Bool> {
-        $appState.readerAttack.showCancelAttack
-    }
+    @State var showCancelAttack = false
 
     var flipperColor: FlipperColor {
         flipperService.flipper?.color ?? .white
@@ -182,7 +175,7 @@ struct ReaderAttackView: View {
                         Spacer()
                         Button {
                             readerAttack.inProgress
-                                ? readerAttackService.cancel()
+                                ? showCancelAttack = true
                                 : dismiss()
                         } label: {
                             Text(readerAttack.isError ? "Close" : "Cancel")
@@ -202,17 +195,17 @@ struct ReaderAttackView: View {
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
-        .customAlert(isPresented: showCancelAttack) {
-            CancelAttackAlert(isPresented: showCancelAttack) {
+        .customAlert(isPresented: $showCancelAttack) {
+            CancelAttackAlert(isPresented: $showCancelAttack) {
                 dismiss()
             }
         }
         .environmentObject(alertController)
         .onAppear {
-            readerAttackService.start()
+            readerAttack.start()
         }
         .onDisappear {
-            readerAttackService.stop()
+            readerAttack.stop()
         }
     }
 }

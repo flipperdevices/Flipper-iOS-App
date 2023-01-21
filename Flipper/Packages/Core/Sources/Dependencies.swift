@@ -48,7 +48,7 @@ public class Depencencies: ObservableObject {
     }()
 
     public lazy var readerAttackService: ReaderAttackService = {
-        .init(appState: appState)
+        .init()
     }()
 
     public lazy var sharingService: SharingService = {
