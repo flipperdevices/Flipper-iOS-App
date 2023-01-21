@@ -38,14 +38,16 @@ public class UserDefaultsStorage {
         set { storage.set(newValue, forKey: .hasReaderLog) }
     }
 
+    // MARK: Debug
+
     public var isDebugMode: Bool {
-        get { storage.value(forKey: .isDebugMode) as? Bool ?? true }
+        get { storage.value(forKey: .isDebugMode) as? Bool ?? false }
         set { storage.set(newValue, forKey: .isDebugMode) }
     }
 
     public var isProvisioningDisabled: Bool {
-        get { storage.value(forKey: .isDebugMode) as? Bool ?? true }
-        set { storage.set(newValue, forKey: .isDebugMode) }
+        get { storage.value(forKey: .isProvisioningDisabled) as? Bool ?? false }
+        set { storage.set(newValue, forKey: .isProvisioningDisabled) }
     }
 
     func reset() {
