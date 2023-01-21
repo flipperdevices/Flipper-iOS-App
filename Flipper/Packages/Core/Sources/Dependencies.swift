@@ -40,7 +40,7 @@ public class Depencencies: ObservableObject {
     }()
 
     public lazy var checkUpdateService: CheckUpdateService = {
-        .init(appState: appState)
+        .init(appState: appState, updateService: updateService)
     }()
 
     public lazy var emulateService: EmulateService = {

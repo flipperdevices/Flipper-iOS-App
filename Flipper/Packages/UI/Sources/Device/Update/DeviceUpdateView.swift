@@ -2,7 +2,6 @@ import Core
 import SwiftUI
 
 struct DeviceUpdateView: View {
-    @EnvironmentObject var appState: AppState
     @EnvironmentObject var updateService: UpdateService
     @EnvironmentObject var flipperService: FlipperService
     @Environment(\.dismiss) var dismiss
@@ -19,7 +18,7 @@ struct DeviceUpdateView: View {
     }
 
     var isUpdating: Bool {
-        switch appState.update.state {
+        switch updateService.state {
         case .update(.downloading), .update(.preparing), .update(.uploading):
             return true
         default:
@@ -28,7 +27,7 @@ struct DeviceUpdateView: View {
     }
 
     var title: String {
-        switch appState.update.state {
+        switch updateService.state {
         case .error(.noInternet), .error(.noCard): return "Update Not Started"
         case .error(.storageError): return "Unable to Update"
         case .error(.noDevice): return "Update Failed"
@@ -37,7 +36,7 @@ struct DeviceUpdateView: View {
     }
 
     var image: String {
-        switch appState.update.state {
+        switch updateService.state {
         case .error(.noCard):
             return "FlipperNoCard"
         case .error(.noInternet), .error(.noDevice), .error(.cantConnect):
@@ -91,7 +90,7 @@ struct DeviceUpdateView: View {
                 .scaledToFit()
                 .padding(.top, 22)
 
-            switch appState.update.state {
+            switch updateService.state {
             case .error(.cantConnect): NoInternetView { start() }
             case .error(.failedDownloading): NoInternetView { start() }
             case .error(.noInternet): NoInternetView { start() }
@@ -132,7 +131,7 @@ struct DeviceUpdateView: View {
                     cancel()
                 })
         }
-        .onChange(of: appState.update.state) { state in
+        .onChange(of: updateService.state) { state in
             if state == .update(.started) {
                 dismiss()
             }

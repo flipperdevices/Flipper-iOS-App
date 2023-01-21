@@ -3,6 +3,7 @@ import SwiftUI
 
 struct DeviceUpdateCard: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var updateService: UpdateService
     @EnvironmentObject var networkService: NetworkService
     @EnvironmentObject var checkUpdateService: CheckUpdateService
     @Environment(\.scenePhase) private var scenePhase
@@ -86,7 +87,7 @@ struct DeviceUpdateCard: View {
                 showConfirmUpdate = true
             }
         }
-        .onReceive(appState.update.result) { result in
+        .onReceive(updateService.result) { result in
             switch result {
             case .success: showUpdateSucceeded = true
             case .failure: showUpdateFailed = true

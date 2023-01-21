@@ -8,15 +8,46 @@ import Foundation
 
 @MainActor
 public class UpdateService: ObservableObject {
+    public var state: State = .update(.preparing)
+
+    public var inProgress: Update.Intent?
+    public var result: SafeSubject<Result> = .init()
+
+    public enum State: Equatable {
+        case update(Update)
+        case error(Error)
+
+        public enum Update: Equatable {
+            case preparing
+            case downloading(progress: Double)
+            case uploading(progress: Double)
+            case started
+            case canceling
+        }
+
+        public enum Error: Equatable {
+            case cantConnect
+            case noInternet
+            case noDevice
+            case noCard
+            case storageError
+            case outdatedApp
+            case failedDownloading
+            case failedPreparing
+            case failedUploading
+            case canceled
+        }
+    }
+
+    public enum Result {
+        case success
+        case failure
+    }
+
     @Inject var rpc: RPC
 
     let appState: AppState
     let flipperService: FlipperService
-
-    var update: UpdateModel {
-        get { appState.update }
-        set { appState.update = newValue }
-    }
 
     private var updateTaskHandle: Task<Void, Swift.Error>?
 
@@ -43,7 +74,7 @@ public class UpdateService: ObservableObject {
 
     private func process(intent: Update.Intent) {
         recordUpdateStarted(intent: intent)
-        update.state = .update(.preparing)
+        state = .update(.preparing)
         guard updateTaskHandle == nil else {
             logger.error("update in progress")
             return
@@ -56,7 +87,7 @@ public class UpdateService: ObservableObject {
                 let path = try await uploadFirmware(archive)
                 try await startUpdateProcess(path)
             } catch {
-                if case .error(let error) = update.state {
+                if case .error(let error) = state {
                     recordUpdateFailed(intent: intent, error: error)
                 }
                 logger.error("update: \(error)")
@@ -68,11 +99,11 @@ public class UpdateService: ObservableObject {
     }
 
     private func prepareForUpdate() async throws {
-        update.state = .update(.preparing)
+        state = .update(.preparing)
         do {
             try await flipperService.showUpdatingFrame()
         } catch {
-            update.state = .error(.failedPreparing)
+            state = .error(.failedPreparing)
             throw error
         }
     }
@@ -83,7 +114,7 @@ public class UpdateService: ObservableObject {
         } catch let error as Peripheral.Error
             where error == .storage(.internal) {
             logger.error("provide region: \(error)")
-            update.state = .error(.storageError)
+            state = .error(.storageError)
             throw error
         }
     }
@@ -92,18 +123,18 @@ public class UpdateService: ObservableObject {
         _ intent: Update.Intent
     ) async throws -> Update.Firmware {
         do {
-            update.state = .update(.downloading(progress: 0))
+            state = .update(.downloading(progress: 0))
             return try await downloadFirmware(intent.to.firmware) { progress in
                 Task { @MainActor in
-                    if case .update(.downloading) = self.update.state {
-                        self.update.state = .update(
+                    if case .update(.downloading) = self.state {
+                        self.state = .update(
                             .downloading(progress: progress)
                         )
                     }
                 }
             }
         } catch where error is URLError {
-            update.state = .error(.failedDownloading)
+            state = .error(.failedDownloading)
             recordUpdateFailed(intent: intent, error: .failedDownloading)
             logger.error("download firmware: \(error.localizedDescription)")
             throw error
@@ -114,11 +145,11 @@ public class UpdateService: ObservableObject {
         _ firmware: Update.Firmware
     ) async throws -> Peripheral.Path {
         do {
-            update.state = .update(.preparing)
+            state = .update(.preparing)
             return try await uploadFirmware(firmware) { progress in
                 Task { @MainActor in
-                    if case .update = self.update.state {
-                        self.update.state = .update(
+                    if case .update = self.state {
+                        self.state = .update(
                             .uploading(progress: progress)
                         )
                     }
@@ -126,16 +157,16 @@ public class UpdateService: ObservableObject {
             }
         } catch let error as Peripheral.Error
             where error == .storage(.internal) {
-            update.state = .error(.storageError)
+            state = .error(.storageError)
             logger.error("upload firmware: \(error)")
             throw error
         }
     }
 
     private func startUpdateProcess(_ directory: Peripheral.Path) async throws {
-        update.state = .update(.preparing)
+        state = .update(.preparing)
         try await flipperService.startUpdateProcess(from: directory)
-        update.state = .update(.started)
+        state = .update(.started)
     }
 
     // MARK: Analytics
@@ -149,7 +180,7 @@ public class UpdateService: ObservableObject {
 
     func recordUpdateFailed(
         intent: Update.Intent,
-        error: UpdateModel.State.Error
+        error: State.Error
     ) {
         let result: UpdateResult
         switch error {

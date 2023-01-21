@@ -10,6 +10,7 @@ import Foundation
 // swiftlint:disable type_body_length
 public class CheckUpdateService: ObservableObject {
     private let appState: AppState
+    let updateService: UpdateService
 
     var update: UpdateModel {
         get { appState.update }
@@ -43,8 +44,9 @@ public class CheckUpdateService: ObservableObject {
         return battery.level >= 10 || battery.state == .charging
     }
 
-    public init(appState: AppState) {
+    public init(appState: AppState, updateService: UpdateService) {
         self.appState = appState
+        self.updateService = updateService
         subscribeToPublishers()
     }
 
@@ -91,7 +93,7 @@ public class CheckUpdateService: ObservableObject {
         // FIXME: wait for event
         updateAvailable.state = .busy(.updateInProgress(intent))
         // FIXME: reuse updateAvailable.state
-        update.inProgress = intent
+        updateService.inProgress = intent
     }
 
     func resetState() {
@@ -145,13 +147,13 @@ public class CheckUpdateService: ObservableObject {
 
     func verifyUpdateResult() {
         guard
-            let intent = update.inProgress,
+            let intent = updateService.inProgress,
             let installed = updateAvailable.installed
         else {
             return
         }
 
-        update.inProgress = nil
+        updateService.inProgress = nil
 
         var updateFromToVersion: String {
             "from \(intent.from) to \(intent.to)"
@@ -164,7 +166,7 @@ public class CheckUpdateService: ObservableObject {
             if intent.to.description == installed.description {
                 logger.info("update success: \(updateFromToVersion)")
 
-                update.result.send(.success)
+                updateService.result.send(.success)
 
                 analytics.flipperUpdateResult(
                     id: intent.id,
@@ -174,7 +176,7 @@ public class CheckUpdateService: ObservableObject {
             } else {
                 logger.info("update error: \(updateFromToVersion)")
 
-                update.result.send(.failure)
+                updateService.result.send(.failure)
 
                 analytics.flipperUpdateResult(
                     id: intent.id,
@@ -209,11 +211,11 @@ public class CheckUpdateService: ObservableObject {
     public func updateAvailableFirmware() {
         Task {
             do {
-                guard update.state != .error(.noInternet) else { return }
+                guard updateService.state != .error(.noInternet) else { return }
                 updateAvailable.manifest = try await Update.Manifest.download()
                 updateVersion(for: updateAvailable.selectedChannel)
             } catch {
-                update.state = .error(.cantConnect)
+                updateService.state = .error(.cantConnect)
                 logger.error("download manifest: \(error)")
             }
         }
