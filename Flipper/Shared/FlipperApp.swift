@@ -9,11 +9,7 @@ struct FlipperApp: App {
         Core.migration()
         #endif
 
-        #if !targetEnvironment(simulator)
         Core.registerMobileDependencies()
-        #else
-        Core.registerMockDependencies()
-        #endif
     }
 
     var body: some Scene {

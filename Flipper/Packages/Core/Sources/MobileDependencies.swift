@@ -3,6 +3,7 @@ import Logging
 import Analytics
 
 import func Peripheral.registerDependencies
+import func Peripheral.registerMockDependencies
 
 public func registerMobileDependencies() {
     let container = Container.shared
@@ -12,7 +13,11 @@ public func registerMobileDependencies() {
 
     AnalyticsSystem.bootstrap([CountlyAnalytics(), ClickhouseAnalytics()])
 
+    #if !targetEnvironment(simulator)
     Peripheral.registerDependencies()
+    #else
+    Peripheral.registerMockDependencies()
+    #endif
 
     container.register(Archive.init, as: Archive.self, isSingleton: true)
     // device
