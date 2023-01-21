@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct MainView: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var device: Device
     @EnvironmentObject var centralService: CentralService
     @EnvironmentObject var archiveService: ArchiveService
     @StateObject var tabViewController: TabViewController = .init()

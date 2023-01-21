@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct ImportView: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var device: Device
     @EnvironmentObject var archiveService: ArchiveService
     @Environment(\.dismiss) private var dismiss
 

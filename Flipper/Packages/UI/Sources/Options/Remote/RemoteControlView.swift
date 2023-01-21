@@ -2,8 +2,7 @@ import Core
 import SwiftUI
 
 struct RemoteControlView: View {
-    @EnvironmentObject var appState: AppState
-    @EnvironmentObject var flipperService: FlipperService
+    @EnvironmentObject var device: Device
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dismiss) private var dismiss
 
@@ -11,7 +10,7 @@ struct RemoteControlView: View {
         VStack {
             Spacer()
 
-            DeviceScreen(pixels: flipperService.frame.pixels)
+            DeviceScreen(pixels: device.frame.pixels)
                 .padding(2)
                 .border(Color(red: 1, green: 0.51, blue: 0), width: 2)
 
@@ -19,7 +18,7 @@ struct RemoteControlView: View {
 
             DeviceControls { button in
                 feedback(style: .light)
-                flipperService.pressButton(button)
+                device.pressButton(button)
             }
             .padding(.bottom, 50)
         }
@@ -36,15 +35,15 @@ struct RemoteControlView: View {
             }
         }
         .onAppear {
-            flipperService.startScreenStreaming()
+            device.startScreenStreaming()
         }
         .onDisappear {
-            flipperService.stopScreenStreaming()
+            device.stopScreenStreaming()
         }
         .onChange(of: scenePhase) { phase in
             switch phase {
-            case .active: flipperService.startScreenStreaming()
-            case .inactive: flipperService.stopScreenStreaming()
+            case .active: device.startScreenStreaming()
+            case .inactive: device.stopScreenStreaming()
             case .background: break
             @unknown default: break
             }

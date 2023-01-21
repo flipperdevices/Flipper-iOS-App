@@ -3,7 +3,7 @@ import SwiftUI
 
 struct DeviceUpdateView: View {
     @EnvironmentObject var updateService: UpdateService
-    @EnvironmentObject var flipperService: FlipperService
+    @EnvironmentObject var device: Device
     @Environment(\.dismiss) var dismiss
 
     @State var showCancelUpdate = false
@@ -40,17 +40,17 @@ struct DeviceUpdateView: View {
         case .error(.noCard):
             return "FlipperNoCard"
         case .error(.noInternet), .error(.noDevice), .error(.cantConnect):
-            switch flipperService.flipper?.color {
+            switch device.flipper?.color {
             case .black: return "FlipperDeadBlack"
             default: return "FlipperDeadWhite"
             }
         case .error(.storageError):
-            switch flipperService.flipper?.color {
+            switch device.flipper?.color {
             case .black: return "FlipperFlashIssueBlack"
             default: return "FlipperFlashIssueWhite"
             }
         default:
-            switch flipperService.flipper?.color {
+            switch device.flipper?.color {
             case .black: return "FlipperUpdatingBlack"
             default: return "FlipperUpdatingWhite"
             }

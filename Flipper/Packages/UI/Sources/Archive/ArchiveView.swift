@@ -4,7 +4,7 @@ import Combine
 import OrderedCollections
 
 struct ArchiveView: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var device: Device
     @EnvironmentObject var archiveService: ArchiveService
     @EnvironmentObject var syncService: SyncService
 
@@ -13,8 +13,8 @@ struct ArchiveView: View {
     @State var showSearchView = false
 
     var canPullToRefresh: Bool {
-        appState.status == .connected ||
-        appState.status == .synchronized
+        device.status == .connected ||
+        device.status == .synchronized
     }
 
     var items: [ArchiveItem] {
@@ -42,14 +42,14 @@ struct ArchiveView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if appState.status == .connecting {
+                if device.status == .connecting {
                     VStack(spacing: 4) {
                         Spinner()
                         Text("Connecting to Flipper...")
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.black30)
                     }
-                } else if appState.status == .synchronizing {
+                } else if device.status == .synchronizing {
                     VStack(spacing: 4) {
                         Spinner()
                         Text(

@@ -2,22 +2,26 @@ import Core
 import SwiftUI
 
 struct OptionsView: View {
-    @EnvironmentObject var appState: AppState
-    @EnvironmentObject var applicationService: ApplicationService
-    @EnvironmentObject var flipperService: FlipperService
+    @EnvironmentObject var device: Device
     @EnvironmentObject var archiveService: ArchiveService
     @Environment(\.dismiss) private var dismiss
 
     @AppStorage(.isDebugMode) var isDebugMode = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
 
-    @State var isDeviceAvailable = false
     @State var showResetApp = false
     @State var versionTapCount = 0
 
     @State var showWidgetSettings = false
 
-    var appVersion: String { Bundle.releaseVersion }
+    var appVersion: String {
+        Bundle.releaseVersion
+    }
+
+    var isDeviceAvailable: Bool {
+        device.status == .connected ||
+        device.status == .synchronized
+    }
 
     var body: some View {
         List {
@@ -51,7 +55,7 @@ struct OptionsView: View {
                     FileManagerView()
                 }
                 Button("Reboot Flipper") {
-                    flipperService.reboot()
+                    device.reboot()
                 }
                 .foregroundColor(isDeviceAvailable ? .accentColor : .gray)
             }
@@ -84,7 +88,7 @@ struct OptionsView: View {
                     .actionSheet(isPresented: $showResetApp) {
                         .init(title: Text("Are you sure?"), buttons: [
                             .destructive(Text("Reset App")) {
-                                applicationService.reset()
+                                AppReset.reset()
                             },
                             .cancel()
                         ])
@@ -120,9 +124,6 @@ struct OptionsView: View {
                 }
                 Title("Options")
             }
-        }
-        .onReceive(appState.$status) { status in
-            isDeviceAvailable = status.isAvailable
         }
         .fullScreenCover(isPresented: $showWidgetSettings) {
             WidgetSettingsView()

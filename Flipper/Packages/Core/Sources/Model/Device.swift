@@ -7,8 +7,8 @@ import Combine
 import Foundation
 
 @MainActor
-public class FlipperService: ObservableObject {
-    let appState: AppState
+public class Device: ObservableObject {
+    @Published public var status: Status = .noDevice
 
     @Inject var rpc: RPC
     @Inject var pairedDevice: PairedDevice
@@ -21,8 +21,7 @@ public class FlipperService: ObservableObject {
     @Published public private(set) var powerInfo: [String: String] = [:]
     @Published public private(set) var isInfoReady = false
 
-    public init(appState: AppState) {
-        self.appState = appState
+    public init() {
         subscribeToPublishers()
     }
 
@@ -58,7 +57,7 @@ public class FlipperService: ObservableObject {
 
     func updateState(_ oldValue: FlipperState?) {
         guard let flipper = flipper else {
-            appState.status = .noDevice
+            status = .noDevice
             return
         }
         guard flipper.state != oldValue else {
@@ -67,14 +66,14 @@ public class FlipperService: ObservableObject {
 
         // We want to preserve unsupportedDevice state instead of disconnected
         if
-            appState.status == .unsupported &&
+            status == .unsupported &&
             flipper.state == .disconnected
         {
             return
         }
 
         // We want to preserve updating state instead of disconnected/connecting
-        if appState.status == .updating {
+        if status == .updating {
             if flipper.state == .disconnected {
                 connect()
                 return
@@ -86,7 +85,7 @@ public class FlipperService: ObservableObject {
         switch flipper.state {
         case .connected: didConnect()
         case .disconnected: didDisconnect()
-        default: appState.status = .init(flipper.state)
+        default: status = .init(flipper.state)
         }
     }
 
@@ -99,7 +98,7 @@ public class FlipperService: ObservableObject {
                     return
                 }
                 try await updateStorageInfo()
-                appState.status = .connected
+                status = .connected
                 logger.info("connected")
             } catch {
                 logger.error("did connect: \(error)")
@@ -113,7 +112,7 @@ public class FlipperService: ObservableObject {
 
     func didDisconnect() {
         logger.info("disconnected")
-        appState.status = .disconnected
+        status = .disconnected
         guard reconnectOnDisconnect else {
             return
         }
@@ -138,12 +137,12 @@ public class FlipperService: ObservableObject {
     func validateFirmwareVersion() -> Bool {
         guard let version = flipper?.information?.protobufRevision else {
             logger.error("can't validate firmware version")
-            appState.status = .disconnected
+            status = .disconnected
             return false
         }
         guard version >= .v0_6 else {
             logger.error("unsupported firmware version")
-            appState.status = .unsupported
+            status = .unsupported
             return false
         }
         return true
@@ -303,7 +302,7 @@ public class FlipperService: ObservableObject {
     }
 }
 
-extension FlipperService {
+extension Device {
 
     // MARK: Analytics
 

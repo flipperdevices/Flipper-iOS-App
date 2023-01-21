@@ -7,7 +7,7 @@ extension DeviceUpdateCard {
 
         @Binding var channel: Update.Channel
 
-        @EnvironmentObject var appState: AppState
+        @EnvironmentObject var device: Device
         @EnvironmentObject var syncService: SyncService
         @EnvironmentObject var checkUpdateService: CheckUpdateService
 
@@ -68,7 +68,7 @@ extension DeviceUpdateCard {
                         showCharge = true
                         return
                     }
-                    guard appState.status != .synchronizing else {
+                    guard device.status != .synchronizing else {
                         showPauseSync = true
                         return
                     }

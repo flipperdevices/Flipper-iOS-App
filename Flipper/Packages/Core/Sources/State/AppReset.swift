@@ -2,13 +2,11 @@ import Inject
 import Darwin
 import Logging
 
-class AppReset {
-    private let storage: FileStorage = .init()
-
-    func reset() {
+public class AppReset {
+    public static func reset() {
         do {
             UserDefaultsStorage.shared.reset()
-            try storage.reset()
+            try FileStorage().reset()
             exit(0)
         } catch {
             logger.error("\(error)")

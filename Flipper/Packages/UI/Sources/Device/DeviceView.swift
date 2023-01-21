@@ -2,25 +2,29 @@ import Core
 import SwiftUI
 
 struct DeviceView: View {
-    @EnvironmentObject var appState: AppState
-    @EnvironmentObject var flipperService: FlipperService
-    @EnvironmentObject var applicationService: ApplicationService
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var device: Device
     @EnvironmentObject var syncService: SyncService
 
     @State var showForgetAction = false
     @State var showUnsupportedVersionAlert = false
 
     var flipper: Flipper? {
-        flipperService.flipper
+        device.flipper
+    }
+
+    var isDeviceAvailable: Bool {
+        device.status == .connected ||
+        device.status == .synchronized
     }
 
     var canSync: Bool {
-        appState.status == .connected
+        device.status == .connected
     }
 
     var canPlayAlert: Bool {
         flipper?.state == .connected &&
-        appState.status != .unsupported
+        device.status != .unsupported
     }
 
     var canConnect: Bool {
@@ -36,7 +40,7 @@ struct DeviceView: View {
     }
 
     var canForget: Bool {
-        appState.status != .noDevice
+        device.status != .noDevice
     }
 
     var body: some View {
@@ -46,17 +50,17 @@ struct DeviceView: View {
 
                 ScrollView {
                     VStack(spacing: 0) {
-                        if appState.status == .unsupported {
+                        if device.status == .unsupported {
                             UnsupportedDevice()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
-                        } else if appState.status != .noDevice {
+                        } else if device.status != .noDevice {
                             DeviceUpdateCard()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         }
 
-                        if appState.status != .unsupported {
+                        if device.status != .unsupported {
                             NavigationLink {
                                 DeviceInfoView()
                             } label: {
@@ -64,7 +68,7 @@ struct DeviceView: View {
                                     .padding(.top, 24)
                                     .padding(.horizontal, 14)
                             }
-                            .disabled(!appState.status.isAvailable)
+                            .disabled(!isDeviceAvailable)
                         }
 
                         VStack(spacing: 24) {
@@ -78,7 +82,7 @@ struct DeviceView: View {
                             }
                             .cornerRadius(10)
 
-                            if appState.status != .noDevice {
+                            if device.status != .noDevice {
                                 VStack(spacing: 0) {
                                     ActionButton(
                                         image: "Sync",
@@ -94,7 +98,7 @@ struct DeviceView: View {
                                         image: "Alert",
                                         title: "Play Alert"
                                     ) {
-                                        flipperService.playAlert()
+                                        device.playAlert()
                                     }
                                     .disabled(!canPlayAlert)
                                 }
@@ -102,7 +106,7 @@ struct DeviceView: View {
                             }
 
                             VStack(spacing: 0) {
-                                if appState.status == .noDevice {
+                                if device.status == .noDevice {
                                     ActionButton(
                                         image: "Connect",
                                         title: "Connect Flipper"
@@ -159,7 +163,7 @@ struct DeviceView: View {
                         title: Text("This action won't delete your keys"),
                         buttons: [
                             .destructive(Text("Forget Flipper")) {
-                                flipperService.forgetDevice()
+                                device.forgetDevice()
                             },
                             .cancel()
                         ]
@@ -170,7 +174,7 @@ struct DeviceView: View {
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
-        .onChange(of: appState.status) { status in
+        .onChange(of: device.status) { status in
             if status == .unsupported {
                 showUnsupportedVersionAlert = true
             }
@@ -178,14 +182,14 @@ struct DeviceView: View {
     }
 
     func connect() {
-        if appState.status == .noDevice {
-            applicationService.showWelcomeScreen()
+        if device.status == .noDevice {
+            router.showWelcomeScreen()
         } else {
-            flipperService.connect()
+            device.connect()
         }
     }
 
     func disconnect() {
-        flipperService.disconnect()
+        device.disconnect()
     }
 }

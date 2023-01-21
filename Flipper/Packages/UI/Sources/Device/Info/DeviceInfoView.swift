@@ -3,15 +3,15 @@ import Collections
 import SwiftUI
 
 struct DeviceInfoView: View {
-    @EnvironmentObject var flipperService: FlipperService
+    @EnvironmentObject var device: Device
     @Environment(\.dismiss) private var dismiss
 
     var deviceInfo: [String: String] {
-        flipperService.deviceInfo
+        device.deviceInfo
     }
 
     var powerInfo: [String: String] {
-        flipperService.powerInfo
+        device.powerInfo
     }
 
     var deviceName: String {
@@ -154,12 +154,12 @@ struct DeviceInfoView: View {
                 ShareButton {
                     share()
                 }
-                .disabled(!flipperService.isInfoReady)
-                .opacity(flipperService.isInfoReady ? 1 : 0.4)
+                .disabled(!device.isInfoReady)
+                .opacity(device.isInfoReady ? 1 : 0.4)
             }
         }
         .task {
-            await flipperService.getInfo()
+            await device.getInfo()
         }
     }
 
@@ -173,16 +173,16 @@ struct DeviceInfoView: View {
         var array = deviceInfo.toArray().sorted()
         array += powerInfo.toArray().sorted()
 
-        if let int = flipperService.flipper?.storage?.internal {
+        if let int = device.flipper?.storage?.internal {
             array.append("int_available: \(int.free)")
             array.append("int_total: \(int.total)")
         }
-        if let ext = flipperService.flipper?.storage?.external {
+        if let ext = device.flipper?.storage?.external {
             array.append("ext_available: \(ext.free)")
             array.append("ext_total: \(ext.total)")
         }
 
-        let name = flipperService.flipper?.name ?? "unknown"
+        let name = device.flipper?.name ?? "unknown"
         let content = array.joined(separator: "\n")
         let filename = "dump-\(name)-\(formatter.string(from: Date())).txt"
 

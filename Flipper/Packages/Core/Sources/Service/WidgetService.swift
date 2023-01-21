@@ -7,7 +7,7 @@ import Foundation
 
 @MainActor
 public class WidgetService: ObservableObject {
-    let appState: AppState
+    let device: Device
     let emulateService: EmulateService
 
     @Published public var state: State = .idle
@@ -48,8 +48,8 @@ public class WidgetService: ObservableObject {
     @Inject private var storage: TodayWidgetStorage
     private var disposeBag = DisposeBag()
 
-    public init(appState: AppState, emulateService: EmulateService) {
-        self.appState = appState
+    public init(device: Device, emulateService: EmulateService) {
+        self.device = device
         self.emulateService = emulateService
         self.keys = storage.keys
         subscribeToPublishers()
@@ -110,7 +110,7 @@ public class WidgetService: ObservableObject {
     }
 
     func onFlipperStatusChanged(_ oldValue: FlipperState?) {
-        guard appState.status == .connected else {
+        guard device.status == .connected else {
             connect()
             return
         }

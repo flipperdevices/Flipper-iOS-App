@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct EmulateView: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var device: Device
     @EnvironmentObject var emulateService: EmulateService
     @Environment(\.dismiss) private var dismiss
 
@@ -14,12 +14,12 @@ struct EmulateView: View {
     @State private var showRestricted = false
 
     var showProgressButton: Bool {
-        appState.status == .connecting ||
-        appState.status == .synchronizing
+        device.status == .connecting ||
+        device.status == .synchronizing
     }
 
     var canEmulate: Bool {
-        (appState.status == .connected || appState.status == .synchronized)
+        (device.status == .connected || device.status == .synchronized)
             && item.status == .synchronized
     }
 
@@ -42,7 +42,7 @@ struct EmulateView: View {
                 }
                 EmulateDescription(
                     item: item,
-                    status: appState.status,
+                    status: device.status,
                     isEmulating: isEmulating)
             case .subghz:
                 ZStack {
@@ -69,7 +69,7 @@ struct EmulateView: View {
                 }
                 EmulateDescription(
                     item: item,
-                    status: appState.status,
+                    status: device.status,
                     isEmulating: isEmulating)
             default:
                 EmptyView()
@@ -102,7 +102,7 @@ struct EmulateView: View {
                 feedback(style: .soft)
             }
         }
-        .onChange(of: appState.status) { status in
+        .onChange(of: device.status) { status in
             if status == .disconnected {
                 resetEmulate()
             }

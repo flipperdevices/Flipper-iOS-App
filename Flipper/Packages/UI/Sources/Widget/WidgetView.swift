@@ -6,7 +6,7 @@ import NotificationCenter
 public struct WidgetView: View {
     @EnvironmentObject var widget: WidgetService
     @EnvironmentObject var emulateService: EmulateService
-    @EnvironmentObject var flipperService: FlipperService
+    @EnvironmentObject var device: Device
 
     public var isError: Bool {
         widget.isError
@@ -32,11 +32,11 @@ public struct WidgetView: View {
             }
         }
         .onAppear {
-            flipperService.connect()
+            device.connect()
         }
         .onDisappear {
             widget.stopEmulate()
-            flipperService.disconnect()
+            device.disconnect()
         }
         .edgesIgnoringSafeArea(.all)
         .onChange(of: emulateService.state) { state in

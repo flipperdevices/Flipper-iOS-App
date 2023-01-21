@@ -4,7 +4,7 @@ import SwiftUI
 import enum Peripheral.FlipperColor
 
 struct ReaderAttackView: View {
-    @EnvironmentObject private var flipperService: FlipperService
+    @EnvironmentObject private var device: Device
     @StateObject private var readerAttack: ReaderAttackService = .init()
 
     @StateObject private var alertController: AlertController = .init()
@@ -13,7 +13,7 @@ struct ReaderAttackView: View {
     @State var showCancelAttack = false
 
     var flipperColor: FlipperColor {
-        flipperService.flipper?.color ?? .white
+        device.flipper?.color ?? .white
     }
 
     var title: String {

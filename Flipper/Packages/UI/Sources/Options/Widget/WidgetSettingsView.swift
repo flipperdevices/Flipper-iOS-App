@@ -15,7 +15,6 @@ extension EnvironmentValues {
 }
 
 struct WidgetSettingsView: View {
-    @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var widget: WidgetService
     @Environment(\.dismiss) private var dismiss
 

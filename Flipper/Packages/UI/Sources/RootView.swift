@@ -8,12 +8,11 @@ public struct RootView: View {
 
     public var body: some View {
         RootViewImpl()
-            .environmentObject(dependencies.appState)
-            .environmentObject(dependencies.applicationService)
+            .environmentObject(dependencies.router)
+            .environmentObject(dependencies.device)
             .environmentObject(dependencies.loggerService)
             .environmentObject(dependencies.networkService)
             .environmentObject(dependencies.centralService)
-            .environmentObject(dependencies.flipperService)
             .environmentObject(dependencies.archiveService)
             .environmentObject(dependencies.syncService)
             .environmentObject(dependencies.updateService)
@@ -25,14 +24,14 @@ public struct RootView: View {
 }
 
 private struct RootViewImpl: View {
-    @EnvironmentObject var appState: AppState
-    @EnvironmentObject var applicationService: ApplicationService
-    @EnvironmentObject var flipperService: FlipperService
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var device: Device
 
     @StateObject var alertController: AlertController = .init()
     @StateObject var hexKeyboardController: HexKeyboardController = .init()
 
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.isPresented) var isPresented
 
     @State private var isPairingIssue = false
 
@@ -44,13 +43,13 @@ private struct RootViewImpl: View {
     var body: some View {
         ZStack {
             ZStack {
-                if applicationService.isFirstLanuch {
+                if router.isFirstLaunch {
                     WelcomeView()
                 } else {
                     MainView()
                 }
             }
-            .animation(.linear, value: applicationService.isFirstLanuch)
+            .animation(.linear, value: router.isFirstLaunch)
             .transition(.opacity)
 
             VStack {
@@ -73,21 +72,26 @@ private struct RootViewImpl: View {
         .environmentObject(alertController)
         .environmentObject(hexKeyboardController)
         .onContinueUserActivity("PlayAlertIntent") { _ in
-            flipperService.playAlert()
+            device.playAlert()
         }
-        .onChange(of: appState.status) {
+        .onChange(of: device.status) {
             if $0 == .invalidPairing {
                 isPairingIssue = true
             }
             if $0 == .connected || $0 == .unsupported {
-                applicationService.hideWelcomeScreen()
+                router.hideWelcomeScreen()
             }
         }
-        .onChange(of: scenePhase) { newPhase in
-            switch newPhase {
+        .onChange(of: scenePhase) { scenePhase in
+            switch scenePhase {
             case .active: onActive()
             case .inactive: onInactive()
             default: break
+            }
+        }
+        .onChange(of: isPresented) { isPresented in
+            if isPresented {
+                router.recordAppOpen()
             }
         }
     }
@@ -98,9 +102,8 @@ private struct RootViewImpl: View {
         }
         endBackgroundTask()
         backgroundTask?.cancel()
-        applicationService.recordAppOpen()
-        if appState.status == .disconnected {
-            flipperService.connect()
+        if device.status == .disconnected {
+            device.connect()
         }
     }
 
@@ -113,7 +116,7 @@ private struct RootViewImpl: View {
             backgroundTask = Task {
                 try await Task.sleep(seconds: 3)
                 //logger.info("disconnecting due to inactivity")
-                flipperService.disconnect()
+                device.disconnect()
             }
             _ = await backgroundTask?.result
             backgroundTask = nil

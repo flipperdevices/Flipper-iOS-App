@@ -7,8 +7,6 @@ import Foundation
 
 @MainActor
 public class EmulateService: ObservableObject {
-    let appState: AppState
-
     @Published public var state: State = .closed
 
     public enum State: Equatable {
@@ -33,8 +31,7 @@ public class EmulateService: ObservableObject {
     private var emulateTask: Task<Void, Swift.Error>?
     private var emulateStarted: Date = .now
 
-    public init(appState: AppState) {
-        self.appState = appState
+    public init() {
         subscribeToPublishers()
     }
 

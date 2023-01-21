@@ -8,8 +8,7 @@ import Foundation
 
 @MainActor
 public class SyncService: ObservableObject {
-    let appState: AppState
-    var status: DeviceStatus = .disconnected
+    let device: Device
 
     @Published public var syncProgress: Int = 0
 
@@ -17,28 +16,22 @@ public class SyncService: ObservableObject {
     @Inject var archive: Archive
     private var disposeBag: DisposeBag = .init()
 
-    public init(appState: AppState) {
-        self.appState = appState
+    public init(device: Device) {
+        self.device = device
         subscribeToPublishers()
     }
 
     func subscribeToPublishers() {
-        appState.$status
+        device.$status
             .sink { [weak self] status in
                 guard let self else { return }
-                let oldValue = self.status
-                self.status = status
-                self.onStatusChanged(oldValue)
+                #if !DEBUG
+                if status == .connected {
+                    self.synchronize(syncDateTime: true)
+                }
+                #endif
             }
             .store(in: &disposeBag)
-    }
-
-    func onStatusChanged(_ oldValue: DeviceStatus) {
-        #if !DEBUG
-        if oldValue == .connecting, status == .connected {
-            self.synchronize(syncDateTime: true)
-        }
-        #endif
     }
 
     // MARK: Synchronization
@@ -46,9 +39,9 @@ public class SyncService: ObservableObject {
     public func synchronize(syncDateTime: Bool = false) {
         Task {
             do {
-                guard appState.status == .connected else { return }
+                guard device.status == .connected else { return }
                 logger.info("synchronize")
-                appState.status = .synchronizing
+                device.status = .synchronizing
 
                 syncProgress = 0
                 if syncDateTime {
@@ -57,10 +50,10 @@ public class SyncService: ObservableObject {
                 try await checkMFLogFile()
                 try await synchronizeArchive()
 
-                appState.status = .synchronized
+                device.status = .synchronized
                 try await Task.sleep(nanoseconds: 3_000 * 1_000_000)
-                guard appState.status == .synchronized else { return }
-                appState.status = .connected
+                guard device.status == .synchronized else { return }
+                device.status = .connected
             } catch {
                 logger.error("synchronize: \(error)")
             }

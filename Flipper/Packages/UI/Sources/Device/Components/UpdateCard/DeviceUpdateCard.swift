@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct DeviceUpdateCard: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var device: Device
     @EnvironmentObject var updateService: UpdateService
     @EnvironmentObject var networkService: NetworkService
     @EnvironmentObject var checkUpdateService: CheckUpdateService

@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct TabView: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var device: Device
     @EnvironmentObject var syncService: SyncService
     @Binding var selected: Tab
 
@@ -65,7 +65,7 @@ struct TabView: View {
 
 extension TabView {
     var deviceTabName: String {
-        switch appState.status {
+        switch device.status {
         case .noDevice: return "No Device"
         case .unsupported: return "Unsupported"
         case .connecting: return "Connecting..."
@@ -85,7 +85,7 @@ extension TabView {
         guard selected == .device else {
             return .black30
         }
-        switch appState.status {
+        switch device.status {
         case .noDevice: return .black40
         case .unsupported: return .sRed
         case .connecting: return .black40
@@ -110,7 +110,7 @@ extension TabView {
 
 extension TabView {
     var deviceImage: AnyView {
-        switch appState.status {
+        switch device.status {
         case .connecting, .synchronizing:
             return .init(
                 Animation(deviceImageName + "_animated")
@@ -124,7 +124,7 @@ extension TabView {
         var name = "device_"
         name += selected == .device ? "filled_" : "line_"
 
-        switch appState.status {
+        switch device.status {
         case .noDevice: name += "no_device"
         case .unsupported: name += "unsupported"
         case .connecting: name += "connecting"

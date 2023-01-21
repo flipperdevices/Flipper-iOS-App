@@ -3,7 +3,7 @@ import SwiftUI
 
 extension DeviceUpdateCard {
     struct CardNoSDError: View {
-        @EnvironmentObject var flipperService: FlipperService
+        @EnvironmentObject var device: Device
         @EnvironmentObject var checkUpdateService: CheckUpdateService
 
         var body: some View {
@@ -33,7 +33,7 @@ extension DeviceUpdateCard {
 
         func updateStorageInfo() {
             Task {
-                try? await flipperService.updateStorageInfo()
+                try? await device.updateStorageInfo()
             }
         }
     }

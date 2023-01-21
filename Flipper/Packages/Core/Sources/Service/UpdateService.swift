@@ -46,25 +46,20 @@ public class UpdateService: ObservableObject {
 
     @Inject var rpc: RPC
 
-    let appState: AppState
-    let flipperService: FlipperService
+    let device: Device
 
     private var updateTaskHandle: Task<Void, Swift.Error>?
 
-    public init(
-        appState: AppState,
-        flipperService: FlipperService
-    ) {
-        self.appState = appState
-        self.flipperService = flipperService
+    public init(device: Device) {
+        self.device = device
     }
 
     public func cancel() {
         updateTaskHandle?.cancel()
         Task {
-            flipperService.disconnect()
+            device.disconnect()
             try await Task.sleep(milliseconds: 100)
-            flipperService.connect()
+            device.connect()
         }
     }
 
@@ -92,7 +87,7 @@ public class UpdateService: ObservableObject {
                 }
                 logger.error("update: \(error)")
             }
-            try? await flipperService.hideUpdatingFrame()
+            try? await device.hideUpdatingFrame()
             updateTaskHandle?.cancel()
             updateTaskHandle = nil
         }
@@ -101,7 +96,7 @@ public class UpdateService: ObservableObject {
     private func prepareForUpdate() async throws {
         state = .update(.preparing)
         do {
-            try await flipperService.showUpdatingFrame()
+            try await device.showUpdatingFrame()
         } catch {
             state = .error(.failedPreparing)
             throw error
@@ -110,7 +105,7 @@ public class UpdateService: ObservableObject {
 
     private func provideRegion() async throws {
         do {
-            try await flipperService.provideSubGHzRegion()
+            try await device.provideSubGHzRegion()
         } catch let error as Peripheral.Error
             where error == .storage(.internal) {
             logger.error("provide region: \(error)")
@@ -165,7 +160,7 @@ public class UpdateService: ObservableObject {
 
     private func startUpdateProcess(_ directory: Peripheral.Path) async throws {
         state = .update(.preparing)
-        try await flipperService.startUpdateProcess(from: directory)
+        try await device.startUpdateProcess(from: directory)
         state = .update(.started)
     }
 

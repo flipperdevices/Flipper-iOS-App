@@ -3,11 +3,7 @@ import Combine
 
 @MainActor
 public class Depencencies: ObservableObject {
-    public let appState: AppState = .init()
-
-    // MARK: Services
-
-    public lazy var applicationService: ApplicationService = {
+    public lazy var router: Router = {
         .init()
     }()
 
@@ -23,28 +19,28 @@ public class Depencencies: ObservableObject {
         .init()
     }()
 
-    public lazy var flipperService: FlipperService = {
-        .init(appState: appState)
+    public lazy var device: Device = {
+        .init()
     }()
 
     public lazy var archiveService: ArchiveService = {
-        .init(appState: appState, syncService: syncService)
+        .init(syncService: syncService)
     }()
 
     public lazy var syncService: SyncService = {
-        .init(appState: appState)
+        .init(device: device)
     }()
 
     public lazy var updateService: UpdateService = {
-        .init(appState: appState, flipperService: flipperService)
+        .init(device: device)
     }()
 
     public lazy var checkUpdateService: CheckUpdateService = {
-        .init(appState: appState, updateService: updateService)
+        .init(updateService: updateService)
     }()
 
     public lazy var emulateService: EmulateService = {
-        .init(appState: appState)
+        .init()
     }()
 
     public lazy var sharingService: SharingService = {
@@ -52,7 +48,7 @@ public class Depencencies: ObservableObject {
     }()
 
     public lazy var widgetService: WidgetService = {
-        .init(appState: appState, emulateService: emulateService)
+        .init(device: device, emulateService: emulateService)
     }()
 
     public init() {}

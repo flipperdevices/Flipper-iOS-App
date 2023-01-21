@@ -9,7 +9,6 @@ import Foundation
 @MainActor
 // swiftlint:disable type_body_length
 public class CheckUpdateService: ObservableObject {
-    private let appState: AppState
     private let updateService: UpdateService
 
     @Published public var state: State = .busy(.connecting)
@@ -68,8 +67,7 @@ public class CheckUpdateService: ObservableObject {
         return battery.level >= 10 || battery.state == .charging
     }
 
-    public init(appState: AppState, updateService: UpdateService) {
-        self.appState = appState
+    public init(updateService: UpdateService) {
         self.updateService = updateService
         subscribeToPublishers()
     }

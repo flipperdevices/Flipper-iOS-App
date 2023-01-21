@@ -24,8 +24,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
         // Add SwiftUI
         let widgetView = WidgetView()
-            .environmentObject(dependencies.appState)
-            .environmentObject(dependencies.flipperService)
+            .environmentObject(dependencies.device)
             .environmentObject(dependencies.archiveService)
             .environmentObject(dependencies.emulateService)
             .environmentObject(dependencies.widgetService)

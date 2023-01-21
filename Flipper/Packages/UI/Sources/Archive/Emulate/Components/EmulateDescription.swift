@@ -4,7 +4,7 @@ import SwiftUI
 extension EmulateView {
     struct EmulateDescription: View {
         let item: ArchiveItem
-        let status: DeviceStatus
+        let status: Device.Status
         let isEmulating: Bool
 
         var text: String {

@@ -5,11 +5,10 @@ import struct Peripheral.ProtobufVersion
 import struct Peripheral.StorageSpace
 
 struct DeviceInfoCard: View {
-    @EnvironmentObject var appState: AppState
-    @EnvironmentObject var flipperService: FlipperService
+    @EnvironmentObject var device: Device
 
     var flipper: Flipper? {
-        flipperService.flipper
+        device.flipper
     }
 
     var isConnecting: Bool {
@@ -27,7 +26,7 @@ struct DeviceInfoCard: View {
         flipper == nil
     }
     var isUpdating: Bool {
-        appState.status == .updating
+        device.status == .updating
     }
 
     var _protobufVersion: ProtobufVersion? {

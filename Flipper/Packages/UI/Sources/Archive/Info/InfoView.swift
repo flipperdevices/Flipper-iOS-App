@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct InfoView: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var device: Device
     @EnvironmentObject var archiveService: ArchiveService
     @StateObject var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss

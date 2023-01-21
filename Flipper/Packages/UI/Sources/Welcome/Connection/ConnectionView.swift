@@ -2,10 +2,9 @@ import Core
 import SwiftUI
 
 struct ConnectionView: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var device: Device
     @EnvironmentObject var central: CentralService
-    @EnvironmentObject var flipperService: FlipperService
-    @EnvironmentObject var applicationService: ApplicationService
     @Environment(\.dismiss) private var dismiss
 
     @State private var showHelpSheet = false
@@ -77,8 +76,8 @@ struct ConnectionView: View {
 
             Spacer()
             Button("Skip connection") {
-                flipperService.forgetDevice()
-                applicationService.hideWelcomeScreen()
+                device.forgetDevice()
+                router.hideWelcomeScreen()
             }
             .padding(.bottom, onMac ? 140 : 8)
             .disabled(central.isConnecting)
@@ -106,7 +105,7 @@ struct ConnectionView: View {
         .onDisappear {
             central.stopScan()
         }
-        .onChange(of: appState.status) { status in
+        .onChange(of: device.status) { status in
             if status == .pairingFailed {
                 isCanceledOrInvalidPin = true
             }

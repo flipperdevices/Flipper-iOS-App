@@ -7,7 +7,6 @@ import Foundation
 
 @MainActor
 public class ArchiveService: ObservableObject {
-    let appState: AppState
     let syncService: SyncService
 
     @Inject var archive: Archive
@@ -18,8 +17,7 @@ public class ArchiveService: ObservableObject {
 
     public let imported = SafeSubject<ArchiveItem>()
 
-    public init(appState: AppState, syncService: SyncService) {
-        self.appState = appState
+    public init(syncService: SyncService) {
         self.syncService = syncService
         subscribeToPublishers()
     }
