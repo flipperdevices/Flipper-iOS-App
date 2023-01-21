@@ -72,14 +72,14 @@ public class WidgetService: ObservableObject {
             }
             .store(in: &disposeBag)
 
-        appState.$emulate
+        emulateService.$state
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] emulate in
+            .sink { [weak self] state in
                 guard let self else { return }
-                if emulate.state == .closed {
+                if state == .closed {
                     self.keyToEmulate = nil
                 }
-                if emulate.state == .locked {
+                if state == .locked {
                     self.keyToEmulate = nil
                     self.state = .error(.appLocked)
                 }

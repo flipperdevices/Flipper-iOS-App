@@ -9,9 +9,18 @@ import Foundation
 public class EmulateService: ObservableObject {
     let appState: AppState
 
-    var emulate: EmulateModel {
-        get { appState.emulate }
-        set { appState.emulate = newValue }
+    @Published public var state: State = .closed
+
+    public enum State: Equatable {
+        case staring
+        case started
+        case loading
+        case loaded
+        case emulating
+        case closing
+        case closed
+        case locked
+        case restricted
     }
 
     @Inject private var rpc: RPC
@@ -38,14 +47,15 @@ public class EmulateService: ObservableObject {
         }
     }
 
-    func onFlipperAppStateChanged(_ state: Message.AppState) {
-        switch state {
+    func onFlipperAppStateChanged(_ newValue: Message.AppState) {
+        switch newValue {
         case .started:
-            emulate.state = .started
+            self.state = .started
         case .closed:
-            emulate.state = .closed
+            self.state = .closed
             resetEmulate()
-        case .unknown: logger.critical("unknown app state")
+        case .unknown:
+            logger.critical("unknown app state")
         }
     }
 
@@ -104,44 +114,44 @@ public class EmulateService: ObservableObject {
 
     private func startApp(_ name: String) async throws {
         do {
-            emulate.state = .staring
+            state = .staring
             try await rpc.appStart(name, args: "RPC")
             try await waitForAppStartedEvent()
             return
         } catch let error as Error {
             if error == .application(.systemLocked) {
-                emulate.state = .locked
+                state = .locked
             }
             throw error
         }
     }
 
     private func waitForAppStartedEvent() async throws {
-        while emulate.state == .staring {
+        while state == .staring {
             try await Task.sleep(nanoseconds: 100 * 1_000_000)
         }
     }
 
     private func loadFile(_ path: Peripheral.Path) async throws {
-        emulate.state = .loading
+        state = .loading
         try await rpc.appLoadFile(path)
-        emulate.state = .loaded
+        state = .loaded
     }
 
     private func startLoaded(_ item: ArchiveItem) async throws {
-        guard emulate.state == .loaded else {
+        guard state == .loaded else {
             return
         }
         if item.kind == .subghz {
             do {
                 try await rpc.appButtonPress()
             } catch let error as Error where error == .application(.cmdError) {
-                emulate.state = .restricted
+                state = .restricted
                 throw error
             }
             emulateStarted = .now
         }
-        emulate.state = .emulating
+        state = .emulating
         try await waitForMinimumDuration(for: item)
     }
 
@@ -156,7 +166,7 @@ public class EmulateService: ObservableObject {
     }
 
     private func stopLoaded(_ item: ArchiveItem) async throws {
-        guard emulate.state == .emulating else {
+        guard state == .emulating else {
             return
         }
         if item.kind == .subghz {
@@ -166,13 +176,13 @@ public class EmulateService: ObservableObject {
 
     private func exitApp() async throws {
         guard
-            emulate.state != .closing,
-            emulate.state != .closed,
-            emulate.state != .locked
+            state != .closing,
+            state != .closed,
+            state != .locked
         else {
             return
         }
-        emulate.state = .closing
+        state = .closing
         try await rpc.appExit()
     }
 

@@ -9,7 +9,6 @@ import Logging
 public class AppState: ObservableObject {
     @Published public var status: DeviceStatus = .noDevice
 
-    @Published public var emulate: EmulateModel = .init()
     @Published public var readerAttack: ReaderAttackModel = .init()
 
     public init() {

@@ -4,9 +4,9 @@ import SwiftUI
 import NotificationCenter
 
 public struct WidgetView: View {
-    @EnvironmentObject var appState: AppState
-    @EnvironmentObject var flipperService: FlipperService
     @EnvironmentObject var widget: WidgetService
+    @EnvironmentObject var emulateService: EmulateService
+    @EnvironmentObject var flipperService: FlipperService
 
     public var isError: Bool {
         widget.isError
@@ -39,7 +39,7 @@ public struct WidgetView: View {
             flipperService.disconnect()
         }
         .edgesIgnoringSafeArea(.all)
-        .onChange(of: appState.emulate.state) { state in
+        .onChange(of: emulateService.state) { state in
             if
                 state == .staring ||
                 state == .started ||
