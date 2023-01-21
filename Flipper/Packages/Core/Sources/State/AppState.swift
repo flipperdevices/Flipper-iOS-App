@@ -17,8 +17,6 @@ public class AppState: ObservableObject {
 
     @Published public var widget: WidgetModel = .init()
 
-    public let imported = SafeSubject<ArchiveItem>()
-
     public init() {
         logger.info("app version: \(Bundle.fullVersion)")
         logger.info("log level: \(UserDefaultsStorage.shared.logLevel)")

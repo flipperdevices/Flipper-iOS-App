@@ -4,6 +4,7 @@ import SwiftUI
 struct MainView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var centralService: CentralService
+    @EnvironmentObject var archiveService: ArchiveService
     @StateObject var tabViewController: TabViewController = .init()
 
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device {
@@ -38,7 +39,7 @@ struct MainView: View {
         }
         .edgesIgnoringSafeArea(.bottom)
         .environmentObject(tabViewController)
-        .onReceive(appState.imported) { item in
+        .onReceive(archiveService.imported) { item in
             onItemAdded(item: item)
         }
         .onOpenURL { url in

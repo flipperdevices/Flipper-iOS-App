@@ -16,6 +16,8 @@ public class ArchiveService: ObservableObject {
     @Published public private(set) var items: [ArchiveItem] = []
     @Published public private(set) var deleted: [ArchiveItem] = []
 
+    public let imported = SafeSubject<ArchiveItem>()
+
     public init(appState: AppState, syncService: SyncService) {
         self.appState = appState
         self.syncService = syncService
@@ -93,7 +95,7 @@ public class ArchiveService: ObservableObject {
         do {
             try await archive.importKey(item)
             logger.info("added: \(item.filename)")
-            appState.imported.send(item)
+            imported.send(item)
             recordImport()
             syncService.synchronize()
         } catch {
