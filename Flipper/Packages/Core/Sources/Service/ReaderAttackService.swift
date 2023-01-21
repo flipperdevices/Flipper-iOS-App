@@ -26,10 +26,9 @@ public class ReaderAttackService: ObservableObject {
         }
     }
 
-    public var hasMFKey32Log: Bool {
-        get async throws {
-            try await rpc.fileExists(at: .mfKey32Log)
-        }
+    public var hasReaderLog: Bool {
+        get { UserDefaultsStorage.shared.hasReaderLog }
+        set { UserDefaultsStorage.shared.hasReaderLog = newValue }
     }
 
     private var forceStop = false
@@ -70,7 +69,8 @@ public class ReaderAttackService: ObservableObject {
             guard flipper?.state == .connected else {
                 return
             }
-            guard try await hasMFKey32Log else {
+            await checkLog()
+            guard hasReaderLog else {
                 readerAttack.state = .noLog
                 return
             }
@@ -95,6 +95,14 @@ public class ReaderAttackService: ObservableObject {
         task?.cancel()
     }
 
+    public func checkLog() async {
+        do {
+            hasReaderLog = try await rpc.fileExists(at: .mfKey32Log)
+        } catch {
+            logger.error("check log: \(error)")
+        }
+    }
+
     private func readLog() async throws -> String {
         try Task.checkCancellation()
         return try await rpc.readFile(at: .mfKey32Log) { progress in
@@ -106,7 +114,7 @@ public class ReaderAttackService: ObservableObject {
 
     private func deleteLog() async throws {
         try await rpc.deleteFile(at: .mfKey32Log)
-        appState.hasMFLog = false
+        hasReaderLog = false
     }
 
     private func calculateKeys(_ logFile: String) async throws {

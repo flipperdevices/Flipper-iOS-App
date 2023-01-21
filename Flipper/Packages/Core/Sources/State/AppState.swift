@@ -17,7 +17,6 @@ public class AppState: ObservableObject {
 
     @Published public var widget: WidgetModel = .init()
 
-    @Published public var hasMFLog = false
     public let imported = SafeSubject<ArchiveItem>()
 
     public init() {

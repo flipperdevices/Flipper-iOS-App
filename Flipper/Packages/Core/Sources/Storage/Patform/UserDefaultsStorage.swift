@@ -33,6 +33,11 @@ public class UserDefaultsStorage {
         }
     }
 
+    public var hasReaderLog: Bool {
+        get { storage.value(forKey: .hasReaderLog) as? Bool ?? false }
+        set { storage.set(newValue, forKey: .hasReaderLog) }
+    }
+
     public var isDebugMode: Bool {
         get { storage.value(forKey: .isDebugMode) as? Bool ?? true }
         set { storage.set(newValue, forKey: .isDebugMode) }
@@ -48,6 +53,7 @@ public class UserDefaultsStorage {
         storage.removeObject(forKey: .selectedTabKey)
         storage.removeObject(forKey: .updateChannelKey)
         storage.removeObject(forKey: .logLevelKey)
+        storage.removeObject(forKey: .hasReaderLog)
         storage.removeObject(forKey: .isDebugMode)
         storage.removeObject(forKey: .isProvisioningDisabled)
     }
@@ -58,6 +64,7 @@ public extension String {
     static var selectedTabKey: String { "selectedTab" }
     static var updateChannelKey: String { "updateChannel" }
     static var logLevelKey: String { "logLevel" }
+    static var hasReaderLog: String { "hasReaderLog" }
 
     static var isDebugMode: String { "isDebugMode" }
     static var isProvisioningDisabled: String { "isProvisioningDisabled" }

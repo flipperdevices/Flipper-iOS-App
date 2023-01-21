@@ -6,6 +6,8 @@ struct TabView: View {
     @EnvironmentObject var syncService: SyncService
     @Binding var selected: Tab
 
+    @AppStorage(.hasReaderLog) var hasReaderLog = false
+
     enum Tab: String, CaseIterable {
         case device
         case archive
@@ -47,7 +49,7 @@ struct TabView: View {
                     image: .init(Image(hubImageName)),
                     name: "Hub",
                     isSelected: selected == .hub,
-                    hasNotification: appState.hasMFLog
+                    hasNotification: hasReaderLog
                 ) {
                     self.selected = .hub
                 }

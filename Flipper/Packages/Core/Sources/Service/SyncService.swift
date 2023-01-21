@@ -68,7 +68,8 @@ public class SyncService: ObservableObject {
     }
 
     private func checkMFLogFile() async throws {
-        appState.hasMFLog = try await rpc.fileExists(at: .mfKey32Log)
+        UserDefaultsStorage.shared.hasReaderLog =
+            try await rpc.fileExists(at: .mfKey32Log)
     }
 
     private func synchronizeArchive() async throws {

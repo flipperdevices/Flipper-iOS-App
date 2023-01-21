@@ -2,11 +2,10 @@ import Core
 import SwiftUI
 
 struct NFCToolsView: View {
-    @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) private var dismiss
 
-    @State var hasMFLog = false
-    @State var showReaderAttackView = false
+    @State private var showReaderAttackView = false
+    @AppStorage(.hasReaderLog) var hasReaderLog = false
 
     var body: some View {
         ScrollView {
@@ -14,7 +13,7 @@ struct NFCToolsView: View {
                 Button {
                     showReaderAttackView = true
                 } label: {
-                    ReaderAttackCard(hasNotification: hasMFLog)
+                    ReaderAttackCard(hasNotification: hasReaderLog)
                 }
             }
             .padding(14)
@@ -32,9 +31,6 @@ struct NFCToolsView: View {
         }
         .fullScreenCover(isPresented: $showReaderAttackView) {
             ReaderAttackView()
-        }
-        .onChange(of: appState.hasMFLog) {
-            self.hasMFLog = $0
         }
     }
 }

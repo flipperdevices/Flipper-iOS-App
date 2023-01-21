@@ -2,8 +2,7 @@ import Core
 import SwiftUI
 
 struct HubView: View {
-    @EnvironmentObject var appState: AppState
-    @State var hasMFLog = false
+    @AppStorage(.hasReaderLog) var hasReaderLog = false
 
     var body: some View {
         NavigationView {
@@ -12,7 +11,7 @@ struct HubView: View {
                     NavigationLink {
                         NFCToolsView()
                     } label: {
-                        NFCToolsCard(hasNotification: hasMFLog)
+                        NFCToolsCard(hasNotification: hasReaderLog)
                     }
                 }
                 .padding(14)
@@ -28,8 +27,5 @@ struct HubView: View {
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
-        .onChange(of: appState.hasMFLog) {
-            self.hasMFLog = $0
-        }
     }
 }
