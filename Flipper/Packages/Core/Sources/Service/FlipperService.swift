@@ -67,7 +67,7 @@ public class FlipperService: ObservableObject {
 
         // We want to preserve unsupportedDevice state instead of disconnected
         if
-            appState.status == .unsupportedDevice &&
+            appState.status == .unsupported &&
             flipper.state == .disconnected
         {
             return
@@ -143,7 +143,7 @@ public class FlipperService: ObservableObject {
         }
         guard version >= .v0_6 else {
             logger.error("unsupported firmware version")
-            appState.status = .unsupportedDevice
+            appState.status = .unsupported
             return false
         }
         return true

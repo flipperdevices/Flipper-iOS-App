@@ -67,7 +67,7 @@ extension TabView {
     var deviceTabName: String {
         switch appState.status {
         case .noDevice: return "No Device"
-        case .unsupportedDevice: return "Unsupported"
+        case .unsupported: return "Unsupported"
         case .connecting: return "Connecting..."
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"
@@ -87,7 +87,7 @@ extension TabView {
         }
         switch appState.status {
         case .noDevice: return .black40
-        case .unsupportedDevice: return .sRed
+        case .unsupported: return .sRed
         case .connecting: return .black40
         case .connected: return .a2
         case .disconnected: return .black40
@@ -126,7 +126,7 @@ extension TabView {
 
         switch appState.status {
         case .noDevice: name += "no_device"
-        case .unsupportedDevice: name += "unsupported"
+        case .unsupported: name += "unsupported"
         case .connecting: name += "connecting"
         case .connected: name += "connected"
         case .disconnected: name += "disconnected"

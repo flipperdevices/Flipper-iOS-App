@@ -79,7 +79,7 @@ private struct RootViewImpl: View {
             if $0 == .invalidPairing {
                 isPairingIssue = true
             }
-            if $0 == .connected || $0 == .unsupportedDevice {
+            if $0 == .connected || $0 == .unsupported {
                 applicationService.hideWelcomeScreen()
             }
         }

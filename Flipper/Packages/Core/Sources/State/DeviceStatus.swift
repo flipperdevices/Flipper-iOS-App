@@ -2,13 +2,13 @@ import Peripheral
 
 public enum DeviceStatus: CustomStringConvertible {
     case noDevice
-    case unsupportedDevice
     case connecting
     case connected
     case disconnected
     case synchronizing
     case synchronized
     case updating
+    case unsupported
     case invalidPairing
     case pairingFailed
 
@@ -22,13 +22,13 @@ public enum DeviceStatus: CustomStringConvertible {
     public var description: String {
         switch self {
         case .noDevice: return "No device"
-        case .unsupportedDevice: return "Unsupported"
         case .connecting: return "Connecting"
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"
         case .synchronizing: return "Syncing"
         case .synchronized: return "Synced"
         case .updating: return "Updating"
+        case .unsupported: return "Unsupported"
         case .invalidPairing: return "Pairing Failed"
         case .pairingFailed: return "Pairing Failed"
         }

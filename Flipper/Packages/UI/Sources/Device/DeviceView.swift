@@ -20,7 +20,7 @@ struct DeviceView: View {
 
     var canPlayAlert: Bool {
         flipper?.state == .connected &&
-        appState.status != .unsupportedDevice
+        appState.status != .unsupported
     }
 
     var canConnect: Bool {
@@ -46,7 +46,7 @@ struct DeviceView: View {
 
                 ScrollView {
                     VStack(spacing: 0) {
-                        if appState.status == .unsupportedDevice {
+                        if appState.status == .unsupported {
                             UnsupportedDevice()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
@@ -56,7 +56,7 @@ struct DeviceView: View {
                                 .padding(.horizontal, 14)
                         }
 
-                        if appState.status != .unsupportedDevice {
+                        if appState.status != .unsupported {
                             NavigationLink {
                                 DeviceInfoView()
                             } label: {
@@ -171,7 +171,7 @@ struct DeviceView: View {
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
         .onChange(of: appState.status) { status in
-            if status == .unsupportedDevice {
+            if status == .unsupported {
                 showUnsupportedVersionAlert = true
             }
         }
