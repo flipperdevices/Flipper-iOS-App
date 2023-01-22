@@ -1,8 +1,7 @@
 import Inject
 import Logging
 import Analytics
-
-import func Peripheral.registerDependencies
+import Peripheral
 
 public func registerWidgetDependencies() {
     let container = Container.shared
@@ -12,11 +11,11 @@ public func registerWidgetDependencies() {
 
     AnalyticsSystem.bootstrap([CountlyAnalytics(), ClickhouseAnalytics()])
 
-    Peripheral.registerDependencies()
+    let central = Peripheral.Dependencies.central
 
     container.register(Archive.init, as: Archive.self, isSingleton: true)
     // device
-    container.register(PairedFlipper.init, as: PairedDevice.self, isSingleton: true)
+    container.register({ PairedFlipper(central: central) }, as: PairedDevice.self, isSingleton: true)
     // archive
     container.register(MobileArchive.init, as: MobileArchiveProtocol.self, isSingleton: true)
     container.register(DeletedArchive.init, as: DeletedArchiveProtocol.self, isSingleton: true)

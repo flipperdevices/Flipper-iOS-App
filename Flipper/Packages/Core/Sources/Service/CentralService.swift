@@ -6,16 +6,14 @@ import Foundation
 
 @MainActor
 public class CentralService: ObservableObject {
-    @Inject private var central: BluetoothCentral
-    @Inject private var connector: BluetoothConnector
+    private var central: BluetoothCentral
     private var disposeBag = DisposeBag()
 
-    @Published public private(set) var state: BluetoothStatus = .preparing {
+    @Published public private(set) var state: BluetoothStatus = .unknown {
         didSet {
-            switch state {
-            case .ready: startScan()
-            case .notReady: stopScan()
-            }
+            state == .poweredOn
+                ? startScan()
+                : stopScan()
         }
     }
 
@@ -41,7 +39,12 @@ public class CentralService: ObservableObject {
         !connectedPeripherals.isEmpty
     }
 
-    public init() {
+    public init(central: BluetoothCentral) {
+        self.central = central
+        subscribeToPublishers()
+    }
+
+    func subscribeToPublishers() {
         central.status
             .receive(on: DispatchQueue.main)
             .assign(to: \.state, on: self)
@@ -53,7 +56,7 @@ public class CentralService: ObservableObject {
             .assign(to: \.bluetoothPeripherals, on: self)
             .store(in: &disposeBag)
 
-        connector.connected
+        central.connected
             .receive(on: DispatchQueue.main)
             .assign(to: \.connectedPeripherals, on: self)
             .store(in: &disposeBag)
@@ -88,7 +91,7 @@ public class CentralService: ObservableObject {
 
     public func connect(to uuid: UUID) {
         self.uuid = uuid
-        connector.connect(to: uuid)
+        central.connect(to: uuid)
         startConnectTimer()
     }
 
@@ -122,7 +125,7 @@ public class CentralService: ObservableObject {
         connectTimeoutTask = Task {
             try await Task.sleep(seconds: connectTimeoutInSeconds)
             if self.isConnecting, let uuid = self.uuid {
-                self.connector.disconnect(from: uuid)
+                self.central.disconnect(from: uuid)
                 self.isConnectTimeout = true
             }
         }

@@ -42,7 +42,7 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
 
     init(
         peripheral: CBPeripheral,
-        colorService service: CBUUID? = nil
+        service: CBUUID? = nil
     ) {
         self.id = peripheral.identifier
         self.name = String(name: peripheral.name)

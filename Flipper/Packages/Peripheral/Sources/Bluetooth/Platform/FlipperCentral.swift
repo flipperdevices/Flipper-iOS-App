@@ -1,15 +1,12 @@
-import Inject
 import CoreBluetooth
 import Logging
 
-class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
+class FlipperCentral: NSObject, BluetoothCentral {
     private lazy var manager: CBCentralManager = {
         let manager = CBCentralManager()
         manager.delegate = self
         return manager
     }()
-
-    @Inject var factory: PeripheralFactory
 
     private var serviceKey: String {
         "kCBAdvDataServiceUUIDs"
@@ -28,7 +25,7 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
         _status.eraseToAnyPublisher()
     }
     let _status: SafeValueSubject<BluetoothStatus> = {
-        .init(.notReady(.preparing))
+        .init(.unknown)
     }()
 
     // MARK: BluetoothCentral
@@ -41,7 +38,7 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
     }()
 
     func startScanForPeripherals() {
-        if _status.value == .ready {
+        if _status.value == .poweredOn {
             manager.scanForPeripherals(withServices: flipperServiceIDs)
         }
     }
@@ -66,7 +63,7 @@ class FlipperCentral: NSObject, BluetoothCentral, BluetoothConnector {
         guard let peripheral = manager.retrievePeripheral(id) else {
             return
         }
-        let device = factory.create(peripheral: peripheral)
+        let device = FlipperPeripheral(peripheral: peripheral)
         device.onConnecting()
         _connected[id] = device
         manager.connect(peripheral)
@@ -124,7 +121,7 @@ extension FlipperCentral: CBCentralManagerDelegate {
     ) {
         let service = (advertisementData[serviceKey] as? [CBUUID])?.first
         if _discovered[peripheral.identifier] == nil {
-            _discovered[peripheral.identifier] = factory.create(
+            _discovered[peripheral.identifier] = FlipperPeripheral(
                 peripheral: peripheral,
                 service: service)
         }
@@ -163,20 +160,7 @@ extension FlipperCentral {
 
 fileprivate extension BluetoothStatus {
     init(_ source: CBManagerState) {
-        switch source {
-        case .resetting, .unknown:
-            self = .notReady(.preparing)
-        case .unsupported:
-            self = .notReady(.unsupported)
-        case .unauthorized:
-            self = .notReady(.unauthorized)
-        case .poweredOff:
-            self = .notReady(.poweredOff)
-        case .poweredOn:
-            self = .ready
-        @unknown default:
-            self = .notReady(.unsupported)
-        }
+        self = BluetoothStatus(rawValue: source.rawValue) ?? .unknown
     }
 }
 

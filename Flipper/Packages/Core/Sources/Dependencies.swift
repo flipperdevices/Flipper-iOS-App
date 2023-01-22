@@ -1,8 +1,17 @@
 import Inject
 import Combine
+import Peripheral
 
 @MainActor
-public class Depencencies: ObservableObject {
+public class Dependencies: ObservableObject {
+    // Service
+
+    public lazy var central: BluetoothCentral = {
+        Peripheral.Dependencies.central
+    }()
+
+    // Model
+
     public lazy var router: Router = {
         .init()
     }()
@@ -16,7 +25,7 @@ public class Depencencies: ObservableObject {
     }()
 
     public lazy var centralService: CentralService = {
-        .init()
+        .init(central: central)
     }()
 
     public lazy var device: Device = {

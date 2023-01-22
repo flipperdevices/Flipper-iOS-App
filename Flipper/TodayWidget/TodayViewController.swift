@@ -10,7 +10,7 @@ var registerDependenciesOnce: Void = {
 class TodayViewController: UIViewController, NCWidgetProviding {
     let compactModeHeight = 110.0
 
-    let dependencies: Depencencies
+    let dependencies: Dependencies
 
     required init?(coder: NSCoder) {
         _ = registerDependenciesOnce

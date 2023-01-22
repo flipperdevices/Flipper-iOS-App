@@ -7,10 +7,10 @@ import struct Foundation.UUID
 
 class PairedFlipper: PairedDevice, ObservableObject {
     @Inject var storage: DeviceStorage
-    @Inject var connector: BluetoothConnector
+    private var central: BluetoothCentral
     private var disposeBag: DisposeBag = .init()
 
-    private var bluetoothStatus: BluetoothStatus = .notReady(.preparing) {
+    private var bluetoothStatus: BluetoothStatus = .unknown {
         didSet { didUpdateBluetoothStatus() }
     }
 
@@ -34,21 +34,25 @@ class PairedFlipper: PairedDevice, ObservableObject {
         }
     }
 
-    init() {
+    init(central: BluetoothCentral) {
+        self.central = central
         _flipper.value = storage.flipper
+        subscribeToPublishers()
+    }
 
-        connector.status
+    func subscribeToPublishers() {
+        central.status
             .assign(to: \.bluetoothStatus, on: self)
             .store(in: &disposeBag)
 
-        connector.connected
+        central.connected
             .map { $0.first }
             .assign(to: \.bluetoothPeripheral, on: self)
             .store(in: &disposeBag)
     }
 
     func didUpdateBluetoothStatus() {
-        if bluetoothStatus == .ready {
+        if bluetoothStatus == .poweredOn {
             connect()
         }
     }
@@ -81,13 +85,13 @@ class PairedFlipper: PairedDevice, ObservableObject {
 
     func connect() {
         if let flipper = _flipper.value {
-            connector.connect(to: flipper.id)
+            central.connect(to: flipper.id)
         }
     }
 
     func disconnect() {
         if let peripheral = bluetoothPeripheral {
-            connector.disconnect(from: peripheral.id)
+            central.disconnect(from: peripheral.id)
         }
     }
 

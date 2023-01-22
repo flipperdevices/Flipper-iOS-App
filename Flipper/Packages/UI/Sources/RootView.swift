@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 public struct RootView: View {
-    @StateObject var dependencies: Depencencies = .init()
+    @StateObject var dependencies: Dependencies = .init()
 
     public init() {}
 

@@ -14,13 +14,7 @@ struct ConnectionView: View {
     var body: some View {
         VStack(spacing: 0) {
             switch central.state {
-            case .notReady(let reason):
-                if reason == .unauthorized {
-                    BluetoothAccessView()
-                } else {
-                    BluetoothOffView()
-                }
-            case .ready:
+            case .poweredOn:
                 HStack(spacing: 0) {
                     HStack(spacing: 8) {
                         Text("Searching")
@@ -72,6 +66,10 @@ struct ConnectionView: View {
                         }
                     }
                 }
+            case .unauthorized:
+                BluetoothAccessView()
+            default:
+                BluetoothOffView()
             }
 
             Spacer()
