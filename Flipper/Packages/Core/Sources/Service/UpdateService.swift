@@ -8,7 +8,7 @@ import Foundation
 
 @MainActor
 public class UpdateService: ObservableObject {
-    public var state: State = .update(.preparing)
+    @Published public var state: State = .update(.preparing)
 
     public var inProgress: Update.Intent?
     public var result: SafeSubject<Result> = .init()
