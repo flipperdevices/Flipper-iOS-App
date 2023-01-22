@@ -14,12 +14,24 @@ class PairedFlipper: PairedDevice, ObservableObject {
         didSet { didUpdateBluetoothStatus() }
     }
 
+    var session: Session = ClosedSession.shared
+
     var flipper: SafePublisher<Flipper?> { _flipper.eraseToAnyPublisher() }
     private var _flipper: SafeValueSubject<Flipper?> = .init(nil)
 
     private var infoBag: AnyCancellable?
     private var bluetoothPeripheral: BluetoothPeripheral? {
-        didSet { peripheralDidChange() }
+        didSet {
+            guard let peripheral = bluetoothPeripheral else {
+                session = ClosedSession.shared
+                return
+            }
+            if oldValue == nil {
+                restartSession(with: peripheral)
+            }
+
+            peripheralDidChange()
+        }
     }
 
     init() {
@@ -51,6 +63,13 @@ class PairedFlipper: PairedDevice, ObservableObject {
             _flipper.value = _init(peripheral)
             storage.flipper = _init(peripheral)
         }
+    }
+
+    func restartSession(with peripheral: BluetoothPeripheral) {
+        let backup = session
+        session = FlipperSession(peripheral: peripheral)
+        session.onScreenFrame = backup.onScreenFrame
+        session.onAppStateChanged = backup.onAppStateChanged
     }
 
     func subscribeToUpdates() {

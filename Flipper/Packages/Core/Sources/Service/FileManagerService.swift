@@ -8,7 +8,8 @@ import Foundation
 
 @MainActor
 public class FileManagerService: ObservableObject {
-    @Inject private var rpc: RPC
+    @Inject private var pairedDevice: PairedDevice
+    private var rpc: RPC { pairedDevice.session }
 
     @Published public var content: Content? {
         didSet {

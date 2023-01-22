@@ -9,7 +9,8 @@ import Foundation
 
 @MainActor
 public class PingTest: ObservableObject {
-    @Inject private var rpc: RPC
+    @Inject private var pairedDevice: PairedDevice
+    private var rpc: RPC { pairedDevice.session }
 
     @Published public var payloadSize: Double = 1024
     @Published public var requestTimestamp: Int = .init()

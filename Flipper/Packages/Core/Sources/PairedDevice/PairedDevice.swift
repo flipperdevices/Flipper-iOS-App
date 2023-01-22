@@ -1,4 +1,7 @@
+import Peripheral
+
 public protocol PairedDevice {
+    var session: Session { get }
     var flipper: SafePublisher<Flipper?> { get }
 
     func connect()

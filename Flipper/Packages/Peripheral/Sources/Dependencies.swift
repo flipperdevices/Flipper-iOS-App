@@ -9,5 +9,4 @@ public func registerDependencies() {
     let central = FlipperCentral()
     container.register(instance: central, as: BluetoothCentral.self)
     container.register(instance: central, as: BluetoothConnector.self)
-    container.register(BluetoothRPC.init, as: RPC.self, isSingleton: true)
 }

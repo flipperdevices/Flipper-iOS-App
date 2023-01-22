@@ -64,8 +64,8 @@ public class ReaderAttackService: ObservableObject {
         Set(keysFound).intersection(userKnownKeys)
     }
 
-    @Inject private var rpc: RPC
-    @Inject var pairedDevice: PairedDevice
+    @Inject private var pairedDevice: PairedDevice
+    private var rpc: RPC { pairedDevice.session }
     private var disposeBag: DisposeBag = .init()
 
     @Published public var flipper: Flipper? {

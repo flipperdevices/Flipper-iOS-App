@@ -10,8 +10,8 @@ import Foundation
 public class Device: ObservableObject {
     @Published public var status: Status = .noDevice
 
-    @Inject var rpc: RPC
-    @Inject var pairedDevice: PairedDevice
+    @Inject private var pairedDevice: PairedDevice
+    private var rpc: RPC { pairedDevice.session }
     private var disposeBag = DisposeBag()
 
     @Published public var flipper: Flipper?
@@ -36,7 +36,7 @@ public class Device: ObservableObject {
             }
             .store(in: &disposeBag)
 
-        rpc.onScreenFrame { [weak self] frame in
+        rpc.onScreenFrame = { [weak self] frame in
             guard let self else { return }
             Task { @MainActor in
                 self.frame = frame

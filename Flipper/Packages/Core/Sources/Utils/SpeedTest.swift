@@ -5,7 +5,8 @@ import Peripheral
 
 @MainActor
 public class SpeedTest: ObservableObject {
-    @Inject private var rpc: RPC
+    @Inject private var pairedDevice: PairedDevice
+    private var rpc: RPC { pairedDevice.session }
 
     public let defaultPacketSize = 444
     public let maximumPacketSize = 1024

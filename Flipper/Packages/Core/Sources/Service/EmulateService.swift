@@ -21,9 +21,6 @@ public class EmulateService: ObservableObject {
         case restricted
     }
 
-    @Inject private var rpc: RPC
-    private var disposeBag: DisposeBag = .init()
-
     var item: ArchiveItem?
 
     private var stop = false
@@ -31,12 +28,15 @@ public class EmulateService: ObservableObject {
     private var emulateTask: Task<Void, Swift.Error>?
     private var emulateStarted: Date = .now
 
-    public init() {
+    @Inject private var pairedDevice: PairedDevice
+    private var rpc: RPC { pairedDevice.session }
+
+    init() {
         subscribeToPublishers()
     }
 
     func subscribeToPublishers() {
-        rpc.onAppStateChanged { [weak self] state in
+        rpc.onAppStateChanged = { [weak self] state in
             guard let self else { return }
             Task { @MainActor in
                 self.onFlipperAppStateChanged(state)

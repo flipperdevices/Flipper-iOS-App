@@ -44,7 +44,8 @@ public class UpdateService: ObservableObject {
         case failure
     }
 
-    @Inject var rpc: RPC
+    @Inject private var pairedDevice: PairedDevice
+    private var rpc: RPC { pairedDevice.session }
 
     let device: Device
 

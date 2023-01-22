@@ -12,7 +12,9 @@ public class SyncService: ObservableObject {
 
     @Published public var syncProgress: Int = 0
 
-    @Inject var rpc: RPC
+    @Inject private var pairedDevice: PairedDevice
+    private var rpc: RPC { pairedDevice.session }
+
     @Inject var archive: Archive
     private var disposeBag: DisposeBag = .init()
 

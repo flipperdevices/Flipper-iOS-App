@@ -1,8 +1,8 @@
 import Foundation
 
-public protocol Session: AnyObject {
-    var onMessage: ((Message) -> Void)? { get set }
-    var onError: ((Error) -> Void)? { get set }
+public protocol Session: RPC, AnyObject {
+    var onScreenFrame: ((ScreenFrame) -> Void)? { get set }
+    var onAppStateChanged: ((Message.AppState) -> Void)? { get set }
 
     func send(_ message: Message) async throws
     func send(_ request: Request) async -> AsyncThrowingStreams

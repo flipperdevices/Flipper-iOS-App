@@ -45,8 +45,8 @@ public class CheckUpdateService: ObservableObject {
         }
     }
 
-    @Inject private var rpc: RPC
     @Inject private var pairedDevice: PairedDevice
+    private var rpc: RPC { pairedDevice.session }
     private var disposeBag: DisposeBag = .init()
 
     @Published var flipper: Flipper? {

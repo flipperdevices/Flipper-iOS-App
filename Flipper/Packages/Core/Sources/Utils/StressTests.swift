@@ -4,7 +4,9 @@ import Peripheral
 
 @MainActor
 public class StressTest: ObservableObject {
-    @Inject private var rpc: RPC
+    @Inject private var pairedDevice: PairedDevice
+    private var rpc: RPC { pairedDevice.session }
+
     @Inject var connector: BluetoothConnector
     var disposeBag: DisposeBag = .init()
 

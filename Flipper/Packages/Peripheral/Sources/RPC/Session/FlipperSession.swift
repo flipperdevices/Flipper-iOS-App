@@ -2,18 +2,23 @@ import Combine
 import Foundation
 import Logging
 
-class FlipperSession: Session {
+public class FlipperSession: Session {
+    public static var current: FlipperSession?
+
     private let peripheral: BluetoothPeripheral
     private var subscriptions = [AnyCancellable]()
 
     let queue: Queue = .init()
 
-    var onMessage: ((Message) -> Void)?
-    var onError: ((Error) -> Void)?
+    public var onMessage: ((Message) -> Void)?
+    public var onError: ((Error) -> Void)?
+
+    public var onScreenFrame: ((ScreenFrame) -> Void)?
+    public var onAppStateChanged: ((Message.AppState) -> Void)?
 
     var timeoutTask: Task<Void, Swift.Error>?
 
-    init(peripheral: BluetoothPeripheral) {
+    public init(peripheral: BluetoothPeripheral) {
         logger.info("session started")
         self.peripheral = peripheral
         subscribeToUpdates()
@@ -33,12 +38,12 @@ class FlipperSession: Session {
             .store(in: &subscriptions)
     }
 
-    func send(_ message: Message) async throws {
+    public func send(_ message: Message) async throws {
         logger.debug(">> \(message)")
         for try await _ in await send(.message(message)).output { }
     }
 
-    func send(_ request: Request) async -> AsyncThrowingStreams {
+    public func send(_ request: Request) async -> AsyncThrowingStreams {
         .init { output, input in
             Task {
                 let streams = await send(.request(request))
@@ -83,7 +88,7 @@ class FlipperSession: Session {
         }
     }
 
-    func close() async {
+    public func close() async {
         logger.info("canceling tasks...")
         await queue.cancel()
         logger.info("canceling tasks done")
@@ -102,11 +107,26 @@ extension FlipperSession {
             do {
                 setupTimeoutTimer()
                 if let message = try await queue.didReceiveData(data) {
-                    onMessage?(message)
+                    onMessage(message)
                 }
             } catch {
                 logger.critical("\(error)")
             }
+        }
+    }
+
+    func onMessage(_ message: Message) {
+        switch message {
+        case .error(let error):
+            logger.error("error message: \(error)")
+        case .screenFrame(let screenFrame):
+            onScreenFrame?(screenFrame)
+        case .appState(let state):
+            onAppStateChanged?(state)
+        case .unknown(let command):
+            logger.error("unknown command: \(command)")
+        default:
+            logger.error("unhandled message: \(message)")
         }
     }
 }

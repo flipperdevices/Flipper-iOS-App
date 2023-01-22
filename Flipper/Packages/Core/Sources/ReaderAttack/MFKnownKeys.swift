@@ -2,9 +2,8 @@ import Inject
 import Peripheral
 
 public class MFKnownKeys {
-    @Inject private var rpc: RPC
-
-    public init() {}
+    @Inject private var pairedDevice: PairedDevice
+    private var rpc: RPC { pairedDevice.session }
 
     private var flipperKeysExist: Bool {
         get async throws {
