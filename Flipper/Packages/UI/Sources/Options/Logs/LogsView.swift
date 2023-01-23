@@ -3,18 +3,25 @@ import Logging
 import SwiftUI
 
 struct LogsView: View {
-    @EnvironmentObject var loggerService: LoggerService
+    @StateObject var logs: Logs = .init()
     @Environment(\.dismiss) private var dismiss
+
+    @AppStorage(.logLevelKey) var logLevel: Logger.Level = .debug
+
+    public var logLevels: [Logger.Level] {
+        Logger.Level.allCases
+    }
 
     var body: some View {
         List {
-            ForEach(loggerService.logs, id: \.self) { name in
+            ForEach(logs.records, id: \.self) { name in
                 NavigationLink(name) {
-                    NamedLogsView(name: name)
+                    LogView(name: name)
+                        .environmentObject(logs)
                 }
             }
             .onDelete { indexSet in
-                loggerService.delete(at: indexSet)
+                logs.delete(indexSet)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -28,13 +35,13 @@ struct LogsView: View {
             }
             TrailingToolbarItems {
                 NavBarMenu {
-                    ForEach(loggerService.logLevels, id: \.self) { level in
+                    ForEach(logLevels, id: \.self) { level in
                         Button {
-                            loggerService.logLevel = level
+                            logLevel = level
                         } label: {
                             HStack {
                                 Text(level.rawValue)
-                                if level == loggerService.logLevel {
+                                if level == logLevel {
                                     Image(systemName: "checkmark")
                                 }
                             }
@@ -47,7 +54,7 @@ struct LogsView: View {
                 }
 
                 NavBarButton {
-                    loggerService.deleteAll()
+                    logs.deleteAll()
                 } label: {
                     Text("Delete All")
                         .font(.system(size: 14, weight: .bold))
@@ -55,6 +62,9 @@ struct LogsView: View {
                 }
                 .padding(.trailing, 4)
             }
+        }
+        .task {
+            logs.reload()
         }
     }
 }

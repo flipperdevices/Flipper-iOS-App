@@ -18,10 +18,6 @@ public class Dependencies: ObservableObject {
         .init()
     }()
 
-    public lazy var loggerService: LoggerService = {
-        .init()
-    }()
-
     public lazy var networkService: NetworkService = {
         .init()
     }()

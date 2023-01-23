@@ -1,8 +1,8 @@
 import Core
 import SwiftUI
 
-struct NamedLogsView: View {
-    @EnvironmentObject var loggerService: LoggerService
+struct LogView: View {
+    @EnvironmentObject var logs: Logs
     @Environment(\.dismiss) private var dismiss
 
     let name: String
@@ -30,7 +30,7 @@ struct NamedLogsView: View {
             }
         }
         .task {
-            messages = loggerService.read(name)
+            messages = logs.read(name)
         }
     }
 }

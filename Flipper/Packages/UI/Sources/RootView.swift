@@ -10,7 +10,6 @@ public struct RootView: View {
         RootViewImpl()
             .environmentObject(dependencies.router)
             .environmentObject(dependencies.device)
-            .environmentObject(dependencies.loggerService)
             .environmentObject(dependencies.networkService)
             .environmentObject(dependencies.centralService)
             .environmentObject(dependencies.archiveService)
