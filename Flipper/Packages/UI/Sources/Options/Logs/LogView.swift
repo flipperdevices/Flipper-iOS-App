@@ -6,12 +6,22 @@ struct LogView: View {
     @Environment(\.dismiss) private var dismiss
 
     let name: String
-    @State var messages: [String] = []
+    @State var messages: [Message] = []
+
+    public struct Message: Identifiable {
+        public let id: UUID
+        public let text: String
+
+        init(_ text: String) {
+            self.id = .init()
+            self.text = text
+        }
+    }
 
     var body: some View {
         List {
-            ForEach(messages, id: \.self) { message in
-                Text(message)
+            ForEach(messages) { message in
+                Text(message.text)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -25,12 +35,12 @@ struct LogView: View {
             }
             TrailingToolbarItems {
                 ShareButton {
-                    shareLogs(name: name, messages: messages)
+                    shareLogs(name: name, messages: messages.map { $0.text })
                 }
             }
         }
         .task {
-            messages = logs.read(name)
+            messages = logs.read(name).map { .init($0) }
         }
     }
 }
