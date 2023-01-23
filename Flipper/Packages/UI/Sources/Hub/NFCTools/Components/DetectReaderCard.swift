@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ReaderAttackCard: View {
+struct DetectReaderCard: View {
     let hasNotification: Bool
 
     var body: some View {

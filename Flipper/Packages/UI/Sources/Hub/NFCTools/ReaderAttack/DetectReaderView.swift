@@ -3,9 +3,9 @@ import SwiftUI
 
 import enum Peripheral.FlipperColor
 
-struct ReaderAttackView: View {
+struct DetectReaderView: View {
     @EnvironmentObject private var device: Device
-    @StateObject private var readerAttack: ReaderAttackService = .init()
+    @StateObject private var detectReader: DetectReader = .init()
 
     @StateObject private var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
@@ -17,10 +17,10 @@ struct ReaderAttackView: View {
     }
 
     var title: String {
-        guard !readerAttack.newKeys.isEmpty else {
+        guard !detectReader.newKeys.isEmpty else {
             return "New Keys Not Found"
         }
-        let keysCount = readerAttack.newKeys.count
+        let keysCount = detectReader.newKeys.count
         let s = keysCount == 1 ? "" : "s"
         return "\(keysCount) New Key\(s) added to User Dict."
     }
@@ -28,7 +28,7 @@ struct ReaderAttackView: View {
     var content: some View {
         VStack(spacing: 18) {
             VStack {
-                switch readerAttack.state {
+                switch detectReader.state {
                 case .noLog:
                     ReaderDataNotFound(fliperColor: flipperColor)
                 case .noDevice:
@@ -43,7 +43,7 @@ struct ReaderAttackView: View {
                             ProgressBarView(
                                 color: .a2,
                                 image: "ProgressDownload",
-                                progress: readerAttack.progress
+                                progress: detectReader.progress
                             )
                             .padding(.horizontal, 18)
                             Text("Downloading raw file from Flipper...")
@@ -60,7 +60,7 @@ struct ReaderAttackView: View {
                             ProgressBarView(
                                 color: .a1,
                                 image: "ProgressKey",
-                                progress: readerAttack.progress
+                                progress: detectReader.progress
                             )
                             .padding(.horizontal, 18)
                             Text("Calculating...")
@@ -111,9 +111,9 @@ struct ReaderAttackView: View {
                             .font(.system(size: 18, weight: .bold))
                         VStack(spacing: 24) {
                             Image(
-                                readerAttack.newKeys.isEmpty
-                                ? "FlipperShrugging"
-                                : "FlipperSuccess"
+                                detectReader.newKeys.isEmpty
+                                    ? "FlipperShrugging"
+                                    : "FlipperSuccess"
                             )
                             .resizable()
                             .renderingMode(.template)
@@ -121,8 +121,8 @@ struct ReaderAttackView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 92)
 
-                            if !readerAttack.newKeys.isEmpty {
-                                KeysView(.init(readerAttack.newKeys))
+                            if !detectReader.newKeys.isEmpty {
+                                KeysView(.init(detectReader.newKeys))
                             }
 
                             Button {
@@ -142,19 +142,19 @@ struct ReaderAttackView: View {
                 }
             }
 
-            if !readerAttack.isError {
+            if !detectReader.isError {
                 VStack(alignment: .leading, spacing: 32) {
                     CalculatedKeys(
-                        results: readerAttack.results,
-                        showProgress: readerAttack.showCalculatedKeysSpinner
+                        results: detectReader.results,
+                        showProgress: detectReader.showCalculatedKeysSpinner
                     )
-                    if readerAttack.hasNewKeys {
-                        UniqueKeys(keys: readerAttack.newKeys)
+                    if detectReader.hasNewKeys {
+                        UniqueKeys(keys: detectReader.newKeys)
                     }
-                    if readerAttack.hasDuplicatedKeys {
+                    if detectReader.hasDuplicatedKeys {
                         DuplicatedKeys(
-                            flipperKeys: readerAttack.flipperDuplicatedKeys,
-                            userKeys: readerAttack.userDuplicatedKeys)
+                            flipperKeys: detectReader.flipperDuplicatedKeys,
+                            userKeys: detectReader.userDuplicatedKeys)
                     }
                 }
             }
@@ -171,15 +171,15 @@ struct ReaderAttackView: View {
                     Spacer()
                 }
 
-                if readerAttack.state != .finished {
+                if detectReader.state != .finished {
                     HStack {
                         Spacer()
                         Button {
-                            readerAttack.inProgress
+                            detectReader.inProgress
                                 ? showCancelAttack = true
                                 : dismiss()
                         } label: {
-                            Text(readerAttack.isError ? "Close" : "Cancel")
+                            Text(detectReader.isError ? "Close" : "Cancel")
                                 .font(.system(size: 16, weight: .medium))
                                 .padding(.horizontal, 8)
                                 .tappableFrame()
@@ -203,10 +203,10 @@ struct ReaderAttackView: View {
         }
         .environmentObject(alertController)
         .onAppear {
-            readerAttack.start()
+            detectReader.start()
         }
         .onDisappear {
-            readerAttack.stop()
+            detectReader.stop()
         }
     }
 }

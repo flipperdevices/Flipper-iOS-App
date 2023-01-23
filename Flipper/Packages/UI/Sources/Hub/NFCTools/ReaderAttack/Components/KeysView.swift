@@ -1,7 +1,7 @@
 import Core
 import SwiftUI
 
-extension ReaderAttackView {
+extension DetectReaderView {
     struct KeysView: View {
         let keys: [MFKey64]
 

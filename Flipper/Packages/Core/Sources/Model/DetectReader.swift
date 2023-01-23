@@ -6,7 +6,7 @@ import Combine
 import Foundation
 
 @MainActor
-public class ReaderAttackService: ObservableObject {
+public class DetectReader: ObservableObject {
     @Published public var state: State = .downloadingLog
     var flipperKnownKeys: Set<MFKey64> = .init()
     var userKnownKeys: Set<MFKey64> = .init()

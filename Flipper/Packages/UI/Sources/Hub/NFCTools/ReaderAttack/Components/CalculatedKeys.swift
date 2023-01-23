@@ -1,7 +1,7 @@
 import Core
 import SwiftUI
 
-extension ReaderAttackView {
+extension DetectReaderView {
     struct CalculatedKeys: View {
         let results: [ReaderAttack.Result]
         let showProgress: Bool
