@@ -4,7 +4,7 @@ import SwiftUI
 struct ConnectionView: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var device: Device
-    @EnvironmentObject var central: CentralService
+    @EnvironmentObject var central: Central
     @Environment(\.dismiss) private var dismiss
 
     @State private var showHelpSheet = false
@@ -104,7 +104,7 @@ struct ConnectionView: View {
             if central.state == .poweredOn {
                 central.startScan()
             } else {
-                central.kickBluetoothCentral()
+                central.kick()
             }
         }
         .onDisappear {

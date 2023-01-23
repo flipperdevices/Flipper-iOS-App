@@ -3,8 +3,8 @@ import SwiftUI
 
 struct DeviceView: View {
     @EnvironmentObject var router: Router
+    @EnvironmentObject var central: Central
     @EnvironmentObject var device: Device
-    @EnvironmentObject var central: CentralService
     @EnvironmentObject var syncService: SyncService
 
     @State var showForgetAction = false
@@ -183,6 +183,11 @@ struct DeviceView: View {
         .onChange(of: central.state) { state in
             if state == .poweredOn {
                 device.connect()
+            }
+        }
+        .task {
+            if central.state != .poweredOn {
+                central.kick()
             }
         }
     }

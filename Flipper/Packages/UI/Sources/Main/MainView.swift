@@ -3,7 +3,6 @@ import SwiftUI
 
 struct MainView: View {
     @EnvironmentObject var device: Device
-    @EnvironmentObject var centralService: CentralService
     @EnvironmentObject var archiveService: ArchiveService
     @StateObject var tabViewController: TabViewController = .init()
 
@@ -51,9 +50,6 @@ struct MainView: View {
         }
         .fullScreenCover(isPresented: $showWidgetSettings) {
             WidgetSettingsView()
-        }
-        .onAppear {
-            centralService.kickBluetoothCentral()
         }
     }
 

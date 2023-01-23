@@ -6,27 +6,21 @@ import Foundation
 @MainActor
 public class Dependencies: ObservableObject {
 
-    // Service
-
-    public lazy var central: BluetoothCentral = {
-        Peripheral.Dependencies.central
-    }()
-
     // Model
 
     public lazy var router: Router = {
         .init()
     }()
 
-    public lazy var networkService: NetworkService = {
+    public lazy var central: Central = {
         .init()
     }()
 
-    public lazy var centralService: CentralService = {
-        .init(central: central)
+    public lazy var device: Device = {
+        .init()
     }()
 
-    public lazy var device: Device = {
+    public lazy var networkService: NetworkService = {
         .init()
     }()
 
