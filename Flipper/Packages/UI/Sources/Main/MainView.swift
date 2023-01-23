@@ -4,6 +4,7 @@ import SwiftUI
 struct MainView: View {
     @EnvironmentObject var device: Device
     @EnvironmentObject var archiveService: ArchiveService
+
     @StateObject var tabViewController: TabViewController = .init()
 
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device {

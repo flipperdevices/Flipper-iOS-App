@@ -11,7 +11,7 @@ public struct RootView: View {
             .environmentObject(dependencies.router)
             .environmentObject(dependencies.device)
             .environmentObject(dependencies.central)
-            .environmentObject(dependencies.networkService)
+            .environmentObject(dependencies.networkMonitor)
             .environmentObject(dependencies.archiveService)
             .environmentObject(dependencies.syncService)
             .environmentObject(dependencies.updateService)

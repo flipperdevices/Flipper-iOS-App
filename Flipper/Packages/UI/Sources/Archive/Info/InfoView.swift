@@ -4,11 +4,11 @@ import SwiftUI
 struct InfoView: View {
     @EnvironmentObject var device: Device
     @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var sharingService: SharingService
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+
     @StateObject var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
-
-    @EnvironmentObject var sharingService: SharingService
-    @EnvironmentObject var networkService: NetworkService
 
     let item: ArchiveItem
 
@@ -93,7 +93,7 @@ struct InfoView: View {
         .bottomSheet(isPresented: $showShareView) {
             ShareView(item: current)
                 .environmentObject(sharingService)
-                .environmentObject(networkService)
+                .environmentObject(networkMonitor)
         }
         .fullScreenCover(isPresented: $showDumpEditor) {
             NFCEditorView(item: $current)

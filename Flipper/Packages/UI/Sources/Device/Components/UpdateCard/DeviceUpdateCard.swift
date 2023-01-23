@@ -4,8 +4,8 @@ import SwiftUI
 struct DeviceUpdateCard: View {
     @EnvironmentObject var device: Device
     @EnvironmentObject var updateService: UpdateService
-    @EnvironmentObject var networkService: NetworkService
     @EnvironmentObject var checkUpdateService: CheckUpdateService
+    @EnvironmentObject var networkMonitor: NetworkMonitor
     @Environment(\.scenePhase) private var scenePhase
 
     @AppStorage(.updateChannel) var channel: Update.Channel = .release
@@ -101,7 +101,7 @@ struct DeviceUpdateCard: View {
                 checkUpdateService.updateAvailableFirmware(for: channel)
             }
         }
-        .onChange(of: networkService.available) {
+        .onChange(of: networkMonitor.isAvailable) {
             checkUpdateService.onNetworkStatusChanged(available: $0)
         }
         .fullScreenCover(item: $intent) { intent in

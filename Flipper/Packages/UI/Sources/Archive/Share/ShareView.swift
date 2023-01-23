@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ShareView: View {
     @EnvironmentObject var sharingService: SharingService
-    @EnvironmentObject var networkService: NetworkService
+    @EnvironmentObject var networkMonitor: NetworkMonitor
 
     let item: ArchiveItem
 
@@ -71,7 +71,7 @@ struct ShareView: View {
             Spacer()
         }
         .frame(height: 258)
-        .onChange(of: networkService.available) { available in
+        .onChange(of: networkMonitor.isAvailable) { available in
             state = available ? .select : .noInternet
         }
         .onAppear {

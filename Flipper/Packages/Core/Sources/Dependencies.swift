@@ -20,7 +20,7 @@ public class Dependencies: ObservableObject {
         .init()
     }()
 
-    public lazy var networkService: NetworkService = {
+    public lazy var networkMonitor: NetworkMonitor = {
         .init()
     }()
 
