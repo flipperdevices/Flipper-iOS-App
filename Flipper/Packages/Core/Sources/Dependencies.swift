@@ -1,6 +1,7 @@
 import Inject
 import Combine
 import Peripheral
+import Foundation
 
 @MainActor
 public class Dependencies: ObservableObject {
@@ -61,5 +62,8 @@ public class Dependencies: ObservableObject {
         .init(device: device, emulateService: emulateService)
     }()
 
-    public init() {}
+    public init() {
+        logger.info("app version: \(Bundle.fullVersion)")
+        logger.info("log level: \(UserDefaultsStorage.shared.logLevel)")
+    }
 }
