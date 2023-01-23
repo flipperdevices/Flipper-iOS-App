@@ -5,7 +5,7 @@ import Combine
 import Foundation
 
 @MainActor
-public class CentralService: ObservableObject {
+public class Central: ObservableObject {
     private var central: BluetoothCentral
     private var disposeBag = DisposeBag()
 
@@ -33,7 +33,7 @@ public class CentralService: ObservableObject {
         !connectedPeripherals.isEmpty
     }
 
-    public init(central: BluetoothCentral) {
+    public init(central: BluetoothCentral = Peripheral.Dependencies.central) {
         self.central = central
         subscribeToPublishers()
     }
