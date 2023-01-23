@@ -100,8 +100,20 @@ struct ConnectionView: View {
             HelpView()
                 .customBackground(Color.background)
         }
+        .onAppear {
+            if central.state == .poweredOn {
+                central.startScan()
+            } else {
+                central.kickBluetoothCentral()
+            }
+        }
         .onDisappear {
             central.stopScan()
+        }
+        .onChange(of: central.state) { state in
+            if state == .poweredOn {
+                central.startScan()
+            }
         }
         .onChange(of: device.status) { status in
             if status == .pairingFailed {

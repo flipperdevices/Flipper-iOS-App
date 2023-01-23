@@ -47,7 +47,7 @@ public class Device: ObservableObject {
     // MARK: Device Events
 
     func onFlipperChanged(_ oldValue: Flipper?) {
-        updateState(oldValue?.state)
+        updateState(oldValue?.state ?? .disconnected)
         if oldValue?.information != flipper?.information {
             reportGATTInfo()
         }
@@ -55,7 +55,7 @@ public class Device: ObservableObject {
 
     // MARK: Status
 
-    func updateState(_ oldValue: FlipperState?) {
+    func updateState(_ oldValue: FlipperState) {
         guard let flipper = flipper else {
             status = .noDevice
             return
@@ -97,9 +97,9 @@ public class Device: ObservableObject {
                     disconnect()
                     return
                 }
-                try await updateStorageInfo()
                 status = .connected
                 logger.info("connected")
+                try await updateStorageInfo()
             } catch {
                 logger.error("did connect: \(error)")
             }
@@ -151,6 +151,7 @@ public class Device: ObservableObject {
     // MARK: Connection
 
     public func connect() {
+        logger.info("connecting")
         reconnectOnDisconnect = true
         pairedDevice.connect()
     }

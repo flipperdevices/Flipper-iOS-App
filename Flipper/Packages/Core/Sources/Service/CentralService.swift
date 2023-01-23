@@ -9,13 +9,7 @@ public class CentralService: ObservableObject {
     private var central: BluetoothCentral
     private var disposeBag = DisposeBag()
 
-    @Published public private(set) var state: BluetoothStatus = .unknown {
-        didSet {
-            state == .poweredOn
-                ? startScan()
-                : stopScan()
-        }
-    }
+    @Published public private(set) var state: BluetoothStatus = .unknown
 
     let scanTimeoutInSeconds = 30
     @Published public var isScanTimeout = false
@@ -91,6 +85,7 @@ public class CentralService: ObservableObject {
 
     public func connect(to uuid: UUID) {
         self.uuid = uuid
+        logger.info("pairing")
         central.connect(to: uuid)
         startConnectTimer()
     }

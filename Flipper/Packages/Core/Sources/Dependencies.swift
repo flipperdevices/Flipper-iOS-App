@@ -4,6 +4,7 @@ import Peripheral
 
 @MainActor
 public class Dependencies: ObservableObject {
+
     // Service
 
     public lazy var central: BluetoothCentral = {

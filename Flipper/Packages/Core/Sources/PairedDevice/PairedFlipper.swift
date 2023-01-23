@@ -10,10 +10,6 @@ class PairedFlipper: PairedDevice, ObservableObject {
     private var central: BluetoothCentral
     private var disposeBag: DisposeBag = .init()
 
-    private var bluetoothStatus: BluetoothStatus = .unknown {
-        didSet { didUpdateBluetoothStatus() }
-    }
-
     var session: Session = ClosedSession.shared
 
     var flipper: SafePublisher<Flipper?> { _flipper.eraseToAnyPublisher() }
@@ -41,20 +37,10 @@ class PairedFlipper: PairedDevice, ObservableObject {
     }
 
     func subscribeToPublishers() {
-        central.status
-            .assign(to: \.bluetoothStatus, on: self)
-            .store(in: &disposeBag)
-
         central.connected
             .map { $0.first }
             .assign(to: \.bluetoothPeripheral, on: self)
             .store(in: &disposeBag)
-    }
-
-    func didUpdateBluetoothStatus() {
-        if bluetoothStatus == .poweredOn {
-            connect()
-        }
     }
 
     func peripheralDidChange() {
