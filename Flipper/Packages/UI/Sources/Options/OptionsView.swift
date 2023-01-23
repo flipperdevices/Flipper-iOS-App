@@ -73,6 +73,11 @@ struct OptionsView: View {
                 }
             }
 
+            Section(header: Text("Resources")) {
+                Link("Forum", destination: URL(string: "https://forum.flipperzero.one")!)
+                Link("GitHub", destination: URL(string: "https://github.com/flipperdevices")!)
+            }
+
             Section {
             } footer: {
                 VStack(alignment: .center) {
