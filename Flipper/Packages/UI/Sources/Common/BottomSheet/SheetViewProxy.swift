@@ -48,11 +48,11 @@ class HostingController<Content: View>: UIHostingController<Content> {
         self.view.backgroundColor = .clear
         if #available (iOS 15, *) {
             // swiftlint:disable opening_brace
-            if let presentationContoller = presentationController
+            if let presentationController = presentationController
                 as? UISheetPresentationController
             {
-                presentationContoller.detents = [.medium()]
-                presentationContoller.prefersGrabberVisible = prefersGrabberVisible
+                presentationController.detents = [.medium()]
+                presentationController.prefersGrabberVisible = prefersGrabberVisible
             }
         }
     }

@@ -96,7 +96,7 @@ extension CountlyAnalytics: Analytics {
             ])
     }
 
-    func syncronizationResult(
+    func synchronizationResult(
         subGHzCount: Int,
         rfidCount: Int,
         nfcCount: Int,

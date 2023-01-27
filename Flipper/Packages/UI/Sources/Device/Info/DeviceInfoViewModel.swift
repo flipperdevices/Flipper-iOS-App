@@ -177,9 +177,9 @@ class DeviceInfoViewModel: ObservableObject {
 
         let name = flipper?.name ?? "unknown"
         let content = array.joined(separator: "\n")
-        let filenname = "dump-\(name)-\(formatter.string(from: Date())).txt"
+        let filename = "dump-\(name)-\(formatter.string(from: Date())).txt"
 
-        Core.share(content, filename: filenname)
+        Core.share(content, filename: filename)
     }
 }
 
