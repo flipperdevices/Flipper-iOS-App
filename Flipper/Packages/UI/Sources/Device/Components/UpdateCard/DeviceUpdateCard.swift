@@ -17,9 +17,6 @@ struct DeviceUpdateCard: View {
     @State var intent: Update.Intent? = nil
     @State var showConfirmUpdate = false
 
-    @State var showUpdateFailed = false
-    @State var showUpdateSucceeded = false
-
     var body: some View {
         Card {
             VStack(spacing: 0) {
@@ -70,25 +67,9 @@ struct DeviceUpdateCard: View {
                 "New Firmware \(intent.to) " +
                 "will be installed")
         }
-        .customAlert(isPresented: $showUpdateSucceeded) {
-            UpdateSucceededAlert(
-                isPresented: $showUpdateSucceeded,
-                firmwareVersion: updateVersion)
-        }
-        .customAlert(isPresented: $showUpdateFailed) {
-            UpdateFailedAlert(
-                isPresented: $showUpdateFailed,
-                firmwareVersion: updateVersion)
-        }
         .onChange(of: checkUpdateService.intent) { intent in
             if intent != nil {
                 showConfirmUpdate = true
-            }
-        }
-        .onReceive(updateService.result) { result in
-            switch result {
-            case .success: showUpdateSucceeded = true
-            case .failure: showUpdateFailed = true
             }
         }
         .onOpenURL { url in

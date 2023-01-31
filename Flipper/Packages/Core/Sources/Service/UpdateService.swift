@@ -11,7 +11,6 @@ public class UpdateService: ObservableObject {
     @Published public var state: State = .update(.preparing)
 
     public var inProgress: Update.Intent?
-    public var result: SafeSubject<Result> = .init()
 
     public enum State: Equatable {
         case update(Update)
