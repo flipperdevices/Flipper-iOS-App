@@ -94,7 +94,7 @@ extension Update.Manifest.Version {
 // MARK: Last archive
 
 extension Update.Manifest.Version {
-    public var updateArchive: File? {
-        files.first { $0.type == "update_tgz" }
+    public var f7UpdateBundle: File? {
+        files.first { $0.target == "f7" && $0.type == "update_tgz" }
     }
 }
