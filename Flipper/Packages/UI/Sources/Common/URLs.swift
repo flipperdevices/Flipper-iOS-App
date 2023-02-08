@@ -51,4 +51,14 @@ extension URL {
     static var helpToFactoryReset: URL {
         .init(string: "https://flipp.dev/storage-repair")!
     }
+
+    // MARK: Resources
+
+    static var forum: URL {
+        .init(string: "https://forum.flipperzero.one")!
+    }
+
+    static var github: URL {
+        .init(string: "https://github.com/flipperdevices")!
+    }
 }
