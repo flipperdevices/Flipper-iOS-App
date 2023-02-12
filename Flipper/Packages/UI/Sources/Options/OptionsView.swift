@@ -50,6 +50,11 @@ struct OptionsView: View {
                 .foregroundColor(.primary)
             }
 
+            Section(header: Text("Resources")) {
+                Link("Forum", destination: .forum)
+                Link("GitHub", destination: .github)
+            }
+
             if viewModel.isDebugMode {
                 Section(header: Text("Debug")) {
                     Toggle(isOn: $viewModel.isProvisioningDisabled) {

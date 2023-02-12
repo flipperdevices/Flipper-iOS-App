@@ -30,7 +30,7 @@ extension Update {
         _ version: Manifest.Version,
         progress: @escaping (Double) -> Void
     ) async throws -> Firmware {
-        guard let url = version.updateArchive?.url else {
+        guard let url = version.f7UpdateBundle?.url else {
             throw Error.invalidFirmwareURL
         }
 
