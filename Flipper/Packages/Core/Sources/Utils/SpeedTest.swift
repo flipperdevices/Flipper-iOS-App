@@ -1,5 +1,7 @@
-import Foundation
 import Peripheral
+
+import Combine
+import Foundation
 
 @MainActor
 public class SpeedTest: ObservableObject {

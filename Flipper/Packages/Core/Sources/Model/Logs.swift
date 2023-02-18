@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 public class Logs: ObservableObject {
