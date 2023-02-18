@@ -1,4 +1,3 @@
-import Inject
 import Peripheral
 
 import Combine
@@ -9,8 +8,12 @@ import Foundation
 
 @MainActor
 public class PingTest: ObservableObject {
-    @Inject private var pairedDevice: PairedDevice
+    private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
+
+    public init(pairedDevice: PairedDevice) {
+        self.pairedDevice = pairedDevice
+    }
 
     @Published public var payloadSize: Double = 1024
     @Published public var requestTimestamp: Int = .init()
@@ -25,8 +28,6 @@ public class PingTest: ObservableObject {
         guard time > 0 else { return 0 }
         return Int(Double(sent * 2) * (100.0 / Double(time)))
     }
-
-    public init() {}
 
     var sent: Int = 0
 

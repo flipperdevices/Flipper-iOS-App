@@ -1,4 +1,3 @@
-import Inject
 import Analytics
 import Peripheral
 
@@ -43,7 +42,7 @@ public class CheckUpdateService: ObservableObject {
         }
     }
 
-    @Inject private var pairedDevice: PairedDevice
+    private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
     private var disposeBag: DisposeBag = .init()
 
@@ -65,7 +64,8 @@ public class CheckUpdateService: ObservableObject {
         return battery.level >= 10 || battery.state == .charging
     }
 
-    public init() {
+    public init(pairedDevice: PairedDevice) {
+        self.pairedDevice = pairedDevice
         subscribeToPublishers()
     }
 

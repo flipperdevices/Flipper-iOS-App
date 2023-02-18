@@ -2,7 +2,10 @@ import Core
 import SwiftUI
 
 struct PingView: View {
-    @StateObject var pingTest: PingTest = .init()
+    // next step
+    @StateObject var pingTest: PingTest = .init(
+        pairedDevice: Dependencies.shared.pairedDevice
+    )
     @Environment(\.dismiss) private var dismiss
     @State var entered: String = ""
 

@@ -1,4 +1,3 @@
-import Inject
 import Analytics
 import Peripheral
 import Combine
@@ -28,10 +27,11 @@ public class EmulateService: ObservableObject {
     private var emulateTask: Task<Void, Swift.Error>?
     private var emulateStarted: Date = .now
 
-    @Inject private var pairedDevice: PairedDevice
+    private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
 
-    init() {
+    public init(pairedDevice: PairedDevice) {
+        self.pairedDevice = pairedDevice
         subscribeToPublishers()
     }
 

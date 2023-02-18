@@ -1,13 +1,22 @@
-import Inject
 import Logging
 import Peripheral
 import Foundation
 import OrderedCollections
 
 class ArchiveSync: ArchiveSyncProtocol {
-    @Inject private var flipperArchive: FlipperArchiveProtocol
-    @Inject private var mobileArchive: MobileArchiveProtocol
-    @Inject private var syncedItems: SyncedItemsProtocol
+    private let flipperArchive: FlipperArchiveProtocol
+    private let mobileArchive: MobileArchiveProtocol
+    private let syncedItems: SyncedItemsProtocol
+
+    init(
+        flipperArchive: FlipperArchiveProtocol,
+        mobileArchive: MobileArchiveProtocol,
+        syncedItems: SyncedItemsProtocol
+    ) {
+        self.flipperArchive = flipperArchive
+        self.mobileArchive = mobileArchive
+        self.syncedItems = syncedItems
+    }
 
     private var state: State = .idle
     private var eventsSubject: SafeSubject<Event> = .init()

@@ -1,4 +1,3 @@
-import Inject
 import Analytics
 import Peripheral
 
@@ -10,7 +9,7 @@ import Foundation
 public class Device: ObservableObject {
     @Published public var status: Status = .noDevice
 
-    @Inject private var pairedDevice: PairedDevice
+    private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
     private var disposeBag = DisposeBag()
 
@@ -21,7 +20,8 @@ public class Device: ObservableObject {
     @Published public private(set) var powerInfo: [String: String] = [:]
     @Published public private(set) var isInfoReady = false
 
-    public init() {
+    public init(pairedDevice: PairedDevice) {
+        self.pairedDevice = pairedDevice
         subscribeToPublishers()
     }
 

@@ -1,4 +1,3 @@
-import Inject
 import Peripheral
 import Combine
 import Logging
@@ -6,7 +5,7 @@ import Logging
 import struct Foundation.UUID
 
 class PairedFlipper: PairedDevice, ObservableObject {
-    @Inject var storage: DeviceStorage
+    private var storage: DeviceStorage
     private var central: BluetoothCentral
     private var disposeBag: DisposeBag = .init()
 
@@ -30,8 +29,9 @@ class PairedFlipper: PairedDevice, ObservableObject {
         }
     }
 
-    init(central: BluetoothCentral) {
+    init(central: BluetoothCentral, storage: DeviceStorage) {
         self.central = central
+        self.storage = storage
         _flipper.value = storage.flipper
         subscribeToPublishers()
     }

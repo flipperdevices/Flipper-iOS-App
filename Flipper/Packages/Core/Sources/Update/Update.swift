@@ -1,4 +1,3 @@
-import Inject
 import Analytics
 import Peripheral
 

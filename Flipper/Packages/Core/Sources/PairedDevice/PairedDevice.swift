@@ -10,3 +10,4 @@ public protocol PairedDevice {
 
     func updateStorageInfo(_ storageInfo: Flipper.StorageInfo)
 }
+

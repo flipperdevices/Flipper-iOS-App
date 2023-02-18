@@ -3,7 +3,10 @@ import Logging
 import SwiftUI
 
 struct LogsView: View {
-    @StateObject var logs: Logs = .init()
+    // next step
+    @StateObject var logs: Logs = .init(
+        loggerStorage: Dependencies.shared.loggerStorage
+    )
     @Environment(\.dismiss) private var dismiss
 
     @AppStorage(.logLevelKey) var logLevel: Logger.Level = .debug

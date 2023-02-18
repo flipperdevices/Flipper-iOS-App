@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 public struct RootView: View {
-    @StateObject var dependencies: Dependencies = .init()
+    @StateObject var dependencies: Dependencies = .shared
 
     public init() {}
 
@@ -18,7 +18,6 @@ public struct RootView: View {
             .environmentObject(dependencies.checkUpdateService)
             .environmentObject(dependencies.sharingService)
             .environmentObject(dependencies.emulateService)
-            .environmentObject(dependencies.widgetService)
     }
 }
 

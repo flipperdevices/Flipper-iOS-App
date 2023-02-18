@@ -1,4 +1,3 @@
-import Inject
 import Logging
 import Analytics
 import Peripheral
@@ -8,7 +7,8 @@ import Foundation
 
 @MainActor
 public class FileManagerService: ObservableObject {
-    @Inject private var pairedDevice: PairedDevice
+    // next step
+    let pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
 
     @Published public var content: Content? {
@@ -47,14 +47,34 @@ public class FileManagerService: ObservableObject {
         path.string
     }
 
-    public convenience init() {
-        self.init(path: .init(string: "/"), mode: .list)
+    public convenience init(pairedDevice: PairedDevice) {
+        self.init(
+            // next step
+            pairedDevice: pairedDevice,
+            path: .init(string: "/"),
+            mode: .list)
         recordFileManager()
     }
 
-    public init(path: Path, mode: PathMode) {
+    // next step
+    public init(pairedDevice: PairedDevice, path: Path, mode: PathMode) {
+        self.pairedDevice = pairedDevice
         self.path = path
         self.mode = mode
+    }
+
+    public func modelForDirectory(_ name: String) -> FileManagerService {
+        .init(
+            pairedDevice: pairedDevice,
+            path: path.appending(name),
+            mode: .list)
+    }
+
+    public func modelForFile(_ name: String) -> FileManagerService {
+        .init(
+            pairedDevice: pairedDevice,
+            path: path.appending(name),
+            mode: .edit)
     }
 
     func showProgressView() {

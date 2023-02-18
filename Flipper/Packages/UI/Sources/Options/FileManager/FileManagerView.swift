@@ -4,7 +4,10 @@ import Peripheral
 import UniformTypeIdentifiers
 
 struct FileManagerView: View {
-    @StateObject var viewModel: FileManagerService = .init()
+    // next step
+    @ObservedObject var viewModel: FileManagerService = .init(
+        pairedDevice: Dependencies.shared.pairedDevice
+    )
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -89,9 +92,10 @@ struct FileManagerView: View {
                         .frame(width: 20)
 
                     NavigationLink(directory.name) {
-                        FileManagerView(viewModel: .init(
-                            path: viewModel.path.appending(directory.name),
-                            mode: .list))
+                        // next step
+                        FileManagerView(viewModel: viewModel
+                            .modelForDirectory(directory.name)
+                        )
                     }
                     .foregroundColor(.primary)
                 }
@@ -104,9 +108,10 @@ struct FileManagerView: View {
                             Image(systemName: "doc")
                                 .frame(width: 20)
                             NavigationLink {
-                                FileManagerView(viewModel: .init(
-                                    path: viewModel.path.appending(file.name),
-                                    mode: .edit))
+                                // next step
+                                FileManagerView(viewModel: viewModel
+                                    .modelForFile(file.name)
+                                )
                             } label: {
                                 FileRow(file: file)
                             }

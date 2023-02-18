@@ -1,12 +1,15 @@
-import Inject
 import Logging
 import Foundation
 import Peripheral
 
 @MainActor
 public class SpeedTest: ObservableObject {
-    @Inject private var pairedDevice: PairedDevice
+    private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
+
+    public init(pairedDevice: PairedDevice) {
+        self.pairedDevice = pairedDevice
+    }
 
     public let defaultPacketSize = 444
     public let maximumPacketSize = 1024
@@ -21,8 +24,6 @@ public class SpeedTest: ObservableObject {
     }
     @Published public var bpsMin: Int = 0
     @Published public var bpsMax: Int = 0
-
-    public init() {}
 
     public func runSpeedTest() async throws {
         while isRunning {

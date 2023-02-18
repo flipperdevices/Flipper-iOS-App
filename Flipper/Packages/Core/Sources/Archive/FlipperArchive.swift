@@ -1,9 +1,12 @@
-import Inject
 import Peripheral
 
 class FlipperArchive: FlipperArchiveProtocol {
-    @Inject private var pairedDevice: PairedDevice
+    private let pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
+
+    init(pairedDevice: PairedDevice) {
+        self.pairedDevice = pairedDevice
+    }
 
     func getManifest(progress: (Double) -> Void) async throws -> Manifest {
         try await rpc.getManifest(progress: progress)

@@ -1,18 +1,45 @@
-import Inject
 import Foundation
 import Peripheral
 import Logging
 
 public class Archive {
-    @Inject var archiveSync: ArchiveSyncProtocol
-    @Inject var favoritesSync: FavoritesSyncProtocol
+    let archiveSync: ArchiveSyncProtocol
+    let favoritesSync: FavoritesSyncProtocol
 
-    @Inject var mobileFavorites: MobileFavoritesProtocol
-    @Inject var mobileArchive: MobileArchiveProtocol
-    @Inject var mobileNotes: MobileNotesStorage
-    @Inject var deletedArchive: DeletedArchiveProtocol
+    let mobileFavorites: MobileFavoritesProtocol
+    let mobileArchive: MobileArchiveProtocol
+    let mobileNotes: MobileNotesStorage
+    let deletedArchive: DeletedArchiveProtocol
 
-    @Inject var syncedItems: SyncedItemsProtocol
+    let syncedItems: SyncedItemsProtocol
+
+    init(
+        archiveSync: ArchiveSyncProtocol,
+        favoritesSync: FavoritesSyncProtocol,
+        mobileFavorites: MobileFavoritesProtocol,
+        mobileArchive: MobileArchiveProtocol,
+        mobileNotes: MobileNotesStorage,
+        deletedArchive: DeletedArchiveProtocol,
+        syncedItems: SyncedItemsProtocol
+    ) {
+        self.archiveSync = archiveSync
+        self.favoritesSync = favoritesSync
+        self.mobileFavorites = mobileFavorites
+        self.mobileArchive = mobileArchive
+        self.mobileNotes = mobileNotes
+        self.deletedArchive = deletedArchive
+        self.syncedItems = syncedItems
+
+        // FIXME:
+
+        archiveSync.events
+            .sink { [weak self] in
+                self?.onSyncEvent($0)
+            }
+            .store(in: &disposeBag)
+
+        load()
+    }
 
     private var disposeBag: DisposeBag = .init()
 
@@ -35,16 +62,6 @@ public class Archive {
     }()
 
     var isLoading = false
-
-    init() {
-        archiveSync.events
-            .sink { [weak self] in
-                self?.onSyncEvent($0)
-            }
-            .store(in: &disposeBag)
-
-        load()
-    }
 
     func load() {
         isLoading = true

@@ -1,4 +1,3 @@
-import Inject
 import Peripheral
 
 extension Archive {

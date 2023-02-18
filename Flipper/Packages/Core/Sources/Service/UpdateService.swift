@@ -1,4 +1,3 @@
-import Inject
 import Analytics
 import Peripheral
 
@@ -43,14 +42,16 @@ public class UpdateService: ObservableObject {
         case failure
     }
 
-    @Inject private var pairedDevice: PairedDevice
+    private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
 
+    // next step
     let device: Device
 
     private var updateTaskHandle: Task<Void, Swift.Error>?
 
-    public init(device: Device) {
+    public init(pairedDevice: PairedDevice, device: Device) {
+        self.pairedDevice = pairedDevice
         self.device = device
     }
 

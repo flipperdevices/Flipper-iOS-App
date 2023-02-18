@@ -1,12 +1,15 @@
-import Inject
 import Peripheral
 
 class FlipperFavorites: FlipperFavoritesProtocol {
     let filename = "favorites.txt"
     var path: Path { .init(components: ["any", filename]) }
 
-    @Inject private var pairedDevice: PairedDevice
+    private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
+
+    init(pairedDevice: PairedDevice) {
+        self.pairedDevice = pairedDevice
+    }
 
     func read() async throws -> Favorites {
         do {

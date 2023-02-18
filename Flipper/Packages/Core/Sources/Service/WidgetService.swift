@@ -1,4 +1,3 @@
-import Inject
 import Peripheral
 
 import Logging
@@ -36,6 +35,9 @@ public class WidgetService: ObservableObject {
             case cantConnect
             case bluetoothOff
         }
+    }
+
+    public init() {
     }
 
     public func add(_ key: ArchiveItem) {

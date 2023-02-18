@@ -1,29 +1,15 @@
 import Core
 import SwiftUI
 
-import NotificationCenter
-
-public struct WidgetDisplayModeKey: EnvironmentKey {
-    public static let defaultValue: NCWidgetDisplayMode = .compact
-}
-
-extension EnvironmentValues {
-    public var widgetDisplayMode: NCWidgetDisplayMode {
-        get { self[WidgetDisplayModeKey.self] }
-        set { self[WidgetDisplayModeKey.self] = newValue }
-    }
-}
-
 struct WidgetSettingsView: View {
-    @EnvironmentObject private var widget: WidgetService
+    @StateObject private var widget: WidgetService = .init()
     @Environment(\.dismiss) private var dismiss
 
     @State var showAddKeyView = false
     @State var showWidgetHelpView = false
 
     var rows: Range<Int> {
-        print(widget.keys.count)
-        return (0..<(widget.keys.count / 2 + 1))
+        (0..<(widget.keys.count / 2 + 1))
     }
 
     var body: some View {

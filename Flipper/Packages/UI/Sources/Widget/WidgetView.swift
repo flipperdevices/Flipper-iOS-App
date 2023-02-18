@@ -1,12 +1,19 @@
 import Core
 import Logging
+
 import SwiftUI
 import NotificationCenter
 
 public struct WidgetView: View {
-    @EnvironmentObject var widget: WidgetService
-    @EnvironmentObject var emulateService: EmulateService
-    @EnvironmentObject var device: Device
+    @StateObject var widget: WidgetService = .init()
+
+    @StateObject var device: Device = .init(
+        pairedDevice: Dependencies.shared.pairedDevice
+    )
+
+    @StateObject var emulateService: EmulateService = .init(
+        pairedDevice: Dependencies.shared.pairedDevice
+    )
 
     public var isError: Bool {
         widget.isError
@@ -23,6 +30,7 @@ public struct WidgetView: View {
             switch widget.state {
             case .idle, .emulating:
                 WidgetKeysView()
+                    .environmentObject(widget)
             case .loading:
                 Text("Loading")
             case .error(let error):

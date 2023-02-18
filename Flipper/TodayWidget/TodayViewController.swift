@@ -6,10 +6,16 @@ import Core
 class TodayViewController: UIViewController, NCWidgetProviding {
     let compactModeHeight = 110.0
 
-    let dependencies: Dependencies
+    // next step
+    var isError: Bool = false
+    var isExpanded: Bool = false
+    var expandedModeHeight: Double {
+        let keysCount = 0
+        let rowsCount = keysCount / 2 + 1
+        return compactModeHeight * Double(rowsCount)
+    }
 
     required init?(coder: NSCoder) {
-        dependencies = .init()
         super.init(coder: coder)
     }
 
@@ -19,10 +25,6 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
         // Add SwiftUI
         let widgetView = WidgetView()
-            .environmentObject(dependencies.device)
-            .environmentObject(dependencies.archiveService)
-            .environmentObject(dependencies.emulateService)
-            .environmentObject(dependencies.widgetService)
         let hostingController = UIHostingController(rootView: widgetView)
         addChild(hostingController)
         view.addSubview(hostingController.view)
@@ -46,20 +48,16 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         _ activeDisplayMode: NCWidgetDisplayMode,
         withMaximumSize maxSize: CGSize
     ) {
-        dependencies.widgetService.objectWillChange.send()
-        dependencies.widgetService.isExpanded = activeDisplayMode == .expanded
+        isExpanded = activeDisplayMode == .expanded
 
-        guard !dependencies.widgetService.isError else {
+        guard !isError else {
             preferredContentSize.height = compactModeHeight
             return
         }
 
         switch activeDisplayMode {
-        case .compact:
-            preferredContentSize.height = compactModeHeight
-        case .expanded:
-            let rowsCount = dependencies.widgetService.keys.count / 2 + 1
-            preferredContentSize.height = compactModeHeight * Double(rowsCount)
+        case .compact: preferredContentSize.height = compactModeHeight
+        case .expanded: preferredContentSize.height = expandedModeHeight
         @unknown default: break
         }
     }

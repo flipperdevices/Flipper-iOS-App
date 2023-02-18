@@ -1,10 +1,9 @@
-import Inject
 import Foundation
 import Peripheral
 
 @MainActor
 public class StressTest: ObservableObject {
-    @Inject private var pairedDevice: PairedDevice
+    private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
     private var disposeBag: DisposeBag = .init()
 
@@ -35,7 +34,10 @@ public class StressTest: ObservableObject {
         }
     }
 
-    public init() {}
+    public init(pairedDevice: PairedDevice) {
+        self.pairedDevice = pairedDevice
+        subscribeToPublishers()
+    }
 
     func subscribeToPublishers() {
         pairedDevice.flipper

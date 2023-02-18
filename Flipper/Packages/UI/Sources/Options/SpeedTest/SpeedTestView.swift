@@ -4,7 +4,10 @@ import SwiftUI
 // swiftlint:disable vertical_parameter_alignment_on_call
 
 struct SpeedTestView: View {
-    @StateObject var speedTest: SpeedTest = .init()
+    // next step
+    @StateObject var speedTest: SpeedTest = .init(
+        pairedDevice: Dependencies.shared.pairedDevice
+    )
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {

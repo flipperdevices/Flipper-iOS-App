@@ -1,4 +1,3 @@
-import Inject
 import Peripheral
 
 import Logging
@@ -64,7 +63,7 @@ public class DetectReader: ObservableObject {
         Set(keysFound).intersection(userKnownKeys)
     }
 
-    @Inject private var pairedDevice: PairedDevice
+    private let pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
     private var disposeBag: DisposeBag = .init()
 
@@ -82,10 +81,18 @@ public class DetectReader: ObservableObject {
     }
 
     private var forceStop = false
-    private let mfKnownKeys = MFKnownKeys()
+    private let mfKnownKeys: MFKnownKeys
 
-    public init() {
+    public init(pairedDevice: PairedDevice) {
+        self.pairedDevice = pairedDevice
+        // next step
+        self.mfKnownKeys = .init(pairedDevice: pairedDevice)
+
         subscribeToPublishers()
+    }
+
+    public convenience init() {
+        self.init(pairedDevice: Dependencies.shared.pairedDevice)
     }
 
     func subscribeToPublishers() {

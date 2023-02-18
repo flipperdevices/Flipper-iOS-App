@@ -2,7 +2,10 @@ import Core
 import SwiftUI
 
 struct StressTestView: View {
-    @StateObject var stressTest: StressTest = .init()
+    // next step
+    @StateObject var stressTest: StressTest = .init(
+        pairedDevice: Dependencies.shared.pairedDevice
+    )
     @Environment(\.dismiss) private var dismiss
 
     @State var events: [StressTest.Event] = []

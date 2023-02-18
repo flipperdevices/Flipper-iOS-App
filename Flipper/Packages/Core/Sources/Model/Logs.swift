@@ -1,8 +1,11 @@
-import Inject
 import Foundation
 
 public class Logs: ObservableObject {
-    @Inject private var loggerStorage: LoggerStorage
+    private var loggerStorage: LoggerStorage
+
+    public init(loggerStorage: LoggerStorage) {
+        self.loggerStorage = loggerStorage
+    }
 
     @Published public var records: [String] = []
 
@@ -11,8 +14,6 @@ public class Logs: ObservableObject {
         formatter.dateFormat = "HH:mm:ss dd-MM-yyyy"
         return formatter
     }()
-
-    public init() {}
 
     public func reload() {
         records = loggerStorage.list().sorted {

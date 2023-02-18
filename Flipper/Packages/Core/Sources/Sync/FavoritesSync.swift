@@ -1,11 +1,20 @@
-import Inject
 import Peripheral
 import OrderedCollections
 
 class FavoritesSync: FavoritesSyncProtocol {
-    @Inject private var mobileFavorites: MobileFavoritesProtocol
-    @Inject private var flipperFavorites: FlipperFavoritesProtocol
-    @Inject private var syncedFavorites: SyncedFavoritesProtocol
+    private let mobileFavorites: MobileFavoritesProtocol
+    private let flipperFavorites: FlipperFavoritesProtocol
+    private let syncedFavorites: SyncedFavoritesProtocol
+
+    init(
+        mobileFavorites: MobileFavoritesProtocol,
+        flipperFavorites: FlipperFavoritesProtocol,
+        syncedFavorites: SyncedFavoritesProtocol
+    ) {
+        self.mobileFavorites = mobileFavorites
+        self.flipperFavorites = flipperFavorites
+        self.syncedFavorites = syncedFavorites
+    }
 
     func run() async throws {
         let mobile = try await mobileFavorites.read().paths

@@ -1,4 +1,3 @@
-import Inject
 import Analytics
 import Peripheral
 
@@ -8,18 +7,22 @@ import Foundation
 
 @MainActor
 public class SyncService: ObservableObject {
+    // next step
     let device: Device
 
     @Published public var syncProgress: Int = 0
 
-    @Inject private var pairedDevice: PairedDevice
+    private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
 
-    @Inject var archive: Archive
+    private var archive: Archive
     private var disposeBag: DisposeBag = .init()
 
-    public init(device: Device) {
+    init(pairedDevice: PairedDevice, archive: Archive, device: Device) {
+        self.pairedDevice = pairedDevice
+        self.archive = archive
         self.device = device
+
         subscribeToPublishers()
     }
 

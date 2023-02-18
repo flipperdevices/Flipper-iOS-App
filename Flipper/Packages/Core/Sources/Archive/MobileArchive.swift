@@ -1,12 +1,14 @@
-import Inject
 import Peripheral
 import Foundation
 
 class MobileArchive: MobileArchiveProtocol {
-    @Inject var storage: MobileArchiveStorage
+    private let storage: MobileArchiveStorage
+
     private var manifest: Manifest?
 
-    init() {}
+    init(storage: MobileArchiveStorage) {
+        self.storage = storage
+    }
 
     func getManifest(
         progress: (Double) -> Void

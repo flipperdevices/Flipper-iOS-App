@@ -15,9 +15,6 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "Inject",
-            path: "../Inject"),
-        .package(
             name: "Analytics",
             path: "../Analytics"),
         .package(
@@ -51,7 +48,6 @@ let package = Package(
         .target(
             name: "Core",
             dependencies: [
-                "Inject",
                 "Analytics",
                 "Peripheral",
                 "MFKey32v2",

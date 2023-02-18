@@ -8,8 +8,6 @@ struct FlipperApp: App {
         #if !DEBUG
         Core.migration()
         #endif
-
-        Core.registerMobileDependencies()
     }
 
     var body: some Scene {

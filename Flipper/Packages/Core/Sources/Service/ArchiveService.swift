@@ -1,4 +1,3 @@
-import Inject
 import Analytics
 
 import Combine
@@ -9,7 +8,7 @@ import Foundation
 public class ArchiveService: ObservableObject {
     let syncService: SyncService
 
-    @Inject var archive: Archive
+    private let archive: Archive
     private var disposeBag: DisposeBag = .init()
 
     @Published public private(set) var items: [ArchiveItem] = []
@@ -17,7 +16,8 @@ public class ArchiveService: ObservableObject {
 
     public let imported = SafeSubject<ArchiveItem>()
 
-    public init(syncService: SyncService) {
+    public init(archive: Archive, syncService: SyncService) {
+        self.archive = archive
         self.syncService = syncService
         subscribeToPublishers()
     }
