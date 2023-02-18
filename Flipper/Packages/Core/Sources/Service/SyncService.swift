@@ -16,7 +16,7 @@ public class SyncService: ObservableObject {
     private var rpc: RPC { pairedDevice.session }
 
     private var archive: Archive
-    private var disposeBag: DisposeBag = .init()
+    private var cancellables: [AnyCancellable] = .init()
 
     init(pairedDevice: PairedDevice, archive: Archive, device: Device) {
         self.pairedDevice = pairedDevice
@@ -36,7 +36,7 @@ public class SyncService: ObservableObject {
                 }
                 #endif
             }
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
     }
 
     // MARK: Synchronization

@@ -1,6 +1,7 @@
-import Foundation
 import Peripheral
+
 import Logging
+import Combine
 
 public class Archive {
     let archiveSync: ArchiveSyncProtocol
@@ -36,28 +37,28 @@ public class Archive {
             .sink { [weak self] in
                 self?.onSyncEvent($0)
             }
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
 
         load()
     }
 
-    private var disposeBag: DisposeBag = .init()
+    private var cancellables: [AnyCancellable] = .init()
 
     public enum Error: String, Swift.Error {
         case alreadyExists
     }
 
-    public var items: SafePublisher<[ArchiveItem]> {
+    public var items: AnyPublisher<[ArchiveItem], Never> {
         _items.eraseToAnyPublisher()
     }
-    var _items: SafeValueSubject<[ArchiveItem]> = {
+    var _items: CurrentValueSubject<[ArchiveItem], Never> = {
         .init([])
     }()
 
-    public var deletedItems: SafePublisher<[ArchiveItem]> {
+    public var deletedItems: AnyPublisher<[ArchiveItem], Never> {
         _deletedItems.eraseToAnyPublisher()
     }
-    var _deletedItems: SafeValueSubject<[ArchiveItem]> = {
+    var _deletedItems: CurrentValueSubject<[ArchiveItem], Never> = {
         .init([])
     }()
 

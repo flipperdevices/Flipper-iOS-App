@@ -1,11 +1,13 @@
-import Foundation
 import Peripheral
+
+import Combine
+import Foundation
 
 @MainActor
 public class StressTest: ObservableObject {
     private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
-    private var disposeBag: DisposeBag = .init()
+    private var cancellables: [AnyCancellable] = .init()
 
     var flipper: Flipper? {
         didSet {
@@ -15,9 +17,9 @@ public class StressTest: ObservableObject {
         }
     }
 
-    fileprivate let progressSubject = SafeValueSubject<[Event]>([])
+    fileprivate let progressSubject = CurrentValueSubject<[Event], Never>([])
 
-    public var progress: SafePublisher<[Event]> {
+    public var progress: AnyPublisher<[Event], Never> {
         progressSubject.eraseToAnyPublisher()
     }
 
@@ -43,7 +45,7 @@ public class StressTest: ObservableObject {
         pairedDevice.flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
     }
 
     var isRunning = false

@@ -1,5 +1,6 @@
-import CoreBluetooth
 import Logging
+import Combine
+import CoreBluetooth
 
 class FlipperCentral: NSObject, BluetoothCentral {
     private lazy var manager: CBCentralManager = {
@@ -21,19 +22,19 @@ class FlipperCentral: NSObject, BluetoothCentral {
 
     // MARK: BluetoothCentral & BluetoothConnector
 
-    var status: SafePublisher<BluetoothStatus> {
+    var status: AnyPublisher<BluetoothStatus, Never> {
         _status.eraseToAnyPublisher()
     }
-    let _status: SafeValueSubject<BluetoothStatus> = {
+    let _status: CurrentValueSubject<BluetoothStatus, Never> = {
         .init(.unknown)
     }()
 
     // MARK: BluetoothCentral
 
-    var discovered: SafePublisher<[BluetoothPeripheral]> {
+    var discovered: AnyPublisher<[BluetoothPeripheral], Never> {
         _discovered.eraseToAnyPublisher()
     }
-    let _discovered: SafeValueSubject<[BluetoothPeripheral]> = {
+    let _discovered: CurrentValueSubject<[BluetoothPeripheral], Never> = {
         .init([])
     }()
 
@@ -52,10 +53,10 @@ class FlipperCentral: NSObject, BluetoothCentral {
 
     // MARK: BluetoothConnector
 
-    var connected: SafePublisher<[BluetoothPeripheral]> {
+    var connected: AnyPublisher<[BluetoothPeripheral], Never> {
         _connected.eraseToAnyPublisher()
     }
-    let _connected: SafeValueSubject<[BluetoothPeripheral]> = {
+    let _connected: CurrentValueSubject<[BluetoothPeripheral], Never> = {
         .init([])
     }()
 
@@ -185,7 +186,7 @@ extension Array where Element == BluetoothPeripheral {
     }
 }
 
-extension SafeValueSubject where Output == [BluetoothPeripheral] {
+extension CurrentValueSubject where Output == [BluetoothPeripheral] {
     subscript(_ id: UUID) -> Output.Element? {
         get { self.value[id] }
         set { self.value[id] = newValue }

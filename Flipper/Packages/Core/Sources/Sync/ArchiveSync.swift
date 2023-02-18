@@ -1,6 +1,7 @@
 import Logging
 import Peripheral
-import Foundation
+
+import Combine
 import OrderedCollections
 
 class ArchiveSync: ArchiveSyncProtocol {
@@ -19,8 +20,12 @@ class ArchiveSync: ArchiveSyncProtocol {
     }
 
     private var state: State = .idle
-    private var eventsSubject: SafeSubject<Event> = .init()
-    var events: SafePublisher<Event> { eventsSubject.eraseToAnyPublisher() }
+    private var eventsSubject: PassthroughSubject<Event, Never> = {
+        .init()
+    }()
+    var events: AnyPublisher<Event, Never> {
+        eventsSubject.eraseToAnyPublisher()
+    }
 
     enum State {
         case idle

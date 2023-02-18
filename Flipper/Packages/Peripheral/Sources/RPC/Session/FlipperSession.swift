@@ -1,6 +1,6 @@
+import Logging
 import Combine
 import Foundation
-import Logging
 
 public class FlipperSession: Session {
     public static var current: FlipperSession?

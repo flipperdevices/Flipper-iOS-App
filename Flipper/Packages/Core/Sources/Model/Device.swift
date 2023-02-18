@@ -11,7 +11,7 @@ public class Device: ObservableObject {
 
     private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
-    private var disposeBag = DisposeBag()
+    private var cancellables = [AnyCancellable]()
 
     @Published public var flipper: Flipper?
     @Published public private(set) var frame: ScreenFrame = .init()
@@ -34,7 +34,7 @@ public class Device: ObservableObject {
                 self.flipper = newValue
                 self.onFlipperChanged(oldValue)
             }
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
 
         rpc.onScreenFrame = { [weak self] frame in
             guard let self else { return }

@@ -1,8 +1,7 @@
 import Analytics
 
-import Combine
 import Logging
-import Foundation
+import Combine
 
 @MainActor
 public class Router: ObservableObject {

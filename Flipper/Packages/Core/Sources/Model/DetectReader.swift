@@ -65,7 +65,7 @@ public class DetectReader: ObservableObject {
 
     private let pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
-    private var disposeBag: DisposeBag = .init()
+    private var cancellables: [AnyCancellable] = .init()
 
     @Published public var flipper: Flipper? {
         didSet {
@@ -99,7 +99,7 @@ public class DetectReader: ObservableObject {
         pairedDevice.flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
     }
 
     var task: Task<Void, Never>?

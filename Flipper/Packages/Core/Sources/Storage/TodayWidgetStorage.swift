@@ -1,4 +1,6 @@
+import Combine
+
 public protocol TodayWidgetStorage {
-    var didChange: SafePublisher<Void> { get }
+    var didChange: AnyPublisher<Void, Never> { get }
     var keys: [WidgetKey] { get set }
 }

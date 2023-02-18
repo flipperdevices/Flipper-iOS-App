@@ -1,18 +1,23 @@
 import Peripheral
-import Combine
+
 import Logging
+import Combine
 
 import struct Foundation.UUID
 
 class PairedFlipper: PairedDevice, ObservableObject {
     private var storage: DeviceStorage
     private var central: BluetoothCentral
-    private var disposeBag: DisposeBag = .init()
+    private var cancellables: [AnyCancellable] = .init()
 
     var session: Session = ClosedSession.shared
 
-    var flipper: SafePublisher<Flipper?> { _flipper.eraseToAnyPublisher() }
-    private var _flipper: SafeValueSubject<Flipper?> = .init(nil)
+    var flipper: AnyPublisher<Flipper?, Never> {
+        _flipper.eraseToAnyPublisher()
+    }
+    private var _flipper: CurrentValueSubject<Flipper?, Never> = {
+        .init(nil)
+    }()
 
     private var infoBag: AnyCancellable?
     private var bluetoothPeripheral: BluetoothPeripheral? {
@@ -40,7 +45,7 @@ class PairedFlipper: PairedDevice, ObservableObject {
         central.connected
             .map { $0.first }
             .assign(to: \.bluetoothPeripheral, on: self)
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
     }
 
     func peripheralDidChange() {

@@ -1,6 +1,6 @@
-import CoreBluetooth
-import Combine
 import Logging
+import Combine
+import CoreBluetooth
 
 class FlipperPeripheral: NSObject, BluetoothPeripheral {
     private var peripheral: CBPeripheral

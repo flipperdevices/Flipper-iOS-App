@@ -44,7 +44,7 @@ public class CheckUpdateService: ObservableObject {
 
     private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
-    private var disposeBag: DisposeBag = .init()
+    private var cancellables: [AnyCancellable] = .init()
 
     @Published var flipper: Flipper? {
         didSet { onFlipperChanged(oldValue) }
@@ -73,7 +73,7 @@ public class CheckUpdateService: ObservableObject {
         pairedDevice.flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
     }
 
     // FIXME:

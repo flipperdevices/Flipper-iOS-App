@@ -1,7 +1,7 @@
 import Analytics
 
-import Combine
 import Logging
+import Combine
 import Foundation
 
 @MainActor
@@ -9,12 +9,12 @@ public class ArchiveService: ObservableObject {
     let syncService: SyncService
 
     private let archive: Archive
-    private var disposeBag: DisposeBag = .init()
+    private var cancellables: [AnyCancellable] = .init()
 
     @Published public private(set) var items: [ArchiveItem] = []
     @Published public private(set) var deleted: [ArchiveItem] = []
 
-    public let imported = SafeSubject<ArchiveItem>()
+    public let imported = PassthroughSubject<ArchiveItem, Never>()
 
     public init(archive: Archive, syncService: SyncService) {
         self.archive = archive
@@ -26,12 +26,12 @@ public class ArchiveService: ObservableObject {
         archive.items
             .receive(on: DispatchQueue.main)
             .assign(to: \.items, on: self)
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
 
         archive.deletedItems
             .receive(on: DispatchQueue.main)
             .assign(to: \.deleted, on: self)
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
     }
 
     public func save(

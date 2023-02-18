@@ -6,7 +6,7 @@ import Foundation
 @MainActor
 public class Central: ObservableObject {
     private var central: BluetoothCentral
-    private var disposeBag = DisposeBag()
+    private var cancellables = [AnyCancellable]()
 
     @Published public private(set) var state: BluetoothStatus = .unknown
 
@@ -41,18 +41,18 @@ public class Central: ObservableObject {
         central.status
             .receive(on: DispatchQueue.main)
             .assign(to: \.state, on: self)
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
 
         central.discovered
             .receive(on: DispatchQueue.main)
             .filter { !$0.isEmpty }
             .assign(to: \.bluetoothPeripherals, on: self)
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
 
         central.connected
             .receive(on: DispatchQueue.main)
             .assign(to: \.connectedPeripherals, on: self)
-            .store(in: &disposeBag)
+            .store(in: &cancellables)
     }
 
     private func updateFlippers() {
