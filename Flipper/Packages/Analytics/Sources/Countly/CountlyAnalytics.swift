@@ -1,5 +1,4 @@
 import Countly
-import Logging
 
 public class CountlyAnalytics {
     private let hostURL = "https://countly.flipp.dev/"

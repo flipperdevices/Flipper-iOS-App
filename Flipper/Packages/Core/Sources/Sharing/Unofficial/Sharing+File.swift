@@ -1,5 +1,4 @@
 import UIKit
-import Logging
 import Foundation
 
 class FileImporter: Importer {

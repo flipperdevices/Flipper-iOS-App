@@ -1,5 +1,4 @@
 import Darwin
-import Logging
 
 public class AppReset {
     public static func reset() {

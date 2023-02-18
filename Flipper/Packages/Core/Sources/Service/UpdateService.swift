@@ -1,7 +1,6 @@
 import Analytics
 import Peripheral
 
-import Logging
 import Combine
 import Foundation
 

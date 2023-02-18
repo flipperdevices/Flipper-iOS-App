@@ -1,7 +1,6 @@
 import Peripheral
 
 import Combine
-import Logging
 import Foundation
 
 // TODO: Refactor (ex PingViewModel)

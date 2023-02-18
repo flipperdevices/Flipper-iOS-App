@@ -1,4 +1,3 @@
-import Logging
 
 public struct ScreenFrame {
     let bytes: [UInt8]

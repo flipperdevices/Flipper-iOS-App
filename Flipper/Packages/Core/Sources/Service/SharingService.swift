@@ -1,6 +1,5 @@
 import Analytics
 
-import Logging
 import Foundation
 
 @MainActor

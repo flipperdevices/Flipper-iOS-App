@@ -1,6 +1,5 @@
 import Peripheral
 
-import Logging
 import Combine
 import Foundation
 

@@ -1,4 +1,3 @@
-import Logging
 import Foundation
 
 public class Sharing {

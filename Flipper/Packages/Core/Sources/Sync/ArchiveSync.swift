@@ -1,4 +1,3 @@
-import Logging
 import Peripheral
 
 import Combine

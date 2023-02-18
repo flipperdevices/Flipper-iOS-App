@@ -1,7 +1,6 @@
 import Analytics
 import Peripheral
 import Combine
-import Logging
 import Foundation
 
 @MainActor

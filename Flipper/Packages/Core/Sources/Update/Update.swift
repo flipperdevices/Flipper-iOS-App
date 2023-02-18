@@ -2,7 +2,6 @@ import Analytics
 import Peripheral
 
 import Foundation
-import Logging
 
 public class Update {
     public struct Version: Equatable {

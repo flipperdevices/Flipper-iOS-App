@@ -1,6 +1,5 @@
 import Peripheral
 import Foundation
-import Logging
 
 class WebImporter: Importer {
     enum Error: Swift.Error {

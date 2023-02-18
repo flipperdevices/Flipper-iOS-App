@@ -1,5 +1,4 @@
 import Core
-import Logging
 
 import SwiftUI
 import NotificationCenter

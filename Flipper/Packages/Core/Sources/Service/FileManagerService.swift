@@ -1,4 +1,3 @@
-import Logging
 import Analytics
 import Peripheral
 import Foundation

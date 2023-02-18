@@ -1,5 +1,5 @@
-import Foundation
 import Logging
+import Foundation
 
 public class UserDefaultsStorage {
     public static let shared: UserDefaultsStorage = .init()
