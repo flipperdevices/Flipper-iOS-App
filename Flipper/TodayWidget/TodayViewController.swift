@@ -3,17 +3,12 @@ import SwiftUI
 import NotificationCenter
 import Core
 
-var registerDependenciesOnce: Void = {
-    Core.registerWidgetDependencies()
-}()
-
 class TodayViewController: UIViewController, NCWidgetProviding {
     let compactModeHeight = 110.0
 
     let dependencies: Dependencies
 
     required init?(coder: NSCoder) {
-        _ = registerDependenciesOnce
         dependencies = .init()
         super.init(coder: coder)
     }
