@@ -19,7 +19,6 @@ extension EmulateView {
             case .synchronizing:
                 return "Syncing..."
             default:
-                print(status)
                 return "Flipper Not Connected"
             }
         }
