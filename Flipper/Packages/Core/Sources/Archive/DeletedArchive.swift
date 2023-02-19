@@ -1,9 +1,9 @@
 import Peripheral
 
-class DeletedArchive: DeletedArchiveProtocol {
-    private let storage: DeletedArchiveStorage
+class DeletedArchive: ArchiveProtocol {
+    private let storage: ArchiveStorage
 
-    init(storage: DeletedArchiveStorage) {
+    init(storage: ArchiveStorage) {
         self.storage = storage
     }
 

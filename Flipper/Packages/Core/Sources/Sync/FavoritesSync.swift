@@ -2,14 +2,14 @@ import Peripheral
 import OrderedCollections
 
 class FavoritesSync: FavoritesSyncProtocol {
-    private let mobileFavorites: MobileFavoritesProtocol
-    private let flipperFavorites: FlipperFavoritesProtocol
-    private let syncedFavorites: SyncedFavoritesProtocol
+    private let mobileFavorites: FavoritesProtocol
+    private let flipperFavorites: FavoritesProtocol
+    private let syncedFavorites: FavoritesProtocol
 
     init(
-        mobileFavorites: MobileFavoritesProtocol,
-        flipperFavorites: FlipperFavoritesProtocol,
-        syncedFavorites: SyncedFavoritesProtocol
+        mobileFavorites: FavoritesProtocol,
+        flipperFavorites: FavoritesProtocol,
+        syncedFavorites: FavoritesProtocol
     ) {
         self.mobileFavorites = mobileFavorites
         self.flipperFavorites = flipperFavorites

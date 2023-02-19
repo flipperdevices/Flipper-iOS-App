@@ -45,10 +45,10 @@ public class Dependencies: ObservableObject {
 
     public lazy var archive: Archive = {
         let mobileArchive = MobileArchive(
-            storage: PlainMobileArchiveStorage()
+            storage: MobileArchiveStorage()
         )
         let mobileFavorites = MobileFavorites()
-        let syncedItems = PlainSyncedItemsStorage()
+        let syncedManifest = SyncedItemsStorage()
 
         return Archive(
             archiveSync: ArchiveSync(
@@ -56,7 +56,7 @@ public class Dependencies: ObservableObject {
                     pairedDevice: pairedDevice
                 ),
                 mobileArchive: mobileArchive,
-                syncedItems: syncedItems),
+                syncedManifest: syncedManifest),
             favoritesSync: FavoritesSync(
                 mobileFavorites: mobileFavorites,
                 flipperFavorites: FlipperFavorites(
@@ -65,11 +65,11 @@ public class Dependencies: ObservableObject {
                 syncedFavorites: SyncedFavorites()),
             mobileFavorites: mobileFavorites,
             mobileArchive: mobileArchive,
-            mobileNotes: PlainMobileNotesStorage(),
+            mobileNotes: NotesArchiveStorage(),
             deletedArchive: DeletedArchive(
-                storage: PlainDeletedArchiveStorage()
+                storage: DeletedArchiveStorage()
             ),
-            syncedItems: syncedItems)
+            syncedManifest: syncedManifest)
     }()
 
     // MARK: Application Model

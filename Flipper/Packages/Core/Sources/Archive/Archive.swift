@@ -6,21 +6,21 @@ public class Archive {
     let archiveSync: ArchiveSyncProtocol
     let favoritesSync: FavoritesSyncProtocol
 
-    let mobileFavorites: MobileFavoritesProtocol
-    let mobileArchive: MobileArchiveProtocol
-    let mobileNotes: MobileNotesStorage
-    let deletedArchive: DeletedArchiveProtocol
+    let mobileFavorites: FavoritesProtocol
+    let mobileArchive: ArchiveProtocol & Compressable
+    let mobileNotes: ArchiveStorage
+    let deletedArchive: ArchiveProtocol
 
-    let syncedItems: SyncedItemsProtocol
+    let syncedManifest: ManifestStorage
 
     init(
         archiveSync: ArchiveSyncProtocol,
         favoritesSync: FavoritesSyncProtocol,
-        mobileFavorites: MobileFavoritesProtocol,
-        mobileArchive: MobileArchiveProtocol,
-        mobileNotes: MobileNotesStorage,
-        deletedArchive: DeletedArchiveProtocol,
-        syncedItems: SyncedItemsProtocol
+        mobileFavorites: FavoritesProtocol,
+        mobileArchive: ArchiveProtocol & Compressable,
+        mobileNotes: ArchiveStorage,
+        deletedArchive: ArchiveProtocol,
+        syncedManifest: ManifestStorage
     ) {
         self.archiveSync = archiveSync
         self.favoritesSync = favoritesSync
@@ -28,7 +28,7 @@ public class Archive {
         self.mobileArchive = mobileArchive
         self.mobileNotes = mobileNotes
         self.deletedArchive = deletedArchive
-        self.syncedItems = syncedItems
+        self.syncedManifest = syncedManifest
 
         // FIXME:
 
@@ -287,12 +287,13 @@ extension Archive {
     public func status(
         for item: ArchiveItem
     ) async throws -> ArchiveItem.Status {
-        guard let synced = syncedItems.manifest?[item.path] else {
+        let syncedManifest = try await syncedManifest.get()
+        guard let synced = syncedManifest[item.path] else {
             return .imported
         }
 
-        let manifest = try await mobileArchive.getManifest()
-        guard let current = manifest[item.path] else {
+        let mobileManifest = try await mobileArchive.getManifest()
+        guard let current = mobileManifest[item.path] else {
             return .imported
         }
 

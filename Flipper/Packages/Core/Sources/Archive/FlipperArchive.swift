@@ -1,6 +1,6 @@
 import Peripheral
 
-class FlipperArchive: FlipperArchiveProtocol {
+class FlipperArchive: ArchiveProtocol {
     private let pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
 

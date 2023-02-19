@@ -45,7 +45,7 @@ extension Archive {
             setStatus(.synchronizing, for: .init(path: path))
         case .imported(let path):
             if path.isShadowFile {
-                if let path = originPath(forShadow: path) {
+                if let path = try await originPath(forShadow: path) {
                     try await reload(.init(path: path))
                 }
             } else {
@@ -57,7 +57,7 @@ extension Archive {
         case .deleted(let path):
             if path.isShadowFile {
                 try await mobileArchive.delete(path)
-                if let path = originPath(forShadow: path) {
+                if let path = try await originPath(forShadow: path) {
                     try await reload(.init(path: path))
                 }
             } else {
@@ -67,9 +67,10 @@ extension Archive {
     }
 
     // FIXME:
-    private func originPath(forShadow path: Path) -> Path? {
+    private func originPath(forShadow path: Path) async throws -> Path? {
         let originPath = Path(string: "\(path.string.dropLast(3))nfc")
-        guard syncedItems.manifest?[originPath] != nil else {
+        let manifest = try await syncedManifest.get()
+        guard manifest[originPath] != nil else {
             return nil
         }
         return originPath

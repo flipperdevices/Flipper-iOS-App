@@ -4,18 +4,18 @@ import Combine
 import OrderedCollections
 
 class ArchiveSync: ArchiveSyncProtocol {
-    private let flipperArchive: FlipperArchiveProtocol
-    private let mobileArchive: MobileArchiveProtocol
-    private let syncedItems: SyncedItemsProtocol
+    private let flipperArchive: ArchiveProtocol
+    private let mobileArchive: ArchiveProtocol
+    private let syncedManifest: ManifestStorage
 
     init(
-        flipperArchive: FlipperArchiveProtocol,
-        mobileArchive: MobileArchiveProtocol,
-        syncedItems: SyncedItemsProtocol
+        flipperArchive: ArchiveProtocol,
+        mobileArchive: ArchiveProtocol,
+        syncedManifest: ManifestStorage
     ) {
         self.flipperArchive = flipperArchive
         self.mobileArchive = mobileArchive
-        self.syncedItems = syncedItems
+        self.syncedManifest = syncedManifest
     }
 
     private var state: State = .idle
@@ -44,7 +44,7 @@ class ArchiveSync: ArchiveSyncProtocol {
     var syncProgressFactor: Double { 1.0 - manifestProgressFactor }
 
     private func sync(_ progress: (Double) -> Void) async throws {
-        let lastManifest = syncedItems.manifest ?? .init()
+        let lastManifest = try await syncedManifest.get()
 
         let mobileChanges = try await mobileArchive
             .getManifest()
@@ -92,7 +92,7 @@ class ArchiveSync: ArchiveSyncProtocol {
             currentProgress += syncItemFactor
         }
 
-        syncedItems.manifest = try await mobileArchive.getManifest()
+        try await syncedManifest.upsert(mobileArchive.getManifest())
     }
 
     private func sortActions(

@@ -1,17 +1,20 @@
 import Peripheral
 import Foundation
 
-class PlainDeletedArchiveStorage: DeletedArchiveStorage {
+class PlainArchiveStorage: ArchiveStorage {
     let storage: FileStorage = .init()
-    private let root: Path = "deleted"
+
+    private let root: Path
+
+    init(root: Path) {
+        self.root = root
+    }
 
     var manifest: Manifest {
         get async throws {
             try await storage.getManifest(at: root)
         }
     }
-
-    init() {}
 
     func get(_ path: Path) async throws -> String {
         let path = makePath(for: path)
@@ -30,5 +33,12 @@ class PlainDeletedArchiveStorage: DeletedArchiveStorage {
 
     private func makePath(for path: Path) -> Path {
         root.appending(path.string)
+    }
+}
+
+extension PlainArchiveStorage: Compressable {
+    func compress() -> URL? {
+        let name = root.lastComponent ?? "archive"
+        return storage.archive(root.string, to: "\(name).zip")
     }
 }

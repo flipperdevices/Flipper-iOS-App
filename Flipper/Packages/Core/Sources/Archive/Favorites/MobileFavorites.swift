@@ -1,6 +1,6 @@
 import Peripheral
 
-class MobileFavorites: MobileFavoritesProtocol {
+class MobileFavorites: FavoritesProtocol {
     let storage: FileStorage = .init()
     let filename = "mobile_favorites.txt"
     var path: Path { .init(string: filename) }
