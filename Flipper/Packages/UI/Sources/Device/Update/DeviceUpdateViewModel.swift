@@ -60,12 +60,9 @@ class DeviceUpdateViewModel: ObservableObject {
         }
     }
 
-    lazy var changelog: String = {
-        return (firmware?.changelog ?? "")
-            .replacingPullRequestURLs
-            .replacingCompareURLs
-            .replacingURLs
-    }()
+    var changelog: String {
+        return firmware?.changelog ?? ""
+    }
 
     var availableFirmwareColor: Color {
         switch channel {
@@ -238,31 +235,5 @@ class DeviceUpdateViewModel: ObservableObject {
 
     func howToFactoryReset() {
         UIApplication.shared.open(.helpToFactoryReset)
-    }
-}
-
-private extension String {
-
-    // (^| ) - is simple guard against matching valid markdown link
-
-    var replacingPullRequestURLs: String {
-        replacingOccurrences(
-            of: #"(^| )(https://github.com/[^\s]+/pull/([0-9]+))"#,
-            with: "$1[#$3]($2)",
-            options: [.regularExpression])
-    }
-
-    var replacingCompareURLs: String {
-        replacingOccurrences(
-            of: #"(^| )(https://github.com/[^\s]+/compare/([^\s]+))"#,
-            with: "$1[$3]($2)",
-            options: [.regularExpression])
-    }
-
-    var replacingURLs: String {
-        replacingOccurrences(
-            of: #"(^| )(https://[^\s]+)"#,
-            with: "$1[$2]($2)",
-            options: [.regularExpression])
     }
 }

@@ -1,7 +1,7 @@
 import Peripheral
 import Foundation
 
-class SyncedItemsMock: SyncedItemsProcotol {
+class SyncedItemsMock: SyncedItemsProtocol {
     var manifest: Manifest?
 }
 

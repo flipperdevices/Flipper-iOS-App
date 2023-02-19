@@ -30,7 +30,7 @@ extension Update {
         _ version: Manifest.Version,
         progress: @escaping (Double) -> Void
     ) async throws -> Firmware {
-        guard let url = version.updateArchive?.url else {
+        guard let url = version.f7UpdateBundle?.url else {
             throw Error.invalidFirmwareURL
         }
 
@@ -90,7 +90,7 @@ extension Update {
         try? await rpc.createDirectory(at: .update)
         try? await rpc.createDirectory(at: firmwareUpdatePath)
 
-        let files = await filterExising(firmware.files, at: .update)
+        let files = await filterExisting(firmware.files, at: .update)
 
         if !files.isEmpty {
             progress(0)
@@ -117,7 +117,7 @@ extension Update {
         }
     }
 
-    private func filterExising(
+    private func filterExisting(
         _ files: [Firmware.File],
         at path: Path
     ) async -> [Firmware.File] {

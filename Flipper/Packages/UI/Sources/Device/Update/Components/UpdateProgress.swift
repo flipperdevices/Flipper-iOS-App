@@ -20,10 +20,6 @@ extension DeviceUpdateView {
             }
         }
 
-        var changelog: Document {
-            (try? .init(markdown: viewModel.changelog)) ?? .init(blocks: [])
-        }
-
         var body: some View {
             VStack(spacing: 0) {
                 Text(viewModel.availableFirmware)
@@ -48,7 +44,7 @@ extension DeviceUpdateView {
                             .font(.system(size: 18, weight: .bold))
                             .padding(.top, 24)
 
-                        Markdown(changelog)
+                        GitHubMarkdown(viewModel.changelog)
                             .padding(.vertical, 14)
                             .markdownStyle(
                                 MarkdownStyle(

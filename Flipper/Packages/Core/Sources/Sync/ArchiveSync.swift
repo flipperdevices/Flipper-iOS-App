@@ -9,7 +9,7 @@ class ArchiveSync: ArchiveSyncProtocol {
 
     @Inject private var flipperArchive: FlipperArchiveProtocol
     @Inject private var mobileArchive: MobileArchiveProtocol
-    @Inject private var syncedItems: SyncedItemsProcotol
+    @Inject private var syncedItems: SyncedItemsProtocol
 
     private var state: State = .idle
     private var eventsSubject: SafeSubject<Event> = .init()
