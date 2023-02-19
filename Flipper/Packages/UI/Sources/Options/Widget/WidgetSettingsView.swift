@@ -5,8 +5,8 @@ struct WidgetSettingsView: View {
     @StateObject private var widget: WidgetService = .init()
     @Environment(\.dismiss) private var dismiss
 
-    @State var showAddKeyView = false
-    @State var showWidgetHelpView = false
+    @State private var showAddKeyView = false
+    @State private var showWidgetHelpView = false
 
     var rows: Range<Int> {
         (0..<(widget.keys.count / 2 + 1))

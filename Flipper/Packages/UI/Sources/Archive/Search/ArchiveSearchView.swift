@@ -5,8 +5,8 @@ struct ArchiveSearchView: View {
     @EnvironmentObject var archiveService: ArchiveService
     @Environment(\.dismiss) private var dismiss
 
-    @State var predicate = ""
-    @State var selectedItem: ArchiveItem?
+    @State private var predicate = ""
+    @State private var selectedItem: ArchiveItem?
 
     var filteredItems: [ArchiveItem] {
         guard !predicate.isEmpty else {

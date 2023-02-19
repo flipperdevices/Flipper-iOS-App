@@ -9,10 +9,10 @@ struct OptionsView: View {
     @AppStorage(.isDebugMode) var isDebugMode = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
 
-    @State var showResetApp = false
-    @State var versionTapCount = 0
+    @State private var showResetApp = false
+    @State private var versionTapCount = 0
 
-    @State var showWidgetSettings = false
+    @State private var showWidgetSettings = false
 
     var appVersion: String {
         Bundle.releaseVersion

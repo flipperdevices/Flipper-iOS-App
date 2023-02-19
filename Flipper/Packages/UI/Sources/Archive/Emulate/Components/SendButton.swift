@@ -10,9 +10,9 @@ extension EmulateView {
 
         @Environment(\.isEnabled) var isEnabled
 
-        @State var isPressed = false
-        @State var trimFrom: Double = 0
-        @State var trimTo: Double = 0
+        @State private var isPressed = false
+        @State private var trimFrom: Double = 0
+        @State private var trimTo: Double = 0
 
         var text: String {
             isEmulating

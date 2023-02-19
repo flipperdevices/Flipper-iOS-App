@@ -10,19 +10,19 @@ struct FileManagerListing: View {
     @EnvironmentObject var fileManager: RemoteFileManager
     @Environment(\.dismiss) var dismiss
 
-    @State var elements: [Element] = []
-    @State var error: String? = nil
-    @State var isBusy = false
+    @State private var elements: [Element] = []
+    @State private var error: String? = nil
+    @State private var isBusy = false
 
-    @State var name = ""
-    @State var isNewFile = false
-    @State var isNewDirectory = false
+    @State private var name = ""
+    @State private var isNewFile = false
+    @State private var isNewDirectory = false
     @FocusState var isNameFocused: Bool
     var namePlaceholder: String {
         "\(isNewFile ? "file" : "directory") name"
     }
 
-    @State var isFileImporterPresented = false
+    @State private var isFileImporterPresented = false
 
     var body: some View {
         VStack {

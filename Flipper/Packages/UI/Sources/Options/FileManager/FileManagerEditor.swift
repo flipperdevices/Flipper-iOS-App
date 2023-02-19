@@ -9,9 +9,9 @@ struct FileManagerEditor: View {
     @EnvironmentObject var fileManager: RemoteFileManager
     @Environment(\.dismiss) var dismiss
 
-    @State var content: String = ""
-    @State var error: String? = nil
-    @State var isBusy = false
+    @State private var content: String = ""
+    @State private var error: String? = nil
+    @State private var isBusy = false
 
     var body: some View {
         VStack {

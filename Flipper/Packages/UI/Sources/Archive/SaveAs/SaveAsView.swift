@@ -7,7 +7,7 @@ struct SaveAsView: View {
     @Environment(\.dismiss) private var dismiss
 
     @Binding var item: ArchiveItem
-    @State var error: String?
+    @State private var error: String?
 
     var body: some View {
         ZStack {

@@ -10,7 +10,7 @@ struct DetectReaderView: View {
     @StateObject private var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
 
-    @State var showCancelAttack = false
+    @State private var showCancelAttack = false
 
     var flipperColor: FlipperColor {
         device.flipper?.color ?? .white

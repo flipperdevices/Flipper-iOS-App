@@ -8,13 +8,13 @@ struct ImportView: View {
 
     let url: URL
 
-    @State var state: ImportState = .loading
+    @State private var state: ImportState = .loading
 
-    @State var item: ArchiveItem = .none
-    @State var backup: ArchiveItem = .none
+    @State private var item: ArchiveItem = .none
+    @State private var backup: ArchiveItem = .none
 
-    @State var isEditing = false
-    @State var error: String?
+    @State private var isEditing = false
+    @State private var error: String?
 
     enum ImportState {
         case loading

@@ -8,9 +8,9 @@ struct ArchiveView: View {
     @EnvironmentObject var archiveService: ArchiveService
     @EnvironmentObject var syncService: SyncService
 
-    @State var importedItem: URL?
-    @State var selectedItem: ArchiveItem?
-    @State var showSearchView = false
+    @State private var importedItem: URL?
+    @State private var selectedItem: ArchiveItem?
+    @State private var showSearchView = false
 
     var canPullToRefresh: Bool {
         device.status == .connected ||

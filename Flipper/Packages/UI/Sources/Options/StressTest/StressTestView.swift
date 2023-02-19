@@ -8,7 +8,7 @@ struct StressTestView: View {
     )
     @Environment(\.dismiss) private var dismiss
 
-    @State var events: [StressTest.Event] = []
+    @State private var events: [StressTest.Event] = []
 
     var successCount: Int {
         events.filter { $0.kind == .success }.count

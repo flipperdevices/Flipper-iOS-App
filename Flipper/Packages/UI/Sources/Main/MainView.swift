@@ -15,10 +15,10 @@ struct MainView: View {
         }
     }
 
-    @State var importedName = ""
-    @State var importedOpacity = 0.0
+    @State private var importedName = ""
+    @State private var importedOpacity = 0.0
 
-    @State var showWidgetSettings = false
+    @State private var showWidgetSettings = false
 
     var body: some View {
         VStack(spacing: 0) {

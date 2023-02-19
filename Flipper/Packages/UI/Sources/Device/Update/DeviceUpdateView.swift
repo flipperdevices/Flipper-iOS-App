@@ -6,7 +6,7 @@ struct DeviceUpdateView: View {
     @EnvironmentObject var device: Device
     @Environment(\.dismiss) var dismiss
 
-    @State var showCancelUpdate = false
+    @State private var showCancelUpdate = false
 
     let intent: Update.Intent
 

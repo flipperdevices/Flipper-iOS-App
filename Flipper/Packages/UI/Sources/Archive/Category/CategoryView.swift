@@ -6,7 +6,7 @@ struct CategoryView: View {
     @Environment(\.dismiss) private var dismiss
 
     let kind: ArchiveItem.Kind
-    @State var selectedItem: ArchiveItem?
+    @State private var selectedItem: ArchiveItem?
 
     var items: [ArchiveItem] {
         archiveService.items.filter { $0.kind == kind }

@@ -23,7 +23,7 @@ struct EmulateView: View {
             && item.status == .synchronized
     }
 
-    @State var emulateDuration: Int = 0
+    @State private var emulateDuration: Int = 0
 
     var body: some View {
         VStack(spacing: 4) {

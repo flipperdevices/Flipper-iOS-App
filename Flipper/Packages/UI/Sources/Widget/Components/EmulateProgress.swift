@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EmulateProgress: View {
-    @State var rotation = 0.0
+    @State private var rotation = 0.0
 
     var animation: SwiftUI.Animation {
         .linear(duration: 1).repeatForever(autoreverses: false)

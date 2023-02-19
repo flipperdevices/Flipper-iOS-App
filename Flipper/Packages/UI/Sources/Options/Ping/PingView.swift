@@ -7,7 +7,7 @@ struct PingView: View {
         pairedDevice: Dependencies.shared.pairedDevice
     )
     @Environment(\.dismiss) private var dismiss
-    @State var entered: String = ""
+    @State private var entered: String = ""
 
     var body: some View {
         VStack(spacing: 20) {

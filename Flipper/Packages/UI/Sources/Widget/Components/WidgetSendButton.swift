@@ -5,7 +5,7 @@ struct WidgetSendButton: View {
     let onPress: () -> Void
     let onRelease: () -> Void
 
-    @State var isPressed = false
+    @State private var isPressed = false
 
     var color: Color {
         state == .disabled ? .black8 : .a1

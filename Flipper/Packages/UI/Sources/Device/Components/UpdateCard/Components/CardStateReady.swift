@@ -11,8 +11,8 @@ extension DeviceUpdateCard {
         @EnvironmentObject var syncService: SyncService
         @EnvironmentObject var checkUpdateService: CheckUpdateService
 
-        @State var showPauseSync = false
-        @State var showCharge = false
+        @State private var showPauseSync = false
+        @State private var showCharge = false
 
         var availableFirmware: String {
             checkUpdateService.available?.description ?? "unknown"

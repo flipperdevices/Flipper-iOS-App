@@ -5,9 +5,9 @@ struct CategoryDeletedView: View {
     @EnvironmentObject var archiveService: ArchiveService
     @Environment(\.dismiss) private var dismiss
 
-    @State var selectedItem: ArchiveItem?
-    @State var showRestoreSheet = false
-    @State var showDeleteSheet = false
+    @State private var selectedItem: ArchiveItem?
+    @State private var showRestoreSheet = false
+    @State private var showDeleteSheet = false
 
     var restoreSheetTitle: String {
         "All deleted keys will be restored and synced with Flipper"

@@ -8,7 +8,7 @@ struct WidgetAddKeyView: View {
     let widgetKeys: [WidgetKey]
     let onItemSelected: (ArchiveItem) -> Void
 
-    @State var predicate = ""
+    @State private var predicate = ""
 
     var filteredItems: [ArchiveItem] {
         archiveService.items.filter { item in

@@ -14,8 +14,8 @@ struct DeviceUpdateCard: View {
         checkUpdateService.intent?.to.description ?? "unknown"
     }
 
-    @State var intent: Update.Intent? = nil
-    @State var showConfirmUpdate = false
+    @State private var intent: Update.Intent? = nil
+    @State private var showConfirmUpdate = false
 
     var body: some View {
         Card {

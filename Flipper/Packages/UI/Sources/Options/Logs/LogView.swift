@@ -6,7 +6,7 @@ struct LogView: View {
     @Environment(\.dismiss) private var dismiss
 
     let name: String
-    @State var messages: [Message] = []
+    @State private var messages: [Message] = []
 
     public struct Message: Identifiable {
         public let id: UUID

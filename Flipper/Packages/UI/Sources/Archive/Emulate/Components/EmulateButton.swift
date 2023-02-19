@@ -8,8 +8,8 @@ extension EmulateView {
         let onTapGesture: () -> Void
         let onLongTapGesture: () -> Void
 
-        @State var trimFrom: Double = 0
-        @State var trimTo: Double = 0.333
+        @State private var trimFrom: Double = 0
+        @State private var trimTo: Double = 0.333
 
         var text: String {
             isEmulating

@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct AnimatedPlaceholder: View {
-    @State var startPoint: UnitPoint = .init(x: 0, y: 0)
-    @State var endPoint: UnitPoint = .init(x: -10, y: 0)
+    @State private var startPoint: UnitPoint = .init(x: 0, y: 0)
+    @State private var endPoint: UnitPoint = .init(x: -10, y: 0)
 
     let color1: Color
     let color2: Color

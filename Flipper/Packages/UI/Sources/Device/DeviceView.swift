@@ -7,8 +7,8 @@ struct DeviceView: View {
     @EnvironmentObject var device: Device
     @EnvironmentObject var syncService: SyncService
 
-    @State var showForgetAction = false
-    @State var showUnsupportedVersionAlert = false
+    @State private var showForgetAction = false
+    @State private var showUnsupportedVersionAlert = false
 
     var flipper: Flipper? {
         device.flipper
