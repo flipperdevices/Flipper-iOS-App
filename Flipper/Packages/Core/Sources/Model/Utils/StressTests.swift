@@ -3,6 +3,8 @@ import Peripheral
 import Combine
 import Foundation
 
+// TODO: Refactor (ex StressTestViewModel)
+
 @MainActor
 public class StressTest: ObservableObject {
     private var pairedDevice: PairedDevice

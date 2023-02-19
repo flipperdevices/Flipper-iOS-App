@@ -3,6 +3,8 @@ import Peripheral
 import Combine
 import Foundation
 
+// TODO: Refactor (ex SpeedTestViewModel)
+
 @MainActor
 public class SpeedTest: ObservableObject {
     private var pairedDevice: PairedDevice
