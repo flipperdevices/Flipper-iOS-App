@@ -2,7 +2,6 @@ import Core
 import SwiftUI
 
 struct InfoView: View {
-    @EnvironmentObject var device: Device
     @EnvironmentObject var archiveService: ArchiveService
     @EnvironmentObject var sharingService: SharingService
     @EnvironmentObject var networkMonitor: NetworkMonitor
