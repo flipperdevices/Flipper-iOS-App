@@ -126,7 +126,7 @@ struct OptionsView: View {
             }
         }
         .fullScreenCover(isPresented: $showWidgetSettings) {
-            WidgetSettingsView()
+            TodayWidgetSettingsView()
         }
     }
 

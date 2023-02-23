@@ -1,8 +1,9 @@
 import Peripheral
-import Foundation
-import Combine
 
-class JSONTodayWidgetStorage: NSObject, TodayWidgetStorage {
+import Combine
+import Foundation
+
+class JSONTodayWidgetStorage: NSObject, TodayWidgetKeysStorage {
     let storage: FileStorage = .init()
     let filename = "today_widget_keys.json"
     var path: Path { .init(string: filename) }
@@ -12,13 +13,16 @@ class JSONTodayWidgetStorage: NSObject, TodayWidgetStorage {
     }
     fileprivate let didChangeSubject = PassthroughSubject<Void, Never>()
 
-    var keys: [WidgetKey] {
-        get {
-            (try? storage.read(path)) ?? []
+    func read() async throws -> [WidgetKey] {
+        do {
+            return (try storage.read(path)) ?? []
+        } catch let error as NSError where error.code == 260 {
+            return []
         }
-        set {
-            try? storage.write(newValue, at: path)
-        }
+    }
+
+    func write(_ keys: [WidgetKey]) async throws {
+        try storage.write(keys, at: path)
     }
 
     override init() {

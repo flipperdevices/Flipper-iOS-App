@@ -84,7 +84,7 @@ struct EmulateView: View {
             TransmissionRestrictedAlert(isPresented: $showRestricted)
         }
         .onDisappear {
-            forceStopEmulate()
+            stopEmulate()
         }
         .onChange(of: emulateService.state) { state in
             if state == .closed {
@@ -147,6 +147,5 @@ struct EmulateView: View {
 
     func resetEmulate() {
         isEmulating = false
-        emulateService.resetEmulate()
     }
 }

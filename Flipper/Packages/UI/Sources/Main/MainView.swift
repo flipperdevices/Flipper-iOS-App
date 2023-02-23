@@ -18,7 +18,7 @@ struct MainView: View {
     @State private var importedName = ""
     @State private var importedOpacity = 0.0
 
-    @State private var showWidgetSettings = false
+    @State private var showTodayWidgetSettings = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -45,12 +45,12 @@ struct MainView: View {
             onItemAdded(item: item)
         }
         .onOpenURL { url in
-            if url == .widgetSettings {
-                showWidgetSettings = true
+            if url == .todayWidgetSettings {
+                showTodayWidgetSettings = true
             }
         }
-        .fullScreenCover(isPresented: $showWidgetSettings) {
-            WidgetSettingsView()
+        .fullScreenCover(isPresented: $showTodayWidgetSettings) {
+            TodayWidgetSettingsView()
         }
     }
 

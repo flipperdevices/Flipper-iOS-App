@@ -15,7 +15,7 @@ struct AddKeyButton: View {
 
     func addKey() {
         #if os(iOS)
-        openURL(.widgetSettings)
+        openURL(.todayWidgetSettings)
         #endif
     }
 }

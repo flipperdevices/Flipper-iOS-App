@@ -1,16 +1,18 @@
 import SwiftUI
 
 struct WidgetEmulateButton: View {
-    let state: WidgetKeyState
+    let isEmulating: Bool
     let onTapGesture: () -> Void
     let onLongPressGesture: () -> Void
 
+    @Environment(\.isEnabled) var isEnabled
+
     var color: Color {
-        state == .disabled ? .black8 : .a2
+        isEnabled ? .a2 : .black8
     }
 
     var label: String {
-        state == .emulating ? "Emulating..." : "Emulate"
+        isEmulating ? "Emulating..." : "Emulate"
     }
 
     var body: some View {
@@ -32,7 +34,6 @@ struct WidgetEmulateButton: View {
         .simultaneousGesture(TapGesture().onEnded {
             onTapGesture()
         })
-        .disabled(state == .disabled)
     }
 }
 

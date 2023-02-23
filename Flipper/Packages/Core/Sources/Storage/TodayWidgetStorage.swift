@@ -1,6 +1,8 @@
 import Combine
 
-public protocol TodayWidgetStorage {
+public protocol TodayWidgetKeysStorage {
     var didChange: AnyPublisher<Void, Never> { get }
-    var keys: [WidgetKey] { get set }
+
+    func read() async throws -> [WidgetKey]
+    func write(_ keys: [WidgetKey]) async throws
 }

@@ -43,9 +43,13 @@ public class Dependencies: ObservableObject {
 
     // archive
 
+    public lazy var mobileArchiveStorage: ArchiveStorage = {
+        MobileArchiveStorage()
+    }()
+
     public lazy var archive: Archive = {
         let mobileArchive = MobileArchive(
-            storage: MobileArchiveStorage()
+            storage: mobileArchiveStorage
         )
         let mobileFavorites = MobileFavorites()
         let syncedManifest = SyncedItemsStorage()
@@ -122,5 +126,16 @@ public class Dependencies: ObservableObject {
     @MainActor
     public lazy var sharingService: SharingService = {
         .init()
+    }()
+
+    @MainActor
+    public lazy var widget: TodayWidget = {
+        .init(
+            widgetStorage: FilteredWidgetStorage(
+                widgetStorage: JSONTodayWidgetStorage(),
+                mobileStorage: mobileArchiveStorage),
+            emulateService: emulateService,
+            archive: archive,
+            device: pairedDevice)
     }()
 }

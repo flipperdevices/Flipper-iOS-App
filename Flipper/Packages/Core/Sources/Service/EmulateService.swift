@@ -102,7 +102,7 @@ public class EmulateService: ObservableObject {
         forceStop = true
     }
 
-    public func resetEmulate() {
+    private func resetEmulate() {
         item = nil
         stop = false
         forceStop = false

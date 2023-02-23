@@ -2,11 +2,11 @@ import Peripheral
 import Foundation
 
 class MobileArchive: ArchiveProtocol {
-    private let storage: ArchiveStorage & Compressable
+    private let storage: ArchiveStorage
 
     private var manifest: Manifest?
 
-    init(storage: ArchiveStorage & Compressable) {
+    init(storage: ArchiveStorage) {
         self.storage = storage
     }
 
@@ -47,6 +47,6 @@ class MobileArchive: ArchiveProtocol {
 
 extension MobileArchive: Compressable {
     func compress() -> URL? {
-        storage.compress()
+        (storage as? Compressable)?.compress()
     }
 }

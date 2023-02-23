@@ -3,19 +3,20 @@ import SwiftUI
 
 @MainActor
 struct WidgetKeyView: View {
-    @EnvironmentObject var widget: WidgetService
+    @EnvironmentObject var widget: TodayWidget
 
     let key: WidgetKey
 
-    var state: WidgetKeyState {
-        guard let keyToEmulate = widget.keyToEmulate else {
-            return .idle
-        }
-        return key == keyToEmulate ? .emulating : .disabled
+    var isEmulating: Bool {
+        widget.keyToEmulate == key
+    }
+
+    var isEnabled: Bool {
+        widget.keyToEmulate == nil || isEmulating
     }
 
     var color: Color {
-        guard state != .disabled else {
+        guard isEnabled else {
             return .black8
         }
         switch key.kind {
@@ -35,7 +36,7 @@ struct WidgetKeyView: View {
                         EmulateProgress()
                     }
                 }
-                .opacity(state == .emulating ? 1 : 0)
+                .opacity(isEmulating ? 1 : 0)
 
                 Image(systemName: "exclamationmark.circle.fill")
                     .resizable()
@@ -59,17 +60,18 @@ struct WidgetKeyView: View {
 
             if key.kind == .subghz {
                 WidgetSendButton(
-                    state: state,
+                    isEmulating: isEmulating,
                     onPress: { widget.onSendPressed(for: key) },
                     onRelease: { widget.onSendReleased(for: key) }
                 )
             } else {
                 WidgetEmulateButton(
-                    state: state,
+                    isEmulating: isEmulating,
                     onTapGesture: { widget.onEmulateTapped(for: key) },
                     onLongPressGesture: { widget.onEmulateTapped(for: key) }
                 )
             }
         }
+        .disabled(!isEnabled)
     }
 }

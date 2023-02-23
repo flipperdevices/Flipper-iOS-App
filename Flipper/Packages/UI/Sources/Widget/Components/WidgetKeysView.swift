@@ -3,16 +3,13 @@ import SwiftUI
 import NotificationCenter
 
 struct WidgetKeysView: View {
-    @EnvironmentObject var widget: WidgetService
+    let keys: [WidgetKey]
+    let isExpanded: Bool
 
     var rows: Range<Int> {
-        widget.isExpanded
+        isExpanded
             ? (0..<(keys.count / 2 + 1))
             : (0..<1)
-    }
-
-    var keys: [WidgetKey] {
-        widget.keys
     }
 
     var body: some View {
@@ -44,6 +41,7 @@ struct WidgetKeysView: View {
                 .padding(.horizontal, 11)
                 .padding(.bottom, 4)
             }
+            .frame(height: 110)
 
             if row + 1 < rows.endIndex {
                 Divider()

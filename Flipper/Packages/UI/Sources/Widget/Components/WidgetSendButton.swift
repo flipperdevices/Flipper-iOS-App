@@ -1,18 +1,20 @@
 import SwiftUI
 
 struct WidgetSendButton: View {
-    let state: WidgetKeyState
+    let isEmulating: Bool
     let onPress: () -> Void
     let onRelease: () -> Void
 
     @State private var isPressed = false
 
+    @Environment(\.isEnabled) var isEnabled
+
     var color: Color {
-        state == .disabled ? .black8 : .a1
+        isEnabled ? .a1 : .black8
     }
 
     var label: String {
-        state == .emulating ? "Sending..." : "Send"
+        isEmulating ? "Sending..." : "Send"
     }
 
     var body: some View {
@@ -42,6 +44,5 @@ struct WidgetSendButton: View {
                     onRelease()
                 }
         )
-        .disabled(state == .disabled)
     }
 }

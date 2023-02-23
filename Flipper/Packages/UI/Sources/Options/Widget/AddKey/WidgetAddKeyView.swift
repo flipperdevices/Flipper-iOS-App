@@ -6,7 +6,7 @@ struct WidgetAddKeyView: View {
     @Environment(\.dismiss) private var dismiss
 
     let widgetKeys: [WidgetKey]
-    let onItemSelected: (ArchiveItem) -> Void
+    let onItemSelected: (WidgetKey) -> Void
 
     @State private var predicate = ""
 
@@ -46,7 +46,7 @@ struct WidgetAddKeyView: View {
             } else {
                 ScrollView {
                     CategoryList(items: filteredItems) { item in
-                        onItemSelected(item)
+                        onItemSelected(.init(name: item.name, kind: item.kind))
                         dismiss()
                     }
                     .padding(14)

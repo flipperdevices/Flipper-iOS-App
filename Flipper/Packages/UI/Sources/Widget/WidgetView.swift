@@ -4,19 +4,7 @@ import SwiftUI
 import NotificationCenter
 
 public struct WidgetView: View {
-    @StateObject var widget: WidgetService = .init()
-
-    @StateObject var device: Device = .init(
-        pairedDevice: Dependencies.shared.pairedDevice
-    )
-
-    @StateObject var emulateService: EmulateService = .init(
-        pairedDevice: Dependencies.shared.pairedDevice
-    )
-
-    public var isError: Bool {
-        widget.isError
-    }
+    @EnvironmentObject var widget: TodayWidget
 
     public init() {
     }
@@ -26,34 +14,28 @@ public struct WidgetView: View {
             Divider()
                 .foregroundColor(.black4)
 
-            switch widget.state {
-            case .idle, .emulating:
-                WidgetKeysView()
-                    .environmentObject(widget)
-            case .loading:
-                Text("Loading")
-            case .error(let error):
-                ErrorView(error: error) {
-                    print("on back")
+            if let error = widget.error {
+                WidgetError(error) {
+                    widget.error = nil
                 }
+                .padding(.vertical, 14)
+            } else {
+                WidgetKeysView(
+                    keys: widget.keys,
+                    isExpanded: widget.isExpanded
+                )
             }
         }
+        .edgesIgnoringSafeArea(.all)
         .onAppear {
-            device.connect()
+            widget.connect()
         }
         .onDisappear {
             widget.stopEmulate()
-            device.disconnect()
+            widget.disconnect()
         }
-        .edgesIgnoringSafeArea(.all)
-        .onChange(of: emulateService.state) { state in
-            if
-                state == .staring ||
-                state == .started ||
-                state == .closed
-            {
-                feedback(style: .soft)
-            }
+        .onChange(of: widget.keyToEmulate) { state in
+            feedback(style: .soft)
         }
     }
 }

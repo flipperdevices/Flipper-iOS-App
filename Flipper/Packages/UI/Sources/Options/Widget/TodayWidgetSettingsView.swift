@@ -1,15 +1,21 @@
 import Core
 import SwiftUI
 
-struct WidgetSettingsView: View {
-    @StateObject private var widget: WidgetService = .init()
+struct TodayWidgetSettingsView: View {
+    @StateObject private var widget: TodayWidget = {
+        Dependencies.shared.widget
+    }()
     @Environment(\.dismiss) private var dismiss
 
     @State private var showAddKeyView = false
     @State private var showWidgetHelpView = false
 
+    var keys: [WidgetKey] {
+        widget.keys
+    }
+
     var rows: Range<Int> {
-        (0..<(widget.keys.count / 2 + 1))
+        (0..<(keys.count / 2 + 1))
     }
 
     var body: some View {
@@ -39,9 +45,9 @@ struct WidgetSettingsView: View {
                             let i1 = row * 2
                             let i2 = i1 + 1
 
-                            if i1 < widget.keys.count {
-                                WidgetAddedItem(key: widget.keys[i1]) {
-                                    widget.delete(at: i1)
+                            if i1 < keys.count {
+                                WidgetAddedItem(key: keys[i1]) {
+                                    widget.delete(keys[i1])
                                 }
                                 .padding(11)
                             } else {
@@ -54,11 +60,11 @@ struct WidgetSettingsView: View {
                             Divider()
 
                             Group {
-                                if i2 < widget.keys.count {
-                                    WidgetAddedItem(key: widget.keys[i2]) {
-                                        widget.delete(at: i2)
+                                if i2 < keys.count {
+                                    WidgetAddedItem(key: keys[i2]) {
+                                        widget.delete(keys[i2])
                                     }
-                                } else if i1 < widget.keys.count {
+                                } else if i1 < keys.count {
                                     WidgetAddButton {
                                         showAddKeyView = true
                                     }
@@ -78,7 +84,7 @@ struct WidgetSettingsView: View {
                     }
                 }
                 .sheet(isPresented: $showAddKeyView) {
-                    WidgetAddKeyView(widgetKeys: widget.keys) {
+                    WidgetAddKeyView(widgetKeys: keys) {
                         widget.add($0)
                     }
                 }
