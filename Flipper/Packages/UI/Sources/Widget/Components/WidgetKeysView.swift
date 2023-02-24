@@ -6,15 +6,14 @@ struct WidgetKeysView: View {
     let keys: [WidgetKey]
     let isExpanded: Bool
 
-    var rows: Range<Int> {
-        isExpanded
-            ? (0..<(keys.count / 2 + 1))
-            : (0..<1)
-    }
+    private let maxRows = 4
+    private var keysRows: Int { keys.count / 2 + 1 }
+    private var rowsCount: Int { isExpanded ? min(keysRows, maxRows) : 1 }
+    private var rowsRange: Range<Int> { (0..<rowsCount) }
 
     var body: some View {
         VStack(spacing: 0) {
-            ForEach(rows, id: \.self) { row in
+            ForEach(rowsRange, id: \.self) { row in
                 ZStack {
                     HStack {
                         Spacer()
@@ -47,9 +46,29 @@ struct WidgetKeysView: View {
                     }
                 }
 
-                if row + 1 < rows.endIndex {
+                if row + 1 < rowsRange.endIndex {
                     Divider()
                 }
+            }
+
+            if keys.count >= maxRows * 2 {
+                Divider()
+                CustomizeButton()
+                    .padding(.vertical, 6)
+            }
+        }
+    }
+
+    struct CustomizeButton: View {
+        @Environment(\.openURL) var openURL
+
+        var body: some View {
+            Button {
+                openURL(.todayWidgetSettings)
+            } label: {
+                Text("Customize")
+                    .foregroundColor(.black30)
+                    .font(.system(size: 12, weight: .medium))
             }
         }
     }

@@ -10,13 +10,14 @@ struct TodayWidgetSettingsView: View {
     @State private var showAddKeyView = false
     @State private var showWidgetHelpView = false
 
-    var keys: [WidgetKey] {
+    private var keys: [WidgetKey] {
         widget.keys
     }
 
-    var rows: Range<Int> {
-        (0..<(keys.count / 2 + 1))
-    }
+    private let maxRows = 4
+    private var keysRows: Int { keys.count / 2 + 1 }
+    private var rowsCount: Int { min(keysRows, maxRows) }
+    private var rowsRange: Range<Int> { (0..<rowsCount) }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -40,7 +41,7 @@ struct TodayWidgetSettingsView: View {
 
             ScrollView {
                 VStack(spacing: 0) {
-                    ForEach(rows, id: \.self) { row in
+                    ForEach(rowsRange, id: \.self) { row in
                         HStack {
                             let i1 = row * 2
                             let i2 = i1 + 1
@@ -78,7 +79,7 @@ struct TodayWidgetSettingsView: View {
                             .padding(11)
                         }
 
-                        if row + 1 < rows.endIndex {
+                        if row + 1 < rowsRange.endIndex {
                             Divider()
                         }
                     }

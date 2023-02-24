@@ -27,7 +27,7 @@ struct WidgetKeyView: View {
     }
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 5) {
             ZStack(alignment: .topTrailing) {
                 ZStack {
                     if key.kind == .subghz {

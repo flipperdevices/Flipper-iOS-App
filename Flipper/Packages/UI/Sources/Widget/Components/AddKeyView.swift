@@ -7,7 +7,7 @@ struct AddKeyView: View {
         Button {
             action()
         } label: {
-            VStack(spacing: 8) {
+            VStack(spacing: 5) {
                 Image(systemName: "plus.circle.fill")
                     .resizable()
                     .foregroundColor(.black4)
