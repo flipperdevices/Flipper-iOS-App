@@ -71,11 +71,7 @@ class TodayViewController: UIViewController, WidgetProviding {
         _ activeDisplayMode: WidgetDisplayMode,
         withMaximumSize maxSize: CGSize
     ) {
-        var transaction = Transaction()
-        transaction.disablesAnimations = true
-        withTransaction(transaction) {
-            widget.isExpanded = activeDisplayMode == .expanded
-        }
+        widget.isExpanded = activeDisplayMode == .expanded
         updatePreferredHeight()
     }
 
