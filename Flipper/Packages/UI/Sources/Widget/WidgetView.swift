@@ -32,7 +32,6 @@ public struct WidgetView: View {
         }
         .onDisappear {
             widget.stopEmulate()
-            widget.disconnect()
         }
         .onChange(of: widget.keyToEmulate) { state in
             feedback(style: .soft)
