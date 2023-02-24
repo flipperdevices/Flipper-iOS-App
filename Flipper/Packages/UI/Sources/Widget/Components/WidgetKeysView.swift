@@ -13,38 +13,43 @@ struct WidgetKeysView: View {
     }
 
     var body: some View {
-        ForEach(rows, id: \.self) { row in
-            HStack(spacing: 0) {
-                let i1 = row * 2
-                let i2 = i1 + 1
-
+        VStack(spacing: 0) {
+            ForEach(rows, id: \.self) { row in
                 ZStack {
-                    if i1 < keys.count {
-                        WidgetKeyView(key: keys[i1])
-                    } else {
-                        AddKeyButton()
+                    HStack {
+                        Spacer()
+                        Divider()
+                        Spacer()
+                    }
+
+                    HStack(spacing: 0) {
+                        let i1 = row * 2
+                        let i2 = i1 + 1
+
+                        Group {
+                            if i1 < keys.count {
+                                WidgetKeyView(key: keys[i1])
+                            } else {
+                                AddKeyButton()
+                            }
+                        }
+                        .padding(10)
+
+                        Group {
+                            if i2 < keys.count {
+                                WidgetKeyView(key: keys[i2])
+                            } else {
+                                AddKeyButton()
+                                    .opacity(i1 < keys.count ? 1 : 0)
+                            }
+                        }
+                        .padding(10)
                     }
                 }
-                .padding(.horizontal, 11)
-                .padding(.bottom, 4)
 
-                Divider()
-
-                ZStack {
-                    if i2 < keys.count {
-                        WidgetKeyView(key: keys[i2])
-                    } else {
-                        AddKeyButton()
-                            .opacity(i1 < keys.count ? 1 : 0)
-                    }
+                if row + 1 < rows.endIndex {
+                    Divider()
                 }
-                .padding(.horizontal, 11)
-                .padding(.bottom, 4)
-            }
-            .frame(height: 110)
-
-            if row + 1 < rows.endIndex {
-                Divider()
             }
         }
     }

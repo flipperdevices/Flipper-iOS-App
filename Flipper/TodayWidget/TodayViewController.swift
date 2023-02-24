@@ -7,16 +7,11 @@ import Core
 class TodayViewController: UIViewController, WidgetProviding {
     private let widget = Dependencies.shared.widget
 
-    private var keysCount: Int = 0
     private var isError: Bool = false
     private var cancellables: [AnyCancellable] = []
 
     private let compactModeHeight = 110.0
-
-    private var expandedModeHeight: Double {
-        let rowsCount = keysCount / 2 + 1
-        return compactModeHeight * Double(rowsCount)
-    }
+    private var expandedModeHeight = 110.0
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -29,6 +24,11 @@ class TodayViewController: UIViewController, WidgetProviding {
         // Add SwiftUI
         let widgetView = WidgetView()
             .environmentObject(widget)
+            .onHeightChanged { [weak self] in
+                guard let self else { return }
+                self.expandedModeHeight = $0
+                self.updatePreferredHeight()
+            }
         let hostingController = UIHostingController(rootView: widgetView)
         addChild(hostingController)
         view.addSubview(hostingController.view)
@@ -42,8 +42,7 @@ class TodayViewController: UIViewController, WidgetProviding {
         widget.$keys
             .sink { [weak self] keys in
                 guard let self else { return }
-                self.keysCount = keys.count
-                updatePreferredHeight()
+                self.view.setNeedsLayout()
             }
             .store(in: &cancellables)
 
@@ -99,5 +98,35 @@ private extension UIView {
         leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         backgroundColor = .clear
+    }
+}
+
+extension View {
+    func onHeightChanged(_ action: @escaping (Double) -> Void) -> some View {
+        self
+            .background(GeometryReader {
+                Color.clear.preference(
+                    key: HeightPreferenceKey.self,
+                    value: $0.frame(in: .global).height
+                )
+            })
+            .onPreferenceChange(HeightPreferenceKey.self, perform: action)
+    }
+}
+
+private struct HeightPreferenceKey: PreferenceKey {
+    typealias Value = Double
+
+    static var defaultValue = Double.zero
+
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        let height = nextValue()
+        guard
+            height != 0.0,
+            height != value
+        else {
+            return
+        }
+        value = height
     }
 }
