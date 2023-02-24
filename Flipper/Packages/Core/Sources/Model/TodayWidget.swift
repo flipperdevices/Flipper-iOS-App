@@ -161,7 +161,10 @@ public class TodayWidget: ObservableObject {
     func onFlipperStatusChanged(_ oldValue: FlipperState?) {
         if flipperStatus == .connected, oldValue != .connected {
             timeoutTask?.cancel()
-            startEmulateOnConnect()
+            startEmulateOrConnect()
+        }
+        if flipperStatus == .disconnected {
+            keyToEmulate = nil
         }
     }
 
@@ -190,14 +193,15 @@ public class TodayWidget: ObservableObject {
             return
         }
         keyToEmulate = key
-        startEmulateOnConnect()
+        startEmulateOrConnect()
     }
 
-    func startEmulateOnConnect() {
-        guard
-            flipperStatus == .connected,
-            let key = keyToEmulate
-        else {
+    func startEmulateOrConnect() {
+        guard flipperStatus == .connected else {
+            connect()
+            return
+        }
+        guard let key = keyToEmulate else {
             return
         }
         guard let item = item(for: key), item.status == .synchronized else {
