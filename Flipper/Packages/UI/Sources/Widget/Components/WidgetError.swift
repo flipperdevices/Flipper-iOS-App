@@ -33,6 +33,8 @@ extension WidgetView {
 
         var body: some View {
             VStack(spacing: 14) {
+                Spacer()
+
                 VStack(spacing: 2) {
                     Image(image)
                     Text(text)
@@ -42,32 +44,41 @@ extension WidgetView {
                 HStack {
                     Spacer()
 
-                    Button {
-                        onDismiss()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.backward")
-                                .font(.system(size: 14, weight: .medium))
-                            Text("Back")
-                                .font(.system(size: 14, weight: .medium))
-                        }
-                    }
-                    .foregroundColor(.black60)
+                    backButton
 
                     Spacer()
                     Spacer()
 
-                    Button {
-                        openURL(.flipperMobile)
-                    } label: {
-                        Text("Open App")
-                            .font(.system(size: 14, weight: .medium))
-                    }
+                    openAppButton
 
                     Spacer()
                 }
+                .opacity(error != .bluetoothOff ? 1 : 0)
 
                 Spacer()
+            }
+        }
+
+        var backButton: some View {
+            Button {
+                onDismiss()
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "chevron.backward")
+                        .font(.system(size: 14, weight: .medium))
+                    Text("Back")
+                        .font(.system(size: 14, weight: .medium))
+                }
+            }
+            .foregroundColor(.black60)
+        }
+
+        var openAppButton: some View {
+            Button {
+                openURL(.flipperMobile)
+            } label: {
+                Text("Open App")
+                    .font(.system(size: 14, weight: .medium))
             }
         }
     }

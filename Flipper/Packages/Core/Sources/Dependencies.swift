@@ -136,6 +136,7 @@ public class Dependencies: ObservableObject {
                 mobileStorage: mobileArchiveStorage),
             emulateService: emulateService,
             archive: archive,
+            central: central,
             device: pairedDevice)
     }()
 }

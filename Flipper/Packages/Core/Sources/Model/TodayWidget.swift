@@ -12,7 +12,13 @@ public class TodayWidget: ObservableObject {
     @Published public var keyToEmulate: WidgetKey?
     @Published public var error: Error?
 
-    var flipperState: FlipperState = .disconnected {
+    var bluetoothStatus: BluetoothStatus = .unknown {
+        didSet {
+            onBluetoothStatusChanged(oldValue)
+        }
+    }
+
+    var flipperStatus: FlipperState = .disconnected {
         didSet {
             onFlipperStatusChanged(oldValue)
         }
@@ -30,17 +36,20 @@ public class TodayWidget: ObservableObject {
     private var widgetStorage: TodayWidgetKeysStorage
     private var emulateService: EmulateService
     private var archive: Archive
+    private var central: Central
     private var device: PairedDevice
 
     public init(
         widgetStorage: TodayWidgetKeysStorage,
         emulateService: EmulateService,
         archive: Archive,
+        central: Central,
         device: PairedDevice
     ) {
         self.widgetStorage = widgetStorage
         self.emulateService = emulateService
         self.archive = archive
+        self.central = central
         self.device = device
         subscribeToPublisher()
         loadKeys()
@@ -69,11 +78,20 @@ public class TodayWidget: ObservableObject {
             }
             .store(in: &cancellables)
 
+        central.$state
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in
+                guard let self else { return }
+                self.bluetoothStatus = state
+            }
+            .store(in: &cancellables)
+
         device.flipper
             .receive(on: DispatchQueue.main)
             .map { $0?.state ?? .disconnected }
             .sink { [weak self] state in
-                self?.flipperState = state
+                guard let self else { return }
+                self.flipperStatus = state
             }
             .store(in: &cancellables)
     }
@@ -99,6 +117,10 @@ public class TodayWidget: ObservableObject {
     }
 
     public func connect() {
+        guard bluetoothStatus == .poweredOn else {
+            central.kick()
+            return
+        }
         device.connect()
         setupConnectionTimer(timeout: 5)
     }
@@ -111,7 +133,7 @@ public class TodayWidget: ObservableObject {
         }
         timeoutTask = Task {
             try await Task.sleep(milliseconds: .init(timeout * 1_000))
-            if flipperState != .connected {
+            if flipperStatus != .connected {
                 logger.debug("widget connection timeout")
                 Task { @MainActor in
                     error = .cantConnect
@@ -122,8 +144,22 @@ public class TodayWidget: ObservableObject {
         }
     }
 
+    func onBluetoothStatusChanged(_ oldValue: BluetoothStatus) {
+        switch bluetoothStatus {
+        case .poweredOn:
+            if error == .bluetoothOff {
+                error = nil
+            }
+            connect()
+        case .poweredOff, .unauthorized:
+            error = .bluetoothOff
+        default:
+            break
+        }
+    }
+
     func onFlipperStatusChanged(_ oldValue: FlipperState?) {
-        if flipperState == .connected, oldValue != .connected {
+        if flipperStatus == .connected, oldValue != .connected {
             timeoutTask?.cancel()
             startEmulateOnConnect()
         }
@@ -159,7 +195,7 @@ public class TodayWidget: ObservableObject {
 
     func startEmulateOnConnect() {
         guard
-            flipperState == .connected,
+            flipperStatus == .connected,
             let key = keyToEmulate
         else {
             return
