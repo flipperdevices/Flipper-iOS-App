@@ -5,6 +5,7 @@ struct TabView: View {
     @EnvironmentObject var device: Device
     @EnvironmentObject var syncService: SyncService
     @Binding var selected: Tab
+    var extraAction: () -> Void
 
     @AppStorage(.hasReaderLog) var hasReaderLog = false
 
@@ -18,6 +19,13 @@ struct TabView: View {
         selected == tab ? .accentColor : .secondary
     }
 
+    func handleTap(on tab: Tab) {
+        switch selected {
+        case tab: extraAction()
+        default: selected = tab
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top) {
@@ -27,7 +35,7 @@ struct TabView: View {
                     isSelected: selected == .device,
                     hasNotification: false
                 ) {
-                    self.selected = .device
+                    handleTap(on: .device)
                 }
                 .foregroundColor(deviceColor)
 
@@ -39,7 +47,7 @@ struct TabView: View {
                     isSelected: selected == .archive,
                     hasNotification: false
                 ) {
-                    self.selected = .archive
+                    handleTap(on: .archive)
                 }
                 .foregroundColor(archiveColor)
 
@@ -51,7 +59,7 @@ struct TabView: View {
                     isSelected: selected == .hub,
                     hasNotification: hasReaderLog
                 ) {
-                    self.selected = .hub
+                    handleTap(on: .hub)
                 }
                 .foregroundColor(hubColor)
             }

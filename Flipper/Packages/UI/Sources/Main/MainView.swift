@@ -7,13 +7,7 @@ struct MainView: View {
 
     @StateObject var tabViewController: TabViewController = .init()
 
-    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device {
-        didSet {
-            if oldValue == selectedTab {
-                tabViewController.popToRootView(for: selectedTab)
-            }
-        }
-    }
+    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
 
     @State private var importedName = ""
     @State private var importedOpacity = 0.0
@@ -35,8 +29,10 @@ struct MainView: View {
             }
 
             if !tabViewController.isHidden {
-                TabView(selected: $selectedTab)
-                    .transition(.move(edge: .bottom))
+                TabView(selected: $selectedTab) {
+                    tabViewController.popToRootView(for: selectedTab)
+                }
+                .transition(.move(edge: .bottom))
             }
         }
         .edgesIgnoringSafeArea(.bottom)
