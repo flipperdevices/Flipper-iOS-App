@@ -51,7 +51,7 @@ struct WidgetKeysView: View {
                 }
             }
 
-            if keys.count >= maxRows * 2 {
+            if keys.count >= maxRows * 2, isExpanded {
                 Divider()
                 CustomizeButton()
                     .padding(.vertical, 6)

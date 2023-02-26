@@ -26,7 +26,6 @@ public struct WidgetView: View {
                 )
             }
         }
-        .edgesIgnoringSafeArea(.all)
         .onAppear {
             widget.connect()
         }

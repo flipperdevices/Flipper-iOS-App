@@ -93,6 +93,7 @@ private extension UIView {
         topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         backgroundColor = .clear
     }
 }
