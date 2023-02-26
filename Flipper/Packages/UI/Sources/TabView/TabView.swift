@@ -27,7 +27,7 @@ struct TabView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        Group {
             HStack(alignment: .top) {
                 TabViewItem(
                     image: deviceImage,
@@ -63,10 +63,9 @@ struct TabView: View {
                 }
                 .foregroundColor(hubColor)
             }
-            .padding(.top, 6)
+            .padding(.vertical, 6)
             .padding(.horizontal, 8)
         }
-        .frame(height: tabViewHeight + bottomSafeArea + 9, alignment: .top)
         .background(systemBackground)
     }
 }

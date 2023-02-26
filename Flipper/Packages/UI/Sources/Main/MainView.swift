@@ -35,7 +35,6 @@ struct MainView: View {
                 .transition(.move(edge: .bottom))
             }
         }
-        .edgesIgnoringSafeArea(.bottom)
         .environmentObject(tabViewController)
         .onReceive(archiveService.imported) { item in
             onItemAdded(item: item)
