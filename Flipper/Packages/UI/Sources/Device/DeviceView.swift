@@ -150,12 +150,6 @@ struct DeviceView: View {
                         }
                         .padding(.vertical, 24)
                         .padding(.horizontal, 14)
-
-                        Color.clear.alert(
-                            isPresented: $showUnsupportedVersionAlert
-                        ) {
-                            .unsupportedDeviceIssue
-                        }
                     }
                 }
                 .background(Color.background)
@@ -175,6 +169,9 @@ struct DeviceView: View {
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
+        .customAlert(isPresented: $showUnsupportedVersionAlert) {
+            UnsupportedVersionAlert(isPresented: $showUnsupportedVersionAlert)
+        }
         .onChange(of: device.status) { status in
             if status == .unsupported {
                 showUnsupportedVersionAlert = true
