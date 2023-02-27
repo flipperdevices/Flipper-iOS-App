@@ -22,8 +22,6 @@ struct ConnectionView: View {
                     }
                     .opacity(central.isScanTimeout ? 0 : 1)
 
-                    alertsHack()
-
                     Spacer()
 
                     Button {
@@ -100,6 +98,33 @@ struct ConnectionView: View {
             HelpView()
                 .customBackground(Color.background)
         }
+        .alert(
+            "Connection Failed",
+            isPresented: $central.isConnectTimeout
+        ) {
+            Button("Cancel") {}
+            Button("Retry") {
+                central.stopScan()
+                central.startScan()
+            }
+        } message: {
+            Text("Unable to connect to Flipper. " +
+                 "Try to connect again or use Help")
+        }
+        .alert(
+            "Unable to Connect to Flipper",
+            isPresented: $isCanceledOrInvalidPin
+        ) {
+            Button("Cancel") {}
+            Button("Retry") {
+                if let uuid = lastUUID {
+                    central.connect(to: uuid)
+                }
+            }
+        } message: {
+            Text("Connection was canceled or the pairing " +
+                 "code was entered incorrectly")
+        }
         .onAppear {
             if central.state == .poweredOn {
                 central.startScan()
@@ -119,30 +144,6 @@ struct ConnectionView: View {
             if status == .pairingFailed {
                 isCanceledOrInvalidPin = true
             }
-        }
-    }
-}
-
-// TODO: Replace with new API on iOS15
-
-extension ConnectionView {
-    func alertsHack() -> some View {
-        HStack {
-            Spacer()
-                .alert(isPresented: $central.isConnectTimeout) {
-                    .connectionTimeout {
-                        central.stopScan()
-                        central.startScan()
-                    }
-                }
-            Spacer()
-                .alert(isPresented: $isCanceledOrInvalidPin) {
-                    .canceledOrIncorrectPin {
-                        if let uuid = lastUUID {
-                            central.connect(to: uuid)
-                        }
-                    }
-                }
         }
     }
 }
