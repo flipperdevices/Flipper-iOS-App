@@ -22,6 +22,8 @@ struct FileManagerListing: View {
         "\(isNewFile ? "file" : "directory") name"
     }
 
+    @State private var selectedIndexSet: IndexSet?
+    @State private var isForceDeletePresented = false
     @State private var isFileImporterPresented = false
 
     var body: some View {
@@ -128,6 +130,15 @@ struct FileManagerListing: View {
                 }
             }
         }
+        .alert(
+            "Directory is not empty",
+            isPresented: $isForceDeletePresented,
+            presenting: selectedIndexSet
+        ) { selectedIndexSet in
+            Button("Force Delete", role: .destructive) {
+                delete(selectedIndexSet, force: true)
+            }
+        }
         .fileImporter(
             isPresented: $isFileImporterPresented,
             allowedContentTypes: [UTType.item]
@@ -157,19 +168,20 @@ struct FileManagerListing: View {
         }
     }
 
-    func delete(_ indexSet: IndexSet) {
+    func delete(_ indexSet: IndexSet, force: Bool = false) {
+        guard let index = indexSet.first else { return }
         Task {
-            for index in indexSet {
-                let element = elements.remove(at: index)
-                do {
-                    try await fileManager.delete(element, at: path)
-                } catch let error as RemoteFileManager.Error
-                            where error == .directoryIsNotEmpty {
-                    self.error = "directory is not empty"
-                } catch {
-                    self.error = String(describing: error)
-                    elements.insert(element, at: index)
-                }
+            let element = elements.remove(at: index)
+            do {
+                try await fileManager.delete(element, at: path, force: force)
+            } catch let error as RemoteFileManager.Error
+                        where error == .directoryIsNotEmpty && !force {
+                elements.insert(element, at: index)
+                self.selectedIndexSet = indexSet
+                self.isForceDeletePresented = true
+            } catch {
+                self.error = String(describing: error)
+                elements.insert(element, at: index)
             }
         }
     }

@@ -108,7 +108,7 @@ public class RemoteFileManager: ObservableObject {
     ) async throws {
         do {
             let path = path.appending(element.name)
-            try await rpc.deleteFile(at: path, force: false)
+            try await rpc.deleteFile(at: path, force: force)
         } catch let error as Peripheral.Error
                     where error == .storage(.notEmpty) {
             throw Error.directoryIsNotEmpty
