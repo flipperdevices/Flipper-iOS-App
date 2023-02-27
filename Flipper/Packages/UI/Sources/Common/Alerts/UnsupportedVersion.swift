@@ -21,7 +21,6 @@ struct UnsupportedVersionAlert: View {
             .font(.system(size: 14, weight: .medium))
             .multilineTextAlignment(.center)
             .foregroundColor(.black40)
-            .padding(.horizontal, 12)
             .padding(.top, 4)
 
             Button {
