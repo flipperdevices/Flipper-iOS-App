@@ -1,4 +1,3 @@
-import UIKit
 import Foundation
 
 class FileImporter: Importer {
@@ -32,6 +31,7 @@ extension FileImporter {
 extension FileImporter {
     @MainActor
     func importCloudKey(from url: URL) async throws -> ArchiveItem {
+        #if canImport(UIKit)
         let filename = url.lastPathComponent
         logger.debug("importing icloud key: \(filename)")
 
@@ -40,5 +40,8 @@ extension FileImporter {
             throw Error.cantOpenKey
         }
         return try .init(filename: filename, data: data)
+        #else
+        throw Error.cantOpenKey
+        #endif
     }
 }

@@ -239,12 +239,16 @@ extension UpdateService {
     }
 
     private  func readCloudFirmware(from url: URL) async throws -> [UInt8] {
+        #if canImport(UIKit)
         logger.debug("reading cloud firmware file: \(url.lastPathComponent)")
         let doc = CloudDocument(fileURL: url)
         guard await doc.open(), let data = doc.data else {
             throw Update.Error.invalidFirmwareCloudDocument
         }
         return .init(data)
+        #else
+        throw Update.Error.invalidFirmwareCloudDocument
+        #endif
     }
 
     public func uploadFirmware(
