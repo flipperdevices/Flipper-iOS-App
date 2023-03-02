@@ -1,7 +1,7 @@
 import Peripheral
 import Foundation
 
-class WebImporter: Importer {
+class ShortURLImporter: Importer {
     enum Error: Swift.Error {
         case invalidURLFragment
         case invalidPercentEncoding
@@ -12,21 +12,6 @@ class WebImporter: Importer {
     }
 
     func importKey(from url: URL) async throws -> ArchiveItem {
-        if url.pathComponents.contains("sf") {
-            return try await importKey(serverKey: url)
-        } else {
-            return try await importKey(shortURL: url)
-        }
-    }
-
-    func importKey(serverKey url: URL) async throws -> ArchiveItem {
-        guard let item = try await TempLinkSharing().importKey(url: url) else {
-            throw Error.serverError
-        }
-        return item
-    }
-
-    func importKey(shortURL url: URL) async throws -> ArchiveItem {
         guard let query = url.fragment else {
             throw Error.invalidURLFragment
         }
@@ -55,36 +40,6 @@ class WebImporter: Importer {
     }
 }
 
-public func makeShareURL(for key: ArchiveItem) -> URL? {
-    var queryItems = [URLQueryItem]()
-    queryItems.append(name: "path", value: key.path.string.dropFirst())
-    queryItems.append(contentsOf: key.properties.map {
-        .init(name: $0.key, value: $0.value)
-    })
-
-    var components = URLComponents()
-    components.fragment = queryItems.plusPercentEncoded
-    return components.url(relativeTo: .shareBaseURL)
-}
-
-public func shareAsURL(_ key: ArchiveItem) throws {
-    guard let url = makeShareURL(for: key) else {
-        throw Sharing.Error.encodingError
-    }
-
-    guard url.isShort else {
-        throw Sharing.Error.urlIsTooLong
-    }
-
-    share([url])
-}
-
-extension URL {
-    public var isShort: Bool {
-        absoluteString.count <= 256
-    }
-}
-
 fileprivate extension Array where Element == ArchiveItem.Property {
     var queryItems: [URLQueryItem] {
         self.map { .init(name: $0.key, value: $0.value) }
@@ -108,7 +63,7 @@ fileprivate extension Array where Element == ArchiveItem.Property {
 
 // MARK: CustomStringConvertible
 
-extension WebImporter.Error: CustomStringConvertible {
+extension ShortURLImporter.Error: CustomStringConvertible {
     var description: String {
         switch self {
         case .invalidURLFragment: return "invalid url fragment"

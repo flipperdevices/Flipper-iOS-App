@@ -5,33 +5,47 @@ import Foundation
 public class SharingService: ObservableObject {
     public init() {}
 
-    public func canEncodeToURL(_ item: ArchiveItem) -> Bool {
-        makeShareURL(for: item)?.isShort ?? false
+    public func shareInitiated() {
+        analytics.appOpen(target: .keyShare)
     }
 
-    public func shareAsTempLink(item: ArchiveItem) async throws {
-        do {
-            if let url = try await TempLinkSharing().shareKey(item) {
-                Core.share([url])
-                analytics.appOpen(target: .keyShareUpload)
-            }
-        } catch {
-            logger.error("sharing: \(error)")
-            throw error
+    public func canEncodeToURL(_ item: ArchiveItem) -> Bool {
+        ShortURLExporter().makeURL(item)?.isShort ?? false
+    }
+
+    public func localLink(for item: ArchiveItem) async throws -> URL {
+        try await logging("short url") {
+            let url = try await Sharing.exportKey(item, using: .url)
+            analytics.appOpen(target: .keyShareURL)
+            return url
         }
     }
 
-    public func shareAsShortLink(item: ArchiveItem) {
-        try? Core.shareAsURL(item)
-        analytics.appOpen(target: .keyShareURL)
+    public func serverLink(for item: ArchiveItem) async throws -> URL {
+        try await logging("server url") {
+            let url = try await Sharing.exportKey(item, using: .server)
+            analytics.appOpen(target: .keyShareUpload)
+            return url
+        }
     }
 
-    public func shareAsFile(item: ArchiveItem) {
-        Core.shareAsFile(item)
-        analytics.appOpen(target: .keyShareFile)
+    public func tempFileURL(for item: ArchiveItem) async throws -> URL {
+        try await logging("file url") {
+            let url = try await Sharing.exportKey(item, using: .file)
+            analytics.appOpen(target: .keyShareFile)
+            return url
+        }
     }
 
-    public func shareInitiated() {
-        analytics.appOpen(target: .keyShare)
+    private func logging<T>(
+        _ name: String,
+        _ task: () async throws -> T
+    ) async throws-> T {
+        do {
+            return try await task()
+        } catch {
+            logger.error("\(name): \(error)")
+            throw error
+        }
     }
 }

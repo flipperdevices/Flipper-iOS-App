@@ -42,7 +42,7 @@ struct OptionsView: View {
                     LogsView()
                 }
                 Button("Backup Keys") {
-                    archiveService.backupKeys()
+                    share(archiveService.backupKeys())
                 }
                 .disabled(archiveService.items.isEmpty)
             }

@@ -5,7 +5,10 @@ struct ShareView: View {
     @EnvironmentObject var sharingService: SharingService
     @EnvironmentObject var networkMonitor: NetworkMonitor
 
+    @Environment(\.dismiss) var dismiss
+
     let item: ArchiveItem
+    let onShare: ([Any]) -> Void
 
     @State private var state: SharingState = .select
     @State private var isTempLink = false
@@ -90,9 +93,11 @@ struct ShareView: View {
         withAnimation {
             state = .uploading
         }
-        Task {
+        Task { @MainActor in
             do {
-                try await sharingService.shareAsTempLink(item: item)
+                let url = try await sharingService.serverLink(for: item)
+                onShare([url.absoluteString])
+                dismiss()
             } catch {
                 state = .cantConnect
             }
@@ -100,10 +105,18 @@ struct ShareView: View {
     }
 
     func shareAsShortLink() {
-        sharingService.shareAsShortLink(item: item)
+        Task { @MainActor in
+            let url = try await sharingService.localLink(for: item)
+            onShare([url.absoluteString])
+            dismiss()
+        }
     }
 
     func shareAsFile() {
-        sharingService.shareAsFile(item: item)
+        Task { @MainActor in
+            let url = try await sharingService.tempFileURL(for: item)
+            onShare([url])
+            dismiss()
+        }
     }
 }

@@ -13,9 +13,13 @@ struct InfoView: View {
 
     @State private var current: ArchiveItem = .none
     @State private var backup: ArchiveItem = .none
-    @State private var showShareView = false
+
+    @State private var showShareKind = false
+    @State private var shareItems = [Any]()
+
     @State private var showDumpEditor = false
     @State private var isEditing = false
+
     @State private var error: String?
 
     var body: some View {
@@ -65,7 +69,7 @@ struct InfoView: View {
                                 image: "Share",
                                 title: "Share"
                             ) {
-                                share()
+                                showShareKind = true
                             }
                             .foregroundColor(.primary)
                             InfoButton(
@@ -89,10 +93,20 @@ struct InfoView: View {
                 alertController.alert
             }
         }
-        .bottomSheet(isPresented: $showShareView) {
-            ShareView(item: current)
-                .environmentObject(sharingService)
-                .environmentObject(networkMonitor)
+        .bottomSheet(isPresented: $showShareKind) {
+            ShareView(item: current) { items in
+                self.shareItems = items
+            }
+            .onAppear {
+                shareItems = []
+            }
+            .onDisappear {
+                if !shareItems.isEmpty {
+                    share(shareItems)
+                }
+            }
+            .environmentObject(sharingService)
+            .environmentObject(networkMonitor)
         }
         .fullScreenCover(isPresented: $showDumpEditor) {
             NFCEditorView(item: $current)
@@ -135,10 +149,6 @@ struct InfoView: View {
         withAnimation {
             isEditing = true
         }
-    }
-
-    func share() {
-        showShareView = true
     }
 
     func delete() {

@@ -19,9 +19,3 @@ class CustomImporter: Importer {
         return try .init(filename: filename, data: data)
     }
 }
-
-private func shareCustom(_ key: ArchiveItem) {
-    let base64String = Data(key.content.utf8).base64EncodedString()
-    let urlString = "flipper://\(key.filename)/\(base64String)"
-    share([urlString])
-}

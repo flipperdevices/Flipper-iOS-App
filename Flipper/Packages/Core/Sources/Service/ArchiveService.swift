@@ -125,7 +125,7 @@ public class ArchiveService: ObservableObject {
         }
     }
 
-    public func backupKeys() {
+    public func backupKeys() -> URL? {
         archive.backupKeys()
     }
 

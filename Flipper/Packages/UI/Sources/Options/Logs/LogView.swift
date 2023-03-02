@@ -35,12 +35,18 @@ struct LogView: View {
             }
             TrailingToolbarItems {
                 ShareButton {
-                    shareLogs(name: name, messages: messages.map { $0.text })
+                    share()
                 }
             }
         }
         .task {
             messages = logs.read(name).map { .init($0) }
         }
+    }
+
+    func share() {
+        shareFile(
+            name: name + ".txt",
+            content: messages.map { $0.text }.joined(separator: "\n"))
     }
 }

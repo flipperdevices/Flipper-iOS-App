@@ -42,24 +42,3 @@ extension FileImporter {
         return try .init(filename: filename, data: data)
     }
 }
-
-// MARK: Sharing
-
-public func shareAsFile(_ key: ArchiveItem) {
-    let urls = FileManager.default.urls(
-        for: .cachesDirectory, in: .userDomainMask)
-
-    guard let publicDirectory = urls.first else {
-        return
-    }
-
-    let fileURL = publicDirectory.appendingPathComponent(key.filename)
-
-    FileManager.default.createFile(
-        atPath: fileURL.path,
-        contents: key.content.data(using: .utf8))
-
-    share([fileURL]) {_, _, _, _ in
-        try? FileManager.default.removeItem(at: fileURL)
-    }
-}
