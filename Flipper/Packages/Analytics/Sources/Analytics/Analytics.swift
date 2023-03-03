@@ -43,6 +43,11 @@ public class Analytics: EventHandler {
         to: String,
         status: UpdateResult
     ) {
+        AnalyticsSystem.handler?.flipperUpdateResult(
+            id: id,
+            from: from,
+            to: to,
+            status: status)
     }
 
     public func synchronizationResult(
@@ -53,6 +58,13 @@ public class Analytics: EventHandler {
         iButtonCount: Int,
         synchronizationTime: Int
     ) {
+        AnalyticsSystem.handler?.synchronizationResult(
+            subGHzCount: subGHzCount,
+            rfidCount: rfidCount,
+            nfcCount: nfcCount,
+            infraredCount: infraredCount,
+            iButtonCount: iButtonCount,
+            synchronizationTime: synchronizationTime)
     }
 
     public func subghzProvisioning(
@@ -63,5 +75,12 @@ public class Analytics: EventHandler {
         provided: String,
         source: RegionSource
     ) {
+        AnalyticsSystem.handler?.subghzProvisioning(
+            sim1: sim1,
+            sim2: sim2,
+            ip: ip,
+            system: system,
+            provided: provided,
+            source: source)
     }
 }
