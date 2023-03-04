@@ -1,15 +1,16 @@
+import Core
+
 import SwiftUI
 
 struct SelectChannel: View {
-    let firmware: String
-    let color: Color
-    let onChannelSelected: (String) -> Void
+    let version: Update.Version
+    let onChannelSelected: (Update.Channel) -> Void
 
     @State private var showChannelSelector = false
     @State private var channelSelectorOffset: Double = .zero
 
     var body: some View {
-        SelectChannelButton(firmware: firmware, color: color) {
+        SelectChannelButton(version: version) {
             showChannelSelector = true
         }
         .background(GeometryReader {
@@ -21,17 +22,18 @@ struct SelectChannel: View {
             channelSelectorOffset = $0
         }
         .popup(isPresented: $showChannelSelector, hideOnTap: true) {
-            SelectChannelPopup(offset: channelSelectorOffset) {
+            SelectChannelPopup {
                 showChannelSelector = false
                 onChannelSelected($0)
             }
+            .offset(y: channelSelectorOffset - 14)
+            .padding(.trailing, 14)
         }
     }
 }
 
 struct SelectChannelButton: View {
-    let firmware: String
-    let color: Color
+    let version: Update.Version
     var action: () -> Void
 
     var body: some View {
@@ -40,9 +42,8 @@ struct SelectChannelButton: View {
         } label: {
             HStack(spacing: 6) {
                 Spacer()
-                Text(firmware)
+                Version(version)
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(color)
                 Image(systemName: "chevron.down")
                     .foregroundColor(.black30)
             }

@@ -1,6 +1,7 @@
 import SwiftUI
 
 extension DeviceUpdateView {
+    // MARK: Not used
     struct OutdatedAppView: View {
         @Environment(\.openURL) private var openURL
 

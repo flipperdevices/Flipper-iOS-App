@@ -270,6 +270,7 @@ public class Device: ObservableObject {
     public func startUpdateProcess(from path: Path) async throws {
         try await rpc.update(manifest: path.appending("update.fuf"))
         try await rpc.reboot(to: .update)
+        status = .updating
         logger.info("update started")
     }
 
@@ -298,6 +299,11 @@ public class Device: ObservableObject {
         } catch {
             logger.error("power info: \(error)")
         }
+    }
+
+    public var hasBatteryCharged: Bool {
+        guard let battery = flipper?.battery else { return false }
+        return battery.level >= 10 || battery.state == .charging
     }
 }
 

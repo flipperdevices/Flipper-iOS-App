@@ -14,8 +14,8 @@ public struct RootView: View {
             .environmentObject(dependencies.networkMonitor)
             .environmentObject(dependencies.archiveService)
             .environmentObject(dependencies.syncService)
-            .environmentObject(dependencies.updateService)
-            .environmentObject(dependencies.checkUpdateService)
+            .environmentObject(dependencies.updateModel)
+            .environmentObject(dependencies.updater)
             .environmentObject(dependencies.sharingService)
             .environmentObject(dependencies.emulateService)
     }

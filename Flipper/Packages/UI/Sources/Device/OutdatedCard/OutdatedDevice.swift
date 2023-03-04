@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct UnsupportedDevice: View {
+struct OutdatedDeviceCard: View {
     @Environment(\.openURL) private var openURL
 
     var body: some View {
@@ -20,11 +20,14 @@ struct UnsupportedDevice: View {
                     .multilineTextAlignment(.center)
                     .padding(.top, 4)
 
-                Text("Firmware version on your Flipper is not supported. Please update it via PC.")
-                    .font(.system(size: 14, weight: .medium))
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.black40)
-                    .padding(.top, 4)
+                Text(
+                    "Firmware version on your Flipper is not supported. " +
+                    "Please update it via PC."
+                )
+                .font(.system(size: 14, weight: .medium))
+                .multilineTextAlignment(.center)
+                .foregroundColor(.black40)
+                .padding(.top, 4)
 
                 Button {
                     openURL(.helpToInstallFirmware)

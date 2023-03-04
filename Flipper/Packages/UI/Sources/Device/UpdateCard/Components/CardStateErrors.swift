@@ -3,8 +3,7 @@ import SwiftUI
 
 extension DeviceUpdateCard {
     struct CardNoSDError: View {
-        @EnvironmentObject var device: Device
-        @EnvironmentObject var checkUpdateService: CheckUpdateService
+        let retry: () -> Void
 
         var body: some View {
             VStack(spacing: 2) {
@@ -22,7 +21,7 @@ extension DeviceUpdateCard {
             .padding(.vertical, 4)
 
             Button {
-                updateStorageInfo()
+                retry()
             } label: {
                 Text("Retry")
                     .font(.system(size: 16, weight: .medium))
@@ -30,17 +29,10 @@ extension DeviceUpdateCard {
             }
             .padding(.bottom, 8)
         }
-
-        func updateStorageInfo() {
-            Task {
-                try? await device.updateStorageInfo()
-            }
-        }
     }
 
     struct CardNoInternetError: View {
-        @EnvironmentObject var checkUpdateService: CheckUpdateService
-        let channel: Update.Channel
+        let retry: () -> Void
 
         var body: some View {
             VStack(spacing: 2) {
@@ -58,7 +50,7 @@ extension DeviceUpdateCard {
             .padding(.vertical, 4)
 
             Button {
-                checkUpdateService.updateAvailableFirmware(for: channel)
+                retry()
             } label: {
                 Text("Retry")
                     .font(.system(size: 16, weight: .medium))
@@ -69,8 +61,7 @@ extension DeviceUpdateCard {
     }
 
     struct CardCantConnectError: View {
-        @EnvironmentObject var checkUpdateService: CheckUpdateService
-        let channel: Update.Channel
+        let retry: () -> Void
 
         var body: some View {
             VStack(spacing: 2) {
@@ -88,7 +79,7 @@ extension DeviceUpdateCard {
             .padding(.vertical, 4)
 
             Button {
-                checkUpdateService.updateAvailableFirmware(for: channel)
+                retry()
             } label: {
                 Text("Retry")
                     .font(.system(size: 16, weight: .medium))

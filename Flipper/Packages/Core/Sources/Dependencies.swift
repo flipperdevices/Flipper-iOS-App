@@ -109,13 +109,18 @@ public class Dependencies: ObservableObject {
     }()
 
     @MainActor
-    public lazy var updateService: UpdateService = {
-        .init(pairedDevice: pairedDevice, device: device)
+    public lazy var updateModel: UpdateModel = {
+        .init(
+            pairedDevice: pairedDevice,
+            updateSource: RemoteUpdateSource(
+                manifestSource: RemoteManifestSource()))
     }()
 
     @MainActor
-    public lazy var checkUpdateService: CheckUpdateService = {
-        .init(pairedDevice: pairedDevice)
+    public lazy var updater: Updater = {
+        .init(
+            pairedDevice: pairedDevice,
+            device: device)
     }()
 
     @MainActor

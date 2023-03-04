@@ -15,7 +15,7 @@ extension Flipper.DeviceInformation {
         default: return nil
         }
 
-        return .init(channel: channel, version: version)
+        return .init(name: version, channel: channel)
     }
 
     private var firmwareChannel: Update.Channel? {

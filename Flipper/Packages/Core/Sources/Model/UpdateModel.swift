@@ -4,16 +4,30 @@ import Combine
 import Foundation
 
 @MainActor
-// swiftlint:disable type_body_length
-public class CheckUpdateService: ObservableObject {
-    @Published public var state: State = .busy(.connecting)
+public class UpdateModel: ObservableObject {
+    @Published public var state: State = .busy(.checkingForUpdate)
 
-    @Published public var manifest: Update.Manifest?
+    @Published public var firmware: Update.Firmware?
 
-    @Published public var installed: Update.Version?
-    @Published public var available: Update.Version?
+    public var installed: Update.Version? {
+        flipper?.information?.firmwareVersion
+    }
+    public var available: Update.Version? {
+        firmware?.version
+    }
 
     @Published public var intent: Update.Intent?
+    @Published public var showUpdate = false
+
+    public var updateChannel: Update.Channel {
+        get {
+            UserDefaultsStorage.shared.updateChannel
+        }
+        set {
+            UserDefaultsStorage.shared.updateChannel = newValue
+            updateAvailableFirmware()
+        }
+    }
 
     public enum State: Equatable {
         case busy(Busy)
@@ -21,9 +35,8 @@ public class CheckUpdateService: ObservableObject {
         case error(Error)
 
         public enum Busy: Equatable {
-            case connecting
-            case loadingManifest
-            case updateInProgress(Update.Intent)
+            case checkingForUpdate
+            case updateInProgress
         }
 
         public enum Ready: Equatable {
@@ -40,9 +53,18 @@ public class CheckUpdateService: ObservableObject {
         }
     }
 
+    private let networkMonitor: NetworkMonitor = .init()
+    private let updateSource: UpdateSource
+
     private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
     private var cancellables: [AnyCancellable] = .init()
+
+    public init(pairedDevice: PairedDevice, updateSource: UpdateSource) {
+        self.pairedDevice = pairedDevice
+        self.updateSource = updateSource
+        subscribeToPublishers()
+    }
 
     @Published var flipper: Flipper? {
         didSet { onFlipperChanged(oldValue) }
@@ -57,70 +79,58 @@ public class CheckUpdateService: ObservableObject {
         return .success(storage.external != nil)
     }
 
-    public var hasBatteryCharged: Bool {
-        guard let battery = flipper?.battery else { return false }
-        return battery.level >= 10 || battery.state == .charging
-    }
-
-    public init(pairedDevice: PairedDevice) {
-        self.pairedDevice = pairedDevice
-        subscribeToPublishers()
-    }
-
     func subscribeToPublishers() {
         pairedDevice.flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
             .store(in: &cancellables)
-    }
 
-    // FIXME:
-    var channel: Update.Channel {
-        .init(rawValue: UserDefaultsStorage.shared.updateChannel)
+        networkMonitor.$isAvailable
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                guard let self else { return }
+                self.onNetworkStatusChanged(available: $0)
+            }
+            .store(in: &cancellables)
     }
 
     func onFlipperChanged(_ oldValue: Flipper?) {
-        updateState(channel: channel)
-
         guard flipper?.state == .connected else {
-            resetState()
+            resetFlipperState()
             return
         }
 
         if oldValue?.state != .connected {
-            verifyManifest()
-            verifyRegionData()
-            detectCurrentRegion()
+            updateInstalledManifest()
+            updateProvisionedRegion()
+            updateCurrentRegion()
+        }
+
+        // FIXME: use async api to check sd card
+        if oldValue?.storage != flipper?.storage {
+            updateState()
         }
     }
 
-    public func onUpdatePressed() {
+    func resetFlipperState() {
+        hasManifest = .idle
+        currentRegion = .idle
+        provisionedRegion = .idle
+    }
+
+    public func startUpdate() {
         guard
             let installed = installed,
             let available = available
         else {
             return
         }
-
-        intent = .init(
-            id: Int(Date().timeIntervalSince1970),
-            from: installed,
-            to: available
-        )
+        intent = .init(from: installed, to: available)
+        showUpdate = true
+        state = .busy(.updateInProgress)
     }
 
-    public func onUpdateStarted(_ intent: Update.Intent) {
-        // FIXME: wait for event
-        state = .busy(.updateInProgress(intent))
-    }
-
-    func resetState() {
-        hasManifest = .idle
-        currentRegion = .idle
-        provisionedRegion = .idle
-    }
-
-    func verifyManifest() {
+    func updateInstalledManifest() {
         guard case .idle = hasManifest else { return }
         hasManifest = .working
         Task {
@@ -131,10 +141,11 @@ public class CheckUpdateService: ObservableObject {
                 logger.error("verify manifest: \(error)")
                 hasManifest = .success(false)
             }
+            updateState()
         }
     }
 
-    func verifyRegionData() {
+    func updateProvisionedRegion() {
         guard case .idle = provisionedRegion else { return }
         provisionedRegion = .working
         Task {
@@ -146,10 +157,11 @@ public class CheckUpdateService: ObservableObject {
                 logger.error("verify region: \(error)")
                 provisionedRegion = .failure(error)
             }
+            updateState()
         }
     }
 
-    func detectCurrentRegion() {
+    func updateCurrentRegion() {
         guard case .idle = currentRegion else { return }
         currentRegion = .working
         Task {
@@ -160,22 +172,29 @@ public class CheckUpdateService: ObservableObject {
                 logger.error("check region change: \(error)")
                 currentRegion = .failure(error)
             }
+            updateState()
         }
     }
 
     public func onNetworkStatusChanged(available: Bool) {
         switch available {
-        case true: state = .busy(.connecting)
-        case false: state = .error(.noInternet)
+        case true:
+            state = .busy(.checkingForUpdate)
+            updateAvailableFirmware()
+        case false:
+            state = .error(.noInternet)
         }
     }
 
-    public func updateAvailableFirmware(for channel: Update.Channel) {
+    public func updateAvailableFirmware() {
+        guard state != .error(.noInternet) else { return }
+        state = .busy(.checkingForUpdate)
         Task {
             do {
-                guard state != .error(.noInternet) else { return }
-                manifest = try await Update.Manifest.download()
-                updateVersion(for: channel)
+                firmware = try await updateSource.firmware(
+                    for: .f7,
+                    channel: updateChannel)
+                updateState()
             } catch {
                 state = .error(.cantConnect)
                 logger.error("download manifest: \(error)")
@@ -183,35 +202,18 @@ public class CheckUpdateService: ObservableObject {
         }
     }
 
-    public func updateVersion(for channel: Update.Channel) {
-        guard
-            let firmware = manifest?.version(for: channel)
-        else {
-            available = nil
-            return
-        }
-
-        available = .init(
-            channel: channel,
-            firmware: firmware)
-
-        updateState(channel: channel)
-    }
-
-    // Validating
-
-    func updateState(channel: Update.Channel) {
+    func updateState() {
         guard validateFlipperState() else { return }
         guard validateSDCard() else { return }
 
         guard validateInstalledFirmware() else { return }
         guard validateAvailableFirmware() else { return }
 
-        guard checkSelectedChannel(channel) else { return }
-        guard checkInstalledFirmware() else { return }
+        guard checkChannelUpdate() else { return }
+        guard checkVersionUpdate() else { return }
 
-        guard validateManifest() else { return }
-        guard validateRegion() else { return }
+        guard checkManifestUpdate() else { return }
+        guard checkRegionUpdate() else { return }
 
         state = .ready(.noUpdates)
     }
@@ -227,7 +229,7 @@ public class CheckUpdateService: ObservableObject {
             case .error(.noCard), .busy(.updateInProgress):
                 return false
             default:
-                state = .busy(.connecting)
+                state = .busy(.checkingForUpdate)
                 return false
             }
         default:
@@ -252,7 +254,15 @@ public class CheckUpdateService: ObservableObject {
         return true
     }
 
-    func validateManifest() -> Bool {
+    func validateInstalledFirmware() -> Bool {
+        installed != nil
+    }
+
+    func validateAvailableFirmware() -> Bool {
+        available != nil
+    }
+
+    func checkManifestUpdate() -> Bool {
         guard case .success(let hasManifest) = hasManifest else {
             return false
         }
@@ -263,73 +273,48 @@ public class CheckUpdateService: ObservableObject {
         return true
     }
 
-    func validateRegion() -> Bool {
-        let provisionedRegionCode: ISOCode
-        let currentRegionCode: ISOCode
-
-        switch provisionedRegion {
-        case .success(let region):
-            provisionedRegionCode = region
-        case .failure:
-            state = .ready(.versionUpdate)
-            return false
-        default:
-            return false
-        }
-
-        switch currentRegion {
-        case .success(let region):
-            currentRegionCode = region
-        case .failure:
-            state = .ready(.versionUpdate)
-            return false
-        default:
-            return false
-        }
-
-        guard currentRegionCode == provisionedRegionCode else {
+    func checkRegionUpdate() -> Bool {
+        guard
+            case .success(let provisionedRegionCode) = provisionedRegion,
+            case .success(let currentRegionCode) = currentRegion,
+            currentRegionCode == provisionedRegionCode
+        else {
             state = .ready(.versionUpdate)
             return false
         }
-
         return true
     }
 
-    func validateInstalledFirmware() -> Bool {
-        guard let installed = flipper?.information?.firmwareVersion else {
-            installed = nil
-            return false
-        }
-        self.installed = installed
-        return true
-    }
-
-    func validateAvailableFirmware() -> Bool {
-        return available != nil
-    }
-
-    func checkSelectedChannel(_ channel: Update.Channel) -> Bool {
+    func checkChannelUpdate() -> Bool {
         guard let installed = installed else {
             return false
         }
-        guard installed.channel == channel else {
+        guard installed.channel == updateChannel else {
             state = .ready(.channelUpdate)
             return false
         }
         return true
     }
 
-    func checkInstalledFirmware() -> Bool {
+    func checkVersionUpdate() -> Bool {
         guard
             let installed = installed,
             let available = available
         else {
             return false
         }
-        guard installed.description == available.description else {
+        guard installed == available else {
             state = .ready(.versionUpdate)
             return false
         }
         return true
+    }
+}
+
+extension Update.Intent {
+    init(from: Update.Version, to: Update.Version) {
+        id = Int(Date().timeIntervalSince1970)
+        currentVersion = from
+        desiredVersion = to
     }
 }

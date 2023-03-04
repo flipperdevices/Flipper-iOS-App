@@ -4,10 +4,9 @@ import MarkdownUI
 
 extension DeviceUpdateView {
     struct UpdateProgressView: View {
-        let state: UpdateService.State.Update
+        let state: Updater.State.Busy
+        let version: Update.Version
         let changelog: String
-        let availableFirmware: String
-        let availableFirmwareColor: Color
 
         var description: String {
             switch state {
@@ -17,8 +16,6 @@ extension DeviceUpdateView {
                 return "Preparing for update..."
             case .uploading:
                 return "Uploading firmware to Flipper..."
-            case .canceling:
-                return "Canceling..."
             default:
                 return ""
             }
@@ -26,9 +23,8 @@ extension DeviceUpdateView {
 
         var body: some View {
             VStack(spacing: 0) {
-                Text(availableFirmware)
+                Version(version)
                     .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(availableFirmwareColor)
                     .padding(.top, 14)
                 UpdateProgress(state: state)
                     .padding(.top, 8)
@@ -76,7 +72,7 @@ extension DeviceUpdateView {
     }
 
     struct UpdateProgress: View {
-        let state: UpdateService.State.Update
+        let state: Updater.State.Busy
 
         var image: String {
             switch state {
@@ -94,8 +90,7 @@ extension DeviceUpdateView {
         var color: Color {
             switch state {
             case .downloading: return .sGreenUpdate
-            case .preparing, .uploading, .canceling: return .a2
-            default: return .clear
+            case .preparing, .uploading: return .a2
             }
         }
 

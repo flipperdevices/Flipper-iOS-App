@@ -3,29 +3,25 @@ import SwiftUI
 
 extension DeviceUpdateCard {
     struct CardStateReady: View {
-        let state: CheckUpdateService.State.Ready
+        @EnvironmentObject var updateModel: UpdateModel
 
-        @Binding var channel: Update.Channel
+        let state: UpdateModel.State.Ready
+
+        var version: Update.Version? {
+            updateModel.available
+        }
+
+        var updateChannel: Update.Channel {
+            get { updateModel.updateChannel }
+            nonmutating set { updateModel.updateChannel = newValue }
+        }
 
         @EnvironmentObject var device: Device
         @EnvironmentObject var syncService: SyncService
-        @EnvironmentObject var checkUpdateService: CheckUpdateService
 
+        @State private var showConfirmUpdate = false
         @State private var showPauseSync = false
         @State private var showCharge = false
-
-        var availableFirmware: String {
-            checkUpdateService.available?.description ?? "unknown"
-        }
-
-        var channelColor: Color {
-            switch channel {
-            case .development: return .development
-            case .candidate: return .candidate
-            case .release: return .release
-            case .custom: return .custom
-            }
-        }
 
         var description: String {
             switch state {
@@ -47,14 +43,10 @@ extension DeviceUpdateCard {
 
                     Spacer()
 
-                    SelectChannel(
-                        firmware: availableFirmware,
-                        color: channelColor
-                    ) {
-                        onChannelSelected($0)
-                    }
-                    .onTapGesture {
-                        checkUpdateService.updateAvailableFirmware(for: channel)
+                    if let version = version {
+                        SelectChannel(version: version) {
+                            updateChannel = $0
+                        }
                     }
                 }
                 .font(.system(size: 14))
@@ -64,7 +56,7 @@ extension DeviceUpdateCard {
                 Divider()
 
                 UpdateButton(state: state) {
-                    guard checkUpdateService.hasBatteryCharged else {
+                    guard device.hasBatteryCharged else {
                         showCharge = true
                         return
                     }
@@ -72,7 +64,7 @@ extension DeviceUpdateCard {
                         showPauseSync = true
                         return
                     }
-                    checkUpdateService.onUpdatePressed()
+                    showConfirmUpdate = true
                 }
 
                 VStack {
@@ -98,19 +90,23 @@ extension DeviceUpdateCard {
                     "Firmware update is not possible during synchronization. " +
                     "Wait for sync to finish or pause it.")
             }
+            .alert(
+                "Update Firmware?",
+                isPresented: $showConfirmUpdate,
+                presenting: updateModel.firmware
+            ) { intent in
+                Button("Cancel") { }
+                Button("Update") {
+                    updateModel.startUpdate()
+                }
+            } message: { firmware in
+                Text(
+                    "New Firmware \(firmware.version) " +
+                    "will be installed")
+            }
             .customAlert(isPresented: $showCharge) {
                 LowBatteryAlert(isPresented: $showCharge)
             }
-        }
-
-        func onChannelSelected(_ name: String) {
-            switch name {
-            case "Release": channel = .release
-            case "Release-Candidate": channel = .candidate
-            case "Development": channel = .development
-            default: break
-            }
-            checkUpdateService.updateVersion(for: channel)
         }
     }
 }

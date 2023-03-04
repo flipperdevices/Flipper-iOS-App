@@ -1,8 +1,9 @@
+import Core
+
 import SwiftUI
 
 struct SelectChannelPopup: View {
-    let offset: Double
-    let onChannelSelected: (String) -> Void
+    let onChannelSelected: (Update.Channel) -> Void
 
     var body: some View {
         HStack {
@@ -11,8 +12,9 @@ struct SelectChannelPopup: View {
                 VStack(alignment: .leading, spacing: 0) {
                     ChannelMenuRow(
                         title: "Release",
+                        color: Update.Channel.release.color,
                         description: "Stable release (recommended)",
-                        onClick: onChannelSelected
+                        onClick: { onChannelSelected(.release) }
                     )
                     .padding(12)
 
@@ -21,8 +23,9 @@ struct SelectChannelPopup: View {
 
                     ChannelMenuRow(
                         title: "Release-Candidate",
+                        color: Update.Channel.candidate.color,
                         description: "Pre-release under testing",
-                        onClick: onChannelSelected
+                        onClick: { onChannelSelected(.candidate) }
                     )
                     .padding(12)
 
@@ -31,36 +34,27 @@ struct SelectChannelPopup: View {
 
                     ChannelMenuRow(
                         title: "Development",
+                        color: Update.Channel.development.color,
                         description: "Daily unstable build, lots of bugs",
-                        onClick: onChannelSelected
+                        onClick: { onChannelSelected(.development) }
                     )
                     .padding(12)
                 }
             }
             .frame(width: 220)
         }
-        .offset(y: offset - 14)
-        .padding(.trailing, 14)
     }
 }
 
 struct ChannelMenuRow: View {
     let title: String
+    let color: Color
     let description: String
-    var onClick: (String) -> Void
-
-    var color: Color {
-        switch title {
-        case "Release": return .release
-        case "Release-Candidate": return .candidate
-        case "Development": return .development
-        default: return .clear
-        }
-    }
+    var onClick: () -> Void
 
     var body: some View {
         Button {
-            onClick(title)
+            onClick()
         } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 1) {

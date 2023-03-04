@@ -15,9 +15,17 @@ public class UserDefaultsStorage {
         set { storage.set(newValue, forKey: .selectedTabKey) }
     }
 
-    public var updateChannel: String {
-        get { storage.value(forKey: .updateChannel) as? String ?? "" }
-        set { storage.set(newValue, forKey: .updateChannel) }
+    public var updateChannel: Update.Channel {
+        get {
+            if let channel = storage.value(forKey: .updateChannel) as? String {
+                return .init(rawValue: channel) ?? .release
+            } else {
+                return .release
+            }
+        }
+        set {
+            storage.set(newValue.rawValue, forKey: .updateChannel)
+        }
     }
 
     public var logLevel: Logger.Level {

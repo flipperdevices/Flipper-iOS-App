@@ -2,76 +2,54 @@ import Core
 import SwiftUI
 
 struct DeviceUpdateView: View {
-    @EnvironmentObject var updateService: UpdateService
+    @EnvironmentObject var updater: Updater
     @EnvironmentObject var device: Device
     @Environment(\.dismiss) var dismiss
 
     @State private var showCancelUpdate = false
 
-    let intent: Update.Intent
+    let firmware: Update.Firmware
 
-    var channel: Update.Channel {
-        intent.to.channel
-    }
-    var firmware: Update.Manifest.Version {
-        intent.to.firmware
+    var version: Update.Version {
+        firmware.version
     }
 
     var isUpdating: Bool {
-        switch updateService.state {
-        case .update(.downloading), .update(.preparing), .update(.uploading):
-            return true
-        default:
-            return false
+        switch updater.state {
+        case .busy: return true
+        default: return false
         }
     }
 
     var title: String {
-        switch updateService.state {
-        case .error(.noInternet), .error(.noCard): return "Update Not Started"
-        case .error(.storageError): return "Unable to Update"
-        case .error(.noDevice): return "Update Failed"
+        switch updater.state {
+        case .error(.cantDownload): return "Update Not Started"
+        case .error(.cantUpload): return "Unable to Update"
+        case .error(.cantCommunicate): return "Update Failed"
         default: return "Updating your Flipper"
         }
     }
 
     var image: String {
-        switch updateService.state {
-        case .error(.noCard):
-            return "FlipperNoCard"
-        case .error(.noInternet), .error(.noDevice), .error(.cantConnect):
-            switch device.flipper?.color {
-            case .black: return "FlipperDeadBlack"
-            default: return "FlipperDeadWhite"
-            }
-        case .error(.storageError):
-            switch device.flipper?.color {
-            case .black: return "FlipperFlashIssueBlack"
-            default: return "FlipperFlashIssueWhite"
+        switch updater.state {
+        case .error(let error):
+            switch error {
+            case .cantDownload, .cantCommunicate:
+                switch device.flipper?.color {
+                case .black: return "FlipperDeadBlack"
+                default: return "FlipperDeadWhite"
+                }
+            case .cantUpload:
+                switch device.flipper?.color {
+                case .black: return "FlipperFlashIssueBlack"
+                default: return "FlipperFlashIssueWhite"
+                }
             }
         default:
             switch device.flipper?.color {
             case .black: return "FlipperUpdatingBlack"
             default: return "FlipperUpdatingWhite"
             }
-        }
-    }
-
-    var availableFirmware: String {
-        switch channel {
-        case .development: return "Dev \(firmware.version)"
-        case .candidate: return "RC \(firmware.version.dropLast(3))"
-        case .release: return "Release \(firmware.version)"
-        case .custom(let url): return "Custom \(url.lastPathComponent)"
-        }
-    }
-
-    var availableFirmwareColor: Color {
-        switch channel {
-        case .development: return .development
-        case .candidate: return .candidate
-        case .release: return .release
-        case .custom: return .custom
         }
     }
 
@@ -90,23 +68,16 @@ struct DeviceUpdateView: View {
                 .scaledToFit()
                 .padding(.top, 22)
 
-            switch updateService.state {
-            case .error(.cantConnect): NoInternetView { start() }
-            case .error(.failedDownloading): NoInternetView { start() }
-            case .error(.noInternet): NoInternetView { start() }
-            case .error(.noDevice): NoDeviceView()
-            case .error(.noCard): StorageErrorView()
-            case .error(.failedPreparing): StorageErrorView()
-            case .error(.failedUploading): StorageErrorView()
-            case .error(.storageError): StorageErrorView()
-            case .error(.outdatedApp): OutdatedAppView()
-            case .error(.canceled): CanceledView()
-            case .update(let state):
+            switch updater.state {
+            case .started, .canceled: EmptyView()
+            case .error(.cantDownload): NoInternetView { start() }
+            case .error(.cantCommunicate): NoDeviceView()
+            case .error(.cantUpload): StorageErrorView()
+            case .busy(let state):
                 UpdateProgressView(
                     state: state,
-                    changelog: changelog,
-                    availableFirmware: availableFirmware,
-                    availableFirmwareColor: availableFirmwareColor)
+                    version: version,
+                    changelog: changelog)
             }
 
             Spacer()
@@ -131,8 +102,8 @@ struct DeviceUpdateView: View {
                     cancel()
                 })
         }
-        .onChange(of: updateService.state) { state in
-            if state == .update(.started) {
+        .onChange(of: updater.state) { state in
+            if state == .started || state == .canceled {
                 dismiss()
             }
         }
@@ -146,7 +117,7 @@ struct DeviceUpdateView: View {
     }
 
     func start() {
-        updateService.start(intent)
+        updater.install(firmware)
     }
 
     func confirmCancel() {
@@ -154,7 +125,7 @@ struct DeviceUpdateView: View {
     }
 
     func cancel() {
-        updateService.cancel()
+        updater.cancel()
         dismiss()
     }
 }

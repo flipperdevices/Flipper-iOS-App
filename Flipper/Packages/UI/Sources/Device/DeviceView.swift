@@ -52,7 +52,7 @@ struct DeviceView: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         if device.status == .unsupported {
-                            UnsupportedDevice()
+                            OutdatedDeviceCard()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         } else if device.status != .noDevice {
