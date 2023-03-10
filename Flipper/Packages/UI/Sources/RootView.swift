@@ -34,7 +34,6 @@ private struct RootViewImpl: View {
     @State private var isPairingIssue = false
 
     @State private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
-    @State private var backgroundTask: Task<Void, Swift.Error>?
 
     init() {}
 
@@ -99,7 +98,6 @@ private struct RootViewImpl: View {
             return
         }
         endBackgroundTask()
-        backgroundTask?.cancel()
         if device.status == .disconnected {
             device.connect()
         }
@@ -109,17 +107,7 @@ private struct RootViewImpl: View {
         guard backgroundTaskID == .invalid else {
             return
         }
-        Task {
-            backgroundTaskID = startBackgroundTask()
-            backgroundTask = Task {
-                try await Task.sleep(seconds: 3)
-                //logger.info("disconnecting due to inactivity")
-                device.disconnect()
-            }
-            _ = await backgroundTask?.result
-            backgroundTask = nil
-            endBackgroundTask()
-        }
+        backgroundTaskID = startBackgroundTask()
     }
 
     private func startBackgroundTask() -> UIBackgroundTaskIdentifier {
