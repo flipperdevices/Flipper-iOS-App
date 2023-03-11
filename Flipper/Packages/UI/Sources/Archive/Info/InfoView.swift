@@ -2,8 +2,8 @@ import Core
 import SwiftUI
 
 struct InfoView: View {
-    @EnvironmentObject var archiveService: ArchiveService
-    @EnvironmentObject var sharingService: SharingService
+    @EnvironmentObject var archive: ArchiveModel
+    @EnvironmentObject var sharing: SharingModel
     @EnvironmentObject var networkMonitor: NetworkMonitor
 
     @StateObject var alertController: AlertController = .init()
@@ -105,7 +105,7 @@ struct InfoView: View {
                     share(shareItems)
                 }
             }
-            .environmentObject(sharingService)
+            .environmentObject(sharing)
             .environmentObject(networkMonitor)
         }
         .fullScreenCover(isPresented: $showDumpEditor) {
@@ -120,7 +120,7 @@ struct InfoView: View {
         .onChange(of: current.isFavorite) { _ in
             toggleFavorite()
         }
-        .onChange(of: archiveService.items) { items in
+        .onChange(of: archive.items) { items in
             if let item = items.first(where: { $0.id == current.id }) {
                 self.current.status = item.status
             }
@@ -137,7 +137,7 @@ struct InfoView: View {
                 guard backup.isFavorite != current.isFavorite else { return }
                 guard !isEditing else { return }
                 backup.isFavorite = current.isFavorite
-                try await archiveService.onIsFavoriteToggle(current)
+                try await archive.onIsFavoriteToggle(current)
             } catch {
                 showError(error)
             }
@@ -154,7 +154,7 @@ struct InfoView: View {
     func delete() {
         Task {
             do {
-                try await archiveService.delete(current)
+                try await archive.delete(current)
                 dismiss()
             } catch {
                 showError(error)
@@ -171,7 +171,7 @@ struct InfoView: View {
         }
         Task {
             do {
-                try await archiveService.save(backup, as: current)
+                try await archive.save(backup, as: current)
                 withAnimation {
                     isEditing = false
                 }

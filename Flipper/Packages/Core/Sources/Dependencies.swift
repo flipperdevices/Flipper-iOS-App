@@ -99,12 +99,12 @@ public class Dependencies: ObservableObject {
     }()
 
     @MainActor
-    public lazy var archiveService: ArchiveService = {
-        .init(archive: archive, syncService: syncService)
+    public lazy var archiveModel: ArchiveModel = {
+        .init(archive: archive, synchronization: synchronization)
     }()
 
     @MainActor
-    public lazy var syncService: SyncService = {
+    public lazy var synchronization: Synchronization = {
         .init(pairedDevice: pairedDevice, archive: archive, device: device)
     }()
 
@@ -124,12 +124,12 @@ public class Dependencies: ObservableObject {
     }()
 
     @MainActor
-    public lazy var emulateService: EmulateService = {
+    public lazy var emulate: Emulate = {
         .init(pairedDevice: pairedDevice)
     }()
 
     @MainActor
-    public lazy var sharingService: SharingService = {
+    public lazy var sharing: SharingModel = {
         .init()
     }()
 
@@ -139,7 +139,7 @@ public class Dependencies: ObservableObject {
             widgetStorage: FilteredWidgetStorage(
                 widgetStorage: JSONTodayWidgetStorage(),
                 mobileStorage: mobileArchiveStorage),
-            emulateService: emulateService,
+            emulate: emulate,
             archive: archive,
             central: central,
             device: pairedDevice)

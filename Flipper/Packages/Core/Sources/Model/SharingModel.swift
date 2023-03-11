@@ -2,7 +2,7 @@ import Combine
 import Foundation
 
 @MainActor
-public class SharingService: ObservableObject {
+public class SharingModel: ObservableObject {
     public init() {}
 
     public func shareInitiated() {

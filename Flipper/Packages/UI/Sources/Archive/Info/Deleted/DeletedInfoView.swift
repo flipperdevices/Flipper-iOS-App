@@ -3,7 +3,7 @@ import SwiftUI
 
 @MainActor
 struct DeletedInfoView: View {
-    @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var archive: ArchiveModel
     @Environment(\.dismiss) private var dismiss
 
     let item: ArchiveItem
@@ -63,7 +63,7 @@ struct DeletedInfoView: View {
     func restore() {
         Task {
             do {
-                try await archiveService.restore(item)
+                try await archive.restore(item)
                 dismiss()
             } catch {
                 showError(error)
@@ -74,7 +74,7 @@ struct DeletedInfoView: View {
     func delete() {
         Task {
             do {
-                try await archiveService.wipe(item)
+                try await archive.wipe(item)
                 dismiss()
             } catch {
                 showError(error)

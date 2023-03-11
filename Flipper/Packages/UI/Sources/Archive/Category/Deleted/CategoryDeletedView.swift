@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct CategoryDeletedView: View {
-    @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var archive: ArchiveModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedItem: ArchiveItem?
@@ -18,7 +18,7 @@ struct CategoryDeletedView: View {
     }
 
     var toolbarActionsColor: Color {
-        archiveService.items.isEmpty ? .primary.opacity(0.5) : .primary
+        archive.items.isEmpty ? .primary.opacity(0.5) : .primary
     }
 
     var body: some View {
@@ -26,10 +26,10 @@ struct CategoryDeletedView: View {
             Text("No deleted keys")
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(.black40)
-                .opacity(archiveService.items.isEmpty ? 1 : 0)
+                .opacity(archive.items.isEmpty ? 1 : 0)
 
             ScrollView {
-                CategoryList(items: archiveService.deleted) { item in
+                CategoryList(items: archive.deleted) { item in
                     selectedItem = item
                 }
                 .padding(14)
@@ -55,11 +55,11 @@ struct CategoryDeletedView: View {
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(toolbarActionsColor)
                     }
-                    .disabled(archiveService.items.isEmpty)
+                    .disabled(archive.items.isEmpty)
                     .actionSheet(isPresented: $showRestoreSheet) {
                         .init(title: Text(restoreSheetTitle), buttons: [
                             .destructive(Text("Restore All")) {
-                                archiveService.restoreAll()
+                                archive.restoreAll()
                             },
                             .cancel()
                         ])
@@ -72,11 +72,11 @@ struct CategoryDeletedView: View {
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(toolbarActionsColor)
                     }
-                    .disabled(archiveService.items.isEmpty)
+                    .disabled(archive.items.isEmpty)
                     .actionSheet(isPresented: $showDeleteSheet) {
                         .init(title: Text(deleteSheetTitle), buttons: [
                             .destructive(Text("Delete All")) {
-                                archiveService.deleteAll()
+                                archive.deleteAll()
                             },
                             .cancel()
                         ])

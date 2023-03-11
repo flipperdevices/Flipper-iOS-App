@@ -12,12 +12,12 @@ public struct RootView: View {
             .environmentObject(dependencies.device)
             .environmentObject(dependencies.central)
             .environmentObject(dependencies.networkMonitor)
-            .environmentObject(dependencies.archiveService)
-            .environmentObject(dependencies.syncService)
+            .environmentObject(dependencies.archiveModel)
+            .environmentObject(dependencies.synchronization)
             .environmentObject(dependencies.updateModel)
             .environmentObject(dependencies.updater)
-            .environmentObject(dependencies.sharingService)
-            .environmentObject(dependencies.emulateService)
+            .environmentObject(dependencies.sharing)
+            .environmentObject(dependencies.emulate)
     }
 }
 

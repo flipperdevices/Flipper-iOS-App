@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct SaveAsView: View {
-    @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var archive: ArchiveModel
     @StateObject var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
 
@@ -73,7 +73,7 @@ struct SaveAsView: View {
     func save() {
         Task {
             do {
-                try await archiveService.add(item)
+                try await archive.add(item)
                 dismiss()
             } catch {
                 showError(error)

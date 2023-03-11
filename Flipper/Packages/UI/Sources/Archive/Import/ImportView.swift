@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ImportView: View {
     @EnvironmentObject var device: Device
-    @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var archive: ArchiveModel
     @Environment(\.dismiss) private var dismiss
 
     let url: URL
@@ -128,7 +128,7 @@ struct ImportView: View {
     func loadItem() async {
         self.state = .loading
         do {
-            self.item = try await archiveService.loadItem(url: url)
+            self.item = try await archive.loadItem(url: url)
             self.state = .loaded
         } catch let error as URLError {
             switch error.code {
@@ -150,7 +150,7 @@ struct ImportView: View {
     func add() {
         Task { @MainActor in
             do {
-                try await archiveService.add(item)
+                try await archive.add(item)
                 dismiss()
             } catch {
                 showError(error)

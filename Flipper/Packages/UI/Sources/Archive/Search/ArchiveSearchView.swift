@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct ArchiveSearchView: View {
-    @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var archive: ArchiveModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var predicate = ""
@@ -10,9 +10,9 @@ struct ArchiveSearchView: View {
 
     var filteredItems: [ArchiveItem] {
         guard !predicate.isEmpty else {
-            return archiveService.items
+            return archive.items
         }
-        return archiveService.items.filter {
+        return archive.items.filter {
             $0.name.value.lowercased().contains(predicate.lowercased()) ||
             $0.note.lowercased().contains(predicate.lowercased())
         }

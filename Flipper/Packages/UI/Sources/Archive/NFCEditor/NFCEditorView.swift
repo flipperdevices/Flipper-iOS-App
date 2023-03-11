@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct NFCEditorView: View {
-    @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var archive: ArchiveModel
     @StateObject var alertController: AlertController = .init()
     @StateObject var hexKeyboardController: HexKeyboardController = .init()
     @Environment(\.dismiss) private var dismiss
@@ -171,7 +171,7 @@ struct NFCEditorView: View {
         item.nfcBlocks = bytes
         Task {
             do {
-                try await archiveService.save(item, as: item)
+                try await archive.save(item, as: item)
             } catch {
                 showError(error)
             }

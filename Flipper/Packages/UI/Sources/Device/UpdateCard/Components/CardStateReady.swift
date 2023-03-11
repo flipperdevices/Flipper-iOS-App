@@ -17,7 +17,7 @@ extension DeviceUpdateCard {
         }
 
         @EnvironmentObject var device: Device
-        @EnvironmentObject var syncService: SyncService
+        @EnvironmentObject var synchronization: Synchronization
 
         @State private var showConfirmUpdate = false
         @State private var showPauseSync = false
@@ -83,7 +83,7 @@ extension DeviceUpdateCard {
             ) {
                 Button("Continue") { }
                 Button("Pause") {
-                    syncService.cancelSync()
+                    synchronization.cancelSync()
                 }
             } message: {
                 Text(

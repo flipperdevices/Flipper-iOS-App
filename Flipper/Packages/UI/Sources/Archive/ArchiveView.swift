@@ -5,8 +5,8 @@ import OrderedCollections
 
 struct ArchiveView: View {
     @EnvironmentObject var device: Device
-    @EnvironmentObject var archiveService: ArchiveService
-    @EnvironmentObject var syncService: SyncService
+    @EnvironmentObject var archive: ArchiveModel
+    @EnvironmentObject var synchronization: Synchronization
 
     @State private var importedItem: URL?
     @State private var selectedItem: ArchiveItem?
@@ -18,11 +18,11 @@ struct ArchiveView: View {
     }
 
     var items: [ArchiveItem] {
-        archiveService.items
+        archive.items
     }
 
     var sortedItems: [ArchiveItem] {
-        archiveService.items.sorted { $0.date < $1.date }
+        archive.items.sorted { $0.date < $1.date }
     }
 
     var favoriteItems: [ArchiveItem] {
@@ -53,9 +53,9 @@ struct ArchiveView: View {
                     VStack(spacing: 4) {
                         Spinner()
                         Text(
-                            syncService.syncProgress == 0
+                            synchronization.progress == 0
                                 ? "Syncing..."
-                                : "Syncing \(syncService.syncProgress)%"
+                                : "Syncing \(synchronization.progress)%"
                         )
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.black30)
@@ -67,7 +67,7 @@ struct ArchiveView: View {
                     ) {
                         CategoryCard(
                             groups: groups,
-                            deletedCount: archiveService.deleted.count
+                            deletedCount: archive.deleted.count
                         )
                         .padding(14)
 
@@ -79,7 +79,7 @@ struct ArchiveView: View {
                             .padding(.bottom, 14)
                         }
 
-                        if !archiveService.items.isEmpty {
+                        if !archive.items.isEmpty {
                             AllItemsSection(items: sortedItems) { item in
                                 selectedItem = item
                             }
@@ -124,7 +124,7 @@ struct ArchiveView: View {
     }
 
     func refresh() {
-        syncService.synchronize()
+        synchronization.start()
     }
 }
 

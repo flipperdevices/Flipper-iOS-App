@@ -3,7 +3,7 @@ import SwiftUI
 
 struct TabView: View {
     @EnvironmentObject var device: Device
-    @EnvironmentObject var syncService: SyncService
+    @EnvironmentObject var synchronization: Synchronization
     @Binding var selected: Tab
     var extraAction: () -> Void
 
@@ -78,7 +78,7 @@ extension TabView {
         case .connecting: return "Connecting..."
         case .connected: return "Connected"
         case .disconnected: return "Disconnected"
-        case .synchronizing: return "Syncing \(syncService.syncProgress)%"
+        case .synchronizing: return "Syncing \(synchronization.progress)%"
         case .synchronized: return "Synced!"
         case .updating: return "Connecting..."
         case .invalidPairing: return "Pairing Failed"

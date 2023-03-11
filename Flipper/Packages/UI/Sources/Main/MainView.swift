@@ -3,7 +3,7 @@ import SwiftUI
 
 struct MainView: View {
     @EnvironmentObject var device: Device
-    @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var archive: ArchiveModel
 
     @StateObject var tabViewController: TabViewController = .init()
 
@@ -37,7 +37,7 @@ struct MainView: View {
         }
         .ignoresSafeArea(.keyboard)
         .environmentObject(tabViewController)
-        .onReceive(archiveService.imported) { item in
+        .onReceive(archive.imported) { item in
             onItemAdded(item: item)
         }
         .onOpenURL { url in

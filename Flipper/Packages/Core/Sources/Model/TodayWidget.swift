@@ -33,20 +33,20 @@ public class TodayWidget: ObservableObject {
     private var cancellables: [AnyCancellable] = []
 
     private var widgetStorage: TodayWidgetKeysStorage
-    private var emulateService: EmulateService
+    private var emulate: Emulate
     private var archive: Archive
     private var central: Central
     private var device: PairedDevice
 
     public init(
         widgetStorage: TodayWidgetKeysStorage,
-        emulateService: EmulateService,
+        emulate: Emulate,
         archive: Archive,
         central: Central,
         device: PairedDevice
     ) {
         self.widgetStorage = widgetStorage
-        self.emulateService = emulateService
+        self.emulate = emulate
         self.archive = archive
         self.central = central
         self.device = device
@@ -63,7 +63,7 @@ public class TodayWidget: ObservableObject {
             }
             .store(in: &cancellables)
 
-        emulateService.$state
+        emulate.$state
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
                 guard let self else { return }
@@ -175,7 +175,7 @@ public class TodayWidget: ObservableObject {
     public func onSendPressed(for key: WidgetKey) {
         keyToEmulate == nil
             ? startEmulate(key)
-            : emulateService.forceStopEmulate()
+            : emulate.forceStopEmulate()
     }
 
     public func onSendReleased(for key: WidgetKey) {
@@ -209,7 +209,7 @@ public class TodayWidget: ObservableObject {
             resetEmulate()
             return
         }
-        emulateService.startEmulate(item)
+        emulate.startEmulate(item)
     }
 
     private func item(for key: WidgetKey) -> ArchiveItem? {
@@ -217,11 +217,11 @@ public class TodayWidget: ObservableObject {
     }
 
     public func stopEmulate() {
-        emulateService.stopEmulate()
+        emulate.stopEmulate()
     }
 
     func forceStopEmulate() {
-        emulateService.forceStopEmulate()
+        emulate.forceStopEmulate()
     }
 
     func toggleEmulate(_ key: WidgetKey) {

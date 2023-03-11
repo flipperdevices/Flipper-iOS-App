@@ -2,8 +2,8 @@ import Combine
 import Foundation
 
 @MainActor
-public class ArchiveService: ObservableObject {
-    let syncService: SyncService
+public class ArchiveModel: ObservableObject {
+    let synchronization: Synchronization
 
     private let archive: Archive
     private var cancellables: [AnyCancellable] = .init()
@@ -13,9 +13,9 @@ public class ArchiveService: ObservableObject {
 
     public let imported = PassthroughSubject<ArchiveItem, Never>()
 
-    public init(archive: Archive, syncService: SyncService) {
+    public init(archive: Archive, synchronization: Synchronization) {
         self.archive = archive
-        self.syncService = syncService
+        self.synchronization = synchronization
         subscribeToPublishers()
     }
 
@@ -41,7 +41,7 @@ public class ArchiveService: ObservableObject {
             }
             try await archive.upsert(newItem)
             recordEdit()
-            syncService.synchronize()
+            synchronization.start()
         } catch {
             logger.error("saving changes: \(error)")
             throw error
@@ -51,7 +51,7 @@ public class ArchiveService: ObservableObject {
     public func delete(_ item: ArchiveItem) async throws {
         do {
             try await archive.delete(item.id)
-            syncService.synchronize()
+            synchronization.start()
         } catch {
             logger.error("deleting item: \(error)")
             throw error
@@ -61,7 +61,7 @@ public class ArchiveService: ObservableObject {
     public func restore(_ item: ArchiveItem) async throws {
         do {
             try await archive.restore(item)
-            syncService.synchronize()
+            synchronization.start()
         } catch {
             logger.error("restore item: \(error)")
             throw error
@@ -92,7 +92,7 @@ public class ArchiveService: ObservableObject {
             logger.info("added: \(item.filename)")
             imported.send(item)
             recordImport()
-            syncService.synchronize()
+            synchronization.start()
         } catch {
             logger.error("add: \(error)")
             throw error
@@ -108,7 +108,7 @@ public class ArchiveService: ObservableObject {
         Task {
             do {
                 try await archive.restoreAll()
-                syncService.synchronize()
+                synchronization.start()
             } catch {
                 logger.error("restore all: \(error)")
             }

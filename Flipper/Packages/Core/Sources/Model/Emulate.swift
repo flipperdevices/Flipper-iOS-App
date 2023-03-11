@@ -4,7 +4,7 @@ import Combine
 import Foundation
 
 @MainActor
-public class EmulateService: ObservableObject {
+public class Emulate: ObservableObject {
     @Published public var state: State = .closed
 
     public enum State: Equatable {
@@ -215,7 +215,7 @@ extension ArchiveItem {
     }
 }
 
-extension EmulateService {
+extension Emulate {
     // Emulated since button pressed (ms)
     var emulateDuration: Int {
         Date().timeIntervalSince(emulateStarted).ms

@@ -4,11 +4,11 @@ import Combine
 import Foundation
 
 @MainActor
-public class SyncService: ObservableObject {
+public class Synchronization: ObservableObject {
     // next step
     let device: Device
 
-    @Published public var syncProgress: Int = 0
+    @Published public var progress: Int = 0
 
     private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
@@ -30,7 +30,7 @@ public class SyncService: ObservableObject {
                 guard let self else { return }
                 #if !DEBUG
                 if status == .connected {
-                    self.synchronize(syncDateTime: true)
+                    self.start(syncDateTime: true)
                 }
                 #endif
             }
@@ -39,14 +39,14 @@ public class SyncService: ObservableObject {
 
     // MARK: Synchronization
 
-    public func synchronize(syncDateTime: Bool = false) {
+    public func start(syncDateTime: Bool = false) {
         Task {
             do {
                 guard device.status == .connected else { return }
                 logger.info("synchronize")
                 device.status = .synchronizing
 
-                syncProgress = 0
+                progress = 0
                 if syncDateTime {
                     try await self.synchronizeDateTime()
                 }
@@ -74,7 +74,7 @@ public class SyncService: ObservableObject {
                 // FIXME: find the issue (very rare)
                 guard progress.isNormal else { return }
                 Task { @MainActor in
-                    syncProgress = Int(progress * 100)
+                    self.progress = Int(progress * 100)
                 }
             }
         }

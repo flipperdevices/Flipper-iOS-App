@@ -3,7 +3,7 @@ import SwiftUI
 
 struct EmulateView: View {
     @EnvironmentObject var device: Device
-    @EnvironmentObject var emulateService: EmulateService
+    @EnvironmentObject var emulate: Emulate
     @Environment(\.dismiss) private var dismiss
 
     let item: ArchiveItem
@@ -86,7 +86,7 @@ struct EmulateView: View {
         .onDisappear {
             stopEmulate()
         }
-        .onChange(of: emulateService.state) { state in
+        .onChange(of: emulate.state) { state in
             if state == .closed {
                 self.isEmulating = false
             }
@@ -125,18 +125,18 @@ struct EmulateView: View {
     func startEmulate() {
         guard !isEmulating else { return }
         isEmulating = true
-        emulateService.startEmulate(item)
+        emulate.startEmulate(item)
         showBubbleIfNeeded()
     }
 
     func stopEmulate() {
         guard isEmulating else { return }
-        emulateService.stopEmulate()
+        emulate.stopEmulate()
     }
 
     func forceStopEmulate() {
         guard isEmulating else { return }
-        emulateService.forceStopEmulate()
+        emulate.forceStopEmulate()
     }
 
     func toggleEmulate() {

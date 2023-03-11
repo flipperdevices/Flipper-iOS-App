@@ -2,14 +2,14 @@ import Core
 import SwiftUI
 
 struct CategoryView: View {
-    @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var archive: ArchiveModel
     @Environment(\.dismiss) private var dismiss
 
     let kind: ArchiveItem.Kind
     @State private var selectedItem: ArchiveItem?
 
     var items: [ArchiveItem] {
-        archiveService.items.filter { $0.kind == kind }
+        archive.items.filter { $0.kind == kind }
     }
 
     var body: some View {

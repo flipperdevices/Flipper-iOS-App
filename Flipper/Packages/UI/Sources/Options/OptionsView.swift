@@ -3,7 +3,7 @@ import SwiftUI
 
 struct OptionsView: View {
     @EnvironmentObject var device: Device
-    @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var archive: ArchiveModel
     @Environment(\.dismiss) private var dismiss
 
     @AppStorage(.isDebugMode) var isDebugMode = false
@@ -42,9 +42,9 @@ struct OptionsView: View {
                     LogsView()
                 }
                 Button("Backup Keys") {
-                    share(archiveService.backupKeys())
+                    share(archive.backupKeys())
                 }
-                .disabled(archiveService.items.isEmpty)
+                .disabled(archive.items.isEmpty)
             }
 
             Section(header: Text("Remote")) {

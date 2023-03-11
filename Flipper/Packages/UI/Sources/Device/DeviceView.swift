@@ -5,7 +5,7 @@ struct DeviceView: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var central: Central
     @EnvironmentObject var device: Device
-    @EnvironmentObject var syncService: SyncService
+    @EnvironmentObject var synchronization: Synchronization
 
     @State private var showForgetAction = false
     @State private var showUnsupportedVersionAlert = false
@@ -89,7 +89,7 @@ struct DeviceView: View {
                                         image: "Sync",
                                         title: "Synchronize"
                                     ) {
-                                        syncService.synchronize()
+                                        synchronization.start()
                                     }
                                     .disabled(!canSync)
 

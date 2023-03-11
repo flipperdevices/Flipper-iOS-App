@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct ShareView: View {
-    @EnvironmentObject var sharingService: SharingService
+    @EnvironmentObject var sharing: SharingModel
     @EnvironmentObject var networkMonitor: NetworkMonitor
 
     @Environment(\.dismiss) var dismiss
@@ -78,10 +78,10 @@ struct ShareView: View {
             state = available ? .select : .noInternet
         }
         .onAppear {
-            sharingService.shareInitiated()
+            sharing.shareInitiated()
         }
         .task {
-            isTempLink = !sharingService.canEncodeToURL(item)
+            isTempLink = !sharing.canEncodeToURL(item)
         }
     }
 
@@ -95,7 +95,7 @@ struct ShareView: View {
         }
         Task { @MainActor in
             do {
-                let url = try await sharingService.serverLink(for: item)
+                let url = try await sharing.serverLink(for: item)
                 onShare([url.absoluteString])
                 dismiss()
             } catch {
@@ -106,7 +106,7 @@ struct ShareView: View {
 
     func shareAsShortLink() {
         Task { @MainActor in
-            let url = try await sharingService.localLink(for: item)
+            let url = try await sharing.localLink(for: item)
             onShare([url.absoluteString])
             dismiss()
         }
@@ -114,7 +114,7 @@ struct ShareView: View {
 
     func shareAsFile() {
         Task { @MainActor in
-            let url = try await sharingService.tempFileURL(for: item)
+            let url = try await sharing.tempFileURL(for: item)
             onShare([url])
             dismiss()
         }

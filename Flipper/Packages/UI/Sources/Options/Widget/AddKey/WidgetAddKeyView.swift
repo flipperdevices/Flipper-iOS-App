@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct WidgetAddKeyView: View {
-    @EnvironmentObject var archiveService: ArchiveService
+    @EnvironmentObject var archive: ArchiveModel
     @Environment(\.dismiss) private var dismiss
 
     let widgetKeys: [WidgetKey]
@@ -11,7 +11,7 @@ struct WidgetAddKeyView: View {
     @State private var predicate = ""
 
     var filteredItems: [ArchiveItem] {
-        archiveService.items.filter { item in
+        archive.items.filter { item in
             guard item.isAllowed else {
                 return false
             }
