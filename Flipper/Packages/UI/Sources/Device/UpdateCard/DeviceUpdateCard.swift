@@ -7,6 +7,11 @@ struct DeviceUpdateCard: View {
 
     @State private var showUpdate = false
 
+    @State private var showUpdateSuccess = false
+    @State private var showUpdateFailure = false
+
+    @AppStorage(.installingVersion) var installInProgress = ""
+
     var body: some View {
         Card {
             VStack(spacing: 0) {
@@ -48,6 +53,30 @@ struct DeviceUpdateCard: View {
         .fullScreenCover(isPresented: $updateModel.showUpdate) {
             if let firmware = updateModel.firmware {
                 DeviceUpdateView(firmware: firmware)
+            }
+        }
+        .onChange(of: updateModel.installed) { installed in
+            if let installed = installed, !installInProgress.isEmpty {
+                showUpdateSuccess = installed.description == installInProgress
+                showUpdateFailure = installed.description != installInProgress
+            }
+        }
+        .customAlert(isPresented: $showUpdateSuccess) {
+            UpdateSucceededAlert(
+                isPresented: $showUpdateSuccess,
+                firmwareVersion: installInProgress
+            )
+            .onDisappear {
+                installInProgress = ""
+            }
+        }
+        .customAlert(isPresented: $showUpdateFailure) {
+            UpdateFailedAlert(
+                isPresented: $showUpdateFailure,
+                firmwareVersion: installInProgress
+            )
+            .onDisappear {
+                installInProgress = ""
             }
         }
         .task {

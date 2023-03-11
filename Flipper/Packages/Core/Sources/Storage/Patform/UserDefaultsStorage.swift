@@ -73,6 +73,7 @@ public extension String {
     static var isFirstLaunchKey: String { "isFirstLaunch" }
     static var selectedTabKey: String { "selectedTab" }
     static var updateChannel: String { "updateChannel" }
+    static var installingVersion: String { "installingVersion" }
     static var logLevelKey: String { "logLevel" }
     static var hasReaderLog: String { "hasReaderLog" }
 

@@ -7,6 +7,7 @@ struct DeviceUpdateView: View {
     @Environment(\.dismiss) var dismiss
 
     @State private var showCancelUpdate = false
+    @AppStorage(.installingVersion) var installInProgress = ""
 
     let firmware: Update.Firmware
 
@@ -103,6 +104,9 @@ struct DeviceUpdateView: View {
                 })
         }
         .onChange(of: updater.state) { state in
+            if state == .started {
+                installInProgress = firmware.version.description
+            }
             if state == .started || state == .canceled {
                 dismiss()
             }
