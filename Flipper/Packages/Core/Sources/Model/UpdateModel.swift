@@ -53,7 +53,6 @@ public class UpdateModel: ObservableObject {
         }
     }
 
-    private let networkMonitor: NetworkMonitor = .init()
     private let updateSource: UpdateSource
 
     private var pairedDevice: PairedDevice
@@ -83,14 +82,6 @@ public class UpdateModel: ObservableObject {
         pairedDevice.flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
-            .store(in: &cancellables)
-
-        networkMonitor.$isAvailable
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                guard let self else { return }
-                self.onNetworkStatusChanged(available: $0)
-            }
             .store(in: &cancellables)
     }
 
@@ -173,16 +164,6 @@ public class UpdateModel: ObservableObject {
                 currentRegion = .failure(error)
             }
             updateState()
-        }
-    }
-
-    public func onNetworkStatusChanged(available: Bool) {
-        switch available {
-        case true:
-            state = .busy(.checkingForUpdate)
-            updateAvailableFirmware()
-        case false:
-            state = .error(.noInternet)
         }
     }
 
