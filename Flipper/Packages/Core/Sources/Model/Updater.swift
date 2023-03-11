@@ -27,11 +27,6 @@ public class Updater: ObservableObject {
         }
     }
 
-    public enum Result {
-        case success
-        case failure
-    }
-
     private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
 
@@ -66,9 +61,22 @@ public class Updater: ObservableObject {
                 let path = try await uploadFirmware(bundle)
                 try await startUpdateProcess(path)
             } catch {
+                onError(error)
                 logger.error("update: \(error)")
             }
             updateTaskHandle = nil
+        }
+    }
+
+    private func onError(_ error: Swift.Error) {
+        switch error {
+        case _ as URLError:
+            state = .error(.cantDownload)
+        case let error as Peripheral.Error
+            where error == .storage(.internal):
+            state = .error(.cantUpload)
+        default:
+            state = .error(.cantCommunicate)
         }
     }
 
@@ -83,62 +91,39 @@ public class Updater: ObservableObject {
 
     private func prepareForUpdate() async throws {
         state = .busy(.preparing)
-        do {
-            try await device.showUpdatingFrame()
-        } catch {
-            state = .error(.cantCommunicate)
-            throw error
-        }
+        try await device.showUpdatingFrame()
     }
 
     private func provideRegion() async throws {
         state = .busy(.preparing)
-        do {
-            try await device.provideSubGHzRegion()
-        } catch let error as Peripheral.Error
-            where error == .storage(.internal) {
-            state = .error(.cantUpload)
-            throw error
-        }
+        try await device.provideSubGHzRegion()
     }
 
     private func downloadFirmware(_ url: URL) async throws -> [UInt8] {
-        do {
-            state = .busy(.downloading(progress: 0))
-            return try await provider.data(from: url) { progress in
-                Task { @MainActor in
-                    if case .busy(.downloading) = self.state {
-                        self.state = .busy(
-                            .downloading(progress: progress)
-                        )
-                    }
+        state = .busy(.downloading(progress: 0))
+        return try await provider.data(from: url) { progress in
+            Task { @MainActor in
+                if case .busy(.downloading) = self.state {
+                    self.state = .busy(
+                        .downloading(progress: progress)
+                    )
                 }
             }
-        } catch where error is URLError {
-            state = .error(.cantDownload)
-            throw error
         }
     }
 
     private func uploadFirmware(
         _ bundle: UpdateBundle
     ) async throws -> Peripheral.Path {
-        do {
-            state = .busy(.preparing)
-            return try await uploader.upload(bundle) { progress in
-                Task { @MainActor in
-                    if case .busy = self.state {
-                        self.state = .busy(
-                            .uploading(progress: progress)
-                        )
-                    }
+        state = .busy(.preparing)
+        return try await uploader.upload(bundle) { progress in
+            Task { @MainActor in
+                if case .busy = self.state {
+                    self.state = .busy(
+                        .uploading(progress: progress)
+                    )
                 }
             }
-        } catch let error as Peripheral.Error
-            where error == .storage(.internal)
-        {
-            state = .error(.cantUpload)
-            throw error
         }
     }
 
