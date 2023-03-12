@@ -24,16 +24,21 @@ public class Synchronization: ObservableObject {
         subscribeToPublishers()
     }
 
+    // next step
+    var deviceStatus: Device.Status = .disconnected {
+        didSet {
+            #if !DEBUG
+            if oldValue == .connecting, deviceStatus == .connected {
+                self.start(syncDateTime: true)
+            }
+            #endif
+        }
+    }
+
     func subscribeToPublishers() {
         device.$status
-            .sink { [weak self] status in
-                guard let self else { return }
-                #if !DEBUG
-                if status == .connected {
-                    self.start(syncDateTime: true)
-                }
-                #endif
-            }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.deviceStatus, on: self)
             .store(in: &cancellables)
     }
 
