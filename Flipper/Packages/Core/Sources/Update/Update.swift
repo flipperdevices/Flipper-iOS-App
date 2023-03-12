@@ -1,6 +1,12 @@
 import Foundation
 
 public enum Update {
+    public struct Manifest {
+        public let release: Firmware
+        public let candidate: Firmware
+        public let development: Firmware
+    }
+
     public struct Firmware: Equatable {
         public var version: Version
         public var changelog: String
@@ -33,6 +39,14 @@ public enum Update {
         public let id: Int
         public let currentVersion: Version
         public let desiredVersion: Version
+    }
+}
+
+extension Update.Manifest {
+    init(for target: Update.Target, from manifest: FirmwareManifest) throws {
+        release = try manifest.firmware(for: target, channel: .release)
+        candidate = try manifest.firmware(for: target, channel: .candidate)
+        development = try manifest.firmware(for: target, channel: .development)
     }
 }
 

@@ -14,7 +14,7 @@ extension FirmwareManifestSource {
 
 // MARK: Remote
 
-struct RemoteManifestSource: FirmwareManifestSource {
+struct RemoteFirmwareManifestSource: FirmwareManifestSource {
     func get(
         progress: @escaping (Double) -> Void
     ) async throws -> FirmwareManifest {

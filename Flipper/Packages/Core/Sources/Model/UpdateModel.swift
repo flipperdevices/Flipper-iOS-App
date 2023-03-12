@@ -7,26 +7,27 @@ import Foundation
 public class UpdateModel: ObservableObject {
     @Published public var state: State = .loading
 
-    @Published public var firmware: Update.Firmware?
+    @Published public var manifest: Update.Manifest?
+    @Published public var updateChannel: Update.Channel = .load() {
+        didSet { updateChannel.save() }
+    }
 
     @Published public var intent: Update.Intent?
     @Published public var showUpdate = false
+
+    public var firmware: Update.Firmware? {
+        switch updateChannel {
+        case .release: return manifest?.release
+        case .candidate: return manifest?.candidate
+        case .development: return manifest?.development
+        }
+    }
 
     public var installed: Update.Version? {
         flipper?.information?.firmwareVersion
     }
     public var available: Update.Version? {
         firmware?.version
-    }
-
-    public var updateChannel: Update.Channel {
-        get {
-            UserDefaultsStorage.shared.updateChannel
-        }
-        set {
-            UserDefaultsStorage.shared.updateChannel = newValue
-            updateAvailableFirmware()
-        }
     }
 
     public enum State: Equatable {
@@ -67,7 +68,7 @@ public class UpdateModel: ObservableObject {
 
     private var device: Device
 
-    private let updateSource: UpdateSource
+    private let manifestSource: TargetManifestSource
     private let provider: FirmwareProvider
     private let uploader: FirmwareUploader
 
@@ -78,11 +79,11 @@ public class UpdateModel: ObservableObject {
     public init(
         device: Device,
         pairedDevice: PairedDevice,
-        updateSource: UpdateSource
+        manifestSource: TargetManifestSource
     ) {
         self.device = device
         self.pairedDevice = pairedDevice
-        self.updateSource = updateSource
+        self.manifestSource = manifestSource
 
         // next step
         self.provider = .init()
@@ -194,9 +195,7 @@ public class UpdateModel: ObservableObject {
         state = .loading
         Task {
             do {
-                firmware = try await updateSource.firmware(
-                    for: .f7,
-                    channel: updateChannel)
+                manifest = try await manifestSource.manifest(for: .f7)
                 updateState()
             } catch {
                 state = .error(.cantConnect)
@@ -408,10 +407,20 @@ public class UpdateModel: ObservableObject {
     }
 }
 
-extension Update.Intent {
+private extension Update.Intent {
     init(from: Update.Version, to: Update.Version) {
         id = Int(Date().timeIntervalSince1970)
         currentVersion = from
         desiredVersion = to
+    }
+}
+
+private extension Update.Channel {
+    static func load() -> Self {
+        UserDefaultsStorage.shared.updateChannel
+    }
+
+    func save() {
+        UserDefaultsStorage.shared.updateChannel = self
     }
 }

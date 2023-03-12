@@ -113,8 +113,8 @@ public class Dependencies: ObservableObject {
         .init(
             device: device,
             pairedDevice: pairedDevice,
-            updateSource: RemoteUpdateSource(
-                manifestSource: RemoteManifestSource()))
+            manifestSource: RemoteTargetManifestSource(
+                manifestSource: RemoteFirmwareManifestSource()))
     }()
 
     @MainActor

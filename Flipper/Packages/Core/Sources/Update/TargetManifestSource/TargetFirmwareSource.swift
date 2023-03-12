@@ -1,4 +1,4 @@
-public protocol UpdateSource {
+public protocol TargetFirmwareSource {
     func firmware(
         for target: Update.Target,
         channel: Update.Channel,
@@ -6,7 +6,7 @@ public protocol UpdateSource {
     ) async throws -> Update.Firmware
 }
 
-extension UpdateSource {
+extension TargetFirmwareSource {
     func firmware(
         for target: Update.Target,
         channel: Update.Channel
@@ -17,7 +17,7 @@ extension UpdateSource {
 
 // MARK: Remote
 
-class RemoteUpdateSource: UpdateSource {
+class RemoteTargetFirmwareSource: TargetFirmwareSource {
     let manifestSource: FirmwareManifestSource
 
     init(manifestSource: FirmwareManifestSource) {
