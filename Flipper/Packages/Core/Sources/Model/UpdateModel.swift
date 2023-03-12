@@ -5,7 +5,13 @@ import Foundation
 
 @MainActor
 public class UpdateModel: ObservableObject {
-    @Published public var state: State = .loading
+    @Published public var state: State = .loading {
+        didSet { onStateChanged(oldValue) }
+    }
+
+    @Published var flipper: Flipper? {
+        didSet { onFlipperChanged(oldValue) }
+    }
 
     @Published public var manifest: Update.Manifest?
     @Published public var updateChannel: Update.Channel = .load() {
@@ -94,10 +100,6 @@ public class UpdateModel: ObservableObject {
         subscribeToPublishers()
     }
 
-    @Published var flipper: Flipper? {
-        didSet { onFlipperChanged(oldValue) }
-    }
-
     var hasManifest: LazyResult<Bool, Swift.Error> = .idle
     var currentRegion: LazyResult<ISOCode, Swift.Error> = .idle
     var provisionedRegion: LazyResult<ISOCode, Swift.Error> = .idle
@@ -112,6 +114,10 @@ public class UpdateModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
             .store(in: &cancellables)
+    }
+
+    func onStateChanged(_ oldValue: State) {
+        recordUpdateStateChanged(from: oldValue, to: state)
     }
 
     func onFlipperChanged(_ oldValue: Flipper?) {
@@ -143,7 +149,6 @@ public class UpdateModel: ObservableObject {
         }
         intent = .init(from: installed, to: available)
         showUpdate = true
-        state = .update(.progress(.preparing))
     }
 
     func updateInstalledManifest() {
@@ -436,5 +441,85 @@ private extension Update.Channel {
 
     func save() {
         UserDefaultsStorage.shared.updateChannel = self
+    }
+}
+
+// MARK: Analytics
+
+import enum Analytics.UpdateResult
+
+extension UpdateModel {
+    func recordUpdateStateChanged(from oldValue: State, to newValue: State) {
+        guard let intent = intent else {
+            return
+        }
+
+        switch (oldValue, newValue) {
+
+        case (.ready, .update(.progress(.downloading))):
+            recordUpdateStarted(intent: intent)
+
+        case (.update(.result(.started)), .update(.result(.succeeded))):
+            recordUpdateSuccessed(intent: intent)
+
+        case (.update(.result(.started)), .update(.result(.failed))):
+            recordUpdateFailed(intent: intent)
+
+        case (.update(.progress), .update(.result(.canceled))):
+            recordUpdateCanceled(intent: intent)
+
+        case (.update(.progress), .error(let error)):
+            recordUpdateError(intent: intent, error: error)
+
+        default:
+            break
+        }
+    }
+
+    func recordUpdateStarted(intent: Update.Intent) {
+        analytics.flipperUpdateStart(
+            id: intent.id,
+            from: intent.currentVersion.description,
+            to: intent.desiredVersion.description)
+    }
+
+    func recordUpdateSuccessed(intent: Update.Intent) {
+        analytics.flipperUpdateResult(
+            id: intent.id,
+            from: intent.currentVersion.description,
+            to: intent.desiredVersion.description,
+            status: .completed)
+    }
+
+    func recordUpdateCanceled(intent: Update.Intent) {
+        analytics.flipperUpdateResult(
+            id: intent.id,
+            from: intent.currentVersion.description,
+            to: intent.desiredVersion.description,
+            status: .canceled)
+    }
+
+    func recordUpdateError(
+        intent: Update.Intent,
+        error: State.Error
+    ) {
+        let result: Analytics.UpdateResult
+        switch error {
+        case .cantConnect, .noInternet: result = .failedDownload
+        case .noCard, .noDevice: result = .failedUpload
+        }
+        analytics.flipperUpdateResult(
+            id: intent.id,
+            from: intent.currentVersion.description,
+            to: intent.desiredVersion.description,
+            status: result)
+    }
+
+    func recordUpdateFailed(intent: Update.Intent) {
+        analytics.flipperUpdateResult(
+            id: intent.id,
+            from: intent.currentVersion.description,
+            to: intent.desiredVersion.description,
+            status: .failed)
     }
 }
