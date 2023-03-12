@@ -8,19 +8,45 @@ struct RemoteControlView: View {
 
     var body: some View {
         VStack {
-            Spacer()
+            HStack {
+                VStack(spacing: 8) {
+                    Image("RemoteScreenshot")
+                    Text("Screenshot")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.a1)
+                }
+                Spacer()
+                VStack(spacing: 8) {
+                    Image("RemoteUnlock")
+                    Text("Lock Flipper")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.a1)
+                }
+            }
+            .padding(.top, 14)
+            .padding(.horizontal, 36)
 
-            DeviceScreen(pixels: device.frame.pixels)
-                .padding(2)
-                .border(Color(red: 1, green: 0.51, blue: 0), width: 2)
+            Spacer(minLength: 0)
+            Spacer(minLength: 0)
+            Spacer(minLength: 14)
 
-            Spacer()
+            VStack(spacing: 14){
+                DeviceScreen(pixels: device.frame.pixels)
+                    .padding(.horizontal, 24)
+
+                Image("RemoteFlipperLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .padding(.horizontal, 96)
+            }
+
+            Spacer(minLength: 14)
 
             DeviceControls { button in
                 feedback(style: .light)
                 device.pressButton(button)
             }
-            .padding(.bottom, 50)
+            .padding(.bottom, 14)
         }
         .frame(maxWidth: .infinity)
         .background(Color.background)
