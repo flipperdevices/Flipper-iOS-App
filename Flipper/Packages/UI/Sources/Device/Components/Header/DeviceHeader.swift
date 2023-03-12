@@ -1,5 +1,4 @@
 import Core
-import Peripheral
 import SwiftUI
 
 struct DeviceHeader: View {

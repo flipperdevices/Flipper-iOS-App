@@ -1,9 +1,13 @@
+import Core
 import SwiftUI
 
 struct SaveAsView: View {
-    @StateObject var viewModel: SaveAsViewModel
+    @EnvironmentObject var archive: ArchiveModel
     @StateObject var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
+
+    @Binding var item: ArchiveItem
+    @State private var error: String?
 
     var body: some View {
         ZStack {
@@ -26,7 +30,7 @@ struct SaveAsView: View {
                     HStack {
                         Spacer()
                         Button {
-                            viewModel.save()
+                            save()
                         } label: {
                             Text("Save")
                                 .foregroundColor(.primary)
@@ -42,7 +46,7 @@ struct SaveAsView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
                         CardView(
-                            item: viewModel.item,
+                            item: $item,
                             isEditing: .init(get: { true }, set: { _ in }),
                             kind: .existing
                         )
@@ -59,10 +63,25 @@ struct SaveAsView: View {
             }
         }
         .navigationBarHidden(true)
-        .alert(isPresented: $viewModel.isError) {
-            Alert(title: Text(viewModel.error))
+        .alert(item: $error) { error in
+            Alert(title: Text(error))
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
+    }
+
+    func save() {
+        Task {
+            do {
+                try await archive.add(item)
+                dismiss()
+            } catch {
+                showError(error)
+            }
+        }
+    }
+
+    func showError(_ error: Swift.Error) {
+        self.error = String(describing: error)
     }
 }

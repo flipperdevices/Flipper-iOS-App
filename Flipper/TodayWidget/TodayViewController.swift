@@ -1,37 +1,62 @@
 import UI
+import Combine
 import SwiftUI
 import NotificationCenter
 import Core
 
-var registerDependenciesOnce: Void = {
-    Core.registerWidgetDependencies()
-}()
+class TodayViewController: UIViewController, WidgetProviding {
+    private let widget = Dependencies.shared.widget
 
-class TodayViewController: UIViewController, NCWidgetProviding {
-    let compactModeHeight = 110.0
-    @ObservedObject var viewModel: WidgetViewModel
+    private var isError: Bool = false
+    private var cancellables: [AnyCancellable] = []
+
+    private let compactModeHeight = 110.0
+    private var expandedModeHeight = 110.0
 
     required init?(coder: NSCoder) {
-        _ = registerDependenciesOnce
-        viewModel = .init()
         super.init(coder: coder)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Enable expanded mode
-        self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
+        self.extensionContext?.widgetAvailableDisplayMode = .expanded
         // Add SwiftUI
-        let widgetView = WidgetView(viewModel: viewModel)
+        let widgetView = WidgetView()
+            .environmentObject(widget)
+            .onHeightChanged { [weak self] in
+                guard let self else { return }
+                self.expandedModeHeight = $0
+                self.updatePreferredHeight()
+            }
         let hostingController = UIHostingController(rootView: widgetView)
         addChild(hostingController)
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
         hostingController.view.addConstraints(to: self.view)
+
+        subscribeToKeysChanged()
+    }
+
+    func subscribeToKeysChanged() {
+        widget.$keys
+            .sink { [weak self] keys in
+                guard let self else { return }
+                self.view.setNeedsLayout()
+            }
+            .store(in: &cancellables)
+
+        widget.$error
+            .sink { [weak self] error in
+                guard let self else { return }
+                isError = error != nil
+                updatePreferredHeight()
+            }
+            .store(in: &cancellables)
     }
 
     func widgetPerformUpdate(
-        completionHandler: (@escaping (NCUpdateResult) -> Void)
+        completionHandler: (@escaping (UpdateResult) -> Void)
     ) {
         // Perform any setup necessary in order to update the view.
 
@@ -43,23 +68,21 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     }
 
     func widgetActiveDisplayModeDidChange(
-        _ activeDisplayMode: NCWidgetDisplayMode,
+        _ activeDisplayMode: WidgetDisplayMode,
         withMaximumSize maxSize: CGSize
     ) {
-        viewModel.isExpanded = activeDisplayMode == .expanded
+        widget.isExpanded = activeDisplayMode == .expanded
+        updatePreferredHeight()
+    }
 
-        guard !viewModel.isError else {
+    func updatePreferredHeight() {
+        guard !isError else {
             preferredContentSize.height = compactModeHeight
             return
         }
-
-        switch activeDisplayMode {
-        case .compact:
-            preferredContentSize.height = compactModeHeight
-        case .expanded:
-            let rowsCount = viewModel.keys.count / 2 + 1
-            preferredContentSize.height = compactModeHeight * Double(rowsCount)
-        @unknown default: break
+        switch widget.isExpanded {
+        case true: preferredContentSize.height = expandedModeHeight
+        case false: preferredContentSize.height = compactModeHeight
         }
     }
 }
@@ -67,10 +90,40 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 private extension UIView {
     func addConstraints(to view: UIView) {
         translatesAutoresizingMaskIntoConstraints = false
-        heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+        topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         backgroundColor = .clear
+    }
+}
+
+extension View {
+    func onHeightChanged(_ action: @escaping (Double) -> Void) -> some View {
+        self
+            .background(GeometryReader {
+                Color.clear.preference(
+                    key: HeightPreferenceKey.self,
+                    value: $0.frame(in: .global).height
+                )
+            })
+            .onPreferenceChange(HeightPreferenceKey.self, perform: action)
+    }
+}
+
+private struct HeightPreferenceKey: PreferenceKey {
+    typealias Value = Double
+
+    static var defaultValue = Double.zero
+
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        let height = nextValue()
+        guard
+            height != 0.0,
+            height != value
+        else {
+            return
+        }
+        value = height
     }
 }

@@ -2,34 +2,74 @@ import Core
 import SwiftUI
 
 struct DeviceView: View {
-    @StateObject var viewModel: DeviceViewModel
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var central: Central
+    @EnvironmentObject var device: Device
+    @EnvironmentObject var synchronization: Synchronization
+
+    @State private var showForgetAction = false
+    @State private var showUnsupportedVersionAlert = false
+
+    var flipper: Flipper? {
+        device.flipper
+    }
+
+    var isDeviceAvailable: Bool {
+        device.status == .connected ||
+        device.status == .synchronized
+    }
+
+    var canSync: Bool {
+        device.status == .connected
+    }
+
+    var canPlayAlert: Bool {
+        flipper?.state == .connected &&
+        device.status != .unsupported
+    }
+
+    var canConnect: Bool {
+        flipper?.state == .disconnected ||
+        flipper?.state == .disconnecting ||
+        flipper?.state == .pairingFailed ||
+        flipper?.state == .invalidPairing
+    }
+
+    var canDisconnect: Bool {
+        flipper?.state == .connected ||
+        flipper?.state == .connecting
+    }
+
+    var canForget: Bool {
+        device.status != .noDevice
+    }
 
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                DeviceHeader(device: viewModel.flipper)
+                DeviceHeader(device: flipper)
 
                 ScrollView {
                     VStack(spacing: 0) {
-                        if viewModel.status == .unsupportedDevice {
-                            UnsupportedDevice()
+                        if device.status == .unsupported {
+                            OutdatedDeviceCard()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
-                        } else if viewModel.status != .noDevice {
-                            DeviceUpdateCard(viewModel: .init())
+                        } else if device.status != .noDevice {
+                            DeviceUpdateCard()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
                         }
 
-                        if viewModel.status != .unsupportedDevice {
+                        if device.status != .unsupported {
                             NavigationLink {
-                                DeviceInfoView(viewModel: .init())
+                                DeviceInfoView()
                             } label: {
-                                DeviceInfoCard(viewModel: .init())
+                                DeviceInfoCard()
                                     .padding(.top, 24)
                                     .padding(.horizontal, 14)
                             }
-                            .disabled(!viewModel.status.isAvailable)
+                            .disabled(!isDeviceAvailable)
                         }
 
                         VStack(spacing: 24) {
@@ -38,20 +78,20 @@ struct DeviceView: View {
                                     image: "Options",
                                     title: "Options"
                                 ) {
-                                    OptionsView(viewModel: .init())
+                                    OptionsView()
                                 }
                             }
                             .cornerRadius(10)
 
-                            if viewModel.status != .noDevice {
+                            if device.status != .noDevice {
                                 VStack(spacing: 0) {
                                     ActionButton(
                                         image: "Sync",
                                         title: "Synchronize"
                                     ) {
-                                        viewModel.sync()
+                                        synchronization.start()
                                     }
-                                    .disabled(!viewModel.canSync)
+                                    .disabled(!canSync)
 
                                     Divider()
 
@@ -59,48 +99,48 @@ struct DeviceView: View {
                                         image: "Alert",
                                         title: "Play Alert"
                                     ) {
-                                        viewModel.playAlert()
+                                        device.playAlert()
                                     }
-                                    .disabled(!viewModel.canPlayAlert)
+                                    .disabled(!canPlayAlert)
                                 }
                                 .cornerRadius(10)
                             }
 
                             VStack(spacing: 0) {
-                                if viewModel.status == .noDevice {
+                                if device.status == .noDevice {
                                     ActionButton(
                                         image: "Connect",
                                         title: "Connect Flipper"
                                     ) {
-                                        viewModel.connect()
+                                        connect()
                                     }
                                 } else {
-                                    if viewModel.canConnect {
+                                    if canConnect {
                                         ActionButton(
                                             image: "Connect",
                                             title: "Connect"
                                         ) {
-                                            viewModel.connect()
+                                            connect()
                                         }
                                     }
 
-                                    if viewModel.canDisconnect {
+                                    if canDisconnect {
                                         ActionButton(
                                             image: "Disconnect",
                                             title: "Disconnect"
                                         ) {
-                                            viewModel.disconnect()
+                                            disconnect()
                                         }
                                     }
 
                                     Divider()
 
-                                    if viewModel.canForget {
+                                    if canForget {
                                         ActionButton(
                                             image: "Forget",
                                             title: "Forget Flipper"
                                         ) {
-                                            viewModel.showForgetActionSheet()
+                                            showForgetAction = true
                                         }
                                         .foregroundColor(.sRed)
                                     }
@@ -110,21 +150,15 @@ struct DeviceView: View {
                         }
                         .padding(.vertical, 24)
                         .padding(.horizontal, 14)
-
-                        Color.clear.alert(
-                            isPresented: $viewModel.showUnsupportedVersionAlert
-                        ) {
-                            .unsupportedDeviceIssue
-                        }
                     }
                 }
                 .background(Color.background)
-                .actionSheet(isPresented: $viewModel.showForgetAction) {
+                .actionSheet(isPresented: $showForgetAction) {
                     .init(
                         title: Text("This action won't delete your keys"),
                         buttons: [
                             .destructive(Text("Forget Flipper")) {
-                                viewModel.forgetFlipper()
+                                device.forgetDevice()
                             },
                             .cancel()
                         ]
@@ -135,5 +169,35 @@ struct DeviceView: View {
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
+        .customAlert(isPresented: $showUnsupportedVersionAlert) {
+            UnsupportedVersionAlert(isPresented: $showUnsupportedVersionAlert)
+        }
+        .onChange(of: device.status) { status in
+            if status == .unsupported {
+                showUnsupportedVersionAlert = true
+            }
+        }
+        .onChange(of: central.state) { state in
+            if state == .poweredOn {
+                device.connect()
+            }
+        }
+        .task {
+            if central.state != .poweredOn {
+                central.kick()
+            }
+        }
+    }
+
+    func connect() {
+        if device.status == .noDevice {
+            router.showWelcomeScreen()
+        } else {
+            device.connect()
+        }
+    }
+
+    func disconnect() {
+        device.disconnect()
     }
 }

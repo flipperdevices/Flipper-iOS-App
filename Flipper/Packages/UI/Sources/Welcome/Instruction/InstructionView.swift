@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct InstructionView: View {
-    @StateObject var viewModel: InstructionViewModel
-
     var body: some View {
         VStack(spacing: 0) {
             Text(
@@ -27,7 +25,7 @@ struct InstructionView: View {
             Spacer()
 
             NavigationLink {
-                ConnectionView(viewModel: .init())
+                ConnectionView()
                     .customBackground(Color.background)
             } label: {
                 Text("Connect")
@@ -42,7 +40,7 @@ struct InstructionView: View {
 
                 HStack {
                     Button {
-                        viewModel.openTermsOfService()
+                        openTermsOfService()
                     } label: {
                         Text("Terms of Service")
                             .underline()
@@ -52,7 +50,7 @@ struct InstructionView: View {
                         .foregroundColor(.black30)
 
                     Button {
-                        viewModel.openPrivacyPolicy()
+                        openPrivacyPolicy()
                     } label: {
                         Text("Privacy Policy")
                             .underline()
@@ -63,5 +61,13 @@ struct InstructionView: View {
             .padding(.top, 18)
             .padding(.bottom, 12)
         }
+    }
+
+    func openTermsOfService() {
+        UIApplication.shared.open(.termsOfServiceURL)
+    }
+
+    func openPrivacyPolicy() {
+        UIApplication.shared.open(.privacyPolicyURL)
     }
 }

@@ -44,6 +44,9 @@ struct HexEditorSection: View {
         var bytes = bytes
         var rows = [Row]()
         for i in 0 ..< rowsCount {
+            guard bytes.count > offset else {
+                break
+            }
             rows.append(.init(
                 id: lineOffset + i,
                 bytes: .init(bytes[offset...].prefix(columnsCount))))

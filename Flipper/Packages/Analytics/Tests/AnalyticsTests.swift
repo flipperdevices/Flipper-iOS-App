@@ -1,7 +1,6 @@
 import XCTest
 
-@testable import Analytics
-
+@testable 
 class AnalyticsTests: XCTestCase {
     func emptyTest() {
     }

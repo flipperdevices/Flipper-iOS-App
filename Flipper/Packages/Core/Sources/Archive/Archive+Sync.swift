@@ -1,5 +1,5 @@
-import Inject
 import Peripheral
+import Foundation
 
 extension Archive {
     func synchronize(_ progress: (Double) -> Void) async throws {
@@ -46,9 +46,7 @@ extension Archive {
             setStatus(.synchronizing, for: .init(path: path))
         case .imported(let path):
             if path.isShadowFile {
-                if let path = originPath(forShadow: path) {
-                    try await reload(.init(path: path))
-                }
+                try await reloadOrigin(forShadow: path)
             } else {
                 try await reload(.init(path: path))
             }
@@ -58,21 +56,27 @@ extension Archive {
         case .deleted(let path):
             if path.isShadowFile {
                 try await mobileArchive.delete(path)
-                if let path = originPath(forShadow: path) {
-                    try await reload(.init(path: path))
-                }
+                try await reloadOrigin(forShadow: path)
             } else {
                 try await delete(.init(path: path))
             }
         }
     }
 
-    // FIXME:
-    private func originPath(forShadow path: Path) -> Path? {
-        let originPath = Path(string: "\(path.string.dropLast(3))nfc")
-        guard syncedItems.manifest?[originPath] != nil else {
-            return nil
+    // TODO: do not reload origin if doesn't exist yet
+    private func reloadOrigin(forShadow path: Path) async throws {
+        do {
+            let path = originPath(forShadow: path)
+            try await reload(.init(path: path))
+        } catch let error as NSError where error.code == 260 {
+            logger.info("orphan shadow file loaded")
         }
-        return originPath
+    }
+
+    private func originPath(forShadow path: Path) -> Path {
+        guard path.string.hasSuffix(".shd") else {
+            return path
+        }
+        return "\(path.string.dropLast(".shd".count)).nfc"
     }
 }

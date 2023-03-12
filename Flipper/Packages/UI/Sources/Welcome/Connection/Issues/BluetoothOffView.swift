@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct BluetoothOffView: View {
+    @Environment(\.openURL) private var openURL
+
     var body: some View {
         VStack(spacing: 12) {
             Spacer()
@@ -16,7 +18,7 @@ struct BluetoothOffView: View {
                 .foregroundColor(.black40)
 
             Button {
-                Application.openSystemSettings()
+                openURL(.systemSettings)
             } label: {
                 Text("Go to Settings")
                     .roundedButtonStyle()

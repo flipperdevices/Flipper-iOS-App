@@ -3,6 +3,8 @@ import SwiftUI
 struct PairingIssueAlert: View {
     var isPresented: Binding<Bool>
 
+    @Environment(\.openURL) private var openURL
+
     var body: some View {
         VStack(spacing: 0) {
             Text("Can’t connect to Flipper")
@@ -70,7 +72,7 @@ struct PairingIssueAlert: View {
                 }
 
                 Button {
-                    Application.openSystemSettings()
+                    openURL(.systemSettings)
                     isPresented.wrappedValue = false
                 } label: {
                     Text("Go to Settings")

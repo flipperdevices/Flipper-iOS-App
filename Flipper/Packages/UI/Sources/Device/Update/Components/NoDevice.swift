@@ -2,7 +2,7 @@ import SwiftUI
 
 extension DeviceUpdateView {
     struct NoDeviceView: View {
-        @StateObject var viewModel: DeviceUpdateViewModel
+        @Environment(\.openURL) private var openURL
 
         var body: some View {
             VStack(spacing: 0) {
@@ -37,7 +37,7 @@ extension DeviceUpdateView {
                 .padding(.top, 14)
 
                 Button {
-                    viewModel.readMore()
+                    openURL(.helpToReboot)
                 } label: {
                     Text("Read More")
                         .font(.system(size: 14, weight: .medium))

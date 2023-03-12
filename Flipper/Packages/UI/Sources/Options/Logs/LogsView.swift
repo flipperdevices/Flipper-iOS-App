@@ -1,18 +1,31 @@
+import Core
+
+import Logging
 import SwiftUI
 
 struct LogsView: View {
-    @StateObject var viewModel: LogsViewModel
+    // next step
+    @StateObject var logs: Logs = .init(
+        loggerStorage: Dependencies.shared.loggerStorage
+    )
     @Environment(\.dismiss) private var dismiss
+
+    @AppStorage(.logLevelKey) var logLevel: Logger.Level = .debug
+
+    public var logLevels: [Logger.Level] {
+        Logger.Level.allCases
+    }
 
     var body: some View {
         List {
-            ForEach(viewModel.logs, id: \.self) { name in
+            ForEach(logs.records, id: \.self) { name in
                 NavigationLink(name) {
-                    NamedLogsView(viewModel: .init(name: name))
+                    LogView(name: name)
+                        .environmentObject(logs)
                 }
             }
             .onDelete { indexSet in
-                viewModel.delete(at: indexSet)
+                logs.delete(indexSet)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -26,13 +39,13 @@ struct LogsView: View {
             }
             TrailingToolbarItems {
                 NavBarMenu {
-                    ForEach(viewModel.logLevels, id: \.self) { level in
+                    ForEach(logLevels, id: \.self) { level in
                         Button {
-                            viewModel.changeLogLevel(to: level)
+                            logLevel = level
                         } label: {
                             HStack {
                                 Text(level.rawValue)
-                                if level == viewModel.logLevel {
+                                if level == logLevel {
                                     Image(systemName: "checkmark")
                                 }
                             }
@@ -45,7 +58,7 @@ struct LogsView: View {
                 }
 
                 NavBarButton {
-                    viewModel.deleteAll()
+                    logs.deleteAll()
                 } label: {
                     Text("Delete All")
                         .font(.system(size: 14, weight: .bold))
@@ -53,6 +66,9 @@ struct LogsView: View {
                 }
                 .padding(.trailing, 4)
             }
+        }
+        .task {
+            logs.reload()
         }
     }
 }

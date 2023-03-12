@@ -4,7 +4,23 @@ struct ProgressBarView: View {
     let color: Color
     let image: String
     let progress: Double
-    @State var text: String?
+    let text: String?
+
+    @State private var dots: String = "..."
+
+    private var progressText: String {
+        if text == "..." {
+            return dots
+        }
+        return text ?? "\(Int(progress * 100)) %"
+    }
+
+    init(color: Color, image: String, progress: Double, text: String? = nil) {
+        self.color = color
+        self.image = image
+        self.progress = progress
+        self.text = text
+    }
 
     var body: some View {
         ZStack {
@@ -21,7 +37,7 @@ struct ProgressBarView: View {
 
                 Spacer()
 
-                Text(text ?? "\(Int(progress * 100)) %")
+                Text(progressText)
                     .foregroundColor(.white)
                     .font(.haxrCorpNeue(size: 40))
                     .padding(.bottom, 4)
@@ -37,14 +53,14 @@ struct ProgressBarView: View {
         .background(color.opacity(0.54))
         .cornerRadius(9)
         .task {
-            if text == "..." {
-                while !Task.isCancelled {
-                    try? await Task.sleep(milliseconds: 500)
-                    if let count = text?.count {
-                        self.text = .init(repeating: ".", count: count % 3 + 1)
-                    }
-                }
-            }
+            await animateDots()
+        }
+    }
+
+    func animateDots() async {
+        while !Task.isCancelled {
+            try? await Task.sleep(milliseconds: 500)
+            self.dots = .init(repeating: ".", count: dots.count % 3 + 1)
         }
     }
 }

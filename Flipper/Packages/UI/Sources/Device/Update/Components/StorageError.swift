@@ -2,7 +2,7 @@ import SwiftUI
 
 extension DeviceUpdateView {
     struct StorageErrorView: View {
-        @StateObject var viewModel: DeviceUpdateViewModel
+        @Environment(\.openURL) private var openURL
 
         var text: String {
             "Flipper’s internal flash storage is full or broken. " +
@@ -18,7 +18,7 @@ extension DeviceUpdateView {
                     .padding(.top, 3)
 
                 Button {
-                    viewModel.howToFactoryReset()
+                    openURL(.helpToFactoryReset)
                 } label: {
                     Text("How to do Factory Reset")
                         .font(.system(size: 14, weight: .medium))

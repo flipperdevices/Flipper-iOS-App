@@ -1,296 +1,151 @@
+import Core
 import SwiftUI
 
 struct EmulateView: View {
-    @StateObject var viewModel: EmulateViewModel
+    @EnvironmentObject var device: Device
+    @EnvironmentObject var emulate: Emulate
     @Environment(\.dismiss) private var dismiss
+
+    let item: ArchiveItem
+
+    @State private var isEmulating = false
+    @State private var showBubble = false
+    @State private var showAppLocked = false
+    @State private var showRestricted = false
+
+    var showProgressButton: Bool {
+        device.status == .connecting ||
+        device.status == .synchronizing
+    }
+
+    var canEmulate: Bool {
+        (device.status == .connected || device.status == .synchronized)
+            && item.status == .synchronized
+    }
+
+    @State private var emulateDuration: Int = 0
 
     var body: some View {
         VStack(spacing: 4) {
-            switch viewModel.item.kind {
+            switch item.kind {
             case .nfc, .rfid, .ibutton:
                 ZStack {
                     ConnectingButton()
-                        .opacity(viewModel.showProgressButton ? 1 : 0)
-                    EmulateButton(viewModel: viewModel)
-                        .opacity(viewModel.showProgressButton ? 0 : 1)
-                        .disabled(!viewModel.canEmulate)
+                        .opacity(showProgressButton ? 1 : 0)
+                    EmulateButton(
+                        isEmulating: isEmulating,
+                        onTapGesture: toggleEmulate,
+                        onLongTapGesture: toggleEmulate
+                    )
+                    .opacity(showProgressButton ? 0 : 1)
+                    .disabled(!canEmulate)
                 }
-                EmulateDescription(viewModel: viewModel)
+                EmulateDescription(
+                    item: item,
+                    status: device.status,
+                    isEmulating: isEmulating)
             case .subghz:
                 ZStack {
                     ConnectingButton()
-                        .opacity(viewModel.showProgressButton ? 1 : 0)
-                    SendButton(viewModel: viewModel)
-                        .opacity(viewModel.showProgressButton ? 0 : 1)
-                        .disabled(!viewModel.canEmulate)
+                        .opacity(showProgressButton ? 1 : 0)
+                    SendButton(
+                        isEmulating: isEmulating,
+                        emulateDuration: item.duration,
+                        onPressed: {
+                            guard !isEmulating else {
+                                forceStopEmulate()
+                                return
+                            }
+                            startEmulate()
+                        }, onReleased: {
+                            stopEmulate()
+                        }
+                    )
+                    .opacity(showProgressButton ? 0 : 1)
+                    .disabled(!canEmulate)
                     Bubble("Hold to send continuously")
                         .offset(y: -34)
-                        .opacity(viewModel.showBubble ? 1 : 0)
+                        .opacity(showBubble ? 1 : 0)
                 }
-                EmulateDescription(viewModel: viewModel)
+                EmulateDescription(
+                    item: item,
+                    status: device.status,
+                    isEmulating: isEmulating)
             default:
                 EmptyView()
             }
         }
         .padding(.horizontal, 24)
         .padding(.top, 18)
-        .customAlert(isPresented: $viewModel.showAppLocked) {
-            FlipperBusyAlert(isPresented: $viewModel.showAppLocked)
+        .customAlert(isPresented: $showAppLocked) {
+            FlipperBusyAlert(isPresented: $showAppLocked)
         }
-        .customAlert(isPresented: $viewModel.showRestricted) {
-            TransmissionRestrictedAlert(isPresented: $viewModel.showRestricted)
+        .customAlert(isPresented: $showRestricted) {
+            TransmissionRestrictedAlert(isPresented: $showRestricted)
         }
         .onDisappear {
-            viewModel.forceStopEmulate()
+            stopEmulate()
         }
-    }
-}
-
-private struct ConnectingButton: View {
-    var body: some View {
-        AnimatedPlaceholder()
-            .frame(height: 48)
-            .frame(maxWidth: .infinity)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-}
-
-private struct EmulateButton: View {
-    @ObservedObject var viewModel: EmulateViewModel
-    @Environment(\.isEnabled) var isEnabled
-
-    @State var trimFrom: Double = 0
-    @State var trimTo: Double = 0.333
-
-    var text: String {
-        viewModel.isEmulating
-            ? "Emulating..."
-            : "Emulate"
-    }
-
-    var buttonColor: Color {
-        isEnabled
-            ? viewModel.isEmulating
-                ? .init(.init(red: 0.54, green: 0.73, blue: 1.0, alpha: 1.0))
-                : Color.a2
-            : .black8
-    }
-    var borderBackgroundColor: Color {
-        .init(.init(red: 0.73, green: 0.84, blue: 0.99, alpha: 1.0))
-    }
-    var borderColor: Color {
-        .a2
-    }
-
-    func startAnimation() {
-        withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) {
-            trimFrom = 0.667
-            trimTo = 1
-        }
-    }
-
-    var body: some View {
-        ZStack {
-            HStack {
-                if viewModel.isEmulating {
-                    Animation("Emulating")
-                        .frame(width: 32, height: 32)
-                } else {
-                    Image("Emulate")
-                }
-                Spacer()
+        .onChange(of: emulate.state) { state in
+            if state == .closed {
+                self.isEmulating = false
             }
-            .padding(.horizontal, 12)
-
-            HStack {
-                Spacer()
-                Text(text)
-                    .font(.born2bSportyV2(size: 23))
-                Spacer()
+            if state == .locked {
+                self.isEmulating = false
+                self.showAppLocked = true
+            }
+            if state == .restricted {
+                self.isEmulating = false
+                self.showRestricted = true
+            }
+            if state == .staring || state == .started || state == .closed {
+                feedback(style: .soft)
             }
         }
-        .frame(height: 48)
-        .frame(maxWidth: .infinity)
-        .foregroundColor(.white)
-        .background(buttonColor)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay {
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(borderBackgroundColor, lineWidth: 4)
-                .opacity(viewModel.isEmulating ? 1 : 0)
-        }
-        .overlay(
-            EmulateBorder(cornerRadius: 12)
-                .trim(from: trimFrom, to: trimTo)
-                .stroke(borderColor, lineWidth: 4)
-                .opacity(viewModel.isEmulating ? 1 : 0)
-        )
-        .simultaneousGesture(LongPressGesture().onEnded { _ in
-            viewModel.toggleEmulate()
-        })
-        .simultaneousGesture(TapGesture().onEnded {
-            viewModel.toggleEmulate()
-        })
-        .onAppear {
-            startAnimation()
-        }
-    }
-}
-
-private struct SendButton: View {
-    @ObservedObject var viewModel: EmulateViewModel
-    @Environment(\.isEnabled) var isEnabled
-
-    @State var isPressed = false
-    @State var trimFrom: Double = 0
-    @State var trimTo: Double = 0
-
-    var text: String {
-        viewModel.isEmulating
-            ? "Sending..."
-            : "Send"
-    }
-
-    var buttonColor: Color {
-        isEnabled
-            ? viewModel.isEmulating
-                ? .init(.init(red: 1.0, green: 0.65, blue: 0.29, alpha: 1.0))
-                : Color.a1
-            : .black8
-    }
-    var borderBackgroundColor: Color {
-        .init(.init(red: 0.99, green: 0.79, blue: 0.59, alpha: 1.0))
-    }
-    var borderColor: Color {
-        .a1
-    }
-
-    var animationDuration: Double {
-        Double(viewModel.emulateDuration + 333) / 1000
-    }
-
-    func startAnimation() {
-        guard !viewModel.isEmulating else { return }
-        trimTo = 0
-        withAnimation(.linear(duration: animationDuration)) {
-            trimTo = 1
-        }
-    }
-
-    var body: some View {
-        ZStack {
-            HStack {
-                if viewModel.isEmulating {
-                    Animation("Sending")
-                        .frame(width: 32, height: 32)
-                } else {
-                    Image("Send")
-                }
-                Spacer()
-            }
-            .padding(.horizontal, 12)
-
-            HStack {
-                Spacer()
-                Text(text)
-                    .font(.born2bSportyV2(size: 23))
-                Spacer()
+        .onChange(of: device.status) { status in
+            if status == .disconnected {
+                resetEmulate()
             }
         }
-        .frame(height: 48)
-        .frame(maxWidth: .infinity)
-        .foregroundColor(.white)
-        .background(buttonColor)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay {
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(borderBackgroundColor, lineWidth: 4)
-                .opacity(viewModel.isEmulating ? 1 : 0)
-        }
-        .overlay(
-            SendBorder(cornerRadius: 12)
-                .trim(from: trimFrom, to: trimTo)
-                .stroke(borderColor, lineWidth: 4)
-                .opacity(viewModel.isEmulating ? 1 : 0)
-        )
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in
-                    guard !isPressed else {
-                        return
-                    }
-                    isPressed = true
-                    guard !viewModel.isEmulating else {
-                        viewModel.forceStopEmulate()
-                        return
-                    }
-                    startAnimation()
-                    viewModel.startEmulate()
-                }
-                .onEnded { _ in
-                    isPressed = false
-                    viewModel.stopEmulate()
-                }
-        )
     }
-}
 
-struct EmulateDescription: View {
-    @StateObject var viewModel: EmulateViewModel
-
-    var text: String {
-        switch viewModel.deviceStatus {
-        case .connected, .synchronized:
-            guard viewModel.item.status == .synchronized else {
-                return "Not synced. Unable to send from Flipper."
+    func showBubbleIfNeeded() {
+        guard !showBubble else { return }
+        Task {
+            withAnimation(.linear(duration: 0.3)) {
+                showBubble = true
             }
-            return viewModel.item.kind == .subghz ? sendText : emulateText
-        case .connecting:
-            return "Connecting..."
-        case .synchronizing:
-            return "Syncing..."
-        default:
-            return "Flipper Not Connected"
-        }
-    }
-
-    var sendText: String {
-        if viewModel.isEmulating {
-            return ""
-        } else {
-            return "Hold to send from Flipper"
-        }
-    }
-
-    var emulateText: String {
-        if viewModel.isEmulating {
-            return "Emulating on Flipper... Tap to stop"
-        } else {
-            return ""
-        }
-    }
-
-    var image: String {
-        "WarningSmall"
-    }
-
-    var isError: Bool {
-        (viewModel.item.status != .synchronized) ||
-            (viewModel.deviceStatus != .connected &&
-            viewModel.deviceStatus != .connecting &&
-            viewModel.deviceStatus != .synchronized &&
-            viewModel.deviceStatus != .synchronizing)
-    }
-
-    var body: some View {
-        HStack(spacing: 4) {
-            if isError {
-                Image(image)
+            try await Task.sleep(seconds: 2)
+            withAnimation(.linear(duration: 1)) {
+                showBubble = false
             }
-
-            Text(text)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(.black20)
         }
+    }
+
+    func startEmulate() {
+        guard !isEmulating else { return }
+        isEmulating = true
+        emulate.startEmulate(item)
+        showBubbleIfNeeded()
+    }
+
+    func stopEmulate() {
+        guard isEmulating else { return }
+        emulate.stopEmulate()
+    }
+
+    func forceStopEmulate() {
+        guard isEmulating else { return }
+        emulate.forceStopEmulate()
+    }
+
+    func toggleEmulate() {
+        isEmulating
+            ? stopEmulate()
+            : startEmulate()
+    }
+
+    func resetEmulate() {
+        isEmulating = false
     }
 }

@@ -1,12 +1,14 @@
-import Inject
 import Peripheral
 import Foundation
 
-class MobileArchive: MobileArchiveProtocol {
-    @Inject var storage: MobileArchiveStorage
+class MobileArchive: ArchiveProtocol {
+    private let storage: ArchiveStorage
+
     private var manifest: Manifest?
 
-    init() {}
+    init(storage: ArchiveStorage) {
+        self.storage = storage
+    }
 
     func getManifest(
         progress: (Double) -> Void
@@ -41,8 +43,10 @@ class MobileArchive: MobileArchiveProtocol {
         try await storage.delete(path)
         manifest?[path] = nil
     }
+}
 
+extension MobileArchive: Compressable {
     func compress() -> URL? {
-        storage.compress()
+        (storage as? Compressable)?.compress()
     }
 }

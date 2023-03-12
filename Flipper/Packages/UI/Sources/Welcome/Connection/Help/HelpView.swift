@@ -81,6 +81,8 @@ struct HelpPoint: View {
     let linkLabel: String?
     let linkURL: URL?
 
+    @Environment(\.openURL) private var openURL
+
     var body: some View {
         HStack(alignment: .top, spacing: 6) {
             VStack(alignment: .leading) {
@@ -90,7 +92,7 @@ struct HelpPoint: View {
                 Text(text)
                 if let linkLabel = linkLabel, let linkURL = linkURL {
                     Button {
-                        UIApplication.shared.open(linkURL)
+                        openURL(linkURL)
                     } label: {
                         Text(linkLabel)
                             .underline()
