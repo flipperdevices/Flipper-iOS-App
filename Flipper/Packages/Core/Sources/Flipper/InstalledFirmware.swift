@@ -10,9 +10,8 @@ extension Flipper.DeviceInformation {
         var version: String
         switch channel {
         case .release: version = "\(String(parts[1]))"
-        case .candidate: version = "\(parts[1].dropLast(3))"
+        case .candidate: version = "\(parts[1])"
         case .development: version = "\(parts[0])"
-        default: return nil
         }
 
         return .init(name: version, channel: channel)
