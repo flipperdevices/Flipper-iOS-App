@@ -8,7 +8,6 @@ struct DeviceUpdateView: View {
 
     @State private var state: UpdateModel.State = .update(.progress(.preparing))
     @State private var showCancelUpdate = false
-    @AppStorage(.installingVersion) var installInProgress = ""
 
     let firmware: Update.Firmware
 
@@ -27,7 +26,7 @@ struct DeviceUpdateView: View {
         switch state {
         case .error(.noInternet): return "Update Not Started"
         case .error(.noCard): return "Unable to Update"
-        case .error(.cantConnect): return "Update Failed"
+        case .error(.noDevice): return "Update Failed"
         default: return "Updating your Flipper"
         }
     }
@@ -109,10 +108,7 @@ struct DeviceUpdateView: View {
             switch newState {
             case .update(.progress), .error:
                 state = newState
-            case .update(.result(let result)):
-                if result == .started {
-                    installInProgress = firmware.version.description
-                }
+            case .update(.result):
                 dismiss()
             default:
                 break

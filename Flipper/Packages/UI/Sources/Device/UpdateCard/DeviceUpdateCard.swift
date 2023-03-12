@@ -10,7 +10,9 @@ struct DeviceUpdateCard: View {
     @State private var showUpdateSuccess = false
     @State private var showUpdateFailure = false
 
-    @AppStorage(.installingVersion) var installInProgress = ""
+    private var updateVersion: String {
+        updateModel.intent?.desiredVersion.description ?? ""
+    }
 
     var body: some View {
         Card {
@@ -55,29 +57,27 @@ struct DeviceUpdateCard: View {
                 DeviceUpdateView(firmware: firmware)
             }
         }
-        .onChange(of: updateModel.installed) { installed in
-            if let installed = installed, !installInProgress.isEmpty {
-                showUpdateSuccess = installed.description == installInProgress
-                showUpdateFailure = installed.description != installInProgress
+        .onChange(of: updateModel.state) { state in
+            guard case .update(.result(let result)) = state else {
+                return
+            }
+            switch result {
+            case .succeeded: showUpdateSuccess = true
+            case .failed: showUpdateFailure = true
+            default: break
             }
         }
         .customAlert(isPresented: $showUpdateSuccess) {
             UpdateSucceededAlert(
                 isPresented: $showUpdateSuccess,
-                firmwareVersion: installInProgress
+                firmwareVersion: updateVersion
             )
-            .onDisappear {
-                installInProgress = ""
-            }
         }
         .customAlert(isPresented: $showUpdateFailure) {
             UpdateFailedAlert(
                 isPresented: $showUpdateFailure,
-                firmwareVersion: installInProgress
+                firmwareVersion: updateVersion
             )
-            .onDisappear {
-                installInProgress = ""
-            }
         }
         .task {
             update()

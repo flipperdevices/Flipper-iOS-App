@@ -48,13 +48,15 @@ public class UpdateModel: ObservableObject {
 
             public enum Progress: Equatable {
                 case preparing
-                case downloading(progress: Double)
-                case uploading(progress: Double)
+                case downloading(Double)
+                case uploading(Double)
             }
 
             public enum Result: Equatable {
                 case started
                 case canceled
+                case succeeded
+                case failed
             }
         }
 
@@ -209,6 +211,7 @@ public class UpdateModel: ObservableObject {
         guard validateSDCard() else { return }
 
         guard validateInstalledFirmware() else { return }
+        guard validateUpdateResult() else { return }
         guard validateAvailableFirmware() else { return }
 
         guard checkChannelUpdate() else { return }
@@ -258,6 +261,21 @@ public class UpdateModel: ObservableObject {
 
     func validateInstalledFirmware() -> Bool {
         installed != nil
+    }
+
+    func validateUpdateResult() -> Bool {
+        guard
+            let intent = intent,
+            let installed = installed,
+            case .update(.result(.started)) = state
+        else {
+            return true
+        }
+        switch intent.desiredVersion == installed {
+        case true: state = .update(.result(.succeeded))
+        case false: state = .update(.result(.failed))
+        }
+        return false
     }
 
     func validateAvailableFirmware() -> Bool {
@@ -371,13 +389,11 @@ public class UpdateModel: ObservableObject {
     }
 
     private func downloadFirmware(_ url: URL) async throws -> [UInt8] {
-        state = .update(.progress(.downloading(progress: 0)))
+        state = .update(.progress(.downloading(0)))
         return try await provider.data(from: url) { progress in
-            Task { @MainActor in
-                if case .update(.progress(.downloading)) = self.state {
-                    self.state = .update(
-                        .progress(.downloading(progress: progress))
-                    )
+            if case .update(.progress) = self.state {
+                Task { @MainActor in
+                    self.state = .update(.progress(.downloading(progress)))
                 }
             }
         }
@@ -388,11 +404,9 @@ public class UpdateModel: ObservableObject {
     ) async throws -> Peripheral.Path {
         state = .update(.progress(.preparing))
         return try await uploader.upload(bundle) { progress in
-            Task { @MainActor in
-                if case .update = self.state {
-                    self.state = .update(
-                        .progress(.uploading(progress: progress))
-                    )
+            if case .update(.progress) = self.state {
+                Task { @MainActor in
+                    self.state = .update(.progress(.uploading(progress)))
                 }
             }
         }
