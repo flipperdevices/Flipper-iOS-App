@@ -62,14 +62,14 @@ struct FileManagerEditor: View {
     }
 
     func save() {
-        Task {
+        Task { @MainActor in
+            isBusy = true
             do {
-                isBusy = true
-                defer { isBusy = false }
                 try await fileManager.writeFile(content, at: path)
             } catch {
                 self.error = String(describing: error)
             }
+            isBusy = false
         }
     }
 }

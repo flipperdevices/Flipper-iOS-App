@@ -49,8 +49,8 @@ class TodayViewController: UIViewController, WidgetProviding {
         widget.$error
             .sink { [weak self] error in
                 guard let self else { return }
-                isError = error != nil
-                updatePreferredHeight()
+                self.isError = error != nil
+                self.updatePreferredHeight()
             }
             .store(in: &cancellables)
     }
