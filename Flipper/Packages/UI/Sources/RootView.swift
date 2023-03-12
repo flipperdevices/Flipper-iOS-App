@@ -15,7 +15,6 @@ public struct RootView: View {
             .environmentObject(dependencies.archiveModel)
             .environmentObject(dependencies.synchronization)
             .environmentObject(dependencies.updateModel)
-            .environmentObject(dependencies.updater)
             .environmentObject(dependencies.sharing)
             .environmentObject(dependencies.emulate)
     }

@@ -24,10 +24,10 @@ struct DeviceUpdateCard: View {
                 .padding(.horizontal, 12)
 
                 switch updateModel.state {
-                case .busy(.checkingForUpdate):
+                case .loading:
                     CardStateBusy()
 
-                case .busy(.updateInProgress):
+                case .update:
                     CardStateInProgress()
 
                 case .ready(let state):

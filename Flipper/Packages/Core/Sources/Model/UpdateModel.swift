@@ -5,9 +5,12 @@ import Foundation
 
 @MainActor
 public class UpdateModel: ObservableObject {
-    @Published public var state: State = .busy(.checkingForUpdate)
+    @Published public var state: State = .loading
 
     @Published public var firmware: Update.Firmware?
+
+    @Published public var intent: Update.Intent?
+    @Published public var showUpdate = false
 
     public var installed: Update.Version? {
         flipper?.information?.firmwareVersion
@@ -15,9 +18,6 @@ public class UpdateModel: ObservableObject {
     public var available: Update.Version? {
         firmware?.version
     }
-
-    @Published public var intent: Update.Intent?
-    @Published public var showUpdate = false
 
     public var updateChannel: Update.Channel {
         get {
@@ -30,19 +30,31 @@ public class UpdateModel: ObservableObject {
     }
 
     public enum State: Equatable {
-        case busy(Busy)
+        case loading
         case ready(Ready)
+        case update(Update)
         case error(Error)
-
-        public enum Busy: Equatable {
-            case checkingForUpdate
-            case updateInProgress
-        }
 
         public enum Ready: Equatable {
             case noUpdates
             case versionUpdate
             case channelUpdate
+        }
+
+        public enum Update: Equatable {
+            case progress(Progress)
+            case result(Result)
+
+            public enum Progress: Equatable {
+                case preparing
+                case downloading(progress: Double)
+                case uploading(progress: Double)
+            }
+
+            public enum Result: Equatable {
+                case started
+                case canceled
+            }
         }
 
         public enum Error: Equatable {
@@ -53,15 +65,29 @@ public class UpdateModel: ObservableObject {
         }
     }
 
+    private var device: Device
+
     private let updateSource: UpdateSource
+    private let provider: FirmwareProvider
+    private let uploader: FirmwareUploader
 
     private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
     private var cancellables: [AnyCancellable] = .init()
 
-    public init(pairedDevice: PairedDevice, updateSource: UpdateSource) {
+    public init(
+        device: Device,
+        pairedDevice: PairedDevice,
+        updateSource: UpdateSource
+    ) {
+        self.device = device
         self.pairedDevice = pairedDevice
         self.updateSource = updateSource
+
+        // next step
+        self.provider = .init()
+        self.uploader = .init(pairedDevice: pairedDevice)
+
         subscribeToPublishers()
     }
 
@@ -86,9 +112,8 @@ public class UpdateModel: ObservableObject {
     }
 
     func onFlipperChanged(_ oldValue: Flipper?) {
-        guard flipper?.state == .connected else {
+        if flipper?.state == .disconnected {
             resetFlipperState()
-            return
         }
 
         if oldValue?.state != .connected {
@@ -97,10 +122,7 @@ public class UpdateModel: ObservableObject {
             updateCurrentRegion()
         }
 
-        // FIXME: use async api to check sd card
-        if oldValue?.storage != flipper?.storage {
-            updateState()
-        }
+        updateState()
     }
 
     func resetFlipperState() {
@@ -118,7 +140,7 @@ public class UpdateModel: ObservableObject {
         }
         intent = .init(from: installed, to: available)
         showUpdate = true
-        state = .busy(.updateInProgress)
+        state = .update(.progress(.preparing))
     }
 
     func updateInstalledManifest() {
@@ -169,7 +191,7 @@ public class UpdateModel: ObservableObject {
 
     public func updateAvailableFirmware() {
         guard state != .error(.noInternet) else { return }
-        state = .busy(.checkingForUpdate)
+        state = .loading
         Task {
             do {
                 firmware = try await updateSource.firmware(
@@ -207,15 +229,15 @@ public class UpdateModel: ObservableObject {
             return true
         case .connecting:
             switch state {
-            case .error(.noCard), .busy(.updateInProgress):
+            case .error(.noCard), .update(.result(.started)):
                 return false
             default:
-                state = .busy(.checkingForUpdate)
+                state = .loading
                 return false
             }
         default:
             switch state {
-            case .busy(.updateInProgress):
+            case .update(.result(.started)):
                 return false
             default:
                 state = .error(.noDevice)
@@ -289,6 +311,100 @@ public class UpdateModel: ObservableObject {
             return false
         }
         return true
+    }
+
+    // MARK: Update
+
+    private var updateTaskHandle: Task<Void, Swift.Error>?
+
+    public func install(_ firmware: Update.Firmware) {
+        guard updateTaskHandle == nil else {
+            logger.error("update in progress")
+            return
+        }
+        updateTaskHandle = Task {
+            do {
+                let bytes = try await downloadFirmware(firmware.url)
+                let bundle = try await UpdateBundle(unpacking: bytes)
+
+                try await prepareForUpdate()
+                try await provideRegion()
+                let path = try await uploadFirmware(bundle)
+                try await startUpdateProcess(path)
+            } catch {
+                handleInstallError(error)
+                logger.error("update: \(error)")
+            }
+            updateTaskHandle = nil
+        }
+    }
+
+    private func handleInstallError(_ error: Swift.Error) {
+        switch error {
+        case _ as URLError:
+            state = .error(.cantConnect)
+        case let error as Peripheral.Error
+            where error == .storage(.internal):
+            state = .error(.noCard)
+        default:
+            state = .error(.noDevice)
+        }
+    }
+
+    public func cancel() {
+        Task {
+            state = .update(.result(.canceled))
+            device.disconnect()
+            updateTaskHandle = nil
+            try? await Task.sleep(milliseconds: 333)
+            device.connect()
+        }
+    }
+
+    private func prepareForUpdate() async throws {
+        state = .update(.progress(.preparing))
+        try await device.showUpdatingFrame()
+    }
+
+    private func provideRegion() async throws {
+        state = .update(.progress(.preparing))
+        try await device.provideSubGHzRegion()
+    }
+
+    private func downloadFirmware(_ url: URL) async throws -> [UInt8] {
+        state = .update(.progress(.downloading(progress: 0)))
+        return try await provider.data(from: url) { progress in
+            Task { @MainActor in
+                if case .update(.progress(.downloading)) = self.state {
+                    self.state = .update(
+                        .progress(.downloading(progress: progress))
+                    )
+                }
+            }
+        }
+    }
+
+    private func uploadFirmware(
+        _ bundle: UpdateBundle
+    ) async throws -> Peripheral.Path {
+        state = .update(.progress(.preparing))
+        return try await uploader.upload(bundle) { progress in
+            Task { @MainActor in
+                if case .update = self.state {
+                    self.state = .update(
+                        .progress(.uploading(progress: progress))
+                    )
+                }
+            }
+        }
+    }
+
+    private func startUpdateProcess(
+        _ directory: Peripheral.Path
+    ) async throws {
+        state = .update(.progress(.preparing))
+        try await device.startUpdateProcess(from: directory)
+        state = .update(.result(.started))
     }
 }
 

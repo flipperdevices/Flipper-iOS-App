@@ -4,7 +4,7 @@ import MarkdownUI
 
 extension DeviceUpdateView {
     struct UpdateProgressView: View {
-        let state: Updater.State.Busy
+        let state: UpdateModel.State.Update.Progress
         let version: Update.Version
         let changelog: String
 
@@ -16,8 +16,6 @@ extension DeviceUpdateView {
                 return "Preparing for update..."
             case .uploading:
                 return "Uploading firmware to Flipper..."
-            default:
-                return ""
             }
         }
 
@@ -72,7 +70,7 @@ extension DeviceUpdateView {
     }
 
     struct UpdateProgress: View {
-        let state: Updater.State.Busy
+        let state: UpdateModel.State.Update.Progress
 
         var image: String {
             switch state {

@@ -2,10 +2,11 @@ import Core
 import SwiftUI
 
 struct DeviceUpdateView: View {
-    @EnvironmentObject var updater: Updater
+    @EnvironmentObject var update: UpdateModel
     @EnvironmentObject var device: Device
     @Environment(\.dismiss) var dismiss
 
+    @State private var state: UpdateModel.State = .update(.progress(.preparing))
     @State private var showCancelUpdate = false
     @AppStorage(.installingVersion) var installInProgress = ""
 
@@ -16,31 +17,31 @@ struct DeviceUpdateView: View {
     }
 
     var isUpdating: Bool {
-        switch updater.state {
-        case .busy: return true
+        switch state {
+        case .update: return true
         default: return false
         }
     }
 
     var title: String {
-        switch updater.state {
-        case .error(.cantDownload): return "Update Not Started"
-        case .error(.cantUpload): return "Unable to Update"
-        case .error(.cantCommunicate): return "Update Failed"
+        switch state {
+        case .error(.noInternet): return "Update Not Started"
+        case .error(.noCard): return "Unable to Update"
+        case .error(.cantConnect): return "Update Failed"
         default: return "Updating your Flipper"
         }
     }
 
     var image: String {
-        switch updater.state {
+        switch state {
         case .error(let error):
             switch error {
-            case .cantDownload, .cantCommunicate:
+            case .noInternet, .noDevice, .cantConnect:
                 switch device.flipper?.color {
                 case .black: return "FlipperDeadBlack"
                 default: return "FlipperDeadWhite"
                 }
-            case .cantUpload:
+            case .noCard:
                 switch device.flipper?.color {
                 case .black: return "FlipperFlashIssueBlack"
                 default: return "FlipperFlashIssueWhite"
@@ -69,16 +70,17 @@ struct DeviceUpdateView: View {
                 .scaledToFit()
                 .padding(.top, 22)
 
-            switch updater.state {
-            case .started, .canceled: EmptyView()
-            case .error(.cantDownload): NoInternetView { start() }
-            case .error(.cantCommunicate): NoDeviceView()
-            case .error(.cantUpload): StorageErrorView()
-            case .busy(let state):
+            switch state {
+            case .error(.cantConnect): NoInternetView { start() }
+            case .error(.noDevice): NoDeviceView()
+            case .error(.noCard): StorageErrorView()
+            case .update(.progress(let state)):
                 UpdateProgressView(
                     state: state,
                     version: version,
                     changelog: changelog)
+            default:
+                EmptyView()
             }
 
             Spacer()
@@ -103,12 +105,17 @@ struct DeviceUpdateView: View {
                     cancel()
                 })
         }
-        .onChange(of: updater.state) { state in
-            if state == .started {
-                installInProgress = firmware.version.description
-            }
-            if state == .started || state == .canceled {
+        .onChange(of: update.state) { newState in
+            switch newState {
+            case .update(.progress), .error:
+                state = newState
+            case .update(.result(let result)):
+                if result == .started {
+                    installInProgress = firmware.version.description
+                }
                 dismiss()
+            default:
+                break
             }
         }
         .onAppear {
@@ -121,7 +128,8 @@ struct DeviceUpdateView: View {
     }
 
     func start() {
-        updater.install(firmware)
+        state = .initial
+        update.install(firmware)
     }
 
     func confirmCancel() {
@@ -129,7 +137,11 @@ struct DeviceUpdateView: View {
     }
 
     func cancel() {
-        updater.cancel()
+        update.cancel()
         dismiss()
     }
+}
+
+private extension UpdateModel.State {
+    static let initial: Self = .update(.progress(.preparing))
 }
