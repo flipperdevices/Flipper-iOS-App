@@ -3,6 +3,8 @@ import Peripheral
 import Combine
 import Foundation
 
+//swiftlint:disable type_body_length
+
 @MainActor
 public class UpdateModel: ObservableObject {
     @Published public var state: State = .loading {
