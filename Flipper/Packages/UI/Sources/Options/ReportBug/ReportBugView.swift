@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 
 struct ReportBugView: View {
@@ -8,7 +9,7 @@ struct ReportBugView: View {
     struct Report {
         let title: String
         let description: String
-        let includeLogs: Bool
+        let attachLogs: Bool
     }
 
     enum Status {
@@ -45,9 +46,16 @@ struct ReportBugView: View {
 
     func sendReport(_ report: Report) {
         Task {
-            status = .submit
-            try await Task.sleep(seconds: 2)
-            status = .success("39fa428faf1f401895a3085d3c73be6")
+            do {
+                status = .submit
+                let id = try await Support.reportBug(
+                    subject: report.title,
+                    message: report.description,
+                    attachLogs: report.attachLogs)
+                status = .success(id)
+            } catch {
+                status = .failure
+            }
         }
     }
 }

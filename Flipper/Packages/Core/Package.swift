@@ -37,7 +37,10 @@ let package = Package(
             branch: "dev"),
         .package(
             url: "https://github.com/swiftstack/dcompression.git",
-            branch: "dev")
+            branch: "dev"),
+        .package(
+            url: "https://github.com/getsentry/sentry-cocoa.git",
+            from: "8.4.0")
     ],
     targets: [
         .target(
@@ -50,7 +53,8 @@ let package = Package(
                 .product(name: "DCompression", package: "dcompression"),
                 .product(name: "SwiftProtobuf", package: "swift-protobuf"),
                 .product(name: "Collections", package: "swift-collections"),
-                .product(name: "Logging", package: "swift-log")
+                .product(name: "Logging", package: "swift-log"),
+                .product(name: "Sentry", package: "sentry-cocoa")
             ],
             path: "Sources"),
         .testTarget(

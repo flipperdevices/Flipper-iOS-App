@@ -8,7 +8,7 @@ extension ReportBugView {
 
         @State private var title = ""
         @State private var description = ""
-        @State private var includeLogs = true
+        @State private var attachLogs = true
         @FocusState private var focusState: Focused?
 
         enum Focused {
@@ -109,7 +109,7 @@ extension ReportBugView {
                 onSubmit(.init(
                     title: title,
                     description: description,
-                    includeLogs: includeLogs))
+                    attachLogs: attachLogs))
             } label: {
                 Text("Submit")
                     .font(.system(size: 16, weight: .bold))
@@ -131,7 +131,7 @@ extension ReportBugView {
 
                             descriptionView
 
-                            Toggle("Add logs", isOn: $includeLogs)
+                            Toggle("Add logs", isOn: $attachLogs)
                                 .tint(.a1)
                         }
                         .padding(14)
