@@ -31,6 +31,8 @@ public protocol RPC: AnyObject {
 
     // MARK: Application
 
+    var isLocked: Bool { get async throws }
+
     func appStart(_ name: String, args: String) async throws
     func appLoadFile(_ path: Path) async throws
     func appButtonPress(_ button: String) async throws

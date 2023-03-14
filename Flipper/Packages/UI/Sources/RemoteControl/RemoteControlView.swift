@@ -1,4 +1,6 @@
 import Core
+import Peripheral
+
 import SwiftUI
 
 struct RemoteControlView: View {
@@ -44,10 +46,21 @@ struct RemoteControlView: View {
                 }
                 Spacer()
                 VStack(spacing: 8) {
-                    Image("RemoteUnlock")
-                    Text("Lock Flipper")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.a1)
+                    Button {
+                        device.isLocked ? unlock() : lock()
+                    } label: {
+                        Image(device.isLocked ? "RemoteUnlock" : "RemoteLock")
+                    }
+
+                    ZStack {
+                        Text("Lock Flipper")
+                            .opacity(device.isLocked ? 0 : 1)
+
+                        Text("Unlock Flipper")
+                            .opacity(device.isLocked ? 1 : 0)
+                    }
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.a1)
                 }
             }
             .padding(.top, 14)
@@ -70,8 +83,7 @@ struct RemoteControlView: View {
             Spacer(minLength: 14)
 
             DeviceControls { button in
-                feedback(style: .light)
-                device.pressButton(button)
+                pressButton(button)
             }
             .padding(.bottom, 14)
         }
@@ -88,6 +100,7 @@ struct RemoteControlView: View {
             }
         }
         .onAppear {
+            device.updateLockStatus()
             device.startScreenStreaming()
         }
         .onDisappear {
@@ -115,6 +128,38 @@ struct RemoteControlView: View {
         }
         UI.share(url) {
             try? FileManager.default.removeItem(at: url)
+        }
+    }
+
+    @State var isBusy = false
+
+    private func syncTask(_ task: @escaping () async throws -> Void) {
+        guard !isBusy else { return }
+        isBusy = true
+        Task {
+            try await task()
+            isBusy = false
+        }
+    }
+
+    func pressButton(_ button: InputKey) {
+        syncTask {
+            feedback(style: .light)
+            try await device.pressButton(button)
+        }
+    }
+
+    func lock() {
+        syncTask {
+            try await device.lock()
+            device.updateLockStatus()
+        }
+    }
+
+    func unlock() {
+        syncTask {
+            try await device.unlock()
+            device.updateLockStatus()
         }
     }
 }

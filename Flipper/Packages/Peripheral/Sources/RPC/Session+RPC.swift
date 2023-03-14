@@ -5,6 +5,18 @@ import struct Foundation.Date
 // MARK: Public methods
 
 extension Session {
+    public var isLocked: Bool {
+        get async throws {
+            let response = try await self
+                .send(.application(.lockStatus))
+                .response
+            guard case .application(.lockStatus(let isLocked)) = response else {
+                throw Error.unexpectedResponse(response)
+            }
+            return isLocked
+        }
+    }
+
     public func deviceInfo(
     ) -> AsyncThrowingStream<(String, String), Swift.Error> {
         .init { continuation in

@@ -11,6 +11,8 @@ public class Device: ObservableObject {
     private var rpc: RPC { pairedDevice.session }
     private var cancellables = [AnyCancellable]()
 
+    @Published public var isLocked = false
+
     @Published public var flipper: Flipper?
     @Published public private(set) var frame: ScreenFrame = .init()
 
@@ -201,13 +203,12 @@ public class Device: ObservableObject {
         }
     }
 
-    public func pressButton(_ button: InputKey) {
-        Task {
-            do {
-                try await rpc.pressButton(button)
-            } catch {
-                logger.error("press button: \(error)")
-            }
+    public func pressButton(_ button: InputKey) async throws {
+        do {
+            try await rpc.pressButton(button)
+        } catch {
+            logger.error("press button: \(error)")
+            throw error
         }
     }
 
@@ -304,6 +305,43 @@ public class Device: ObservableObject {
     public var hasBatteryCharged: Bool {
         guard let battery = flipper?.battery else { return false }
         return battery.level >= 10 || battery.state == .charging
+    }
+
+    public func lock() async throws {
+        // <(^_^)>
+        try await rpc.pressButton(.back)
+        try await rpc.pressButton(.back)
+        try await rpc.pressButton(.back)
+        // couldn't exit the app
+        guard !(try await rpc.isLocked) else {
+            return
+        }
+        try await rpc.pressButton(.up)
+        try await rpc.pressButton(.enter)
+        // FIXME: updateLockStatus
+        self.isLocked = true
+    }
+
+    public func unlock() async throws {
+        // <(^_^)>
+        try await rpc.pressButton(.back)
+        try await rpc.pressButton(.back)
+        try await rpc.pressButton(.back)
+        // FIXME: updateLockStatus
+        self.isLocked = false
+    }
+
+    public func updateLockStatus() {
+        Task { @MainActor in
+            do {
+                // FIXME: acts like isApplicationRunning
+                // self.isLocked = try await rpc.isLocked
+                let isLocked = try await rpc.isLocked
+                logger.debug("is locked: \(isLocked)")
+            } catch {
+                logger.error("update lock status: \(error)")
+            }
+        }
     }
 }
 
