@@ -2,6 +2,10 @@ import Foundation
 
 extension FileManager {
     public func createTempFile(name: String, content: String) throws -> URL {
+        try createTempFile(name: name, data: .init(content.utf8))
+    }
+
+    public func createTempFile(name: String, data: Data) throws -> URL {
         let fileURL = FileManager.default
             .temporaryDirectory
             .appendingPathComponent(name)
@@ -10,7 +14,7 @@ extension FileManager {
             try FileManager.default.removeItem(atPath: fileURL.path)
         }
 
-        try content.write(to: fileURL, atomically: true, encoding: .utf8)
+        try data.write(to: fileURL)
 
         return fileURL
     }

@@ -2,17 +2,10 @@ import SwiftUI
 import Peripheral
 
 struct DeviceScreen: View {
-    var pixels: [Bool]
+    var uiImage: UIImage
 
-    var width: Int { 128 }
-    var height: Int { 64 }
-
-    var colorPixels: [PixelColor] {
-        self.pixels.map { $0 ? .black : .orange }
-    }
-
-    var uiImage: UIImage {
-        UIImage(pixels: colorPixels, width: width, height: height) ?? .init()
+    init(_ uiImage: UIImage) {
+        self.uiImage = uiImage
     }
 
     var body: some View {
