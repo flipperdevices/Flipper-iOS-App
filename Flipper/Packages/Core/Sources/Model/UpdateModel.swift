@@ -17,7 +17,10 @@ public class UpdateModel: ObservableObject {
 
     @Published public var manifest: Update.Manifest?
     @Published public var updateChannel: Update.Channel = .load() {
-        didSet { updateChannel.save() }
+        didSet {
+            updateChannel.save()
+            updateState()
+        }
     }
 
     @Published public var intent: Update.Intent?
@@ -127,7 +130,7 @@ public class UpdateModel: ObservableObject {
             resetFlipperState()
         }
 
-        if oldValue?.state != .connected {
+        if oldValue?.state != .connected, flipper?.state == .connected {
             updateInstalledManifest()
             updateProvisionedRegion()
             updateCurrentRegion()
