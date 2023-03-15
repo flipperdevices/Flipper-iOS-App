@@ -138,6 +138,7 @@
 		8BE40CF627F1266D00288F66 /* Peripheral */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Peripheral; path = Packages/Peripheral; sourceTree = "<group>"; };
 		8BED6143270B66D8009E51E2 /* perform_lint.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
 		8BEE5AF928A54BF20070D01E /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Analytics/Sources/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
+		8BF074E329C2500700DC688B /* ActivityWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ActivityWidgetExtension.entitlements; sourceTree = "<group>"; };
 		8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodayWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BF9CEC928E21A4400CD5D31 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
@@ -343,6 +344,7 @@
 		F0DBFA1424EF2F9600EB2880 = {
 			isa = PBXGroup;
 			children = (
+				8BF074E329C2500700DC688B /* ActivityWidgetExtension.entitlements */,
 				8B77A9C626CAA3BA00A3DF9F /* Packages */,
 				F0DBFA2324EF2F9900EB2880 /* iOS */,
 				F0DBFA1924EF2F9600EB2880 /* Shared */,
@@ -667,6 +669,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = ActivityWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -682,7 +685,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.ActivityWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.LiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -699,6 +702,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = ActivityWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -714,7 +718,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.ActivityWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.LiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
