@@ -200,7 +200,11 @@ public class UpdateModel: ObservableObject {
     }
 
     public func updateAvailableFirmware() {
-        guard state != .error(.noInternet) else { return }
+        switch state {
+        case .update: return
+        case .error(.noInternet): return
+        default: break
+        }
         state = .loading
         Task {
             do {
