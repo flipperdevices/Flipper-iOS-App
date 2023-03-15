@@ -6,6 +6,7 @@ struct DeviceView: View {
     @EnvironmentObject var central: Central
     @EnvironmentObject var device: Device
     @EnvironmentObject var synchronization: Synchronization
+    @EnvironmentObject var updateModel: UpdateModel
 
     @State private var showForgetAction = false
     @State private var showUnsupportedVersionAlert = false
@@ -49,7 +50,9 @@ struct DeviceView: View {
             VStack(spacing: 0) {
                 DeviceHeader(device: flipper)
 
-                ScrollView {
+                RefreshableScrollView(isEnabled: true) {
+                    updateModel.updateAvailableFirmware()
+                } content: {
                     VStack(spacing: 0) {
                         if device.status == .unsupported {
                             OutdatedDeviceCard()

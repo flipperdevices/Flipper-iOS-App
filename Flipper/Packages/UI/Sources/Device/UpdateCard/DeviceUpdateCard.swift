@@ -47,11 +47,6 @@ struct DeviceUpdateCard: View {
                 }
             }
         }
-        .onChange(of: scenePhase) { phase in
-            if phase == .active {
-                updateModel.updateAvailableFirmware()
-            }
-        }
         .fullScreenCover(isPresented: $updateModel.showUpdate) {
             if let firmware = updateModel.firmware {
                 DeviceUpdateView(firmware: firmware)
