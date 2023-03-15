@@ -1,12 +1,15 @@
 import Core
 import SwiftUI
+import ActivityKit
 
 struct DeviceUpdateView: View {
     @EnvironmentObject var update: UpdateModel
     @EnvironmentObject var device: Device
     @Environment(\.dismiss) var dismiss
+    @Environment(\.scenePhase) var scenePhase
 
     @State private var state: UpdateModel.State = .update(.progress(.preparing))
+    @State private var activity: Any? = nil
     @State private var showCancelUpdate = false
 
     let firmware: Update.Firmware
@@ -116,16 +119,61 @@ struct DeviceUpdateView: View {
         }
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
+            startActivity()
             start()
         }
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
+            stopActivity()
+        }
+        .onChange(of: update.state) { newState in
+            updateActivity(newState)
+        }
+        .onChange(of: scenePhase) { newValue in
+            UIApplication.shared.isIdleTimerDisabled = newValue == .active
         }
     }
 
     func start() {
-        state = .initial
         update.install(firmware)
+    }
+
+    func startActivity() {
+        if #available(iOS 16.2, *) {
+            let attributes = UpdateActivityAttibutes(version: firmware.version)
+            activity = try? Activity<UpdateActivityAttibutes>.request(
+                attributes: attributes,
+                content: .init(state: .preparing, staleDate: nil))
+        }
+    }
+
+    func stopActivity() {
+        if #available(iOS 16.2, *) {
+            var activity: Activity<UpdateActivityAttibutes>? {
+                self.activity as? Activity<UpdateActivityAttibutes>
+            }
+            Task {
+                await activity?.end(.none)
+            }
+        }
+    }
+
+    func updateActivity(_ state: UpdateModel.State) {
+        if #available(iOS 16.2, *) {
+            var activity: Activity<UpdateActivityAttibutes>? {
+                self.activity as? Activity<UpdateActivityAttibutes>
+            }
+            Task {
+                switch state {
+                case .update(.progress(let progress)):
+                    await activity?.update(.init(state: progress, staleDate: nil))
+                case .update(.result):
+                    stopActivity()
+                default:
+                    break
+                }
+            }
+        }
     }
 
     func confirmCancel() {

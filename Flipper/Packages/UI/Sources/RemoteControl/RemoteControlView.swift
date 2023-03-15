@@ -70,7 +70,7 @@ struct RemoteControlView: View {
             Spacer(minLength: 0)
             Spacer(minLength: 14)
 
-            VStack(spacing: 14){
+            VStack(spacing: 14) {
                 DeviceScreen(uiImage)
                     .padding(.horizontal, 24)
 

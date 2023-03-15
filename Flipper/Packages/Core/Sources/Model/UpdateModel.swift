@@ -54,7 +54,7 @@ public class UpdateModel: ObservableObject {
             case progress(Progress)
             case result(Result)
 
-            public enum Progress: Equatable {
+            public enum Progress: Equatable, Codable, Hashable {
                 case preparing
                 case downloading(Double)
                 case uploading(Double)

@@ -13,12 +13,17 @@ public enum Update {
         public var url: URL
     }
 
-    public struct Version: Equatable {
+    public struct Version: Equatable, Codable {
         public let name: String
         public let channel: Channel
+
+        public init(name: String, channel: Channel) {
+            self.name = name
+            self.channel = channel
+        }
     }
 
-    public enum Channel: String, Equatable {
+    public enum Channel: String, Equatable, Codable {
         case development
         case candidate
         case release

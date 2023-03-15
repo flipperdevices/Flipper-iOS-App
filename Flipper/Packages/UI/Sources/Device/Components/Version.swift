@@ -1,28 +1,27 @@
 import Core
-
 import SwiftUI
 
-struct Version: View {
+public struct Version: View {
     let version: Update.Version
 
-    init(_ version: Update.Version) {
+    public init(_ version: Update.Version) {
         self.version = version
     }
 
-    var body: some View {
+    public var body: some View {
         Text(version.description)
             .foregroundColor(version.color)
     }
 }
 
 extension Update.Version {
-    var color: Color {
+    public var color: Color {
         channel.color
     }
 }
 
 extension Update.Channel {
-    var color: Color {
+    public var color: Color {
         switch self {
         case .development: return .development
         case .candidate: return .candidate
