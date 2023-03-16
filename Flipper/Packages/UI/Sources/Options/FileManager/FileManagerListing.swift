@@ -50,43 +50,35 @@ struct FileManagerListing: View {
                     ForEach(elements, id: \.description) {
                         switch $0 {
                         case .directory(let directory):
-                            HStack {
-                                Image(systemName: "folder.fill")
-                                    .frame(width: 20)
-
-                                NavigationLink(directory.name) {
-                                    FileManagerListing(
-                                        path: path.appending(directory.name)
-                                    )
-                                    .environmentObject(fileManager)
-                                }
-                                .foregroundColor(.primary)
-                            }
-                        case .file(let file):
-                            if let data = file.data, !data.isEmpty {
-                                Text(String(decoding: data, as: UTF8.self))
-                            } else {
+                            NavigationLink {
+                                FileManagerListing(
+                                    path: path.appending(directory.name)
+                                )
+                                .environmentObject(fileManager)
+                            } label: {
                                 HStack {
-                                    if fileManager.canRead(file) {
-                                        Image(systemName: "doc")
-                                            .frame(width: 20)
-                                        NavigationLink {
-                                            FileManagerEditor(
-                                                path: path.appending(file.name)
-                                            )
-                                            .environmentObject(fileManager)
-                                        } label: {
-                                            FileRow(file: file)
-                                        }
-                                        .foregroundColor(.primary)
-                                    } else {
-                                        Image(systemName: "lock.doc")
-                                            .frame(width: 20)
-                                        FileRow(file: file)
-                                            .foregroundColor(.secondary)
-                                    }
+                                    Image(systemName: "folder.fill")
+                                        .frame(width: 20)
+
+                                    Text(directory.name)
                                 }
                             }
+                            .foregroundColor(.primary)
+                        case .file(let file):
+                            NavigationLink {
+                                FileManagerEditor(
+                                    path: path.appending(file.name)
+                                )
+                                .environmentObject(fileManager)
+                            } label: {
+                                HStack {
+                                    Image(systemName: "doc")
+                                        .frame(width: 20)
+
+                                    FileRow(file: file)
+                                }
+                            }
+                            .disabled(!fileManager.canRead(file))
                         }
                     }
                     .onDelete { indexSet in
