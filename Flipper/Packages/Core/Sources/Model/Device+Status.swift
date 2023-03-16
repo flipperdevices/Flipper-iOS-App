@@ -10,6 +10,7 @@ extension Device {
         case synchronized
         case updating
         case unsupported
+        case outdatedMobile
         case invalidPairing
         case pairingFailed
 
@@ -23,6 +24,7 @@ extension Device {
             case .synchronized: return "Synced"
             case .updating: return "Updating"
             case .unsupported: return "Unsupported"
+            case .outdatedMobile: return "Outdated App"
             case .invalidPairing: return "Pairing Failed"
             case .pairingFailed: return "Pairing Failed"
             }

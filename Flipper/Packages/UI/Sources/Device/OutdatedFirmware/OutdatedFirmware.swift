@@ -1,19 +1,12 @@
 import SwiftUI
 
-struct OutdatedDeviceCard: View {
+struct OutdatedFirmwareCard: View {
     @Environment(\.openURL) private var openURL
 
     var body: some View {
-        VStack {
+        Card {
             VStack(spacing: 0) {
-                HStack {
-                    Text("Firmware Update")
-                        .font(.system(size: 16, weight: .bold))
-                    Spacer()
-                }
-
-                Image("Outdated")
-                    .padding(.top, 9)
+                Image("OutdatedFirmware")
 
                 Text("Outdated firmware version")
                     .font(.system(size: 14, weight: .medium))
@@ -39,9 +32,8 @@ struct OutdatedDeviceCard: View {
                 .foregroundColor(.a2)
                 .padding(.top, 8)
             }
+            .frame(maxWidth: .infinity)
             .padding(12)
         }
-        .background(Color.groupedBackground)
-        .cornerRadius(10)
     }
 }
