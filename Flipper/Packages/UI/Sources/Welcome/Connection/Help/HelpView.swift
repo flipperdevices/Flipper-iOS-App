@@ -26,7 +26,7 @@ struct HelpView: View {
                 VStack(alignment: .leading, spacing: 24) {
                     HelpPoint(
                         number: "1",
-                        text: "Check the correct name of your Flipper",
+                        text: "Check the correct name of your Flipper.",
                         linkLabel: "How to know the name of Flipper",
                         linkURL: .helpToKnowName)
 
