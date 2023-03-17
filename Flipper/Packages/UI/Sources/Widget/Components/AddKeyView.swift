@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct AddKeyView: View {
-    let viewModel: WidgetViewModel
+    var action: () -> Void
 
     var body: some View {
         Button {
-            viewModel.addKey()
+            action()
         } label: {
-            VStack(spacing: 8) {
+            VStack(spacing: 5) {
                 Image(systemName: "plus.circle.fill")
                     .resizable()
                     .foregroundColor(.black4)

@@ -8,6 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
+		8B10BF4C29A77D53007FC0F3 /* BlackHole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */; };
+		8B1A481929C113A5000169E9 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1A481829C113A5000169E9 /* WidgetKit.framework */; };
+		8B1A481B29C113A5000169E9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1A481A29C113A5000169E9 /* SwiftUI.framework */; };
+		8B1A481E29C113A5000169E9 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A481D29C113A5000169E9 /* Bundle.swift */; };
+		8B1A482029C113A5000169E9 /* LiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A481F29C113A5000169E9 /* LiveActivity.swift */; };
+		8B1A482229C113A5000169E9 /* ActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482129C113A5000169E9 /* ActivityWidget.swift */; };
+		8B1A482729C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */; };
+		8B1A482829C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */; };
+		8B1A482B29C113A6000169E9 /* ActivityWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8B1A483029C11AF8000169E9 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B1A482F29C11AF8000169E9 /* Core */; };
+		8B1BB6D429C1E67B008AE2A0 /* HaxrCorpNeue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */; };
+		8B1BB6D529C1E67B008AE2A0 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
+		8B1BB6D629C1E681008AE2A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
+		8B1BB6D829C1E725008AE2A0 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B1BB6D729C1E725008AE2A0 /* UI */; };
 		8B7064CC26E27429006CB4A8 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B7064CB26E27429006CB4A8 /* UI */; };
 		8B7480DE2807483500692304 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
 		8B77A9CD26CAA43300A3DF9F /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B77A9CC26CAA43300A3DF9F /* Core */; };
@@ -36,6 +50,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		8B1A482929C113A6000169E9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0DBFA1524EF2F9600EB2880 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8B1A481629C113A5000169E9;
+			remoteInfo = ActivityWidgetExtension;
+		};
 		8BCFDDE9277A2405002DA4CD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F0DBFA1524EF2F9600EB2880 /* Project object */;
@@ -70,6 +91,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				8BF9CED428E21A4400CD5D31 /* TodayWidget.appex in Embed Foundation Extensions */,
+				8B1A482B29C113A6000169E9 /* ActivityWidgetExtension.appex in Embed Foundation Extensions */,
 				8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -80,13 +102,21 @@
 /* Begin PBXFileReference section */
 		44A5B59224F05647009EE7FB /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlackHole.swift; sourceTree = "<group>"; };
+		8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ActivityWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B1A481829C113A5000169E9 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		8B1A481A29C113A5000169E9 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		8B1A481D29C113A5000169E9 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		8B1A481F29C113A5000169E9 /* LiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivity.swift; sourceTree = "<group>"; };
+		8B1A482129C113A5000169E9 /* ActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityWidget.swift; sourceTree = "<group>"; };
+		8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = ActivityWidget.intentdefinition; sourceTree = "<group>"; };
+		8B1A482629C113A6000169E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8B38AA5F289D6BD800A152F3 /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Analytics; path = Packages/Analytics; sourceTree = "<group>"; };
 		8B7480DD2807483500692304 /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		8B886F162759BA9A00D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Core/.swiftlint.yml; sourceTree = "<group>"; };
 		8B886F172759BAA500D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/UI/.swiftlint.yml; sourceTree = "<group>"; };
 		8B886F192759BAC600D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Inject/.swiftlint.yml; sourceTree = "<group>"; };
 		8B89527827581E7B00E4C336 /* UI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UI; path = Packages/UI; sourceTree = "<group>"; };
-		8B89527927581E8700E4C336 /* Inject */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Inject; path = Packages/Inject; sourceTree = "<group>"; };
 		8B89527A27581E9500E4C336 /* Core */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Core; path = Packages/Core; sourceTree = "<group>"; };
 		8B8A5A82289D6FDA00F005F5 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Analytics/.swiftlint.yml; sourceTree = "<group>"; };
 		8BA49B4B2902C86C00762ADF /* MFKey32v2 */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = MFKey32v2; path = Packages/MFKey32v2; sourceTree = "<group>"; };
@@ -108,6 +138,7 @@
 		8BE40CF627F1266D00288F66 /* Peripheral */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Peripheral; path = Packages/Peripheral; sourceTree = "<group>"; };
 		8BED6143270B66D8009E51E2 /* perform_lint.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
 		8BEE5AF928A54BF20070D01E /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Analytics/Sources/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
+		8BF074E329C2500700DC688B /* ActivityWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ActivityWidgetExtension.entitlements; sourceTree = "<group>"; };
 		8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodayWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BF9CEC928E21A4400CD5D31 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
@@ -120,6 +151,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		8B1A481429C113A5000169E9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B1BB6D829C1E725008AE2A0 /* UI in Frameworks */,
+				8B1A483029C11AF8000169E9 /* Core in Frameworks */,
+				8B1A481B29C113A5000169E9 /* SwiftUI.framework in Frameworks */,
+				8B1A481929C113A5000169E9 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8BCFDDDA277A2405002DA4CD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -155,8 +197,22 @@
 			children = (
 				8BCFDDDE277A2405002DA4CD /* QuickLook.framework */,
 				8BF9CEC928E21A4400CD5D31 /* NotificationCenter.framework */,
+				8B1A481829C113A5000169E9 /* WidgetKit.framework */,
+				8B1A481A29C113A5000169E9 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8B1A481C29C113A5000169E9 /* ActivityWidget */ = {
+			isa = PBXGroup;
+			children = (
+				8B1A481D29C113A5000169E9 /* Bundle.swift */,
+				8B1A481F29C113A5000169E9 /* LiveActivity.swift */,
+				8B1A482129C113A5000169E9 /* ActivityWidget.swift */,
+				8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */,
+				8B1A482629C113A6000169E9 /* Info.plist */,
+			);
+			path = ActivityWidget;
 			sourceTree = "<group>";
 		};
 		8B2D5D0B27EFA992005A2F56 /* Peripheral */ = {
@@ -180,7 +236,6 @@
 		8B77A9C626CAA3BA00A3DF9F /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				8B89527927581E8700E4C336 /* Inject */,
 				8B38AA5F289D6BD800A152F3 /* Analytics */,
 				8BE40CF627F1266D00288F66 /* Peripheral */,
 				8BA49B4B2902C86C00762ADF /* MFKey32v2 */,
@@ -278,6 +333,7 @@
 			isa = PBXGroup;
 			children = (
 				8BB7DF2F2911922D005C38C9 /* TodayWidget.entitlements */,
+				8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */,
 				8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */,
 				8BF9CECE28E21A4400CD5D31 /* MainInterface.storyboard */,
 				8BF9CED128E21A4400CD5D31 /* Info.plist */,
@@ -288,12 +344,14 @@
 		F0DBFA1424EF2F9600EB2880 = {
 			isa = PBXGroup;
 			children = (
+				8BF074E329C2500700DC688B /* ActivityWidgetExtension.entitlements */,
 				8B77A9C626CAA3BA00A3DF9F /* Packages */,
 				F0DBFA2324EF2F9900EB2880 /* iOS */,
 				F0DBFA1924EF2F9600EB2880 /* Shared */,
 				8BED6139270B617B009E51E2 /* SwiftLint */,
 				8BCFDDE0277A2405002DA4CD /* KeyPreview */,
 				8BF9CECB28E21A4400CD5D31 /* TodayWidget */,
+				8B1A481C29C113A5000169E9 /* ActivityWidget */,
 				F0DBFA2224EF2F9900EB2880 /* Products */,
 				44A5B5B124F05FCE009EE7FB /* Frameworks */,
 			);
@@ -315,6 +373,7 @@
 				F0DBFA2124EF2F9900EB2880 /* Flipper.app */,
 				8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */,
 				8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */,
+				8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -334,6 +393,27 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		8B1A481629C113A5000169E9 /* ActivityWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8B1A482E29C113A6000169E9 /* Build configuration list for PBXNativeTarget "ActivityWidgetExtension" */;
+			buildPhases = (
+				8B1A481329C113A5000169E9 /* Sources */,
+				8B1A481429C113A5000169E9 /* Frameworks */,
+				8B1A481529C113A5000169E9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ActivityWidgetExtension;
+			packageProductDependencies = (
+				8B1A482F29C11AF8000169E9 /* Core */,
+				8B1BB6D729C1E725008AE2A0 /* UI */,
+			);
+			productName = ActivityWidgetExtension;
+			productReference = 8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		8BCFDDDC277A2405002DA4CD /* KeyPreview */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8BCFDDEF277A2405002DA4CD /* Build configuration list for PBXNativeTarget "KeyPreview" */;
@@ -388,6 +468,7 @@
 			dependencies = (
 				8BCFDDEA277A2405002DA4CD /* PBXTargetDependency */,
 				8BF9CED328E21A4400CD5D31 /* PBXTargetDependency */,
+				8B1A482A29C113A6000169E9 /* PBXTargetDependency */,
 			);
 			name = "Flipper(iOS)";
 			packageProductDependencies = (
@@ -404,9 +485,12 @@
 		F0DBFA1524EF2F9600EB2880 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1170;
+				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1400;
 				TargetAttributes = {
+					8B1A481629C113A5000169E9 = {
+						CreatedOnToolsVersion = 14.3;
+					};
 					8BCFDDDC277A2405002DA4CD = {
 						CreatedOnToolsVersion = 13.2;
 					};
@@ -434,11 +518,22 @@
 				F0DBFA2024EF2F9900EB2880 /* Flipper(iOS) */,
 				8BCFDDDC277A2405002DA4CD /* KeyPreview */,
 				8BF9CEC728E21A4400CD5D31 /* TodayWidget */,
+				8B1A481629C113A5000169E9 /* ActivityWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		8B1A481529C113A5000169E9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B1BB6D629C1E681008AE2A0 /* Assets.xcassets in Resources */,
+				8B1BB6D429C1E67B008AE2A0 /* HaxrCorpNeue.ttf in Resources */,
+				8B1BB6D529C1E67B008AE2A0 /* Born2bSportyV2.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8BCFDDDB277A2405002DA4CD /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -497,6 +592,17 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		8B1A481329C113A5000169E9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B1A482229C113A5000169E9 /* ActivityWidget.swift in Sources */,
+				8B1A482729C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */,
+				8B1A482029C113A5000169E9 /* LiveActivity.swift in Sources */,
+				8B1A481E29C113A5000169E9 /* Bundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8BCFDDD9277A2405002DA4CD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -511,6 +617,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BF9CECD28E21A4400CD5D31 /* TodayViewController.swift in Sources */,
+				8B10BF4C29A77D53007FC0F3 /* BlackHole.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -519,6 +626,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BCB0168278F135C00DA66F5 /* Intents.intentdefinition in Sources */,
+				8B1A482829C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */,
 				F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -526,6 +634,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		8B1A482A29C113A6000169E9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8B1A481629C113A5000169E9 /* ActivityWidgetExtension */;
+			targetProxy = 8B1A482929C113A6000169E9 /* PBXContainerItemProxy */;
+		};
 		8BCFDDEA277A2405002DA4CD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8BCFDDDC277A2405002DA4CD /* KeyPreview */;
@@ -550,6 +663,73 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		8B1A482C29C113A6000169E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = ActivityWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SXH69675TZ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ActivityWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ActivityWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.LiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		8B1A482D29C113A6000169E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = ActivityWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SXH69675TZ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ActivityWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ActivityWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.LiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		8BCFDDED277A2405002DA4CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -561,13 +741,12 @@
 				INFOPLIST_FILE = KeyPreview/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = KeyPreview;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.1;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.KeyPreview;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -589,13 +768,12 @@
 				INFOPLIST_FILE = KeyPreview/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = KeyPreview;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.1;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.KeyPreview;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -616,13 +794,12 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = SXH69675TZ;
 				INFOPLIST_FILE = TodayWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.1;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.TodayWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -641,13 +818,12 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = SXH69675TZ;
 				INFOPLIST_FILE = TodayWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.1;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.TodayWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -718,6 +894,7 @@
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
 			};
 			name = Debug;
 		};
@@ -774,6 +951,7 @@
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
 			};
 			name = Release;
 		};
@@ -790,12 +968,11 @@
 				DEVELOPMENT_TEAM = SXH69675TZ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.1;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main;
 				PRODUCT_NAME = Flipper;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -820,12 +997,11 @@
 				DEVELOPMENT_TEAM = SXH69675TZ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.1;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main;
 				PRODUCT_NAME = Flipper;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -841,6 +1017,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8B1A482E29C113A6000169E9 /* Build configuration list for PBXNativeTarget "ActivityWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8B1A482C29C113A6000169E9 /* Debug */,
+				8B1A482D29C113A6000169E9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		8BCFDDEF277A2405002DA4CD /* Build configuration list for PBXNativeTarget "KeyPreview" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -880,6 +1065,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8B1A482F29C11AF8000169E9 /* Core */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Core;
+		};
+		8B1BB6D729C1E725008AE2A0 /* UI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UI;
+		};
 		8B7064CB26E27429006CB4A8 /* UI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = UI;

@@ -1,20 +1,17 @@
 import Logging
-import Inject
 import Foundation
 
 // swiftlint:disable function_parameter_count
 
 struct FileLogHandler: LogHandler {
-    @Inject var storage: LoggerStorage
+    private let storage: LoggerStorage
 
-    static var logLevel: Logger.Level { UserDefaultsStorage.shared.logLevel }
-
-    static func factory(_ label: String) -> FileLogHandler {
-        .init(metadata: .init(), logLevel: logLevel)
+    init(storage: LoggerStorage) {
+        self.storage = storage
     }
 
-    var metadata: Logger.Metadata
-    var logLevel: Logger.Level
+    var metadata: Logger.Metadata = .init()
+    var logLevel: Logger.Level = UserDefaultsStorage.shared.logLevel
 
     subscript(metadataKey metadataKey: String) -> Logger.Metadata.Value? {
         get { self.metadata[metadataKey] }

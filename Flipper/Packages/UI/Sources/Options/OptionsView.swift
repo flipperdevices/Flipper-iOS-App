@@ -2,50 +2,68 @@ import Core
 import SwiftUI
 
 struct OptionsView: View {
-    @StateObject var viewModel: OptionsViewModel
+    @EnvironmentObject var device: Device
+    @EnvironmentObject var archive: ArchiveModel
     @Environment(\.dismiss) private var dismiss
+
+    @AppStorage(.isDebugMode) var isDebugMode = false
+    @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
+
+    @State private var showResetApp = false
+    @State private var versionTapCount = 0
+
+    @State private var showWidgetSettings = false
+
+    var appVersion: String {
+        Bundle.releaseVersion
+    }
+
+    var isDeviceAvailable: Bool {
+        device.status == .connected ||
+        device.status == .synchronized
+    }
 
     var body: some View {
         List {
             Section(header: Text("Utils")) {
                 NavigationLink("Ping") {
-                    PingView(viewModel: .init())
+                    PingView()
                 }
-                .disabled(!viewModel.isAvailable)
+                .disabled(!isDeviceAvailable)
                 NavigationLink("Stress Test") {
-                    StressTestView(viewModel: .init())
+                    StressTestView()
                 }
-                .disabled(!viewModel.isAvailable)
+                .disabled(!isDeviceAvailable)
                 NavigationLink("Speed Test") {
-                    SpeedTestView(viewModel: .init())
+                    SpeedTestView()
                 }
-                .disabled(!viewModel.isAvailable)
+                .disabled(!isDeviceAvailable)
                 NavigationLink("Logs") {
-                    LogsView(viewModel: .init())
+                    LogsView()
                 }
                 Button("Backup Keys") {
-                    viewModel.backupKeys()
+                    share(archive.backupKeys())
                 }
-                .disabled(!viewModel.hasKeys)
+                .disabled(archive.items.isEmpty)
             }
 
             Section(header: Text("Remote")) {
                 NavigationLink("Screen Streaming") {
-                    RemoteControlView(viewModel: .init())
+                    RemoteControlView()
                 }
                 NavigationLink("File Manager") {
-                    FileManagerView(viewModel: .init())
+                    FileManagerView()
                 }
                 Button("Reboot Flipper") {
-                    viewModel.rebootFlipper()
+                    device.reboot()
                 }
-                .foregroundColor(viewModel.isAvailable ? .accentColor : .gray)
+                .foregroundColor(isDeviceAvailable ? .accentColor : .gray)
             }
-            .disabled(!viewModel.isAvailable)
+            .disabled(!isDeviceAvailable)
 
             Section {
                 Button("Widget Settings") {
-                    viewModel.showWidgetSettings()
+                    showWidgetSettings = true
                 }
                 .foregroundColor(.primary)
             }
@@ -55,22 +73,22 @@ struct OptionsView: View {
                 Link("GitHub", destination: .github)
             }
 
-            if viewModel.isDebugMode {
+            if isDebugMode {
                 Section(header: Text("Debug")) {
-                    Toggle(isOn: $viewModel.isProvisioningDisabled) {
+                    Toggle(isOn: $isProvisioningDisabled) {
                         Text("Disable provisioning")
                     }
                     NavigationLink("I'm watching you") {
-                        CarrierView(viewModel: .init())
+                        CarrierView()
                     }
                     Button("Reset App") {
-                        viewModel.showResetApp = true
+                        showResetApp = true
                     }
                     .foregroundColor(.sRed)
-                    .actionSheet(isPresented: $viewModel.showResetApp) {
+                    .actionSheet(isPresented: $showResetApp) {
                         .init(title: Text("Are you sure?"), buttons: [
                             .destructive(Text("Reset App")) {
-                                viewModel.resetApp()
+                                AppReset.reset()
                             },
                             .cancel()
                         ])
@@ -84,14 +102,14 @@ struct OptionsView: View {
                     Text("Flipper Mobile App")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.black20)
-                    Text("Version: \(viewModel.appVersion)")
+                    Text("Version: \(appVersion)")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.black40)
                 }
                 .padding(.vertical, 20)
                 .frame(maxWidth: .infinity)
                 .onTapGesture {
-                    viewModel.onVersionTapGesture()
+                    onVersionTapGesture()
                 }
             }
             .padding(.top, -40)
@@ -106,6 +124,17 @@ struct OptionsView: View {
                 }
                 Title("Options")
             }
+        }
+        .fullScreenCover(isPresented: $showWidgetSettings) {
+            TodayWidgetSettingsView()
+        }
+    }
+
+    func onVersionTapGesture() {
+        versionTapCount += 1
+        if versionTapCount == 10 {
+            isDebugMode = true
+            versionTapCount = 0
         }
     }
 }

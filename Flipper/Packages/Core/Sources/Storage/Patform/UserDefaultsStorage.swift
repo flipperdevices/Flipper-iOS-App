@@ -1,5 +1,5 @@
-import Foundation
 import Logging
+import Foundation
 
 public class UserDefaultsStorage {
     public static let shared: UserDefaultsStorage = .init()
@@ -15,9 +15,17 @@ public class UserDefaultsStorage {
         set { storage.set(newValue, forKey: .selectedTabKey) }
     }
 
-    public var updateChannel: String {
-        get { storage.value(forKey: .updateChannelKey) as? String ?? "" }
-        set { storage.set(newValue, forKey: .updateChannelKey) }
+    public var updateChannel: Update.Channel {
+        get {
+            if let channel = storage.value(forKey: .updateChannel) as? String {
+                return .init(rawValue: channel) ?? .release
+            } else {
+                return .release
+            }
+        }
+        set {
+            storage.set(newValue.rawValue, forKey: .updateChannel)
+        }
     }
 
     public var logLevel: Logger.Level {
@@ -33,21 +41,29 @@ public class UserDefaultsStorage {
         }
     }
 
+    public var hasReaderLog: Bool {
+        get { storage.value(forKey: .hasReaderLog) as? Bool ?? false }
+        set { storage.set(newValue, forKey: .hasReaderLog) }
+    }
+
+    // MARK: Debug
+
     public var isDebugMode: Bool {
-        get { storage.value(forKey: .isDebugMode) as? Bool ?? true }
+        get { storage.value(forKey: .isDebugMode) as? Bool ?? false }
         set { storage.set(newValue, forKey: .isDebugMode) }
     }
 
     public var isProvisioningDisabled: Bool {
-        get { storage.value(forKey: .isDebugMode) as? Bool ?? true }
-        set { storage.set(newValue, forKey: .isDebugMode) }
+        get { storage.value(forKey: .isProvisioningDisabled) as? Bool ?? false }
+        set { storage.set(newValue, forKey: .isProvisioningDisabled) }
     }
 
     func reset() {
         storage.removeObject(forKey: .isFirstLaunchKey)
         storage.removeObject(forKey: .selectedTabKey)
-        storage.removeObject(forKey: .updateChannelKey)
+        storage.removeObject(forKey: .updateChannel)
         storage.removeObject(forKey: .logLevelKey)
+        storage.removeObject(forKey: .hasReaderLog)
         storage.removeObject(forKey: .isDebugMode)
         storage.removeObject(forKey: .isProvisioningDisabled)
     }
@@ -56,8 +72,10 @@ public class UserDefaultsStorage {
 public extension String {
     static var isFirstLaunchKey: String { "isFirstLaunch" }
     static var selectedTabKey: String { "selectedTab" }
-    static var updateChannelKey: String { "updateChannel" }
+    static var updateChannel: String { "updateChannel" }
+    static var installingVersion: String { "installingVersion" }
     static var logLevelKey: String { "logLevel" }
+    static var hasReaderLog: String { "hasReaderLog" }
 
     static var isDebugMode: String { "isDebugMode" }
     static var isProvisioningDisabled: String { "isProvisioningDisabled" }

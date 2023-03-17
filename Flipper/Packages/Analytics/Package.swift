@@ -15,9 +15,6 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "Inject",
-            path: "../Inject"),
-        .package(
             name: "Logging",
             url: "https://github.com/apple/swift-log.git",
             from: "1.4.2"),
@@ -34,7 +31,6 @@ let package = Package(
         .target(
             name: "Analytics",
             dependencies: [
-                "Inject",
                 "Logging",
                 "Countly",
                 "SwiftProtobuf"

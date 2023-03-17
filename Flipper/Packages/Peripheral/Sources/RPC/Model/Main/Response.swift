@@ -77,6 +77,9 @@ extension Response {
             self.init(decoding: response)
         case .systemUpdateResponse(let response):
             self.init(decoding: response)
+        // Applicaton
+        case .appLockStatusResponse(let response):
+            self.init(decoding: response)
         // Storage
         case .storageInfoResponse(let response):
             self.init(decoding: response)
@@ -118,6 +121,10 @@ extension Response {
 
     init(decoding response: PBSystem_UpdateResponse) {
         self = .system(.update(.init(response.code)))
+    }
+
+    init(decoding response: PBApp_LockStatusResponse) {
+        self = .application(.lockStatus(response.locked))
     }
 
     init(decoding response: PBStorage_InfoResponse) {

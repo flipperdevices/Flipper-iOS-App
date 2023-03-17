@@ -2,7 +2,6 @@ import Core
 import SwiftUI
 
 struct CardView: View {
-    @State var focusedField: String = ""
     @Binding var item: ArchiveItem
     @Binding var isEditing: Bool
     let kind: Kind
@@ -13,11 +12,7 @@ struct CardView: View {
         case deleted
     }
 
-    init(item: Binding<ArchiveItem>, isEditing: Binding<Bool>, kind: Kind) {
-        self._item = item
-        self._isEditing = isEditing
-        self.kind = kind
-    }
+    @State private var focusedField: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {

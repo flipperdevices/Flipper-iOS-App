@@ -1,7 +1,9 @@
 import Foundation
 
-public protocol RPC {
-    var session: Session? { get }
+public protocol RPC: AnyObject {
+    // TODO: Use async sequence
+    var onScreenFrame: ((ScreenFrame) -> Void)? { get set }
+    var onAppStateChanged: ((Message.AppState) -> Void)? { get set }
 
     // MARK: System
 
@@ -29,6 +31,8 @@ public protocol RPC {
 
     // MARK: Application
 
+    var isLocked: Bool { get async throws }
+
     func appStart(_ name: String, args: String) async throws
     func appLoadFile(_ path: Path) async throws
     func appButtonPress(_ button: String) async throws
@@ -39,8 +43,6 @@ public protocol RPC {
 
     func startStreaming() async throws
     func stopStreaming() async throws
-    func onScreenFrame(_ body: @escaping (ScreenFrame) -> Void)
-    func onAppStateChanged(_ body: @escaping (Message.AppState) -> Void)
     func pressButton(_ button: InputKey) async throws
     func playAlert() async throws
     func startVirtualDisplay(with frame: ScreenFrame?) async throws

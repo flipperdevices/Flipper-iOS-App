@@ -1,18 +1,15 @@
 import Countly
-import Logging
 
-class CountlyAnalytics {
-    private let logger = Logger(label: "countly-analytics")
-
+public class CountlyAnalytics {
     private let hostURL = "https://countly.flipp.dev/"
 
-    init() {
+    public init() {
         #if !DEBUG
         guard let appKey = Bundle
             .main
             .object(forInfoDictionaryKey: "COUNTLY_APP_KEY") as? String
         else {
-            logger.error("COUNTLY_APP_KEY not found")
+            logger.error("countly: COUNTLY_APP_KEY not found")
             return
         }
         let config = CountlyConfig()
@@ -31,8 +28,8 @@ class CountlyAnalytics {
     }
 }
 
-extension CountlyAnalytics: Analytics {
-    func appOpen(target: OpenTarget) {
+extension CountlyAnalytics: EventHandler {
+    public func appOpen(target: OpenTarget) {
         recordEvent(
             key: "app_open",
             segmentation: [
@@ -40,7 +37,7 @@ extension CountlyAnalytics: Analytics {
             ])
     }
 
-    func flipperGATTInfo(flipperVersion: String) {
+    public func flipperGATTInfo(flipperVersion: String) {
         recordEvent(
             key: "flipper_gatt_info",
             segmentation: [
@@ -48,7 +45,7 @@ extension CountlyAnalytics: Analytics {
             ])
     }
 
-    func flipperRPCInfo(
+    public func flipperRPCInfo(
         sdcardIsAvailable: Bool,
         internalFreeByte: Int,
         internalTotalByte: Int,
@@ -66,7 +63,7 @@ extension CountlyAnalytics: Analytics {
             ])
     }
 
-    func flipperUpdateStart(
+    public func flipperUpdateStart(
         id: Int,
         from: String,
         to: String
@@ -80,7 +77,7 @@ extension CountlyAnalytics: Analytics {
             ])
     }
 
-    func flipperUpdateResult(
+    public func flipperUpdateResult(
         id: Int,
         from: String,
         to: String,
@@ -96,7 +93,7 @@ extension CountlyAnalytics: Analytics {
             ])
     }
 
-    func synchronizationResult(
+    public func synchronizationResult(
         subGHzCount: Int,
         rfidCount: Int,
         nfcCount: Int,
@@ -116,7 +113,7 @@ extension CountlyAnalytics: Analytics {
             ])
     }
 
-    func subghzProvisioning(
+    public func subghzProvisioning(
         sim1: String,
         sim2: String,
         ip: String,

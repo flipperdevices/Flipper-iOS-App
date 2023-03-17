@@ -1,11 +1,8 @@
-public enum BluetoothStatus: Equatable {
-    public enum NotReadyReason: String, Equatable {
-        case poweredOff
-        case preparing
-        case unauthorized
-        case unsupported
-    }
-
-    case ready
-    case notReady(NotReadyReason)
+public enum BluetoothStatus: Int, Sendable, Equatable {
+    case unknown = 0
+    case resetting = 1
+    case unsupported = 2
+    case unauthorized = 3
+    case poweredOff = 4
+    case poweredOn = 5
 }

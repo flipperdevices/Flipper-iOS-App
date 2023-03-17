@@ -1,19 +1,20 @@
-class WantMoarAnalytics {
-    var analytics: [Analytics] = [
-        CountlyAnalytics(),
-        ClickhouseAnalytics()
-    ]
+class WantMoarEventHandler {
+    var handlers: [EventHandler]
+
+    init(handlers: [EventHandler]) {
+        self.handlers = handlers
+    }
 }
 
-extension WantMoarAnalytics: Analytics {
+extension WantMoarEventHandler: EventHandler {
     func appOpen(target: OpenTarget) {
-        analytics.forEach {
+        handlers.forEach {
             $0.appOpen(target: target)
         }
     }
 
     func flipperGATTInfo(flipperVersion: String) {
-        analytics.forEach {
+        handlers.forEach {
             $0.flipperGATTInfo(flipperVersion: flipperVersion)
         }
     }
@@ -25,7 +26,7 @@ extension WantMoarAnalytics: Analytics {
         externalFreeByte: Int,
         externalTotalByte: Int
     ) {
-        analytics.forEach {
+        handlers.forEach {
             $0.flipperRPCInfo(
                 sdcardIsAvailable: sdcardIsAvailable,
                 internalFreeByte: internalFreeByte,
@@ -40,7 +41,7 @@ extension WantMoarAnalytics: Analytics {
         from: String,
         to: String
     ) {
-        analytics.forEach {
+        handlers.forEach {
             $0.flipperUpdateStart(id: id, from: from, to: to)
         }
     }
@@ -51,7 +52,7 @@ extension WantMoarAnalytics: Analytics {
         to: String,
         status: UpdateResult
     ) {
-        analytics.forEach {
+        handlers.forEach {
             $0.flipperUpdateResult(id: id, from: from, to: to, status: status)
         }
     }
@@ -64,7 +65,7 @@ extension WantMoarAnalytics: Analytics {
         iButtonCount: Int,
         synchronizationTime: Int
     ) {
-        analytics.forEach {
+        handlers.forEach {
             $0.synchronizationResult(
                 subGHzCount: subGHzCount,
                 rfidCount: rfidCount,
@@ -83,7 +84,7 @@ extension WantMoarAnalytics: Analytics {
         provided: String,
         source: RegionSource
     ) {
-        analytics.forEach {
+        handlers.forEach {
             $0.subghzProvisioning(
                 sim1: sim1,
                 sim2: sim2,

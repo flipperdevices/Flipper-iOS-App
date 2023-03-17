@@ -1,10 +1,11 @@
-import Inject
 import Peripheral
 
-class DeletedArchive: DeletedArchiveProtocol {
-    @Inject var storage: DeletedArchiveStorage
+class DeletedArchive: ArchiveProtocol {
+    private let storage: ArchiveStorage
 
-    init() {}
+    init(storage: ArchiveStorage) {
+        self.storage = storage
+    }
 
     func getManifest(
         progress: (Double) -> Void

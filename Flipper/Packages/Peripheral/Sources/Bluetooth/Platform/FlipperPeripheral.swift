@@ -1,10 +1,7 @@
-import CoreBluetooth
 import Combine
-import Logging
+import CoreBluetooth
 
 class FlipperPeripheral: NSObject, BluetoothPeripheral {
-    private let logger = Logger(label: "peripheral")
-
     private var peripheral: CBPeripheral
     private var serialWrite: CBCharacteristic?
 
@@ -44,7 +41,7 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
 
     init(
         peripheral: CBPeripheral,
-        colorService service: CBUUID? = nil
+        service: CBUUID? = nil
     ) {
         self.id = peripheral.identifier
         self.name = String(name: peripheral.name)

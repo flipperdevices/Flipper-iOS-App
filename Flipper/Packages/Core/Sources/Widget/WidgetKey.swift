@@ -1,6 +1,6 @@
 import Peripheral
 
-public struct WidgetKey: Codable {
+public struct WidgetKey: Equatable, Codable {
     public let name: ArchiveItem.Name
     public let kind: ArchiveItem.Kind
 

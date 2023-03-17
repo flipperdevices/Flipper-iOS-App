@@ -1,5 +1,7 @@
+import Combine
+
 protocol ArchiveSyncProtocol {
-    var events: SafePublisher<ArchiveSync.Event> { get }
+    var events: AnyPublisher<ArchiveSync.Event, Never> { get }
 
     func run(_ progress: (Double) -> Void) async throws
     func cancel()

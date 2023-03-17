@@ -1,8 +1,5 @@
-import Logging
 
 public struct ScreenFrame {
-    private let logger = Logger(label: "screenframe")
-
     let bytes: [UInt8]
 
     static var width: Int { 128 }

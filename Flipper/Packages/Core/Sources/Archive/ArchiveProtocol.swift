@@ -69,8 +69,6 @@ extension ArchiveProtocol {
     }
 }
 
-protocol FlipperArchiveProtocol: ArchiveProtocol {}
-protocol MobileArchiveProtocol: ArchiveProtocol {
+protocol Compressable {
     func compress() -> URL?
 }
-protocol DeletedArchiveProtocol: ArchiveProtocol {}

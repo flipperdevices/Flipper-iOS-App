@@ -2,19 +2,32 @@ import Core
 import SwiftUI
 
 struct StressTestView: View {
-    @StateObject var viewModel: StressTestViewModel
+    // next step
+    @StateObject var stressTest: StressTest = .init(
+        pairedDevice: Dependencies.shared.pairedDevice
+    )
     @Environment(\.dismiss) private var dismiss
+
+    @State private var events: [StressTest.Event] = []
+
+    var successCount: Int {
+        events.filter { $0.kind == .success }.count
+    }
+
+    var errorCount: Int {
+        events.filter { $0.kind == .error }.count
+    }
 
     var body: some View {
         VStack {
             HStack {
-                Text("success: \(viewModel.successCount)")
-                Text("error: \(viewModel.errorCount)")
+                Text("success: \(successCount)")
+                Text("error: \(errorCount)")
             }
             .padding(.top, 20)
             .padding(.horizontal, 20)
 
-            List(viewModel.events.reversed()) {
+            List(events.reversed()) {
                 Text($0.message)
                     .foregroundColor($0.color)
             }
@@ -22,14 +35,14 @@ struct StressTestView: View {
             HStack {
                 Spacer()
                 Button {
-                    viewModel.start()
+                    stressTest.start()
                 } label: {
                     Text("Start")
                         .roundedButtonStyle(maxWidth: .infinity)
                 }
                 Spacer()
                 Button {
-                    viewModel.stop()
+                    stressTest.stop()
                 } label: {
                     Text("Stop")
                         .roundedButtonStyle(maxWidth: .infinity)
@@ -49,7 +62,10 @@ struct StressTestView: View {
             }
         }
         .onDisappear {
-            viewModel.stop()
+            stressTest.stop()
+        }
+        .onReceive(stressTest.progress) {
+            events = $0
         }
     }
 }
@@ -62,5 +78,11 @@ extension StressTest.Event {
         case .success: return .sGreen
         case .error: return .sRed
         }
+    }
+}
+
+extension StressTest.Event: CustomStringConvertible {
+    public var description: String {
+        "[\(self.kind)] \(self.message)"
     }
 }

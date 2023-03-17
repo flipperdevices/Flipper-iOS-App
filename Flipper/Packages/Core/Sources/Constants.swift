@@ -17,3 +17,9 @@ extension URL {
         "https://transfer.flpr.app"
     }
 }
+
+extension URL {
+    static var firmwareManifestURL: URL {
+        "https://update.flipperzero.one/firmware/directory.json"
+    }
+}

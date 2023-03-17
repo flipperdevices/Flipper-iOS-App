@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SendProgress: View {
-    @State var trimTo = 0.0
+    @State private var trimTo = 0.0
 
     var animation: SwiftUI.Animation {
         .linear(duration: 1).repeatForever(autoreverses: false)

@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import UIKit
 
 class CloudDocument: UIDocument {
@@ -10,3 +11,4 @@ class CloudDocument: UIDocument {
         self.data = contents as? Data
     }
 }
+#endif

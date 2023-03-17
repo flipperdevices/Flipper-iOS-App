@@ -2,16 +2,16 @@ import Core
 import SwiftUI
 
 struct HubView: View {
-    @StateObject var viewModel: HubViewModel
+    @AppStorage(.hasReaderLog) var hasReaderLog = false
 
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack {
                     NavigationLink {
-                        NFCToolsView(viewModel: .init())
+                        NFCToolsView()
                     } label: {
-                        NFCToolsCard(hasNotification: viewModel.hasMFLog)
+                        NFCToolsCard(hasNotification: hasReaderLog)
                     }
                 }
                 .padding(14)
