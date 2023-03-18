@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8B1A481629C113A5000169E9"
-               BuildableName = "ActivityWidgetExtension.appex"
-               BlueprintName = "ActivityWidgetExtension"
+               BuildableName = "ActivityWidget.appex"
+               BlueprintName = "ActivityWidget"
                ReferencedContainer = "container:Flipper.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

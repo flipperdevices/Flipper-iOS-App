@@ -16,7 +16,7 @@
 		8B1A482229C113A5000169E9 /* ActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482129C113A5000169E9 /* ActivityWidget.swift */; };
 		8B1A482729C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */; };
 		8B1A482829C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */; };
-		8B1A482B29C113A6000169E9 /* ActivityWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8B1A482B29C113A6000169E9 /* ActivityWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8B1A481729C113A5000169E9 /* ActivityWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8B1A483029C11AF8000169E9 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B1A482F29C11AF8000169E9 /* Core */; };
 		8B1BB6D429C1E67B008AE2A0 /* HaxrCorpNeue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */; };
 		8B1BB6D529C1E67B008AE2A0 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
@@ -91,7 +91,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				8BF9CED428E21A4400CD5D31 /* TodayWidget.appex in Embed Foundation Extensions */,
-				8B1A482B29C113A6000169E9 /* ActivityWidgetExtension.appex in Embed Foundation Extensions */,
+				8B1A482B29C113A6000169E9 /* ActivityWidget.appex in Embed Foundation Extensions */,
 				8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -103,7 +103,7 @@
 		44A5B59224F05647009EE7FB /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlackHole.swift; sourceTree = "<group>"; };
-		8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ActivityWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B1A481729C113A5000169E9 /* ActivityWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ActivityWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B1A481829C113A5000169E9 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		8B1A481A29C113A5000169E9 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		8B1A481D29C113A5000169E9 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
@@ -138,7 +138,7 @@
 		8BE40CF627F1266D00288F66 /* Peripheral */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Peripheral; path = Packages/Peripheral; sourceTree = "<group>"; };
 		8BED6143270B66D8009E51E2 /* perform_lint.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
 		8BEE5AF928A54BF20070D01E /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Analytics/Sources/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
-		8BF074E329C2500700DC688B /* ActivityWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ActivityWidgetExtension.entitlements; sourceTree = "<group>"; };
+		8BF074E329C2500700DC688B /* ActivityWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ActivityWidget.entitlements; sourceTree = "<group>"; };
 		8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodayWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BF9CEC928E21A4400CD5D31 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
@@ -206,6 +206,7 @@
 		8B1A481C29C113A5000169E9 /* ActivityWidget */ = {
 			isa = PBXGroup;
 			children = (
+				8BF074E329C2500700DC688B /* ActivityWidget.entitlements */,
 				8B1A481D29C113A5000169E9 /* Bundle.swift */,
 				8B1A481F29C113A5000169E9 /* LiveActivity.swift */,
 				8B1A482129C113A5000169E9 /* ActivityWidget.swift */,
@@ -344,7 +345,6 @@
 		F0DBFA1424EF2F9600EB2880 = {
 			isa = PBXGroup;
 			children = (
-				8BF074E329C2500700DC688B /* ActivityWidgetExtension.entitlements */,
 				8B77A9C626CAA3BA00A3DF9F /* Packages */,
 				F0DBFA2324EF2F9900EB2880 /* iOS */,
 				F0DBFA1924EF2F9600EB2880 /* Shared */,
@@ -373,7 +373,7 @@
 				F0DBFA2124EF2F9900EB2880 /* Flipper.app */,
 				8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */,
 				8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */,
-				8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */,
+				8B1A481729C113A5000169E9 /* ActivityWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -393,9 +393,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8B1A481629C113A5000169E9 /* ActivityWidgetExtension */ = {
+		8B1A481629C113A5000169E9 /* ActivityWidget */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8B1A482E29C113A6000169E9 /* Build configuration list for PBXNativeTarget "ActivityWidgetExtension" */;
+			buildConfigurationList = 8B1A482E29C113A6000169E9 /* Build configuration list for PBXNativeTarget "ActivityWidget" */;
 			buildPhases = (
 				8B1A481329C113A5000169E9 /* Sources */,
 				8B1A481429C113A5000169E9 /* Frameworks */,
@@ -405,13 +405,13 @@
 			);
 			dependencies = (
 			);
-			name = ActivityWidgetExtension;
+			name = ActivityWidget;
 			packageProductDependencies = (
 				8B1A482F29C11AF8000169E9 /* Core */,
 				8B1BB6D729C1E725008AE2A0 /* UI */,
 			);
 			productName = ActivityWidgetExtension;
-			productReference = 8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */;
+			productReference = 8B1A481729C113A5000169E9 /* ActivityWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		8BCFDDDC277A2405002DA4CD /* KeyPreview */ = {
@@ -518,7 +518,7 @@
 				F0DBFA2024EF2F9900EB2880 /* Flipper(iOS) */,
 				8BCFDDDC277A2405002DA4CD /* KeyPreview */,
 				8BF9CEC728E21A4400CD5D31 /* TodayWidget */,
-				8B1A481629C113A5000169E9 /* ActivityWidgetExtension */,
+				8B1A481629C113A5000169E9 /* ActivityWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -636,7 +636,7 @@
 /* Begin PBXTargetDependency section */
 		8B1A482A29C113A6000169E9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8B1A481629C113A5000169E9 /* ActivityWidgetExtension */;
+			target = 8B1A481629C113A5000169E9 /* ActivityWidget */;
 			targetProxy = 8B1A482929C113A6000169E9 /* PBXContainerItemProxy */;
 		};
 		8BCFDDEA277A2405002DA4CD /* PBXTargetDependency */ = {
@@ -669,7 +669,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_ENTITLEMENTS = ActivityWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ActivityWidget/ActivityWidget.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -702,7 +702,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_ENTITLEMENTS = ActivityWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ActivityWidget/ActivityWidget.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1017,7 +1017,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8B1A482E29C113A6000169E9 /* Build configuration list for PBXNativeTarget "ActivityWidgetExtension" */ = {
+		8B1A482E29C113A6000169E9 /* Build configuration list for PBXNativeTarget "ActivityWidget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8B1A482C29C113A6000169E9 /* Debug */,
