@@ -225,7 +225,6 @@ public class UpdateModel: ObservableObject {
         guard validateSDCard() else { return }
 
         guard validateInstalledFirmware() else { return }
-        guard validateUpdateResult() else { return }
         guard validateAvailableFirmware() else { return }
 
         guard checkChannelUpdate() else { return }
@@ -233,6 +232,8 @@ public class UpdateModel: ObservableObject {
 
         guard checkManifestUpdate() else { return }
         guard checkRegionUpdate() else { return }
+
+        guard validateUpdateResult() else { return }
 
         state = .ready(.noUpdates)
     }
