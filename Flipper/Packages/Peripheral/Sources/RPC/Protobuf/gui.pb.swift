@@ -138,12 +138,70 @@ extension PBGui_InputType: CaseIterable {
 
 #endif  // swift(>=4.2)
 
+enum PBGui_ScreenOrientation: SwiftProtobuf.Enum {
+  typealias RawValue = Int
+
+  ///*< Horizontal 
+  case horizontal // = 0
+
+  ///*< Horizontal flipped (180)
+  case horizontalFlip // = 1
+
+  ///*< Vertical (90)
+  case vertical // = 2
+
+  ///*< Vertical flipped 
+  case verticalFlip // = 3
+  case UNRECOGNIZED(Int)
+
+  init() {
+    self = .horizontal
+  }
+
+  init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .horizontal
+    case 1: self = .horizontalFlip
+    case 2: self = .vertical
+    case 3: self = .verticalFlip
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  var rawValue: Int {
+    switch self {
+    case .horizontal: return 0
+    case .horizontalFlip: return 1
+    case .vertical: return 2
+    case .verticalFlip: return 3
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+}
+
+#if swift(>=4.2)
+
+extension PBGui_ScreenOrientation: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [PBGui_ScreenOrientation] = [
+    .horizontal,
+    .horizontalFlip,
+    .vertical,
+    .verticalFlip,
+  ]
+}
+
+#endif  // swift(>=4.2)
+
 struct PBGui_ScreenFrame {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   var data: Data = Data()
+
+  var orientation: PBGui_ScreenOrientation = .horizontal
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -219,6 +277,7 @@ struct PBGui_StopVirtualDisplayRequest {
 #if swift(>=5.5) && canImport(_Concurrency)
 extension PBGui_InputKey: @unchecked Sendable {}
 extension PBGui_InputType: @unchecked Sendable {}
+extension PBGui_ScreenOrientation: @unchecked Sendable {}
 extension PBGui_ScreenFrame: @unchecked Sendable {}
 extension PBGui_StartScreenStreamRequest: @unchecked Sendable {}
 extension PBGui_StopScreenStreamRequest: @unchecked Sendable {}
@@ -252,10 +311,20 @@ extension PBGui_InputType: SwiftProtobuf._ProtoNameProviding {
   ]
 }
 
+extension PBGui_ScreenOrientation: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "HORIZONTAL"),
+    1: .same(proto: "HORIZONTAL_FLIP"),
+    2: .same(proto: "VERTICAL"),
+    3: .same(proto: "VERTICAL_FLIP"),
+  ]
+}
+
 extension PBGui_ScreenFrame: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ScreenFrame"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "data"),
+    2: .same(proto: "orientation"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -265,6 +334,7 @@ extension PBGui_ScreenFrame: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBytesField(value: &self.data) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.orientation) }()
       default: break
       }
     }
@@ -274,11 +344,15 @@ extension PBGui_ScreenFrame: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     if !self.data.isEmpty {
       try visitor.visitSingularBytesField(value: self.data, fieldNumber: 1)
     }
+    if self.orientation != .horizontal {
+      try visitor.visitSingularEnumField(value: self.orientation, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: PBGui_ScreenFrame, rhs: PBGui_ScreenFrame) -> Bool {
     if lhs.data != rhs.data {return false}
+    if lhs.orientation != rhs.orientation {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
