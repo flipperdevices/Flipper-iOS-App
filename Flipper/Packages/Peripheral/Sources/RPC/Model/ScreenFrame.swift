@@ -1,6 +1,14 @@
 
 public struct ScreenFrame {
     let bytes: [UInt8]
+    public let orientation: Orientation
+
+    public enum Orientation: Int {
+        case horizontal
+        case horizontalFlipped
+        case vertical
+        case verticalFlipped
+    }
 
     static var width: Int { 128 }
     static var height: Int { 64 }
@@ -21,17 +29,19 @@ public struct ScreenFrame {
 
     public init() {
         self.bytes = .init(repeating: 0, count: Self.pixelCount / 8)
+        self.orientation = .horizontal
     }
 
-    public init?(_ bytes: [UInt8]) {
+    public init?(bytes: [UInt8], orientation: Orientation) {
         guard bytes.count < Self.pixelCount else {
             logger.error("invalid screen frame bytes")
             return nil
         }
         self.bytes = bytes
+        self.orientation = orientation
     }
 
-    public init?(_ pixels: [Bool]) {
+    public init?(pixels: [Bool], orientation: Orientation) {
         if pixels.count != Self.width * Self.height {
             logger.error("invalid pixel count")
             return nil
@@ -41,5 +51,6 @@ public struct ScreenFrame {
             bytes[index / 8] = bytes[index / 8] | (1 << (index % 8))
         }
         self.bytes = bytes
+        self.orientation = orientation
     }
 }
