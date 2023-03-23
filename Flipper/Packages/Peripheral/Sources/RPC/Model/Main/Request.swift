@@ -11,6 +11,7 @@ public enum Request {
     public enum System {
         case deviceInfo
         case powerInfo
+        case property(String)
         case alert
         case ping([UInt8])
         case getDate
@@ -68,6 +69,12 @@ extension Request.System {
         case .powerInfo:
             return .with {
                 $0.systemPowerInfoRequest = .init()
+            }
+        case .property(let key):
+            return .with {
+                $0.propertyGetRequest = .with {
+                    $0.key = key
+                }
             }
         case .alert:
             return .with {
@@ -325,6 +332,7 @@ extension Request.System: CustomStringConvertible {
         switch self {
         case .deviceInfo: return "deviceInfo"
         case .powerInfo: return "powerInfo"
+        case .property(let key): return "property(\(key))"
         case .alert: return "alert"
         case .ping(let bytes): return "ping(\(bytes.count) bytes)"
         case .getDate: return "info"
