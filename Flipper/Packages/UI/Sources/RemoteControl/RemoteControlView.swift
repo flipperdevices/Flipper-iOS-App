@@ -16,8 +16,15 @@ struct RemoteControlView: View {
         ) ?? .init()
     }
 
+    var normalizedImage: UIImage {
+        switch device.frame.orientation {
+        case .horizontalFlipped: return uiImage.withOrientation(.down)
+        default: return uiImage
+        }
+    }
+
     var screenshotImage: UIImage {
-        uiImage.resized(to: .init(
+        normalizedImage.resized(to: .init(
             width: 512,
             height: 256))
     }
@@ -71,7 +78,7 @@ struct RemoteControlView: View {
             Spacer(minLength: 14)
 
             VStack(spacing: 14) {
-                DeviceScreen(uiImage)
+                DeviceScreen(normalizedImage)
                     .padding(.horizontal, 24)
 
                 Image("RemoteFlipperLogo")
@@ -182,5 +189,12 @@ private extension UIImage {
             $0.cgContext.interpolationQuality = interpolationQuality
             draw(in: CGRect(origin: .zero, size: size))
         }
+    }
+
+    func withOrientation(_ orientation: Orientation) -> UIImage {
+        guard let cgImage = self.cgImage else {
+            return .init()
+        }
+        return .init(cgImage: cgImage, scale: 1.0, orientation: orientation)
     }
 }
