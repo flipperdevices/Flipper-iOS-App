@@ -280,10 +280,29 @@ public class Device: ObservableObject {
     }
 
     public func getInfo() async {
+        guard let version = flipper?.information?.protobufRevision else {
+            return
+        }
         isInfoReady = false
-        await getDeviceInfo()
-        await getPowerInfo()
+        if version < .v0_14 {
+            await getDeviceInfo()
+            await getPowerInfo()
+        } else {
+            await updateValues("devinfo")
+            await updateValues("pwrinfo")
+            await updateValues("pwrdebug")
+        }
         isInfoReady = true
+    }
+
+    func updateValues(_ key: String) async {
+        do {
+            for try await property in rpc.property(key) {
+                info.update(key: property.key, value: property.value)
+            }
+        } catch {
+            logger.error("update values: \(error)")
+        }
     }
 
     public func getDeviceInfo() async {
