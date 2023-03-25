@@ -1,4 +1,4 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.6
 import PackageDescription
 
 let package = Package(
@@ -21,22 +21,20 @@ let package = Package(
             name: "Analytics",
             path: "../Analytics"),
         .package(
-            name: "Lottie",
             url: "https://github.com/airbnb/lottie-ios.git",
             from: "3.3.0"),
         .package(
-            name: "MarkdownUI",
             url: "https://github.com/tonyfreeman/MarkdownUI.git",
-            .branch("main"))
+            branch: "main")
     ],
     targets: [
         .target(
             name: "UI",
             dependencies: [
                 "Core",
-                "Lottie",
                 "Analytics",
-                "MarkdownUI"
+                .product(name: "Lottie", package: "lottie-ios"),
+                .product(name: "MarkdownUI", package: "MarkdownUI")
             ],
             path: "Sources"),
         .testTarget(
