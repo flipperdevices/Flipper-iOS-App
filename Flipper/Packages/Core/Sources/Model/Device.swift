@@ -315,6 +315,23 @@ public class Device: ObservableObject {
         }
     }
 
+
+    public func getRegion() async throws -> Provisioning.Region {
+        let bytes = try await rpc.readFile(at: Provisioning.location)
+        return try Provisioning.Region(decoding: bytes)
+    }
+
+    public func hasAssetsManifest() async throws -> Bool {
+        do {
+            _ = try await rpc.getSize(at: .manifest)
+            return true
+        } catch let error as Peripheral.Error
+                    where error == .storage(.doesNotExist)
+        {
+            return false
+        }
+    }
+
     public func getPowerInfo() async {
         do {
             for try await (key, value) in rpc.powerInfo() {

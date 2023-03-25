@@ -86,7 +86,6 @@ public class UpdateModel: ObservableObject {
     private let uploader: FirmwareUploader
 
     private var pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
     private var cancellables: [AnyCancellable] = .init()
 
     public init(
@@ -161,8 +160,8 @@ public class UpdateModel: ObservableObject {
         hasManifest = .working
         Task {
             do {
-                _ = try await rpc.getSize(at: .manifest)
-                hasManifest = .success(true)
+                let result = try await device.hasAssetsManifest()
+                hasManifest = .success(result)
             } catch {
                 logger.error("verify manifest: \(error)")
                 hasManifest = .success(false)
@@ -176,8 +175,7 @@ public class UpdateModel: ObservableObject {
         provisionedRegion = .working
         Task {
             do {
-                let bytes = try await rpc.readFile(at: Provisioning.location)
-                let region = try Provisioning.Region(decoding: bytes)
+                let region = try await device.getRegion()
                 provisionedRegion = .success(region.code)
             } catch {
                 logger.error("verify region: \(error)")
