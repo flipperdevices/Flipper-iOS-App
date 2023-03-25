@@ -19,7 +19,7 @@ struct DeviceInfoView: View {
     var hardwareOTPVersion: String? { info.hardware.otp.version }
     var serialNumber: String? { hardware.uid }
 
-    var softwareRevision: String? { firmware.commit.hash }
+    var softwareRevision: String? { firmware.formatted }
     var buildDate: String? { firmware.build.date }
     var firmwareTarget: String? { firmware.target }
     var protobufVersion: String? { info.protobuf.version.formatted }

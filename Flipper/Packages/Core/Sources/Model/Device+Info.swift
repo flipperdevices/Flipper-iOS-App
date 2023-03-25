@@ -28,9 +28,14 @@ extension Device {
         }
 
         public struct Firmware {
+            public var branch: Branch = .init()
             public var commit: Commit = .init()
             public var build: Build = .init()
             public var target: String?
+
+            public struct Branch {
+                public var name: String?
+            }
 
             public struct Commit {
                 public var hash: String?
@@ -96,6 +101,8 @@ extension Device {
                 return \.hardware.otp.version
             case "hardware_uid", "hardware.uid":
                 return \.hardware.uid
+            case "firmware_branch", "firmware.branch.name":
+                return \.firmware.branch.name
             case "firmware_commit", "firmware.commit.hash":
                 return \.firmware.commit.hash
             case "firmware_build_date", "firmware.build.date":
@@ -126,6 +133,18 @@ extension Device {
                 .replacingOccurrences(of: "Fus", with: "FUS")
                 .replacingOccurrences(of: "Sram", with: "SRAM")
         }
+    }
+}
+
+extension Device.Info.Firmware {
+    public var formatted: String? {
+        guard
+            let name = branch.name,
+            let commit = commit.hash
+        else {
+            return nil
+        }
+        return "\(name) \(commit)"
     }
 }
 
