@@ -16,8 +16,7 @@ public class Device: ObservableObject {
     @Published public var flipper: Flipper?
     @Published public private(set) var frame: ScreenFrame = .init()
 
-    @Published public private(set) var deviceInfo: [String: String] = [:]
-    @Published public private(set) var powerInfo: [String: String] = [:]
+    @Published public private(set) var info: Info = .init()
     @Published public private(set) var isInfoReady = false
 
     public init(pairedDevice: PairedDevice) {
@@ -290,7 +289,7 @@ public class Device: ObservableObject {
     public func getDeviceInfo() async {
         do {
             for try await (key, value) in rpc.deviceInfo() {
-                deviceInfo[key] = value
+                info.update(key: key, value: value)
             }
         } catch {
             logger.error("device info: \(error)")
@@ -300,7 +299,7 @@ public class Device: ObservableObject {
     public func getPowerInfo() async {
         do {
             for try await (key, value) in rpc.powerInfo() {
-                powerInfo[key] = value
+                info.update(key: key, value: value)
             }
         } catch {
             logger.error("power info: \(error)")

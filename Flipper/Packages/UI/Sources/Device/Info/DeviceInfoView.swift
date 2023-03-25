@@ -6,93 +6,31 @@ struct DeviceInfoView: View {
     @EnvironmentObject var device: Device
     @Environment(\.dismiss) private var dismiss
 
-    var deviceInfo: [String: String] {
-        device.deviceInfo
-    }
+    var info: Device.Info { device.info }
+    var hardware: Device.Info.Hardware { info.hardware }
+    var firmware: Device.Info.Firmware { info.firmware }
 
-    var powerInfo: [String: String] {
-        device.powerInfo
-    }
+    var deviceName: String? { hardware.name }
+    var hardwareModel: String? { hardware.model }
+    var hardwareRegion: String? { hardware.region.builtin }
+    var hardwareRegionProvisioned: String? { hardware.region.provisioned }
 
-    var deviceName: String {
-        deviceInfo["hardware_name"] ?? ""
-    }
-    var hardwareModel: String {
-        deviceInfo["hardware_model"] ?? ""
-    }
-    var hardwareRegion: String {
-        deviceInfo["hardware_region"] ?? ""
-    }
-    var hardwareRegionProvisioned: String {
-        deviceInfo["hardware_region_provisioned"] ?? ""
-    }
+    var hardwareVersion: String? { hardware.version }
+    var hardwareOTPVersion: String? { info.hardware.otp.version }
+    var serialNumber: String? { hardware.uid }
 
-    var hardwareVersion: String { deviceInfo["hardware_ver"] ?? "" }
-    var hardwareOTPVersion: String { deviceInfo["hardware_otp_ver"] ?? "" }
-    var serialNumber: String { deviceInfo["hardware_uid"] ?? "" }
+    var softwareRevision: String? { firmware.commit.hash }
+    var buildDate: String? { firmware.build.date }
+    var firmwareTarget: String? { firmware.target }
+    var protobufVersion: String? { info.protobuf.version.formatted }
 
-    var softwareRevision: String { deviceInfo["firmware_commit"] ?? "" }
-    var buildDate: String { deviceInfo["firmware_build_date"] ?? "" }
-    var firmwareTarget: String { deviceInfo["firmware_target"] ?? "" }
-    var protobufVersion: String {
-        guard
-            let major = deviceInfo["protobuf_version_major"],
-            let minor = deviceInfo["protobuf_version_minor"]
-        else {
-            return ""
-        }
-        return "\(major).\(minor)"
-    }
+    var radioFirmware: String? { info.radio.stack.formatted }
 
-    var radioFirmware: String {
-        guard
-            let major = deviceInfo["radio_stack_major"],
-            let minor = deviceInfo["radio_stack_minor"],
-            let type = deviceInfo["radio_stack_type"]
-        else {
-            return ""
-        }
-        let typeString = RadioStackType(rawValue: type)?.description
-            ?? "Unknown"
-        return "\(major).\(minor).\(type) (\(typeString))"
-    }
+    var otherKeys: OrderedDictionary<String, String?> {
+        var result: OrderedDictionary<String, String?> = .init()
 
-    private var usedKeys: [String] = [
-        "hardware_name",
-        "hardware_model",
-        "hardware_region",
-        "hardware_region_provisioned",
-        "hardware_ver",
-        "hardware_otp_ver",
-        "hardware_uid",
-        "firmware_commit",
-        "firmware_build_date",
-        "firmware_target",
-        "protobuf_version_major",
-        "protobuf_version_minor",
-        "radio_stack_major",
-        "radio_stack_minor",
-        "radio_stack_type"
-    ]
-
-    private func formatKey(_ key: String) -> String {
-        key
-            .replacingOccurrences(of: "_", with: " ")
-            .capitalized
-            .replacingOccurrences(of: "Ble", with: "BLE")
-            .replacingOccurrences(of: "Fus", with: "FUS")
-            .replacingOccurrences(of: "Sram", with: "SRAM")
-    }
-
-    var otherKeys: OrderedDictionary<String, String> {
-        var result: OrderedDictionary<String, String> = .init()
-
-        let keys = deviceInfo.keys
-            .filter { !usedKeys.contains($0) }
-            .sorted()
-
-        for key in keys {
-            result[formatKey(key)] = deviceInfo[key]
+        for key in info.unknown.keys.sorted() {
+            result[key] = info.unknown[key]
         }
 
         return result
@@ -170,16 +108,15 @@ struct DeviceInfoView: View {
     }()
 
     private func share() {
-        var array = deviceInfo.toArray().sorted()
-        array += powerInfo.toArray().sorted()
+        var array = info.keys.toArray().sorted()
 
         if let int = device.flipper?.storage?.internal {
-            array.append("int_available: \(int.free)")
-            array.append("int_total: \(int.total)")
+            array.append("storage.int.available: \(int.free)")
+            array.append("storage.int.total: \(int.total)")
         }
         if let ext = device.flipper?.storage?.external {
-            array.append("ext_available: \(ext.free)")
-            array.append("ext_total: \(ext.total)")
+            array.append("storage.ext.available: \(ext.free)")
+            array.append("storage.ext.total: \(ext.total)")
         }
 
         let name = device.flipper?.name ?? "unknown"

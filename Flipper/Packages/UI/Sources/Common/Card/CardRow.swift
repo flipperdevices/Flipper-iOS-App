@@ -2,13 +2,18 @@ import SwiftUI
 
 struct CardRow: View {
     let name: String
-    let value: AttributedString
+    let value: AttributedString?
 
-    init(name: String, value: String) {
-        self.init(name: name, value: .init(value))
+    init(name: String, value: String?) {
+        self.name = name
+        if let value = value {
+            self.value = .init(value)
+        } else {
+            self.value = nil
+        }
     }
 
-    init(name: String, value: AttributedString) {
+    init(name: String, value: AttributedString?) {
         self.name = name
         self.value = value
     }
@@ -20,7 +25,7 @@ struct CardRow: View {
                 .multilineTextAlignment(.leading)
                 .foregroundColor(.black30)
             Spacer()
-            if !value.description.isEmpty {
+            if let value = value {
                 Text(value)
                     .font(.system(size: 14, weight: .regular))
                     .multilineTextAlignment(.trailing)
