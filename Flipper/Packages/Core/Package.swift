@@ -27,8 +27,8 @@ let package = Package(
             url: "https://github.com/apple/swift-collections.git",
             from: "1.0.0"),
         .package(
-            url: "https://github.com/tonyfreeman/swift-protobuf.git",
-            branch: "ignore-invalid-utf8"),
+            url: "https://github.com/apple/swift-protobuf.git",
+            from: "1.21.0"),
         .package(
             url: "https://github.com/apple/swift-log.git",
             from: "1.4.2"),

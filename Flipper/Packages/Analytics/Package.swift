@@ -21,8 +21,8 @@ let package = Package(
             url: "https://github.com/Countly/countly-sdk-ios.git",
             from: "21.11.2"),
         .package(
-            url: "https://github.com/tonyfreeman/swift-protobuf.git",
-            branch: "ignore-invalid-utf8")
+            url: "https://github.com/apple/swift-protobuf.git",
+            from: "1.21.0")
     ],
     targets: [
         .target(
