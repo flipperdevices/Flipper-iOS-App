@@ -215,6 +215,12 @@ extension Response.System: CustomStringConvertible {
     }
 }
 
+extension Response.System.Property: CustomStringConvertible {
+    public var description: String {
+        "\(key): \(value)"
+    }
+}
+
 extension Response.Application: CustomStringConvertible {
     public var description: String {
         switch self {
