@@ -53,7 +53,7 @@ public class UpdateModel: ObservableObject {
             case channelUpdate
         }
 
-        public enum Update: Equatable {
+        public enum Update: Equatable, Codable, Hashable {
             case progress(Progress)
             case result(Result)
 
@@ -63,7 +63,7 @@ public class UpdateModel: ObservableObject {
                 case uploading(Double)
             }
 
-            public enum Result: Equatable {
+            public enum Result: Equatable, Codable, Hashable {
                 case started
                 case canceled
                 case succeeded
