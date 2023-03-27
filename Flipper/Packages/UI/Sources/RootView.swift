@@ -85,10 +85,8 @@ private struct RootViewImpl: View {
             default: break
             }
         }
-        .onChange(of: isPresented) { isPresented in
-            if isPresented {
-                router.recordAppOpen()
-            }
+        .task {
+            router.recordAppOpen()
         }
     }
 
