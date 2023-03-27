@@ -24,8 +24,8 @@ let package = Package(
             url: "https://github.com/airbnb/lottie-ios.git",
             from: "3.3.0"),
         .package(
-            url: "https://github.com/tonyfreeman/MarkdownUI.git",
-            branch: "main")
+            url: "https://github.com/gonzalezreal/swift-markdown-ui",
+            from: "2.0.2")
     ],
     targets: [
         .target(
@@ -34,7 +34,7 @@ let package = Package(
                 "Core",
                 "Analytics",
                 .product(name: "Lottie", package: "lottie-ios"),
-                .product(name: "MarkdownUI", package: "MarkdownUI")
+                .product(name: "MarkdownUI", package: "swift-markdown-ui")
             ],
             path: "Sources"),
         .testTarget(
