@@ -6,7 +6,7 @@ class PreviewViewController: UIViewController, QLPreviewingController {
         super.viewDidLoad()
     }
 
-    func preparePreviewOfFile(
+    nonisolated func preparePreviewOfFile(
         at url: URL,
         completionHandler handler: @escaping (Error?) -> Void
     ) {
