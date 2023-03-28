@@ -22,6 +22,8 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     var services: [FlipperService] {
         peripheral.services?.map { FlipperService($0) } ?? []
     }
+    // FIXME: Temporary workaround to ignore cache
+    private var updatedDeviceInfoCharacteristics: Set<CBUUID> = .init()
 
     var info: AnyPublisher<Void, Never> {
         infoSubject.eraseToAnyPublisher()
@@ -221,7 +223,28 @@ extension FlipperPeripheral: CBPeripheralDelegate {
     }
 
     func didUpdateDeviceInformation(_ characteristic: CBCharacteristic) {
+        guard
+            let services = peripheral.services,
+            let info = services.first(where: { $0.uuid == .deviceInformation }),
+            let characteristics = info.characteristics
+        else {
+            return
+        }
+        guard characteristics.allSatisfy({ isUpdated($0) }) else {
+            markAsUpdated(characteristic)
+            return
+        }
         state = .connected
+    }
+
+    // FIXME: Temporary workaround to ignore cache
+
+    func isUpdated(_ characteristic: CBCharacteristic) -> Bool {
+        updatedDeviceInfoCharacteristics.contains(characteristic.uuid)
+    }
+
+    func markAsUpdated(_ characteristic: CBCharacteristic) {
+        updatedDeviceInfoCharacteristics.insert(characteristic.uuid)
     }
 }
 
