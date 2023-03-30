@@ -38,6 +38,12 @@ struct RemoteControlView: View {
         return "Screenshot \(date) at \(time)"
     }
 
+    //--------------------------------------------------------------------------
+    @State var controlsQueue: [(UUID, InputKey)] = []
+    @State var controlsStream: AsyncStream<InputKey>?
+    @State var controlsStreamContinuation: AsyncStream<InputKey>.Continuation?
+    //--------------------------------------------------------------------------
+
     var body: some View {
         VStack {
             HStack {
@@ -78,8 +84,11 @@ struct RemoteControlView: View {
             Spacer(minLength: 14)
 
             VStack(spacing: 14) {
-                DeviceScreen(normalizedImage)
-                    .padding(.horizontal, 24)
+                VStack(spacing: 0) {
+                    ControlsQueue($controlsQueue)
+                    DeviceScreen(normalizedImage)
+                }
+                .padding(.horizontal, 24)
 
                 Image("RemoteFlipperLogo")
                     .resizable()
@@ -90,7 +99,7 @@ struct RemoteControlView: View {
             Spacer(minLength: 14)
 
             DeviceControls { button in
-                pressButton(button)
+                buttonTapped(button)
             }
             .padding(.bottom, 14)
         }
@@ -121,6 +130,51 @@ struct RemoteControlView: View {
             @unknown default: break
             }
         }
+        .task {
+            await runLoop()
+        }
+    }
+
+    func runLoop() async {
+        let controlsStream = AsyncStream<InputKey> { continuation in
+            controlsStreamContinuation = continuation
+        }
+        self.controlsStream = controlsStream
+        for await next in controlsStream {
+            await pressButton(next)
+            withAnimation {
+                controlsQueue = .init(controlsQueue.dropFirst())
+            }
+        }
+    }
+
+    func buttonTapped(_ button: InputKey) {
+        controlsQueue.append((.init(), button))
+        controlsStreamContinuation?.yield(button)
+    }
+
+    func pressButton(_ button: InputKey) async {
+        feedback(style: .light)
+        try? await device.pressButton(button)
+        feedback(style: .light)
+    }
+
+    func lock() {
+        // FIXME: add .lock button
+        guard controlsQueue.isEmpty else { return }
+        Task {
+            try await device.lock()
+            device.updateLockStatus()
+        }
+    }
+
+    func unlock() {
+        // FIXME: add .unlock button
+        guard controlsQueue.isEmpty else { return }
+        Task {
+            try await device.unlock()
+            device.updateLockStatus()
+        }
     }
 
     func screenshot() {
@@ -135,38 +189,6 @@ struct RemoteControlView: View {
         }
         UI.share(url) {
             try? FileManager.default.removeItem(at: url)
-        }
-    }
-
-    @State var isBusy = false
-
-    private func syncTask(_ task: @escaping () async throws -> Void) {
-        guard !isBusy else { return }
-        isBusy = true
-        Task {
-            try await task()
-            isBusy = false
-        }
-    }
-
-    func pressButton(_ button: InputKey) {
-        syncTask {
-            feedback(style: .light)
-            try await device.pressButton(button)
-        }
-    }
-
-    func lock() {
-        syncTask {
-            try await device.lock()
-            device.updateLockStatus()
-        }
-    }
-
-    func unlock() {
-        syncTask {
-            try await device.unlock()
-            device.updateLockStatus()
         }
     }
 }

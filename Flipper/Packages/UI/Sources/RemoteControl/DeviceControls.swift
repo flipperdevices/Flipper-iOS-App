@@ -2,18 +2,18 @@ import SwiftUI
 import Peripheral
 
 struct DeviceControls: View {
-    var onButton: @MainActor (InputKey) -> Void
+    var action: (InputKey) -> Void
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 36) {
-            ControlCircle(onButton: onButton)
-            ControlBackButton(onButton: onButton)
+            ControlCircle(action: action)
+            ControlBackButton { action(.back) }
         }
     }
 }
 
 struct ControlCircle: View {
-    var onButton: @MainActor (InputKey) -> Void
+    var action: @MainActor (InputKey) -> Void
 
     var verticalSpacing: Double { 12 }
     var horizontalSpacing: Double { 10 }
@@ -25,27 +25,25 @@ struct ControlCircle: View {
             .overlay {
                 VStack(spacing: verticalSpacing) {
                     HStack(spacing: horizontalSpacing) {
-                        ControlButton(inputKey: .up, onButton: onButton)
+                        ControlButton(inputKey: .up) { action(.up) }
                     }
 
                     HStack(spacing: horizontalSpacing) {
-                        ControlButton(inputKey: .left, onButton: onButton)
-                        ControlButton(inputKey: .enter, onButton: onButton)
-                        ControlButton(inputKey: .right, onButton: onButton)
+                        ControlButton(inputKey: .left) { action(.left) }
+                        ControlButton(inputKey: .enter) { action(.enter) }
+                        ControlButton(inputKey: .right) { action(.right) }
                     }
 
                     HStack(spacing: horizontalSpacing) {
-                        ControlButton(inputKey: .down, onButton: onButton)
+                        ControlButton(inputKey: .down) { action(.down) }
                     }
                 }
             }
     }
 }
 
-struct ControlButton: View {
+struct ControlButtonImage: View {
     let inputKey: InputKey
-
-    var onButton: @MainActor (InputKey) -> Void
 
     var rotation: Double {
         switch inputKey {
@@ -68,22 +66,35 @@ struct ControlButton: View {
         }
     }
 
+    init(_ inputKey: InputKey) {
+        self.inputKey = inputKey
+    }
+
+    var body: some View {
+        Image(image)
+            .rotationEffect(.degrees(rotation))
+    }
+}
+
+struct ControlButton: View {
+    let inputKey: InputKey
+    var action: () -> Void
+
     var body: some View {
         Button {
-            onButton(inputKey)
+            action()
         } label: {
-            Image(image)
-                .rotationEffect(.degrees(rotation))
+            ControlButtonImage(inputKey)
         }
     }
 }
 
 struct ControlEnterButton: View {
-    var onButton: @MainActor (InputKey) -> Void
+    var action: () -> Void
 
     var body: some View {
         Button {
-            onButton(.enter)
+            action()
         } label: {
             Image("RemoteControlEnter")
         }
@@ -91,11 +102,11 @@ struct ControlEnterButton: View {
 }
 
 struct ControlBackButton: View {
-    var onButton: @MainActor (InputKey) -> Void
+    var action: () -> Void
 
     var body: some View {
         Button {
-            onButton(.back)
+            action()
         } label: {
             Image("RemoteControlBack")
         }
