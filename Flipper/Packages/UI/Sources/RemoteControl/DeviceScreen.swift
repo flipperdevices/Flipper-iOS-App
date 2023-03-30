@@ -17,7 +17,7 @@ struct DeviceScreen: View {
                     .resizable()
                     .interpolation(.none)
                     .aspectRatio(contentMode: .fit)
-                    .padding(12)
+                    .padding(14)
             )
     }
 }
