@@ -47,33 +47,12 @@ struct RemoteControlView: View {
     var body: some View {
         VStack {
             HStack {
-                VStack(spacing: 8) {
-                    Button {
-                        screenshot()
-                    } label: {
-                        Image("RemoteScreenshot")
-                    }
-                    Text("Screenshot")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.a1)
+                ScreenshotButton {
+                    screenshot()
                 }
                 Spacer()
-                VStack(spacing: 8) {
-                    Button {
-                        device.isLocked ? unlock() : lock()
-                    } label: {
-                        Image(device.isLocked ? "RemoteUnlock" : "RemoteLock")
-                    }
-
-                    ZStack {
-                        Text("Lock Flipper")
-                            .opacity(device.isLocked ? 0 : 1)
-
-                        Text("Unlock Flipper")
-                            .opacity(device.isLocked ? 1 : 0)
-                    }
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.a1)
+                LockButton(isLocked: device.isLocked) {
+                    device.isLocked ? unlock() : lock()
                 }
             }
             .padding(.top, 14)
