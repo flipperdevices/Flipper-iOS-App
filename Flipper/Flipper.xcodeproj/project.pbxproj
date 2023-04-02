@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0AD5C05D29D9A04E00E0F97E /* ArchivedItemEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD5C05B29D9A04E00E0F97E /* ArchivedItemEntity.swift */; };
+		0AD5C05E29D9A04E00E0F97E /* SendArchivedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD5C05C29D9A04E00E0F97E /* SendArchivedItem.swift */; };
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
 		8B10BF4C29A77D53007FC0F3 /* BlackHole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */; };
 		8B1A481929C113A5000169E9 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1A481829C113A5000169E9 /* WidgetKit.framework */; };
@@ -100,6 +102,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0AD5C05B29D9A04E00E0F97E /* ArchivedItemEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchivedItemEntity.swift; sourceTree = "<group>"; };
+		0AD5C05C29D9A04E00E0F97E /* SendArchivedItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendArchivedItem.swift; sourceTree = "<group>"; };
 		44A5B59224F05647009EE7FB /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlackHole.swift; sourceTree = "<group>"; };
@@ -192,6 +196,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0AD5C05A29D9A02300E0F97E /* AppIntents */ = {
+			isa = PBXGroup;
+			children = (
+				0AD5C05B29D9A04E00E0F97E /* ArchivedItemEntity.swift */,
+				0AD5C05C29D9A04E00E0F97E /* SendArchivedItem.swift */,
+			);
+			path = AppIntents;
+			sourceTree = "<group>";
+		};
 		44A5B5B124F05FCE009EE7FB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -352,6 +365,7 @@
 				8BCFDDE0277A2405002DA4CD /* KeyPreview */,
 				8BF9CECB28E21A4400CD5D31 /* TodayWidget */,
 				8B1A481C29C113A5000169E9 /* ActivityWidget */,
+				0AD5C05A29D9A02300E0F97E /* AppIntents */,
 				F0DBFA2224EF2F9900EB2880 /* Products */,
 				44A5B5B124F05FCE009EE7FB /* Frameworks */,
 			);
@@ -626,8 +640,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BCB0168278F135C00DA66F5 /* Intents.intentdefinition in Sources */,
+				0AD5C05D29D9A04E00E0F97E /* ArchivedItemEntity.swift in Sources */,
 				8B1A482829C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */,
 				F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */,
+				0AD5C05E29D9A04E00E0F97E /* SendArchivedItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
