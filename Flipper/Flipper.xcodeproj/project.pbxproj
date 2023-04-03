@@ -43,7 +43,6 @@
 		8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8BF9CECA28E21A4400CD5D31 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BF9CEC928E21A4400CD5D31 /* NotificationCenter.framework */; };
 		8BF9CECD28E21A4400CD5D31 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */; };
-		8BF9CED028E21A4400CD5D31 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BF9CECE28E21A4400CD5D31 /* MainInterface.storyboard */; };
 		8BF9CED428E21A4400CD5D31 /* TodayWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
@@ -142,7 +141,6 @@
 		8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodayWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BF9CEC928E21A4400CD5D31 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
-		8BF9CECF28E21A4400CD5D31 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		8BF9CED128E21A4400CD5D31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -336,7 +334,6 @@
 				8BB7DF2F2911922D005C38C9 /* TodayWidget.entitlements */,
 				8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */,
 				8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */,
-				8BF9CECE28E21A4400CD5D31 /* MainInterface.storyboard */,
 				8BF9CED128E21A4400CD5D31 /* Info.plist */,
 			);
 			path = TodayWidget;
@@ -549,7 +546,6 @@
 				8BB7DF3129119CED005C38C9 /* HaxrCorpNeue.ttf in Resources */,
 				8BB7DF3229119CED005C38C9 /* Born2bSportyV2.ttf in Resources */,
 				8BB7DF3029119296005C38C9 /* Assets.xcassets in Resources */,
-				8BF9CED028E21A4400CD5D31 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -651,17 +647,6 @@
 			targetProxy = 8BF9CED228E21A4400CD5D31 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		8BF9CECE28E21A4400CD5D31 /* MainInterface.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8BF9CECF28E21A4400CD5D31 /* Base */,
-			);
-			name = MainInterface.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		8B1A482C29C113A6000169E9 /* Debug */ = {

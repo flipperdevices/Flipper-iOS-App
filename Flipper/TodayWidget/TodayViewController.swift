@@ -4,7 +4,8 @@ import SwiftUI
 import NotificationCenter
 import Core
 
-class TodayViewController: UIViewController, WidgetProviding {
+@objc(TodayViewController)
+@MainActor class TodayViewController: UIViewController, WidgetProviding {
     private let widget = Dependencies.shared.widget
 
     private var isError: Bool = false
@@ -13,12 +14,7 @@ class TodayViewController: UIViewController, WidgetProviding {
     private let compactModeHeight = 110.0
     private var expandedModeHeight = 110.0
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func loadView() {
         // Enable expanded mode
         self.extensionContext?.widgetAvailableDisplayMode = .expanded
         // Add SwiftUI
@@ -31,6 +27,8 @@ class TodayViewController: UIViewController, WidgetProviding {
             }
         let hostingController = UIHostingController(rootView: widgetView)
         addChild(hostingController)
+
+        view = UIView()
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
         hostingController.view.addConstraints(to: self.view)
@@ -55,7 +53,7 @@ class TodayViewController: UIViewController, WidgetProviding {
             .store(in: &cancellables)
     }
 
-    func widgetPerformUpdate(
+    nonisolated func widgetPerformUpdate(
         completionHandler: (@escaping (UpdateResult) -> Void)
     ) {
         // Perform any setup necessary in order to update the view.
@@ -67,12 +65,14 @@ class TodayViewController: UIViewController, WidgetProviding {
         completionHandler(.newData)
     }
 
-    func widgetActiveDisplayModeDidChange(
+    nonisolated func widgetActiveDisplayModeDidChange(
         _ activeDisplayMode: WidgetDisplayMode,
         withMaximumSize maxSize: CGSize
     ) {
-        widget.isExpanded = activeDisplayMode == .expanded
-        updatePreferredHeight()
+        Task { @MainActor in
+            widget.isExpanded = activeDisplayMode == .expanded
+            updatePreferredHeight()
+        }
     }
 
     func updatePreferredHeight() {
