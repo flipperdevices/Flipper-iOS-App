@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A228A9D29DE0D2F000D7D10 /* FlipperShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A228A9C29DE0D2F000D7D10 /* FlipperShortcuts.swift */; };
 		0AD5C05D29D9A04E00E0F97E /* ArchivedItemEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD5C05B29D9A04E00E0F97E /* ArchivedItemEntity.swift */; };
 		0AD5C05E29D9A04E00E0F97E /* SendArchivedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD5C05C29D9A04E00E0F97E /* SendArchivedItem.swift */; };
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
@@ -102,6 +103,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0A228A9C29DE0D2F000D7D10 /* FlipperShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperShortcuts.swift; sourceTree = "<group>"; };
 		0AD5C05B29D9A04E00E0F97E /* ArchivedItemEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchivedItemEntity.swift; sourceTree = "<group>"; };
 		0AD5C05C29D9A04E00E0F97E /* SendArchivedItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendArchivedItem.swift; sourceTree = "<group>"; };
 		44A5B59224F05647009EE7FB /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
@@ -201,6 +203,7 @@
 			children = (
 				0AD5C05B29D9A04E00E0F97E /* ArchivedItemEntity.swift */,
 				0AD5C05C29D9A04E00E0F97E /* SendArchivedItem.swift */,
+				0A228A9C29DE0D2F000D7D10 /* FlipperShortcuts.swift */,
 			);
 			path = AppIntents;
 			sourceTree = "<group>";
@@ -643,6 +646,7 @@
 				0AD5C05D29D9A04E00E0F97E /* ArchivedItemEntity.swift in Sources */,
 				8B1A482829C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */,
 				F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */,
+				0A228A9D29DE0D2F000D7D10 /* FlipperShortcuts.swift in Sources */,
 				0AD5C05E29D9A04E00E0F97E /* SendArchivedItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

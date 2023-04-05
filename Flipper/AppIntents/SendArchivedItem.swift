@@ -29,7 +29,7 @@ struct SendArchivedItem: AppIntent {
         guard await dependencies.emulate.state != .locked
         else { return .result(dialog: "Flipper is busy. Please exit any running app and try again.") }
 
-        if [.rfid, .nfc].contains(item.kind) {
+        if [.rfid, .nfc, .ibutton].contains(item.kind) {
             return .result(dialog: "Started \(archivedItem.name) emulation.")
         }
 
