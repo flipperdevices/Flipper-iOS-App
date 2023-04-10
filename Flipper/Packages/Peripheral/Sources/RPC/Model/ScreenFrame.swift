@@ -8,6 +8,10 @@ public struct ScreenFrame {
         case horizontalFlipped
         case vertical
         case verticalFlipped
+
+        public var isHorizontal: Bool {
+            self == .horizontal || self == .horizontalFlipped
+        }
     }
 
     static var width: Int { 128 }

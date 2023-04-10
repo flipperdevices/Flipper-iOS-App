@@ -44,43 +44,103 @@ struct RemoteControlView: View {
     @State var controlsStreamContinuation: AsyncStream<InputKey>.Continuation?
     //--------------------------------------------------------------------------
 
+    @Namespace var namespace
+
+    @State var isHorizontal: Bool = false
+
+    @State private var deviceSize: CGSize = .zero
+    @State var screenRect: CGRect = .zero
+
+    var displayOffset: Double { 0.6 }
+    var buttonSide: Double { 90 }
+    var buttonPadding: Double { 12 }
+
     var body: some View {
-        VStack {
-            HStack {
-                ScreenshotButton {
-                    screenshot()
-                }
-                Spacer()
-                LockButton(isLocked: device.isLocked) {
-                    device.isLocked ? unlock() : lock()
+        VStack(spacing: 0) {
+            ZStack {
+                GeometryReader { proxy in
+                    var width: Double {
+                        isHorizontal
+                            ? proxy.size.width
+                            : min(proxy.size.width, proxy.size.height)
+                    }
+
+                    var rotation: Angle {
+                        .degrees(isHorizontal ? 0 : 90)
+                    }
+
+                    var offset: Double {
+                        max(0, proxy.size.height - deviceSize.height) * 0.8
+                    }
+
+                    var screenOffset: Double { screenRect.origin.y }
+                    var screenWidth: Double { screenRect.width }
+
+                    var screenshotOffsetX: Double {
+                        isHorizontal
+                            ? buttonPadding
+                            : screenRect.width - buttonSide - buttonPadding
+                    }
+
+                    var screenshotOffsetY: Double {
+                        isHorizontal
+                            ? 0
+                            : screenOffset - screenRect.width / 2
+                    }
+
+                    var lockOffsetX: Double {
+                        screenRect.width - buttonSide - buttonPadding
+                    }
+
+                    var lockOffsetY: Double {
+                        isHorizontal
+                            ? 0
+                            : screenOffset + screenRect.width / 2 - buttonSide
+                    }
+
+                    ScreenshotButton {}
+                        .frame(width: buttonSide, height: buttonSide)
+                        .offset(x: screenshotOffsetX)
+                        .offset(y: screenshotOffsetY)
+
+                    LockButton(isLocked: false) {}
+                        .frame(width: buttonSide, height: buttonSide)
+                        .offset(x: lockOffsetX)
+                        .offset(y: lockOffsetY)
+
+                    VStack(spacing: 8) {
+                        ControlsQueue($controlsQueue)
+                            .padding(.horizontal, 4)
+                            .opacity(isHorizontal ? 1 : 0)
+
+                        DeviceScreen(uiImage)
+                            .rotationEffect(rotation, anchor: .bottomTrailing)
+                            .frame(width: width)
+                            .offset(x: isHorizontal ? 0 : -width)
+                            .captureFrame(in: $screenRect, space: .named("rcp"))
+
+                        FlipperLogo()
+                            .frame(width: width * 0.55)
+                            .opacity(isHorizontal ? 1 : 0)
+                    }
+                    .captureSize(in: $deviceSize)
+                    .offset(y: offset)
                 }
             }
             .padding(.top, 14)
-            .padding(.horizontal, 36)
-
-            Spacer(minLength: 0)
-            Spacer(minLength: 0)
-            Spacer(minLength: 14)
-
-            VStack(spacing: 14) {
-                VStack(spacing: 0) {
-                    ControlsQueue($controlsQueue)
-                    DeviceScreen(normalizedImage)
-                }
-                .padding(.horizontal, 24)
-
-                Image("RemoteFlipperLogo")
-                    .resizable()
-                    .scaledToFit()
-                    .padding(.horizontal, 96)
-            }
-
-            Spacer(minLength: 14)
+            .padding(.horizontal, 18)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .coordinateSpace(name: "rcp")
 
             DeviceControls { button in
                 buttonTapped(button)
             }
             .padding(.bottom, 14)
+        }
+        .onChange(of: device.frame.orientation) { value in
+            withAnimation {
+                isHorizontal = value.isHorizontal
+            }
         }
         .frame(maxWidth: .infinity)
         .background(Color.background)
@@ -110,6 +170,7 @@ struct RemoteControlView: View {
             }
         }
         .task {
+            isHorizontal = device.frame.orientation.isHorizontal
             await runLoop()
         }
     }
@@ -197,5 +258,44 @@ private extension UIImage {
             return .init()
         }
         return .init(cgImage: cgImage, scale: 1.0, orientation: orientation)
+    }
+}
+
+private struct SizeKey: PreferenceKey {
+    static let defaultValue: CGSize = .zero
+
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+private extension View {
+    func captureSize(in binding: Binding<CGSize>) -> some View {
+        overlay(GeometryReader { proxy in
+            Color.clear.preference(key: SizeKey.self, value: proxy.size)
+        })
+        .onPreferenceChange(SizeKey.self) { binding.wrappedValue = $0 }
+    }
+}
+
+private struct RectKey: PreferenceKey {
+    static let defaultValue: CGRect = .zero
+
+    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+        value = nextValue()
+    }
+}
+
+private extension View {
+    func captureFrame(
+        in binding: Binding<CGRect>,
+        space: CoordinateSpace
+    ) -> some View {
+        overlay(GeometryReader { proxy in
+            Color.clear.preference(
+                key: RectKey.self,
+                value: proxy.frame(in: space))
+        })
+        .onPreferenceChange(RectKey.self) { binding.wrappedValue = $0 }
     }
 }
