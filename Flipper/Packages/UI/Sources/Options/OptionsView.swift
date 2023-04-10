@@ -49,7 +49,7 @@ struct OptionsView: View {
 
             Section(header: Text("Remote")) {
                 NavigationLink("Screen Streaming") {
-                    RemoteControlView()
+                    Text("Screen Streaming was moved to Hub")
                 }
                 NavigationLink("File Manager") {
                     FileManagerView()
