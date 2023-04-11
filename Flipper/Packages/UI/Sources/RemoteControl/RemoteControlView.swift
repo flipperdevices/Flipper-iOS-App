@@ -50,10 +50,11 @@ struct RemoteControlView: View {
 
     @Namespace var namespace
 
-    @State var isHorizontal: Bool = false
+    @State private var isHorizontal = false
+    @State private var showOutdatedAlert = false
 
     @State private var deviceSize: CGSize = .zero
-    @State var screenRect: CGRect = .zero
+    @State private var screenRect: CGRect = .zero
 
     var displayOffset: Double { 0.6 }
     var buttonSide: Double { 90 }
@@ -109,10 +110,13 @@ struct RemoteControlView: View {
                     .offset(x: screenshotOffsetX)
                     .offset(y: screenshotOffsetY)
 
-                    LockButton(isLocked: false) {}
-                        .frame(width: buttonSide, height: buttonSide)
-                        .offset(x: lockOffsetX)
-                        .offset(y: lockOffsetY)
+                    LockButton(isLocked: false) {
+                        showOutdatedAlert = true
+                    }
+                    .opacity(0.5)
+                    .frame(width: buttonSide, height: buttonSide)
+                    .offset(x: lockOffsetX)
+                    .offset(y: lockOffsetY)
 
                     VStack(spacing: 8) {
                         ControlsQueue($controlsQueue)
@@ -187,6 +191,9 @@ struct RemoteControlView: View {
             case .background: break
             @unknown default: break
             }
+        }
+        .customAlert(isPresented: $showOutdatedAlert) {
+            OutdatedVersionAlert(isPresented: $showOutdatedAlert)
         }
         .task {
             isHorizontal = device.frame?.orientation.isHorizontal ?? true
