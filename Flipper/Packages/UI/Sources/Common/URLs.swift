@@ -61,4 +61,8 @@ extension URL {
     static var github: URL {
         .init(string: "https://github.com/flipperdevices")!
     }
+
+    static var bugReport: URL {
+        .init(string: "https://flipp.dev/mobile-app-bug-report")!
+    }
 }

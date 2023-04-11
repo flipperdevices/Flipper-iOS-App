@@ -85,6 +85,13 @@ struct OptionsView: View {
                             .underline()
                     }
                 }
+                HStack {
+                    Image("OptionsBug")
+                        .renderingMode(.template)
+                    NavigationLink("Report a bug") {
+                        ReportBugView()
+                    }
+                }
             }
             .foregroundColor(.primary)
 
