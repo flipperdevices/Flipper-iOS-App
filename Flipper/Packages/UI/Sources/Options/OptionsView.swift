@@ -68,16 +68,32 @@ struct OptionsView: View {
                 .foregroundColor(.primary)
             }
 
-            Section(header: Text("Resources")) {
-                Link("Forum", destination: .forum)
-                Link("GitHub", destination: .github)
+            Section {
+                HStack {
+                    Image("OptionsForum")
+                        .renderingMode(.template)
+                    Link(destination: .github) {
+                        Text("Forum")
+                            .underline()
+                    }
+                }
+                HStack {
+                    Image("OptionsGitHub")
+                        .renderingMode(.template)
+                    Link(destination: .github) {
+                        Text("GitHub")
+                            .underline()
+                    }
+                }
             }
+            .foregroundColor(.primary)
 
             if isDebugMode {
                 Section(header: Text("Debug")) {
                     Toggle(isOn: $isProvisioningDisabled) {
                         Text("Disable provisioning")
                     }
+                    .tint(.a1)
                     NavigationLink("I'm watching you") {
                         CarrierView()
                     }
