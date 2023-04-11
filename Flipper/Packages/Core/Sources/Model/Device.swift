@@ -14,7 +14,7 @@ public class Device: ObservableObject {
     @Published public var isLocked = false
 
     @Published public var flipper: Flipper?
-    @Published public private(set) var frame: ScreenFrame = .init()
+    @Published public private(set) var frame: ScreenFrame?
 
     @Published public private(set) var info: Info = .init()
     @Published public private(set) var isInfoReady = false

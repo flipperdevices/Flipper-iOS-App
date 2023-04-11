@@ -8,23 +8,27 @@ struct RemoteControlView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dismiss) private var dismiss
 
-    var uiImage: UIImage {
-        .init(
-            pixels: device.frame.pixels.map { $0 ? .black : .orange },
+    var uiImage: UIImage? {
+        guard let frame = device.frame else { return nil }
+        return .init(
+            pixels: frame.pixels.map { $0 ? .black : .orange },
             width: 128,
             height: 64
-        ) ?? .init()
+        )
     }
 
-    var normalizedImage: UIImage {
-        switch device.frame.orientation {
-        case .horizontalFlipped: return uiImage.withOrientation(.down)
-        default: return uiImage
+    var normalizedImage: UIImage? {
+        guard let frame = device.frame, let image = uiImage else {
+            return nil
+        }
+        switch frame.orientation {
+        case .horizontalFlipped: return image.withOrientation(.down)
+        default: return image
         }
     }
 
-    var screenshotImage: UIImage {
-        normalizedImage.resized(to: .init(
+    var screenshotImage: UIImage? {
+        normalizedImage?.resized(to: .init(
             width: 512,
             height: 256))
     }
@@ -115,7 +119,7 @@ struct RemoteControlView: View {
                             .padding(.horizontal, 4)
                             .opacity(isHorizontal ? 1 : 0)
 
-                        DeviceScreen(uiImage)
+                        DeviceScreen(normalizedImage)
                             .rotationEffect(rotation, anchor: .bottomTrailing)
                             .frame(width: width)
                             .offset(x: isHorizontal ? 0 : -width)
@@ -139,9 +143,9 @@ struct RemoteControlView: View {
             }
             .padding(.bottom, 14)
         }
-        .onChange(of: device.frame.orientation) { value in
+        .onChange(of: device.frame) { frame in
             withAnimation {
-                isHorizontal = value.isHorizontal
+                isHorizontal = frame?.orientation.isHorizontal ?? true
             }
         }
         .frame(maxWidth: .infinity)
@@ -172,7 +176,7 @@ struct RemoteControlView: View {
             }
         }
         .task {
-            isHorizontal = device.frame.orientation.isHorizontal
+            isHorizontal = device.frame?.orientation.isHorizontal ?? true
             await runLoop()
         }
     }
@@ -221,7 +225,7 @@ struct RemoteControlView: View {
 
     func screenshot() {
         guard
-            let data = screenshotImage.pngData(),
+            let data = screenshotImage?.pngData(),
             let url = try? FileManager.default.createTempFile(
                 name: "\(screenshotName).png",
                 data: data

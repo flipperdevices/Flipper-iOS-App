@@ -3,9 +3,9 @@ import Peripheral
 
 extension RemoteControlView {
     struct DeviceScreen: View {
-        var uiImage: UIImage
+        var uiImage: UIImage?
 
-        init(_ uiImage: UIImage) {
+        init(_ uiImage: UIImage?) {
             self.uiImage = uiImage
         }
 
@@ -15,11 +15,16 @@ extension RemoteControlView {
                 .scaledToFit()
                 .overlay(
                     GeometryReader { proxy in
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .interpolation(.none)
-                            .aspectRatio(contentMode: .fit)
-                            .padding(proxy.size.width * 0.04)
+                        if let uiImage = uiImage {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .interpolation(.none)
+                                .aspectRatio(contentMode: .fit)
+                                .padding(proxy.size.width * 0.04)
+                        } else {
+                            AnimatedPlaceholder()
+                                .padding(proxy.size.width * 0.04)
+                        }
                     }
                 )
         }
