@@ -119,11 +119,24 @@ struct RemoteControlView: View {
                             .padding(.horizontal, 4)
                             .opacity(isHorizontal ? 1 : 0)
 
-                        DeviceScreen(normalizedImage)
-                            .rotationEffect(rotation, anchor: .bottomTrailing)
-                            .frame(width: width)
-                            .offset(x: isHorizontal ? 0 : -width)
-                            .captureFrame(in: $screenRect, space: .named("rcp"))
+                        DeviceScreen {
+                            if device.status == .disconnected {
+                                Image("RemoteNotConnected")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            } else if let uiImage = uiImage {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .interpolation(.none)
+                                    .aspectRatio(contentMode: .fit)
+                            } else {
+                                AnimatedPlaceholder()
+                            }
+                        }
+                        .rotationEffect(rotation, anchor: .bottomTrailing)
+                        .frame(width: width)
+                        .offset(x: isHorizontal ? 0 : -width)
+                        .captureFrame(in: $screenRect, space: .named("rcp"))
 
                         FlipperLogo()
                             .frame(width: width * 0.55)

@@ -2,11 +2,11 @@ import SwiftUI
 import Peripheral
 
 extension RemoteControlView {
-    struct DeviceScreen: View {
-        var uiImage: UIImage?
+    struct DeviceScreen<Content: View>: View {
+        let content: () -> Content
 
-        init(_ uiImage: UIImage?) {
-            self.uiImage = uiImage
+        init(@ViewBuilder content: @escaping () -> Content) {
+            self.content = content
         }
 
         var body: some View {
@@ -15,16 +15,8 @@ extension RemoteControlView {
                 .scaledToFit()
                 .overlay(
                     GeometryReader { proxy in
-                        if let uiImage = uiImage {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .interpolation(.none)
-                                .aspectRatio(contentMode: .fit)
-                                .padding(proxy.size.width * 0.04)
-                        } else {
-                            AnimatedPlaceholder()
-                                .padding(proxy.size.width * 0.04)
-                        }
+                        content()
+                            .padding(proxy.size.width * 0.04)
                     }
                 )
         }
