@@ -98,10 +98,12 @@ struct RemoteControlView: View {
                             : screenOffset + screenRect.width / 2 - buttonSide
                     }
 
-                    ScreenshotButton {}
-                        .frame(width: buttonSide, height: buttonSide)
-                        .offset(x: screenshotOffsetX)
-                        .offset(y: screenshotOffsetY)
+                    ScreenshotButton {
+                        screenshot()
+                    }
+                    .frame(width: buttonSide, height: buttonSide)
+                    .offset(x: screenshotOffsetX)
+                    .offset(y: screenshotOffsetY)
 
                     LockButton(isLocked: false) {}
                         .frame(width: buttonSide, height: buttonSide)
