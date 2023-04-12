@@ -49,9 +49,10 @@ struct RefreshableScrollView<Content: View>: View {
             }
             .onPreferenceChange(OffsetPreferenceKey.self) { offset in
                 self.offset = offset
-                if offset == 0 {
+                // TODO: Find the reason why the offset is not 0.0 sometimes
+                if offset < 1 {
                     isTriggered = false
-                } else if offset > threshold, !isTriggered {
+                } else if offset > threshold, !isTriggered, isEnabled {
                     isTriggered = true
                     feedback(style: .soft)
                     refreshAction()
