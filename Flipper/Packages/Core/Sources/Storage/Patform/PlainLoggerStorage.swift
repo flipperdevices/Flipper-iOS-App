@@ -21,7 +21,12 @@ class PlainLoggerStorage: LoggerStorage {
     }
 
     func list() -> [String] {
-        (try? storage.list(at: directory)) ?? []
+        let files = (try? storage.list(at: directory)) ?? []
+        return files.sorted {
+            guard let first = formatter.date(from: $0) else { return false }
+            guard let second = formatter.date(from: $1) else { return false }
+            return first < second
+        }
     }
 
     func read(_ name: String) -> [String] {
