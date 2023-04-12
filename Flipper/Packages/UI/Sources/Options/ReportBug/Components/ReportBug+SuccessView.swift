@@ -38,7 +38,7 @@ extension ReportBugView {
         }()
 
         var issueID: some View {
-            VStack(spacing: 4) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text("Your issue ID:")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.black40)
