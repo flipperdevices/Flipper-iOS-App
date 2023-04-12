@@ -14,10 +14,20 @@ class PlainLoggerStorage: LoggerStorage {
         return formatter
     }()
 
-    private var current: String
+    private var currentLogName: String
 
-    init() {
-        current = formatter.string(from: Date())
+    private var currentLogPath: Path {
+        directory.appending(currentLogName)
+    }
+
+    init(recordsLimit: Int = 10) {
+        currentLogName = formatter.string(from: Date())
+        cleanup(limit: 10)
+    }
+
+    private func cleanup(limit: Int) {
+        try? storage.append("", at: currentLogPath)
+        list().dropLast(limit).forEach(delete)
     }
 
     func list() -> [String] {
@@ -37,7 +47,7 @@ class PlainLoggerStorage: LoggerStorage {
     }
 
     func write(_ message: String) {
-        try? storage.append("\(message)\n", at: directory.appending(current))
+        try? storage.append("\(message)\n", at: currentLogPath)
     }
 
     func delete(_ name: String) {
