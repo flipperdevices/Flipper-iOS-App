@@ -6,6 +6,10 @@ struct ReportBugView: View {
 
     @State var status: Status = .edit
 
+    var feedback: Feedback = .init(
+        loggerStorage: Dependencies.shared.loggerStorage
+    )
+
     struct Report {
         let title: String
         let description: String
@@ -48,7 +52,7 @@ struct ReportBugView: View {
         Task {
             do {
                 status = .submit
-                let id = try await Support.reportBug(
+                let id = try await feedback.reportBug(
                     subject: report.title,
                     message: report.description,
                     attachLogs: report.attachLogs)

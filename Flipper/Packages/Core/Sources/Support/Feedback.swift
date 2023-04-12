@@ -2,8 +2,15 @@ import Analytics
 import Sentry
 import UIKit
 
-public class Support {
-    public init() {
+public class Feedback {
+    let loggerStorage: LoggerStorage
+
+    public init(loggerStorage: LoggerStorage) {
+        self.loggerStorage = loggerStorage
+    }
+
+    convenience public init() {
+        self.init(loggerStorage: Dependencies.shared.loggerStorage)
     }
 
     enum Error: Swift.Error {
@@ -11,7 +18,7 @@ public class Support {
         case clientError
     }
 
-    private static var sentryDSN: String? {
+    private var sentryDSN: String? {
         #if DEBUG
         ProcessInfo().environment["SENTRY_DSN"]
         #else
@@ -19,7 +26,7 @@ public class Support {
         #endif
     }
 
-    private static var isAppStoreBuild: Bool {
+    private var isAppStoreBuild: Bool {
         guard let receiptURL = Bundle.main.appStoreReceiptURL else {
             return false
         }
@@ -27,7 +34,7 @@ public class Support {
         return receiptData != nil
     }
 
-    private static var environment: String {
+    private var environment: String {
         #if DEBUG
         return "DEBUG"
         #else
@@ -35,7 +42,7 @@ public class Support {
         #endif
     }
 
-    private static var options: Options {
+    private var options: Options {
         get throws {
             guard let sentryDSN, !sentryDSN.isEmpty else {
                 logger.error("report bug: SENTRY_DSN not found")
@@ -49,11 +56,24 @@ public class Support {
         }
     }
 
-    public static func reportBug(
+    private var logsLimit = 3
+
+    private var attachments: [Attachment] {
+        loggerStorage.list().suffix(logsLimit).map { name in
+            let content = loggerStorage.read(name).joined(separator: "\n")
+            return .init(data: .init(content.utf8), filename: "\(name).txt")
+        }
+    }
+
+    public func reportBug(
         subject: String,
         message: String,
         attachLogs: Bool
     ) async throws -> String {
+        guard let client = try SentryClient(options: options) else {
+            throw Error.clientError
+        }
+
         let event = Event(level: .warning)
         event.user = .init(userId: DeviceID.uuidString)
         event.message = .init(formatted: subject)
@@ -71,13 +91,24 @@ public class Support {
             "os": "\(systemName) \(systemVersion)"
         ]
 
-        guard let client = try SentryClient(options: options) else {
-            throw Error.clientError
+        // Add attachments
+
+        let scope = Scope()
+
+        if attachLogs {
+            attachments.forEach(scope.addAttachment)
         }
-        let id = client.capture(event: event)
+
+        let id = client.capture(event: event, scope: scope)
+
+        // Add feedback
+
         let feedback = UserFeedback(eventId: id)
         feedback.comments = message
         client.capture(userFeedback: feedback)
+
+        // Flush
+
         client.flush(timeout: .infinity)
 
         return id.sentryIdString
