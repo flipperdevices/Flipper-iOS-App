@@ -4,6 +4,8 @@ extension ReportBugView {
     struct SuccessView: View {
         @Environment(\.colorScheme) private var colorScheme
 
+        @State var showCopied = false
+
         let id: String
 
         var placeholderColor: Color {
@@ -50,11 +52,12 @@ extension ReportBugView {
                     Spacer()
 
                     Button {
-                        UIPasteboard.general.string = id
+                        copyId()
                     } label: {
-                        Text("Copy")
-                            .foregroundColor(.a2)
+                        Text(showCopied ? "Copied" : "Copy")
+                            .foregroundColor(showCopied ? .black40 : .a2)
                     }
+                    .disabled(showCopied)
                 }
                 .font(.system(size: 14, weight: .medium))
                 .padding(12)
@@ -87,6 +90,17 @@ extension ReportBugView {
             }
             .padding(.top, 14)
             .padding(.horizontal, 14)
+        }
+
+        func copyId() {
+            UIPasteboard.general.string = id
+            Task { @MainActor in
+                showCopied = true
+                try await Task.sleep(seconds: 3)
+                withAnimation {
+                    showCopied = false
+                }
+            }
         }
     }
 }
