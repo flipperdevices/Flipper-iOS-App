@@ -30,8 +30,8 @@ struct ReportBugView: View {
                 EditorView(onSubmit: sendReport)
             case .submit:
                 SubmitView()
-            case .success(let uuid):
-                SuccessView(uuid: uuid)
+            case .success(let id):
+                SuccessView(id: id)
             case .failure:
                 FailureView()
             }

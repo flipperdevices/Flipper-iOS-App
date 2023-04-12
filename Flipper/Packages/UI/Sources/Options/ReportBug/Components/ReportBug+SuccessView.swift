@@ -4,7 +4,7 @@ extension ReportBugView {
     struct SuccessView: View {
         @Environment(\.colorScheme) private var colorScheme
 
-        let uuid: String
+        let id: String
 
         var placeholderColor: Color {
             switch colorScheme {
@@ -44,13 +44,13 @@ extension ReportBugView {
                     .foregroundColor(.black40)
 
                 HStack {
-                    Text(uuid)
+                    Text(id)
                         .lineLimit(1)
 
                     Spacer()
 
                     Button {
-                        print("copied")
+                        UIPasteboard.general.string = id
                     } label: {
                         Text("Copy")
                             .foregroundColor(.a2)
