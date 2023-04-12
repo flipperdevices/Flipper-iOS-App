@@ -284,6 +284,7 @@ public class Device: ObservableObject {
             return
         }
         isInfoReady = false
+        info = .init()
         if version < .v0_14 {
             await getDeviceInfo()
             await getPowerInfo()

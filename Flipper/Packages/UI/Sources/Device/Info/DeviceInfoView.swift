@@ -36,8 +36,14 @@ struct DeviceInfoView: View {
         return result
     }
 
+    var canRefresh: Bool {
+        device.status == .connected && device.isInfoReady == true
+    }
+
     var body: some View {
-        ScrollView {
+        RefreshableScrollView(isEnabled: canRefresh) {
+            reload()
+        } content: {
             VStack(spacing: 14) {
                 DeviceInfoViewCard(
                     title: "Flipper Device",
@@ -97,6 +103,12 @@ struct DeviceInfoView: View {
             }
         }
         .task {
+            reload()
+        }
+    }
+
+    private func reload() {
+        Task {
             await device.getInfo()
         }
     }
