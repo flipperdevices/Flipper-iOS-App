@@ -33,10 +33,10 @@ extension ReportBugView {
             expected result and your actual result.
 
             For example:
-            Open App
-            Connect Flipper
-            Go to the Archive
-            Go to Sub-GHz category
+             1. Open App
+             2. Connect Flipper
+             3. Go to the Archive
+             4. Go to Sub-GHz category
 
             Expected result: I see my Sub-GHz keys
             Actual result: App crashes
