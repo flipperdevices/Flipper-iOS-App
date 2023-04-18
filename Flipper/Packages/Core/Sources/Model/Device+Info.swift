@@ -62,6 +62,7 @@ extension Device {
                 public var major: String?
                 public var minor: String?
                 public var type: String?
+                public var sub: String?
             }
         }
 
@@ -119,6 +120,8 @@ extension Device {
                 return \.radio.stack.minor
             case "radio_stack_type", "radio.stack.type":
                 return \.radio.stack.type
+            case "radio_stack_sub", "radio.stack.sub":
+                return \.radio.stack.sub
             default:
                 return nil
             }
@@ -166,11 +169,12 @@ extension Device.Info.Radio.Stack {
             let major = major,
             let minor = minor,
             let type = type
+            let sub = sub
         else {
             return nil
         }
         let typeString = RadioStackType(rawValue: type)?.description
-        return "\(major).\(minor).\(type) (\(typeString ?? "Unknown"))"
+        return "\(major).\(minor).\(sub) (\(typeString ?? "Unknown"))"
     }
 }
 
