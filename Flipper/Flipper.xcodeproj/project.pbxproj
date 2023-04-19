@@ -25,6 +25,7 @@
 		8B1BB6D529C1E67B008AE2A0 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
 		8B1BB6D629C1E681008AE2A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 		8B1BB6D829C1E725008AE2A0 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B1BB6D729C1E725008AE2A0 /* UI */; };
+		8B5E986429E8235A0057B0D7 /* PlayAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E986329E8235A0057B0D7 /* PlayAlert.swift */; };
 		8B7064CC26E27429006CB4A8 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B7064CB26E27429006CB4A8 /* UI */; };
 		8B7480DE2807483500692304 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
 		8B77A9CD26CAA43300A3DF9F /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B77A9CC26CAA43300A3DF9F /* Core */; };
@@ -117,6 +118,7 @@
 		8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = ActivityWidget.intentdefinition; sourceTree = "<group>"; };
 		8B1A482629C113A6000169E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8B38AA5F289D6BD800A152F3 /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Analytics; path = Packages/Analytics; sourceTree = "<group>"; };
+		8B5E986329E8235A0057B0D7 /* PlayAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayAlert.swift; sourceTree = "<group>"; };
 		8B7480DD2807483500692304 /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		8B886F162759BA9A00D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Core/.swiftlint.yml; sourceTree = "<group>"; };
 		8B886F172759BAA500D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/UI/.swiftlint.yml; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 		0AD5C05A29D9A02300E0F97E /* AppIntents */ = {
 			isa = PBXGroup;
 			children = (
+				8B5E986329E8235A0057B0D7 /* PlayAlert.swift */,
 				0AD5C05B29D9A04E00E0F97E /* ArchivedItemEntity.swift */,
 				0AD5C05C29D9A04E00E0F97E /* SendArchivedItem.swift */,
 				0A228A9C29DE0D2F000D7D10 /* FlipperShortcuts.swift */,
@@ -641,6 +644,7 @@
 				8BCB0168278F135C00DA66F5 /* Intents.intentdefinition in Sources */,
 				0AD5C05D29D9A04E00E0F97E /* ArchivedItemEntity.swift in Sources */,
 				8B1A482829C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */,
+				8B5E986429E8235A0057B0D7 /* PlayAlert.swift in Sources */,
 				F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */,
 				0A228A9D29DE0D2F000D7D10 /* FlipperShortcuts.swift in Sources */,
 				0AD5C05E29D9A04E00E0F97E /* SendArchivedItem.swift in Sources */,
