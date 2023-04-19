@@ -168,7 +168,7 @@ extension Device.Info.Radio.Stack {
         guard
             let major = major,
             let minor = minor,
-            let type = type
+            let type = type,
             let sub = sub
         else {
             return nil
