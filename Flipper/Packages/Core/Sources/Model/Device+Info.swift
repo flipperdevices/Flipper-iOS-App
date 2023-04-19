@@ -61,8 +61,8 @@ extension Device {
             public struct Stack {
                 public var major: String?
                 public var minor: String?
+                public var patch: String?
                 public var type: String?
-                public var sub: String?
             }
         }
 
@@ -118,10 +118,10 @@ extension Device {
                 return \.radio.stack.major
             case "radio_stack_minor", "radio.stack.minor":
                 return \.radio.stack.minor
+            case "radio_stack_sub", "radio.stack.sub":
+                return \.radio.stack.patch
             case "radio_stack_type", "radio.stack.type":
                 return \.radio.stack.type
-            case "radio_stack_sub", "radio.stack.sub":
-                return \.radio.stack.sub
             default:
                 return nil
             }
@@ -168,13 +168,13 @@ extension Device.Info.Radio.Stack {
         guard
             let major = major,
             let minor = minor,
-            let type = type,
-            let sub = sub
+            let patch = patch,
+            let type = type
         else {
             return nil
         }
         let typeString = RadioStackType(rawValue: type)?.description
-        return "\(major).\(minor).\(sub) (\(typeString ?? "Unknown"))"
+        return "\(major).\(minor).\(patch) (\(typeString ?? "Unknown"))"
     }
 }
 
