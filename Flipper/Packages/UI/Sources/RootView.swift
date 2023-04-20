@@ -28,7 +28,6 @@ private struct RootViewImpl: View {
     @StateObject var hexKeyboardController: HexKeyboardController = .init()
 
     @Environment(\.scenePhase) var scenePhase
-    @Environment(\.presentationMode) var presentationMode
 
     @State private var isPairingIssue = false
 
@@ -85,10 +84,8 @@ private struct RootViewImpl: View {
             default: break
             }
         }
-        .onChange(of: presentationMode.wrappedValue.isPresented) { isPresented in
-            if isPresented {
-                router.recordAppOpen()
-            }
+        .task {
+            router.recordAppOpen()
         }
     }
 

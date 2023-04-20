@@ -578,6 +578,30 @@ struct PB_Main {
     set {content = .appButtonReleaseRequest(newValue)}
   }
 
+  var appGetErrorRequest: PBApp_GetErrorRequest {
+    get {
+      if case .appGetErrorRequest(let v)? = content {return v}
+      return PBApp_GetErrorRequest()
+    }
+    set {content = .appGetErrorRequest(newValue)}
+  }
+
+  var appGetErrorResponse: PBApp_GetErrorResponse {
+    get {
+      if case .appGetErrorResponse(let v)? = content {return v}
+      return PBApp_GetErrorResponse()
+    }
+    set {content = .appGetErrorResponse(newValue)}
+  }
+
+  var appDataExchangeRequest: PBApp_DataExchangeRequest {
+    get {
+      if case .appDataExchangeRequest(let v)? = content {return v}
+      return PBApp_DataExchangeRequest()
+    }
+    set {content = .appDataExchangeRequest(newValue)}
+  }
+
   var guiStartScreenStreamRequest: PBGui_StartScreenStreamRequest {
     get {
       if case .guiStartScreenStreamRequest(let v)? = content {return v}
@@ -690,6 +714,22 @@ struct PB_Main {
     set {content = .appStateResponse(newValue)}
   }
 
+  var propertyGetRequest: PBProperty_GetRequest {
+    get {
+      if case .propertyGetRequest(let v)? = content {return v}
+      return PBProperty_GetRequest()
+    }
+    set {content = .propertyGetRequest(newValue)}
+  }
+
+  var propertyGetResponse: PBProperty_GetResponse {
+    get {
+      if case .propertyGetResponse(let v)? = content {return v}
+      return PBProperty_GetResponse()
+    }
+    set {content = .propertyGetResponse(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Content: Equatable {
@@ -736,6 +776,9 @@ struct PB_Main {
     case appLoadFileRequest(PBApp_AppLoadFileRequest)
     case appButtonPressRequest(PBApp_AppButtonPressRequest)
     case appButtonReleaseRequest(PBApp_AppButtonReleaseRequest)
+    case appGetErrorRequest(PBApp_GetErrorRequest)
+    case appGetErrorResponse(PBApp_GetErrorResponse)
+    case appDataExchangeRequest(PBApp_DataExchangeRequest)
     case guiStartScreenStreamRequest(PBGui_StartScreenStreamRequest)
     case guiStopScreenStreamRequest(PBGui_StopScreenStreamRequest)
     case guiScreenFrame(PBGui_ScreenFrame)
@@ -750,6 +793,8 @@ struct PB_Main {
     case gpioReadPinResponse(PBGpio_ReadPinResponse)
     case gpioWritePin(PBGpio_WritePin)
     case appStateResponse(PBApp_AppStateResponse)
+    case propertyGetRequest(PBProperty_GetRequest)
+    case propertyGetResponse(PBProperty_GetResponse)
 
   #if !swift(>=4.1)
     static func ==(lhs: PB_Main.OneOf_Content, rhs: PB_Main.OneOf_Content) -> Bool {
@@ -929,6 +974,18 @@ struct PB_Main {
         guard case .appButtonReleaseRequest(let l) = lhs, case .appButtonReleaseRequest(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
+      case (.appGetErrorRequest, .appGetErrorRequest): return {
+        guard case .appGetErrorRequest(let l) = lhs, case .appGetErrorRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.appGetErrorResponse, .appGetErrorResponse): return {
+        guard case .appGetErrorResponse(let l) = lhs, case .appGetErrorResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.appDataExchangeRequest, .appDataExchangeRequest): return {
+        guard case .appDataExchangeRequest(let l) = lhs, case .appDataExchangeRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       case (.guiStartScreenStreamRequest, .guiStartScreenStreamRequest): return {
         guard case .guiStartScreenStreamRequest(let l) = lhs, case .guiStartScreenStreamRequest(let r) = rhs else { preconditionFailure() }
         return l == r
@@ -983,6 +1040,14 @@ struct PB_Main {
       }()
       case (.appStateResponse, .appStateResponse): return {
         guard case .appStateResponse(let l) = lhs, case .appStateResponse(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.propertyGetRequest, .propertyGetRequest): return {
+        guard case .propertyGetRequest(let l) = lhs, case .propertyGetRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.propertyGetResponse, .propertyGetResponse): return {
+        guard case .propertyGetResponse(let l) = lhs, case .propertyGetResponse(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -1157,6 +1222,9 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     48: .standard(proto: "app_load_file_request"),
     49: .standard(proto: "app_button_press_request"),
     50: .standard(proto: "app_button_release_request"),
+    63: .standard(proto: "app_get_error_request"),
+    64: .standard(proto: "app_get_error_response"),
+    65: .standard(proto: "app_data_exchange_request"),
     20: .standard(proto: "gui_start_screen_stream_request"),
     21: .standard(proto: "gui_stop_screen_stream_request"),
     22: .standard(proto: "gui_screen_frame"),
@@ -1171,6 +1239,8 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     56: .standard(proto: "gpio_read_pin_response"),
     57: .standard(proto: "gpio_write_pin"),
     58: .standard(proto: "app_state_response"),
+    61: .standard(proto: "property_get_request"),
+    62: .standard(proto: "property_get_response"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1923,6 +1993,71 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .storageTimestampResponse(v)
         }
       }()
+      case 61: try {
+        var v: PBProperty_GetRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .propertyGetRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .propertyGetRequest(v)
+        }
+      }()
+      case 62: try {
+        var v: PBProperty_GetResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .propertyGetResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .propertyGetResponse(v)
+        }
+      }()
+      case 63: try {
+        var v: PBApp_GetErrorRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .appGetErrorRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .appGetErrorRequest(v)
+        }
+      }()
+      case 64: try {
+        var v: PBApp_GetErrorResponse?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .appGetErrorResponse(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .appGetErrorResponse(v)
+        }
+      }()
+      case 65: try {
+        var v: PBApp_DataExchangeRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .appDataExchangeRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .appDataExchangeRequest(v)
+        }
+      }()
       default: break
       }
     }
@@ -2170,6 +2305,26 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .storageTimestampResponse?: try {
       guard case .storageTimestampResponse(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 60)
+    }()
+    case .propertyGetRequest?: try {
+      guard case .propertyGetRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 61)
+    }()
+    case .propertyGetResponse?: try {
+      guard case .propertyGetResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 62)
+    }()
+    case .appGetErrorRequest?: try {
+      guard case .appGetErrorRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 63)
+    }()
+    case .appGetErrorResponse?: try {
+      guard case .appGetErrorResponse(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 64)
+    }()
+    case .appDataExchangeRequest?: try {
+      guard case .appDataExchangeRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 65)
     }()
     case nil: break
     }

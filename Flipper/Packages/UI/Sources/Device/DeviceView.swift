@@ -9,7 +9,8 @@ struct DeviceView: View {
     @EnvironmentObject var updateModel: UpdateModel
 
     @State private var showForgetAction = false
-    @State private var showUnsupportedVersionAlert = false
+    @State private var showOutdatedFirmwareAlert = false
+    @State private var showOutdatedMobileAlert = false
 
     var flipper: Flipper? {
         device.flipper
@@ -20,13 +21,17 @@ struct DeviceView: View {
         device.status == .synchronized
     }
 
+    var isOutdatedVersion: Bool {
+        device.status == .unsupported ||
+        device.status == .outdatedMobile
+    }
+
     var canSync: Bool {
         device.status == .connected
     }
 
     var canPlayAlert: Bool {
-        flipper?.state == .connected &&
-        device.status != .unsupported
+        flipper?.state == .connected && !isOutdatedVersion
     }
 
     var canConnect: Bool {
@@ -50,21 +55,25 @@ struct DeviceView: View {
             VStack(spacing: 0) {
                 DeviceHeader(device: flipper)
 
-                RefreshableScrollView(isEnabled: true) {
+                RefreshableScrollView(isEnabled: isDeviceAvailable) {
                     updateModel.updateAvailableFirmware()
                 } content: {
                     VStack(spacing: 0) {
-                        if device.status == .unsupported {
-                            OutdatedDeviceCard()
+                        switch device.status {
+                        case .unsupported:
+                            OutdatedFirmwareCard()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
-                        } else if device.status != .noDevice {
-                            DeviceUpdateCard()
+                        case .outdatedMobile:
+                            OutdatedMobileCard()
                                 .padding(.top, 24)
                                 .padding(.horizontal, 14)
-                        }
-
-                        if device.status != .unsupported {
+                        default:
+                            if device.status != .noDevice {
+                                DeviceUpdateCard()
+                                    .padding(.top, 24)
+                                    .padding(.horizontal, 14)
+                            }
                             NavigationLink {
                                 DeviceInfoView()
                             } label: {
@@ -172,13 +181,15 @@ struct DeviceView: View {
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
-        .customAlert(isPresented: $showUnsupportedVersionAlert) {
-            UnsupportedVersionAlert(isPresented: $showUnsupportedVersionAlert)
+        .customAlert(isPresented: $showOutdatedFirmwareAlert) {
+            OutdatedFirmwareAlert(isPresented: $showOutdatedFirmwareAlert)
+        }
+        .customAlert(isPresented: $showOutdatedMobileAlert) {
+            OutdatedMobileAlert(isPresented: $showOutdatedMobileAlert)
         }
         .onChange(of: device.status) { status in
-            if status == .unsupported {
-                showUnsupportedVersionAlert = true
-            }
+            showOutdatedFirmwareAlert = status == .unsupported
+            showOutdatedMobileAlert = status == .outdatedMobile
         }
         .onChange(of: central.state) { state in
             if state == .poweredOn {

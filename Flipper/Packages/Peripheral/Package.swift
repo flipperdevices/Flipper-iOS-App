@@ -1,4 +1,4 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.6
 import PackageDescription
 
 let package = Package(
@@ -15,15 +15,12 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "Collections",
             url: "https://github.com/apple/swift-collections.git",
-            .upToNextMajor(from: "1.0.0")),
+            from: "1.0.0"),
         .package(
-            name: "SwiftProtobuf",
-            url: "https://github.com/tonyfreeman/swift-protobuf.git",
-            branch: "ignore-invalid-utf8"),
+            url: "https://github.com/apple/swift-protobuf.git",
+            from: "1.21.0"),
         .package(
-            name: "Logging",
             url: "https://github.com/apple/swift-log.git",
             from: "1.4.2")
     ],
@@ -31,9 +28,9 @@ let package = Package(
         .target(
             name: "Peripheral",
             dependencies: [
-                "SwiftProtobuf",
-                "Collections",
-                "Logging"
+                .product(name: "SwiftProtobuf", package: "swift-protobuf"),
+                .product(name: "Collections", package: "swift-collections"),
+                .product(name: "Logging", package: "swift-log")
             ],
             path: "Sources"),
         .testTarget(

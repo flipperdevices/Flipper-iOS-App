@@ -24,29 +24,14 @@ struct UpdateProgressView: View {
                 .padding(.top, 12)
 
             ScrollView {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 14) {
                     Text("What’s New")
                         .font(.system(size: 18, weight: .bold))
-                        .padding(.top, 24)
 
                     GitHubMarkdown(changelog)
-                        .padding(.vertical, 14)
-                        .markdownStyle(
-                            MarkdownStyle(
-                                font: .system(size: 15),
-                                measurements: .init(
-                                    headingScales: .init(
-                                        h1: 1.0,
-                                        h2: 1.0,
-                                        h3: 1.0,
-                                        h4: 1.0,
-                                        h5: 1.0,
-                                        h6: 1.0),
-                                    headingSpacing: 0.3
-                                )
-                            )
-                        )
                 }
+                .padding(.top, 24)
+                .padding(.bottom, 14)
                 .padding(.horizontal, 14)
             }
 

@@ -8,16 +8,27 @@ struct RemoteControlView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dismiss) private var dismiss
 
-    var uiImage: UIImage {
-        .init(
-            pixels: device.frame.pixels.map { $0 ? .black : .orange },
+    var uiImage: UIImage? {
+        guard let frame = device.frame else { return nil }
+        return .init(
+            pixels: frame.pixels.map { $0 ? .black : .orange },
             width: 128,
             height: 64
-        ) ?? .init()
+        )
     }
 
-    var screenshotImage: UIImage {
-        uiImage.resized(to: .init(
+    var normalizedImage: UIImage? {
+        guard let frame = device.frame, let image = uiImage else {
+            return nil
+        }
+        switch frame.orientation {
+        case .horizontalFlipped: return image.withOrientation(.down)
+        default: return image
+        }
+    }
+
+    var screenshotImage: UIImage? {
+        normalizedImage?.resized(to: .init(
             width: 512,
             height: 256))
     }
@@ -31,61 +42,128 @@ struct RemoteControlView: View {
         return "Screenshot \(date) at \(time)"
     }
 
+    //--------------------------------------------------------------------------
+    @State var controlsQueue: [(UUID, InputKey)] = []
+    @State var controlsStream: AsyncStream<InputKey>?
+    @State var controlsStreamContinuation: AsyncStream<InputKey>.Continuation?
+    //--------------------------------------------------------------------------
+
+    @Namespace var namespace
+
+    @State private var isHorizontal = false
+    @State private var showOutdatedAlert = false
+
+    @State private var deviceSize: CGSize = .zero
+    @State private var screenRect: CGRect = .zero
+
+    var displayOffset: Double { 0.6 }
+    var buttonSide: Double { 90 }
+    var buttonPadding: Double { 12 }
+
     var body: some View {
-        VStack {
-            HStack {
-                VStack(spacing: 8) {
-                    Button {
+        VStack(spacing: 0) {
+            ZStack {
+                GeometryReader { proxy in
+                    var width: Double {
+                        isHorizontal
+                            ? proxy.size.width
+                            : min(proxy.size.width, proxy.size.height)
+                    }
+
+                    var rotation: Angle {
+                        .degrees(isHorizontal ? 0 : 90)
+                    }
+
+                    var offset: Double {
+                        max(0, proxy.size.height - deviceSize.height) * 0.8
+                    }
+
+                    var screenOffset: Double { screenRect.origin.y }
+                    var screenWidth: Double { screenRect.width }
+
+                    var screenshotOffsetX: Double {
+                        isHorizontal
+                            ? buttonPadding
+                            : screenRect.width - buttonSide - buttonPadding
+                    }
+
+                    var screenshotOffsetY: Double {
+                        isHorizontal
+                            ? 0
+                            : screenOffset - screenRect.width / 2
+                    }
+
+                    var lockOffsetX: Double {
+                        screenRect.width - buttonSide - buttonPadding
+                    }
+
+                    var lockOffsetY: Double {
+                        isHorizontal
+                            ? 0
+                            : screenOffset + screenRect.width / 2 - buttonSide
+                    }
+
+                    ScreenshotButton {
                         screenshot()
-                    } label: {
-                        Image("RemoteScreenshot")
                     }
-                    Text("Screenshot")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.a1)
-                }
-                Spacer()
-                VStack(spacing: 8) {
-                    Button {
-                        device.isLocked ? unlock() : lock()
-                    } label: {
-                        Image(device.isLocked ? "RemoteUnlock" : "RemoteLock")
-                    }
+                    .frame(width: buttonSide, height: buttonSide)
+                    .offset(x: screenshotOffsetX)
+                    .offset(y: screenshotOffsetY)
 
-                    ZStack {
-                        Text("Lock Flipper")
-                            .opacity(device.isLocked ? 0 : 1)
-
-                        Text("Unlock Flipper")
-                            .opacity(device.isLocked ? 1 : 0)
+                    LockButton(isLocked: false) {
+                        showOutdatedAlert = true
                     }
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.a1)
+                    .opacity(0.5)
+                    .frame(width: buttonSide, height: buttonSide)
+                    .offset(x: lockOffsetX)
+                    .offset(y: lockOffsetY)
+
+                    VStack(spacing: 8) {
+                        ControlsQueue($controlsQueue)
+                            .padding(.horizontal, 4)
+                            .opacity(isHorizontal ? 1 : 0)
+
+                        DeviceScreen {
+                            if device.status == .disconnected {
+                                Image("RemoteNotConnected")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            } else if let uiImage = uiImage {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .interpolation(.none)
+                                    .aspectRatio(contentMode: .fit)
+                            } else {
+                                AnimatedPlaceholder()
+                            }
+                        }
+                        .rotationEffect(rotation, anchor: .bottomTrailing)
+                        .frame(width: width)
+                        .offset(x: isHorizontal ? 0 : -width)
+                        .captureFrame(in: $screenRect, space: .named("rcp"))
+
+                        FlipperLogo()
+                            .frame(width: width * 0.55)
+                            .opacity(isHorizontal ? 1 : 0)
+                    }
+                    .captureSize(in: $deviceSize)
+                    .offset(y: offset)
                 }
             }
             .padding(.top, 14)
-            .padding(.horizontal, 36)
-
-            Spacer(minLength: 0)
-            Spacer(minLength: 0)
-            Spacer(minLength: 14)
-
-            VStack(spacing: 14) {
-                DeviceScreen(uiImage)
-                    .padding(.horizontal, 24)
-
-                Image("RemoteFlipperLogo")
-                    .resizable()
-                    .scaledToFit()
-                    .padding(.horizontal, 96)
-            }
-
-            Spacer(minLength: 14)
+            .padding(.horizontal, 18)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .coordinateSpace(name: "rcp")
 
             DeviceControls { button in
-                pressButton(button)
+                buttonTapped(button)
             }
             .padding(.bottom, 14)
+        }
+        .onChange(of: device.frame) { frame in
+            withAnimation {
+                isHorizontal = frame?.orientation.isHorizontal ?? true
+            }
         }
         .frame(maxWidth: .infinity)
         .background(Color.background)
@@ -114,11 +192,60 @@ struct RemoteControlView: View {
             @unknown default: break
             }
         }
+        .customAlert(isPresented: $showOutdatedAlert) {
+            OutdatedVersionAlert(isPresented: $showOutdatedAlert)
+        }
+        .task {
+            isHorizontal = device.frame?.orientation.isHorizontal ?? true
+            await runLoop()
+        }
+    }
+
+    func runLoop() async {
+        let controlsStream = AsyncStream<InputKey> { continuation in
+            controlsStreamContinuation = continuation
+        }
+        self.controlsStream = controlsStream
+        for await next in controlsStream {
+            await pressButton(next)
+            withAnimation {
+                controlsQueue = .init(controlsQueue.dropFirst())
+            }
+        }
+    }
+
+    func buttonTapped(_ button: InputKey) {
+        controlsQueue.append((.init(), button))
+        controlsStreamContinuation?.yield(button)
+    }
+
+    func pressButton(_ button: InputKey) async {
+        feedback(style: .light)
+        try? await device.pressButton(button)
+        feedback(style: .light)
+    }
+
+    func lock() {
+        // FIXME: add .lock button
+        guard controlsQueue.isEmpty else { return }
+        Task {
+            try await device.lock()
+            device.updateLockStatus()
+        }
+    }
+
+    func unlock() {
+        // FIXME: add .unlock button
+        guard controlsQueue.isEmpty else { return }
+        Task {
+            try await device.unlock()
+            device.updateLockStatus()
+        }
     }
 
     func screenshot() {
         guard
-            let data = screenshotImage.pngData(),
+            let data = screenshotImage?.pngData(),
             let url = try? FileManager.default.createTempFile(
                 name: "\(screenshotName).png",
                 data: data
@@ -128,38 +255,6 @@ struct RemoteControlView: View {
         }
         UI.share(url) {
             try? FileManager.default.removeItem(at: url)
-        }
-    }
-
-    @State var isBusy = false
-
-    private func syncTask(_ task: @escaping () async throws -> Void) {
-        guard !isBusy else { return }
-        isBusy = true
-        Task {
-            try await task()
-            isBusy = false
-        }
-    }
-
-    func pressButton(_ button: InputKey) {
-        syncTask {
-            feedback(style: .light)
-            try await device.pressButton(button)
-        }
-    }
-
-    func lock() {
-        syncTask {
-            try await device.lock()
-            device.updateLockStatus()
-        }
-    }
-
-    func unlock() {
-        syncTask {
-            try await device.unlock()
-            device.updateLockStatus()
         }
     }
 }
@@ -182,5 +277,51 @@ private extension UIImage {
             $0.cgContext.interpolationQuality = interpolationQuality
             draw(in: CGRect(origin: .zero, size: size))
         }
+    }
+
+    func withOrientation(_ orientation: Orientation) -> UIImage {
+        guard let cgImage = self.cgImage else {
+            return .init()
+        }
+        return .init(cgImage: cgImage, scale: 1.0, orientation: orientation)
+    }
+}
+
+private struct SizeKey: PreferenceKey {
+    static let defaultValue: CGSize = .zero
+
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+private extension View {
+    func captureSize(in binding: Binding<CGSize>) -> some View {
+        overlay(GeometryReader { proxy in
+            Color.clear.preference(key: SizeKey.self, value: proxy.size)
+        })
+        .onPreferenceChange(SizeKey.self) { binding.wrappedValue = $0 }
+    }
+}
+
+private struct RectKey: PreferenceKey {
+    static let defaultValue: CGRect = .zero
+
+    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+        value = nextValue()
+    }
+}
+
+private extension View {
+    func captureFrame(
+        in binding: Binding<CGRect>,
+        space: CoordinateSpace
+    ) -> some View {
+        overlay(GeometryReader { proxy in
+            Color.clear.preference(
+                key: RectKey.self,
+                value: proxy.frame(in: space))
+        })
+        .onPreferenceChange(RectKey.self) { binding.wrappedValue = $0 }
     }
 }

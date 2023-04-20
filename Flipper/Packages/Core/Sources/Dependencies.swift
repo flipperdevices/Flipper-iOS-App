@@ -8,9 +8,19 @@ import Foundation
 // Temporary service locator while refactoring in progress
 
 public class Dependencies: ObservableObject {
-    public static var shared: Dependencies = {
-        .init()
-    }()
+    private static let queue = DispatchQueue(label: "com.flipper.dependencies")
+
+    private static var sharedInstance: Dependencies?
+
+    public static var shared: Dependencies {
+        return queue.sync {
+            sharedInstance ?? {
+                let instance = Dependencies()
+                sharedInstance = instance
+                return instance
+            }()
+        }
+    }
 
     private init() {
         LoggingSystem.bootstrap { _ in

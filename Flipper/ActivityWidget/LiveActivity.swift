@@ -12,7 +12,7 @@ struct LiveActivity: Widget {
                 state: context.state,
                 version: context.attributes.version
             )
-            .padding(.vertical, 14)
+            .padding(14)
             .activityBackgroundTint(.black)
             .activitySystemActionForegroundColor(Color.white)
         } dynamicIsland: { context in
@@ -34,23 +34,101 @@ struct LiveActivity: Widget {
     }
 
     struct LockScreenBanner: View {
-        let state: UpdateModel.State.Update.Progress
+        let state: UpdateModel.State.Update
         let version: Update.Version
 
-        var color: Color {
+        var body: some View {
             switch state {
-            case .downloading: return .sGreenUpdate
-            case .preparing, .uploading: return .a2
+            case .progress(let progress):
+                Progress(state: progress, version: version)
+            case .result(let result):
+                Result(state: result, version: version)
             }
         }
 
-        var body: some View {
-            VStack(spacing: 8) {
-                Version(version)
-                    .font(.system(size: 18, weight: .medium))
-                UpdateProgressBar(state: state)
-                    .padding(.horizontal, 24)
-                UpdateProgressDescription(state: state)
+        struct Progress: View {
+            let state: UpdateModel.State.Update.Progress
+            let version: Update.Version
+
+            var color: Color {
+                switch state {
+                case .downloading: return .sGreenUpdate
+                case .preparing, .uploading: return .a2
+                }
+            }
+
+            var body: some View {
+                VStack(spacing: 8) {
+                    Version(version)
+                        .font(.system(size: 18, weight: .medium))
+                    UpdateProgressBar(state: state)
+                        .padding(.horizontal, 24)
+                    UpdateProgressDescription(state: state)
+                }
+            }
+        }
+
+        struct Result: View {
+            let state: UpdateModel.State.Update.Result
+            let version: Update.Version
+
+            var body: some View {
+                switch state {
+                case .started: Started()
+                case .canceled: Canceled()
+                case .succeeded: Succeeded()
+                case .failed: Failed()
+                }
+            }
+
+            struct Started: View {
+                var body: some View {
+                    VStack(spacing: 8) {
+                        Image("UpdateStartedActivity")
+                        Text(
+                            "Flipper is updating in offline mode. " +
+                            "Look at the device \nscreen for info and " +
+                            "wait for reconnection."
+                        )
+                        .font(.system(size: 12, weight: .medium))
+                        .lineLimit(2, reservesSpace: true)
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(.black30)
+                    }
+                }
+            }
+
+            struct Canceled: View {
+                var body: some View {
+                    VStack(spacing: 8) {
+                        Image("UpdateCanceledActivity")
+                        Text("Update Aborted")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.sRed)
+                    }
+                }
+            }
+
+            struct Succeeded: View {
+                var body: some View {
+                    VStack(spacing: 8) {
+                        Image("UpdateSuccessActivity")
+                        Text("Update Successful")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.sGreenUpdate)
+                    }
+                }
+            }
+
+            struct Failed: View {
+                var body: some View {
+                    VStack(spacing: 8) {
+                        Image("UpdateFailedActivity")
+                        Text("Update Failed")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.sRed)
+                    }
+                }
             }
         }
     }
@@ -66,21 +144,42 @@ struct LiveActivity: Widget {
     struct CompactTrailing: View {
         let state: UpdateActivityAttibutes.ContentState
 
-        var color: Color {
+        var body: some View {
             switch state {
-            case .downloading: return .sGreenUpdate
-            case .preparing, .uploading: return .a2
+            case .progress(let progress):
+                Progress(state: progress)
+            case .result(let result):
+                Result(state: result)
             }
         }
 
-        var body: some View {
-            switch state {
-            case .preparing:
-                ProgressView()
-            case .downloading(let progress):
-                CompactProgress(progress, color)
-            case .uploading(let progress):
-                CompactProgress(progress, color)
+        struct Progress: View {
+            let state: UpdateActivityAttibutes.ContentState.Progress
+
+            var color: Color {
+                switch state {
+                case .downloading: return .sGreenUpdate
+                case .preparing, .uploading: return .a2
+                }
+            }
+
+            var body: some View {
+                switch state {
+                case .preparing:
+                    ProgressView()
+                case .downloading(let progress):
+                    CompactProgress(progress, color)
+                case .uploading(let progress):
+                    CompactProgress(progress, color)
+                }
+            }
+        }
+
+        struct Result: View {
+            let state: UpdateActivityAttibutes.ContentState.Result
+
+            var body: some View {
+                EmptyView()
             }
         }
     }
@@ -123,20 +222,42 @@ struct ActivityWidgetLiveActivity_Previews: PreviewProvider {
     static let attributes = UpdateActivityAttibutes(version: .init(
         name: "0.61",
         channel: .release))
-    static let contentState = UpdateActivityAttibutes.ContentState.uploading(10)
+    static let contentState = UpdateActivityAttibutes.ContentState
+        .progress(.uploading(0.5))
 
     static var previews: some View {
         attributes
             .previewContext(contentState, viewKind: .dynamicIsland(.compact))
-            .previewDisplayName("Island Compact")
+            .previewDisplayName("Progress Compact")
         attributes
             .previewContext(contentState, viewKind: .dynamicIsland(.expanded))
-            .previewDisplayName("Island Expanded")
+            .previewDisplayName("Progress Expanded")
         attributes
             .previewContext(contentState, viewKind: .dynamicIsland(.minimal))
-            .previewDisplayName("Minimal")
+            .previewDisplayName("Progress Minimal")
         attributes
             .previewContext(contentState, viewKind: .content)
-            .previewDisplayName("Notification")
+            .previewDisplayName("Progress Notification")
+    }
+}
+
+@available(iOSApplicationExtension 16.2, *)
+struct ActivityWidgetLiveActivity2_Previews: PreviewProvider {
+    static let attributes = UpdateActivityAttibutes(version: .init(
+        name: "0.61",
+        channel: .release))
+    static let contentState = UpdateActivityAttibutes.ContentState
+        .result(.started)
+
+    static var previews: some View {
+        attributes
+            .previewContext(.result(.started), viewKind: .content)
+            .previewDisplayName("Started Notification")
+        attributes
+            .previewContext(.result(.canceled), viewKind: .content)
+            .previewDisplayName("Canceled Notification")
+        attributes
+            .previewContext(.result(.failed), viewKind: .content)
+            .previewDisplayName("Failed Notification")
     }
 }

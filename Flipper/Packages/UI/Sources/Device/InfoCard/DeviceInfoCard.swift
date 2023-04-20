@@ -33,19 +33,20 @@ struct DeviceInfoCard: View {
         flipper?.information?.protobufRevision
     }
 
-    var protobufVersion: String {
-        guard isConnected else { return "" }
-        guard let version = _protobufVersion else { return "" }
+    var protobufVersion: String? {
+        guard isConnected else { return nil }
+        guard let version = _protobufVersion else { return nil }
         return version == .unknown ? "—" : version.rawValue
     }
 
-    var firmwareVersion: String {
-        guard isConnected else { return "" }
-        guard let info = flipper?.information else { return "" }
+    var firmwareVersion: String? {
+        guard isConnected else { return nil }
+        guard let info = flipper?.information else { return nil }
         return info.firmwareVersion?.description ?? "invalid"
     }
 
     var firmwareVersionColor: Color {
+        guard let firmwareVersion else { return .clear }
         switch firmwareVersion {
         case _ where firmwareVersion.starts(with: "Dev"): return .development
         case _ where firmwareVersion.starts(with: "RC"): return .candidate
@@ -54,9 +55,9 @@ struct DeviceInfoCard: View {
         }
     }
 
-    var firmwareBuild: String {
-        guard isConnected else { return "" }
-        guard let info = flipper?.information else { return "" }
+    var firmwareBuild: String? {
+        guard isConnected else { return nil }
+        guard let info = flipper?.information else { return nil }
 
         let build = info
             .softwareRevision
@@ -66,18 +67,18 @@ struct DeviceInfoCard: View {
 
         return .init(build)
     }
-    
-    var internalSpace: String {
+
+    var internalSpace: String? {
             guard isConnected, let int = flipper?.storage?.internal else {
-                return ""
+                return nil
             }
             return int.description
         }
 
     @available(iOS 15, *)
-    var internalSpaceAttributed: AttributedString {
+    var internalSpaceAttributed: AttributedString? {
         guard isConnected, let int = flipper?.storage?.internal else {
-            return ""
+            return nil
         }
         var result = AttributedString(int.description)
         if int.free < 20_000 {
@@ -85,21 +86,21 @@ struct DeviceInfoCard: View {
         }
         return result
     }
-    
-    var externalSpace: String {
+
+    var externalSpace: String? {
         guard isConnected, flipper?.storage?.internal != nil else {
-            return ""
+            return nil
         }
         guard let ext = flipper?.storage?.external else {
             return "—"
         }
         return ext.description
     }
-        
+
     @available(iOS 15, *)
-    var externalSpaceAttributed: AttributedString {
+    var externalSpaceAttributed: AttributedString? {
         guard isConnected, flipper?.storage?.internal != nil else {
-            return ""
+            return nil
         }
         guard let ext = flipper?.storage?.external else {
             return "—"

@@ -14,10 +14,9 @@ public class Device: ObservableObject {
     @Published public var isLocked = false
 
     @Published public var flipper: Flipper?
-    @Published public private(set) var frame: ScreenFrame = .init()
+    @Published public private(set) var frame: ScreenFrame?
 
-    @Published public private(set) var deviceInfo: [String: String] = [:]
-    @Published public private(set) var powerInfo: [String: String] = [:]
+    @Published public private(set) var info: Info = .init()
     @Published public private(set) var isInfoReady = false
 
     public init(pairedDevice: PairedDevice) {
@@ -66,7 +65,7 @@ public class Device: ObservableObject {
 
         // We want to preserve unsupportedDevice state instead of disconnected
         if
-            status == .unsupported &&
+            (status == .unsupported || status == .outdatedMobile),
             flipper.state == .disconnected
         {
             return
@@ -143,6 +142,11 @@ public class Device: ObservableObject {
         guard version >= .v0_6 else {
             logger.error("unsupported firmware version")
             status = .unsupported
+            return false
+        }
+        guard version < .v1_0 else {
+            logger.error("outdated mobile app version")
+            status = .outdatedMobile
             return false
         }
         return true
@@ -276,26 +280,63 @@ public class Device: ObservableObject {
     }
 
     public func getInfo() async {
+        guard let version = flipper?.information?.protobufRevision else {
+            return
+        }
         isInfoReady = false
-        await getDeviceInfo()
-        await getPowerInfo()
+        info = .init()
+        if version < .v0_14 {
+            await getDeviceInfo()
+            await getPowerInfo()
+        } else {
+            await updateValues("devinfo")
+            await updateValues("pwrinfo")
+            await updateValues("pwrdebug")
+        }
         isInfoReady = true
+    }
+
+    func updateValues(_ key: String) async {
+        do {
+            for try await property in rpc.property(key) {
+                info.update(key: property.key, value: property.value)
+            }
+        } catch {
+            logger.error("update values: \(error)")
+        }
     }
 
     public func getDeviceInfo() async {
         do {
             for try await (key, value) in rpc.deviceInfo() {
-                deviceInfo[key] = value
+                info.update(key: key, value: value)
             }
         } catch {
             logger.error("device info: \(error)")
         }
     }
 
+
+    public func getRegion() async throws -> Provisioning.Region {
+        let bytes = try await rpc.readFile(at: Provisioning.location)
+        return try Provisioning.Region(decoding: bytes)
+    }
+
+    public func hasAssetsManifest() async throws -> Bool {
+        do {
+            _ = try await rpc.getSize(at: .manifest)
+            return true
+        } catch let error as Peripheral.Error
+                    where error == .storage(.doesNotExist)
+        {
+            return false
+        }
+    }
+
     public func getPowerInfo() async {
         do {
             for try await (key, value) in rpc.powerInfo() {
-                powerInfo[key] = value
+                info.update(key: key, value: value)
             }
         } catch {
             logger.error("power info: \(error)")

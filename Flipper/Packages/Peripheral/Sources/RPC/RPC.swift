@@ -9,6 +9,7 @@ public protocol RPC: AnyObject {
 
     func deviceInfo() -> AsyncThrowingStream<(String, String), Swift.Error>
     func powerInfo() -> AsyncThrowingStream<(String, String), Swift.Error>
+    func property(_ key: String) -> AsyncThrowingStream<Response.System.Property, Swift.Error>
     @discardableResult
     func ping(_ bytes: [UInt8]) async throws -> [UInt8]
     func reboot(to mode: Message.RebootMode) async throws

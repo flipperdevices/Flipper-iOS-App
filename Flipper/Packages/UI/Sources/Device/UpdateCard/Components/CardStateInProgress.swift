@@ -3,7 +3,7 @@ import SwiftUI
 extension DeviceUpdateCard {
     struct CardStateInProgress: View {
         var body: some View {
-            UpdateStartedImage()
+            Image("UpdateStarted")
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
 

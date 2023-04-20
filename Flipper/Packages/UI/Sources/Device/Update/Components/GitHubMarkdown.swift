@@ -4,26 +4,36 @@ import MarkdownUI
 struct GitHubMarkdown: View {
     var text: String
 
-    @State private var document: Document?
+    @State private var markdown: String = ""
 
     init(_ text: String) {
         self.text = text
     }
 
     var body: some View {
-        Markdown(document ?? .init(blocks: []))
+        Markdown(markdown)
+            .markdownTextStyle {
+                FontSize(14)
+            }
+            .markdownBlockStyle(\.heading2) { label in
+                label
+                    .markdownMargin(top: .rem(0), bottom: .rem(0.5))
+                    .markdownTextStyle {
+                        FontWeight(.semibold)
+                        FontSize(.em(1))
+                    }
+            }
             .task {
                 formatDocument()
             }
     }
 
     func formatDocument() {
-        let markdown = text
+        markdown = text
             .replacingPullRequestURLs
             .replacingCompareURLs
             .replacingURLs
             .replacingUsers
-        document = try? .init(markdown: markdown)
     }
 }
 

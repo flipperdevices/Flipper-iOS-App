@@ -143,7 +143,7 @@ struct DeviceUpdateView: View {
             let attributes = UpdateActivityAttibutes(version: firmware.version)
             activity = try? Activity<UpdateActivityAttibutes>.request(
                 attributes: attributes,
-                content: .init(state: .preparing, staleDate: nil))
+                content: .init(state: .progress(.preparing), staleDate: nil))
         }
     }
 
@@ -165,10 +165,24 @@ struct DeviceUpdateView: View {
             }
             Task {
                 switch state {
+
                 case .update(.progress(let progress)):
-                    await activity?.update(.init(state: progress, staleDate: nil))
-                case .update(.result):
+                    await activity?.update(.init(
+                        state: .progress(progress),
+                        staleDate: .now.addingTimeInterval(6)))
+
+                case .update(.result(let result)):
+                    await activity?.update(.init(
+                        state: .result(result),
+                        staleDate: nil))
                     stopActivity()
+
+                case .error:
+                    await activity?.update(.init(
+                        state: .result(.canceled),
+                        staleDate: nil))
+                    stopActivity()
+
                 default:
                     break
                 }

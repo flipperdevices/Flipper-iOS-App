@@ -59,7 +59,7 @@ struct PairingIssueAlert: View {
                     HStack {
                         Text("3.")
                             .font(.system(size: 14, weight: .bold))
-                        Text("Click “Forget This Device” button")
+                        Text("Press “Forget This Device” button")
                             .font(.system(size: 14, weight: .regular))
                         Spacer()
                     }

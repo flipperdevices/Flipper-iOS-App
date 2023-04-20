@@ -1,4 +1,4 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.6
 import PackageDescription
 
 let package = Package(
@@ -15,25 +15,22 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "Logging",
             url: "https://github.com/apple/swift-log.git",
             from: "1.4.2"),
         .package(
-            name: "Countly",
             url: "https://github.com/Countly/countly-sdk-ios.git",
             from: "21.11.2"),
         .package(
-            name: "SwiftProtobuf",
-            url: "https://github.com/tonyfreeman/swift-protobuf.git",
-            branch: "ignore-invalid-utf8")
+            url: "https://github.com/apple/swift-protobuf.git",
+            from: "1.21.0")
     ],
     targets: [
         .target(
             name: "Analytics",
             dependencies: [
-                "Logging",
-                "Countly",
-                "SwiftProtobuf"
+                .product(name: "SwiftProtobuf", package: "swift-protobuf"),
+                .product(name: "Countly", package: "countly-sdk-ios"),
+                .product(name: "Logging", package: "swift-log")
             ],
             path: "Sources"),
         .testTarget(

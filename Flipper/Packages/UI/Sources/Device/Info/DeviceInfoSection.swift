@@ -3,7 +3,7 @@ import OrderedCollections
 
 struct DeviceInfoViewCard: View {
     let title: String
-    var values: OrderedDictionary<String, String>
+    var values: OrderedDictionary<String, String?>
 
     var zippedIndexKey: [(Int, String)] {
         .init(zip(values.keys.indices, values.keys))
@@ -21,7 +21,7 @@ struct DeviceInfoViewCard: View {
                 .padding(.horizontal, 12)
 
                 ForEach(zippedIndexKey, id: \.0) { index, key in
-                    CardRow(name: key, value: values[key] ?? "")
+                    CardRow(name: key, value: values[key] ?? nil)
                         .padding(.horizontal, 12)
                     if index + 1 < values.count {
                         Divider()

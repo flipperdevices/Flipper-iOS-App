@@ -17,6 +17,33 @@ extension Session {
         }
     }
 
+    public func property(
+        _ key: String
+    ) -> AsyncThrowingStream<Response.System.Property, Swift.Error> {
+        .init { continuation in
+            Task {
+                do {
+                    let streams = await send(.system(.property(key)))
+                    for try await next in streams.input {
+                        switch next {
+                        case .ok:
+                            // TODO: Fix firmware to avoid extra packet
+                            continuation.finish()
+                            return
+                        case .system(.property(let property)):
+                            continuation.yield(property)
+                        default:
+                            throw Error.unexpectedResponse(next)
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+
     public func deviceInfo(
     ) -> AsyncThrowingStream<(String, String), Swift.Error> {
         .init { continuation in

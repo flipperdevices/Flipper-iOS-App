@@ -11,9 +11,15 @@ public enum Response: Equatable {
     public enum System: Equatable {
         case deviceInfo(String, String)
         case powerInfo(String, String)
+        case property(Property)
         case ping([UInt8])
         case dateTime(Date)
         case update(Update)
+
+        public struct Property: Equatable {
+            public let key: String
+            public let value: String
+        }
 
         public enum Update: Equatable {
             case ok
@@ -73,6 +79,8 @@ extension Response {
             self.init(decoding: response)
         case .systemPowerInfoResponse(let response):
             self.init(decoding: response)
+        case .propertyGetResponse(let response):
+            self.init(decoding: response)
         case .systemGetDatetimeResponse(let response):
             self.init(decoding: response)
         case .systemUpdateResponse(let response):
@@ -113,6 +121,10 @@ extension Response {
 
     init(decoding response: PBSystem_PowerInfoResponse) {
         self = .system(.powerInfo(response.key, response.value))
+    }
+
+    init(decoding response: PBProperty_GetResponse) {
+        self = .system(.property(.init(response)))
     }
 
     init(decoding response: PBSystem_GetDateTimeResponse) {
@@ -171,6 +183,13 @@ extension Response.System.Update {
     }
 }
 
+extension Response.System.Property {
+    init(_ response: PBProperty_GetResponse) {
+        self.key = response.key
+        self.value = response.value
+    }
+}
+
 extension Response: CustomStringConvertible {
     public var description: String {
         switch self {
@@ -189,9 +208,16 @@ extension Response.System: CustomStringConvertible {
         case let .ping(bytes): return "ping(\(bytes.count) bytes)"
         case let .deviceInfo(key, value): return "deviceInfo(\(key): \(value))"
         case let .powerInfo(key, value): return "powerInfo(\(key): \(value))"
+        case let .property(property): return "property(\(property))"
         case let .dateTime(date): return "dateTime(\(date))"
         case let .update(update): return "update(\(update))"
         }
+    }
+}
+
+extension Response.System.Property: CustomStringConvertible {
+    public var description: String {
+        "\(key): \(value)"
     }
 }
 

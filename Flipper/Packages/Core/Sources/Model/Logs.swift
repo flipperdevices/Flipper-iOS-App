@@ -10,18 +10,8 @@ public class Logs: ObservableObject {
 
     @Published public var records: [String] = []
 
-    private let formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss dd-MM-yyyy"
-        return formatter
-    }()
-
     public func reload() {
-        records = loggerStorage.list().sorted {
-            guard let first = formatter.date(from: $0) else { return false }
-            guard let second = formatter.date(from: $1) else { return false }
-            return first < second
-        }
+        records = loggerStorage.list()
     }
 
     public func read(_ name: String) -> [String] {

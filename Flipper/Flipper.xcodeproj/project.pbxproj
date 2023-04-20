@@ -3,10 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A228A9D29DE0D2F000D7D10 /* FlipperShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A228A9C29DE0D2F000D7D10 /* FlipperShortcuts.swift */; };
+		0AD5C05D29D9A04E00E0F97E /* ArchivedItemEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD5C05B29D9A04E00E0F97E /* ArchivedItemEntity.swift */; };
+		0AD5C05E29D9A04E00E0F97E /* SendArchivedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD5C05C29D9A04E00E0F97E /* SendArchivedItem.swift */; };
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
 		8B10BF4C29A77D53007FC0F3 /* BlackHole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */; };
 		8B1A481929C113A5000169E9 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1A481829C113A5000169E9 /* WidgetKit.framework */; };
@@ -16,12 +19,13 @@
 		8B1A482229C113A5000169E9 /* ActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482129C113A5000169E9 /* ActivityWidget.swift */; };
 		8B1A482729C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */; };
 		8B1A482829C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */; };
-		8B1A482B29C113A6000169E9 /* ActivityWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8B1A482B29C113A6000169E9 /* ActivityWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8B1A481729C113A5000169E9 /* ActivityWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8B1A483029C11AF8000169E9 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B1A482F29C11AF8000169E9 /* Core */; };
 		8B1BB6D429C1E67B008AE2A0 /* HaxrCorpNeue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */; };
 		8B1BB6D529C1E67B008AE2A0 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
 		8B1BB6D629C1E681008AE2A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 		8B1BB6D829C1E725008AE2A0 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B1BB6D729C1E725008AE2A0 /* UI */; };
+		8B5E986429E8235A0057B0D7 /* PlayAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E986329E8235A0057B0D7 /* PlayAlert.swift */; };
 		8B7064CC26E27429006CB4A8 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B7064CB26E27429006CB4A8 /* UI */; };
 		8B7480DE2807483500692304 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
 		8B77A9CD26CAA43300A3DF9F /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B77A9CC26CAA43300A3DF9F /* Core */; };
@@ -43,7 +47,6 @@
 		8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8BF9CECA28E21A4400CD5D31 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BF9CEC928E21A4400CD5D31 /* NotificationCenter.framework */; };
 		8BF9CECD28E21A4400CD5D31 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */; };
-		8BF9CED028E21A4400CD5D31 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BF9CECE28E21A4400CD5D31 /* MainInterface.storyboard */; };
 		8BF9CED428E21A4400CD5D31 /* TodayWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
@@ -91,7 +94,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				8BF9CED428E21A4400CD5D31 /* TodayWidget.appex in Embed Foundation Extensions */,
-				8B1A482B29C113A6000169E9 /* ActivityWidgetExtension.appex in Embed Foundation Extensions */,
+				8B1A482B29C113A6000169E9 /* ActivityWidget.appex in Embed Foundation Extensions */,
 				8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -100,10 +103,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0A228A9C29DE0D2F000D7D10 /* FlipperShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperShortcuts.swift; sourceTree = "<group>"; };
+		0AD5C05B29D9A04E00E0F97E /* ArchivedItemEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchivedItemEntity.swift; sourceTree = "<group>"; };
+		0AD5C05C29D9A04E00E0F97E /* SendArchivedItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendArchivedItem.swift; sourceTree = "<group>"; };
 		44A5B59224F05647009EE7FB /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlackHole.swift; sourceTree = "<group>"; };
-		8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ActivityWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B1A481729C113A5000169E9 /* ActivityWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ActivityWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B1A481829C113A5000169E9 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		8B1A481A29C113A5000169E9 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		8B1A481D29C113A5000169E9 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
@@ -112,6 +118,7 @@
 		8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = ActivityWidget.intentdefinition; sourceTree = "<group>"; };
 		8B1A482629C113A6000169E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8B38AA5F289D6BD800A152F3 /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Analytics; path = Packages/Analytics; sourceTree = "<group>"; };
+		8B5E986329E8235A0057B0D7 /* PlayAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayAlert.swift; sourceTree = "<group>"; };
 		8B7480DD2807483500692304 /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		8B886F162759BA9A00D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Core/.swiftlint.yml; sourceTree = "<group>"; };
 		8B886F172759BAA500D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/UI/.swiftlint.yml; sourceTree = "<group>"; };
@@ -138,11 +145,10 @@
 		8BE40CF627F1266D00288F66 /* Peripheral */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Peripheral; path = Packages/Peripheral; sourceTree = "<group>"; };
 		8BED6143270B66D8009E51E2 /* perform_lint.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
 		8BEE5AF928A54BF20070D01E /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Analytics/Sources/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
-		8BF074E329C2500700DC688B /* ActivityWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ActivityWidgetExtension.entitlements; sourceTree = "<group>"; };
+		8BF074E329C2500700DC688B /* ActivityWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ActivityWidget.entitlements; sourceTree = "<group>"; };
 		8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodayWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BF9CEC928E21A4400CD5D31 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
-		8BF9CECF28E21A4400CD5D31 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		8BF9CED128E21A4400CD5D31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipperApp.swift; sourceTree = "<group>"; };
 		F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -192,6 +198,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0AD5C05A29D9A02300E0F97E /* AppIntents */ = {
+			isa = PBXGroup;
+			children = (
+				8B5E986329E8235A0057B0D7 /* PlayAlert.swift */,
+				0AD5C05B29D9A04E00E0F97E /* ArchivedItemEntity.swift */,
+				0AD5C05C29D9A04E00E0F97E /* SendArchivedItem.swift */,
+				0A228A9C29DE0D2F000D7D10 /* FlipperShortcuts.swift */,
+			);
+			path = AppIntents;
+			sourceTree = "<group>";
+		};
 		44A5B5B124F05FCE009EE7FB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -206,6 +223,7 @@
 		8B1A481C29C113A5000169E9 /* ActivityWidget */ = {
 			isa = PBXGroup;
 			children = (
+				8BF074E329C2500700DC688B /* ActivityWidget.entitlements */,
 				8B1A481D29C113A5000169E9 /* Bundle.swift */,
 				8B1A481F29C113A5000169E9 /* LiveActivity.swift */,
 				8B1A482129C113A5000169E9 /* ActivityWidget.swift */,
@@ -335,7 +353,6 @@
 				8BB7DF2F2911922D005C38C9 /* TodayWidget.entitlements */,
 				8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */,
 				8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */,
-				8BF9CECE28E21A4400CD5D31 /* MainInterface.storyboard */,
 				8BF9CED128E21A4400CD5D31 /* Info.plist */,
 			);
 			path = TodayWidget;
@@ -344,7 +361,6 @@
 		F0DBFA1424EF2F9600EB2880 = {
 			isa = PBXGroup;
 			children = (
-				8BF074E329C2500700DC688B /* ActivityWidgetExtension.entitlements */,
 				8B77A9C626CAA3BA00A3DF9F /* Packages */,
 				F0DBFA2324EF2F9900EB2880 /* iOS */,
 				F0DBFA1924EF2F9600EB2880 /* Shared */,
@@ -352,6 +368,7 @@
 				8BCFDDE0277A2405002DA4CD /* KeyPreview */,
 				8BF9CECB28E21A4400CD5D31 /* TodayWidget */,
 				8B1A481C29C113A5000169E9 /* ActivityWidget */,
+				0AD5C05A29D9A02300E0F97E /* AppIntents */,
 				F0DBFA2224EF2F9900EB2880 /* Products */,
 				44A5B5B124F05FCE009EE7FB /* Frameworks */,
 			);
@@ -373,7 +390,7 @@
 				F0DBFA2124EF2F9900EB2880 /* Flipper.app */,
 				8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */,
 				8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */,
-				8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */,
+				8B1A481729C113A5000169E9 /* ActivityWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -393,9 +410,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8B1A481629C113A5000169E9 /* ActivityWidgetExtension */ = {
+		8B1A481629C113A5000169E9 /* ActivityWidget */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8B1A482E29C113A6000169E9 /* Build configuration list for PBXNativeTarget "ActivityWidgetExtension" */;
+			buildConfigurationList = 8B1A482E29C113A6000169E9 /* Build configuration list for PBXNativeTarget "ActivityWidget" */;
 			buildPhases = (
 				8B1A481329C113A5000169E9 /* Sources */,
 				8B1A481429C113A5000169E9 /* Frameworks */,
@@ -405,13 +422,13 @@
 			);
 			dependencies = (
 			);
-			name = ActivityWidgetExtension;
+			name = ActivityWidget;
 			packageProductDependencies = (
 				8B1A482F29C11AF8000169E9 /* Core */,
 				8B1BB6D729C1E725008AE2A0 /* UI */,
 			);
 			productName = ActivityWidgetExtension;
-			productReference = 8B1A481729C113A5000169E9 /* ActivityWidgetExtension.appex */;
+			productReference = 8B1A481729C113A5000169E9 /* ActivityWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		8BCFDDDC277A2405002DA4CD /* KeyPreview */ = {
@@ -485,8 +502,9 @@
 		F0DBFA1524EF2F9600EB2880 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1400;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					8B1A481629C113A5000169E9 = {
 						CreatedOnToolsVersion = 14.3;
@@ -508,7 +526,6 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
 			);
 			mainGroup = F0DBFA1424EF2F9600EB2880;
 			productRefGroup = F0DBFA2224EF2F9900EB2880 /* Products */;
@@ -518,7 +535,7 @@
 				F0DBFA2024EF2F9900EB2880 /* Flipper(iOS) */,
 				8BCFDDDC277A2405002DA4CD /* KeyPreview */,
 				8BF9CEC728E21A4400CD5D31 /* TodayWidget */,
-				8B1A481629C113A5000169E9 /* ActivityWidgetExtension */,
+				8B1A481629C113A5000169E9 /* ActivityWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -548,7 +565,6 @@
 				8BB7DF3129119CED005C38C9 /* HaxrCorpNeue.ttf in Resources */,
 				8BB7DF3229119CED005C38C9 /* Born2bSportyV2.ttf in Resources */,
 				8BB7DF3029119296005C38C9 /* Assets.xcassets in Resources */,
-				8BF9CED028E21A4400CD5D31 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -626,8 +642,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BCB0168278F135C00DA66F5 /* Intents.intentdefinition in Sources */,
+				0AD5C05D29D9A04E00E0F97E /* ArchivedItemEntity.swift in Sources */,
 				8B1A482829C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */,
+				8B5E986429E8235A0057B0D7 /* PlayAlert.swift in Sources */,
 				F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */,
+				0A228A9D29DE0D2F000D7D10 /* FlipperShortcuts.swift in Sources */,
+				0AD5C05E29D9A04E00E0F97E /* SendArchivedItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -636,7 +656,7 @@
 /* Begin PBXTargetDependency section */
 		8B1A482A29C113A6000169E9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8B1A481629C113A5000169E9 /* ActivityWidgetExtension */;
+			target = 8B1A481629C113A5000169E9 /* ActivityWidget */;
 			targetProxy = 8B1A482929C113A6000169E9 /* PBXContainerItemProxy */;
 		};
 		8BCFDDEA277A2405002DA4CD /* PBXTargetDependency */ = {
@@ -651,17 +671,6 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		8BF9CECE28E21A4400CD5D31 /* MainInterface.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8BF9CECF28E21A4400CD5D31 /* Base */,
-			);
-			name = MainInterface.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		8B1A482C29C113A6000169E9 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -669,22 +678,21 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_ENTITLEMENTS = ActivityWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ActivityWidget/ActivityWidget.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = SXH69675TZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ActivityWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ActivityWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.LiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -702,22 +710,21 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_ENTITLEMENTS = ActivityWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ActivityWidget/ActivityWidget.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = SXH69675TZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ActivityWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ActivityWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.LiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1017,7 +1024,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8B1A482E29C113A6000169E9 /* Build configuration list for PBXNativeTarget "ActivityWidgetExtension" */ = {
+		8B1A482E29C113A6000169E9 /* Build configuration list for PBXNativeTarget "ActivityWidget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8B1A482C29C113A6000169E9 /* Debug */,

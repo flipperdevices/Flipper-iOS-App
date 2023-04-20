@@ -3,18 +3,23 @@ import SwiftUI
 struct CardRow: View {
     let name: String
     let formattedValue: Any?
-    let plainStringValue: String
+    let plainStringValue: String?
 
-    init(name: String, value: String) {
+    init(name: String, value: String?) {
         self.name = name
         self.formattedValue = nil
         self.plainStringValue = value
     }
 
     @available(iOS 15.0, *)
-    init(name: String, value: AttributedString) {
+    init(name: String, value: AttributedString?) {
         self.name = name
         self.formattedValue = value
+        if let value = value {
+            self.plainStringValue = value
+        } else {
+            self.plainStringValue = nil
+        }
         self.plainStringValue = value.description
     }
 
@@ -25,7 +30,7 @@ struct CardRow: View {
                 .multilineTextAlignment(.leading)
                 .foregroundColor(.black30)
             Spacer()
-            if !plainStringValue.description.isEmpty {
+            if formattedValue != nil && plainStringValue != nil {
                 if #available(iOS 15, *), let value = formattedValue as? AttributedString {
                     Text(value)
                         .font(.system(size: 14, weight: .regular))

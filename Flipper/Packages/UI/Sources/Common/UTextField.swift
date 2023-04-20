@@ -23,7 +23,7 @@ struct UTextField: View {
                     focusedField = focused ? title : ""
                 }
                 .submitLabelDoneIfAvailable()
-                .disableAutocorrection(true)
+                .autocorrectionDisabled()
             }
             .padding(.top, 4)
             Divider()

@@ -14,7 +14,7 @@ struct SelectChannelPopup: View {
                         title: "Release",
                         color: Update.Channel.release.color,
                         description: "Stable release (recommended)",
-                        onClick: { onChannelSelected(.release) }
+                        onPress: { onChannelSelected(.release) }
                     )
                     .padding(12)
 
@@ -25,7 +25,7 @@ struct SelectChannelPopup: View {
                         title: "Release-Candidate",
                         color: Update.Channel.candidate.color,
                         description: "Pre-release under testing",
-                        onClick: { onChannelSelected(.candidate) }
+                        onPress: { onChannelSelected(.candidate) }
                     )
                     .padding(12)
 
@@ -36,7 +36,7 @@ struct SelectChannelPopup: View {
                         title: "Development",
                         color: Update.Channel.development.color,
                         description: "Daily unstable build, lots of bugs",
-                        onClick: { onChannelSelected(.development) }
+                        onPress: { onChannelSelected(.development) }
                     )
                     .padding(12)
                 }
@@ -50,11 +50,11 @@ struct ChannelMenuRow: View {
     let title: String
     let color: Color
     let description: String
-    var onClick: () -> Void
+    var onPress: () -> Void
 
     var body: some View {
         Button {
-            onClick()
+            onPress()
         } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 1) {
