@@ -4,7 +4,7 @@ extension NFCEditorView {
     struct SaveChangesAlert: View {
         let save: () -> Void
         let saveAs: () -> Void
-        let dismiss: DismissAction
+        let dismiss: () -> Void
 
         var body: some View {
             VStack(spacing: 24) {

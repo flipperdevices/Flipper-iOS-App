@@ -39,7 +39,7 @@ struct LogView: View {
                 }
             }
         }
-        .task {
+        .task { @MainActor in
             messages = logs.read(name).map { .init($0) }
         }
     }

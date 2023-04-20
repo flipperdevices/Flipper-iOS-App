@@ -100,7 +100,7 @@ struct NFCEditorView: View {
         .alert(item: $error) { error in
             Alert(title: Text(error))
         }
-        .task {
+        .task { @MainActor in
             self.uid = item.uid
             self.atqa = item.atqa
             self.sak = item.sak

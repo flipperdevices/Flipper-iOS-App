@@ -77,32 +77,31 @@ extension DeviceUpdateCard {
                 .padding(.bottom, 8)
                 .padding(.horizontal, 12)
             }
-            .alert(
-                "Pause Synchronization?",
-                isPresented: $showPauseSync
-            ) {
-                Button("Continue") { }
-                Button("Pause") {
-                    synchronization.cancelSync()
-                }
-            } message: {
-                Text(
-                    "Firmware update is not possible during synchronization. " +
-                    "Wait for sync to finish or pause it.")
+            .alert(isPresented: $showPauseSync) {
+                Alert(
+                    title: Text("Pause Synchronization?"),
+                    message: Text(
+                        "Firmware update is not possible during synchronization. " +
+                        "Wait for sync to finish or pause it."
+                    ),
+                    primaryButton: .default(Text("Continue")),
+                    secondaryButton: .destructive(Text("Pause")) {
+                        synchronization.cancelSync()
+                    }
+                )
             }
-            .alert(
-                "Update Firmware?",
-                isPresented: $showConfirmUpdate,
-                presenting: updateModel.firmware
-            ) { intent in
-                Button("Cancel") { }
-                Button("Update") {
-                    updateModel.startUpdate()
-                }
-            } message: { firmware in
-                Text(
-                    "New Firmware \(firmware.version) " +
-                    "will be installed")
+            .alert(isPresented: $showConfirmUpdate) {
+                Alert(
+                    title: Text("Update Firmware?"),
+                    message: Text(
+                        "New Firmware \(updateModel.firmware?.version as? String ?? "") " +
+                        "will be installed"
+                    ),
+                    primaryButton: .default(Text("Cancel")),
+                    secondaryButton: .destructive(Text("Update")) {
+                        updateModel.startUpdate()
+                    }
+                )
             }
             .customAlert(isPresented: $showCharge) {
                 LowBatteryAlert(isPresented: $showCharge)

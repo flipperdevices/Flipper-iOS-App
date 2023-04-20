@@ -185,7 +185,7 @@ struct DeviceView: View {
                 device.connect()
             }
         }
-        .task {
+        .task { @MainActor in
             if central.state != .poweredOn {
                 central.kick()
             }

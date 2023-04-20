@@ -66,8 +66,16 @@ struct DeviceInfoCard: View {
 
         return .init(build)
     }
+    
+    var internalSpace: String {
+            guard isConnected, let int = flipper?.storage?.internal else {
+                return ""
+            }
+            return int.description
+        }
 
-    var internalSpace: AttributedString {
+    @available(iOS 15, *)
+    var internalSpaceAttributed: AttributedString {
         guard isConnected, let int = flipper?.storage?.internal else {
             return ""
         }
@@ -77,8 +85,19 @@ struct DeviceInfoCard: View {
         }
         return result
     }
-
-    var externalSpace: AttributedString {
+    
+    var externalSpace: String {
+        guard isConnected, flipper?.storage?.internal != nil else {
+            return ""
+        }
+        guard let ext = flipper?.storage?.external else {
+            return "—"
+        }
+        return ext.description
+    }
+        
+    @available(iOS 15, *)
+    var externalSpaceAttributed: AttributedString {
         guard isConnected, flipper?.storage?.internal != nil else {
             return ""
         }

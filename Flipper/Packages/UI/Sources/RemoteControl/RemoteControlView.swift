@@ -25,9 +25,9 @@ struct RemoteControlView: View {
     var screenshotName: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
-        let date = formatter.string(from: .now)
+        let date = formatter.string(from: Date())
         formatter.dateFormat = "HH.mm.ss"
-        let time = formatter.string(from: .now)
+        let time = formatter.string(from: Date())
         return "Screenshot \(date) at \(time)"
     }
 

@@ -17,7 +17,7 @@ struct FileManagerListing: View {
     @State private var name = ""
     @State private var isNewFile = false
     @State private var isNewDirectory = false
-    @FocusState var isNameFocused: Bool
+    @State private var isNameFocused: Bool = false
     var namePlaceholder: String {
         "\(isNewFile ? "file" : "directory") name"
     }
@@ -41,11 +41,8 @@ struct FileManagerListing: View {
                         .foregroundColor(.primary)
                     }
                     if isNewFile || isNewDirectory {
-                        TextField(namePlaceholder, text: $name)
-                            .onSubmit {
-                                submitNewElement()
-                            }
-                            .focused($isNameFocused)
+                        TextField(namePlaceholder, text: $name, onCommit: { submitNewElement() })
+                            //.focused($isNameFocused)
                     }
                     ForEach(elements, id: \.description) {
                         switch $0 {
@@ -130,14 +127,17 @@ struct FileManagerListing: View {
                 }
             }
         }
-        .alert(
-            "Directory is not empty",
-            isPresented: $isForceDeletePresented,
-            presenting: selectedIndexSet
-        ) { selectedIndexSet in
-            Button("Force Delete", role: .destructive) {
-                delete(selectedIndexSet, force: true)
-            }
+        .alert(isPresented: $isForceDeletePresented) {
+            Alert(
+                title: Text("Directory is not empty"),
+                message: nil,
+                primaryButton: .destructive(Text("Force Delete")) {
+                    if let selectedIndexSet = selectedIndexSet {
+                        delete(selectedIndexSet, force: true)
+                    }
+                },
+                secondaryButton: .cancel()
+            )
         }
         .fileImporter(
             isPresented: $isFileImporterPresented,
