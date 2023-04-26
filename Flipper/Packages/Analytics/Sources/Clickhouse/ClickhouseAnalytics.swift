@@ -155,6 +155,9 @@ fileprivate extension Metric_Events_Open.OpenTarget {
         case .keyShareURL: self = .shareShortlink
         case .keyShareUpload: self = .shareLonglink
         case .keyShareFile: self = .shareFile
+        case .saveNFCDump: self = .saveDump
+        case .mfKey32: self = .mfkey32
+        case .nfcDumpEditor: self = .openNfcDumpEditor
         }
     }
 }

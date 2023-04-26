@@ -149,6 +149,9 @@ fileprivate extension OpenTarget {
         case .keyShareURL: return 7
         case .keyShareUpload: return 8
         case .keyShareFile: return 9
+        case .saveNFCDump: return 10
+        case .mfKey32: return 11
+        case .nfcDumpEditor: return 12
         }
     }
 }

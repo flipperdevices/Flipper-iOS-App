@@ -37,6 +37,8 @@ struct Metric_Events_SynchronizationEnd {
 
   var synchronizationTimeMs: Int64 = 0
 
+  var changesCount: Int32 = 0
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -59,6 +61,7 @@ extension Metric_Events_SynchronizationEnd: SwiftProtobuf.Message, SwiftProtobuf
     4: .standard(proto: "infrared_count"),
     5: .standard(proto: "ibutton_count"),
     6: .standard(proto: "synchronization_time_ms"),
+    7: .standard(proto: "changes_count"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -73,6 +76,7 @@ extension Metric_Events_SynchronizationEnd: SwiftProtobuf.Message, SwiftProtobuf
       case 4: try { try decoder.decodeSingularInt32Field(value: &self.infraredCount) }()
       case 5: try { try decoder.decodeSingularInt32Field(value: &self.ibuttonCount) }()
       case 6: try { try decoder.decodeSingularInt64Field(value: &self.synchronizationTimeMs) }()
+      case 7: try { try decoder.decodeSingularInt32Field(value: &self.changesCount) }()
       default: break
       }
     }
@@ -97,6 +101,9 @@ extension Metric_Events_SynchronizationEnd: SwiftProtobuf.Message, SwiftProtobuf
     if self.synchronizationTimeMs != 0 {
       try visitor.visitSingularInt64Field(value: self.synchronizationTimeMs, fieldNumber: 6)
     }
+    if self.changesCount != 0 {
+      try visitor.visitSingularInt32Field(value: self.changesCount, fieldNumber: 7)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -107,6 +114,7 @@ extension Metric_Events_SynchronizationEnd: SwiftProtobuf.Message, SwiftProtobuf
     if lhs.infraredCount != rhs.infraredCount {return false}
     if lhs.ibuttonCount != rhs.ibuttonCount {return false}
     if lhs.synchronizationTimeMs != rhs.synchronizationTimeMs {return false}
+    if lhs.changesCount != rhs.changesCount {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -48,6 +48,9 @@ public enum OpenTarget: Sendable {
     case keyShareURL
     case keyShareUpload
     case keyShareFile
+    case nfcDumpEditor
+    case saveNFCDump
+    case mfKey32
 }
 
 public enum UpdateResult: Sendable {
