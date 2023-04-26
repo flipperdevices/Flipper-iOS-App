@@ -63,7 +63,8 @@ extension WantMoarEventHandler: EventHandler {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTime: Int
+        synchronizationTime: Int,
+        changesCount: Int
     ) {
         handlers.forEach {
             $0.synchronizationResult(
@@ -72,7 +73,8 @@ extension WantMoarEventHandler: EventHandler {
                 nfcCount: nfcCount,
                 infraredCount: infraredCount,
                 iButtonCount: iButtonCount,
-                synchronizationTime: synchronizationTime)
+                synchronizationTime: synchronizationTime,
+                changesCount: changesCount)
         }
     }
 

@@ -2,15 +2,16 @@ import Peripheral
 import Foundation
 
 extension Archive {
-    func synchronize(_ progress: (Double) -> Void) async throws {
+    func synchronize(_ progress: (Double) -> Void) async throws -> Int {
         guard !isLoading else {
             logger.critical("synchronize: archive isn't loaded")
-            return
+            return 0
         }
         do {
-            try await archiveSync.run(progress)
+            let changesCount = try await archiveSync.run(progress)
             try await favoritesSync.run()
             try await updateFavoriteItems()
+            return changesCount
         } catch {
             logger.critical("synchronize: \(error)")
             throw error

@@ -56,7 +56,8 @@ public class Analytics: EventHandler {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTime: Int
+        synchronizationTime: Int,
+        changesCount: Int
     ) {
         AnalyticsSystem.handler?.synchronizationResult(
             subGHzCount: subGHzCount,
@@ -64,7 +65,8 @@ public class Analytics: EventHandler {
             nfcCount: nfcCount,
             infraredCount: infraredCount,
             iButtonCount: iButtonCount,
-            synchronizationTime: synchronizationTime)
+            synchronizationTime: synchronizationTime,
+            changesCount: changesCount)
     }
 
     public func subghzProvisioning(

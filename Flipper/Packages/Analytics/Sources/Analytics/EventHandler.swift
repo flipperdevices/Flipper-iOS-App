@@ -25,7 +25,8 @@ public protocol EventHandler {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTime: Int
+        synchronizationTime: Int,
+        changesCount: Int
     )
     func subghzProvisioning(
         sim1: String,

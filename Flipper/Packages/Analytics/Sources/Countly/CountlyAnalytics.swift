@@ -99,7 +99,8 @@ extension CountlyAnalytics: EventHandler {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTime: Int
+        synchronizationTime: Int,
+        changesCount: Int
     ) {
         recordEvent(
             key: "synchronization_end",
@@ -109,7 +110,8 @@ extension CountlyAnalytics: EventHandler {
                 "nfc_count": .init(nfcCount),
                 "infrared_count": .init(infraredCount),
                 "ibutton_count": .init(iButtonCount),
-                "synchronization_time_ms": .init(synchronizationTime)
+                "synchronization_time_ms": .init(synchronizationTime),
+                "changes_count": .init(changesCount)
             ])
     }
 

@@ -107,7 +107,8 @@ extension ClickhouseAnalytics: EventHandler {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTime: Int
+        synchronizationTime: Int,
+        changesCount: Int
     ) {
         report(event: .with {
             $0.synchronizationEnd = .with {
@@ -117,6 +118,7 @@ extension ClickhouseAnalytics: EventHandler {
                 $0.infraredCount = .init(infraredCount)
                 $0.ibuttonCount = .init(iButtonCount)
                 $0.synchronizationTimeMs = .init(synchronizationTime)
+                $0.changesCount = .init(changesCount)
             }
         })
     }
