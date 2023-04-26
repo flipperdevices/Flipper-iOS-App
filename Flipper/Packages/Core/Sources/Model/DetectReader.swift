@@ -125,6 +125,7 @@ public class DetectReader: ObservableObject {
                 state = .noLog
                 return
             }
+            reportMFKey32Started()
             state = .downloadingLog
             let log = try await readLog()
             state = .calculating
@@ -187,5 +188,9 @@ public class DetectReader: ObservableObject {
     private func uploadKeys() async throws {
         try Task.checkCancellation()
         try await mfKnownKeys.writeUserKeys(newUserKnownKeys)
+    }
+
+    private func reportMFKey32Started() {
+        analytics.appOpen(target: .mfKey32)
     }
 }
