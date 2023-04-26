@@ -29,7 +29,7 @@ struct CardRow: View {
                 .multilineTextAlignment(.leading)
                 .foregroundColor(.black30)
             Spacer()
-            if formattedValue != nil && plainStringValue != nil {
+            if formattedValue != nil || plainStringValue != nil {
                 if #available(iOS 15, *), let value = formattedValue as? AttributedString {
                     Text(value)
                         .font(.system(size: 14, weight: .regular))
