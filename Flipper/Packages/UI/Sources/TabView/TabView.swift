@@ -78,7 +78,8 @@ extension TabView {
         case .outdatedMobile: return "Outdated App"
         case .connecting: return "Connecting..."
         case .connected: return "Connected"
-        case .disconnected: return "Disconnected"
+        // TODO: Think about .notConnected state
+        case .disconnected: return "Not Connected"
         case .synchronizing: return "Syncing \(synchronization.progress)%"
         case .synchronized: return "Synced!"
         case .updating: return "Connecting..."
