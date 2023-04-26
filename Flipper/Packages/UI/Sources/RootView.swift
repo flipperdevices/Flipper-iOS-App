@@ -84,7 +84,7 @@ private struct RootViewImpl: View {
             default: break
             }
         }
-        .task {
+        .task { @MainActor in
             router.recordAppOpen()
         }
     }

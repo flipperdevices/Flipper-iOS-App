@@ -100,7 +100,7 @@ struct OptionsView: View {
                     Toggle(isOn: $isProvisioningDisabled) {
                         Text("Disable provisioning")
                     }
-                    .tint(.a1)
+                    .tintA1IfAvailable()
                     NavigationLink("I'm watching you") {
                         CarrierView()
                     }

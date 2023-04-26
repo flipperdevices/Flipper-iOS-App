@@ -195,7 +195,7 @@ struct RemoteControlView: View {
         .customAlert(isPresented: $showOutdatedAlert) {
             OutdatedVersionAlert(isPresented: $showOutdatedAlert)
         }
-        .task {
+        .task { @MainActor in
             isHorizontal = device.frame?.orientation.isHorizontal ?? true
             await runLoop()
         }

@@ -28,6 +28,14 @@ extension View {
         }
     }
     
+    @ViewBuilder func submitLabelReturnIfAvailable() -> some View {
+        if #available(iOS 15, *) {
+            submitLabel(.done)
+        } else {
+            self
+        }
+    }
+    
     @ViewBuilder func enableTextSelectionIfAvailable() -> some View {
         if #available(iOS 15, *) {
             textSelection(.enabled)
@@ -39,6 +47,14 @@ extension View {
     @ViewBuilder func backgroundIfAvailable<S>(_ style: S, ignoresSafeAreaEdges edges: Edge.Set = .all) -> some View where S : ShapeStyle {
         if #available(iOS 15, *) {
             background(style, ignoresSafeAreaEdges: edges)
+        } else {
+            self
+        }
+    }
+    
+    @ViewBuilder func tintA1IfAvailable() -> some View {
+        if #available(iOS 15, *) {
+            tint(.a1)
         } else {
             self
         }

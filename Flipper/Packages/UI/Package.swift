@@ -25,7 +25,7 @@ let package = Package(
             from: "3.3.0"),
         .package(
             url: "https://github.com/gonzalezreal/swift-markdown-ui",
-            from: "2.0.2")
+            from: "1.1.0")
     ],
     targets: [
         .target(

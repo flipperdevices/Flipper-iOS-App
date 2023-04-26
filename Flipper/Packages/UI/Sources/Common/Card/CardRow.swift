@@ -16,11 +16,10 @@ struct CardRow: View {
         self.name = name
         self.formattedValue = value
         if let value = value {
-            self.plainStringValue = value
+            self.plainStringValue = value.description
         } else {
             self.plainStringValue = nil
         }
-        self.plainStringValue = value.description
     }
 
     var body: some View {
@@ -35,8 +34,8 @@ struct CardRow: View {
                     Text(value)
                         .font(.system(size: 14, weight: .regular))
                         .multilineTextAlignment(.trailing)
-                } else {
-                    Text(plainStringValue)
+                } else if let value = plainStringValue {
+                    Text(value)
                         .font(.system(size: 14, weight: .regular))
                         .multilineTextAlignment(.trailing)
                 }
