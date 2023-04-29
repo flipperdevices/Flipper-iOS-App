@@ -153,7 +153,8 @@ struct DeviceUpdateView: View {
                 self.activity as? Activity<UpdateActivityAttibutes>
             }
             Task {
-                await activity?.end(.none)
+                let deadline = Date.now.addingTimeInterval(7)
+                await activity?.end(.none, dismissalPolicy: .after(deadline))
             }
         }
     }
