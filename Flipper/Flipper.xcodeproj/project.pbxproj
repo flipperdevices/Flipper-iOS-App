@@ -122,7 +122,6 @@
 		8B7480DD2807483500692304 /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		8B886F162759BA9A00D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Core/.swiftlint.yml; sourceTree = "<group>"; };
 		8B886F172759BAA500D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/UI/.swiftlint.yml; sourceTree = "<group>"; };
-		8B886F192759BAC600D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Inject/.swiftlint.yml; sourceTree = "<group>"; };
 		8B89527827581E7B00E4C336 /* UI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UI; path = Packages/UI; sourceTree = "<group>"; };
 		8B89527A27581E9500E4C336 /* Core */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Core; path = Packages/Core; sourceTree = "<group>"; };
 		8B8A5A82289D6FDA00F005F5 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Analytics/.swiftlint.yml; sourceTree = "<group>"; };
@@ -297,7 +296,6 @@
 		8BED6139270B617B009E51E2 /* SwiftLint */ = {
 			isa = PBXGroup;
 			children = (
-				8BED613D270B61F7009E51E2 /* Inject */,
 				8B8A5A81289D6FA500F005F5 /* Analytics */,
 				8B2D5D0B27EFA992005A2F56 /* Peripheral */,
 				8BED613C270B61EE009E51E2 /* Core */,
@@ -313,14 +311,6 @@
 				8B886F162759BA9A00D9A682 /* .swiftlint.yml */,
 			);
 			name = Core;
-			sourceTree = "<group>";
-		};
-		8BED613D270B61F7009E51E2 /* Inject */ = {
-			isa = PBXGroup;
-			children = (
-				8B886F192759BAC600D9A682 /* .swiftlint.yml */,
-			);
-			name = Inject;
 			sourceTree = "<group>";
 		};
 		8BED613E270B6202009E51E2 /* UI */ = {
