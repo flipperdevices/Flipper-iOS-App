@@ -165,16 +165,17 @@ struct DeviceView: View {
                     }
                 }
                 .background(Color.background)
-                .actionSheet(isPresented: $showForgetAction) {
-                    .init(
-                        title: Text("This action won't delete your keys"),
-                        buttons: [
-                            .destructive(Text("Forget Flipper")) {
-                                device.forgetDevice()
-                            },
-                            .cancel()
-                        ]
-                    )
+                .confirmationDialog(
+                    "Forget Flipper?",
+                    isPresented: $showForgetAction,
+                    titleVisibility: .visible,
+                    presenting: flipper
+                ) { _ in
+                    Button("Forget Flipper", role: .destructive) {
+                        device.forgetDevice()
+                    }
+                } message: { flipper in
+                    Text("App will no longer be paired with Flipper \(flipper.name)")
                 }
             }
             .navigationBarHidden(true)
