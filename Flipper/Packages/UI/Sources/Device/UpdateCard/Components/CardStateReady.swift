@@ -77,32 +77,24 @@ extension DeviceUpdateCard {
                 .padding(.bottom, 8)
                 .padding(.horizontal, 12)
             }
-            .alert(
-                "Pause Synchronization?",
-                isPresented: $showPauseSync
-            ) {
-                Button("Continue") { }
-                Button("Pause") {
+            .customAlert(isPresented: $showPauseSync) {
+                PauseSyncAlert(
+                    isPresented: $showPauseSync,
+                    installedVersion: updateModel.installed!,
+                    availableVersion: updateModel.available!
+                ) {
                     synchronization.cancelSync()
-                }
-            } message: {
-                Text(
-                    "Firmware update is not possible during synchronization. " +
-                    "Wait for sync to finish or pause it.")
-            }
-            .alert(
-                "Update Firmware?",
-                isPresented: $showConfirmUpdate,
-                presenting: updateModel.firmware
-            ) { intent in
-                Button("Cancel") { }
-                Button("Update") {
                     updateModel.startUpdate()
                 }
-            } message: { firmware in
-                Text(
-                    "New Firmware \(firmware.version) " +
-                    "will be installed")
+            }
+            .customAlert(isPresented: $showConfirmUpdate) {
+                ConfirmUpdateAlert(
+                    isPresented: $showConfirmUpdate,
+                    installedVersion: updateModel.installed!,
+                    availableVersion: updateModel.available!
+                ) {
+                    updateModel.startUpdate()
+                }
             }
             .customAlert(isPresented: $showCharge) {
                 LowBatteryAlert(isPresented: $showCharge)

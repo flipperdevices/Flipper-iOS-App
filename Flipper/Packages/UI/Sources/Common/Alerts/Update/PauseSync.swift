@@ -1,16 +1,41 @@
+import Core
 import SwiftUI
 
-struct CancelAttackAlert: View {
+struct PauseSyncAlert: View {
     @Binding var isPresented: Bool
-    var onAbort: () -> Void
+    let installedVersion: Update.Version
+    let availableVersion: Update.Version
+    var onAction: () -> Void
+
+    var isSameChannel: Bool {
+        installedVersion.channel == availableVersion.channel
+    }
+
+    var messageAction: String {
+        isSameChannel ? "update to" : "install"
+    }
+
+    var buttonAction: String {
+        isSameChannel ? "Update" : "Install"
+    }
+
+    var message: AttributedString {
+        var message = AttributedString(
+            "Cannot \(messageAction) to \(availableVersion) during " +
+            "synchronization. Wait for sync to finish or pause it.")
+        if let range = message.range(of: "\(availableVersion)") {
+            message[range].foregroundColor = availableVersion.color
+        }
+        return message
+    }
 
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 4) {
-                Text("Abort Keys Сalculation?")
+                Text("Pause Synchronization?")
                     .font(.system(size: 14, weight: .bold))
 
-                Text("You can restart it later")
+                Text(message)
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)
@@ -24,10 +49,10 @@ struct CancelAttackAlert: View {
                 Divider()
 
                 Button {
-                    onAbort()
+                    onAction()
                     isPresented = false
                 } label: {
-                    Text("Abort")
+                    Text("Pause & \(buttonAction)")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(.a2)
                 }
@@ -37,7 +62,7 @@ struct CancelAttackAlert: View {
                 Button {
                     isPresented = false
                 } label: {
-                    Text("Continue")
+                    Text("Cancel")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(.primary)
                 }
