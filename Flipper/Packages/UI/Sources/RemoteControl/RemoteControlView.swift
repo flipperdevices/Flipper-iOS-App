@@ -9,6 +9,7 @@ struct RemoteControlView: View {
     @Environment(\.dismiss) private var dismiss
 
     var uiImage: UIImage? {
+        guard device.status == .connected else { return nil }
         guard let frame = device.frame else { return nil }
         return .init(
             pixels: frame.pixels.map { $0 ? .black : .orange },
@@ -123,18 +124,22 @@ struct RemoteControlView: View {
                             .padding(.horizontal, 4)
                             .opacity(isHorizontal ? 1 : 0)
 
-                        DeviceScreen {
+                        Group {
                             if device.status == .disconnected {
-                                Image("RemoteNotConnected")
+                                Image("RemoteScreenNotConnected")
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                            } else if let uiImage = uiImage {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .interpolation(.none)
                                     .aspectRatio(contentMode: .fit)
                             } else {
-                                AnimatedPlaceholder()
+                                DeviceScreen {
+                                    if let uiImage = uiImage {
+                                        Image(uiImage: uiImage)
+                                            .resizable()
+                                            .interpolation(.none)
+                                            .aspectRatio(contentMode: .fit)
+                                    } else {
+                                        AnimatedPlaceholder()
+                                    }
+                                }
                             }
                         }
                         .rotationEffect(rotation, anchor: .bottomTrailing)
@@ -177,9 +182,11 @@ struct RemoteControlView: View {
                 Title("Remote Control")
             }
         }
-        .onAppear {
-            device.updateLockStatus()
-            device.startScreenStreaming()
+        .onReceive(device.$status) { status in
+            if status == .connected, scenePhase == .active {
+                device.updateLockStatus()
+                device.startScreenStreaming()
+            }
         }
         .onDisappear {
             device.stopScreenStreaming()
