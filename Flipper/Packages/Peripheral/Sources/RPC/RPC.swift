@@ -32,13 +32,19 @@ public protocol RPC: AnyObject {
 
     // MARK: Application
 
-    var isLocked: Bool { get async throws }
+    var isApplicationLocked: Bool { get async throws }
 
     func appStart(_ name: String, args: String) async throws
     func appLoadFile(_ path: Path) async throws
     func appButtonPress(_ button: String) async throws
     func appButtonRelease() async throws
     func appExit() async throws
+
+    // MARK: Desktop
+
+    var isDesktopLocked: Bool { get async throws }
+
+    func unlock() async throws
 
     // MARK: GUI
 

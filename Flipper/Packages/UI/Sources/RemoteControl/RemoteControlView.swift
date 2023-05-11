@@ -111,10 +111,17 @@ struct RemoteControlView: View {
                     .offset(x: screenshotOffsetX)
                     .offset(y: screenshotOffsetY)
 
-                    LockButton(isLocked: false) {
-                        showOutdatedAlert = true
+                    LockButton(isLocked: device.isLocked) {
+                        Task {
+                            do {
+                                device.isLocked
+                                    ? try await device.unlock()
+                                    : try await device.lock()
+                            } catch {
+                                showOutdatedAlert = true
+                            }
+                        }
                     }
-                    .opacity(0.5)
                     .frame(width: buttonSide, height: buttonSide)
                     .offset(x: lockOffsetX)
                     .offset(y: lockOffsetY)

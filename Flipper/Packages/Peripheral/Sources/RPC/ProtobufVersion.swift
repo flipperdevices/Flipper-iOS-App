@@ -55,6 +55,12 @@ public struct ProtobufVersion {
     // App messages: GetErrorRequest, GetErrorResponse, DataExchangeRequest
     public static var v0_14: ProtobufVersion = .init(major: 0, minor: 14)
 
+    // ScreenFrame: additional orientation field
+    public static var v0_15: ProtobufVersion = .init(major: 0, minor: 15)
+
+    // Desktop service api
+    public static var v0_16: ProtobufVersion = .init(major: 0, minor: 16)
+
     // Future release
     public static var v1_0: ProtobufVersion = .init(major: 1, minor: 0)
 }

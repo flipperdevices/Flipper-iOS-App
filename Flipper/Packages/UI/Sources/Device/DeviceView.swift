@@ -175,7 +175,10 @@ struct DeviceView: View {
                         device.forgetDevice()
                     }
                 } message: { flipper in
-                    Text("App will no longer be paired with Flipper \(flipper.name)")
+                    Text(
+                        "App will no longer be paired with " +
+                        "Flipper \(flipper.name)"
+                    )
                 }
             }
             .navigationBarHidden(true)
