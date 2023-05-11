@@ -29,7 +29,7 @@ extension RPC {
             root.appending($0.location)
         }
 
-        for path in missing {
+        for path in Set(missing) {
             try await createDirectory(at: path)
         }
     }
