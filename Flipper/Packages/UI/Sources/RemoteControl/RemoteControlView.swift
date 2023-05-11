@@ -229,7 +229,7 @@ struct RemoteControlView: View {
         // FIXME: add .lock button
         guard controlsQueue.isEmpty else { return }
         Task {
-            try await device.lock()
+            try? await device.lock()
             device.updateLockStatus()
         }
     }
@@ -238,7 +238,7 @@ struct RemoteControlView: View {
         // FIXME: add .unlock button
         guard controlsQueue.isEmpty else { return }
         Task {
-            try await device.unlock()
+            try? await device.unlock()
             device.updateLockStatus()
         }
     }

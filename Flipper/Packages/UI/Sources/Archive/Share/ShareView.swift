@@ -106,17 +106,19 @@ struct ShareView: View {
 
     func shareAsShortLink() {
         Task { @MainActor in
-            let url = try await sharing.localLink(for: item)
-            onShare([url.absoluteString])
-            dismiss()
+            if let url = try? await sharing.localLink(for: item) {
+                onShare([url.absoluteString])
+                dismiss()
+            }
         }
     }
 
     func shareAsFile() {
         Task { @MainActor in
-            let url = try await sharing.tempFileURL(for: item)
-            onShare([url])
-            dismiss()
+            if let url = try? await sharing.tempFileURL(for: item) {
+                onShare([url])
+                dismiss()
+            }
         }
     }
 }
