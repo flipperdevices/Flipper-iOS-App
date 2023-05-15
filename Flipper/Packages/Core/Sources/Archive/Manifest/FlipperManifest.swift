@@ -9,7 +9,7 @@ extension RPC {
     func getManifest(progress: (Double) -> Void) async throws -> Manifest {
         try await createDirectories()
 
-        let paths = try await listAllFiles { listingProgress in
+        let paths = try await listAllFiles(recursively: true) { listingProgress in
             progress(listingProgress / 2)
         }
 
@@ -35,6 +35,7 @@ extension RPC {
     }
 
     private func listAllFiles(
+        recursively: Bool = false,
         progress: (Double) -> Void
     ) async throws -> [Path] {
         var result: [Path] = .init()
@@ -44,15 +45,44 @@ extension RPC {
         for (index, type) in FileType.allCases.enumerated() {
             let path = root.appending(type.location)
 
-            let files = try await list(at: path)
-                .files
-                .filter { !$0.hasPrefix(".") }
-                .filter { $0.hasSuffix(type.extension) }
-                .map { path.appending($0) }
-
+            let files = try await listFiles(at: path, matching: type, recursively: recursively)
             result.append(contentsOf: files)
 
             progress(Double(index + 1) / Double(FileType.allCases.count))
+        }
+
+        return result
+    }
+
+    private func listFiles(
+        at path: Path,
+        matching fileType: FileType,
+        recursively: Bool = false
+    ) async throws -> [Path] {
+        var result: [Path] = .init()
+
+        let elements = try await list(at: path)
+
+        let files = elements
+            .files
+            .filter { !$0.hasPrefix(".") }
+            .filter { $0.hasSuffix(fileType.extension) }
+            .map { path.appending($0) }
+
+        result.append(contentsOf: files)
+
+        guard recursively else { return result }
+
+        for directory in elements
+            .directories
+            .map({ path.appending($0) }) {
+
+            let recursiveElements = try await listFiles(
+                at: directory,
+                matching: fileType,
+                recursively: recursively
+            )
+            result.append(contentsOf: recursiveElements)
         }
 
         return result
@@ -92,6 +122,18 @@ fileprivate extension Array where Element == Peripheral.Element {
                 return nil
             }
             return file.name
+        }
+    }
+
+    var directories: [String] {
+        self.compactMap {
+            guard
+                case .directory(let directory) = $0,
+                directory.name != String.ignoredDirectory
+            else {
+                return nil
+            }
+            return directory.name
         }
     }
 }

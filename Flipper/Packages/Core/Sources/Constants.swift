@@ -4,6 +4,9 @@ extension String {
     static var appGroup: String {
         "group.com.flipperdevices.main"
     }
+    static var ignoredDirectory: String {
+        "assets"
+    }
 }
 
 extension URL {
