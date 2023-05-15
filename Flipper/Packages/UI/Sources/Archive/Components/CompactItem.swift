@@ -14,13 +14,22 @@ struct CompactItem: View {
             }
 
             Spacer()
-            Text(item.name.value)
-                .lineLimit(1)
-                .font(.system(size: 14, weight: .medium))
-                .padding(.horizontal, 8)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(item.name.value)
+                    .lineLimit(1)
+                    .font(.system(size: 14, weight: .medium))
+                    .padding(.horizontal, 8)
+                if item.subdirectories.count > 0 {
+                    Text(item.subdirectories.joined(separator: "/")+"/")
+                        .foregroundColor(.black60)
+                        .lineLimit(1)
+                        .font(.system(size: 10, weight: .regular))
+                        .padding(.horizontal, 8)
+                }
+            }
             Spacer()
         }
-        .frame(height: 81)
+        .frame(height: 84)
         .background(Color.groupedBackground)
         .cornerRadius(10)
         .compositingGroup()

@@ -17,6 +17,14 @@ public struct Path: Equatable, Hashable {
         .init(components: components.dropLast())
     }
 
+    public var subdirectories: [String] {
+        var copy = self
+        guard copy.components.count > 3 else { return [] }
+        copy.components.removeFirst(2)
+        copy.components.removeLast()
+        return copy.components
+    }
+
     public init<T: StringProtocol>(string: T) {
         self.components = String(string).split(separator: "/").map(String.init)
     }

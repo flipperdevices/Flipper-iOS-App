@@ -8,6 +8,7 @@ public struct ArchiveItem: Equatable, Identifiable {
 
     public var name: Name
     public let kind: Kind
+    public let subdirectories: [String]
     public var properties: [Property]
     public var shadowCopy: [Property]
     public var isFavorite: Bool
@@ -27,6 +28,7 @@ public struct ArchiveItem: Equatable, Identifiable {
     public init(
         name: Name,
         kind: Kind,
+        subdirectories: [String] = [],
         properties: [Property],
         shadowCopy: [Property],
         isFavorite: Bool = false,
@@ -36,6 +38,7 @@ public struct ArchiveItem: Equatable, Identifiable {
     ) {
         self.name = name
         self.kind = kind
+        self.subdirectories = subdirectories
         self.isFavorite = isFavorite
         self.properties = properties
         self.shadowCopy = shadowCopy
@@ -62,30 +65,38 @@ extension ArchiveItem {
         guard let filename = path.lastComponent else {
             throw Error.invalidPath(path)
         }
-        try self.init(filename: filename, content: content)
+        try self.init(filename: filename, content: content, subdirectories: path.subdirectories)
     }
 
-    init(filename: String, content: String) throws {
+    init(filename: String, content: String, subdirectories: [String] = []) throws {
         guard let properties = [Property](content: content) else {
             throw Error.invalidContent(filename)
         }
-        self = try .init(filename: filename, properties: properties)
+        self = try .init(filename: filename, subdirectories: subdirectories, properties: properties)
     }
 
     init(
         filename: String,
+        subdirectories: [String] = [],
         properties: [Property],
         shadowCopy: [Property] = []
     ) throws {
         self.init(
             name: try .init(filename: filename),
             kind: try .init(filename: filename),
+            subdirectories: subdirectories,
             properties: properties,
             shadowCopy: shadowCopy)
     }
 
     public var path: Path {
-        .init(components: ["any", kind.location, filename])
+        guard !subdirectories.isEmpty else {
+            return .init(components: ["any", kind.location, filename])
+        }
+        var components = ["any", kind.location]
+        components.append(contentsOf: subdirectories)
+        components.append(filename)
+        return .init(components: components)
     }
 
     public var filename: String {
