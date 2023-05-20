@@ -117,7 +117,7 @@ struct ArchiveView: View {
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
         .onOpenURL { url in
-            if url.isKeyURL, importedItem == nil {
+            if (url.isKeyFile || url.isKeyURL), importedItem == nil {
                 importedItem = url
             }
         }
@@ -129,6 +129,10 @@ struct ArchiveView: View {
 }
 
 private extension URL {
+    var isKeyFile: Bool {
+        (try? ArchiveItem.Kind(.init(string: path))) != nil
+    }
+
     var isKeyURL: Bool {
         path == "/s" || path == "/sf"
     }
