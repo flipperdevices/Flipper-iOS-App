@@ -8,6 +8,8 @@ struct DeviceView: View {
     @EnvironmentObject var synchronization: Synchronization
     @EnvironmentObject var updateModel: UpdateModel
 
+    @Environment(\.scenePhase) var scenePhase
+
     @State private var showForgetAction = false
     @State private var showOutdatedFirmwareAlert = false
     @State private var showOutdatedMobileAlert = false
@@ -200,6 +202,12 @@ struct DeviceView: View {
                 device.connect()
             }
         }
+        .onChange(of: scenePhase) { scenePhase in
+            switch scenePhase {
+            case .active: onActive()
+            default: break
+            }
+        }
         .task {
             if central.state != .poweredOn {
                 central.kick()
@@ -207,15 +215,35 @@ struct DeviceView: View {
         }
     }
 
-    func connect() {
-        if device.status == .noDevice {
-            router.showWelcomeScreen()
-        } else {
+    func onActive() {
+        if device.status == .disconnected, central.state == .poweredOn {
             device.connect()
         }
+    }
+
+    func connect() {
+        guard device.status != .noDevice else {
+            router.showWelcomeScreen()
+            return
+        }
+
+        guard central.state == .poweredOn else {
+            showBluetoothDisabled()
+            return
+        }
+
+        device.connect()
     }
 
     func disconnect() {
         device.disconnect()
     }
+}
+
+// FIXME: refactor
+
+import CoreBluetooth
+
+private func showBluetoothDisabled() {
+    _ = CBCentralManager()
 }

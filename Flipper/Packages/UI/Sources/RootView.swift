@@ -95,9 +95,6 @@ private struct RootViewImpl: View {
             return
         }
         endBackgroundTask()
-        if device.status == .disconnected {
-            device.connect()
-        }
     }
 
     func onInactive() {
