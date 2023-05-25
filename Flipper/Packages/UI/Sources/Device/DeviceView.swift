@@ -31,7 +31,7 @@ struct DeviceView: View {
     }
 
     var canPlayAlert: Bool {
-        flipper?.state == .connected && !isOutdatedVersion
+        device.flipper?.state == .connected && !isOutdatedVersion
     }
 
     var canConnect: Bool {

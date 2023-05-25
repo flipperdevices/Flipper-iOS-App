@@ -95,12 +95,14 @@ public class Dependencies: ObservableObject {
 
     @MainActor
     public lazy var central: Central = {
-        .init()
+        .init(central: Peripheral.Dependencies.central)
     }()
 
     @MainActor
     public lazy var device: Device = {
-        .init(pairedDevice: pairedDevice)
+        .init(
+            central: central,
+            pairedDevice: pairedDevice)
     }()
 
     @MainActor

@@ -7,6 +7,7 @@ import Foundation
 public class Device: ObservableObject {
     @Published public var status: Status = .noDevice
 
+    private var central: Central
     private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
     private var cancellables = [AnyCancellable]()
@@ -19,7 +20,8 @@ public class Device: ObservableObject {
     @Published public private(set) var info: Info = .init()
     @Published public private(set) var isInfoReady = false
 
-    public init(pairedDevice: PairedDevice) {
+    public init(central: Central, pairedDevice: PairedDevice) {
+        self.central = central
         self.pairedDevice = pairedDevice
         subscribeToPublishers()
     }
@@ -59,6 +61,11 @@ public class Device: ObservableObject {
             status = .noDevice
             return
         }
+        guard central.state == .poweredOn else {
+            status = .disconnected
+            return
+        }
+
         guard flipper.state != oldValue else {
             return
         }
@@ -155,7 +162,11 @@ public class Device: ObservableObject {
     // MARK: Connection
 
     public func connect() {
-        logger.info("connecting")
+        guard central.state == .poweredOn else {
+            logger.info("bluetooth is not ready")
+            return
+        }
+        logger.info("\(central.state), connecting")
         reconnectOnDisconnect = true
         pairedDevice.connect()
     }
