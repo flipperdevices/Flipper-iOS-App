@@ -36,14 +36,26 @@ struct SelectChannelButton: View {
     let version: Update.Version
     var action: () -> Void
 
+    public var text: String {
+        switch version.channel {
+        case .development: return "Dev \(version.name)"
+        case .candidate: return "RC \(version.name.dropLast(3))"
+        case .release: return "Release \(version.name)"
+        case .custom: return "Custom"
+        }
+    }
+
     var body: some View {
         Button {
             action()
         } label: {
             HStack(spacing: 6) {
                 Spacer()
-                Version(version)
+
+                Text(text)
                     .font(.system(size: 14, weight: .regular))
+                    .foregroundColor(version.color)
+
                 Image(systemName: "chevron.down")
                     .foregroundColor(.black30)
             }

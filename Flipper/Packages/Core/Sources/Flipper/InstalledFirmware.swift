@@ -12,6 +12,7 @@ extension Flipper.DeviceInformation {
         case .release: version = "\(parts[1])"
         case .candidate: version = "\(parts[1])"
         case .development: version = "\(parts[0])"
+        case .custom: version = "\(parts[0])"
         }
 
         return .init(name: version, channel: channel)

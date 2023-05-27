@@ -20,6 +20,8 @@ extension DeviceUpdateCard {
         @EnvironmentObject var synchronization: Synchronization
 
         @State private var showConfirmUpdate = false
+        @State private var showFileImporter = false
+
         @State private var showPauseSync = false
         @State private var showCharge = false
 
@@ -55,27 +57,35 @@ extension DeviceUpdateCard {
 
                 Divider()
 
-                UpdateButton(state: state) {
-                    guard device.hasBatteryCharged else {
-                        showCharge = true
-                        return
+                if updateChannel == .custom {
+                    ChooseFileButton {
+                        showFileImporter = true
                     }
-                    guard device.status != .synchronizing else {
-                        showPauseSync = true
-                        return
-                    }
-                    showConfirmUpdate = true
-                }
 
-                VStack {
-                    Text(description)
-                        .font(.system(size: 12, weight: .medium))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.black16)
+                    VStack {
+                        Text("Use the firmware (.tgz) from your files to update")
+                            .font(.system(size: 12, weight: .medium))
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.black16)
+                    }
+                    .padding(.top, 5)
+                    .padding(.bottom, 8)
+                    .padding(.horizontal, 12)
+                } else {
+                    UpdateButton(state: state) {
+                        updatePressed()
+                    }
+
+                    VStack {
+                        Text(description)
+                            .font(.system(size: 12, weight: .medium))
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.black16)
+                    }
+                    .padding(.top, 5)
+                    .padding(.bottom, 8)
+                    .padding(.horizontal, 12)
                 }
-                .padding(.top, 5)
-                .padding(.bottom, 8)
-                .padding(.horizontal, 12)
             }
             .customAlert(isPresented: $showPauseSync) {
                 PauseSyncAlert(
@@ -99,6 +109,34 @@ extension DeviceUpdateCard {
             .customAlert(isPresented: $showCharge) {
                 LowBatteryAlert(isPresented: $showCharge)
             }
+            .fileImporter(
+                isPresented: $showFileImporter,
+                allowedContentTypes: [.gzip]
+            ) { result in
+                guard case .success(let url) = result else {
+                    return
+                }
+                updateModel.customFirmware = .init(
+                    version: .init(
+                        name: url.lastPathComponent,
+                        channel: .custom),
+                    changelog: "",
+                    url: url
+                )
+                updatePressed()
+            }
+        }
+
+        func updatePressed() {
+            guard device.hasBatteryCharged else {
+                showCharge = true
+                return
+            }
+            guard device.status != .synchronizing else {
+                showPauseSync = true
+                return
+            }
+            showConfirmUpdate = true
         }
     }
 }
