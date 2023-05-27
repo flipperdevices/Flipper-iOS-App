@@ -166,7 +166,7 @@ public class Device: ObservableObject {
             logger.info("bluetooth is not ready")
             return
         }
-        logger.info("\(central.state), connecting")
+        logger.info("connecting")
         reconnectOnDisconnect = true
         pairedDevice.connect()
     }
