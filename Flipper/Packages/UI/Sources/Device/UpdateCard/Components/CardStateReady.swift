@@ -63,17 +63,19 @@ extension DeviceUpdateCard {
                     }
 
                     VStack {
-                        Text("Use the firmware (.tgz) from your files to update")
-                            .font(.system(size: 12, weight: .medium))
-                            .multilineTextAlignment(.center)
-                            .foregroundColor(.black16)
+                        Text(
+                            "Use the firmware (.tgz) from your files to update"
+                        )
+                        .font(.system(size: 12, weight: .medium))
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(.black16)
                     }
                     .padding(.top, 5)
                     .padding(.bottom, 8)
                     .padding(.horizontal, 12)
                 } else {
                     UpdateButton(state: state) {
-                        updatePressed()
+                        startUpdate()
                     }
 
                     VStack {
@@ -116,18 +118,28 @@ extension DeviceUpdateCard {
                 guard case .success(let url) = result else {
                     return
                 }
-                updateModel.customFirmware = .init(
-                    version: .init(
-                        name: url.lastPathComponent,
-                        channel: .custom),
-                    changelog: "",
-                    url: url
-                )
-                updatePressed()
+                customUpdateFileChosen(url)
+            }
+            .onOpenURL { url in
+                if url.isFileURL, url.pathExtension == "tgz" {
+                    updateChannel = .custom
+                    customUpdateFileChosen(url)
+                }
             }
         }
 
-        func updatePressed() {
+        func customUpdateFileChosen(_ url: URL) {
+            updateModel.customFirmware = .init(
+                version: .init(
+                    name: url.lastPathComponent,
+                    channel: .custom),
+                changelog: "",
+                url: url
+            )
+            startUpdate()
+        }
+
+        func startUpdate() {
             guard device.hasBatteryCharged else {
                 showCharge = true
                 return
