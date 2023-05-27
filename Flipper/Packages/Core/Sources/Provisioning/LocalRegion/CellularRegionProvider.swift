@@ -7,10 +7,14 @@ public class CellularRegionProvider: RegionProvider {
 
     public init() {
         self.codesProvider = {
+            #if canImport(UIKit)
             CTTelephonyNetworkInfo()
                 .serviceSubscriberCellularProviders?
                 .values
                 .compactMap { $0.isoCountryCode }
+            #else
+            []
+            #endif
         }
     }
 

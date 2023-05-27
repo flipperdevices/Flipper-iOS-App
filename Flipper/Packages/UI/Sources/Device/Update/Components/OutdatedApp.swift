@@ -1,8 +1,9 @@
 import SwiftUI
 
 extension DeviceUpdateView {
+    // MARK: Not used
     struct OutdatedAppView: View {
-        @StateObject var viewModel: DeviceUpdateViewModel
+        @Environment(\.openURL) private var openURL
 
         var body: some View {
             VStack(spacing: 0) {
@@ -22,7 +23,7 @@ extension DeviceUpdateView {
                 .padding(.top, 4)
 
                 Button {
-                    UIApplication.shared.open(.appStore)
+                    openURL(.appStore)
                 } label: {
                     Text("Go to App Store")
                         .font(.system(size: 16, weight: .medium))

@@ -1,9 +1,13 @@
-import SwiftUI
 import Core
+import SwiftUI
 
 struct TabView: View {
-    @StateObject var viewModel: TabViewModel
+    @EnvironmentObject var device: Device
+    @EnvironmentObject var synchronization: Synchronization
     @Binding var selected: Tab
+    var extraAction: () -> Void
+
+    @AppStorage(.hasReaderLog) var hasReaderLog = false
 
     enum Tab: String, CaseIterable {
         case device
@@ -15,8 +19,15 @@ struct TabView: View {
         selected == tab ? .accentColor : .secondary
     }
 
+    func handleTap(on tab: Tab) {
+        switch selected {
+        case tab: extraAction()
+        default: selected = tab
+        }
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        Group {
             HStack(alignment: .top) {
                 TabViewItem(
                     image: deviceImage,
@@ -24,7 +35,7 @@ struct TabView: View {
                     isSelected: selected == .device,
                     hasNotification: false
                 ) {
-                    self.selected = .device
+                    handleTap(on: .device)
                 }
                 .foregroundColor(deviceColor)
 
@@ -36,7 +47,7 @@ struct TabView: View {
                     isSelected: selected == .archive,
                     hasNotification: false
                 ) {
-                    self.selected = .archive
+                    handleTap(on: .archive)
                 }
                 .foregroundColor(archiveColor)
 
@@ -46,29 +57,30 @@ struct TabView: View {
                     image: .init(Image(hubImageName)),
                     name: "Hub",
                     isSelected: selected == .hub,
-                    hasNotification: viewModel.hasMFLog
+                    hasNotification: hasReaderLog
                 ) {
-                    self.selected = .hub
+                    handleTap(on: .hub)
                 }
                 .foregroundColor(hubColor)
             }
-            .padding(.top, 6)
+            .padding(.vertical, 6)
             .padding(.horizontal, 8)
         }
-        .frame(height: tabViewHeight + bottomSafeArea + 9, alignment: .top)
         .background(systemBackground)
     }
 }
 
 extension TabView {
     var deviceTabName: String {
-        switch viewModel.status {
+        switch device.status {
         case .noDevice: return "No Device"
-        case .unsupportedDevice: return "Unsupported"
+        case .unsupported: return "Unsupported"
+        case .outdatedMobile: return "Outdated App"
         case .connecting: return "Connecting..."
         case .connected: return "Connected"
-        case .disconnected: return "Disconnected"
-        case .synchronizing: return "Syncing \(viewModel.syncProgress)%"
+        // TODO: Think about .notConnected state
+        case .disconnected: return "Not Connected"
+        case .synchronizing: return "Syncing \(synchronization.progress)%"
         case .synchronized: return "Synced!"
         case .updating: return "Connecting..."
         case .invalidPairing: return "Pairing Failed"
@@ -82,9 +94,10 @@ extension TabView {
         guard selected == .device else {
             return .black30
         }
-        switch viewModel.status {
+        switch device.status {
         case .noDevice: return .black40
-        case .unsupportedDevice: return .sRed
+        case .unsupported: return .sRed
+        case .outdatedMobile: return .sRed
         case .connecting: return .black40
         case .connected: return .a2
         case .disconnected: return .black40
@@ -107,7 +120,7 @@ extension TabView {
 
 extension TabView {
     var deviceImage: AnyView {
-        switch viewModel.status {
+        switch device.status {
         case .connecting, .synchronizing:
             return .init(
                 Animation(deviceImageName + "_animated")
@@ -121,9 +134,10 @@ extension TabView {
         var name = "device_"
         name += selected == .device ? "filled_" : "line_"
 
-        switch viewModel.status {
+        switch device.status {
         case .noDevice: name += "no_device"
-        case .unsupportedDevice: name += "unsupported"
+        case .unsupported: name += "unsupported"
+        case .outdatedMobile: name += "unsupported"
         case .connecting: name += "connecting"
         case .connected: name += "connected"
         case .disconnected: name += "disconnected"

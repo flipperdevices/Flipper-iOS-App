@@ -1,5 +1,4 @@
 import Peripheral
-import Logging
 
 extension ArchiveItem {
     public enum Kind: Codable, Hashable, Comparable, CaseIterable {
@@ -12,14 +11,14 @@ extension ArchiveItem {
 }
 
 extension ArchiveItem.Kind {
-    init<T: StringProtocol>(filename: T) throws {
+    public init<T: StringProtocol>(filename: T) throws {
         guard let filetype = Peripheral.FileType(filename: filename) else {
             throw ArchiveItem.Error.invalidType(String(filename))
         }
         self = try .init(filetype)
     }
 
-    init(_ path: Path) throws {
+    public init(_ path: Path) throws {
         guard let filename = path.lastComponent else {
             throw ArchiveItem.Error.invalidPath(path)
         }

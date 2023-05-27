@@ -3,7 +3,7 @@ import Peripheral
 extension ScreenFrame {
     // swiftlint:disable force_unwrapping
     static var updateInProgress: ScreenFrame {
-        .init(updatingFrameBytes)!
+        .init(bytes: updatingFrameBytes, orientation: .horizontal)!
     }
 
     // swiftlint:disable multiline_literal_brackets indentation_width

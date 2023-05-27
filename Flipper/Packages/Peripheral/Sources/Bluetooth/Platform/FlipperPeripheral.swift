@@ -1,10 +1,7 @@
-import CoreBluetooth
 import Combine
-import Logging
+import CoreBluetooth
 
 class FlipperPeripheral: NSObject, BluetoothPeripheral {
-    private let logger = Logger(label: "peripheral")
-
     private var peripheral: CBPeripheral
     private var serialWrite: CBCharacteristic?
 
@@ -25,6 +22,8 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     var services: [FlipperService] {
         peripheral.services?.map { FlipperService($0) } ?? []
     }
+    // FIXME: Temporary workaround to ignore cache
+    private var updatedDeviceInfoCharacteristics: Set<CBUUID> = .init()
 
     var info: AnyPublisher<Void, Never> {
         infoSubject.eraseToAnyPublisher()
@@ -44,7 +43,7 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
 
     init(
         peripheral: CBPeripheral,
-        colorService service: CBUUID? = nil
+        service: CBUUID? = nil
     ) {
         self.id = peripheral.identifier
         self.name = String(name: peripheral.name)
@@ -81,7 +80,7 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
     private func _onError(_ error: CBError) {
         switch error.code {
         case .peerRemovedPairingInformation: state = .invalidPairing
-        case .encryptionTimedOut: state = .invalidPairing
+        case .encryptionTimedOut: state = .disconnected
         default: logger.error("unknown error type: \(error)")
         }
     }
@@ -224,7 +223,28 @@ extension FlipperPeripheral: CBPeripheralDelegate {
     }
 
     func didUpdateDeviceInformation(_ characteristic: CBCharacteristic) {
+        guard
+            let services = peripheral.services,
+            let info = services.first(where: { $0.uuid == .deviceInformation }),
+            let characteristics = info.characteristics
+        else {
+            return
+        }
+        guard characteristics.allSatisfy({ isUpdated($0) }) else {
+            markAsUpdated(characteristic)
+            return
+        }
         state = .connected
+    }
+
+    // FIXME: Temporary workaround to ignore cache
+
+    func isUpdated(_ characteristic: CBCharacteristic) -> Bool {
+        updatedDeviceInfoCharacteristics.contains(characteristic.uuid)
+    }
+
+    func markAsUpdated(_ characteristic: CBCharacteristic) {
+        updatedDeviceInfoCharacteristics.insert(characteristic.uuid)
     }
 }
 

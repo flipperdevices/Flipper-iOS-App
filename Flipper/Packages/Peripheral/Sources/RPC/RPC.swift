@@ -1,12 +1,15 @@
 import Foundation
 
-public protocol RPC {
-    var session: Session? { get }
+public protocol RPC: AnyObject {
+    // TODO: Use async sequence
+    var onScreenFrame: ((ScreenFrame) -> Void)? { get set }
+    var onAppStateChanged: ((Message.AppState) -> Void)? { get set }
 
     // MARK: System
 
     func deviceInfo() -> AsyncThrowingStream<(String, String), Swift.Error>
     func powerInfo() -> AsyncThrowingStream<(String, String), Swift.Error>
+    func property(_ key: String) -> AsyncThrowingStream<Response.System.Property, Swift.Error>
     @discardableResult
     func ping(_ bytes: [UInt8]) async throws -> [UInt8]
     func reboot(to mode: Message.RebootMode) async throws
@@ -29,18 +32,24 @@ public protocol RPC {
 
     // MARK: Application
 
+    var isApplicationLocked: Bool { get async throws }
+
     func appStart(_ name: String, args: String) async throws
     func appLoadFile(_ path: Path) async throws
     func appButtonPress(_ button: String) async throws
     func appButtonRelease() async throws
     func appExit() async throws
 
+    // MARK: Desktop
+
+    var isDesktopLocked: Bool { get async throws }
+
+    func unlock() async throws
+
     // MARK: GUI
 
     func startStreaming() async throws
     func stopStreaming() async throws
-    func onScreenFrame(_ body: @escaping (ScreenFrame) -> Void)
-    func onAppStateChanged(_ body: @escaping (Message.AppState) -> Void)
     func pressButton(_ button: InputKey) async throws
     func playAlert() async throws
     func startVirtualDisplay(with frame: ScreenFrame?) async throws

@@ -1,37 +1,41 @@
+import Core
 import SwiftUI
 
 // swiftlint:disable vertical_parameter_alignment_on_call
 
 struct SpeedTestView: View {
-    @StateObject var viewModel: SpeedTestViewModel
+    // next step
+    @StateObject var speedTest: SpeedTest = .init(
+        pairedDevice: Dependencies.shared.pairedDevice
+    )
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack {
             Spacer()
-            Text(String("\(viewModel.bps) bytes per second"))
+            Text(String("\(speedTest.bps) bytes per second"))
             Spacer()
-            Text(String("\(viewModel.bpsMin) ~ \(viewModel.bpsMax) bps"))
+            Text(String("\(speedTest.bpsMin) ~ \(speedTest.bpsMax) bps"))
             Spacer()
-            Text("Packet size: \(Int(viewModel.packetSize))")
+            Text("Packet size: \(Int(speedTest.packetSize))")
             Slider(
-                value: $viewModel.packetSize,
-                in: (1.0 ... Double(viewModel.maximumPacketSize)),
+                value: $speedTest.packetSize,
+                in: (1.0 ... Double(speedTest.maximumPacketSize)),
                 step: 1.0
             ) {
                 Text("Packet size")
             } minimumValueLabel: {
                 Text("1")
             } maximumValueLabel: {
-                Text(String(viewModel.maximumPacketSize))
+                Text(String(speedTest.maximumPacketSize))
             }
             Spacer()
-            Button(viewModel.isRunning ? "Stop" : "Start") {
-                switch viewModel.isRunning {
+            Button(speedTest.isRunning ? "Stop" : "Start") {
+                switch speedTest.isRunning {
                 case true:
-                    viewModel.stop()
+                    speedTest.stop()
                 case false:
-                    viewModel.start()
+                    speedTest.start()
                 }
             }
             .padding(.bottom, 50)
@@ -48,7 +52,7 @@ struct SpeedTestView: View {
             }
         }
         .onDisappear {
-            viewModel.stop()
+            speedTest.stop()
         }
     }
 }

@@ -1,133 +1,95 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "AttributedText",
-        "repositoryURL": "https://github.com/gonzalezreal/AttributedText",
-        "state": {
-          "branch": null,
-          "revision": "0e811cb14de367bbd58a94d12259687e5ee08bea",
-          "version": "1.0.1"
-        }
-      },
-      {
-        "package": "combine-schedulers",
-        "repositoryURL": "https://github.com/pointfreeco/combine-schedulers",
-        "state": {
-          "branch": null,
-          "revision": "aa3e575929f2bcc5bad012bd2575eae716cbcdf7",
-          "version": "0.8.0"
-        }
-      },
-      {
-        "package": "Countly",
-        "repositoryURL": "https://github.com/Countly/countly-sdk-ios.git",
-        "state": {
-          "branch": null,
-          "revision": "51a22dc9c040c4f6fccef7db3edef16d58dead12",
-          "version": "21.11.2"
-        }
-      },
-      {
-        "package": "DCompression",
-        "repositoryURL": "https://github.com/swiftstack/dcompression.git",
-        "state": {
-          "branch": "dev",
-          "revision": "ba3dafed5054d251b6f49a07e1f7c58491a0c2cb",
-          "version": null
-        }
-      },
-      {
-        "package": "Lottie",
-        "repositoryURL": "https://github.com/airbnb/lottie-ios.git",
-        "state": {
-          "branch": null,
-          "revision": "4a6058cbbdfe4f74aeae92c8bd51ad3b0de2a1ee",
-          "version": "3.3.0"
-        }
-      },
-      {
-        "package": "MarkdownUI",
-        "repositoryURL": "https://github.com/tonyfreeman/MarkdownUI.git",
-        "state": {
-          "branch": "main",
-          "revision": "3c80d50712dcecf38ceb8d327969e644d5c37de6",
-          "version": null
-        }
-      },
-      {
-        "package": "NetworkImage",
-        "repositoryURL": "https://github.com/gonzalezreal/NetworkImage",
-        "state": {
-          "branch": null,
-          "revision": "c97f83e771c95186af80ef6118f158852a9e54be",
-          "version": "4.0.1"
-        }
-      },
-      {
-        "package": "Radix",
-        "repositoryURL": "https://github.com/swiftstack/radix.git",
-        "state": {
-          "branch": "dev",
-          "revision": "e360536509fe13c740184ba2496d7d9a5f434f46",
-          "version": null
-        }
-      },
-      {
-        "package": "Stream",
-        "repositoryURL": "https://github.com/swiftstack/stream.git",
-        "state": {
-          "branch": "dev",
-          "revision": "84dfcfe6822fad398ff1d3a51cc7850dbcfea7ef",
-          "version": null
-        }
-      },
-      {
-        "package": "swift-collections",
-        "repositoryURL": "https://github.com/apple/swift-collections.git",
-        "state": {
-          "branch": null,
-          "revision": "48254824bb4248676bf7ce56014ff57b142b77eb",
-          "version": "1.0.2"
-        }
-      },
-      {
-        "package": "swift-log",
-        "repositoryURL": "https://github.com/apple/swift-log.git",
-        "state": {
-          "branch": null,
-          "revision": "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
-          "version": "1.4.2"
-        }
-      },
-      {
-        "package": "SwiftProtobuf",
-        "repositoryURL": "https://github.com/tonyfreeman/swift-protobuf.git",
-        "state": {
-          "branch": "ignore-invalid-utf8",
-          "revision": "5b5cdf2859d256ecb3d97fdd3de4cf8607866c8b",
-          "version": null
-        }
-      },
-      {
-        "package": "SwiftCommonMark",
-        "repositoryURL": "https://github.com/gonzalezreal/SwiftCommonMark",
-        "state": {
-          "branch": null,
-          "revision": "ed252beaddecce28ea6363f800c773d6169011b8",
-          "version": "1.0.0"
-        }
-      },
-      {
-        "package": "xctest-dynamic-overlay",
-        "repositoryURL": "https://github.com/pointfreeco/xctest-dynamic-overlay",
-        "state": {
-          "branch": null,
-          "revision": "30314f1ece684dd60679d598a9b89107557b67d9",
-          "version": "0.4.1"
-        }
+  "pins" : [
+    {
+      "identity" : "countly-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Countly/countly-sdk-ios.git",
+      "state" : {
+        "revision" : "51a22dc9c040c4f6fccef7db3edef16d58dead12",
+        "version" : "21.11.2"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "dcompression",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftstack/dcompression.git",
+      "state" : {
+        "branch" : "dev",
+        "revision" : "ba3dafed5054d251b6f49a07e1f7c58491a0c2cb"
+      }
+    },
+    {
+      "identity" : "lottie-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/airbnb/lottie-ios.git",
+      "state" : {
+        "revision" : "4a6058cbbdfe4f74aeae92c8bd51ad3b0de2a1ee",
+        "version" : "3.3.0"
+      }
+    },
+    {
+      "identity" : "radix",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftstack/radix.git",
+      "state" : {
+        "branch" : "dev",
+        "revision" : "e360536509fe13c740184ba2496d7d9a5f434f46"
+      }
+    },
+    {
+      "identity" : "sentry-cocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getsentry/sentry-cocoa.git",
+      "state" : {
+        "revision" : "92a6472efc750a4e18bdee21c204942ab0bc4dcd",
+        "version" : "8.4.0"
+      }
+    },
+    {
+      "identity" : "stream",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftstack/stream.git",
+      "state" : {
+        "branch" : "dev",
+        "revision" : "84dfcfe6822fad398ff1d3a51cc7850dbcfea7ef"
+      }
+    },
+    {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections.git",
+      "state" : {
+        "revision" : "48254824bb4248676bf7ce56014ff57b142b77eb",
+        "version" : "1.0.2"
+      }
+    },
+    {
+      "identity" : "swift-log",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-log.git",
+      "state" : {
+        "revision" : "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
+        "version" : "1.4.2"
+      }
+    },
+    {
+      "identity" : "swift-markdown-ui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/gonzalezreal/swift-markdown-ui",
+      "state" : {
+        "revision" : "12b351a75201a8124c2f2e1f9fc6ef5cd812c0b9",
+        "version" : "2.1.0"
+      }
+    },
+    {
+      "identity" : "swift-protobuf",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-protobuf.git",
+      "state" : {
+        "revision" : "0af9125c4eae12a4973fb66574c53a54962a9e1e",
+        "version" : "1.21.0"
+      }
+    }
+  ],
+  "version" : 2
 }

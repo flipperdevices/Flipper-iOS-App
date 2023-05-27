@@ -14,7 +14,8 @@ class BluetoothPeripheralMock: BluetoothPeripheral {
                 .init(name: .manufacturerName, value: .init("Flipper".utf8)),
                 .init(name: .serialNumber, value: .init("Serial".utf8)),
                 .init(name: .firmwareRevision, value: .init("Firmware".utf8)),
-                .init(name: .softwareRevision, value: .init("Software".utf8))
+                .init(name: .softwareRevision, value: .init("Software".utf8)),
+                .init(name: .protobufUUID, value: .init("0.11".utf8))
             ]),
         .init(
             name: .battery,
@@ -84,4 +85,5 @@ fileprivate extension String {
     static var serialNumber: String { "Serial Number String" }
     static var firmwareRevision: String { "Firmware Revision String" }
     static var softwareRevision: String { "Software Revision String" }
+    static var protobufUUID: String { "03F6666D-AE5E-47C8-8E1A-5D873EB5A933" }
 }

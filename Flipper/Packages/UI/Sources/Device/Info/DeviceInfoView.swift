@@ -3,46 +3,82 @@ import Collections
 import SwiftUI
 
 struct DeviceInfoView: View {
-    @StateObject var viewModel: DeviceInfoViewModel
+    @EnvironmentObject var device: Device
     @Environment(\.dismiss) private var dismiss
 
+    var info: Device.Info { device.info }
+    var hardware: Device.Info.Hardware { info.hardware }
+    var firmware: Device.Info.Firmware { info.firmware }
+
+    var deviceName: String? { hardware.name }
+    var hardwareModel: String? { hardware.model }
+    var hardwareRegion: String? { hardware.region.builtin }
+    var hardwareRegionProvisioned: String? { hardware.region.provisioned }
+
+    var hardwareVersion: String? { hardware.version }
+    var hardwareOTPVersion: String? { info.hardware.otp.version }
+    var serialNumber: String? { hardware.uid }
+
+    var softwareRevision: String? { firmware.formatted }
+    var buildDate: String? { firmware.build.date }
+    var firmwareTarget: String? { firmware.target }
+    var protobufVersion: String? { info.protobuf.version.formatted }
+
+    var radioFirmware: String? { info.radio.stack.formatted }
+
+    var otherKeys: OrderedDictionary<String, String?> {
+        var result: OrderedDictionary<String, String?> = .init()
+
+        for key in info.unknown.keys.sorted() {
+            result[key] = info.unknown[key]
+        }
+
+        return result
+    }
+
+    var canRefresh: Bool {
+        device.status == .connected && device.isInfoReady == true
+    }
+
     var body: some View {
-        ScrollView {
+        RefreshableScrollView(isEnabled: canRefresh) {
+            reload()
+        } content: {
             VStack(spacing: 14) {
                 DeviceInfoViewCard(
                     title: "Flipper Device",
                     values: [
-                        "Device Name": viewModel.deviceName,
-                        "Hardware Model": viewModel.hardwareModel,
-                        "Hardware Region": viewModel.hardwareRegion,
+                        "Device Name": deviceName,
+                        "Hardware Model": hardwareModel,
+                        "Hardware Region": hardwareRegion,
                         "Hardware Region Provisioned":
-                            viewModel.hardwareRegionProvisioned,
-                        "Hardware Version": viewModel.hardwareVersion,
-                        "Hardware OTP Version": viewModel.hardwareOTPVersion,
-                        "Serial Number": viewModel.serialNumber
+                            hardwareRegionProvisioned,
+                        "Hardware Version": hardwareVersion,
+                        "Hardware OTP Version": hardwareOTPVersion,
+                        "Serial Number": serialNumber
                     ]
                 )
 
                 DeviceInfoViewCard(
                     title: "Firmware",
                     values: [
-                        "Software Revision": viewModel.softwareRevision,
-                        "Build Date": viewModel.buildDate,
-                        "Target": viewModel.firmwareTarget,
-                        "Protobuf Version": viewModel.protobufVersion
+                        "Software Revision": softwareRevision,
+                        "Build Date": buildDate,
+                        "Target": firmwareTarget,
+                        "Protobuf Version": protobufVersion
                     ]
                 )
 
                 DeviceInfoViewCard(
                     title: "Radio Stack",
                     values: [
-                        "Radio Firmware": viewModel.radioFirmware
+                        "Radio Firmware": radioFirmware
                     ]
                 )
 
                 DeviceInfoViewCard(
                     title: "Other",
-                    values: viewModel.otherKeys
+                    values: otherKeys
                 )
             }
             .textSelection(.enabled)
@@ -60,47 +96,51 @@ struct DeviceInfoView: View {
             }
             TrailingToolbarItems {
                 ShareButton {
-                    viewModel.share()
+                    share()
                 }
-                .disabled(!viewModel.isReady)
-                .opacity(viewModel.isReady ? 1 : 0.4)
+                .disabled(!device.isInfoReady)
+                .opacity(device.isInfoReady ? 1 : 0.4)
             }
         }
         .task {
-            await viewModel.getInfo()
+            reload()
         }
+    }
+
+    private func reload() {
+        Task {
+            await device.getInfo()
+        }
+    }
+
+    private let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+        return formatter
+    }()
+
+    private func share() {
+        var array = info.keys.toArray().sorted()
+
+        if let int = device.flipper?.storage?.internal {
+            array.append("storage.int.available: \(int.free)")
+            array.append("storage.int.total: \(int.total)")
+        }
+        if let ext = device.flipper?.storage?.external {
+            array.append("storage.ext.available: \(ext.free)")
+            array.append("storage.ext.total: \(ext.total)")
+        }
+
+        let name = device.flipper?.name ?? "unknown"
+        let content = array.joined(separator: "\n")
+        let filename = "dump-\(name)-\(formatter.string(from: Date())).txt"
+        
+        UI.shareFile(name: filename, content: content)
     }
 }
 
-struct DeviceInfoViewCard: View {
-    let title: String
-    var values: OrderedDictionary<String, String>
-
-    var zippedIndexKey: [(Int, String)] {
-        .init(zip(values.keys.indices, values.keys))
-    }
-
-    var body: some View {
-        Card {
-            VStack(spacing: 12) {
-                HStack {
-                    Text(title)
-                        .font(.system(size: 16, weight: .bold))
-                    Spacer()
-                }
-                .padding(.bottom, 6)
-                .padding(.horizontal, 12)
-
-                ForEach(zippedIndexKey, id: \.0) { index, key in
-                    CardRow(name: key, value: values[key] ?? "")
-                        .padding(.horizontal, 12)
-                    if index + 1 < values.count {
-                        Divider()
-                    }
-                }
-            }
-            .padding(.vertical, 12)
-        }
-        .padding(.horizontal, 14)
+private extension Dictionary where Key == String, Value == String {
+    func toArray() -> [String] {
+        self.map { "\($0): \($1)" }
     }
 }

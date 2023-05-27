@@ -2,8 +2,12 @@ import Core
 import SwiftUI
 
 struct CategoryDeletedView: View {
-    @StateObject var viewModel: CategoryDeletedViewModel
+    @EnvironmentObject var archive: ArchiveModel
     @Environment(\.dismiss) private var dismiss
+
+    @State private var selectedItem: ArchiveItem?
+    @State private var showRestoreSheet = false
+    @State private var showDeleteSheet = false
 
     var restoreSheetTitle: String {
         "All deleted keys will be restored and synced with Flipper"
@@ -14,7 +18,7 @@ struct CategoryDeletedView: View {
     }
 
     var toolbarActionsColor: Color {
-        viewModel.items.isEmpty ? .primary.opacity(0.5) : .primary
+        archive.items.isEmpty ? .primary.opacity(0.5) : .primary
     }
 
     var body: some View {
@@ -22,11 +26,11 @@ struct CategoryDeletedView: View {
             Text("No deleted keys")
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(.black40)
-                .opacity(viewModel.items.isEmpty ? 1 : 0)
+                .opacity(archive.items.isEmpty ? 1 : 0)
 
             ScrollView {
-                CategoryList(items: viewModel.items) { item in
-                    viewModel.onItemSelected(item: item)
+                CategoryList(items: archive.deleted) { item in
+                    selectedItem = item
                 }
                 .padding(14)
             }
@@ -45,43 +49,45 @@ struct CategoryDeletedView: View {
             TrailingToolbarItems {
                 HStack(spacing: 8) {
                     NavBarButton {
-                        viewModel.showRestoreSheet = true
+                        showRestoreSheet = true
                     } label: {
                         Text("Restore All")
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(toolbarActionsColor)
                     }
-                    .disabled(viewModel.items.isEmpty)
-                    .actionSheet(isPresented: $viewModel.showRestoreSheet) {
-                        .init(title: Text(restoreSheetTitle), buttons: [
-                            .destructive(Text("Restore All")) {
-                                viewModel.restoreAll()
-                            },
-                            .cancel()
-                        ])
+                    .disabled(archive.items.isEmpty)
+                    .confirmationDialog(
+                        restoreSheetTitle,
+                        isPresented: $showRestoreSheet,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Restore All") {
+                            archive.restoreAll()
+                        }
                     }
 
                     NavBarButton {
-                        viewModel.showDeleteSheet = true
+                        showDeleteSheet = true
                     } label: {
                         Text("Delete All")
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(toolbarActionsColor)
                     }
-                    .disabled(viewModel.items.isEmpty)
-                    .actionSheet(isPresented: $viewModel.showDeleteSheet) {
-                        .init(title: Text(deleteSheetTitle), buttons: [
-                            .destructive(Text("Delete All")) {
-                                viewModel.deleteAll()
-                            },
-                            .cancel()
-                        ])
+                    .disabled(archive.items.isEmpty)
+                    .confirmationDialog(
+                        deleteSheetTitle,
+                        isPresented: $showDeleteSheet,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Delete All", role: .destructive) {
+                            archive.deleteAll()
+                        }
                     }
                 }
             }
         }
-        .sheet(isPresented: $viewModel.showInfoView) {
-            DeletedInfoView(viewModel: .init(item: viewModel.selectedItem))
+        .sheet(item: $selectedItem) { item in
+            DeletedInfoView(item: item)
         }
     }
 }

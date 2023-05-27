@@ -2,7 +2,7 @@ import Combine
 import Foundation
 import Collections
 
-class BluetoothCentralMock: BluetoothCentral, BluetoothConnector {
+class BluetoothCentralMock: BluetoothCentral {
     private let initialStatus: BluetoothStatus
     private var isScanning = false
 
@@ -13,7 +13,7 @@ class BluetoothCentralMock: BluetoothCentral, BluetoothConnector {
     // MARK: BluetoothCentral
 
     private let statusSubject: CurrentValueSubject<BluetoothStatus, Never> =
-        .init(BluetoothStatus.ready)
+        .init(BluetoothStatus.poweredOn)
     private let peripheralsSubject: CurrentValueSubject<[BluetoothPeripheral], Never> =
         .init([BluetoothPeripheral]())
 
@@ -34,7 +34,7 @@ class BluetoothCentralMock: BluetoothCentral, BluetoothConnector {
     }
 
     func startScanForPeripherals() {
-        guard statusSubject.value == .ready else {
+        guard statusSubject.value == .poweredOn else {
             print("Bluetooth is not ready")
             return
         }

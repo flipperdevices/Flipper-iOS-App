@@ -1,7 +1,7 @@
 import Core
 import SwiftUI
 
-extension ReaderAttackView {
+extension DetectReaderView {
     struct DuplicatedKeys: View {
         let flipperKeys: Set<MFKey64>
         let userKeys: Set<MFKey64>

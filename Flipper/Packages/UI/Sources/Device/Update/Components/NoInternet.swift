@@ -2,11 +2,11 @@ import SwiftUI
 
 extension DeviceUpdateView {
     struct NoInternetView: View {
-        @StateObject var viewModel: DeviceUpdateViewModel
+        var retry: () -> Void
 
         var body: some View {
             VStack(spacing: 0) {
-                Image("NoInternetAlert")
+                Image("ServerError")
 
                 Text("Unable to download firmware")
                     .font(.system(size: 14, weight: .medium))
@@ -18,7 +18,7 @@ extension DeviceUpdateView {
                     .padding(.top, 4)
 
                 Button {
-                    viewModel.update()
+                    retry()
                 } label: {
                     Text("Retry")
                         .font(.system(size: 16, weight: .medium))

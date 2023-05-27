@@ -98,6 +98,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>COUNTLY_APP_KEY</key>
 	<string>$(CI_COUNTLY_APP_KEY)</string>
+	<key>SENTRY_DSN</key>
+	<string>$(CI_SENTRY_DSN)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
@@ -125,6 +127,8 @@
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
+		<key>UISceneConfigurations</key>
+		<dict/>
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
@@ -259,5 +263,7 @@
 			</dict>
 		</dict>
 	</array>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 </dict>
 </plist>

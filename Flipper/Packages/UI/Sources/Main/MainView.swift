@@ -1,64 +1,62 @@
+import Core
 import SwiftUI
 
 struct MainView: View {
-    @StateObject var viewModel: MainViewModel
+    @EnvironmentObject var device: Device
+    @EnvironmentObject var archive: ArchiveModel
+
     @StateObject var tabViewController: TabViewController = .init()
+
+    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
+
+    @State private var importedName = ""
+    @State private var importedOpacity = 0.0
+
+    @State private var showTodayWidgetSettings = false
 
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
-                DeviceView(viewModel: .init())
-                    .opacity(viewModel.selectedTab == .device ? 1 : 0)
-                ArchiveView(viewModel: .init())
-                    .opacity(viewModel.selectedTab == .archive ? 1 : 0)
-                HubView(viewModel: .init())
-                    .opacity(viewModel.selectedTab == .hub ? 1 : 0)
+                DeviceView()
+                    .opacity(selectedTab == .device ? 1 : 0)
+                ArchiveView()
+                    .opacity(selectedTab == .archive ? 1 : 0)
+                HubView()
+                    .opacity(selectedTab == .hub ? 1 : 0)
 
-                ImportedBanner(itemName: viewModel.importedName)
-                    .opacity(viewModel.importedOpacity)
+                ImportedBanner(itemName: importedName)
+                    .opacity(importedOpacity)
             }
 
             if !tabViewController.isHidden {
-                TabView(
-                    viewModel: .init(),
-                    selected: $viewModel.selectedTab
-                )
+                TabView(selected: $selectedTab) {
+                    tabViewController.popToRootView(for: selectedTab)
+                }
                 .transition(.move(edge: .bottom))
             }
         }
-        .edgesIgnoringSafeArea(.bottom)
+        .ignoresSafeArea(.keyboard)
         .environmentObject(tabViewController)
-    }
-}
-
-struct ImportedBanner: View {
-    let itemName: String
-    @Environment(\.colorScheme) var colorScheme
-
-    var backgroundColor: Color {
-        colorScheme == .light ? .black4 : .black80
-    }
-
-    var body: some View {
-        VStack {
-            Spacer()
-            HStack(spacing: 12) {
-                Image("Done")
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(itemName)
-                        .lineLimit(1)
-                        .font(.system(size: 12, weight: .bold))
-                    Text("saved to Archive")
-                        .font(.system(size: 12, weight: .medium))
-                }
-                Spacer()
-            }
-            .padding(12)
-            .frame(height: 48)
-            .frame(maxWidth: .infinity)
-            .background(backgroundColor)
-            .cornerRadius(8)
+        .onReceive(archive.imported) { item in
+            onItemAdded(item: item)
         }
-        .padding(12)
+        .onOpenURL { url in
+            if url == .todayWidgetSettings {
+                showTodayWidgetSettings = true
+            }
+        }
+        .fullScreenCover(isPresented: $showTodayWidgetSettings) {
+            TodayWidgetSettingsView()
+        }
+    }
+
+    func onItemAdded(item: ArchiveItem) {
+        importedName = item.name.value
+        Task { @MainActor in
+            try? await Task.sleep(milliseconds: 200)
+            withAnimation { importedOpacity = 1.0 }
+            try? await Task.sleep(seconds: 3)
+            withAnimation { importedOpacity = 0 }
+        }
     }
 }

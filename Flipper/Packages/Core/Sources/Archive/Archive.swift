@@ -1,52 +1,67 @@
-import Inject
-import Foundation
 import Peripheral
-import Logging
+
+import Combine
 
 public class Archive {
-    let logger = Logger(label: "archive")
+    let archiveSync: ArchiveSyncProtocol
+    let favoritesSync: FavoritesSyncProtocol
 
-    @Inject var archiveSync: ArchiveSyncProtocol
-    @Inject var favoritesSync: FavoritesSyncProtocol
+    let mobileFavorites: FavoritesProtocol
+    let mobileArchive: ArchiveProtocol & Compressable
+    let mobileNotes: ArchiveStorage
+    let deletedArchive: ArchiveProtocol
 
-    @Inject var mobileFavorites: MobileFavoritesProtocol
-    @Inject var mobileArchive: MobileArchiveProtocol
-    @Inject var mobileNotes: MobileNotesStorage
-    @Inject var deletedArchive: DeletedArchiveProtocol
+    let syncedManifest: ManifestStorage
 
-    @Inject var syncedItems: SyncedItemsProtocol
+    init(
+        archiveSync: ArchiveSyncProtocol,
+        favoritesSync: FavoritesSyncProtocol,
+        mobileFavorites: FavoritesProtocol,
+        mobileArchive: ArchiveProtocol & Compressable,
+        mobileNotes: ArchiveStorage,
+        deletedArchive: ArchiveProtocol,
+        syncedManifest: ManifestStorage
+    ) {
+        self.archiveSync = archiveSync
+        self.favoritesSync = favoritesSync
+        self.mobileFavorites = mobileFavorites
+        self.mobileArchive = mobileArchive
+        self.mobileNotes = mobileNotes
+        self.deletedArchive = deletedArchive
+        self.syncedManifest = syncedManifest
 
-    private var disposeBag: DisposeBag = .init()
+        // FIXME:
+
+        archiveSync.events
+            .sink { [weak self] in
+                self?.onSyncEvent($0)
+            }
+            .store(in: &cancellables)
+
+        load()
+    }
+
+    private var cancellables: [AnyCancellable] = .init()
 
     public enum Error: String, Swift.Error {
         case alreadyExists
     }
 
-    public var items: SafePublisher<[ArchiveItem]> {
+    public var items: AnyPublisher<[ArchiveItem], Never> {
         _items.eraseToAnyPublisher()
     }
-    var _items: SafeValueSubject<[ArchiveItem]> = {
+    var _items: CurrentValueSubject<[ArchiveItem], Never> = {
         .init([])
     }()
 
-    public var deletedItems: SafePublisher<[ArchiveItem]> {
+    public var deletedItems: AnyPublisher<[ArchiveItem], Never> {
         _deletedItems.eraseToAnyPublisher()
     }
-    var _deletedItems: SafeValueSubject<[ArchiveItem]> = {
+    var _deletedItems: CurrentValueSubject<[ArchiveItem], Never> = {
         .init([])
     }()
 
     var isLoading = false
-
-    init() {
-        archiveSync.events
-            .sink { [weak self] in
-                self?.onSyncEvent($0)
-            }
-            .store(in: &disposeBag)
-
-        load()
-    }
 
     func load() {
         isLoading = true
@@ -272,12 +287,13 @@ extension Archive {
     public func status(
         for item: ArchiveItem
     ) async throws -> ArchiveItem.Status {
-        guard let synced = syncedItems.manifest?[item.path] else {
+        let syncedManifest = try await syncedManifest.get()
+        guard let synced = syncedManifest[item.path] else {
             return .imported
         }
 
-        let manifest = try await mobileArchive.getManifest()
-        guard let current = manifest[item.path] else {
+        let mobileManifest = try await mobileArchive.getManifest()
+        guard let current = mobileManifest[item.path] else {
             return .imported
         }
 
@@ -298,6 +314,8 @@ extension Archive {
     func importKey(_ item: ArchiveItem) async throws {
         if !_items.value.contains(where: { item.path == $0.path }) {
             try await upsert(item)
+        } else {
+            throw Error.alreadyExists
         }
     }
 }

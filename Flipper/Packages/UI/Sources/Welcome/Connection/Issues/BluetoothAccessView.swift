@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct BluetoothAccessView: View {
+    @Environment(\.openURL) private var openURL
+
     var body: some View {
         VStack(spacing: 12) {
             Spacer()
@@ -22,7 +24,7 @@ struct BluetoothAccessView: View {
             .foregroundColor(.black40)
 
             Button {
-                Application.openSettings()
+                openURL(.settings)
             } label: {
                 Text("Go to Settings")
                     .roundedButtonStyle()

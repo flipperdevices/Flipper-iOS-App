@@ -7,7 +7,7 @@ extension URL {
         .init(string: "flipper://")!
     }
 
-    public static var widgetSettings: URL {
-        .init(string: "flipper://widget-settings")!
+    public static var todayWidgetSettings: URL {
+        .init(string: "flipper://todaywidget-settings")!
     }
 }

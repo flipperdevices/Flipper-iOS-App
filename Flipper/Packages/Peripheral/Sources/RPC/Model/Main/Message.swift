@@ -35,7 +35,10 @@ extension Message {
     }
 
     init(decoding response: PBGui_ScreenFrame) {
-        guard let frame = ScreenFrame(.init(response.data)) else {
+        guard let frame = ScreenFrame(
+            bytes: .init(response.data),
+            orientation: .init(response.orientation)
+        ) else {
             self = .screenFrame(.init())
             return
         }
@@ -47,6 +50,18 @@ extension Message {
         case .appClosed: self = .appState(.closed)
         case .appStarted: self = .appState(.started)
         default: self = .appState(.unknown)
+        }
+    }
+}
+
+extension ScreenFrame.Orientation {
+    init(_ source: PBGui_ScreenOrientation) {
+        switch source {
+        case .horizontal: self = .horizontal
+        case .horizontalFlip: self = .horizontalFlipped
+        case .vertical: self = .vertical
+        case .verticalFlip: self = .verticalFlipped
+        case .UNRECOGNIZED: self = .horizontal
         }
     }
 }

@@ -1,19 +1,30 @@
-import Inject
-import Logging
 import Peripheral
-import Foundation
+
+import Combine
 import OrderedCollections
 
 class ArchiveSync: ArchiveSyncProtocol {
-    private let logger = Logger(label: "archive_synchronization")
+    private let flipperArchive: ArchiveProtocol
+    private let mobileArchive: ArchiveProtocol
+    private let syncedManifest: ManifestStorage
 
-    @Inject private var flipperArchive: FlipperArchiveProtocol
-    @Inject private var mobileArchive: MobileArchiveProtocol
-    @Inject private var syncedItems: SyncedItemsProtocol
+    init(
+        flipperArchive: ArchiveProtocol,
+        mobileArchive: ArchiveProtocol,
+        syncedManifest: ManifestStorage
+    ) {
+        self.flipperArchive = flipperArchive
+        self.mobileArchive = mobileArchive
+        self.syncedManifest = syncedManifest
+    }
 
     private var state: State = .idle
-    private var eventsSubject: SafeSubject<Event> = .init()
-    var events: SafePublisher<Event> { eventsSubject.eraseToAnyPublisher() }
+    private var eventsSubject: PassthroughSubject<Event, Never> = {
+        .init()
+    }()
+    var events: AnyPublisher<Event, Never> {
+        eventsSubject.eraseToAnyPublisher()
+    }
 
     enum State {
         case idle
@@ -21,19 +32,19 @@ class ArchiveSync: ArchiveSyncProtocol {
         case canceled
     }
 
-    func run(_ progress: (Double) -> Void) async throws {
-        guard state == .idle else { return }
+    func run(_ progress: (Double) -> Void) async throws -> Int {
+        guard state == .idle else { return 0 }
         state = .running
         defer { state = .idle }
         progress(0)
-        try await sync(progress)
+        return try await sync(progress)
     }
 
     var manifestProgressFactor: Double { 0.5 }
     var syncProgressFactor: Double { 1.0 - manifestProgressFactor }
 
-    private func sync(_ progress: (Double) -> Void) async throws {
-        let lastManifest = syncedItems.manifest ?? .init()
+    private func sync(_ progress: (Double) -> Void) async throws -> Int {
+        let lastManifest = try await syncedManifest.get()
 
         let mobileChanges = try await mobileArchive
             .getManifest()
@@ -81,7 +92,9 @@ class ArchiveSync: ArchiveSyncProtocol {
             currentProgress += syncItemFactor
         }
 
-        syncedItems.manifest = try await mobileArchive.getManifest()
+        try await syncedManifest.upsert(mobileArchive.getManifest())
+
+        return actions.count
     }
 
     private func sortActions(

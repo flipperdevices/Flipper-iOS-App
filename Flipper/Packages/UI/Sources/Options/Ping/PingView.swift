@@ -1,39 +1,43 @@
+import Core
 import SwiftUI
 
 struct PingView: View {
-    @StateObject var viewModel: PingViewModel
+    // next step
+    @StateObject var pingTest: PingTest = .init(
+        pairedDevice: Dependencies.shared.pairedDevice
+    )
     @Environment(\.dismiss) private var dismiss
-    @State var entered: String = ""
+    @State private var entered: String = ""
 
     var body: some View {
         VStack(spacing: 20) {
             HStack {
-                Text("request timestamp: \(viewModel.requestTimestamp)")
+                Text("request timestamp: \(pingTest.requestTimestamp)")
                 Spacer()
             }
 
             HStack {
-                Text("response timestamp: \(viewModel.responseTimestamp)")
+                Text("response timestamp: \(pingTest.responseTimestamp)")
                 Spacer()
             }
 
             HStack {
-                Text("time: \(viewModel.time) ms")
+                Text("time: \(pingTest.time) ms")
                 Spacer()
             }
 
             HStack {
-                Text("throughput: \(viewModel.bytesPerSecond) bps")
+                Text("throughput: \(pingTest.bytesPerSecond) bps")
                 Spacer()
             }
 
             HStack {
-                Text("payload size: \(Int(viewModel.payloadSize))")
+                Text("payload size: \(Int(pingTest.payloadSize))")
                 Spacer()
             }
 
             Slider(
-                value: $viewModel.payloadSize,
+                value: $pingTest.payloadSize,
                 in: (0...1024),
                 step: 1
             ) {
@@ -46,7 +50,7 @@ struct PingView: View {
             .padding(.vertical, 30)
 
             Button("Send ping") {
-                viewModel.sendPing()
+                pingTest.sendPing()
             }
         }
         .padding(14)
