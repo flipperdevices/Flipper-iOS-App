@@ -124,7 +124,10 @@ struct ArchiveView: View {
         }
         .onDrop(of: [.item], isTargeted: nil) { providers in
             guard let provider = providers.first else { return false }
-            provider.loadItem(forTypeIdentifier: UTType.item.identifier, options: nil) { (data, error) in
+            provider.loadItem(
+                forTypeIdentifier: UTType.item.identifier,
+                options: nil
+            ) { (data, error) in
                 guard let url = data as? URL else { return }
                 importedItem = url
             }
