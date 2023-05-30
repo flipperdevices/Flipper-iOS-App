@@ -2,6 +2,7 @@ import Core
 import SwiftUI
 import Combine
 import OrderedCollections
+import UniformTypeIdentifiers
 
 struct ArchiveView: View {
     @EnvironmentObject var device: Device
@@ -120,6 +121,17 @@ struct ArchiveView: View {
             if (url.isKeyFile || url.isKeyURL), importedItem == nil {
                 importedItem = url
             }
+        }
+        .onDrop(of: [.item], isTargeted: nil) { providers in
+            guard let provider = providers.first else { return false }
+            provider.loadItem(
+                forTypeIdentifier: UTType.item.identifier,
+                options: nil
+            ) { (data, error) in
+                guard let url = data as? URL else { return }
+                importedItem = url
+            }
+            return true
         }
     }
 
