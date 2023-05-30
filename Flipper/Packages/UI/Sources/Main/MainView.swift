@@ -53,9 +53,9 @@ struct MainView: View {
     func onItemAdded(item: ArchiveItem) {
         importedName = item.name.value
         Task { @MainActor in
-            try await Task.sleep(milliseconds: 200)
+            try? await Task.sleep(milliseconds: 200)
             withAnimation { importedOpacity = 1.0 }
-            try await Task.sleep(seconds: 3)
+            try? await Task.sleep(seconds: 3)
             withAnimation { importedOpacity = 0 }
         }
     }

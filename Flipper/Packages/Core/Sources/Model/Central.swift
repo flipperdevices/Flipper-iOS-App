@@ -32,7 +32,7 @@ public class Central: ObservableObject {
         !connectedPeripherals.isEmpty
     }
 
-    public init(central: BluetoothCentral = Peripheral.Dependencies.central) {
+    public init(central: BluetoothCentral) {
         self.central = central
         subscribeToPublishers()
     }

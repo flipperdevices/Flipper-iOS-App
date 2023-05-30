@@ -32,18 +32,18 @@ class ArchiveSync: ArchiveSyncProtocol {
         case canceled
     }
 
-    func run(_ progress: (Double) -> Void) async throws {
-        guard state == .idle else { return }
+    func run(_ progress: (Double) -> Void) async throws -> Int {
+        guard state == .idle else { return 0 }
         state = .running
         defer { state = .idle }
         progress(0)
-        try await sync(progress)
+        return try await sync(progress)
     }
 
     var manifestProgressFactor: Double { 0.5 }
     var syncProgressFactor: Double { 1.0 - manifestProgressFactor }
 
-    private func sync(_ progress: (Double) -> Void) async throws {
+    private func sync(_ progress: (Double) -> Void) async throws -> Int {
         let lastManifest = try await syncedManifest.get()
 
         let mobileChanges = try await mobileArchive
@@ -93,6 +93,8 @@ class ArchiveSync: ArchiveSyncProtocol {
         }
 
         try await syncedManifest.upsert(mobileArchive.getManifest())
+
+        return actions.count
     }
 
     private func sortActions(

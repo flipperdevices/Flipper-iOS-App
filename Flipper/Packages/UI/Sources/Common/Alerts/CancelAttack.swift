@@ -9,15 +9,14 @@ struct CancelAttackAlert: View {
             VStack(spacing: 4) {
                 Text("Abort Keys Сalculation?")
                     .font(.system(size: 14, weight: .bold))
-                    .padding(.top, 25)
 
                 Text("You can restart it later")
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)
                     .padding(.horizontal, 12)
-                    .padding(.top, 4)
             }
+            .padding(.top, 25)
 
             // TODO: move to view builder
 

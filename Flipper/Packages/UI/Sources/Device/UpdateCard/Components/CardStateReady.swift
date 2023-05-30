@@ -20,6 +20,8 @@ extension DeviceUpdateCard {
         @EnvironmentObject var synchronization: Synchronization
 
         @State private var showConfirmUpdate = false
+        @State private var showFileImporter = false
+
         @State private var showPauseSync = false
         @State private var showCharge = false
 
@@ -55,58 +57,98 @@ extension DeviceUpdateCard {
 
                 Divider()
 
-                UpdateButton(state: state) {
-                    guard device.hasBatteryCharged else {
-                        showCharge = true
-                        return
+                if updateChannel == .custom {
+                    ChooseFileButton {
+                        showFileImporter = true
                     }
-                    guard device.status != .synchronizing else {
-                        showPauseSync = true
-                        return
-                    }
-                    showConfirmUpdate = true
-                }
 
-                VStack {
-                    Text(description)
+                    VStack {
+                        Text(
+                            "Use the firmware (.tgz) from your files to update"
+                        )
                         .font(.system(size: 12, weight: .medium))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.black16)
+                    }
+                    .padding(.top, 5)
+                    .padding(.bottom, 8)
+                    .padding(.horizontal, 12)
+                } else {
+                    UpdateButton(state: state) {
+                        startUpdate()
+                    }
+
+                    VStack {
+                        Text(description)
+                            .font(.system(size: 12, weight: .medium))
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.black16)
+                    }
+                    .padding(.top, 5)
+                    .padding(.bottom, 8)
+                    .padding(.horizontal, 12)
                 }
-                .padding(.top, 5)
-                .padding(.bottom, 8)
-                .padding(.horizontal, 12)
             }
-            .alert(
-                "Pause Synchronization?",
-                isPresented: $showPauseSync
-            ) {
-                Button("Continue") { }
-                Button("Pause") {
+            .customAlert(isPresented: $showPauseSync) {
+                PauseSyncAlert(
+                    isPresented: $showPauseSync,
+                    installedVersion: updateModel.installed!,
+                    availableVersion: updateModel.available!
+                ) {
                     synchronization.cancelSync()
-                }
-            } message: {
-                Text(
-                    "Firmware update is not possible during synchronization. " +
-                    "Wait for sync to finish or pause it.")
-            }
-            .alert(
-                "Update Firmware?",
-                isPresented: $showConfirmUpdate,
-                presenting: updateModel.firmware
-            ) { intent in
-                Button("Cancel") { }
-                Button("Update") {
                     updateModel.startUpdate()
                 }
-            } message: { firmware in
-                Text(
-                    "New Firmware \(firmware.version) " +
-                    "will be installed")
+            }
+            .customAlert(isPresented: $showConfirmUpdate) {
+                ConfirmUpdateAlert(
+                    isPresented: $showConfirmUpdate,
+                    installedVersion: updateModel.installed!,
+                    availableVersion: updateModel.available!
+                ) {
+                    updateModel.startUpdate()
+                }
             }
             .customAlert(isPresented: $showCharge) {
                 LowBatteryAlert(isPresented: $showCharge)
             }
+            .fileImporter(
+                isPresented: $showFileImporter,
+                allowedContentTypes: [.gzip]
+            ) { result in
+                guard case .success(let url) = result else {
+                    return
+                }
+                customUpdateFileChosen(url)
+            }
+            .onOpenURL { url in
+                if url.isFileURL, url.pathExtension == "tgz" {
+                    updateChannel = .custom
+                    customUpdateFileChosen(url)
+                }
+            }
+        }
+
+        func customUpdateFileChosen(_ url: URL) {
+            updateModel.customFirmware = .init(
+                version: .init(
+                    name: url.lastPathComponent,
+                    channel: .custom),
+                changelog: "",
+                url: url
+            )
+            startUpdate()
+        }
+
+        func startUpdate() {
+            guard device.hasBatteryCharged else {
+                showCharge = true
+                return
+            }
+            guard device.status != .synchronizing else {
+                showPauseSync = true
+                return
+            }
+            showConfirmUpdate = true
         }
     }
 }

@@ -63,7 +63,8 @@ extension WantMoarEventHandler: EventHandler {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTime: Int
+        synchronizationTime: Int,
+        changesCount: Int
     ) {
         handlers.forEach {
             $0.synchronizationResult(
@@ -72,7 +73,8 @@ extension WantMoarEventHandler: EventHandler {
                 nfcCount: nfcCount,
                 infraredCount: infraredCount,
                 iButtonCount: iButtonCount,
-                synchronizationTime: synchronizationTime)
+                synchronizationTime: synchronizationTime,
+                changesCount: changesCount)
         }
     }
 
@@ -92,47 +94,6 @@ extension WantMoarEventHandler: EventHandler {
                 system: system,
                 provided: provided,
                 source: source)
-        }
-    }
-}
-
-fileprivate extension Metric_Events_Open.OpenTarget {
-    init(_ source: OpenTarget) {
-        switch source {
-        case .app: self = .app
-        case .keyImport: self = .saveKey
-        case .keyEmulate: self = .emulate
-        case .keyEdit: self = .edit
-        case .keyShare: self = .share
-        case .fileManager: self = .experimentalFm
-        case .remoteControl: self = .experimentalScreenstreaming
-        case .keyShareURL: self = .shareShortlink
-        case .keyShareUpload: self = .shareLonglink
-        case .keyShareFile: self = .shareFile
-        }
-    }
-}
-
-fileprivate extension Metric_Events_UpdateFlipperEnd.UpdateStatus {
-    init(_ source: UpdateResult) {
-        switch source {
-        case .completed: self = .completed
-        case .canceled: self = .canceled
-        case .failedDownload: self = .failedDownload
-        case .failedPrepare: self = .failedPrepare
-        case .failedUpload: self = .failedUpload
-        case .failed: self = .failed
-        }
-    }
-}
-
-fileprivate extension Metric_Events_SubGhzProvisioning.RegionSource {
-    init(_ source: RegionSource) {
-        switch source {
-        case .sim: self = .simCountry
-        case .geoIP: self = .geoIp
-        case .locale: self = .system
-        case .default: self = .default
         }
     }
 }

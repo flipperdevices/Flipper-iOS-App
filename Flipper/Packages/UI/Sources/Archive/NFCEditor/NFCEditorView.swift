@@ -101,11 +101,7 @@ struct NFCEditorView: View {
             Alert(title: Text(error))
         }
         .task {
-            self.uid = item.uid
-            self.atqa = item.atqa
-            self.sak = item.sak
-            self.bytes = item.nfcBlocks
-            self.hasBCC = item.hasBCC
+            load()
         }
         .onChange(of: bytes) { _ in
             updateUID()
@@ -164,6 +160,15 @@ struct NFCEditorView: View {
         }
     }
 
+    func load() {
+        uid = item.uid
+        atqa = item.atqa
+        sak = item.sak
+        bytes = item.nfcBlocks
+        hasBCC = item.hasBCC
+        analytics.appOpen(target: .nfcDumpEditor)
+    }
+
     func save() {
         item.uid = uid
         item.sak = sak
@@ -172,11 +177,12 @@ struct NFCEditorView: View {
         Task {
             do {
                 try await archive.save(item, as: item)
+                analytics.appOpen(target: .saveNFCDump)
+                dismiss()
             } catch {
                 showError(error)
             }
         }
-        dismiss()
     }
 
     func saveAs() {

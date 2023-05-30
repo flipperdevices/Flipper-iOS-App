@@ -6,6 +6,7 @@ public enum Request {
     case system(System)
     case storage(Storage)
     case application(Application)
+    case desktop(Desktop)
     case gui(GUI)
 
     public enum System {
@@ -41,6 +42,11 @@ public enum Request {
         case exit
     }
 
+    public enum Desktop {
+        case status
+        case unlock
+    }
+
     public enum GUI {
         case screenStream(Bool)
         case virtualDisplay(Bool, ScreenFrame?)
@@ -54,6 +60,7 @@ extension Request {
         case .system(let request): return request.serialize()
         case .storage(let request): return request.serialize()
         case .application(let request): return request.serialize()
+        case .desktop(let request): return request.serialize()
         case .gui(let request): return request.serialize()
         }
     }
@@ -221,6 +228,21 @@ extension Request.Application {
     }
 }
 
+extension Request.Desktop {
+    func serialize() -> PB_Main {
+        switch self {
+        case .status:
+            return .with {
+                $0.desktopIsLockedRequest = .init()
+            }
+        case .unlock:
+            return .with {
+                $0.desktopUnlockRequest = .init()
+            }
+        }
+    }
+}
+
 extension Request.GUI {
     func serialize() -> PB_Main {
         switch self {
@@ -322,6 +344,7 @@ extension Request: CustomStringConvertible {
         case let .system(system): return "system(\(system))"
         case let .storage(storage): return "storage(\(storage))"
         case let .application(application): return "application(\(application))"
+        case let .desktop(desktop): return "desktop(\(desktop))"
         case let .gui(gui): return "gui(\(gui))"
         }
     }
@@ -385,6 +408,17 @@ extension Request.Application: CustomStringConvertible {
             return "releaseButton"
         case .exit:
             return "exit"
+        }
+    }
+}
+
+extension Request.Desktop: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .status:
+            return "status"
+        case .unlock:
+            return "unlock"
         }
     }
 }

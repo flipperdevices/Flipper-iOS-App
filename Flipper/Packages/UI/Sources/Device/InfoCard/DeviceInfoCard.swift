@@ -7,30 +7,26 @@ import struct Peripheral.StorageSpace
 struct DeviceInfoCard: View {
     @EnvironmentObject var device: Device
 
-    var flipper: Flipper? {
-        device.flipper
-    }
-
     var isConnecting: Bool {
-        flipper?.state == .connecting
+        device.status == .connecting
     }
     var isConnected: Bool {
-        flipper?.state == .connected
+        device.status == .connected
     }
     var isDisconnected: Bool {
-        flipper?.state == .disconnected ||
-        flipper?.state == .pairingFailed ||
-        flipper?.state == .invalidPairing
+        device.status == .disconnected ||
+        device.status == .pairingFailed ||
+        device.status == .invalidPairing
     }
     var isNoDevice: Bool {
-        flipper == nil
+        device.flipper == nil
     }
     var isUpdating: Bool {
         device.status == .updating
     }
 
     var _protobufVersion: ProtobufVersion? {
-        flipper?.information?.protobufRevision
+        device.flipper?.information?.protobufRevision
     }
 
     var protobufVersion: String? {
@@ -41,7 +37,7 @@ struct DeviceInfoCard: View {
 
     var firmwareVersion: String? {
         guard isConnected else { return nil }
-        guard let info = flipper?.information else { return nil }
+        guard let info = device.flipper?.information else { return nil }
         return info.firmwareVersion?.description ?? "invalid"
     }
 
@@ -57,7 +53,7 @@ struct DeviceInfoCard: View {
 
     var firmwareBuild: String? {
         guard isConnected else { return nil }
-        guard let info = flipper?.information else { return nil }
+        guard let info = device.flipper?.information else { return nil }
 
         let build = info
             .softwareRevision
@@ -69,7 +65,7 @@ struct DeviceInfoCard: View {
     }
 
     var internalSpace: AttributedString? {
-        guard isConnected, let int = flipper?.storage?.internal else {
+        guard isConnected, let int = device.flipper?.storage?.internal else {
             return nil
         }
         var result = AttributedString(int.description)
@@ -80,10 +76,10 @@ struct DeviceInfoCard: View {
     }
 
     var externalSpace: AttributedString? {
-        guard isConnected, flipper?.storage?.internal != nil else {
+        guard isConnected, device.flipper?.storage?.internal != nil else {
             return nil
         }
-        guard let ext = flipper?.storage?.external else {
+        guard let ext = device.flipper?.storage?.external else {
             return "—"
         }
         var result = AttributedString(ext.description)
@@ -177,8 +173,22 @@ extension StorageSpace: CustomStringConvertible {
 }
 
 fileprivate extension Int {
+    var bytes: Int {
+        1024
+    }
+
+    var units: [String] {
+        ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"]
+    }
+
     var hr: String {
-        let formatter = ByteCountFormatter()
-        return formatter.string(fromByteCount: Int64(self))
+        guard self >= bytes else { return "\(self) B" }
+        let exp = Int(log2(Double(self)) / log2(Double(bytes)))
+        let unit = units[exp - 1]
+        let number = Double(self) / pow(Double(bytes), Double(exp))
+        return (exp <= 1 || number >= 100)
+            ? String(format: "%.0f %@", number, unit)
+            : String(format: "%.1f %@", number, unit)
+                .replacingOccurrences(of: ".0", with: "")
     }
 }

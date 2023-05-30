@@ -74,6 +74,7 @@ struct SaveAsView: View {
         Task {
             do {
                 try await archive.add(item)
+                analytics.appOpen(target: .saveNFCDump)
                 dismiss()
             } catch {
                 showError(error)

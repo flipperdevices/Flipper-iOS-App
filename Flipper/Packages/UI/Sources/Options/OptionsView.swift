@@ -108,13 +108,10 @@ struct OptionsView: View {
                         showResetApp = true
                     }
                     .foregroundColor(.sRed)
-                    .actionSheet(isPresented: $showResetApp) {
-                        .init(title: Text("Are you sure?"), buttons: [
-                            .destructive(Text("Reset App")) {
-                                AppReset.reset()
-                            },
-                            .cancel()
-                        ])
+                    .confirmationDialog("", isPresented: $showResetApp) {
+                        Button("Reset App", role: .destructive) {
+                            AppReset.reset()
+                        }
                     }
                 }
             }

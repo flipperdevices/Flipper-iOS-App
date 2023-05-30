@@ -16,6 +16,7 @@ public class UpdateModel: ObservableObject {
     }
 
     @Published public var manifest: Update.Manifest?
+    @Published public var customFirmware: Update.Firmware?
     @Published public var updateChannel: Update.Channel = .load() {
         didSet {
             updateChannel.save()
@@ -31,6 +32,7 @@ public class UpdateModel: ObservableObject {
         case .release: return manifest?.release
         case .candidate: return manifest?.candidate
         case .development: return manifest?.development
+        case .custom: return customFirmware
         }
     }
 
@@ -38,7 +40,12 @@ public class UpdateModel: ObservableObject {
         flipper?.information?.firmwareVersion
     }
     public var available: Update.Version? {
-        firmware?.version
+        guard updateChannel != .custom else {
+            return .init(
+                name: customFirmware?.version.name ?? "unknown",
+                channel: .custom)
+        }
+        return firmware?.version
     }
 
     public enum State: Equatable {
