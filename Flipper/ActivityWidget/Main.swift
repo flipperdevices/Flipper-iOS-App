@@ -2,7 +2,7 @@ import WidgetKit
 import SwiftUI
 
 @main
-struct Bundle: WidgetBundle {
+struct ActivityWidgetBundle: WidgetBundle {
     var body: some Widget {
         if #available(iOSApplicationExtension 16.2, *) {
             LiveActivity()

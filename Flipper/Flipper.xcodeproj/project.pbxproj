@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 53;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,7 +14,7 @@
 		8B10BF4C29A77D53007FC0F3 /* BlackHole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */; };
 		8B1A481929C113A5000169E9 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1A481829C113A5000169E9 /* WidgetKit.framework */; };
 		8B1A481B29C113A5000169E9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1A481A29C113A5000169E9 /* SwiftUI.framework */; };
-		8B1A481E29C113A5000169E9 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A481D29C113A5000169E9 /* Bundle.swift */; };
+		8B1A481E29C113A5000169E9 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A481D29C113A5000169E9 /* Main.swift */; };
 		8B1A482029C113A5000169E9 /* LiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A481F29C113A5000169E9 /* LiveActivity.swift */; };
 		8B1A482229C113A5000169E9 /* ActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482129C113A5000169E9 /* ActivityWidget.swift */; };
 		8B1A482729C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */; };
@@ -112,7 +112,7 @@
 		8B1A481729C113A5000169E9 /* ActivityWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ActivityWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B1A481829C113A5000169E9 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		8B1A481A29C113A5000169E9 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		8B1A481D29C113A5000169E9 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		8B1A481D29C113A5000169E9 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		8B1A481F29C113A5000169E9 /* LiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivity.swift; sourceTree = "<group>"; };
 		8B1A482129C113A5000169E9 /* ActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityWidget.swift; sourceTree = "<group>"; };
 		8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = ActivityWidget.intentdefinition; sourceTree = "<group>"; };
@@ -223,7 +223,7 @@
 			isa = PBXGroup;
 			children = (
 				8BF074E329C2500700DC688B /* ActivityWidget.entitlements */,
-				8B1A481D29C113A5000169E9 /* Bundle.swift */,
+				8B1A481D29C113A5000169E9 /* Main.swift */,
 				8B1A481F29C113A5000169E9 /* LiveActivity.swift */,
 				8B1A482129C113A5000169E9 /* ActivityWidget.swift */,
 				8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */,
@@ -605,7 +605,7 @@
 				8B1A482229C113A5000169E9 /* ActivityWidget.swift in Sources */,
 				8B1A482729C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */,
 				8B1A482029C113A5000169E9 /* LiveActivity.swift in Sources */,
-				8B1A481E29C113A5000169E9 /* Bundle.swift in Sources */,
+				8B1A481E29C113A5000169E9 /* Main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
