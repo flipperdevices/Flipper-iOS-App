@@ -24,21 +24,8 @@ class ProvisioningTests: XCTestCase {
         }
     }
 
-    func testSim() async throws {
-        let provisioning = Provisioning(
-            cellularRegionProvider: TestRegion(.ae),
-            localeRegionProvider: TestRegion(.ad),
-            regionsBundleAPI: TestBundle(.init(geoIP: .us, bands: .testBands)))
-
-        let region = try await provisioning.provideRegion()
-
-        XCTAssertEqual(region.code, .ae)
-        XCTAssertEqual(region.bands, RegionBands.testBands[.ae])
-    }
-
     func testGeoIP() async throws {
         let provisioning = Provisioning(
-            cellularRegionProvider: TestRegion(nil),
             localeRegionProvider: TestRegion(.ad),
             regionsBundleAPI: TestBundle(.init(geoIP: .us, bands: .testBands)))
 
@@ -50,7 +37,6 @@ class ProvisioningTests: XCTestCase {
 
     func testLocale() async throws {
         let provisioning = Provisioning(
-            cellularRegionProvider: TestRegion(nil),
             localeRegionProvider: TestRegion(.ad),
             regionsBundleAPI: TestBundle(.init(geoIP: nil, bands: .testBands)))
 
@@ -62,7 +48,6 @@ class ProvisioningTests: XCTestCase {
 
     func testDefault() async throws {
         let provisioning = Provisioning(
-            cellularRegionProvider: TestRegion(nil),
             localeRegionProvider: TestRegion(nil),
             regionsBundleAPI: TestBundle(.init(geoIP: nil, bands: .testBands)))
 

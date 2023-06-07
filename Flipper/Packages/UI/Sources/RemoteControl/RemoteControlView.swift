@@ -11,17 +11,7 @@ struct RemoteControlView: View {
     var uiImage: UIImage? {
         guard device.status == .connected else { return nil }
         guard let frame = device.frame else { return nil }
-        return .init(
-            pixels: frame.pixels.map { $0 ? .black : .orange },
-            width: 128,
-            height: 64
-        )
-    }
-
-    var normalizedImage: UIImage? {
-        guard let frame = device.frame, let image = uiImage else {
-            return nil
-        }
+        guard let image = UIImage(frame: frame) else { return nil }
         switch frame.orientation {
         case .horizontalFlipped: return image.withOrientation(.down)
         default: return image
@@ -29,9 +19,7 @@ struct RemoteControlView: View {
     }
 
     var screenshotImage: UIImage? {
-        normalizedImage?.resized(to: .init(
-            width: 512,
-            height: 256))
+        uiImage?.resized(to: .init(width: 512, height: 256))
     }
 
     var screenshotName: String {
@@ -284,6 +272,16 @@ struct RemoteControlView: View {
         UI.share(url) {
             try? FileManager.default.removeItem(at: url)
         }
+    }
+}
+
+private extension UIImage {
+    convenience init?(frame: ScreenFrame) {
+        self.init(
+            pixels: frame.pixels.map { $0 ? .black : .orange },
+            width: 128,
+            height: 64
+        )
     }
 }
 

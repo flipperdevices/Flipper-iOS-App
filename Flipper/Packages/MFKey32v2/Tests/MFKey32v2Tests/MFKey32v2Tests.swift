@@ -13,6 +13,6 @@ class MFKey32v2Tests: XCTestCase {
         ar1: 0x5fa65203)
 
     func testRecover() {
-        XCTAssertEqual(recover(from: data), 176616078812325)
+        XCTAssertEqual(MFKey32v2.recover(from: data), 176616078812325)
     }
 }
