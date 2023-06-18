@@ -1,19 +1,45 @@
+import Core
 import SwiftUI
+import Foundation
+import SVGKit
 
 struct CategoryIcon: View {
-    let url: URL
+    let image: Applications.Category.ImageSource
 
     var body: some View {
-        CacheAsyncImage(url: url) { phase in
-            if let image = phase.image {
-                image
-                    .renderingMode(.template)
-                    .interpolation(.none)
-                    .resizable()
+        Group {
+            switch image {
+            case .assets(let name): Image(name)
+            case .remote(let url): RemoteImage(url: url)
             }
         }
-        .scaledToFit()
-        .foregroundColor(.black)
+    }
+
+    struct RemoteImage: View {
+        let url: URL
+
+        @State var svgData: Data?
+
+        var body: some View {
+            Group {
+                if let svgData = svgData {
+                    Image(uiImage: SVGKImage(data: svgData).uiImage)
+                        .renderingMode(.template)
+                        .interpolation(.none)
+                        .resizable()
+                } else {
+                    AnimatedPlaceholder()
+                }
+            }
+            .task {
+                do {
+                    let (data, _) = try await URLSession.shared.data(from: url)
+                    self.svgData = data
+                } catch {
+                    print(error)
+                }
+            }
+        }
     }
 }
 

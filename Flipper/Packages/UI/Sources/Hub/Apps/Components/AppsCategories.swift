@@ -43,7 +43,7 @@ struct AppsCategories: View {
             Card {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(alignment: .top) {
-                        CategoryIcon(url: category.icon)
+                        CategoryIcon(image: category.icon)
                             .foregroundColor(.primary)
                             .frame(width: 18, height: 18)
 

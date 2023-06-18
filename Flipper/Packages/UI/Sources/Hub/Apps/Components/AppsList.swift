@@ -59,7 +59,7 @@ struct AppRow: View {
             AppScreens(application: application)
                 .frame(height: 84)
 
-            Text(application.description)
+            Text(application.shortDescription)
                 .font(.system(size: 12, weight: .medium))
                 .multilineTextAlignment(.leading)
                 .padding(.horizontal, 14)
@@ -82,7 +82,7 @@ struct AppRow: View {
                         .lineLimit(1)
 
                     HStack(spacing: 4) {
-                        CategoryIcon(url: application.category.icon)
+                        CategoryIcon(image: application.category.icon)
                             .foregroundColor(.black40)
                             .frame(width: 14, height: 14)
 

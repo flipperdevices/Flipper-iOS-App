@@ -6,7 +6,7 @@ struct AppView: View {
     @EnvironmentObject var model: Applications
     @Environment(\.dismiss) var dismiss
 
-    let application: Applications.Application
+    @State var application: Applications.Application
 
     var canDelete: Bool {
         switch application.status {
@@ -59,14 +59,39 @@ struct AppView: View {
                     AppScreens(application: application)
                         .frame(height: 94)
 
-                    Description(description: application.description)
-                        .padding(.horizontal, 14)
+                    if let description = application.description {
+                        Description(description: description)
+                            .padding(.horizontal, 14)
+                    } else {
+                        AnimatedPlaceholder()
+                            .frame(height: 96)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 14)
+                    }
 
-                    Changelog(changelog: application.changelog)
-                        .padding(.horizontal, 14)
 
-                    Developer()
-                        .padding(.horizontal, 14)
+                    if let changelog = application.changelog {
+                        Changelog(changelog: changelog)
+                            .padding(.horizontal, 14)
+                    } else {
+                        AnimatedPlaceholder()
+                            .frame(height: 96)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 14)
+                    }
+
+                    if
+                        let github = application.github,
+                        let manifest = application.manifest
+                    {
+                        Developer(github: github, manifest: manifest)
+                            .padding(.horizontal, 14)
+                    } else {
+                        AnimatedPlaceholder()
+                            .frame(height: 96)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 14)
+                    }
                 }
             }
             .padding(.vertical, 14)
@@ -82,6 +107,13 @@ struct AppView: View {
 
                 Title(application.name)
                     .padding(.leading, 8)
+            }
+        }
+        .task {
+            do {
+                application = try await model.loadApplication(id: application.id)
+            } catch {
+                print(error)
             }
         }
     }
@@ -101,9 +133,9 @@ struct AppView: View {
                         .lineLimit(1)
 
                     HStack(alignment: .bottom, spacing: 4) {
-                        CategoryIcon(url: application.category.icon)
+                        CategoryIcon(image: application.category.icon)
                             .foregroundColor(.black60)
-                            .frame(width: 18, height: 18)
+                            .frame(width: 12, height: 12)
 
                         Text(application.category.name)
                             .font(.system(size: 14, weight: .medium))
@@ -139,7 +171,7 @@ struct AppView: View {
 
         struct Column: View {
             let key: String
-            let value: String
+            let value: String?
 
             var body: some View {
                 VStack(spacing: 2) {
@@ -148,10 +180,16 @@ struct AppView: View {
                         .foregroundColor(.black40)
                         .lineLimit(1)
 
-                    Text(value)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.primary)
-                        .lineLimit(1)
+                    if let value = value {
+                        Text(value)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                    } else {
+                        AnimatedPlaceholder()
+                            .frame(width: 30, height: 14)
+                    }
+
                 }
             }
         }
@@ -241,8 +279,8 @@ struct AppView: View {
                 Text("Description")
                     .font(.system(size: 16, weight: .bold))
 
-                Text(description)
-                    .font(.system(size: 14, weight: .regular))
+                Markdown(description)
+                    .customMarkdownStyle()
             }
             .foregroundColor(.primary)
         }
@@ -264,17 +302,7 @@ struct AppView: View {
                         .font(.system(size: 16, weight: .bold))
 
                     Markdown(showMore ? changelog : shortChangelog)
-                        .markdownTextStyle {
-                            FontSize(14)
-                        }
-                        .markdownBlockStyle(\.heading2) { label in
-                            label
-                                .markdownMargin(top: .rem(0), bottom: .rem(0.5))
-                                .markdownTextStyle {
-                                    FontWeight(.semibold)
-                                    FontSize(.em(1))
-                                }
-                        }
+                        .customMarkdownStyle()
                         .lineLimit(showMore ? nil : 4)
                 }
 
@@ -294,6 +322,11 @@ struct AppView: View {
     }
 
     struct Developer: View {
+        let github: URL
+        let manifest: URL
+
+        @Environment(\.openURL) var openURL
+
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Developer")
@@ -301,20 +334,55 @@ struct AppView: View {
 
                 HStack(spacing: 8) {
                     Image("GitHub")
-                    Text("View on GitHub")
-                        .font(.system(size: 14, weight: .medium))
-                        .underline()
+                    Button {
+                        openURL(github)
+                    } label: {
+                        Text("View on GitHub")
+                            .font(.system(size: 14, weight: .medium))
+                            .underline()
+                    }
                 }
 
                 HStack(spacing: 8) {
                     Image("GitHub")
-                    Text("Manifest")
-                        .font(.system(size: 14, weight: .medium))
-                        .underline()
+                    Button {
+                        openURL(manifest)
+                    } label: {
+                        Text("Manifest")
+                            .font(.system(size: 14, weight: .medium))
+                            .underline()
+                    }
                 }
 
             }
             .foregroundColor(.primary)
         }
+    }
+}
+
+extension View {
+    func customMarkdownStyle() -> some View {
+        self
+            .markdownTextStyle {
+                FontSize(14)
+            }
+            .markdownBlockStyle(\.heading1) { configuration in
+                configuration
+                    .label
+                    .markdownMargin(top: .rem(0), bottom: .rem(0.5))
+                    .markdownTextStyle {
+                        FontWeight(.semibold)
+                        FontSize(14)
+                    }
+            }
+            .markdownBlockStyle(\.heading2) { configuration in
+                configuration
+                    .label
+                    .markdownMargin(top: .rem(0), bottom: .rem(0.5))
+                    .markdownTextStyle {
+                        FontWeight(.semibold)
+                        FontSize(14)
+                    }
+            }
     }
 }

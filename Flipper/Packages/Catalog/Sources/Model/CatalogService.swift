@@ -1,9 +1,19 @@
 public protocol CatalogService {
-    func getFeaturedApp() async throws -> Application
+    func featured() -> FeaturedRequest
 
-    func getCategories() async throws -> [Category]
-    func getCategory(_ id: String) async throws -> Category
+    func categories() -> CategoriesRequest
+    func category(_ id: String) -> CategoryRequest
 
-    func getApplications() async throws -> [Application]
-    func getApplication(_ id: String) async throws -> Application
+    func applications() -> ApplicationsRequest
+    func application(uid: String) -> ApplicationRequest
+}
+
+public enum SortBy: String {
+    case updated = "updated_at"
+    case created = "created_at"
+}
+
+public enum SortOrder: Int {
+    case asc = 1
+    case desc = -1
 }

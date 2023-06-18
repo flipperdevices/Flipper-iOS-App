@@ -77,7 +77,7 @@ struct AppsRowCard: View {
                         .lineLimit(1)
 
                     HStack(alignment: .bottom, spacing: 4) {
-                        CategoryIcon(url: item.category.icon)
+                        CategoryIcon(image: item.category.icon)
                             .foregroundColor(.black60)
                             .frame(width: 12, height: 12)
 
@@ -87,7 +87,7 @@ struct AppsRowCard: View {
                             .lineLimit(1)
                     }
 
-                    Text(item.description)
+                    Text(item.shortDescription)
                         .font(.system(size: 10, weight: .regular))
                         .foregroundColor(.primary)
                         .lineLimit(1)

@@ -2,16 +2,14 @@ import Foundation
 
 public struct Application: Decodable {
     public let id: String
-    public let name: String
     public let alias: String
     public let categoryId: String
-    public let created: Int
-    public let updated: Int
+    public let created: TimeStamp
+    public let updated: TimeStamp
     public let current: Current
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
-        case name
         case alias
         case created = "created_at"
         case updated = "updated_at"
@@ -21,23 +19,29 @@ public struct Application: Decodable {
 
     public struct Current: Decodable {
         public let id: String
+        public let name: String
         public let version: String
-        public let description: String
+        public let shortDescription: String
         public let icon: URL
         public let screenshots: [URL]
-
+        // Full
+        public let description: String?
+        public let changelog: String?
         public let build: Build?
         public let bundle: Bundle?
         public let links: Links?
 
         enum CodingKeys: String, CodingKey {
             case id = "_id"
+            case name
             case version
-            case description
+            case shortDescription = "short_description"
             case icon = "icon_uri"
             case screenshots
-
-            case build
+            // Full
+            case description
+            case changelog
+            case build = "current_build"
             case bundle
             case links
         }
@@ -82,9 +86,9 @@ public struct Application: Decodable {
     }
 
     public struct Links: Decodable {
-        let bundle: URL
-        let manifest: URL
-        let source: Source
+        public let bundle: URL
+        public let manifest: URL
+        public let source: Source
 
         enum CodingKeys: String, CodingKey {
             case bundle = "bundle_uri"
@@ -93,8 +97,8 @@ public struct Application: Decodable {
         }
 
         public struct Source: Decodable {
-            let type: String
-            let uri: String
+            public let type: String
+            public let uri: URL
         }
     }
 }

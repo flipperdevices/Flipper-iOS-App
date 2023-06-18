@@ -6,6 +6,7 @@ public struct Category: Decodable {
     public let name: String
     public let color: String
     public let icon: URL
+    public let applications: Int
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -13,5 +14,6 @@ public struct Category: Decodable {
         case name
         case color
         case icon = "icon_uri"
+        case applications
     }
 }

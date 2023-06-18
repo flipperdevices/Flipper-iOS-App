@@ -34,6 +34,9 @@ struct AppScreens: View {
                         image
                             .interpolation(.none)
                             .resizable()
+                    } else {
+                        AnimatedPlaceholder()
+                            .frame(width: 170, height: 84)
                     }
                 }
                 .scaledToFit()
