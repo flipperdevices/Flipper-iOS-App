@@ -168,12 +168,30 @@ public class Applications: ObservableObject {
     }
 
     public func loadApplication(id: String) async throws -> Application {
-        let source = try await catalog.application(uid: id).get()
-        var application = Application(source)
-        print(application)
-        application.category = category(for: source)
-        application.status = status(for: application)
-        return application
+        try await handlingWebErrors {
+            let source = try await catalog.application(uid: id).get()
+            var application = Application(source)
+            print(application)
+            application.category = category(for: source)
+            application.status = status(for: application)
+            return application
+        }
+    }
+
+    public func search(for predicate: String) async throws -> [Application] {
+        try await handlingWebErrors {
+            let applications = try await catalog
+                .applications()
+                .filter(predicate)
+                .get()
+
+            return applications.map { source in
+                var application = Application(source)
+                application.category = category(for: source)
+                application.status = status(for: application)
+                return application
+            }
+        }
     }
 }
 

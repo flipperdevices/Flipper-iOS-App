@@ -109,7 +109,7 @@ extension CatalogRequest {
         }
         guard response.statusCode == 200 else {
             print(response.statusCode)
-            throw URLError.init(.init(rawValue: response.statusCode))
+            throw URLError(.init(rawValue: response.statusCode))
         }
         print(String(decoding: data, as: UTF8.self))
         return data

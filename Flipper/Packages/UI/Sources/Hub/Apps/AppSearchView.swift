@@ -6,25 +6,28 @@ struct AppSearchView: View {
     @Environment(\.dismiss) var dismiss
 
     @State var predicate = ""
-
-    var filteredItems: [Applications.Application] {
-        guard !predicate.isEmpty else {
-            return model.applications
-        }
-        return model.applications.filter {
-            $0.name == predicate
-        }
+    var predicateIsValid: Bool {
+        predicate.count >= 2
     }
+
+    @State var inProgress: Bool = false
+    @State var applications: [Applications.Application] = []
+
+    let debouncer = Debouncer(seconds: 1)
 
     var body: some View {
         VStack(spacing: 0) {
-            if filteredItems.isEmpty {
-                NothingFoundView()
+            if !predicateIsValid {
+                Placeholder()
+            } else if inProgress {
+                Spinner()
+            } else if applications.isEmpty {
+                NothingFound(query: predicate)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .customBackground(.background)
             } else {
                 ScrollView {
-                    AppList(applications: filteredItems)
+                    AppList(applications: applications)
                         .padding(14)
                 }
                 .customBackground(.background)
@@ -45,6 +48,52 @@ struct AppSearchView: View {
                     predicate: $predicate
                 )
                 .offset(x: -10)
+            }
+        }
+        .onChange(of: predicate) { newValue in
+            Task {
+                guard newValue.count >= 2 else {
+                    await debouncer.cancel()
+                    applications = []
+                    return
+                }
+                inProgress = true
+                await debouncer.submit {
+                    defer { inProgress = false }
+                    do {
+                        applications = try await model.search(for: newValue)
+                    } catch {
+                        applications = []
+                    }
+                }
+            }
+        }
+    }
+
+    struct Placeholder: View {
+        var body: some View {
+            VStack(spacing: 4) {
+                Text("Enter at least 2 symbols")
+                    .font(.system(size: 14, weight: .medium))
+
+                Text("to search for some apps")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black40)
+            }
+        }
+    }
+
+    struct NothingFound: View {
+        let query: String
+
+        var body: some View {
+            VStack(spacing: 4) {
+                Text("No Results Found")
+                    .font(.system(size: 14, weight: .medium))
+
+                Text("for “\(query)”")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black40)
             }
         }
     }
