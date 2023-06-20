@@ -135,18 +135,24 @@ public class Applications: ObservableObject {
         }
     }
 
-    private func loadApplications() async throws -> [Application] {
+    public func loadApplications(
+        for category: Category? = nil
+    ) async throws -> [Application] {
         try await handlingWebErrors {
-            let applications = try await catalog
+            var applicationsRequest = catalog
                 .applications()
-                .skip(0)
                 .sort(by: .init(source: sortOrder))
                 .order(.init(source: sortOrder))
-                .get()
+
+            if let category = category {
+                applicationsRequest = applicationsRequest.category(category.id)
+            }
+
+            let applications = try await applicationsRequest.get()
 
             return applications.map { source in
                 var application = Application(source)
-                application.category = category(for: source)
+                application.category = self.category(for: source)
                 application.status = status(for: application)
                 return application
             }
@@ -161,10 +167,6 @@ public class Applications: ObservableObject {
 
     private func status(for application: Application) -> Application.Status {
         [.notInstalled, .installed, .outdated].randomElement()!
-    }
-
-    public func loadMore() {
-        // ...
     }
 
     public func loadApplication(id: String) async throws -> Application {

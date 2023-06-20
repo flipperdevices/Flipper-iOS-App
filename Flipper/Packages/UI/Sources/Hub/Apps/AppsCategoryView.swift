@@ -7,12 +7,7 @@ struct AppsCategoryView: View {
 
     let category: Applications.Category
 
-    var applications: [Applications.Application] {
-        model.applications
-        // model.applications.filter { application in
-        //     application.category.id == category.id
-        // }
-    }
+    @State var applications: [Applications.Application] = []
 
     var body: some View {
         ScrollView {
@@ -39,6 +34,22 @@ struct AppsCategoryView: View {
                 Title(category.name)
                     .padding(.leading, 8)
             }
+        }
+        .task {
+            await load()
+        }
+        .onReceive(model.$sortOrder) { newValue in
+            Task {
+                await load()
+            }
+        }
+    }
+
+    func load() async {
+        do {
+            applications = try await model.loadApplications(for: category)
+        } catch {
+            applications = []
         }
     }
 }
