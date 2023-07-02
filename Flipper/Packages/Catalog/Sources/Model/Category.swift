@@ -8,6 +8,22 @@ public struct Category: Decodable {
     public let icon: URL
     public let applications: Int
 
+    public init(
+        id: String,
+        priority: Int,
+        name: String,
+        color: String,
+        icon: URL,
+        applications: Int
+    ) {
+        self.id = id
+        self.priority = priority
+        self.name = name
+        self.color = color
+        self.icon = icon
+        self.applications = applications
+    }
+
     enum CodingKeys: String, CodingKey {
         case id = "_id"
         case priority

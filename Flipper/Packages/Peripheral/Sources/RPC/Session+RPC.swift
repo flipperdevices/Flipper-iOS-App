@@ -22,7 +22,7 @@ extension Session {
             let response = try await self
                 .send(.desktop(.status))
                 .response
-            print(response)
+            // print(response)
             // FIXME:
             return response == .ok
         }

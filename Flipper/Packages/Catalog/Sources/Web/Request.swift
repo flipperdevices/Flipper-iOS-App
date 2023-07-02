@@ -28,24 +28,18 @@ protocol CatalogRequest: Endpoint, Request {
 }
 
 extension CatalogRequest {
-    func append(queryItem: URLQueryItem) -> Self {
+    func setQueryItem(name: String, value: String) -> Self {
         var request = self
-        if let index = request.queryItems.firstIndex(where: {
-            $0.name == queryItem.name
-        }) {
-            request.queryItems[index] = queryItem
-        } else {
-            request.queryItems.append(queryItem)
-        }
+        request.queryItems.append(.init(name: name, value: value))
         return request
     }
 
-    func setQueryItem(name: String, value: String) -> Self {
-        append(queryItem: .init(name: name, value: value))
-    }
-
     func setQueryItem(name: String, value: [String]) -> Self {
-        setQueryItem(name: name, value: value.joined(separator: ","))
+        var result = self
+        for item in value {
+            result.queryItems.append(.init(name: name, value: item))
+        }
+        return result
     }
 
     func setQueryItem(name: String, value: Bool) -> Self {
@@ -93,12 +87,14 @@ extension CatalogRequest {
         guard let url = components.url else {
             throw URLError(.badURL)
         }
-        print(url)
         return try await object(from: url)
     }
 
     private func object(from url: URL) async throws -> Result {
         let data = try await data(from: url)
+        guard Result.self != Data.self else {
+            return data as! Result
+        }
         return try JSONDecoder().decode(Result.self, from: data)
     }
 
@@ -108,10 +104,8 @@ extension CatalogRequest {
             throw URLError(.unknown)
         }
         guard response.statusCode == 200 else {
-            print(response.statusCode)
             throw URLError(.init(rawValue: response.statusCode))
         }
-        print(String(decoding: data, as: UTF8.self))
         return data
     }
 }

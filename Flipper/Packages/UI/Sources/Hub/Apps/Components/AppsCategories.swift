@@ -3,7 +3,7 @@ import SwiftUI
 
 struct AppsCategories: View {
     @EnvironmentObject var model: Applications
-    let categories: [Applications.Category]
+    @State var categories: [Applications.Category] = []
 
     var columns: [GridItem] {
         [.init(.flexible()), .init(.flexible()), .init(.flexible())]
@@ -26,6 +26,13 @@ struct AppsCategories: View {
                 }
             }
         }
+        .task {
+            do {
+                categories = try await model.loadCategories()
+            } catch {
+                categories = []
+            }
+        }
     }
 
     struct CategoryPlaceholder: View {
@@ -43,7 +50,7 @@ struct AppsCategories: View {
             Card {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(alignment: .top) {
-                        CategoryIcon(image: category.icon)
+                        CategoryIcon(category.icon, fixme: true)
                             .foregroundColor(.primary)
                             .frame(width: 18, height: 18)
 
@@ -57,6 +64,7 @@ struct AppsCategories: View {
                     Text(category.name)
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.primary)
+                        .lineLimit(1)
                 }
                 .padding(.vertical, 8)
                 .padding(.horizontal, 10)

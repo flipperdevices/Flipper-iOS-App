@@ -28,6 +28,10 @@ public struct ApplicationsRequest: CatalogRequest {
         setQueryItem(name: "category_id", value: categoryID)
     }
 
+    public func uids(_ uids: [String]) -> Self {
+        setQueryItem(name: "applications", value: uids)
+    }
+
     public func sort(by: SortBy) -> Self {
         setQueryItem(name: "sort_by", value: by)
     }

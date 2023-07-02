@@ -6,20 +6,22 @@ import SwiftUI
 struct HubView: View {
     @State var showRemoteControl = false
 
-    @StateObject var applications: Applications = .init(
-        catalog: WebCatalog()
-    )
+    @EnvironmentObject var applications: Applications
+
+    @AppStorage(.isAppsEnabled) var isAppsEnabled = false
 
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 14) {
-                    NavigationLink {
-                        AppsView()
-                            .environmentObject(applications)
-                    } label: {
-                        AppsRowCard()
-                            .environmentObject(applications)
+                    if isAppsEnabled {
+                        NavigationLink {
+                            AppsView()
+                                .environmentObject(applications)
+                        } label: {
+                            AppsRowCard()
+                                .environmentObject(applications)
+                        }
                     }
 
                     HStack(spacing: 14) {

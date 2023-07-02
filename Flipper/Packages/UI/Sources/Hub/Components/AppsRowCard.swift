@@ -4,6 +4,9 @@ import SwiftUI
 struct AppsRowCard: View {
     @EnvironmentObject var model: Applications
 
+    @State private var topApp: Applications.Application?
+    @State private var isError: Bool = false
+
     var body: some View {
         HubRowCard {
             VStack(alignment: .leading, spacing: 12) {
@@ -25,18 +28,20 @@ struct AppsRowCard: View {
                     HubChevron()
                 }
 
-                if let item = model.topApp {
-                    ApplicationDescription(item: item)
-                } else if case .loading = model.state {
-                    PlaceholderDescription()
-                } else {
+                if let topApp = topApp {
+                    ApplicationDescription(item: topApp)
+                } else if isError {
                     DefaultDescription()
+                } else {
+                    PlaceholderDescription()
                 }
             }
         }
         .task {
-            Task {
-                try await model.loadTopApp()
+            do {
+                topApp = try await model.loadTopApp()
+            } catch {
+                isError = true
             }
         }
     }
@@ -63,31 +68,33 @@ struct AppsRowCard: View {
     }
 
     struct ApplicationDescription: View {
+        @EnvironmentObject var model: Applications
         let item: Applications.Application
+
+        var category: Applications.Category? {
+            model.category(for: item)
+        }
 
         var body: some View {
             HStack(spacing: 8) {
-                AppIcon(url: item.icon)
+                AppIcon(item.current.icon)
                     .frame(width: 42, height: 42)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(item.name)
+                    Text(item.current.name)
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.primary)
                         .lineLimit(1)
 
                     HStack(alignment: .bottom, spacing: 4) {
-                        CategoryIcon(image: item.category.icon)
-                            .foregroundColor(.black60)
+                        CategoryIcon(category?.icon)
                             .frame(width: 12, height: 12)
 
-                        Text(item.category.name)
+                        CategoryName(category?.name)
                             .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.black60)
-                            .lineLimit(1)
                     }
 
-                    Text(item.shortDescription)
+                    Text(item.current.shortDescription)
                         .font(.system(size: 10, weight: .regular))
                         .foregroundColor(.primary)
                         .lineLimit(1)

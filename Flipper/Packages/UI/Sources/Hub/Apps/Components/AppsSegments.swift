@@ -1,12 +1,17 @@
+import Core
 import SwiftUI
 
 struct AppsSegments: View {
+    @EnvironmentObject var model: Applications
+
     @Binding var selected: Segment
 
     enum Segment {
         case all
         case installed
     }
+
+    @State var updatesCount: Int = 0
 
     var body: some View {
         HStack(spacing: 2) {
@@ -21,11 +26,24 @@ struct AppsSegments: View {
                 selected: $selected,
                 id: .installed,
                 image: "InstalledApps",
-                title: "Installed"
+                title: "Installed",
+                badge: updatesCount == 0 ? nil : "\(updatesCount)"
             )
         }
         .background(.white.opacity(0.3))
         .cornerRadius(8)
+        .onReceive(model.$statuses) { _ in
+            Task {
+                loadUpdates()
+            }
+        }
+        .task {
+            loadUpdates()
+        }
+    }
+
+    func loadUpdates() {
+        self.updatesCount = model.outdatedCount
     }
 }
 
@@ -40,6 +58,21 @@ struct AppsSegment: View {
 
     let image: String
     let title: String
+    let badge: String?
+
+    init(
+        selected: Binding<AppsSegments.Segment>,
+        id: AppsSegments.Segment,
+        image: String,
+        title: String,
+        badge: String? = nil
+    ) {
+        self._selected = selected
+        self.id = id
+        self.image = image
+        self.title = title
+        self.badge = badge
+    }
 
     var body: some View {
         HStack {
@@ -48,6 +81,25 @@ struct AppsSegment: View {
                 Image(image)
                     .renderingMode(.template)
                     .foregroundColor(.primary)
+                    .overlay(alignment: .topTrailing) {
+                        if let badge {
+                            HStack {
+                                Text(badge)
+                                    .font(.system(size: 8, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 3)
+                                    .padding(3)
+                            }
+                            .background(Color.sGreenUpdate)
+                            .cornerRadius(60)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 60)
+                                    .inset(by: 0.5)
+                                    .stroke(.white, lineWidth: 1)
+                            )
+                            .offset(x: 6, y: -6)
+                        }
+                    }
                 Text(title)
                     .font(.system(size: 12, weight: .bold))
                 Spacer(minLength: 0)

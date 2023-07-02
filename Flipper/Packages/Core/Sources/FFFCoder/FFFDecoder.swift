@@ -5,6 +5,13 @@ class FFFDecoder {
     ) throws -> T {
         try .init(from: _FFFDecoder(text: string))
     }
+
+    static func decode<T: Decodable>(
+        _ type: T.Type,
+        from bytes: [UInt8]
+    ) throws -> T {
+        try decode(type, from: .init(decoding: bytes, as: UTF8.self))
+    }
 }
 
 class _FFFDecoder: Decoder {

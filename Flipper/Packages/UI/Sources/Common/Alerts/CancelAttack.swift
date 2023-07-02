@@ -18,29 +18,12 @@ struct CancelAttackAlert: View {
             }
             .padding(.top, 25)
 
-            // TODO: move to view builder
-
-            VStack(spacing: 14) {
-                Divider()
-
-                Button {
-                    onAbort()
-                    isPresented = false
-                } label: {
-                    Text("Abort")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.a2)
-                }
-
-                Divider()
-
-                Button {
-                    isPresented = false
-                } label: {
-                    Text("Continue")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.primary)
-                }
+            AlertButtons(
+                isPresented: $isPresented,
+                text: "Abort",
+                cancel: "Continue"
+            ) {
+                onAbort()
             }
         }
     }

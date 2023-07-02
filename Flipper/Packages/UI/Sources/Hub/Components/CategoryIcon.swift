@@ -4,15 +4,32 @@ import Foundation
 import SVGKit
 
 struct CategoryIcon: View {
-    let image: Applications.Category.ImageSource
+    @Environment(\.colorScheme) var colorScheme
+
+    let url: URL?
+    let fixme: Bool
+
+    init(_ url: URL?, fixme: Bool = false) {
+        self.url = url
+        self.fixme = fixme
+    }
+
+    private var color: Color {
+        switch colorScheme {
+        case .dark: return .black40
+        default: return .black60
+        }
+    }
 
     var body: some View {
         Group {
-            switch image {
-            case .assets(let name): Image(name)
-            case .remote(let url): RemoteImage(url: url)
+            if let url = url {
+                RemoteImage(url: url)
+            } else {
+                Image("UnknownCategory")
             }
         }
+        .foregroundColor(fixme ? .primary : color)
     }
 
     struct RemoteImage: View {
@@ -40,42 +57,5 @@ struct CategoryIcon: View {
                 }
             }
         }
-    }
-}
-
-private struct CacheAsyncImage<Content>: View where Content: View {
-    private let url: URL
-    private let content: (AsyncImagePhase) -> Content
-
-    init(
-        url: URL,
-        @ViewBuilder content: @escaping (AsyncImagePhase) -> Content
-    ){
-        self.url = url
-        self.content = content
-    }
-
-    var body: some View{
-        if let image = Cache[url] {
-            content(.success(image))
-        }else{
-            AsyncImage(url: url, content: imageContent)
-        }
-    }
-
-    func imageContent(for phase: AsyncImagePhase) -> some View {
-        if case .success (let image) = phase {
-            Cache[url] = image
-        }
-        return content(phase)
-    }
-}
-
-private class Cache {
-    static private var images: [URL: Image] = [:]
-
-    static subscript(url: URL) -> Image? {
-        get { Cache.images[url] }
-        set { Cache.images[url] = newValue }
     }
 }

@@ -6,7 +6,9 @@ struct AppsView: View {
     @Environment(\.dismiss) var dismiss
 
     @State var showSearchView: Bool = false
-    @State var selectedSegment: AppsSegments.Segment = .all
+    @State var selectedSegment: AppsSegments.Segment = .installed
+
+    @State var isNotConnectedAlertPresented = false
 
     var allSelected: Bool {
         selectedSegment == .all
@@ -49,11 +51,5 @@ struct AppsView: View {
                 }
             }
         }
-        .task {
-            model.load()
-        }
-//        .fullScreenCover(isPresented: $showSearchView) {
-//            AppSearchView()
-//        }
     }
 }

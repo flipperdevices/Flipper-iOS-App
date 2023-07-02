@@ -2,20 +2,20 @@ import Core
 import SwiftUI
 
 struct SortMenu: View {
-    @EnvironmentObject var model: Applications
+    @EnvironmentObject private var model: Applications
 
-    typealias SortOrder = Applications.SortOrder
+    var selected: Binding<Applications.SortOption>
 
     var body: some View {
         Menu {
-            ForEach(SortOrder.allCases, id: \.self) { sortOrder in
+            ForEach(Applications.SortOption.allCases, id: \.self) { sortOrder in
                 Button(sortOrder.rawValue) {
-                    model.sortOrder = sortOrder
+                    selected.wrappedValue = sortOrder
                 }
             }
         } label: {
             HStack(spacing: 4) {
-                Text(model.sortOrder.rawValue)
+                Text(selected.wrappedValue.rawValue)
                     .font(.system(size: 12, weight: .medium))
 
                 Image("ChevronRight")

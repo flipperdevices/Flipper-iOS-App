@@ -4,10 +4,13 @@ import SwiftUI
 struct AllAppsView: View {
     @EnvironmentObject var model: Applications
 
+    @State private var applications: [Applications.Application] = []
+    @State private var sortOrder: Applications.SortOption = .default
+
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                AppsCategories(categories: model.categories)
+                AppsCategories()
                     .padding(.horizontal, 14)
 
                 HStack {
@@ -17,15 +20,31 @@ struct AllAppsView: View {
 
                     Spacer()
 
-                    SortMenu()
+                    SortMenu(selected: $sortOrder)
                 }
                 .padding(.top, 24)
                 .padding(.horizontal, 14)
 
-                AppList(applications: model.applications)
+                AppList(applications: applications)
                     .padding(.top, 18)
             }
             .padding(.vertical, 14)
+        }
+        .task {
+            await load()
+        }
+        .onChange(of: sortOrder) { newValue in
+            Task {
+                await load()
+            }
+        }
+    }
+
+    func load() async {
+        do {
+            applications = try await model.loadApplications(sort: sortOrder)
+        } catch {
+            applications = []
         }
     }
 }

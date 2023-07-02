@@ -7,7 +7,7 @@ struct AppScreens: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(application.screenshots) { screenshot in
+                ForEach(application.current.screenshots) { screenshot in
                     Screenshot(url: screenshot)
                 }
             }
@@ -26,7 +26,7 @@ struct AppScreens: View {
                     .padding(1)
 
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(.primary, lineWidth: 1)
+                    .stroke(.black, lineWidth: 1)
                     .padding(1)
 
                 AsyncImage(url: url) { phase in

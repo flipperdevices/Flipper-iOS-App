@@ -124,10 +124,9 @@ public extension RPC {
 
     func writeFile(
         at path: Path,
-        string: String,
+        bytes: [UInt8],
         progress: (Double) -> Void
     ) async throws {
-        let bytes = [UInt8](string.utf8)
         guard !bytes.isEmpty else {
             progress(1)
             return
@@ -137,5 +136,16 @@ public extension RPC {
             sent += next
             progress(Double(sent) / Double(bytes.count))
         }
+    }
+
+    func writeFile(
+        at path: Path,
+        string: String,
+        progress: (Double) -> Void
+    ) async throws {
+        try await writeFile(
+            at: path,
+            bytes: [UInt8](string.utf8),
+            progress: progress)
     }
 }

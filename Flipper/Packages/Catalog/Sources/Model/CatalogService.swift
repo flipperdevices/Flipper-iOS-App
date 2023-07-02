@@ -6,6 +6,10 @@ public protocol CatalogService {
 
     func applications() -> ApplicationsRequest
     func application(uid: String) -> ApplicationRequest
+
+    func bundle(uid: String, target: String, api: String) -> BundleRequest
+
+    func report(uid: String, description: String) async throws
 }
 
 public enum SortBy: String {
