@@ -355,12 +355,10 @@ fileprivate extension Applications {
         let target = try await getFlipperTarget()
         let api = try await getFlipperAPI()
 
-        let data = try await catalog.bundle(
-            uid: application.current.id,
-            target: target,
-            api: api
-        )
-        .get()
+        let data = try await catalog.build(forVersionID: application.current.id)
+            .target(target)
+            .api(api)
+            .get()
 
         try? await rpc.createDirectory(at: tempPath)
         try? await rpc.createDirectory(at: iosTempPath)

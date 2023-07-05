@@ -26,12 +26,8 @@ public class WebCatalog: CatalogService {
         .init(baseURL: baseURL, uid: uid)
     }
 
-    public func bundle(
-        uid: String,
-        target: String,
-        api: String
-    ) -> BundleRequest {
-        .init(baseURL: baseURL, uid: uid, target: target, api: api)
+    public func build(forVersionID uid: String) -> BuildRequest {
+        .init(baseURL: baseURL, uid: uid)
     }
 
     // TODO:
