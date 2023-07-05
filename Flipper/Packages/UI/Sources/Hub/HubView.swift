@@ -1,13 +1,29 @@
 import Core
+import Catalog
+
 import SwiftUI
 
 struct HubView: View {
     @State var showRemoteControl = false
 
+    @EnvironmentObject var applications: Applications
+
+    @AppStorage(.isAppsEnabled) var isAppsEnabled = false
+
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 14) {
+                    if isAppsEnabled {
+                        NavigationLink {
+                            AppsView()
+                                .environmentObject(applications)
+                        } label: {
+                            AppsRowCard()
+                                .environmentObject(applications)
+                        }
+                    }
+
                     HStack(spacing: 14) {
                         Button {
                             showRemoteControl = true

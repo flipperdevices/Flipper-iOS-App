@@ -43,29 +43,12 @@ struct PauseSyncAlert: View {
             }
             .padding(.top, 25)
 
-            // TODO: move to view builder
-
-            VStack(spacing: 14) {
-                Divider()
-
-                Button {
-                    onAction()
-                    isPresented = false
-                } label: {
-                    Text("Pause & \(buttonAction)")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.a2)
-                }
-
-                Divider()
-
-                Button {
-                    isPresented = false
-                } label: {
-                    Text("Cancel")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.primary)
-                }
+            AlertButtons(
+                isPresented: $isPresented,
+                text: "Pause & \(buttonAction)",
+                cancel: "Cancel"
+            ) {
+                onAction()
             }
         }
     }

@@ -76,3 +76,16 @@ extension Directory: ExpressibleByStringLiteral {
         self.name = stringLiteral
     }
 }
+
+// MARK: Filter
+
+extension Array where Element == Peripheral.Element {
+    public var files: [String] {
+        self.compactMap {
+            guard case .file(let file) = $0 else {
+                return nil
+            }
+            return file.name
+        }
+    }
+}

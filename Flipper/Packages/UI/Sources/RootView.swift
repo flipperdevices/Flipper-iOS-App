@@ -17,6 +17,7 @@ public struct RootView: View {
             .environmentObject(dependencies.updateModel)
             .environmentObject(dependencies.sharing)
             .environmentObject(dependencies.emulate)
+            .environmentObject(dependencies.applications)
     }
 }
 

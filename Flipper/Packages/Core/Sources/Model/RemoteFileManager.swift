@@ -10,7 +10,8 @@ public class RemoteFileManager: ObservableObject {
     private var rpc: RPC { pairedDevice.session }
 
     private var supportedExtensions: [String] = [
-        ".ibtn", ".nfc", ".shd", ".sub", ".rfid", ".ir", ".fmf", ".txt", "log"
+        ".ibtn", ".nfc", ".shd", ".sub", ".rfid", ".ir",
+        ".fmf", ".txt", "log", "fim"
     ]
 
     public enum Error: Swift.Error, Equatable {
