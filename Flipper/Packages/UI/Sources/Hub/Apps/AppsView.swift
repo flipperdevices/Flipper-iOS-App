@@ -6,7 +6,7 @@ struct AppsView: View {
     @Environment(\.dismiss) var dismiss
 
     @State var showSearchView: Bool = false
-    @State var selectedSegment: AppsSegments.Segment = .installed
+    @State var selectedSegment: AppsSegments.Segment = .all
 
     @State var isNotConnectedAlertPresented = false
 
