@@ -98,7 +98,7 @@ struct OptionsView: View {
 
             Section(header: Text("Experimental")) {
                 Toggle(isOn: $isAppsEnabled) {
-                    Text("Enable catalog beta")
+                    Text("Enable Apps in Hub")
                 }
                 .tint(.a1)
             }
