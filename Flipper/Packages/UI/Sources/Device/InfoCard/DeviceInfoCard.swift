@@ -6,12 +6,14 @@ import struct Peripheral.StorageSpace
 
 struct DeviceInfoCard: View {
     @EnvironmentObject var device: Device
-
+    
     var isConnecting: Bool {
         device.status == .connecting
     }
     var isConnected: Bool {
-        device.status == .connected
+        device.status == .connected ||
+        device.status == .synchronizing ||
+        device.status == .synchronized
     }
     var isDisconnected: Bool {
         device.status == .disconnected ||
