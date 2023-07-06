@@ -219,23 +219,13 @@ public class Applications: ObservableObject {
         sort sortOption: SortOption = .newUpdates
     ) async throws -> [Application] {
         try await handlingWebErrors {
-            var applicationsRequest = catalog
+            try await catalog
                 .applications()
+                .category(category?.id)
                 .sort(by: .init(source: sortOption))
                 .order(.init(source: sortOption))
-
-            if let category = category {
-                applicationsRequest = applicationsRequest
-                    .category(category.id)
-            }
-
-            if let deviceInfo {
-                applicationsRequest = applicationsRequest
-                    .target(deviceInfo.target)
-                    .api(deviceInfo.api)
-            }
-
-            return try await applicationsRequest
+                .target(deviceInfo?.target)
+                .api(deviceInfo?.api)
                 .get()
         }
     }
@@ -255,6 +245,8 @@ public class Applications: ObservableObject {
             try await catalog
                 .applications()
                 .filter(predicate)
+                .target(deviceInfo?.target)
+                .api(deviceInfo?.api)
                 .get()
         }
     }
@@ -269,9 +261,9 @@ public class Applications: ObservableObject {
 
         let available = try await catalog
             .applications()
+            .uids(installed.map { $0.id })
             .target(deviceInfo.target)
             .api(deviceInfo.api)
-            .uids(installed.map { $0.id })
             .get()
 
         for application in available {

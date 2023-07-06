@@ -24,8 +24,12 @@ public struct ApplicationsRequest: CatalogRequest {
         setQueryItem(name: "query", value: query)
     }
 
-    public func category(_ categoryID: String) -> Self {
-        setQueryItem(name: "category_id", value: categoryID)
+    public func category(_ categoryID: String?) -> Self {
+        if let categoryID {
+            return setQueryItem(name: "category_id", value: categoryID)
+        } else {
+            return self
+        }
     }
 
     public func uids(_ uids: [String]) -> Self {
@@ -44,12 +48,20 @@ public struct ApplicationsRequest: CatalogRequest {
         setQueryItem(name: "applications", value: applicationIDs)
     }
 
-    public func target(_ target: String) -> Self {
-        setQueryItem(name: "target", value: target)
+    public func target(_ target: String?) -> Self {
+        if let target {
+            return setQueryItem(name: "target", value: target)
+        } else {
+            return self
+        }
     }
 
-    public func api(_ api: String) -> Self {
-        setQueryItem(name: "api", value: api)
+    public func api(_ api: String?) -> Self {
+        if let api {
+            return setQueryItem(name: "api", value: api)
+        } else {
+            return self
+        }
     }
 
     public func hasBuild(_ hasBuild: Bool) -> Self {
