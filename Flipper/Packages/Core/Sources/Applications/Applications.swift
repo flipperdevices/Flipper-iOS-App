@@ -299,7 +299,10 @@ public class Applications: ObservableObject {
         guard let manifest = manifests[application.id] else {
             return .notInstalled
         }
-        guard manifest.versionUID == application.current.id else {
+        guard
+            manifest.versionUID == application.current.id,
+            manifest.buildAPI == deviceInfo?.api
+        else {
             return .outdated
         }
         return .installed
