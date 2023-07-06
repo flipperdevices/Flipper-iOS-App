@@ -10,11 +10,8 @@ struct ConfirmDeleteAppAlert: View {
     var body: some View {
         VStack(spacing: 24) {
             VStack(alignment: .center) {
-                IconNameCategory(
-                    application: application,
-                    size: .small
-                )
-                .padding(16)
+                AppRow.IconNameCategory(application: application)
+                    .padding(16)
             }
             .frame(maxWidth: .infinity)
             .background(Color(red: 0.14, green: 0.14, blue: 0.14))

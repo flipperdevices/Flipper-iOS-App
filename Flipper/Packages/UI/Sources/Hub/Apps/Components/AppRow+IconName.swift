@@ -1,7 +1,7 @@
 import Core
 import SwiftUI
 
-extension AppView {
+extension AppRow {
     struct IconNameCategory: View {
         @EnvironmentObject var model: Applications
         let application: Applications.Application
@@ -13,20 +13,20 @@ extension AppView {
         var body: some View {
             HStack(spacing: 8) {
                 AppIcon(application.current.icon)
-                    .frame(width: 64, height: 64)
+                    .frame(width: 42, height: 42)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(application.current.name)
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.primary)
                         .lineLimit(1)
 
                     HStack(spacing: 4) {
                         CategoryIcon(category?.icon)
-                            .frame(width: 18, height: 18)
+                            .frame(width: 14, height: 14)
 
                         CategoryName(category?.name)
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: 12, weight: .medium))
                     }
                 }
 
@@ -34,4 +34,5 @@ extension AppView {
             }
         }
     }
+
 }

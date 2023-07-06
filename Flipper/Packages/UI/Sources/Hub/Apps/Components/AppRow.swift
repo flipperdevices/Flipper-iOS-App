@@ -15,9 +15,7 @@ struct AppRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                IconNameCategory(
-                    application: application,
-                    size: .small)
+                IconNameCategory(application: application)
 
                 Spacer()
 
