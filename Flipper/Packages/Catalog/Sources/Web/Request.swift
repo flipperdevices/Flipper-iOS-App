@@ -92,6 +92,7 @@ extension CatalogRequest {
 
     private func object(from url: URL) async throws -> Result {
         let data = try await data(from: url)
+        // swiftlint:disable force_cast
         guard Result.self != Data.self else {
             return data as! Result
         }
