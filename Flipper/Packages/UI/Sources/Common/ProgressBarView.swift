@@ -41,7 +41,7 @@ struct ProgressBarView: View {
 
                 Text(progressText)
                     .foregroundColor(.white)
-                    .font(.haxrCorpNeue(size: 28))
+                    .font(.haxrCorpNeue(size: 40))
                     .padding(.bottom, 4)
 
                 Spacer()
