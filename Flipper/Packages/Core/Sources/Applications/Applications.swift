@@ -299,7 +299,7 @@ public class Applications: ObservableObject {
         guard let manifest = manifests[application.id] else {
             return .notInstalled
         }
-        guard manifest.version == application.current.version else {
+        guard manifest.versionUID == application.current.id else {
             return .outdated
         }
         return .installed
@@ -394,7 +394,6 @@ fileprivate extension Applications {
         let (icon, _) = try await URLSession.shared.data(from: iconURL)
 
         let manifest = Applications.Manifest(
-            version: application.current.version,
             fullName: application.current.name,
             icon: icon,
             buildAPI: application.current.build?.sdk.api ?? "",

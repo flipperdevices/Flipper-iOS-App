@@ -6,8 +6,12 @@ extension Applications {
             "Flipper Application Installation Manifest"
         }
 
+        private static var version: Int {
+            1
+        }
+
         public let fileType: String = Manifest.fileType
-        public let version: String
+        public let version: Int = Manifest.version
         public let fullName: String
         public let icon: Data
         public let buildAPI: String
@@ -16,7 +20,6 @@ extension Applications {
         public let path: String
 
         init(
-            version: String,
             fullName: String,
             icon: Data,
             buildAPI: String,
@@ -24,7 +27,6 @@ extension Applications {
             versionUID: String,
             path: String
         ) {
-            self.version = version
             self.fullName = fullName
             self.icon = icon
             self.buildAPI = buildAPI
@@ -47,7 +49,6 @@ extension Applications {
         public init(from decoder: Decoder) throws {
             let container: KeyedDecodingContainer<CodingKeys> = try decoder
                 .container(keyedBy: CodingKeys.self)
-            self.version = try container.decode(String.self, forKey: .version)
             self.fullName = try container.decode(String.self, forKey: .fullName)
             let base64Icon = try container.decode(String.self, forKey: .icon)
             self.icon = Data(base64Encoded: base64Icon) ?? .init()
@@ -94,7 +95,7 @@ extension Catalog.Application {
             current: .init(
                 id: manifest.versionUID,
                 name: manifest.fullName,
-                version: manifest.version,
+                version: "",
                 shortDescription: "",
                 icon: .data(manifest.icon),
                 screenshots: [],
