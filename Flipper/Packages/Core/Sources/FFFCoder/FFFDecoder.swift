@@ -1,4 +1,8 @@
 class FFFDecoder {
+    enum Error: Swift.Error {
+        case notFound(String)
+    }
+
     static func decode<T: Decodable>(
         _ type: T.Type,
         from string: String
@@ -51,5 +55,13 @@ class _FFFDecoder: Decoder {
 
     func singleValueContainer() throws -> SingleValueDecodingContainer {
         fatalError("unreachable")
+    }
+}
+
+extension FFFDecoder.Error: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .notFound(let key): return "value for key not found - '\(key)'"
+        }
     }
 }

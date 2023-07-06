@@ -444,10 +444,19 @@ extension Applications {
             return result
         }
         for file in listing.files {
-            let data = try await rpc.readFile(at: "\(manifestsPath)/\(file)")
-            let manifest = try FFFDecoder.decode(Manifest.self, from: data)
-            result[manifest.uid] = manifest
+            do {
+                let manifest = try await _loadManifest(file)
+                result[manifest.uid] = manifest
+            } catch {
+                logger.error("load manifest: \(error)")
+            }
         }
         return result
+    }
+
+    func _loadManifest(_ name: String) async throws -> Manifest {
+        let data = try await rpc.readFile(at: "\(manifestsPath)/\(name)")
+        let manifest = try FFFDecoder.decode(Manifest.self, from: data)
+        return manifest
     }
 }

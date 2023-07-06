@@ -10,8 +10,11 @@ struct FFFKeyedDecodingContainer<K : CodingKey>
         self.properties = properties
     }
 
-    private func value(for key: K) -> String {
-        properties[key.stringValue]!
+    private func value(for key: K) throws -> String {
+        guard let value = properties[key.stringValue] else {
+            throw FFFDecoder.Error.notFound(key.stringValue)
+        }
+        return value
     }
 
     func contains(_ key: K) -> Bool {
@@ -23,59 +26,59 @@ struct FFFKeyedDecodingContainer<K : CodingKey>
     }
 
     func decode(_ type: Bool.Type, forKey key: K) throws -> Bool {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: String.Type, forKey key: K) throws -> String {
-        value(for: key)
+        try value(for: key)
     }
 
     func decode(_ type: Double.Type, forKey key: K) throws -> Double {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: Float.Type, forKey key: K) throws -> Float {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: Int.Type, forKey key: K) throws -> Int {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: Int8.Type, forKey key: K) throws -> Int8 {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: Int16.Type, forKey key: K) throws -> Int16 {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: Int32.Type, forKey key: K) throws -> Int32 {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: Int64.Type, forKey key: K) throws -> Int64 {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: UInt.Type, forKey key: K) throws -> UInt {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: UInt8.Type, forKey key: K) throws -> UInt8 {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: UInt16.Type, forKey key: K) throws -> UInt16 {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: UInt32.Type, forKey key: K) throws -> UInt32 {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode(_ type: UInt64.Type, forKey key: K) throws -> UInt64 {
-        .init(value(for: key))!
+        try .init(value(for: key))!
     }
 
     func decode<T>(

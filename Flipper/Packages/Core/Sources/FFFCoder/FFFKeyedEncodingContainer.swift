@@ -13,7 +13,7 @@ struct FFFKeyedEncodingContainer<K : CodingKey>
     }
 
     mutating func encodeNil(forKey key: K) throws {
-        fatalError("unreachable")
+        // ignore
     }
 
     mutating func encode(_ value: Bool, forKey key: K) throws {
