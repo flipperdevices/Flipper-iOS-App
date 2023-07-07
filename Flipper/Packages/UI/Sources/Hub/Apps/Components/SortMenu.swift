@@ -2,7 +2,14 @@ import Core
 import SwiftUI
 
 struct SortMenu: View {
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject private var model: Applications
+
+    var color: Color {
+        colorScheme == .light
+            ? .black4
+            : .black80
+    }
 
     var selected: Binding<Applications.SortOption>
 
@@ -27,7 +34,8 @@ struct SortMenu: View {
             .frame(width: 120, height: 26)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.black4)
+                    .inset(by: 0.5)
+                    .stroke(color)
             )
             .foregroundColor(.black30)
         }

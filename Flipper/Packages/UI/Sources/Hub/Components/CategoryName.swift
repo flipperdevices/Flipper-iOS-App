@@ -21,7 +21,6 @@ struct CategoryName: View {
 
     var body: some View {
         Text(name ?? "Unknown")
-            .font(.system(size: 10, weight: .medium))
             .foregroundColor(color)
             .lineLimit(1)
     }

@@ -11,7 +11,7 @@ extension AppView {
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Developer")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
 
                 HStack(spacing: 8) {
                     Image("GitHub")

@@ -10,7 +10,7 @@ extension AppView {
         var body: some View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Description")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
 
                 Markdown(description)
                     .customMarkdownStyle()

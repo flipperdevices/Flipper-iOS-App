@@ -11,29 +11,33 @@ struct AppsCategoryView: View {
     @State var applications: [Applications.Application] = []
     @State private var sortOrder: Applications.SortOption = .default
 
-    var body: some View {
-        Group {
-            if !isLoading && applications.isEmpty {
-                EmptyCategoryView()
-                    .padding(.horizontal, 24)
-            } else {
-                ScrollView {
-                    VStack(spacing: 18) {
-                        HStack {
-                            Spacer()
-                            SortMenu(selected: $sortOrder)
-                        }
-                        .padding(.horizontal, 14)
+    var isEmpty: Bool {
+        !isLoading && applications.isEmpty
+    }
 
-                        if isLoading {
-                            AppRowPreview()
-                        } else {
-                            AppList(applications: applications)
-                        }
+    var body: some View {
+        ZStack {
+            EmptyCategoryView()
+                .padding(.horizontal, 24)
+                .opacity(isEmpty ? 1 : 0)
+
+            ScrollView {
+                VStack(spacing: 18) {
+                    HStack {
+                        Spacer()
+                        SortMenu(selected: $sortOrder)
                     }
-                    .padding(.vertical, 18)
+                    .padding(.horizontal, 14)
+
+                    if isLoading {
+                        AppRowPreview()
+                    } else {
+                        AppList(applications: applications)
+                    }
                 }
+                .padding(.vertical, 18)
             }
+            .opacity(!isEmpty ? 1 : 0)
         }
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
@@ -71,27 +75,16 @@ struct AppsCategoryView: View {
     }
 
     struct EmptyCategoryView: View {
-        @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
-
         var body: some View {
             VStack(spacing: 8) {
                 Text("No Apps Yet")
 
-                Text("""
-                    This category is empty or there are no apps for your \
-                    Flipper firmware. Update Flipper firmware to the \
-                    Release version to see available apps
-                    """
+                Text(
+                    "This category is empty or there are no apps " +
+                    "for your Flipper firmware"
                 )
                 .multilineTextAlignment(.center)
                 .foregroundColor(.black40)
-
-                Button {
-                    selectedTab = .device
-                } label: {
-                    Text("Go to Device Screen")
-                        .foregroundColor(.a2)
-                }
             }
             .font(.system(size: 14, weight: .medium))
         }

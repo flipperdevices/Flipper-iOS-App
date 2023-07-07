@@ -10,14 +10,17 @@ extension AppView {
         @State private var showMore = false
 
         private var shortChangelog: String {
-            changelog.split(separator: "\n").prefix(5).joined(separator: "\n")
+            changelog
+                .split(separator: "\n")
+                .prefix(5)
+                .joined(separator: "\n")
         }
 
         var body: some View {
             VStack(alignment: .leading, spacing: 2) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Changelog")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.system(size: 18, weight: .bold))
 
                     Markdown(showMore ? changelog : shortChangelog)
                         .customMarkdownStyle()

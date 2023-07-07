@@ -44,7 +44,7 @@ struct AppSearchView: View {
 
             PrincipalToolbarItems {
                 SearchField(
-                    placeholder: "name, category, description",
+                    placeholder: "App name, description",
                     predicate: $predicate
                 )
                 .offset(x: -10)
