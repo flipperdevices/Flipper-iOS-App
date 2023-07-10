@@ -1,9 +1,20 @@
 import SwiftUI
 
-struct FlipperIsNotConnectedAlert: View {
+struct RunsOnLatestFirmwareAlert: View {
     @Binding var isPresented: Bool
 
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
+
+    var message: AttributedString {
+        var string = AttributedString(
+            "Connect your Flipper with latest firmware Release " +
+            "version to install this app"
+        )
+        if let range = string.range(of: "Release") {
+            string[range].foregroundColor = .sGreenUpdate
+        }
+        return string
+    }
 
     var body: some View {
         VStack(spacing: 24) {
@@ -11,13 +22,14 @@ struct FlipperIsNotConnectedAlert: View {
                 .padding(.top, 17)
 
             VStack(spacing: 4) {
-                Text("Flipper is Not Connected")
+                Text("Runs on Latest Firmware Release")
                     .font(.system(size: 14, weight: .bold))
 
-                Text("Connect your Flipper Zero to install this app")
+                Text(message)
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)
+
             }
             .padding(.horizontal, 12)
 

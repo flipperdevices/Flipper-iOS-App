@@ -69,7 +69,7 @@ extension AppView {
             }
             .frame(height: 46)
             .customAlert(isPresented: $isNotConnectedAlertPresented) {
-                FlipperIsNotConnectedAlert(
+                RunsOnLatestFirmwareAlert(
                     isPresented: $isNotConnectedAlertPresented)
             }
         }

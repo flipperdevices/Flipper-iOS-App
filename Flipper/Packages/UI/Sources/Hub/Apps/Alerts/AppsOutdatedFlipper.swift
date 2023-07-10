@@ -1,23 +1,35 @@
 import SwiftUI
 
-struct FlipperIsNotConnectedAlert: View {
+struct AppsOutdatedFlipperAlert: View {
     @Binding var isPresented: Bool
 
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
 
+    var message: AttributedString {
+        var string = AttributedString(
+            "This app requires the latest Flipper firmware version " +
+            "from Release channel"
+        )
+        if let range = string.range(of: "Release") {
+            string[range].foregroundColor = .sGreenUpdate
+        }
+        return string
+    }
+
     var body: some View {
         VStack(spacing: 24) {
-            Image("AppAlertNotConnected")
+            Image("AppAlertUnsupported")
                 .padding(.top, 17)
 
             VStack(spacing: 4) {
-                Text("Flipper is Not Connected")
+                Text("To install, update firmware from Release Channel")
                     .font(.system(size: 14, weight: .bold))
 
-                Text("Connect your Flipper Zero to install this app")
+                Text(message)
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)
+
             }
             .padding(.horizontal, 12)
 

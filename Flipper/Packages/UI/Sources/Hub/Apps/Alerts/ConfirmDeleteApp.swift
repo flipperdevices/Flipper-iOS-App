@@ -2,18 +2,10 @@ import Core
 import SwiftUI
 
 struct ConfirmDeleteAppAlert: View {
-    @Environment(\.colorScheme) var colorScheme
-
     @Binding var isPresented: Bool
     let application: Applications.Application
 
     var onAction: () -> Void
-
-    var color: Color {
-        colorScheme == .light
-            ? .init(red: 0.97, green: 0.97, blue: 0.97)
-            : .init(red: 0.14, green: 0.14, blue: 0.14)
-    }
 
     var body: some View {
         VStack(spacing: 24) {
@@ -22,7 +14,7 @@ struct ConfirmDeleteAppAlert: View {
                     .padding(16)
             }
             .frame(maxWidth: .infinity)
-            .background(color)
+            .background(Color("AppAlertBackground"))
             .cornerRadius(12)
             .padding(.top, 24)
 
