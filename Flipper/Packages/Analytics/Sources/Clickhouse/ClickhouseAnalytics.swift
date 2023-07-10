@@ -58,7 +58,9 @@ extension ClickhouseAnalytics: EventHandler {
         internalFreeByte: Int,
         internalTotalByte: Int,
         externalFreeByte: Int,
-        externalTotalByte: Int
+        externalTotalByte: Int,
+        firmwareForkName: String,
+        firmwareGitURL: String
     ) {
         report(event: .with {
             $0.flipperRpcInfo = .with {
@@ -67,6 +69,8 @@ extension ClickhouseAnalytics: EventHandler {
                 $0.internalTotalByte = .init(internalTotalByte)
                 $0.externalFreeByte = .init(externalFreeByte)
                 $0.externalTotalByte = .init(externalTotalByte)
+                $0.firmwareForkName = firmwareForkName
+                $0.firmwareGitURL = firmwareGitURL
             }
         })
     }

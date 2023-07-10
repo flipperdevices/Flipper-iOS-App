@@ -6,7 +6,9 @@ public protocol EventHandler {
         internalFreeByte: Int,
         internalTotalByte: Int,
         externalFreeByte: Int,
-        externalTotalByte: Int
+        externalTotalByte: Int,
+        firmwareForkName: String,
+        firmwareGitURL: String
     )
     func flipperUpdateStart(
         id: Int,

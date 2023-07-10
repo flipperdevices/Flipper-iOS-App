@@ -35,6 +35,10 @@ struct Metric_Events_FlipperRpcInfo {
 
   var externalTotalByte: Int64 = 0
 
+  var firmwareForkName: String = String()
+
+  var firmwareGitURL: String = String()
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -56,6 +60,8 @@ extension Metric_Events_FlipperRpcInfo: SwiftProtobuf.Message, SwiftProtobuf._Me
     3: .standard(proto: "internal_total_byte"),
     4: .standard(proto: "external_free_byte"),
     5: .standard(proto: "external_total_byte"),
+    6: .standard(proto: "firmware_fork_name"),
+    7: .standard(proto: "firmware_git_url"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -69,6 +75,8 @@ extension Metric_Events_FlipperRpcInfo: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 3: try { try decoder.decodeSingularInt64Field(value: &self.internalTotalByte) }()
       case 4: try { try decoder.decodeSingularInt64Field(value: &self.externalFreeByte) }()
       case 5: try { try decoder.decodeSingularInt64Field(value: &self.externalTotalByte) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.firmwareForkName) }()
+      case 7: try { try decoder.decodeSingularStringField(value: &self.firmwareGitURL) }()
       default: break
       }
     }
@@ -90,6 +98,12 @@ extension Metric_Events_FlipperRpcInfo: SwiftProtobuf.Message, SwiftProtobuf._Me
     if self.externalTotalByte != 0 {
       try visitor.visitSingularInt64Field(value: self.externalTotalByte, fieldNumber: 5)
     }
+    if !self.firmwareForkName.isEmpty {
+      try visitor.visitSingularStringField(value: self.firmwareForkName, fieldNumber: 6)
+    }
+    if !self.firmwareGitURL.isEmpty {
+      try visitor.visitSingularStringField(value: self.firmwareGitURL, fieldNumber: 7)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -99,6 +113,8 @@ extension Metric_Events_FlipperRpcInfo: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs.internalTotalByte != rhs.internalTotalByte {return false}
     if lhs.externalFreeByte != rhs.externalFreeByte {return false}
     if lhs.externalTotalByte != rhs.externalTotalByte {return false}
+    if lhs.firmwareForkName != rhs.firmwareForkName {return false}
+    if lhs.firmwareGitURL != rhs.firmwareGitURL {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

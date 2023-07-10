@@ -50,7 +50,9 @@ extension CountlyAnalytics: EventHandler {
         internalFreeByte: Int,
         internalTotalByte: Int,
         externalFreeByte: Int,
-        externalTotalByte: Int
+        externalTotalByte: Int,
+        firmwareForkName: String,
+        firmwareGitURL: String
     ) {
         recordEvent(
             key: "flipper_rpc_info",
@@ -59,7 +61,9 @@ extension CountlyAnalytics: EventHandler {
                 "internal_free_byte": .init(internalFreeByte),
                 "internal_total_byte": .init(internalTotalByte),
                 "external_free_byte": .init(externalFreeByte),
-                "external_total_byte": .init(externalTotalByte)
+                "external_total_byte": .init(externalTotalByte),
+                "firmware_fork_name": firmwareForkName,
+                "firmware_git_url": firmwareGitURL
             ])
     }
 
