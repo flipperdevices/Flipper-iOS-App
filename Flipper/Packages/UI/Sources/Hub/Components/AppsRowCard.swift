@@ -106,7 +106,7 @@ struct AppsRowCard: View {
     struct DefaultDescription: View {
         var body: some View {
             Text(
-                "Discover and install apps you'll like on your Fipper Zero"
+                "Discover and install apps you'll like on your Flipper Zero"
             )
             .font(.system(size: 14, weight: .medium))
             .multilineTextAlignment(.leading)
