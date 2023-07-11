@@ -4,6 +4,7 @@ import SwiftUI
 struct AllAppsView: View {
     @EnvironmentObject var model: Applications
 
+    @State private var isBusy = false
     @State private var applications: [Applications.Application] = []
     @State private var sortOrder: Applications.SortOption = .default
 
@@ -27,6 +28,11 @@ struct AllAppsView: View {
 
                 AppList(applications: applications)
                     .padding(.top, 18)
+
+                if isBusy {
+                    AppRowPreview()
+                        .padding(.top, 12)
+                }
             }
             .padding(.vertical, 14)
         }
@@ -42,7 +48,9 @@ struct AllAppsView: View {
 
     func load() async {
         do {
+            isBusy = true
             applications = try await model.loadApplications(sort: sortOrder)
+            isBusy = false
         } catch {
             applications = []
         }

@@ -226,6 +226,7 @@ public class Applications: ObservableObject {
                 .order(.init(source: sortOption))
                 .target(deviceInfo?.target)
                 .api(deviceInfo?.api)
+                .take(500)
                 .get()
         }
     }
@@ -247,6 +248,7 @@ public class Applications: ObservableObject {
                 .filter(predicate)
                 .target(deviceInfo?.target)
                 .api(deviceInfo?.api)
+                .take(500)
                 .get()
         }
     }

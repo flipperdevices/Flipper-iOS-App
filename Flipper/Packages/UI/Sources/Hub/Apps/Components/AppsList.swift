@@ -15,7 +15,7 @@ struct AppList: View {
     }
 
     var body: some View {
-        VStack(spacing: 12) {
+        LazyVStack(spacing: 12) {
             ForEach(0..<applications.count, id: \.self) { index in
                 let application = applications[index]
 
