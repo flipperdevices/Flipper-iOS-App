@@ -150,19 +150,25 @@ public class Applications: ObservableObject {
     }
 
     private func category(installedID id: Application.ID) -> Category? {
-        let name = categoryName(for: id)
-        return categories.first { $0.name == name }
-    }
-
-    private func categoryName(for id: Application.ID) -> String {
         guard let manifest = manifests[id] else {
-            return "unknown"
+            return nil
         }
         let parts = manifest.path.split(separator: "/")
         guard parts.count == 4 else {
-            return "unknown"
+            return nil
         }
-        return .init(parts[2])
+        let name = String(parts[2])
+        if let category = categories.first(where: { $0.name == name }) {
+            return category
+        } else {
+            return .init(
+                id: "",
+                priority: 0,
+                name: name,
+                color: "",
+                icon: "https://null",
+                applications: 0)
+        }
     }
 
     private func getFlipperTarget() async throws -> String {
@@ -271,15 +277,19 @@ public class Applications: ObservableObject {
             return installed
         }
 
-        let available = try await catalog
-            .applications()
-            .uids(installed.map { $0.id })
-            .target(deviceInfo.target)
-            .api(deviceInfo.api)
-            .get()
-
-        for application in available {
-            statuses[application.id] = status(for: application)
+        do {
+            let available = try await catalog
+                .applications()
+                .uids(installed.map { $0.id })
+                .target(deviceInfo.target)
+                .api(deviceInfo.api)
+                .get()
+            
+            for application in available {
+                statuses[application.id] = status(for: application)
+            }
+        } catch {
+            logger.error("load installed: \(error)")
         }
 
         return installed
