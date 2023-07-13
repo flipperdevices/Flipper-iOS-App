@@ -291,24 +291,34 @@ public class Applications: ObservableObject {
         case notInstalled
         case installed
         case outdated
+        case building
         case unknown
     }
 
     public func status(
         for application: Application
     ) -> ApplicationStatus {
-        status(applicationID: application.id, versionID: application.current.id)
+        status(
+            applicationID: application.id,
+            versionID: application.current.id,
+            buildStatus: application.current.status
+        )
     }
 
     public func status(
         for application: ApplicationInfo
     ) -> ApplicationStatus {
-        status(applicationID: application.id, versionID: application.current.id)
+        status(
+            applicationID: application.id,
+            versionID: application.current.id,
+            buildStatus: application.current.status
+        )
     }
 
     public func status(
         applicationID: Application.ID,
-        versionID: String
+        versionID: String,
+        buildStatus: Application.Status
     ) -> ApplicationStatus {
         guard statuses[applicationID] == nil else {
             return statuses[applicationID] ?? .unknown
@@ -320,7 +330,9 @@ public class Applications: ObservableObject {
             manifest.versionUID == versionID,
             manifest.buildAPI == deviceInfo?.api
         else {
-            return .outdated
+            return buildStatus == .ready
+                ? .outdated
+                : .building
         }
         return .installed
     }

@@ -89,6 +89,10 @@ struct AppRow: View {
                             isNotConnectedAlertPresented = true
                         }
                     }
+                case .building:
+                    UpdateAppButton {
+                    }
+                    .disabled(true)
                 case .unknown:
                     AnimatedPlaceholder()
                         .frame(width: 92)

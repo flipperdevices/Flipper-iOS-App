@@ -63,6 +63,10 @@ extension AppView {
                         }
                     }
                     .font(.born2bSportyV2(size: 32))
+                case .building:
+                    UpdateAppButton {
+                    }
+                    .font(.born2bSportyV2(size: 32))
                 case .unknown:
                     AnimatedPlaceholder()
                 }
