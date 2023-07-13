@@ -11,7 +11,7 @@ struct AppSearchView: View {
     }
 
     @State var inProgress: Bool = false
-    @State var applications: [Applications.Application] = []
+    @State var applications: [Applications.ApplicationInfo] = []
 
     let debouncer = Debouncer(seconds: 1)
 

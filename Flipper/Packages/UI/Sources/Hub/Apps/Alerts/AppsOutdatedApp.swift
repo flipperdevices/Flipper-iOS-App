@@ -2,10 +2,11 @@ import Core
 import SwiftUI
 
 struct AppsOutdatedAppAlert: View {
-    @Environment(\.openURL) var openURL
-
     @Binding var isPresented: Bool
-    let application: Applications.Application
+
+    let application: Applications.ApplicationInfo
+
+    var action: () -> Void
 
     var body: some View {
         VStack(spacing: 24) {
@@ -33,9 +34,7 @@ struct AppsOutdatedAppAlert: View {
             .padding(.horizontal, 12)
 
             Button {
-                if let url = application.current.links?.source.uri {
-                    openURL(url)
-                }
+                action()
                 isPresented = false
             } label: {
                 HStack(spacing: 8) {

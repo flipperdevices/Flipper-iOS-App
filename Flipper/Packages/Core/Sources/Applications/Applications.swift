@@ -9,6 +9,7 @@ import Foundation
 public class Applications: ObservableObject {
     public typealias Category = Catalog.Category
     public typealias Application = Catalog.Application
+    public typealias ApplicationInfo = Catalog.ApplicationInfo
 
     private var categories: [Category] = []
     @Published public var manifests: [Application.ID: Manifest] = [:]
@@ -91,42 +92,42 @@ public class Applications: ObservableObject {
         try? await Task.sleep(seconds: 1)
     }
 
-    public func install(_ application: Application) {
+    public func install(_ id: Application.ID) {
         Task {
             do {
-                statuses[application.id] = .installing(0)
-                try await _install(application) { progress in
+                statuses[id] = .installing(0)
+                try await _install(id) { progress in
                     Task {
-                        statuses[application.id] = .installing(progress)
+                        statuses[id] = .installing(progress)
                     }
                 }
-                statuses[application.id] = nil
+                statuses[id] = nil
             } catch {
                 logger.error("install app: \(error)")
             }
         }
     }
 
-    public func update(_ application: Application) {
+    public func update(_ id: Application.ID) {
         Task {
             do {
-                statuses[application.id] = .updating(0)
-                try await _install(application) { progress in
+                statuses[id] = .updating(0)
+                try await _install(id) { progress in
                     Task {
-                        statuses[application.id] = .updating(progress)
+                        statuses[id] = .updating(progress)
                     }
                 }
-                statuses[application.id] = nil
+                statuses[id] = nil
             } catch {
                 logger.error("update app: \(error)")
             }
         }
     }
 
-    public func delete(_ application: Application) {
+    public func delete(_ id: Application.ID) {
         Task {
             do {
-                try await _delete(application)
+                try await _delete(id)
             } catch {
                 logger.error("delete app: \(error)")
             }
@@ -134,18 +135,27 @@ public class Applications: ObservableObject {
     }
 
     public func category(for application: Application) -> Category? {
-        guard !application.categoryId.isEmpty else {
-            let name = categoryName(for: application)
-            return categories.first { $0.name == name }
-        }
-        return categories.first { $0.id == application.categoryId }
+        category(categoryID: application.categoryId)
     }
 
-    public func categoryName(for application: Application) -> String {
-        guard application.categoryId.isEmpty else {
-            return category(for: application)?.name ?? "unknown"
-        }
-        guard let manifest = manifests[application.id] else {
+
+    public func category(for application: ApplicationInfo) -> Category? {
+        application.categoryId.isEmpty
+            ? category(installedID: application.id)
+            : category(categoryID: application.categoryId)
+    }
+
+    private func category(categoryID id: String) -> Category? {
+        return categories.first { $0.id == id }
+    }
+
+    private func category(installedID id: Application.ID) -> Category? {
+        let name = categoryName(for: id)
+        return categories.first { $0.name == name }
+    }
+
+    private func categoryName(for id: Application.ID) -> String {
+        guard let manifest = manifests[id] else {
             return "unknown"
         }
         let parts = manifest.path.split(separator: "/")
@@ -187,7 +197,7 @@ public class Applications: ObservableObject {
         }
     }
 
-    public func loadTopApp() async throws -> Application {
+    public func loadTopApp() async throws -> ApplicationInfo {
         try await handlingWebErrors {
             _ = try await loadCategories()
             guard let app = try await catalog.featured().get().first else {
@@ -217,7 +227,7 @@ public class Applications: ObservableObject {
     public func loadApplications(
         for category: Category? = nil,
         sort sortOption: SortOption = .newUpdates
-    ) async throws -> [Application] {
+    ) async throws -> [ApplicationInfo] {
         try await handlingWebErrors {
             try await catalog
                 .applications()
@@ -241,11 +251,11 @@ public class Applications: ObservableObject {
         }
     }
 
-    public func search(for predicate: String) async throws -> [Application] {
+    public func search(for string: String) async throws -> [ApplicationInfo] {
         try await handlingWebErrors {
             try await catalog
                 .applications()
-                .filter(predicate)
+                .filter(string)
                 .target(deviceInfo?.target)
                 .api(deviceInfo?.api)
                 .take(500)
@@ -253,9 +263,9 @@ public class Applications: ObservableObject {
         }
     }
 
-    public func loadInstalled() async throws -> [Application] {
+    public func loadInstalled() async throws -> [ApplicationInfo] {
         let installed = manifests.compactMap {
-            Application($0.value)
+            ApplicationInfo($0.value)
         }
         guard let deviceInfo else {
             return installed
@@ -287,14 +297,27 @@ public class Applications: ObservableObject {
     public func status(
         for application: Application
     ) -> ApplicationStatus {
-        guard statuses[application.id] == nil else {
-            return statuses[application.id] ?? .unknown
+        status(applicationID: application.id, versionID: application.current.id)
+    }
+
+    public func status(
+        for application: ApplicationInfo
+    ) -> ApplicationStatus {
+        status(applicationID: application.id, versionID: application.current.id)
+    }
+
+    public func status(
+        applicationID: Application.ID,
+        versionID: String
+    ) -> ApplicationStatus {
+        guard statuses[applicationID] == nil else {
+            return statuses[applicationID] ?? .unknown
         }
-        guard let manifest = manifests[application.id] else {
+        guard let manifest = manifests[applicationID] else {
             return .notInstalled
         }
         guard
-            manifest.versionUID == application.current.id,
+            manifest.versionUID == versionID,
             manifest.buildAPI == deviceInfo?.api
         else {
             return .outdated
@@ -312,6 +335,7 @@ public class Applications: ObservableObject {
 
 extension Catalog.Category: Identifiable {}
 extension Catalog.Application: Identifiable {}
+extension Catalog.ApplicationInfo: Identifiable {}
 
 extension Catalog.SortBy {
     init(source: Applications.SortOption) {
@@ -341,13 +365,10 @@ fileprivate extension Applications {
     var manifestsPath: Path { "/ext/apps_manifests" }
 
     func _install(
-        _ application: Application,
+        _ id: Application.ID,
         progress: (Double) -> Void
     ) async throws {
-        var application = application
-        if application.current.build?.sdk.api == nil {
-            application = try await loadApplication(id: application.id)
-        }
+        let application = try await loadApplication(id: id)
 
         let target = try await getFlipperTarget()
         let api = try await getFlipperAPI()
@@ -360,7 +381,7 @@ fileprivate extension Applications {
         try? await rpc.createDirectory(at: tempPath)
         try? await rpc.createDirectory(at: iosTempPath)
 
-        guard let category = category(for: application) else {
+        guard let category = category(categoryID: application.categoryId) else {
             return
         }
         let appCategoryPath: Path = "\(appsPath)/\(category.name)"
@@ -393,7 +414,7 @@ fileprivate extension Applications {
         let manifest = Applications.Manifest(
             fullName: application.current.name,
             icon: icon,
-            buildAPI: application.current.build?.sdk.api ?? "",
+            buildAPI: application.current.build.sdk.api,
             uid: application.id,
             versionUID: application.current.id,
             path: appPath.string)
@@ -413,21 +434,34 @@ fileprivate extension Applications {
         manifests[application.id] = manifest
     }
 
-    func _delete(_ application: Application) async throws {
-        guard let category = category(for: application) else {
+    func _delete(_ id: Application.ID) async throws {
+        guard let manifest = manifests[id] else {
             return
         }
-        let appCategoryPath: Path = "\(appsPath)/\(category.name)"
-        let appName = "\(application.alias).fap"
-        let manifestName = "\(application.alias).fim"
-        let appPath: Path = "\(appCategoryPath)/\(appName)"
-        let manifestPath: Path = "\(manifestsPath)/\(manifestName)"
+        guard let alias = manifest.alias else {
+            return
+        }
+
+        let appPath: Path = .init(string: manifest.path)
+        let manifestPath: Path = "\(manifestsPath)/\(alias).fim"
 
         try await rpc.deleteFile(at: appPath)
         try await rpc.deleteFile(at: manifestPath)
 
-        manifests[application.id] = nil
-        statuses[application.id] = nil
+        manifests[id] = nil
+        statuses[id] = nil
+    }
+}
+
+extension Applications.Manifest {
+    var alias: String? {
+        guard
+            let name = path.split(separator: "/").last,
+            let alias = name.split(separator: ".").first
+        else {
+            return nil
+        }
+        return .init(alias)
     }
 }
 

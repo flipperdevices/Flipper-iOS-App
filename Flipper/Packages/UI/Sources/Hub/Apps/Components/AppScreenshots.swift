@@ -2,12 +2,16 @@ import Core
 import SwiftUI
 
 struct AppScreens: View {
-    let application: Applications.Application
+    let screenshots: [URL]
+
+    init(_ screenshots: [URL]) {
+        self.screenshots = screenshots
+    }
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(application.current.screenshots) { screenshot in
+                ForEach(screenshots) { screenshot in
                     Screenshot(url: screenshot)
                 }
             }

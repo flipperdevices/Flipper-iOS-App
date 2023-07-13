@@ -5,7 +5,7 @@ struct AllAppsView: View {
     @EnvironmentObject var model: Applications
 
     @State private var isBusy = false
-    @State private var applications: [Applications.Application] = []
+    @State private var applications: [Applications.ApplicationInfo] = []
     @State private var sortOrder: Applications.SortOption = .default
 
     var body: some View {

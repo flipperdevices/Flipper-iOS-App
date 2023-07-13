@@ -28,9 +28,9 @@ extension AppView {
                     .customAlert(isPresented: $confirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $confirmDelete,
-                            application: application
+                            application: .init(application)
                         ) {
-                            model.delete(application)
+                            model.delete(application.id)
                         }
                     }
                 }
@@ -45,7 +45,7 @@ extension AppView {
                 case .notInstalled:
                     InstallAppButton {
                         if model.deviceInfo != nil {
-                            model.install(application)
+                            model.install(application.id)
                         } else {
                             isNotConnectedAlertPresented = true
                         }
@@ -57,7 +57,7 @@ extension AppView {
                 case .outdated:
                     UpdateAppButton {
                         if model.deviceInfo != nil {
-                            model.update(application)
+                            model.update(application.id)
                         } else {
                             isNotConnectedAlertPresented = true
                         }

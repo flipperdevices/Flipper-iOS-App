@@ -16,11 +16,17 @@ extension AppView {
                 .joined(separator: "\n")
         }
 
+        struct Title: View {
+            var body: some View {
+                Text("Changelog")
+                    .font(.system(size: 18, weight: .bold))
+            }
+        }
+
         var body: some View {
             VStack(alignment: .leading, spacing: 2) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Changelog")
-                        .font(.system(size: 18, weight: .bold))
+                    Title()
 
                     Markdown(showMore ? changelog : shortChangelog)
                         .customMarkdownStyle()

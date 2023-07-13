@@ -5,18 +5,81 @@ struct AppView: View {
     @EnvironmentObject var model: Applications
     @Environment(\.dismiss) var dismiss
 
-    @State var application: Applications.Application
+    let alias: String
+
+    @State var application: Applications.Application?
 
     var applicationURL: URL {
-        .init(string: "https://lab.flipp.dev/apps/\(application.alias)")!
-    }
-
-    var isBuildReady: Bool {
-        application.current.status == .ready
+        .init(string: "https://lab.flipper.net/apps/\(alias)")!
     }
 
     var body: some View {
         ScrollView {
+            if let application {
+                LoadedAppView(application: application)
+                    .padding(.vertical, 32)
+            } else {
+                LoadingAppView()
+                    .padding(.vertical, 32)
+            }
+        }
+        .background(Color.background)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            LeadingToolbarItems {
+                BackButton {
+                    dismiss()
+                }
+
+                Title(application?.current.name ?? "Loading...")
+                    .padding(.leading, 8)
+            }
+
+            TrailingToolbarItems {
+                ShareButton {
+                    share(applicationURL)
+                }
+            }
+        }
+        .task {
+            do {
+                application = try await model.loadApplication(id: alias)
+            } catch {
+                print(error)
+            }
+        }
+    }
+
+    struct LoadedAppView: View {
+        @EnvironmentObject var model: Applications
+        let application: Applications.Application
+
+        var isBuildReady: Bool {
+            application.current.status == .ready
+        }
+
+        var screenshots: [URL] {
+            application.current.screenshots
+        }
+
+        var changelog: String {
+            application.current.changelog
+        }
+
+        var description: String {
+            application.current.description
+        }
+
+        var github: URL {
+            application.current.links.source.uri
+        }
+
+        var manifest: URL {
+            application.current.links.manifest
+        }
+
+        var body: some View {
             VStack(spacing: 18) {
                 VStack(spacing: 12) {
                     IconNameCategory(application: application)
@@ -38,42 +101,17 @@ struct AppView: View {
                 .padding(.horizontal, 14)
 
                 VStack(alignment: .leading, spacing: 32) {
-                    AppScreens(application: application)
+                    AppScreens(screenshots)
                         .frame(height: 94)
 
-                    if let description = application.current.description {
-                        Description(description: description)
-                            .padding(.horizontal, 14)
-                    } else {
-                        AnimatedPlaceholder()
-                            .frame(height: 96)
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 14)
-                    }
+                    Description(description: description)
+                        .padding(.horizontal, 14)
 
+                    Changelog(changelog: changelog)
+                        .padding(.horizontal, 14)
 
-                    if let changelog = application.current.changelog {
-                        Changelog(changelog: changelog)
-                            .padding(.horizontal, 14)
-                    } else {
-                        AnimatedPlaceholder()
-                            .frame(height: 96)
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 14)
-                    }
-
-                    if
-                        let github = application.current.links?.source.uri,
-                        let manifest = application.current.links?.manifest
-                    {
-                        Developer(github: github, manifest: manifest)
-                            .padding(.horizontal, 14)
-                    } else {
-                        AnimatedPlaceholder()
-                            .frame(height: 96)
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 14)
-                    }
+                    Developer(github: github, manifest: manifest)
+                        .padding(.horizontal, 14)
 
                     NavigationLink {
                         AppReportView(application: application)
@@ -89,32 +127,121 @@ struct AppView: View {
                     }
                 }
             }
-            .padding(.vertical, 14)
         }
-        .background(Color.background)
-        .navigationBarBackButtonHidden(true)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            LeadingToolbarItems {
-                BackButton {
-                    dismiss()
+    }
+}
+
+extension AppView {
+    struct LoadingAppView: View {
+        var body: some View {
+            VStack(spacing: 18) {
+                VStack(spacing: 12) {
+                    IconNameCategoryPreview()
+                    
+                    VersionSizePreview()
+
+                    ButtonsPreview()
+
+                    Divider()
                 }
+                .padding(.horizontal, 14)
 
-                Title(application.current.name)
-                    .padding(.leading, 8)
-            }
+                VStack(alignment: .leading, spacing: 32) {
+                    ScreensPreview()
 
-            TrailingToolbarItems {
-                ShareButton {
-                    share(applicationURL)
+                    Group {
+                        DescriptionPreview()
+
+                        ChangelogPreview()
+
+                        DeveloperPreview()
+                    }
+                    .padding(.horizontal, 14)
                 }
             }
         }
-        .task {
-            do {
-                application = try await model.loadApplication(id: application.id)
-            } catch {
-                print(error)
+    }
+    
+    struct IconNameCategoryPreview: View {
+        var body: some View {
+            HStack(spacing: 8) {
+                AnimatedPlaceholder()
+                    .frame(width: 64, height: 64)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    AnimatedPlaceholder()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 21)
+                    
+                    AnimatedPlaceholder()
+                        .frame(width: 68, height: 17)
+                }
+            }
+        }
+    }
+    
+    struct ButtonsPreview: View {
+        var body: some View {
+            AnimatedPlaceholder()
+                .frame(height: 46)
+                .frame(maxWidth: .infinity)
+        }
+    }
+
+    struct VersionSizePreview: View {
+        var body: some View {
+            VersionSize(application: nil)
+        }
+    }
+
+    struct ScreensPreview: View {
+        var body: some View {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(0..<3) { _ in
+                        AnimatedPlaceholder()
+                            .frame(width: 189, height: 94)
+                    }
+                }
+                .padding(.horizontal, 14)
+            }
+        }
+    }
+
+    struct TextBlockPreview: View {
+        var body: some View {
+            AnimatedPlaceholder()
+                .frame(height: 96)
+                .frame(maxWidth: .infinity)
+        }
+    }
+
+    struct ChangelogPreview: View {
+        var body: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                Changelog.Title()
+
+                TextBlockPreview()
+            }
+        }
+    }
+
+    struct DescriptionPreview: View {
+        var body: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                Description.Title()
+
+                TextBlockPreview()
+            }
+        }
+    }
+
+    struct DeveloperPreview: View {
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                Developer.Title()
+
+                TextBlockPreview()
             }
         }
     }

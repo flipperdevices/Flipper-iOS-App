@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ConfirmDeleteAppAlert: View {
     @Binding var isPresented: Bool
-    let application: Applications.Application
+    let application: Applications.ApplicationInfo
 
     var onAction: () -> Void
 

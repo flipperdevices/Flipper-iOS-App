@@ -3,6 +3,8 @@ import SwiftUI
 
 extension AppView {
     struct AppStatusButton: View {
+        @Environment(\.openURL) var openURL
+
         let application: Applications.Application
 
         var status: Applications.Application.Status {
@@ -33,12 +35,15 @@ extension AppView {
             .customAlert(isPresented: $isRebuildingAlertPresented) {
                 AppIsRebuildingAlert(
                     isPresented: $isRebuildingAlertPresented,
-                    application: application)
+                    application: .init(application))
             }
             .customAlert(isPresented: $isOutdatedAppAlertPresented) {
                 AppsOutdatedAppAlert(
                     isPresented: $isOutdatedAppAlertPresented,
-                    application: application)
+                    application: .init(application)
+                ) {
+                    openURL(application.current.links.source.uri)
+                }
             }
             .customAlert(isPresented: $isOutdatedDeviceAlertPresented) {
                 AppsOutdatedFlipperAlert(

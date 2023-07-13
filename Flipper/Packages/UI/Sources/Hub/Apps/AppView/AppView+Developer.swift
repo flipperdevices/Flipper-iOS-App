@@ -8,10 +8,16 @@ extension AppView {
 
         @Environment(\.openURL) var openURL
 
-        var body: some View {
-            VStack(alignment: .leading, spacing: 12) {
+        struct Title: View {
+            var body: some View {
                 Text("Developer")
                     .font(.system(size: 18, weight: .bold))
+            }
+        }
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                Title()
 
                 HStack(spacing: 8) {
                     Image("GitHub")
@@ -36,7 +42,6 @@ extension AppView {
                 }
 
             }
-            .foregroundColor(.primary)
         }
     }
 }

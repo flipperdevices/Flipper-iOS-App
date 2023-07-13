@@ -3,7 +3,7 @@ import SwiftUI
 
 struct AppRow: View {
     @EnvironmentObject var model: Applications
-    let application: Applications.Application
+    let application: Applications.ApplicationInfo
     let isInstalled: Bool
 
     @State private var showConfirmDelete = false
@@ -35,7 +35,7 @@ struct AppRow: View {
                             isPresented: $showConfirmDelete,
                             application: application
                         ) {
-                            model.delete(application)
+                            model.delete(application.id)
                         }
                     }
                 }
@@ -43,7 +43,7 @@ struct AppRow: View {
             .padding(.horizontal, 14)
 
             if !isInstalled {
-                AppScreens(application: application)
+                AppScreens(application.current.screenshots)
                     .frame(height: 84)
                 
                 Text(application.current.shortDescription)
@@ -57,7 +57,7 @@ struct AppRow: View {
 
     struct AppRowActionButton: View {
         @EnvironmentObject var model: Applications
-        let application: Applications.Application
+        let application: Applications.ApplicationInfo
         let status: Applications.ApplicationStatus
 
         @State var isNotConnectedAlertPresented = false
@@ -74,7 +74,7 @@ struct AppRow: View {
                 case .notInstalled:
                     InstallAppButton {
                         if model.deviceInfo != nil {
-                            model.install(application)
+                            model.install(application.id)
                         } else {
                             isNotConnectedAlertPresented = true
                         }
@@ -84,7 +84,7 @@ struct AppRow: View {
                 case .outdated:
                     UpdateAppButton {
                         if model.deviceInfo != nil {
-                            model.update(application)
+                            model.update(application.id)
                         } else {
                             isNotConnectedAlertPresented = true
                         }

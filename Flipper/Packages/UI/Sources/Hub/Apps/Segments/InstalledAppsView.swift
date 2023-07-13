@@ -4,9 +4,9 @@ import SwiftUI
 struct InstalledAppsView: View {
     @EnvironmentObject var model: Applications
 
-    @State var applications: [Applications.Application] = []
+    @State var applications: [Applications.ApplicationInfo] = []
 
-    var outdatedApplications: [Applications.Application] {
+    var outdatedApplications: [Applications.ApplicationInfo] {
         applications.filter { model.statuses[$0.id] == .outdated }
     }
 
@@ -17,7 +17,7 @@ struct InstalledAppsView: View {
                     if model.outdatedCount > 0 {
                         UpdateAllAppButton {
                             for application in outdatedApplications {
-                                model.update(application)
+                                model.update(application.id)
                             }
                         }
                         .padding(.horizontal, 14)

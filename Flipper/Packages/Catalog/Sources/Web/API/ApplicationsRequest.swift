@@ -1,7 +1,7 @@
 import Foundation
 
 public struct ApplicationsRequest: CatalogRequest {
-    public typealias Result = [Application]
+    public typealias Result = [ApplicationInfo]
     
     var path: String { "application" }
     var queryItems: [URLQueryItem] = []

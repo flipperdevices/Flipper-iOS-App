@@ -50,10 +50,10 @@ public struct Application: Decodable {
         public let screenshots: [URL]
         public let status: Status
         // Full
-        public let description: String?
-        public let changelog: String?
-        public let build: Build?
-        public let links: Links?
+        public let description: String
+        public let changelog: String
+        public let build: Build
+        public let links: Links
 
         public init(
             id: String,
@@ -63,10 +63,10 @@ public struct Application: Decodable {
             icon: ImageSource,
             screenshots: [URL],
             status: Status,
-            description: String?,
-            changelog: String?,
-            build: Build?,
-            links: Links?
+            description: String,
+            changelog: String,
+            build: Build,
+            links: Links
         ) {
             self.id = id
             self.name = name

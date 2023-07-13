@@ -4,7 +4,7 @@ import SwiftUI
 extension AppRow {
     struct IconNameCategory: View {
         @EnvironmentObject var model: Applications
-        let application: Applications.Application
+        let application: Applications.ApplicationInfo
 
         var category: Applications.Category? {
             model.category(for: application)
@@ -34,5 +34,4 @@ extension AppRow {
             }
         }
     }
-
 }

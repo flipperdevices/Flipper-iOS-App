@@ -76,7 +76,7 @@ extension Applications {
 
 import Catalog
 
-extension Catalog.Application {
+extension Catalog.ApplicationInfo {
     init?(_ manifest: Applications.Manifest) {
         guard let filename = manifest.path.split(separator: "/").last else {
             return nil
@@ -99,10 +99,6 @@ extension Catalog.Application {
                 shortDescription: "",
                 icon: .data(manifest.icon),
                 screenshots: [],
-                status: .ready,
-                description: nil,
-                changelog: nil,
-                build: nil,
-                links: nil))
+                status: .ready))
     }
 }

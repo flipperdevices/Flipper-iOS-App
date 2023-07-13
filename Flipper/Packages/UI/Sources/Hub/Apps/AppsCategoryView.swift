@@ -8,7 +8,7 @@ struct AppsCategoryView: View {
     let category: Applications.Category
 
     @State var isLoading = false
-    @State var applications: [Applications.Application] = []
+    @State var applications: [Applications.ApplicationInfo] = []
     @State private var sortOrder: Applications.SortOption = .default
 
     var isEmpty: Bool {

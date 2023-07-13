@@ -7,15 +7,20 @@ extension AppView {
     struct Description: View {
         let description: String
 
-        var body: some View {
-            VStack(alignment: .leading, spacing: 8) {
+        struct Title: View {
+            var body: some View {
                 Text("Description")
                     .font(.system(size: 18, weight: .bold))
+            }
+        }
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                Title()
 
                 Markdown(description)
                     .customMarkdownStyle()
             }
-            .foregroundColor(.primary)
         }
     }
 }

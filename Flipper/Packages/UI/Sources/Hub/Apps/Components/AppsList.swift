@@ -3,11 +3,11 @@ import SwiftUI
 
 struct AppList: View {
     @EnvironmentObject var model: Applications
-    let applications: [Applications.Application]
+    let applications: [Applications.ApplicationInfo]
     let isInstalled: Bool
 
     init(
-        applications: [Applications.Application],
+        applications: [Applications.ApplicationInfo],
         isInstalled: Bool = false
     ) {
         self.applications = applications
@@ -16,16 +16,15 @@ struct AppList: View {
 
     var body: some View {
         LazyVStack(spacing: 12) {
-            ForEach(0..<applications.count, id: \.self) { index in
-                let application = applications[index]
-
+            ForEach(applications) { application in
                 NavigationLink {
-                    AppView(application: application)
+                    AppView(alias: application.alias)
                         .environmentObject(model)
                 } label: {
                     AppRow(
                         application: application,
-                        isInstalled: isInstalled)
+                        isInstalled: isInstalled
+                    )
                 }
                 .foregroundColor(.primary)
 

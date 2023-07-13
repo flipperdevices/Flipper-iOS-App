@@ -3,20 +3,24 @@ import SwiftUI
 
 extension AppView {
     struct VersionSize: View {
-        let application: Applications.Application
+        let application: Applications.Application?
 
-        var length: Int? {
-            application.current.build?.asset.length
+        var version: String? {
+            application?.current.version
+        }
+
+        var length: String? {
+            application?.current.build.asset.length.hr
         }
 
         var body: some View {
             HStack {
-                Column(key: "Version", value: application.current.version)
+                Column(key: "Version", value: version)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
                 Divider()
                     .foregroundColor(.black4)
-                Column(key: "Size", value: length?.hr)
+                Column(key: "Size", value: length)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
             }

@@ -3,7 +3,7 @@ import SwiftUI
 
 struct AppIsRebuildingAlert: View {
     @Binding var isPresented: Bool
-    let application: Applications.Application
+    let application: Applications.ApplicationInfo
 
     var body: some View {
         VStack(spacing: 24) {
