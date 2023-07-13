@@ -24,12 +24,12 @@ struct AppsOutdatedFlipperAlert: View {
             VStack(spacing: 4) {
                 Text("To install, update firmware from Release Channel")
                     .font(.system(size: 14, weight: .bold))
+                    .multilineTextAlignment(.center)
 
                 Text(message)
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)
-
             }
             .padding(.horizontal, 12)
 
