@@ -11,16 +11,25 @@ struct InstalledAppsView: View {
         applications.filter { model.statuses[$0.id] == .outdated }
     }
 
+    var noApps: Bool {
+        (!isBusy && applications.isEmpty)
+    }
+
     var body: some View {
-        Group {
-            if !isBusy && applications.isEmpty {
+        ZStack {
+            Group {
                 if model.deviceInfo == nil {
                     NotConnected()
                 } else {
                     NoApps()
                 }
-            } else {
-                ScrollView {
+            }
+            .opacity(noApps ? 1 : 0)
+
+            RefreshableScrollView(isEnabled: true) {
+                reload()
+            } content: {
+                Group {
                     if !applications.isEmpty {
                         VStack(spacing: 18) {
                             if model.outdatedCount > 0 {
@@ -41,24 +50,21 @@ struct InstalledAppsView: View {
                         InstalledAppsPreview()
                     }
                 }
+                .opacity(noApps ? 0 : 1)
             }
         }
         .onReceive(model.$manifests) { manifest in
-            Task {
-                await reload()
-            }
+            reload()
         }
         .onReceive(model.$deviceInfo) { deviceInfo in
-            Task {
-                await reload()
-            }
+            reload()
         }
         .task {
-            await reload()
+            await load()
         }
     }
 
-    func reload() async {
+    func load() async {
         guard model.deviceInfo != nil else {
             applications = []
             return
@@ -69,6 +75,13 @@ struct InstalledAppsView: View {
             isBusy = false
         } catch {
             applications = []
+        }
+    }
+
+    func reload() {
+        applications = []
+        Task {
+            await load()
         }
     }
 

@@ -21,7 +21,9 @@ struct AppsCategoryView: View {
                 .padding(.horizontal, 24)
                 .opacity(isEmpty ? 1 : 0)
 
-            ScrollView {
+            RefreshableScrollView(isEnabled: true) {
+                reload()
+            } content: {
                 VStack(spacing: 18) {
                     HStack {
                         Spacer()
@@ -71,6 +73,13 @@ struct AppsCategoryView: View {
             isLoading = false
         } catch {
             applications = []
+        }
+    }
+
+    func reload() {
+        applications = []
+        Task {
+            await load()
         }
     }
 

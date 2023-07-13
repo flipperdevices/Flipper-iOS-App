@@ -9,7 +9,9 @@ struct AllAppsView: View {
     @State private var sortOrder: Applications.SortOption = .default
 
     var body: some View {
-        ScrollView {
+        RefreshableScrollView(isEnabled: true) {
+            reload()
+        } content: {
             VStack(spacing: 0) {
                 AppsCategories()
                     .padding(.horizontal, 14)
@@ -53,6 +55,13 @@ struct AllAppsView: View {
             isBusy = false
         } catch {
             applications = []
+        }
+    }
+
+    func reload() {
+        applications = []
+        Task {
+            await load()
         }
     }
 }

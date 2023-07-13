@@ -14,7 +14,9 @@ struct AppView: View {
     }
 
     var body: some View {
-        ScrollView {
+        RefreshableScrollView(isEnabled: true) {
+            reload()
+        } content: {
             if let application {
                 LoadedAppView(application: application)
                     .padding(.vertical, 32)
@@ -43,11 +45,22 @@ struct AppView: View {
             }
         }
         .task {
-            do {
-                application = try await model.loadApplication(id: alias)
-            } catch {
-                print(error)
-            }
+            await load()
+        }
+    }
+
+    func load() async {
+        do {
+            application = try await model.loadApplication(id: alias)
+        } catch {
+            print(error)
+        }
+    }
+
+    func reload() {
+        application = nil
+        Task {
+            await load()
         }
     }
 
