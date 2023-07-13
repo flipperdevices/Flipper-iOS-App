@@ -433,10 +433,14 @@ fileprivate extension Applications {
         }
         let (icon, _) = try await URLSession.shared.data(from: iconURL)
 
+        guard let build = application.current.build else {
+            return
+        }
+
         let manifest = Applications.Manifest(
             fullName: application.current.name,
             icon: icon,
-            buildAPI: application.current.build.sdk.api,
+            buildAPI: build.sdk.api,
             uid: application.id,
             versionUID: application.current.id,
             path: appPath.string)
