@@ -165,6 +165,8 @@ struct DeviceView: View {
                         .padding(.vertical, 24)
                         .padding(.horizontal, 14)
                     }
+                    
+                    NavigationLink(destination: EmptyView(), label: {})
                 }
                 .background(Color.background)
                 .actionSheet(isPresented: $showForgetAction) {
