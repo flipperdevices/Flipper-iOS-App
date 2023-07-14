@@ -102,8 +102,8 @@ struct DeviceInfoView: View {
                 .opacity(device.isInfoReady ? 1 : 0.4)
             }
         }
-        .task { @MainActor in
-            reload()
+        .task {
+            await reload()
         }
     }
 
