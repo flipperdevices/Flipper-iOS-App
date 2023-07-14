@@ -2,6 +2,7 @@ import Core
 import SwiftUI
 import Combine
 import OrderedCollections
+import UniformTypeIdentifiers
 
 struct ArchiveView: View {
     @EnvironmentObject var device: Device
@@ -117,9 +118,20 @@ struct ArchiveView: View {
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
         .onOpenURL { url in
-            if url.isKeyURL, importedItem == nil {
+            if (url.isKeyFile || url.isKeyURL), importedItem == nil {
                 importedItem = url
             }
+        }
+        .onDrop(of: [.item], isTargeted: nil) { providers in
+            guard let provider = providers.first else { return false }
+            provider.loadItem(
+                forTypeIdentifier: UTType.item.identifier,
+                options: nil
+            ) { (data, error) in
+                guard let url = data as? URL else { return }
+                importedItem = url
+            }
+            return true
         }
     }
 
@@ -129,6 +141,10 @@ struct ArchiveView: View {
 }
 
 private extension URL {
+    var isKeyFile: Bool {
+        (try? ArchiveItem.Kind(.init(string: path))) != nil
+    }
+
     var isKeyURL: Bool {
         path == "/s" || path == "/sf"
     }

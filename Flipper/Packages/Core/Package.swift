@@ -24,6 +24,9 @@ let package = Package(
             name: "MFKey32v2",
             path: "../MFKey32v2"),
         .package(
+            name: "Catalog",
+            path: "../Catalog"),
+        .package(
             url: "https://github.com/apple/swift-collections.git",
             from: "1.0.0"),
         .package(
@@ -49,6 +52,7 @@ let package = Package(
                 "Analytics",
                 "Peripheral",
                 "MFKey32v2",
+                "Catalog",
                 .product(name: "Base64", package: "radix"),
                 .product(name: "DCompression", package: "dcompression"),
                 .product(name: "SwiftProtobuf", package: "swift-protobuf"),

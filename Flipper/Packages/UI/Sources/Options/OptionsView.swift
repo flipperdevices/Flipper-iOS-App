@@ -7,6 +7,7 @@ struct OptionsView: View {
     @Environment(\.dismiss) private var dismiss
 
     @AppStorage(.isDebugMode) var isDebugMode = false
+    @AppStorage(.isAppsEnabled) var isAppsEnabled = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
 
     @State private var showResetApp = false
@@ -95,6 +96,13 @@ struct OptionsView: View {
             }
             .foregroundColor(.primary)
 
+            Section(header: Text("Experimental")) {
+                Toggle(isOn: $isAppsEnabled) {
+                    Text("Enable Apps in Hub")
+                }
+                .tint(.a1)
+            }
+
             if isDebugMode {
                 Section(header: Text("Debug")) {
                     Toggle(isOn: $isProvisioningDisabled) {
@@ -108,13 +116,10 @@ struct OptionsView: View {
                         showResetApp = true
                     }
                     .foregroundColor(.sRed)
-                    .actionSheet(isPresented: $showResetApp) {
-                        .init(title: Text("Are you sure?"), buttons: [
-                            .destructive(Text("Reset App")) {
-                                AppReset.reset()
-                            },
-                            .cancel()
-                        ])
+                    .confirmationDialog("", isPresented: $showResetApp) {
+                        Button("Reset App", role: .destructive) {
+                            AppReset.reset()
+                        }
                     }
                 }
             }

@@ -29,7 +29,7 @@ extension RPC {
             root.appending($0.location)
         }
 
-        for path in missing {
+        for path in Set(missing) {
             try await createDirectory(at: path)
         }
     }
@@ -80,18 +80,5 @@ extension RPC {
 
     private func getFileHash(at path: Path) async throws -> Hash {
         try await calculateFileHash(at: path)
-    }
-}
-
-// MARK: Filter
-
-fileprivate extension Array where Element == Peripheral.Element {
-    var files: [String] {
-        self.compactMap {
-            guard case .file(let file) = $0 else {
-                return nil
-            }
-            return file.name
-        }
     }
 }

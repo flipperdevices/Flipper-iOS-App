@@ -16,14 +16,18 @@ public class Analytics: EventHandler {
         internalFreeByte: Int,
         internalTotalByte: Int,
         externalFreeByte: Int,
-        externalTotalByte: Int
+        externalTotalByte: Int,
+        firmwareForkName: String,
+        firmwareGitURL: String
     ) {
         AnalyticsSystem.handler?.flipperRPCInfo(
             sdcardIsAvailable: sdcardIsAvailable,
             internalFreeByte: internalFreeByte,
             internalTotalByte: internalTotalByte,
             externalFreeByte: externalFreeByte,
-            externalTotalByte: externalTotalByte)
+            externalTotalByte: externalTotalByte,
+            firmwareForkName: firmwareForkName,
+            firmwareGitURL: firmwareGitURL)
     }
 
     public func flipperUpdateStart(
@@ -56,7 +60,8 @@ public class Analytics: EventHandler {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTime: Int
+        synchronizationTime: Int,
+        changesCount: Int
     ) {
         AnalyticsSystem.handler?.synchronizationResult(
             subGHzCount: subGHzCount,
@@ -64,7 +69,8 @@ public class Analytics: EventHandler {
             nfcCount: nfcCount,
             infraredCount: infraredCount,
             iButtonCount: iButtonCount,
-            synchronizationTime: synchronizationTime)
+            synchronizationTime: synchronizationTime,
+            changesCount: changesCount)
     }
 
     public func subghzProvisioning(

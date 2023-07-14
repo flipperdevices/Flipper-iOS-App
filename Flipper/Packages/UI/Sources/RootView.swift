@@ -17,6 +17,7 @@ public struct RootView: View {
             .environmentObject(dependencies.updateModel)
             .environmentObject(dependencies.sharing)
             .environmentObject(dependencies.emulate)
+            .environmentObject(dependencies.applications)
     }
 }
 
@@ -30,6 +31,7 @@ private struct RootViewImpl: View {
     @Environment(\.scenePhase) var scenePhase
 
     @State private var isPairingIssue = false
+    @State private var isUpdateAvailable = false
 
     @State private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
 
@@ -64,6 +66,9 @@ private struct RootViewImpl: View {
         .customAlert(isPresented: $isPairingIssue) {
             PairingIssueAlert(isPresented: $isPairingIssue)
         }
+        .customAlert(isPresented: $isUpdateAvailable) {
+            MobileUpdateAlert(isPresented: $isUpdateAvailable)
+        }
         .environmentObject(alertController)
         .environmentObject(hexKeyboardController)
         .onContinueUserActivity("PlayAlertIntent") { _ in
@@ -86,6 +91,7 @@ private struct RootViewImpl: View {
         }
         .task { @MainActor in
             router.recordAppOpen()
+            isUpdateAvailable = await AppVersionCheck.hasUpdate
         }
     }
 
@@ -94,9 +100,6 @@ private struct RootViewImpl: View {
             return
         }
         endBackgroundTask()
-        if device.status == .disconnected {
-            device.connect()
-        }
     }
 
     func onInactive() {

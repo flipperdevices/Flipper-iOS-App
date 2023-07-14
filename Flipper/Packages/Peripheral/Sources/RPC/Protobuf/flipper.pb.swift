@@ -730,6 +730,22 @@ struct PB_Main {
     set {content = .propertyGetResponse(newValue)}
   }
 
+  var desktopIsLockedRequest: PBDesktop_IsLockedRequest {
+    get {
+      if case .desktopIsLockedRequest(let v)? = content {return v}
+      return PBDesktop_IsLockedRequest()
+    }
+    set {content = .desktopIsLockedRequest(newValue)}
+  }
+
+  var desktopUnlockRequest: PBDesktop_UnlockRequest {
+    get {
+      if case .desktopUnlockRequest(let v)? = content {return v}
+      return PBDesktop_UnlockRequest()
+    }
+    set {content = .desktopUnlockRequest(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Content: Equatable {
@@ -795,6 +811,8 @@ struct PB_Main {
     case appStateResponse(PBApp_AppStateResponse)
     case propertyGetRequest(PBProperty_GetRequest)
     case propertyGetResponse(PBProperty_GetResponse)
+    case desktopIsLockedRequest(PBDesktop_IsLockedRequest)
+    case desktopUnlockRequest(PBDesktop_UnlockRequest)
 
   #if !swift(>=4.1)
     static func ==(lhs: PB_Main.OneOf_Content, rhs: PB_Main.OneOf_Content) -> Bool {
@@ -1050,6 +1068,14 @@ struct PB_Main {
         guard case .propertyGetResponse(let l) = lhs, case .propertyGetResponse(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
+      case (.desktopIsLockedRequest, .desktopIsLockedRequest): return {
+        guard case .desktopIsLockedRequest(let l) = lhs, case .desktopIsLockedRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.desktopUnlockRequest, .desktopUnlockRequest): return {
+        guard case .desktopUnlockRequest(let l) = lhs, case .desktopUnlockRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       default: return false
       }
     }
@@ -1241,6 +1267,8 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     58: .standard(proto: "app_state_response"),
     61: .standard(proto: "property_get_request"),
     62: .standard(proto: "property_get_response"),
+    66: .standard(proto: "desktop_is_locked_request"),
+    67: .standard(proto: "desktop_unlock_request"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2058,6 +2086,32 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .appDataExchangeRequest(v)
         }
       }()
+      case 66: try {
+        var v: PBDesktop_IsLockedRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .desktopIsLockedRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .desktopIsLockedRequest(v)
+        }
+      }()
+      case 67: try {
+        var v: PBDesktop_UnlockRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .desktopUnlockRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .desktopUnlockRequest(v)
+        }
+      }()
       default: break
       }
     }
@@ -2325,6 +2379,14 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .appDataExchangeRequest?: try {
       guard case .appDataExchangeRequest(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 65)
+    }()
+    case .desktopIsLockedRequest?: try {
+      guard case .desktopIsLockedRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 66)
+    }()
+    case .desktopUnlockRequest?: try {
+      guard case .desktopUnlockRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 67)
     }()
     case nil: break
     }

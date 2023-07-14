@@ -26,6 +26,7 @@ extension Update.Channel {
         case .development: return .development
         case .candidate: return .candidate
         case .release: return .release
+        case .custom: return .custom
         }
     }
 }

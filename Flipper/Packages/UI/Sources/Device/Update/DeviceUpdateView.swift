@@ -139,7 +139,7 @@ struct DeviceUpdateView: View {
     }
 
     func startActivity() {
-        if #available(iOS 16.2, *) {
+        if #available(iOS 16.2, *), !ProcessInfo.processInfo.isiOSAppOnMac {
             let attributes = UpdateActivityAttibutes(version: firmware.version)
             activity = try? Activity<UpdateActivityAttibutes>.request(
                 attributes: attributes,
@@ -148,18 +148,19 @@ struct DeviceUpdateView: View {
     }
 
     func stopActivity() {
-        if #available(iOS 16.2, *) {
+        if #available(iOS 16.2, *), !ProcessInfo.processInfo.isiOSAppOnMac {
             var activity: Activity<UpdateActivityAttibutes>? {
                 self.activity as? Activity<UpdateActivityAttibutes>
             }
             Task {
-                await activity?.end(.none)
+                let deadline = Date.now.addingTimeInterval(7)
+                await activity?.end(.none, dismissalPolicy: .after(deadline))
             }
         }
     }
 
     func updateActivity(_ state: UpdateModel.State) {
-        if #available(iOS 16.2, *) {
+        if #available(iOS 16.2, *), !ProcessInfo.processInfo.isiOSAppOnMac {
             var activity: Activity<UpdateActivityAttibutes>? {
                 self.activity as? Activity<UpdateActivityAttibutes>
             }

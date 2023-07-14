@@ -1,13 +1,33 @@
 import Core
+import Catalog
+
 import SwiftUI
 
 struct HubView: View {
     @State var showRemoteControl = false
 
+    @EnvironmentObject var applications: Applications
+
+    @AppStorage(.isAppsEnabled) var isAppsEnabled = false
+
+    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
+    @State private var applicationAlias: String?
+    @State private var showApplication = false
+
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 14) {
+                    if isAppsEnabled {
+                        NavigationLink {
+                            AppsView()
+                                .environmentObject(applications)
+                        } label: {
+                            AppsRowCard()
+                                .environmentObject(applications)
+                        }
+                    }
+
                     HStack(spacing: 14) {
                         Button {
                             showRemoteControl = true
@@ -23,6 +43,12 @@ struct HubView: View {
                     }
                 }
                 .padding(14)
+
+                NavigationLink("", isActive: $showApplication) {
+                    if let applicationAlias {
+                        AppView(alias: applicationAlias)
+                    }
+                }
             }
             .background(Color.background)
             .navigationBarTitleDisplayMode(.inline)
@@ -35,6 +61,13 @@ struct HubView: View {
             .sheet(isPresented: $showRemoteControl) {
                 RemoteControlView()
                     .modifier(AlertControllerModifier())
+            }
+        }
+        .onOpenURL { url in
+            if url.isApplicationURL {
+                applicationAlias = url.applicationAlias
+                selectedTab = .hub
+                showApplication = true
             }
         }
         .navigationViewStyle(.stack)
@@ -81,5 +114,20 @@ private struct AlertControllerModifier: ViewModifier {
                 alertController.alert
             }
         }
+    }
+}
+
+extension URL {
+    var isApplicationURL: Bool {
+        (host == "lab.flipp.dev" || host == "lab.flipper.net")
+        && pathComponents.count == 3
+        && pathComponents[1] == "apps"
+    }
+
+    var applicationAlias: String? {
+        guard pathComponents.count == 3, !pathComponents[2].isEmpty else {
+            return nil
+        }
+        return pathComponents[2]
     }
 }

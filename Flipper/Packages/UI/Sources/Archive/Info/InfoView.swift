@@ -205,6 +205,6 @@ extension ArchiveItem {
         ) else {
             return false
         }
-        return typeProperty.value == "1K" || typeProperty.value == "4K"
+        return ["MINI", "1K", "4K"].contains(typeProperty.value)
     }
 }

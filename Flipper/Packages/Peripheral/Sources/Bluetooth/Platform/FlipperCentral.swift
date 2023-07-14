@@ -104,11 +104,13 @@ extension FlipperCentral: CBCentralManagerDelegate {
     // MARK: Status changed
 
     func centralManagerDidUpdateState(_ manager: CBCentralManager) {
+        _status.value = .init(manager.state)
         if manager.state != .poweredOn {
             _discovered.value.removeAll()
+
+            _connected.value.forEach { $0.onDisconnect() }
             _connected.value.removeAll()
         }
-        _status.value = .init(manager.state)
     }
 
     // MARK: Did discover

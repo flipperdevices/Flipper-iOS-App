@@ -41,6 +41,9 @@ struct Metric_Events_Open {
     case shareShortlink // = 7
     case shareLonglink // = 8
     case shareFile // = 9
+    case saveDump // = 10
+    case mfkey32 // = 11
+    case openNfcDumpEditor // = 12
     case UNRECOGNIZED(Int)
 
     init() {
@@ -59,6 +62,9 @@ struct Metric_Events_Open {
       case 7: self = .shareShortlink
       case 8: self = .shareLonglink
       case 9: self = .shareFile
+      case 10: self = .saveDump
+      case 11: self = .mfkey32
+      case 12: self = .openNfcDumpEditor
       default: self = .UNRECOGNIZED(rawValue)
       }
     }
@@ -75,6 +81,9 @@ struct Metric_Events_Open {
       case .shareShortlink: return 7
       case .shareLonglink: return 8
       case .shareFile: return 9
+      case .saveDump: return 10
+      case .mfkey32: return 11
+      case .openNfcDumpEditor: return 12
       case .UNRECOGNIZED(let i): return i
       }
     }
@@ -99,6 +108,9 @@ extension Metric_Events_Open.OpenTarget: CaseIterable {
     .shareShortlink,
     .shareLonglink,
     .shareFile,
+    .saveDump,
+    .mfkey32,
+    .openNfcDumpEditor,
   ]
 }
 
@@ -157,5 +169,8 @@ extension Metric_Events_Open.OpenTarget: SwiftProtobuf._ProtoNameProviding {
     7: .same(proto: "SHARE_SHORTLINK"),
     8: .same(proto: "SHARE_LONGLINK"),
     9: .same(proto: "SHARE_FILE"),
+    10: .same(proto: "SAVE_DUMP"),
+    11: .same(proto: "MFKEY32"),
+    12: .same(proto: "OPEN_NFC_DUMP_EDITOR"),
   ]
 }

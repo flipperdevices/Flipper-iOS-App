@@ -7,6 +7,7 @@ import Foundation
 public class Device: ObservableObject {
     @Published public var status: Status = .noDevice
 
+    private var central: Central
     private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
     private var cancellables = [AnyCancellable]()
@@ -19,7 +20,8 @@ public class Device: ObservableObject {
     @Published public private(set) var info: Info = .init()
     @Published public private(set) var isInfoReady = false
 
-    public init(pairedDevice: PairedDevice) {
+    public init(central: Central, pairedDevice: PairedDevice) {
+        self.central = central
         self.pairedDevice = pairedDevice
         subscribeToPublishers()
     }
@@ -59,6 +61,11 @@ public class Device: ObservableObject {
             status = .noDevice
             return
         }
+        guard central.state == .poweredOn else {
+            status = .disconnected
+            return
+        }
+
         guard flipper.state != oldValue else {
             return
         }
@@ -99,6 +106,7 @@ public class Device: ObservableObject {
                 status = .connected
                 logger.info("connected")
                 try await updateStorageInfo()
+                reportRPCInfo()
             } catch {
                 logger.error("did connect: \(error)")
             }
@@ -155,6 +163,10 @@ public class Device: ObservableObject {
     // MARK: Connection
 
     public func connect() {
+        guard central.state == .poweredOn else {
+            logger.info("bluetooth is not ready")
+            return
+        }
         logger.info("connecting")
         reconnectOnDisconnect = true
         pairedDevice.connect()
@@ -175,7 +187,6 @@ public class Device: ObservableObject {
         var storageInfo = Flipper.StorageInfo()
         defer {
             pairedDevice.updateStorageInfo(storageInfo)
-            reportRPCInfo()
         }
         do {
             storageInfo.internal = try await rpc.getStorageInfo(at: "/int")
@@ -349,40 +360,31 @@ public class Device: ObservableObject {
     }
 
     public func lock() async throws {
-        // <(^_^)>
-        try await rpc.pressButton(.back)
-        try await rpc.pressButton(.back)
-        try await rpc.pressButton(.back)
-        // couldn't exit the app
-        guard !(try await rpc.isLocked) else {
-            return
-        }
-        try await rpc.pressButton(.up)
-        try await rpc.pressButton(.enter)
-        // FIXME: updateLockStatus
-        self.isLocked = true
+        throw Error.CommonError.notImplemented
     }
 
     public func unlock() async throws {
-        // <(^_^)>
-        try await rpc.pressButton(.back)
-        try await rpc.pressButton(.back)
-        try await rpc.pressButton(.back)
-        // FIXME: updateLockStatus
-        self.isLocked = false
+        guard
+            let protobufRevision = flipper?.information?.protobufRevision,
+            protobufRevision >= .v0_16
+        else {
+            throw Error.CommonError.notImplemented
+        }
+        try await rpc.unlock()
+        updateLockStatus()
     }
 
     public func updateLockStatus() {
-        Task { @MainActor in
-            do {
-                // FIXME: acts like isApplicationRunning
-                // self.isLocked = try await rpc.isLocked
-                let isLocked = try await rpc.isLocked
-                logger.debug("is locked: \(isLocked)")
-            } catch {
-                logger.error("update lock status: \(error)")
-            }
-        }
+        self.isLocked = true
+//        Task { @MainActor in
+//            do {
+//                self.isLocked = try await rpc.isDesktopLocked
+//                logger.debug("is locked: \(isLocked)")
+//            } catch {
+//                self.isLocked = false
+//                logger.error("update lock status: \(error)")
+//            }
+//        }
     }
 }
 
@@ -396,16 +398,39 @@ extension Device {
     }
 
     func reportRPCInfo() {
-        guard let storage = flipper?.storage else { return }
-        analytics.flipperRPCInfo(
-            sdcardIsAvailable: storage.external != nil,
-            internalFreeByte: storage.internal?.free ?? 0,
-            internalTotalByte: storage.internal?.total ?? 0,
-            externalFreeByte: storage.external?.free ?? 0,
-            externalTotalByte: storage.external?.total ?? 0)
+        Task {
+            guard let storage = flipper?.storage else { return }
+            let firmwareForkName = try? await getFirmwareFork()
+            let firmwareGitURL = try? await getFirmwareGit()
+            analytics.flipperRPCInfo(
+                sdcardIsAvailable: storage.external != nil,
+                internalFreeByte: storage.internal?.free ?? 0,
+                internalTotalByte: storage.internal?.total ?? 0,
+                externalFreeByte: storage.external?.free ?? 0,
+                externalTotalByte: storage.external?.total ?? 0,
+                firmwareForkName: firmwareForkName ?? "",
+                firmwareGitURL: firmwareGitURL ?? ""
+            )
+        }
     }
 
     func recordRemoteControl() {
         analytics.appOpen(target: .remoteControl)
+    }
+}
+
+fileprivate extension Device {
+    private func getFirmwareFork() async throws -> String {
+        for try await property in rpc.property("devinfo.firmware.origin.fork") {
+            return property.value
+        }
+        return ""
+    }
+
+    private func getFirmwareGit() async throws -> String {
+        for try await property in rpc.property("devinfo.firmware.origin.git") {
+            return property.value
+        }
+        return ""
     }
 }

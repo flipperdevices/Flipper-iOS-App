@@ -8,6 +8,8 @@ struct DeviceView: View {
     @EnvironmentObject var synchronization: Synchronization
     @EnvironmentObject var updateModel: UpdateModel
 
+    @Environment(\.scenePhase) var scenePhase
+
     @State private var showForgetAction = false
     @State private var showOutdatedFirmwareAlert = false
     @State private var showOutdatedMobileAlert = false
@@ -31,7 +33,7 @@ struct DeviceView: View {
     }
 
     var canPlayAlert: Bool {
-        flipper?.state == .connected && !isOutdatedVersion
+        device.flipper?.state == .connected && !isOutdatedVersion
     }
 
     var canConnect: Bool {
@@ -165,15 +167,19 @@ struct DeviceView: View {
                     }
                 }
                 .background(Color.background)
-                .actionSheet(isPresented: $showForgetAction) {
-                    .init(
-                        title: Text("This action won't delete your keys"),
-                        buttons: [
-                            .destructive(Text("Forget Flipper")) {
-                                device.forgetDevice()
-                            },
-                            .cancel()
-                        ]
+                .confirmationDialog(
+                    "Forget Flipper?",
+                    isPresented: $showForgetAction,
+                    titleVisibility: .visible,
+                    presenting: flipper
+                ) { _ in
+                    Button("Forget Flipper", role: .destructive) {
+                        device.forgetDevice()
+                    }
+                } message: { flipper in
+                    Text(
+                        "App will no longer be paired with " +
+                        "Flipper \(flipper.name)"
                     )
                 }
             }
@@ -196,6 +202,12 @@ struct DeviceView: View {
                 device.connect()
             }
         }
+        .onChange(of: scenePhase) { scenePhase in
+            switch scenePhase {
+            case .active: onActive()
+            default: break
+            }
+        }
         .task { @MainActor in
             if central.state != .poweredOn {
                 central.kick()
@@ -203,15 +215,35 @@ struct DeviceView: View {
         }
     }
 
-    func connect() {
-        if device.status == .noDevice {
-            router.showWelcomeScreen()
-        } else {
+    func onActive() {
+        if device.status == .disconnected, central.state == .poweredOn {
             device.connect()
         }
+    }
+
+    func connect() {
+        guard device.status != .noDevice else {
+            router.showWelcomeScreen()
+            return
+        }
+
+        guard central.state == .poweredOn else {
+            showBluetoothDisabled()
+            return
+        }
+
+        device.connect()
     }
 
     func disconnect() {
         device.disconnect()
     }
+}
+
+// FIXME: refactor
+
+import CoreBluetooth
+
+private func showBluetoothDisabled() {
+    _ = CBCentralManager()
 }

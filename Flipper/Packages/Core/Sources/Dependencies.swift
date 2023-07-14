@@ -1,5 +1,6 @@
 import Analytics
 import Peripheral
+import Catalog
 
 import Logging
 import Combine
@@ -95,12 +96,14 @@ public class Dependencies: ObservableObject {
 
     @MainActor
     public lazy var central: Central = {
-        .init()
+        .init(central: Peripheral.Dependencies.central)
     }()
 
     @MainActor
     public lazy var device: Device = {
-        .init(pairedDevice: pairedDevice)
+        .init(
+            central: central,
+            pairedDevice: pairedDevice)
     }()
 
     @MainActor
@@ -135,6 +138,14 @@ public class Dependencies: ObservableObject {
     @MainActor
     public lazy var sharing: SharingModel = {
         .init()
+    }()
+
+    @MainActor
+    public lazy var applications: Applications = {
+        .init(
+            catalog: WebCatalog(),
+            pairedDevice: pairedDevice
+        )
     }()
 
     @MainActor

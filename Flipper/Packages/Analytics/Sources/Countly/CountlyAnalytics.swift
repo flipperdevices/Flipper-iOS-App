@@ -50,7 +50,9 @@ extension CountlyAnalytics: EventHandler {
         internalFreeByte: Int,
         internalTotalByte: Int,
         externalFreeByte: Int,
-        externalTotalByte: Int
+        externalTotalByte: Int,
+        firmwareForkName: String,
+        firmwareGitURL: String
     ) {
         recordEvent(
             key: "flipper_rpc_info",
@@ -59,7 +61,9 @@ extension CountlyAnalytics: EventHandler {
                 "internal_free_byte": .init(internalFreeByte),
                 "internal_total_byte": .init(internalTotalByte),
                 "external_free_byte": .init(externalFreeByte),
-                "external_total_byte": .init(externalTotalByte)
+                "external_total_byte": .init(externalTotalByte),
+                "firmware_fork_name": firmwareForkName,
+                "firmware_git_url": firmwareGitURL
             ])
     }
 
@@ -99,7 +103,8 @@ extension CountlyAnalytics: EventHandler {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTime: Int
+        synchronizationTime: Int,
+        changesCount: Int
     ) {
         recordEvent(
             key: "synchronization_end",
@@ -109,7 +114,8 @@ extension CountlyAnalytics: EventHandler {
                 "nfc_count": .init(nfcCount),
                 "infrared_count": .init(infraredCount),
                 "ibutton_count": .init(iButtonCount),
-                "synchronization_time_ms": .init(synchronizationTime)
+                "synchronization_time_ms": .init(synchronizationTime),
+                "changes_count": .init(changesCount)
             ])
     }
 
@@ -149,6 +155,9 @@ fileprivate extension OpenTarget {
         case .keyShareURL: return 7
         case .keyShareUpload: return 8
         case .keyShareFile: return 9
+        case .saveNFCDump: return 10
+        case .mfKey32: return 11
+        case .nfcDumpEditor: return 12
         }
     }
 }

@@ -4,6 +4,7 @@
   - nesting
   - todo
   - closure_body_length
+  - unhandled_throwing_task
 
  opt_in_rules:
   - anyobject_protocol

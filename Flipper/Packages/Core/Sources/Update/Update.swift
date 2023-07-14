@@ -11,6 +11,12 @@ public enum Update {
         public var version: Version
         public var changelog: String
         public var url: URL
+
+        public init(version: Version, changelog: String, url: URL) {
+            self.version = version
+            self.changelog = changelog
+            self.url = url
+        }
     }
 
     public struct Version: Equatable, Codable {
@@ -27,6 +33,7 @@ public enum Update {
         case development
         case candidate
         case release
+        case custom
     }
 
     public enum Target: String {
@@ -82,6 +89,7 @@ private extension Update.Channel {
         case .development: return "development"
         case .candidate: return "release-candidate"
         case .release: return "release"
+        case .custom: return "custom"
         }
     }
 }
@@ -92,6 +100,7 @@ extension Update.Version: CustomStringConvertible {
         case .development: return "Dev \(name)"
         case .candidate: return "RC \(name.dropLast(3))"
         case .release: return "Release \(name)"
+        case .custom: return "Custom \(name)"
         }
     }
 }

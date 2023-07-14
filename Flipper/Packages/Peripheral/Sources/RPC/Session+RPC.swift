@@ -5,7 +5,7 @@ import struct Foundation.Date
 // MARK: Public methods
 
 extension Session {
-    public var isLocked: Bool {
+    public var isApplicationLocked: Bool {
         get async throws {
             let response = try await self
                 .send(.application(.lockStatus))
@@ -14,6 +14,17 @@ extension Session {
                 throw Error.unexpectedResponse(response)
             }
             return isLocked
+        }
+    }
+
+    public var isDesktopLocked: Bool {
+        get async throws {
+            let response = try await self
+                .send(.desktop(.status))
+                .response
+            // print(response)
+            // FIXME:
+            return response == .ok
         }
     }
 
@@ -296,6 +307,15 @@ extension Session {
     public func appExit() async throws {
         let response = try await self
             .send(.application(.exit))
+            .response
+        guard case .ok = response else {
+            throw Error.unexpectedResponse(response)
+        }
+    }
+
+    public func unlock() async throws {
+        let response = try await self
+            .send(.desktop(.unlock))
             .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)

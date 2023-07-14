@@ -27,10 +27,16 @@ extension View {
                 }
                 .frame(width: 292)
                 .background(RoundedRectangle(cornerRadius: 18)
-                    .fill(Color.secondaryGroupedBackground)
+                    .fill(.alertBackground)
                 )
             }
             .frame(maxHeight: .infinity)
         }
+    }
+}
+
+extension ShapeStyle where Self == Color {
+    static var alertBackground: Color {
+        .init("AlertBackground")
     }
 }

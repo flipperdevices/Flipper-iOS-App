@@ -9,18 +9,9 @@ struct RemoteControlView: View {
     @Environment(\.dismiss) private var dismiss
 
     var uiImage: UIImage? {
+        guard device.status == .connected else { return nil }
         guard let frame = device.frame else { return nil }
-        return .init(
-            pixels: frame.pixels.map { $0 ? .black : .orange },
-            width: 128,
-            height: 64
-        )
-    }
-
-    var normalizedImage: UIImage? {
-        guard let frame = device.frame, let image = uiImage else {
-            return nil
-        }
+        guard let image = UIImage(frame: frame) else { return nil }
         switch frame.orientation {
         case .horizontalFlipped: return image.withOrientation(.down)
         default: return image
@@ -28,9 +19,7 @@ struct RemoteControlView: View {
     }
 
     var screenshotImage: UIImage? {
-        normalizedImage?.resized(to: .init(
-            width: 512,
-            height: 256))
+        uiImage?.resized(to: .init(width: 512, height: 256))
     }
 
     var screenshotName: String {
@@ -43,9 +32,14 @@ struct RemoteControlView: View {
     }
 
     //--------------------------------------------------------------------------
-    @State var controlsQueue: [(UUID, InputKey)] = []
-    @State var controlsStream: AsyncStream<InputKey>?
-    @State var controlsStreamContinuation: AsyncStream<InputKey>.Continuation?
+    public enum Control {
+        case lock
+        case unlock
+        case inputKey(InputKey)
+    }
+    @State var controlsQueue: [(UUID, Control)] = []
+    @State var controlsStream: AsyncStream<Control>?
+    @State var controlsStreamContinuation: AsyncStream<Control>.Continuation?
     //--------------------------------------------------------------------------
 
     @Namespace var namespace
@@ -110,10 +104,9 @@ struct RemoteControlView: View {
                     .offset(x: screenshotOffsetX)
                     .offset(y: screenshotOffsetY)
 
-                    LockButton(isLocked: false) {
-                        showOutdatedAlert = true
+                    LockButton(isLocked: device.isLocked) {
+                        lockUnlockTapped()
                     }
-                    .opacity(0.5)
                     .frame(width: buttonSide, height: buttonSide)
                     .offset(x: lockOffsetX)
                     .offset(y: lockOffsetY)
@@ -123,18 +116,22 @@ struct RemoteControlView: View {
                             .padding(.horizontal, 4)
                             .opacity(isHorizontal ? 1 : 0)
 
-                        DeviceScreen {
+                        Group {
                             if device.status == .disconnected {
-                                Image("RemoteNotConnected")
+                                Image("RemoteScreenNotConnected")
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                            } else if let uiImage = uiImage {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .interpolation(.none)
                                     .aspectRatio(contentMode: .fit)
                             } else {
-                                AnimatedPlaceholder()
+                                DeviceScreen {
+                                    if let uiImage = uiImage {
+                                        Image(uiImage: uiImage)
+                                            .resizable()
+                                            .interpolation(.none)
+                                            .aspectRatio(contentMode: .fit)
+                                    } else {
+                                        AnimatedPlaceholder()
+                                    }
+                                }
                             }
                         }
                         .rotationEffect(rotation, anchor: .bottomTrailing)
@@ -155,8 +152,8 @@ struct RemoteControlView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .coordinateSpace(name: "rcp")
 
-            DeviceControls { button in
-                buttonTapped(button)
+            DeviceControls { key in
+                controlTapped(.inputKey(key))
             }
             .padding(.bottom, 14)
         }
@@ -177,9 +174,11 @@ struct RemoteControlView: View {
                 Title("Remote Control")
             }
         }
-        .onAppear {
-            device.updateLockStatus()
-            device.startScreenStreaming()
+        .onReceive(device.$status) { status in
+            if status == .connected, scenePhase == .active {
+                device.updateLockStatus()
+                device.startScreenStreaming()
+            }
         }
         .onDisappear {
             device.stopScreenStreaming()
@@ -202,21 +201,42 @@ struct RemoteControlView: View {
     }
 
     func runLoop() async {
-        let controlsStream = AsyncStream<InputKey> { continuation in
+        let controlsStream = AsyncStream<Control> { continuation in
             controlsStreamContinuation = continuation
         }
         self.controlsStream = controlsStream
         for await next in controlsStream {
-            await pressButton(next)
+            await processControl(next)
             withAnimation {
                 controlsQueue = .init(controlsQueue.dropFirst())
             }
         }
     }
 
-    func buttonTapped(_ button: InputKey) {
-        controlsQueue.append((.init(), button))
-        controlsStreamContinuation?.yield(button)
+    func lockUnlockTapped() {
+        guard
+            let protobufVersion = device.flipper?.information?.protobufRevision,
+            protobufVersion >= .v0_16
+        else {
+            showOutdatedAlert = true
+            return
+        }
+        device.isLocked
+            ? controlTapped(.unlock)
+            : controlTapped(.lock)
+    }
+
+    func controlTapped(_ control: Control) {
+        controlsQueue.append((.init(), control))
+        controlsStreamContinuation?.yield(control)
+    }
+
+    func processControl(_ control: Control) async {
+        switch control {
+        case .lock: await lock()
+        case .unlock: await unlock()
+        case .inputKey(let key): await pressButton(key)
+        }
     }
 
     func pressButton(_ button: InputKey) async {
@@ -225,22 +245,18 @@ struct RemoteControlView: View {
         feedback(style: .light)
     }
 
-    func lock() {
-        // FIXME: add .lock button
-        guard controlsQueue.isEmpty else { return }
-        Task {
-            try await device.lock()
-            device.updateLockStatus()
-        }
+    func lock() async {
+        feedback(style: .light)
+        try? await device.lock()
+        device.updateLockStatus()
+        feedback(style: .light)
     }
 
-    func unlock() {
-        // FIXME: add .unlock button
-        guard controlsQueue.isEmpty else { return }
-        Task {
-            try await device.unlock()
-            device.updateLockStatus()
-        }
+    func unlock() async {
+        feedback(style: .light)
+        try? await device.unlock()
+        device.updateLockStatus()
+        feedback(style: .light)
     }
 
     func screenshot() {
@@ -256,6 +272,16 @@ struct RemoteControlView: View {
         UI.share(url) {
             try? FileManager.default.removeItem(at: url)
         }
+    }
+}
+
+private extension UIImage {
+    convenience init?(frame: ScreenFrame) {
+        self.init(
+            pixels: frame.pixels.map { $0 ? .black : .orange },
+            width: 128,
+            height: 64
+        )
     }
 }
 

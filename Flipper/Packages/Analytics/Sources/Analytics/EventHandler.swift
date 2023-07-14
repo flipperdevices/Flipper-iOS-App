@@ -6,7 +6,9 @@ public protocol EventHandler {
         internalFreeByte: Int,
         internalTotalByte: Int,
         externalFreeByte: Int,
-        externalTotalByte: Int
+        externalTotalByte: Int,
+        firmwareForkName: String,
+        firmwareGitURL: String
     )
     func flipperUpdateStart(
         id: Int,
@@ -25,7 +27,8 @@ public protocol EventHandler {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTime: Int
+        synchronizationTime: Int,
+        changesCount: Int
     )
     func subghzProvisioning(
         sim1: String,
@@ -48,6 +51,9 @@ public enum OpenTarget: Sendable {
     case keyShareURL
     case keyShareUpload
     case keyShareFile
+    case nfcDumpEditor
+    case saveNFCDump
+    case mfKey32
 }
 
 public enum UpdateResult: Sendable {

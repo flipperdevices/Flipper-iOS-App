@@ -74,8 +74,9 @@ public class Synchronization: ObservableObject {
     }
 
     private func synchronizeArchive() async throws {
+        var changesCount = 0
         let time = try await measure {
-            try await archive.synchronize { progress in
+            changesCount = try await archive.synchronize { progress in
                 // FIXME: find the issue (very rare)
                 guard progress.isNormal else { return }
                 Task { @MainActor in
@@ -83,7 +84,7 @@ public class Synchronization: ObservableObject {
                 }
             }
         }
-        reportSynchronizationResult(time: time)
+        reportSynchronizationResult(time: time, changesCount: changesCount)
         logger.info("syncing archive: (\(time)s)")
     }
 
@@ -108,14 +109,15 @@ public class Synchronization: ObservableObject {
 
     // MARK: Analytics
 
-    func reportSynchronizationResult(time: Int) {
+    func reportSynchronizationResult(time: Int, changesCount: Int) {
         analytics.synchronizationResult(
             subGHzCount: archive._items.value.count { $0.kind == .subghz },
             rfidCount: archive._items.value.count { $0.kind == .rfid },
             nfcCount: archive._items.value.count { $0.kind == .nfc },
             infraredCount: archive._items.value.count { $0.kind == .infrared },
             iButtonCount: archive._items.value.count { $0.kind == .ibutton },
-            synchronizationTime: time)
+            synchronizationTime: time,
+            changesCount: changesCount)
     }
 }
 

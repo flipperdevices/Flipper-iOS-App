@@ -12,7 +12,7 @@ struct SelectChannelPopup: View {
                 VStack(alignment: .leading, spacing: 0) {
                     ChannelMenuRow(
                         title: "Release",
-                        color: Update.Channel.release.color,
+                        color: .release,
                         description: "Stable release (recommended)",
                         onPress: { onChannelSelected(.release) }
                     )
@@ -23,7 +23,7 @@ struct SelectChannelPopup: View {
 
                     ChannelMenuRow(
                         title: "Release-Candidate",
-                        color: Update.Channel.candidate.color,
+                        color: .candidate,
                         description: "Pre-release under testing",
                         onPress: { onChannelSelected(.candidate) }
                     )
@@ -34,9 +34,20 @@ struct SelectChannelPopup: View {
 
                     ChannelMenuRow(
                         title: "Development",
-                        color: Update.Channel.development.color,
+                        color: .development,
                         description: "Daily unstable build, lots of bugs",
                         onPress: { onChannelSelected(.development) }
+                    )
+                    .padding(12)
+
+                    Divider()
+                        .padding(0)
+
+                    ChannelMenuRow(
+                        title: "Custom",
+                        color: .custom,
+                        description: "Upload file with custom firmware",
+                        onPress: { onChannelSelected(.custom) }
                     )
                     .padding(12)
                 }

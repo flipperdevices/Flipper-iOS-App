@@ -42,8 +42,8 @@ struct DetectReaderView: View {
                         VStack(spacing: 8) {
                             ProgressBarView(
                                 color: .a2,
-                                image: "ProgressDownload",
-                                progress: detectReader.progress
+                                progress: detectReader.progress,
+                                image: "ProgressDownload"
                             )
                             .padding(.horizontal, 18)
                             Text("Downloading raw file from Flipper...")
@@ -59,8 +59,8 @@ struct DetectReaderView: View {
                         VStack(spacing: 8) {
                             ProgressBarView(
                                 color: .a1,
-                                image: "ProgressKey",
-                                progress: detectReader.progress
+                                progress: detectReader.progress,
+                                image: "ProgressKey"
                             )
                             .padding(.horizontal, 18)
                             Text("Calculating...")
@@ -76,8 +76,8 @@ struct DetectReaderView: View {
                         VStack(spacing: 8) {
                             ProgressBarView(
                                 color: .a1,
-                                image: "ProgressKey",
                                 progress: 1,
+                                image: "ProgressKey",
                                 text: "..."
                             )
                             .padding(.horizontal, 18)
@@ -94,8 +94,8 @@ struct DetectReaderView: View {
                         VStack(spacing: 8) {
                             ProgressBarView(
                                 color: .a1,
-                                image: "ProgressKey",
                                 progress: 1,
+                                image: "ProgressKey",
                                 text: "..."
                             )
                             .padding(.horizontal, 18)

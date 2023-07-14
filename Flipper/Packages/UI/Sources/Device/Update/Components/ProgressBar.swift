@@ -39,8 +39,8 @@ public struct UpdateProgressBar: View {
     public var body: some View {
         ProgressBarView(
             color: color,
-            image: image,
             progress: progress,
+            image: image,
             text: text)
     }
 }

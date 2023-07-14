@@ -101,11 +101,7 @@ struct NFCEditorView: View {
             Alert(title: Text(error))
         }
         .task { @MainActor in
-            self.uid = item.uid
-            self.atqa = item.atqa
-            self.sak = item.sak
-            self.bytes = item.nfcBlocks
-            self.hasBCC = item.hasBCC
+            load()
         }
         .onChange(of: bytes) { _ in
             updateUID()
@@ -164,6 +160,15 @@ struct NFCEditorView: View {
         }
     }
 
+    func load() {
+        uid = item.uid
+        atqa = item.atqa
+        sak = item.sak
+        bytes = item.nfcBlocks
+        hasBCC = item.hasBCC
+        analytics.appOpen(target: .nfcDumpEditor)
+    }
+
     func save() {
         item.uid = uid
         item.sak = sak
@@ -172,11 +177,12 @@ struct NFCEditorView: View {
         Task {
             do {
                 try await archive.save(item, as: item)
+                analytics.appOpen(target: .saveNFCDump)
+                dismiss()
             } catch {
                 showError(error)
             }
         }
-        dismiss()
     }
 
     func saveAs() {
@@ -263,13 +269,17 @@ private extension ArchiveItem {
         }
     }
 
+    private var validSectorCount: [Int] { [5, 16, 64] }
+    private var validBlockCount: [Int] { validSectorCount.map { $0 * 4 } }
+    private var validBytesCount: [Int] { validBlockCount.map { $0 * 16 } }
+
     var nfcBlocks: [UInt8?] {
         get {
             let properties = shadowCopy.isEmpty
                 ? self.properties
                 : self.shadowCopy
             let blocks = properties.filter { $0.key.starts(with: "Block ") }
-            guard blocks.count == 64 || blocks.count == 256 else {
+            guard validBlockCount.contains(blocks.count) else {
                 return []
             }
             var result = [UInt8?]()
@@ -283,7 +293,7 @@ private extension ArchiveItem {
             return result
         }
         set {
-            guard newValue.count == 1024 || newValue.count == 4096 else {
+            guard validBytesCount.contains(newValue.count) else {
                 return
             }
             if shadowCopy.isEmpty {

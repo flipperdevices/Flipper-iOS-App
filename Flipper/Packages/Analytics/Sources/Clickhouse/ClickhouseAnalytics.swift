@@ -58,7 +58,9 @@ extension ClickhouseAnalytics: EventHandler {
         internalFreeByte: Int,
         internalTotalByte: Int,
         externalFreeByte: Int,
-        externalTotalByte: Int
+        externalTotalByte: Int,
+        firmwareForkName: String,
+        firmwareGitURL: String
     ) {
         report(event: .with {
             $0.flipperRpcInfo = .with {
@@ -67,6 +69,8 @@ extension ClickhouseAnalytics: EventHandler {
                 $0.internalTotalByte = .init(internalTotalByte)
                 $0.externalFreeByte = .init(externalFreeByte)
                 $0.externalTotalByte = .init(externalTotalByte)
+                $0.firmwareForkName = firmwareForkName
+                $0.firmwareGitURL = firmwareGitURL
             }
         })
     }
@@ -107,7 +111,8 @@ extension ClickhouseAnalytics: EventHandler {
         nfcCount: Int,
         infraredCount: Int,
         iButtonCount: Int,
-        synchronizationTime: Int
+        synchronizationTime: Int,
+        changesCount: Int
     ) {
         report(event: .with {
             $0.synchronizationEnd = .with {
@@ -117,6 +122,7 @@ extension ClickhouseAnalytics: EventHandler {
                 $0.infraredCount = .init(infraredCount)
                 $0.ibuttonCount = .init(iButtonCount)
                 $0.synchronizationTimeMs = .init(synchronizationTime)
+                $0.changesCount = .init(changesCount)
             }
         })
     }
@@ -155,6 +161,9 @@ fileprivate extension Metric_Events_Open.OpenTarget {
         case .keyShareURL: self = .shareShortlink
         case .keyShareUpload: self = .shareLonglink
         case .keyShareFile: self = .shareFile
+        case .saveNFCDump: self = .saveDump
+        case .mfKey32: self = .mfkey32
+        case .nfcDumpEditor: self = .openNfcDumpEditor
         }
     }
 }

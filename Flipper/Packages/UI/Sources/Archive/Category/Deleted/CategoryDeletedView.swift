@@ -56,13 +56,14 @@ struct CategoryDeletedView: View {
                             .foregroundColor(toolbarActionsColor)
                     }
                     .disabled(archive.items.isEmpty)
-                    .actionSheet(isPresented: $showRestoreSheet) {
-                        .init(title: Text(restoreSheetTitle), buttons: [
-                            .destructive(Text("Restore All")) {
-                                archive.restoreAll()
-                            },
-                            .cancel()
-                        ])
+                    .confirmationDialog(
+                        restoreSheetTitle,
+                        isPresented: $showRestoreSheet,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Restore All") {
+                            archive.restoreAll()
+                        }
                     }
 
                     NavBarButton {
@@ -73,13 +74,14 @@ struct CategoryDeletedView: View {
                             .foregroundColor(toolbarActionsColor)
                     }
                     .disabled(archive.items.isEmpty)
-                    .actionSheet(isPresented: $showDeleteSheet) {
-                        .init(title: Text(deleteSheetTitle), buttons: [
-                            .destructive(Text("Delete All")) {
-                                archive.deleteAll()
-                            },
-                            .cancel()
-                        ])
+                    .confirmationDialog(
+                        deleteSheetTitle,
+                        isPresented: $showDeleteSheet,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Delete All", role: .destructive) {
+                            archive.deleteAll()
+                        }
                     }
                 }
             }

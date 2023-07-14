@@ -9,7 +9,7 @@ struct NFCToolsView: View {
 
     var body: some View {
         ScrollView {
-            VStack {
+            VStack(spacing: 14) {
                 Button {
                     showDetectReaderView = true
                 } label: {
