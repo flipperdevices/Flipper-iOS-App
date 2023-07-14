@@ -89,7 +89,7 @@ struct DeviceInfoCard: View {
         guard isConnected, device.flipper?.storage?.internal != nil else {
             return nil
         }
-        guard let ext = flipper?.storage?.external else {
+        guard let ext = device.flipper?.storage?.external else {
             return "—"
         }
         return ext.description

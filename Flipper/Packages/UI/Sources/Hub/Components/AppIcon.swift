@@ -1,6 +1,7 @@
 import Catalog
 
 import SwiftUI
+import SBPAsyncImage
 
 struct AppIcon: View {
     let source: ImageSource
@@ -31,7 +32,7 @@ struct AppIcon: View {
         let url: URL
 
         var body: some View {
-            AsyncImage(url: url) { phase in
+            BackportAsyncImage(url: url) { phase in
                 if let image = phase.image {
                     image
                         .renderingMode(.template)

@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import AttributedText
 
 struct ConfirmUpdateAlert: View {
     @Binding var isPresented: Bool
@@ -15,12 +16,14 @@ struct ConfirmUpdateAlert: View {
         isSameChannel ? "Update" : "Install"
     }
 
-    var message: AttributedString {
-        var message = AttributedString(
-            "New firmware \(availableVersion) will be installed")
-        if let range = message.range(of: "\(availableVersion)") {
-            message[range].foregroundColor = availableVersion.color
+    var message: NSAttributedString {
+        let message = NSMutableAttributedString(
+            string: "New firmware \(availableVersion) will be installed")
+        
+        if let range = message.string.range(of: "\(availableVersion)") {
+            message.addAttribute(.foregroundColor, value: availableVersion.color, range: NSRange(range, in: message.string))
         }
+        
         return message
     }
 
@@ -30,7 +33,7 @@ struct ConfirmUpdateAlert: View {
                 Text("\(action) Firmware?")
                     .font(.system(size: 14, weight: .bold))
 
-                Text(message)
+                AttributedText(message)
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)

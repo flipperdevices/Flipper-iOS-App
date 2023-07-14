@@ -4,9 +4,9 @@ import PackageDescription
 let package = Package(
     name: "Catalog",
     platforms: [
-        .iOS(.v15),
+        .iOS(.v14),
         .macOS(.v12),
-        .tvOS(.v15)
+        .tvOS(.v14)
     ],
     products: [
         .library(

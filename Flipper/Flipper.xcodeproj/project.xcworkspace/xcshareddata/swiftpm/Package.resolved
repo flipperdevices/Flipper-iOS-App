@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "combine-schedulers",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/combine-schedulers",
+      "state" : {
+        "revision" : "882ac01eb7ef9e36d4467eb4b1151e74fcef85ab",
+        "version" : "0.9.1"
+      }
+    },
+    {
       "identity" : "countly-sdk-ios",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Countly/countly-sdk-ios.git",
@@ -61,6 +70,15 @@
       "state" : {
         "branch" : "dev",
         "revision" : "e360536509fe13c740184ba2496d7d9a5f434f46"
+      }
+    },
+    {
+      "identity" : "sbpasyncimage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/yutailang0119/SBPAsyncImage",
+      "state" : {
+        "revision" : "d0f6ecac643b4206fc91d36af680cec266b94c36",
+        "version" : "0.1.0"
       }
     },
     {

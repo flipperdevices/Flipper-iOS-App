@@ -11,7 +11,7 @@ struct AppReportView: View {
 
     @State private var description = ""
     @State private var attachLogs = true
-    @FocusState private var focusState: Focused?
+    //@FocusState private var focusState: Focused?
 
     enum Focused {
         case description
@@ -25,7 +25,7 @@ struct AppReportView: View {
     }
 
     var showDescriptionPlaceholder: Bool {
-        description.isEmpty && focusState != .description
+        description.isEmpty //&& focusState != .description
     }
 
     var isValid: Bool {
@@ -45,16 +45,16 @@ struct AppReportView: View {
                         .padding(12)
 
                     TextEditor(text: $description)
-                        .focused($focusState, equals: .description)
+                        //.focused($focusState, equals: .description)
                         .hideScrollBackground()
                         .frame(minHeight: 100, maxHeight: 220)
                         .padding(12)
                 }
                 .font(.system(size: 14, weight: .medium))
-                .overlay {
+                .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(placeholderColor, lineWidth: 1)
-                }
+                )
 
                 Spacer()
 

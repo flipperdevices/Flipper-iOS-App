@@ -30,14 +30,14 @@ struct AppsSegments: View {
                 badge: updatesCount == 0 ? nil : "\(updatesCount)"
             )
         }
-        .background(.white.opacity(0.3))
+        .modifier(BackgroundModifier(color: .white.opacity(0.3)))
         .cornerRadius(8)
         .onReceive(model.$statuses) { _ in
             Task {
                 loadUpdates()
             }
         }
-        .task {
+        .task { @MainActor in
             loadUpdates()
         }
     }
@@ -78,28 +78,29 @@ struct AppsSegment: View {
         HStack {
             HStack(spacing: 8) {
                 Spacer(minLength: 0)
-                Image(image)
-                    .renderingMode(.template)
-                    .foregroundColor(.primary)
-                    .overlay(alignment: .topTrailing) {
-                        if let badge {
-                            HStack {
-                                Text(badge)
-                                    .font(.system(size: 8, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 3)
-                                    .padding(3)
-                            }
-                            .background(Color.sGreenUpdate)
-                            .cornerRadius(60)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 60)
-                                    .inset(by: 0.5)
-                                    .stroke(.white, lineWidth: 1)
-                            )
-                            .offset(x: 6, y: -6)
+                ZStack(alignment: .topTrailing) {
+                    Image(image)
+                        .renderingMode(.template)
+                        .foregroundColor(.primary)
+                    
+                    if let badge = badge {
+                        HStack {
+                            Text(badge)
+                                .font(.system(size: 8, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 3)
+                                .padding(3)
                         }
+                        .background(Color.sGreenUpdate)
+                        .cornerRadius(60)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 60)
+                                .inset(by: 0.5)
+                                .stroke(Color.white, lineWidth: 1)
+                        )
+                        .offset(x: -6, y: 6)
                     }
+                }
                 Text(title)
                     .font(.system(size: 12, weight: .bold))
                 Spacer(minLength: 0)

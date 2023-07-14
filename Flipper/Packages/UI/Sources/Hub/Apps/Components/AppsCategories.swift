@@ -26,7 +26,7 @@ struct AppsCategories: View {
                 }
             }
         }
-        .task {
+        .task { @MainActor in
             do {
                 categories = try await model.loadCategories()
             } catch {

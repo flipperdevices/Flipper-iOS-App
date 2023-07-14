@@ -27,7 +27,7 @@ struct UpdateAllAppButton: View {
                         }
                         .padding(2)
                     }
-                    .background(.white.opacity(0.8))
+                    .modifier(BackgroundModifier(color: .white.opacity(0.8)))
                     .cornerRadius(4)
                 }
             }
@@ -39,7 +39,7 @@ struct UpdateAllAppButton: View {
         .onReceive(model.$statuses) { _ in
             loadUpdates()
         }
-        .task {
+        .task { @MainActor in
             loadUpdates()
         }
     }

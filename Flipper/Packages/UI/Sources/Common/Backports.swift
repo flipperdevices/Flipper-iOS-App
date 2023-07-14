@@ -75,3 +75,27 @@ extension View {
         )
     }
 }
+
+struct A1ToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Button(action: { configuration.isOn.toggle() }) {
+            HStack {
+                configuration.label
+                Spacer()
+                Image(systemName: configuration.isOn ? "checkmark.square.fill" : "square")
+                    .foregroundColor(.a1)
+            }
+        }
+    }
+}
+
+struct BackgroundModifier: ViewModifier {
+    let color: Color
+    
+    func body(content: Content) -> some View {
+        content
+            .padding(2)
+            .background(color)
+            .cornerRadius(4)
+    }
+}

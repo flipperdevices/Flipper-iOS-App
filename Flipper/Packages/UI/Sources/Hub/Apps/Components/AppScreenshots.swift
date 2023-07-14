@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import SBPAsyncImage
 
 struct AppScreens: View {
     let screenshots: [URL]
@@ -33,7 +34,7 @@ struct AppScreens: View {
                     .stroke(.black, lineWidth: 1)
                     .padding(1)
 
-                AsyncImage(url: url) { phase in
+                BackportAsyncImage(url: url) { phase in
                     if let image = phase.image {
                         image
                             .interpolation(.none)

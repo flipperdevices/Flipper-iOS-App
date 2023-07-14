@@ -1,18 +1,21 @@
 import SwiftUI
+import AttributedText
 
 struct AppsOutdatedFlipperAlert: View {
     @Binding var isPresented: Bool
 
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
 
-    var message: AttributedString {
-        var string = AttributedString(
-            "This app requires the latest Flipper firmware version " +
+    var message: NSAttributedString {
+        let string = NSMutableAttributedString(
+            string: "This app requires the latest Flipper firmware version " +
             "from Release channel"
         )
-        if let range = string.range(of: "Release") {
-            string[range].foregroundColor = .sGreenUpdate
+        
+        if let range = string.string.range(of: "Release") {
+            string.addAttribute(.foregroundColor, value: UIColor.systemGreen, range: NSRange(range, in: string.string))
         }
+        
         return string
     }
 
@@ -26,7 +29,7 @@ struct AppsOutdatedFlipperAlert: View {
                     .font(.system(size: 14, weight: .bold))
                     .multilineTextAlignment(.center)
 
-                Text(message)
+                AttributedText(message)
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)

@@ -100,7 +100,7 @@ struct OptionsView: View {
                 Toggle(isOn: $isAppsEnabled) {
                     Text("Enable Apps in Hub")
                 }
-                .tint(.a1)
+                .toggleStyle(A1ToggleStyle())
             }
 
             if isDebugMode {
@@ -116,10 +116,19 @@ struct OptionsView: View {
                         showResetApp = true
                     }
                     .foregroundColor(.sRed)
-                    .confirmationDialog("", isPresented: $showResetApp) {
-                        Button("Reset App", role: .destructive) {
-                            AppReset.reset()
-                        }
+                    .actionSheet(isPresented: $showResetApp) {
+                        ActionSheet(
+                            title: Text("Reset App"),
+                            buttons: [
+                                .destructive(
+                                    Text("Reset App"),
+                                    action: {
+                                        AppReset.reset()
+                                    }
+                                ),
+                                .cancel()
+                            ]
+                        )
                     }
                 }
             }
