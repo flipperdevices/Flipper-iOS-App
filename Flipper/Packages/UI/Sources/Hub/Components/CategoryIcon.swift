@@ -35,12 +35,12 @@ struct CategoryIcon: View {
     struct RemoteImage: View {
         let url: URL
 
-        @State var svgData: Data?
+        @State var svgkImage: SVGKImage?
 
         var body: some View {
             Group {
-                if let svgData = svgData {
-                    Image(uiImage: SVGKImage(data: svgData).uiImage)
+                if let svgkImage = svgkImage {
+                    Image(uiImage: svgkImage.uiImage)
                         .renderingMode(.template)
                         .interpolation(.none)
                         .resizable()
@@ -51,7 +51,7 @@ struct CategoryIcon: View {
             .task {
                 do {
                     let (data, _) = try await URLSession.shared.data(from: url)
-                    self.svgData = data
+                    self.svgkImage = SVGKImage(data: data)
                 } catch {
                     print(error)
                 }
