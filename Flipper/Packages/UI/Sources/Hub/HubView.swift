@@ -14,13 +14,17 @@ struct HubView: View {
     @State private var applicationAlias: String?
     @State private var showApplication = false
 
+    // NOTE: Fixes SwiftUI focus issue in case of
+    // TextField placed in ToolbarItem inside NavigationView
+    @FocusState var isAppsSearchFieldFocused: Bool
+
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 14) {
                     if isAppsEnabled {
                         NavigationLink {
-                            AppsView()
+                            AppsView(_isAppsSearchFieldFocused)
                                 .environmentObject(applications)
                         } label: {
                             AppsRowCard()

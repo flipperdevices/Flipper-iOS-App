@@ -25,6 +25,7 @@ struct SearchField: View {
                     .font(.system(size: 17))
                     .padding(.trailing, 6)
                     .padding(.vertical, 7)
+                    .focused($isFocused)
             }
 
             Spacer()

@@ -18,10 +18,16 @@ struct AppsView: View {
         selectedSegment == .installed
     }
 
+    @FocusState var isSearchFieldFocused: Bool
+
+    init(_ isSearchFieldFocused: FocusState<Bool>) {
+        self._isSearchFieldFocused = isSearchFieldFocused
+    }
+
     var body: some View {
         ZStack {
             NavigationLink("", isActive: $showSearchView) {
-                AppSearchView()
+                AppSearchView(isSearchFieldFocused: _isSearchFieldFocused)
                     .environmentObject(model)
             }
 
