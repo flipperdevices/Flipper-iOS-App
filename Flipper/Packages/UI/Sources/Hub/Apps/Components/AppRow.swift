@@ -55,9 +55,7 @@ struct AppRow: View {
             }
         }
         .onReceive(model.$statuses) { statuses in
-            if let status = statuses[application.id] {
-                self.status = status
-            }
+            status = statuses[application.id] ?? .notInstalled
         }
     }
 
