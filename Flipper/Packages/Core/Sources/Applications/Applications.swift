@@ -76,8 +76,8 @@ public class Applications: ObservableObject {
                 deviceInfo = try await getDeviceInfo()
             }
         } else if oldValue?.state == .connected, flipper?.state != .connected {
-            manifests = [:]
             deviceInfo = nil
+            manifests = [:]
             statuses = [:]
         }
     }
@@ -92,45 +92,49 @@ public class Applications: ObservableObject {
         try? await Task.sleep(seconds: 1)
     }
 
-    public func install(_ id: Application.ID) {
-        Task {
-            do {
-                statuses[id] = .installing(0)
-                try await _install(id) { progress in
-                    Task {
-                        statuses[id] = .installing(progress)
-                    }
+    public func install(_ id: Application.ID) async {
+        do {
+            statuses[id] = .installing(0)
+            try await _install(id) { progress in
+                Task {
+                    statuses[id] = .installing(progress)
                 }
-                statuses[id] = nil
-            } catch {
-                logger.error("install app: \(error)")
             }
+            statuses[id] = .installed
+        } catch {
+            logger.error("install app: \(error)")
         }
     }
 
-    public func update(_ id: Application.ID) {
-        Task {
-            do {
-                statuses[id] = .updating(0)
-                try await _install(id) { progress in
-                    Task {
-                        statuses[id] = .updating(progress)
-                    }
+    public func update(_ id: Application.ID) async {
+        do {
+            statuses[id] = .updating(0)
+            try await _install(id) { progress in
+                Task {
+                    statuses[id] = .updating(progress)
                 }
-                statuses[id] = nil
-            } catch {
-                logger.error("update app: \(error)")
             }
+            statuses[id] = .installed
+        } catch {
+            logger.error("update app: \(error)")
         }
     }
 
-    public func delete(_ id: Application.ID) {
-        Task {
-            do {
-                try await _delete(id)
-            } catch {
-                logger.error("delete app: \(error)")
-            }
+    public func update(_ ids: [Application.ID]) async {
+        for id in ids {
+            statuses[id] = .updating(0)
+        }
+        for id in ids {
+            await update(id)
+        }
+    }
+
+    public func delete(_ id: Application.ID) async {
+        do {
+            try await _delete(id)
+            statuses[id] = nil
+        } catch {
+            logger.error("delete app: \(error)")
         }
     }
 
@@ -284,7 +288,7 @@ public class Applications: ObservableObject {
                 .target(deviceInfo.target)
                 .api(deviceInfo.api)
                 .get()
-            
+
             for application in available {
                 statuses[application.id] = status(for: application)
             }
@@ -304,44 +308,22 @@ public class Applications: ObservableObject {
         case building
     }
 
-    public func status(
-        for application: Application
-    ) -> ApplicationStatus {
-        status(
-            applicationID: application.id,
-            versionID: application.current.id,
-            buildStatus: application.current.status
-        )
-    }
-
-    public func status(
+    private func status(
         for application: ApplicationInfo
     ) -> ApplicationStatus {
-        status(
-            applicationID: application.id,
-            versionID: application.current.id,
-            buildStatus: application.current.status
-        )
-    }
-
-    public func status(
-        applicationID: Application.ID,
-        versionID: String,
-        buildStatus: Application.Status
-    ) -> ApplicationStatus {
-        guard statuses[applicationID] == nil else {
-            return statuses[applicationID]!
+        guard statuses[application.id] == nil else {
+            return statuses[application.id]!
         }
-        guard let manifest = manifests[applicationID] else {
+        guard let manifest = manifests[application.id] else {
             return .notInstalled
         }
         guard
-            manifest.versionUID == versionID,
+            manifest.versionUID == application.current.id,
             manifest.buildAPI == deviceInfo?.api
         else {
-            return buildStatus == .ready
-                ? .outdated
-                : .building
+            return application.current.status == .ready
+            ? .outdated
+            : .building
         }
         return .installed
     }
@@ -391,12 +373,13 @@ fileprivate extension Applications {
     ) async throws {
         let application = try await loadApplication(id: id)
 
-        let target = try await getFlipperTarget()
-        let api = try await getFlipperAPI()
+        guard let deviceInfo else {
+            return
+        }
 
         let data = try await catalog.build(forVersionID: application.current.id)
-            .target(target)
-            .api(api)
+            .target(deviceInfo.target)
+            .api(deviceInfo.api)
             .get()
 
         try? await rpc.createDirectory(at: tempPath)
@@ -450,7 +433,6 @@ fileprivate extension Applications {
             at: manifestTempPath,
             string: manifestString
         ) { progress in
-            logger.info("writing manifest \(progress)")
         }
 
         try await rpc.moveFile(from: appTempPath, to: appPath)
@@ -474,7 +456,6 @@ fileprivate extension Applications {
         try await rpc.deleteFile(at: manifestPath)
 
         manifests[id] = nil
-        statuses[id] = nil
     }
 }
 

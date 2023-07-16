@@ -30,7 +30,7 @@ extension AppView {
                             isPresented: $confirmDelete,
                             application: .init(application)
                         ) {
-                            model.delete(application.id)
+                            delete()
                         }
                     }
                 }
@@ -40,12 +40,12 @@ extension AppView {
                     InstallingAppButton(progress: progress)
                         .font(.haxrCorpNeue(size: 36))
                 case .updating(let progress):
-                    InstallingAppButton(progress: progress)
+                    UpdatingAppButton(progress: progress)
                         .font(.haxrCorpNeue(size: 36))
                 case .notInstalled:
                     InstallAppButton {
                         if model.deviceInfo != nil {
-                            model.install(application.id)
+                            install()
                         } else {
                             isNotConnectedAlertPresented = true
                         }
@@ -57,7 +57,7 @@ extension AppView {
                 case .outdated:
                     UpdateAppButton {
                         if model.deviceInfo != nil {
-                            model.update(application.id)
+                            update()
                         } else {
                             isNotConnectedAlertPresented = true
                         }
@@ -73,6 +73,24 @@ extension AppView {
             .customAlert(isPresented: $isNotConnectedAlertPresented) {
                 RunsOnLatestFirmwareAlert(
                     isPresented: $isNotConnectedAlertPresented)
+            }
+        }
+
+        func install() {
+            Task {
+                await model.install(application.id)
+            }
+        }
+
+        func update() {
+            Task {
+                await model.update(application.id)
+            }
+        }
+
+        func delete() {
+            Task {
+                await model.delete(application.id)
             }
         }
     }

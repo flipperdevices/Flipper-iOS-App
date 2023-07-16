@@ -36,7 +36,7 @@ struct AppRow: View {
                             isPresented: $showConfirmDelete,
                             application: application
                         ) {
-                            model.delete(application.id)
+                            delete()
                         }
                     }
                 }
@@ -61,6 +61,12 @@ struct AppRow: View {
         }
     }
 
+    func delete() {
+        Task {
+            await model.delete(application.id)
+        }
+    }
+
     struct AppRowActionButton: View {
         @EnvironmentObject var model: Applications
         let application: Applications.ApplicationInfo
@@ -80,7 +86,7 @@ struct AppRow: View {
                 case .notInstalled:
                     InstallAppButton {
                         if model.deviceInfo != nil {
-                            model.install(application.id)
+                            install()
                         } else {
                             isNotConnectedAlertPresented = true
                         }
@@ -90,7 +96,7 @@ struct AppRow: View {
                 case .outdated:
                     UpdateAppButton {
                         if model.deviceInfo != nil {
-                            model.update(application.id)
+                            update()
                         } else {
                             isNotConnectedAlertPresented = true
                         }
@@ -106,6 +112,18 @@ struct AppRow: View {
             .customAlert(isPresented: $isNotConnectedAlertPresented) {
                 FlipperIsNotConnectedAlert(
                     isPresented: $isNotConnectedAlertPresented)
+            }
+        }
+
+        func install() {
+            Task {
+                await model.install(application.id)
+            }
+        }
+
+        func update() {
+            Task {
+                await model.update(application.id)
             }
         }
     }

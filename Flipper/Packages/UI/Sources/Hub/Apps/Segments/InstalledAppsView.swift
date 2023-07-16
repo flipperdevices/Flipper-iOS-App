@@ -7,7 +7,7 @@ struct InstalledAppsView: View {
     @State var isBusy = false
     @State var applications: [Applications.ApplicationInfo] = []
 
-    var outdatedApplications: [Applications.ApplicationInfo] {
+    var outdated: [Applications.ApplicationInfo] {
         applications.filter { model.statuses[$0.id] == .outdated }
     }
 
@@ -34,9 +34,7 @@ struct InstalledAppsView: View {
                         VStack(spacing: 18) {
                             if model.outdatedCount > 0 {
                                 UpdateAllAppButton {
-                                    for application in outdatedApplications {
-                                        model.update(application.id)
-                                    }
+                                    updateAll()
                                 }
                                 .padding(.horizontal, 14)
                             }
@@ -53,10 +51,10 @@ struct InstalledAppsView: View {
                 .opacity(noApps ? 0 : 1)
             }
         }
-        .onReceive(model.$manifests) { manifest in
+        .onReceive(model.$manifests) { _ in
             reload()
         }
-        .onReceive(model.$deviceInfo) { deviceInfo in
+        .onReceive(model.$deviceInfo) { _ in
             reload()
         }
         .task {
@@ -64,11 +62,13 @@ struct InstalledAppsView: View {
         }
     }
 
-    func load() async {
-        guard model.deviceInfo != nil else {
-            applications = []
-            return
+    func updateAll() {
+        Task {
+            await model.update(outdated.map { $0.id })
         }
+    }
+
+    func load() async {
         do {
             isBusy = true
             applications = try await model.loadInstalled()
