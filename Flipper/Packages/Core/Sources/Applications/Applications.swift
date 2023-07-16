@@ -302,7 +302,6 @@ public class Applications: ObservableObject {
         case installed
         case outdated
         case building
-        case unknown
     }
 
     public func status(
@@ -331,7 +330,7 @@ public class Applications: ObservableObject {
         buildStatus: Application.Status
     ) -> ApplicationStatus {
         guard statuses[applicationID] == nil else {
-            return statuses[applicationID] ?? .unknown
+            return statuses[applicationID]!
         }
         guard let manifest = manifests[applicationID] else {
             return .notInstalled

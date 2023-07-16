@@ -68,6 +68,8 @@ struct AppView: View {
         @EnvironmentObject var model: Applications
         let application: Applications.Application
 
+        @State var status: Applications.ApplicationStatus = .notInstalled
+
         var isBuildReady: Bool {
             application.current.status == .ready
         }
@@ -101,7 +103,7 @@ struct AppView: View {
 
                     Buttons(
                         application: application,
-                        status: model.status(for: application)
+                        status: status
                     )
                     .disabled(!isBuildReady)
 
@@ -138,6 +140,11 @@ struct AppView: View {
                         .foregroundColor(.sRed)
                         .padding(.horizontal, 14)
                     }
+                }
+            }
+            .onReceive(model.$statuses) { statuses in
+                if let status = statuses[application.id] {
+                    self.status = status
                 }
             }
         }

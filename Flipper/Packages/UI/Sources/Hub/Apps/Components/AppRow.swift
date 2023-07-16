@@ -6,6 +6,7 @@ struct AppRow: View {
     let application: Applications.ApplicationInfo
     let isInstalled: Bool
 
+    @State private var status: Applications.ApplicationStatus = .notInstalled
     @State private var showConfirmDelete = false
 
     var isBuildReady: Bool {
@@ -21,7 +22,7 @@ struct AppRow: View {
 
                 AppRowActionButton(
                     application: application,
-                    status: model.status(for: application)
+                    status: status
                 )
                 .disabled(!isBuildReady)
 
@@ -51,6 +52,11 @@ struct AppRow: View {
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 14)
                     .lineLimit(2)
+            }
+        }
+        .onReceive(model.$statuses) { statuses in
+            if let status = statuses[application.id] {
+                self.status = status
             }
         }
     }
@@ -93,9 +99,6 @@ struct AppRow: View {
                     UpdateAppButton {
                     }
                     .disabled(true)
-                case .unknown:
-                    AnimatedPlaceholder()
-                        .frame(width: 92)
                 }
             }
             .frame(width: 92, height: 34)
