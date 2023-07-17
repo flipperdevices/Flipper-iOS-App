@@ -8,8 +8,6 @@ struct HubView: View {
 
     @EnvironmentObject var applications: Applications
 
-    @AppStorage(.isAppsEnabled) var isAppsEnabled = false
-
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
     @State private var applicationAlias: String?
     @State private var showApplication = false
@@ -22,14 +20,12 @@ struct HubView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 14) {
-                    if isAppsEnabled {
-                        NavigationLink {
-                            AppsView(_isAppsSearchFieldFocused)
-                                .environmentObject(applications)
-                        } label: {
-                            AppsRowCard()
-                                .environmentObject(applications)
-                        }
+                    NavigationLink {
+                        AppsView(_isAppsSearchFieldFocused)
+                            .environmentObject(applications)
+                    } label: {
+                        AppsRowCard()
+                            .environmentObject(applications)
                     }
 
                     HStack(spacing: 14) {
