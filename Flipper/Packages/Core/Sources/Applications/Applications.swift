@@ -286,9 +286,9 @@ public class Applications: ObservableObject {
             ApplicationInfo($0.value)
         }
         guard let deviceInfo else {
+            installed.forEach { statuses[$0.id] = .installed }
             return installed
         }
-
         do {
             let available = try await catalog
                 .applications()
