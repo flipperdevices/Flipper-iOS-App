@@ -10,6 +10,7 @@ struct AppsCategoryView: View {
     @State var isLoading = false
     @State var applications: [Applications.ApplicationInfo] = []
     @State private var sortOrder: Applications.SortOption = .default
+    @State private var error: Applications.Error?
 
     var isEmpty: Bool {
         !isLoading && applications.isEmpty
@@ -21,25 +22,31 @@ struct AppsCategoryView: View {
                 .padding(.horizontal, 24)
                 .opacity(isEmpty ? 1 : 0)
 
-            RefreshableScrollView(isEnabled: true) {
-                reload()
-            } content: {
-                VStack(spacing: 18) {
-                    HStack {
-                        Spacer()
-                        SortMenu(selected: $sortOrder)
-                    }
+            if let error, error == .unknownSDK {
+                AppsNotCompatibleFirmware()
                     .padding(.horizontal, 14)
-
-                    if isLoading {
-                        AppRowPreview()
-                    } else {
-                        AppList(applications: applications)
+                    .padding(.top, 32)
+            } else {
+                RefreshableScrollView(isEnabled: true) {
+                    reload()
+                } content: {
+                    VStack(spacing: 18) {
+                        HStack {
+                            Spacer()
+                            SortMenu(selected: $sortOrder)
+                        }
+                        .padding(.horizontal, 14)
+                        
+                        if isLoading {
+                            AppRowPreview()
+                        } else {
+                            AppList(applications: applications)
+                        }
                     }
+                    .padding(.vertical, 18)
                 }
-                .padding(.vertical, 18)
+                .opacity(!isEmpty ? 1 : 0)
             }
-            .opacity(!isEmpty ? 1 : 0)
         }
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
@@ -71,6 +78,8 @@ struct AppsCategoryView: View {
                 for: category,
                 sort: sortOrder)
             isLoading = false
+        } catch let error as Applications.Error {
+            self.error = error
         } catch {
             applications = []
         }

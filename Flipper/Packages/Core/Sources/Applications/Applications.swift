@@ -33,6 +33,7 @@ public class Applications: ObservableObject {
 
     public enum Error: Swift.Error {
         case noInternet
+        case unknownSDK
     }
 
     private var rpc: RPC { pairedDevice.session }
@@ -201,6 +202,9 @@ public class Applications: ObservableObject {
     ) async rethrows -> T {
         do {
             return try await body()
+        } catch let error as Catalog.CatalogError where error.isUnknownSDK {
+            logger.error("unknown sdk")
+            throw Error.unknownSDK
         } catch {
             logger.error("web: \(error)")
             throw error
