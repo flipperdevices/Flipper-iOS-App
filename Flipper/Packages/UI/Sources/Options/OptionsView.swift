@@ -72,7 +72,7 @@ struct OptionsView: View {
                 HStack {
                     Image("OptionsForum")
                         .renderingMode(.template)
-                    Link(destination: .github) {
+                    Link(destination: .forum) {
                         Text("Forum")
                             .underline()
                     }
