@@ -26,12 +26,26 @@ struct AppsCategories: View {
                 }
             }
         }
+        .onReceive(model.$deviceInfo) { _ in
+            reload()
+        }
         .task {
-            do {
-                categories = try await model.loadCategories()
-            } catch {
-                categories = []
-            }
+            await load()
+        }
+    }
+
+    func load() async {
+        do {
+            categories = try await model.loadCategories()
+        } catch {
+            categories = []
+        }
+    }
+
+    func reload() {
+        categories = []
+        Task {
+            await load()
         }
     }
 

@@ -225,7 +225,11 @@ public class Applications: ObservableObject {
         } else {
             let task = Task<[Category], Swift.Error> {
                 categories = try await handlingWebErrors {
-                    try await catalog.categories().get()
+                    try await catalog
+                        .categories()
+                        .target(deviceInfo?.target)
+                        .api(deviceInfo?.api)
+                        .get()
                 }
                 categoriesTask = nil
                 return categories

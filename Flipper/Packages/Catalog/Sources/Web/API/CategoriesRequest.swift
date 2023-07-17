@@ -16,11 +16,19 @@ public struct CategoriesRequest: CatalogRequest {
         setQueryItem(name: "limit", value: count)
     }
 
-    public func target(_ target: String) -> Self {
-        setQueryItem(name: "target", value: target)
+    public func target(_ target: String?) -> Self {
+        if let target {
+            return setQueryItem(name: "target", value: target)
+        } else {
+            return self
+        }
     }
 
-    public func api(_ api: String) -> Self {
-        setQueryItem(name: "api", value: api)
+    public func api(_ api: String?) -> Self {
+        if let api {
+            return setQueryItem(name: "api", value: api)
+        } else {
+            return self
+        }
     }
 }
