@@ -5,13 +5,14 @@ struct AppSearchView: View {
     @EnvironmentObject var model: Applications
     @Environment(\.dismiss) var dismiss
 
-    @State var predicate = ""
+    @State private var predicate = ""
     var predicateIsValid: Bool {
         predicate.count >= 2
     }
 
-    @State var inProgress: Bool = false
-    @State var applications: [Applications.ApplicationInfo] = []
+    @State private var inProgress: Bool = false
+    @State private var applications: [Applications.ApplicationInfo] = []
+    @State private var apiError: Applications.APIError?
 
     let debouncer = Debouncer(seconds: 1)
 
@@ -19,7 +20,13 @@ struct AppSearchView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if !predicateIsValid {
+            if model.isOutdatedDevice {
+                AppsNotCompatibleFirmware()
+                    .padding(.horizontal, 14)
+            } else if apiError != nil {
+                AppsAPIError(error: $apiError, action: reload)
+                    .padding(.horizontal, 14)
+            } else if !predicateIsValid {
                 Placeholder()
             } else if inProgress {
                 Spinner()
@@ -54,23 +61,33 @@ struct AppSearchView: View {
             }
         }
         .onChange(of: predicate) { newValue in
-            Task {
-                guard newValue.count >= 2 else {
-                    await debouncer.cancel()
+            search(for: newValue)
+        }
+    }
+
+    func search(for string: String) {
+        Task {
+            guard string.count >= 2 else {
+                await debouncer.cancel()
+                applications = []
+                return
+            }
+            inProgress = true
+            await debouncer.submit {
+                defer { inProgress = false }
+                do {
+                    applications = try await model.search(for: string)
+                } catch let error as Applications.APIError {
+                    apiError = error
+                } catch {
                     applications = []
-                    return
-                }
-                inProgress = true
-                await debouncer.submit {
-                    defer { inProgress = false }
-                    do {
-                        applications = try await model.search(for: newValue)
-                    } catch {
-                        applications = []
-                    }
                 }
             }
         }
+    }
+
+    func reload() {
+        search(for: predicate)
     }
 
     struct Placeholder: View {

@@ -4,8 +4,8 @@ import SwiftUI
 struct InstalledAppsView: View {
     @EnvironmentObject var model: Applications
 
-    @State var isBusy = false
-    @State var applications: [Applications.ApplicationInfo] = []
+    @State private var isBusy = false
+    @State private var applications: [Applications.ApplicationInfo] = []
 
     var outdated: [Applications.ApplicationInfo] {
         applications.filter { model.statuses[$0.id] == .outdated }
@@ -16,39 +16,46 @@ struct InstalledAppsView: View {
     }
 
     var body: some View {
-        ZStack {
-            Group {
-                if model.deviceInfo == nil {
-                    NotConnected()
-                } else {
-                    NoApps()
-                }
-            }
-            .opacity(noApps ? 1 : 0)
-
-            RefreshableScrollView(isEnabled: true) {
-                reload()
-            } content: {
-                Group {
-                    if !applications.isEmpty {
-                        VStack(spacing: 18) {
-                            if model.outdatedCount > 0 {
-                                UpdateAllAppButton {
-                                    updateAll()
-                                }
-                                .padding(.horizontal, 14)
-                            }
-
-                            AppList(
-                                applications: applications,
-                                isInstalled: true)
+        Group {
+            if model.isOutdatedDevice {
+                AppsNotCompatibleFirmware()
+                    .padding(.horizontal, 14)
+            } else {
+                ZStack {
+                    Group {
+                        if model.deviceInfo == nil {
+                            NotConnected()
+                        } else {
+                            NoApps()
                         }
-                        .padding(.vertical, 14)
-                    } else {
-                        InstalledAppsPreview()
+                    }
+                    .opacity(noApps ? 1 : 0)
+                    
+                    RefreshableScrollView(isEnabled: true) {
+                        reload()
+                    } content: {
+                        Group {
+                            if !applications.isEmpty {
+                                VStack(spacing: 18) {
+                                    if model.outdatedCount > 0 {
+                                        UpdateAllAppButton {
+                                            updateAll()
+                                        }
+                                        .padding(.horizontal, 14)
+                                    }
+                                    
+                                    AppList(
+                                        applications: applications,
+                                        isInstalled: true)
+                                }
+                                .padding(.vertical, 14)
+                            } else {
+                                InstalledAppsPreview()
+                            }
+                        }
+                        .opacity(noApps ? 0 : 1)
                     }
                 }
-                .opacity(noApps ? 0 : 1)
             }
         }
         .onReceive(model.$manifests) { _ in

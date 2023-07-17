@@ -8,7 +8,7 @@ struct AllAppsView: View {
     @State private var categories: [Applications.Category] = []
     @State private var applications: [Applications.ApplicationInfo] = []
     @State private var sortOrder: Applications.SortOption = .default
-    @State private var error: Applications.Error?
+    @State private var apiError: Applications.APIError?
 
     var body: some View {
         RefreshableScrollView(isEnabled: true) {
@@ -18,10 +18,13 @@ struct AllAppsView: View {
                 AppsCategories(categories: categories)
                     .padding(.horizontal, 14)
 
-                if let error, error == .unknownSDK {
+                if model.isOutdatedDevice {
                     AppsNotCompatibleFirmware()
                         .padding(.horizontal, 14)
                         .padding(.top, 32)
+                } else if apiError != nil {
+                    AppsAPIError(error: $apiError, action: reload)
+                        .padding(.horizontal, 14)
                 } else {
                     HStack {
                         Text("All Apps")
@@ -37,11 +40,11 @@ struct AllAppsView: View {
 
                     AppList(applications: applications)
                         .padding(.top, 18)
-                }
 
-                if isBusy {
-                    AppRowPreview()
-                        .padding(.top, 12)
+                    if isBusy {
+                        AppRowPreview()
+                            .padding(.top, 12)
+                    }
                 }
             }
             .padding(.vertical, 14)
@@ -70,15 +73,14 @@ struct AllAppsView: View {
             isBusy = true
             defer { isBusy = false }
             applications = try await model.loadApplications(sort: sortOrder)
-        } catch let error as Applications.Error {
-            self.error = error
+        } catch let error as Applications.APIError {
+            apiError = error
         } catch {
             applications = []
         }
     }
 
     func reload() {
-        error = nil
         reloadCategories()
         reloadApplications()
     }

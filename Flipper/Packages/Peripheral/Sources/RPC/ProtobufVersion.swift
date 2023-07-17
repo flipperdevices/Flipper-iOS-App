@@ -61,6 +61,12 @@ public struct ProtobufVersion {
     // Desktop service api
     public static var v0_16: ProtobufVersion = .init(major: 0, minor: 16)
 
+    // Desktop service subscription API
+    public static var v0_17: ProtobufVersion = .init(major: 0, minor: 17)
+
+    // Loader is now able to load apps from SD card
+    public static var v0_18: ProtobufVersion = .init(major: 0, minor: 18)
+
     // Future release
     public static var v1_0: ProtobufVersion = .init(major: 1, minor: 0)
 }

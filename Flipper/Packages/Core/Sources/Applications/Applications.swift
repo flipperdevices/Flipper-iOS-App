@@ -31,8 +31,11 @@ public class Applications: ObservableObject {
         public static var `default`: SortOption { .newUpdates }
     }
 
-    public enum Error: Swift.Error {
+    public enum APIError: Swift.Error {
         case noInternet
+    }
+
+    public enum Error: Swift.Error {
         case unknownSDK
     }
 
@@ -69,14 +72,20 @@ public class Applications: ObservableObject {
     }
 
     @Published public var deviceInfo: DeviceInfo?
+    @Published public var isOutdatedDevice: Bool = false
 
     func onFlipperChanged(_ oldValue: Flipper?) {
         if oldValue?.state != .connected, flipper?.state == .connected {
+            guard flipper?.hasAPIVersion == true else {
+                isOutdatedDevice = true
+                return
+            }
             Task {
                 manifests = try await _loadManifests()
                 deviceInfo = try await getDeviceInfo()
             }
         } else if oldValue?.state == .connected, flipper?.state != .connected {
+            isOutdatedDevice = false
             deviceInfo = nil
             manifests = [:]
             statuses = [:]
@@ -205,6 +214,9 @@ public class Applications: ObservableObject {
         } catch let error as Catalog.CatalogError where error.isUnknownSDK {
             logger.error("unknown sdk")
             throw Error.unknownSDK
+        } catch let error as URLError {
+            logger.error("web: \(error)")
+            throw APIError.noInternet
         } catch {
             logger.error("web: \(error)")
             throw error
@@ -215,7 +227,7 @@ public class Applications: ObservableObject {
         try await handlingWebErrors {
             _ = try await loadCategories()
             guard let app = try await catalog.featured().get().first else {
-                throw Error.noInternet
+                throw APIError.noInternet
             }
             return app
         }
@@ -303,7 +315,6 @@ public class Applications: ObservableObject {
         } catch {
             logger.error("load installed: \(error)")
         }
-
         return installed
     }
 
@@ -502,5 +513,17 @@ extension Applications {
         let data = try await rpc.readFile(at: "\(manifestsPath)/\(name)")
         let manifest = try FFFDecoder.decode(Manifest.self, from: data)
         return manifest
+    }
+}
+
+extension Flipper {
+    var hasAPIVersion: Bool {
+        guard
+            let protobuf = information?.protobufRevision,
+            protobuf >= .v0_17
+        else {
+            return false
+        }
+        return true
     }
 }
