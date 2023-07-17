@@ -116,7 +116,7 @@ struct InstalledAppsView: View {
                     Text("Flipper is Not Connected")
                         .font(.system(size: 14, weight: .bold))
 
-                    Text("Connect your Flipper Zero to install this app")
+                    Text("Connect your Flipper to see the installed apps")
                         .font(.system(size: 14, weight: .medium))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.black40)
