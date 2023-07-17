@@ -31,7 +31,7 @@ struct SortMenu: View {
             }
             .padding(.vertical, 6)
             .padding(.horizontal, 12)
-            .frame(width: 120, height: 26)
+            .frame(width: 124, height: 26)
             .background(
                 RoundedRectangle(cornerRadius: 16)
                     .inset(by: 0.5)
