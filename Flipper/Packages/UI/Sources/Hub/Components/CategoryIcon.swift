@@ -38,15 +38,15 @@ struct CategoryIcon: View {
         @State var svgkImage: SVGKImage?
 
         var body: some View {
-            Group {
-                if let svgkImage = svgkImage {
-                    Image(uiImage: svgkImage.uiImage)
-                        .renderingMode(.template)
-                        .interpolation(.none)
-                        .resizable()
-                } else {
-                    AnimatedPlaceholder()
-                }
+            ZStack {
+                Image(uiImage: svgkImage?.uiImage ?? .init())
+                    .renderingMode(.template)
+                    .interpolation(.none)
+                    .resizable()
+                    .opacity(svgkImage == nil ? 0 : 1)
+
+                AnimatedPlaceholder()
+                    .opacity(svgkImage == nil ? 1 : 0)
             }
             .task {
                 do {
