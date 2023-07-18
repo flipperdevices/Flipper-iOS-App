@@ -55,9 +55,6 @@ struct AllAppsView: View {
         .onReceive(model.$deviceInfo) { _ in
             reload()
         }
-        .task {
-            reload()
-        }
     }
 
     func loadCategories() async {

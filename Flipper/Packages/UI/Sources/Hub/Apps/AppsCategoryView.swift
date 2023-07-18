@@ -66,8 +66,8 @@ struct AppsCategoryView: View {
         .onChange(of: sortOrder) { _ in
             reload()
         }
-        .task {
-            await load()
+        .onReceive(model.$deviceInfo) { _ in
+            reload()
         }
     }
 
