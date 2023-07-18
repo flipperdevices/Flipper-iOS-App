@@ -37,6 +37,8 @@ struct AppIcon: View {
                         .renderingMode(.template)
                         .interpolation(.none)
                         .resizable()
+                } else {
+                    AnimatedPlaceholder()
                 }
             }
         }
