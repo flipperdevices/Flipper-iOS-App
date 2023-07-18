@@ -26,19 +26,11 @@ public class Feedback {
         #endif
     }
 
-    private var isAppStoreBuild: Bool {
-        guard let receiptURL = Bundle.main.appStoreReceiptURL else {
-            return false
-        }
-        let receiptData = try? Data(contentsOf: receiptURL)
-        return receiptData != nil
-    }
-
     private var environment: String {
         #if DEBUG
         return "DEBUG"
         #else
-        return isAppStoreBuild ? "App Store" : "TestFlight"
+        return Bundle.isAppStoreBuild ? "App Store" : "TestFlight"
         #endif
     }
 

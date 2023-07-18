@@ -1,7 +1,10 @@
 import SwiftUI
 
-struct ImportedBanner: View {
-    let itemName: String
+struct Banner: View {
+    let image: String
+    let title: String
+    let description: String
+
     @Environment(\.colorScheme) var colorScheme
 
     var backgroundColor: Color {
@@ -12,12 +15,12 @@ struct ImportedBanner: View {
         VStack {
             Spacer()
             HStack(spacing: 12) {
-                Image("Done")
+                Image(image)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(itemName)
+                    Text(title)
                         .lineLimit(1)
                         .font(.system(size: 12, weight: .bold))
-                    Text("saved to Archive")
+                    Text(description)
                         .font(.system(size: 12, weight: .medium))
                 }
                 Spacer()

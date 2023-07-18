@@ -269,13 +269,17 @@ private extension ArchiveItem {
         }
     }
 
+    private var validSectorCount: [Int] { [5, 16, 64] }
+    private var validBlockCount: [Int] { validSectorCount.map { $0 * 4 } }
+    private var validBytesCount: [Int] { validBlockCount.map { $0 * 16 } }
+
     var nfcBlocks: [UInt8?] {
         get {
             let properties = shadowCopy.isEmpty
                 ? self.properties
                 : self.shadowCopy
             let blocks = properties.filter { $0.key.starts(with: "Block ") }
-            guard blocks.count == 64 || blocks.count == 256 else {
+            guard validBlockCount.contains(blocks.count) else {
                 return []
             }
             var result = [UInt8?]()
@@ -289,7 +293,7 @@ private extension ArchiveItem {
             return result
         }
         set {
-            guard newValue.count == 1024 || newValue.count == 4096 else {
+            guard validBytesCount.contains(newValue.count) else {
                 return
             }
             if shadowCopy.isEmpty {

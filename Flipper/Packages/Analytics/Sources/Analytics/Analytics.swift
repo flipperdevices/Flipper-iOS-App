@@ -16,14 +16,18 @@ public class Analytics: EventHandler {
         internalFreeByte: Int,
         internalTotalByte: Int,
         externalFreeByte: Int,
-        externalTotalByte: Int
+        externalTotalByte: Int,
+        firmwareForkName: String,
+        firmwareGitURL: String
     ) {
         AnalyticsSystem.handler?.flipperRPCInfo(
             sdcardIsAvailable: sdcardIsAvailable,
             internalFreeByte: internalFreeByte,
             internalTotalByte: internalTotalByte,
             externalFreeByte: externalFreeByte,
-            externalTotalByte: externalTotalByte)
+            externalTotalByte: externalTotalByte,
+            firmwareForkName: firmwareForkName,
+            firmwareGitURL: firmwareGitURL)
     }
 
     public func flipperUpdateStart(

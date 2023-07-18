@@ -1,0 +1,12 @@
+<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Info_icon" clip-path="url(#clip0_1775_79869)">
+<circle id="Ellipse 28" cx="6.03353" cy="3.33333" r="0.666667" transform="rotate(-180 6.03353 3.33333)" fill="#919191"/>
+<rect id="Rectangle 213" x="6.5" y="9.5" width="1" height="4.66667" rx="0.5" transform="rotate(-180 6.5 9.5)" fill="#919191"/>
+<circle id="Ellipse 72" cx="6" cy="6" r="5.5" stroke="#919191"/>
+</g>
+<defs>
+<clipPath id="clip0_1775_79869">
+<rect width="12" height="12" fill="white"/>
+</clipPath>
+</defs>
+</svg>

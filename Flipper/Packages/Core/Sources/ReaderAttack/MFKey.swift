@@ -2,7 +2,7 @@ public struct MFKey64: Hashable, Sendable {
     public let value: UInt64
 
     public var hexValue: String {
-        String(value, radix: 16)
+        .init(paddingHexadecimal: value)
     }
 
     public init(value: UInt64) {
@@ -21,7 +21,7 @@ public struct MFKey32: Hashable, Sendable {
     public let value: UInt32
 
     public var hexValue: String {
-        String(value, radix: 16)
+        .init(paddingHexadecimal: value)
     }
 
     public init(value: UInt32) {
@@ -33,5 +33,14 @@ public struct MFKey32: Hashable, Sendable {
             return nil
         }
         self.value = value
+    }
+}
+
+extension String {
+    init<T: BinaryInteger>(paddingHexadecimal value: T) {
+        let string = String(value, radix: 16)
+        self = string.count.isMultiple(of: 2)
+            ? string
+            : "0\(string)"
     }
 }

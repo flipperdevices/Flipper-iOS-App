@@ -17,6 +17,7 @@ public struct RootView: View {
             .environmentObject(dependencies.updateModel)
             .environmentObject(dependencies.sharing)
             .environmentObject(dependencies.emulate)
+            .environmentObject(dependencies.applications)
     }
 }
 
@@ -31,6 +32,7 @@ private struct RootViewImpl: View {
     @Environment(\.isPresented) var isPresented
 
     @State private var isPairingIssue = false
+    @State private var isUpdateAvailable = false
 
     @State private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
 
@@ -65,6 +67,9 @@ private struct RootViewImpl: View {
         .customAlert(isPresented: $isPairingIssue) {
             PairingIssueAlert(isPresented: $isPairingIssue)
         }
+        .customAlert(isPresented: $isUpdateAvailable) {
+            MobileUpdateAlert(isPresented: $isUpdateAvailable)
+        }
         .environmentObject(alertController)
         .environmentObject(hexKeyboardController)
         .onContinueUserActivity("PlayAlertIntent") { _ in
@@ -87,6 +92,7 @@ private struct RootViewImpl: View {
         }
         .task {
             router.recordAppOpen()
+            isUpdateAvailable = await AppVersionCheck.hasUpdate
         }
     }
 

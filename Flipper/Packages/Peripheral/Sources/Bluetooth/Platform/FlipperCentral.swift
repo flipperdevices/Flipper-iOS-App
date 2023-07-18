@@ -15,6 +15,9 @@ class FlipperCentral: NSObject, BluetoothCentral {
         [.flipperZerof6, .flipperZeroBlack, .flipperZeroWhite]
     }
 
+    // cache to preserve flipper color
+    private var services: [UUID: CBUUID] = [:]
+
     override init() {
         super.init()
     }
@@ -63,7 +66,9 @@ class FlipperCentral: NSObject, BluetoothCentral {
         guard let peripheral = manager.retrievePeripheral(id) else {
             return
         }
-        let device = FlipperPeripheral(peripheral: peripheral)
+        let device = FlipperPeripheral(
+            peripheral: peripheral,
+            service: services[id])
         device.onConnecting()
         _connected[id] = device
         manager.connect(peripheral)
@@ -123,6 +128,7 @@ extension FlipperCentral: CBCentralManagerDelegate {
     ) {
         let service = (advertisementData[serviceKey] as? [CBUUID])?.first
         if _discovered[peripheral.identifier] == nil {
+            services[peripheral.identifier] = service
             _discovered[peripheral.identifier] = FlipperPeripheral(
                 peripheral: peripheral,
                 service: service)

@@ -23,7 +23,9 @@ struct ArchiveSearchView: View {
             HStack(spacing: 14) {
                 SearchField(
                     placeholder: "Search by name and note",
-                    predicate: $predicate)
+                    predicate: $predicate
+                )
+                .frame(height: 36)
 
                 Button {
                     dismiss()

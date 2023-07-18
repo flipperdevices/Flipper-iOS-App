@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ProgressBarView: View {
     let color: Color
-    let image: String
+    let image: String?
     let progress: Double
     let text: String?
 
@@ -15,10 +15,10 @@ struct ProgressBarView: View {
         return text ?? "\(Int(progress * 100)) %"
     }
 
-    init(color: Color, image: String, progress: Double, text: String? = nil) {
+    init(color: Color, progress: Double, image: String?, text: String? = nil) {
         self.color = color
-        self.image = image
         self.progress = progress
+        self.image = image
         self.text = text
     }
 
@@ -32,8 +32,10 @@ struct ProgressBarView: View {
             }
 
             HStack {
-                Image(image)
-                    .padding([.leading, .top, .bottom], 9)
+                if let image = image {
+                    Image(image)
+                        .padding([.leading, .top, .bottom], 9)
+                }
 
                 Spacer()
 
@@ -44,9 +46,11 @@ struct ProgressBarView: View {
 
                 Spacer()
 
-                Image(image)
-                    .padding([.leading, .top, .bottom], 9)
-                    .opacity(0)
+                if let image = image {
+                    Image(image)
+                        .padding([.leading, .top, .bottom], 9)
+                        .opacity(0)
+                }
             }
         }
         .frame(height: 46)

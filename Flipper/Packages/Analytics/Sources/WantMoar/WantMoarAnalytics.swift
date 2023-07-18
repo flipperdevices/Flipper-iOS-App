@@ -24,7 +24,9 @@ extension WantMoarEventHandler: EventHandler {
         internalFreeByte: Int,
         internalTotalByte: Int,
         externalFreeByte: Int,
-        externalTotalByte: Int
+        externalTotalByte: Int,
+        firmwareForkName: String,
+        firmwareGitURL: String
     ) {
         handlers.forEach {
             $0.flipperRPCInfo(
@@ -32,7 +34,10 @@ extension WantMoarEventHandler: EventHandler {
                 internalFreeByte: internalFreeByte,
                 internalTotalByte: internalTotalByte,
                 externalFreeByte: externalFreeByte,
-                externalTotalByte: externalTotalByte)
+                externalTotalByte: externalTotalByte,
+                firmwareForkName: firmwareForkName,
+                firmwareGitURL: firmwareGitURL
+            )
         }
     }
 

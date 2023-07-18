@@ -106,6 +106,7 @@ public class Device: ObservableObject {
                 status = .connected
                 logger.info("connected")
                 try await updateStorageInfo()
+                reportRPCInfo()
             } catch {
                 logger.error("did connect: \(error)")
             }
@@ -186,7 +187,6 @@ public class Device: ObservableObject {
         var storageInfo = Flipper.StorageInfo()
         defer {
             pairedDevice.updateStorageInfo(storageInfo)
-            reportRPCInfo()
         }
         do {
             storageInfo.internal = try await rpc.getStorageInfo(at: "/int")
@@ -398,16 +398,39 @@ extension Device {
     }
 
     func reportRPCInfo() {
-        guard let storage = flipper?.storage else { return }
-        analytics.flipperRPCInfo(
-            sdcardIsAvailable: storage.external != nil,
-            internalFreeByte: storage.internal?.free ?? 0,
-            internalTotalByte: storage.internal?.total ?? 0,
-            externalFreeByte: storage.external?.free ?? 0,
-            externalTotalByte: storage.external?.total ?? 0)
+        Task {
+            guard let storage = flipper?.storage else { return }
+            let firmwareForkName = try? await getFirmwareFork()
+            let firmwareGitURL = try? await getFirmwareGit()
+            analytics.flipperRPCInfo(
+                sdcardIsAvailable: storage.external != nil,
+                internalFreeByte: storage.internal?.free ?? 0,
+                internalTotalByte: storage.internal?.total ?? 0,
+                externalFreeByte: storage.external?.free ?? 0,
+                externalTotalByte: storage.external?.total ?? 0,
+                firmwareForkName: firmwareForkName ?? "",
+                firmwareGitURL: firmwareGitURL ?? ""
+            )
+        }
     }
 
     func recordRemoteControl() {
         analytics.appOpen(target: .remoteControl)
+    }
+}
+
+fileprivate extension Device {
+    private func getFirmwareFork() async throws -> String {
+        for try await property in rpc.property("devinfo.firmware.origin.fork") {
+            return property.value
+        }
+        return ""
+    }
+
+    private func getFirmwareGit() async throws -> String {
+        for try await property in rpc.property("devinfo.firmware.origin.git") {
+            return property.value
+        }
+        return ""
     }
 }

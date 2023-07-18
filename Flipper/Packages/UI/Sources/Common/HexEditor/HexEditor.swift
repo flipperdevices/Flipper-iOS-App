@@ -9,9 +9,12 @@ struct HexEditor: View {
     @State private var selectedIndex: Int?
 
     var sectorsRange: Range<Int> {
-        bytes.count == 4096
-            ? 0..<40
-            : 0..<16
+        switch bytes.count {
+        case 320: return 0..<5
+        case 1024: return 0..<16
+        case 4096: return 0..<40
+        default: return 0..<1
+        }
     }
 
     func sector(for sectorNumber: Int) -> HexEditorSection.Sector {

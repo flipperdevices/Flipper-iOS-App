@@ -82,16 +82,3 @@ extension RPC {
         try await calculateFileHash(at: path)
     }
 }
-
-// MARK: Filter
-
-fileprivate extension Array where Element == Peripheral.Element {
-    var files: [String] {
-        self.compactMap {
-            guard case .file(let file) = $0 else {
-                return nil
-            }
-            return file.name
-        }
-    }
-}

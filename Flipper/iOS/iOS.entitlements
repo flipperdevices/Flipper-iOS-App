@@ -9,6 +9,8 @@
 		<string>applinks:flpr.app</string>
 		<string>applinks:link.flpr.app</string>
 		<string>applinks:dev.flpr.app</string>
+		<string>applinks:lab.flipp.dev</string>
+		<string>applinks:lab.flipper.net</string>
 	</array>
 	<key>com.apple.developer.siri</key>
 	<true/>
