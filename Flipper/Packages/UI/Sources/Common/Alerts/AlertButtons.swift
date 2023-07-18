@@ -47,6 +47,7 @@ struct AlertButtons: View {
                 Text(text)
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(actionColor)
+                    .frame(maxWidth: .infinity)
             }
 
             Divider()
@@ -58,6 +59,7 @@ struct AlertButtons: View {
                 Text(cancel)
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity)
             }
         }
     }
