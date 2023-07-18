@@ -1,7 +1,5 @@
 import Core
 import SwiftUI
-import Foundation
-import SVGKit
 
 struct CategoryName: View {
     let name: String?
@@ -24,5 +22,4 @@ struct CategoryName: View {
             .foregroundColor(color)
             .lineLimit(1)
     }
-
 }
