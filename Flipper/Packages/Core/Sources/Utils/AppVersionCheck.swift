@@ -32,7 +32,14 @@ public class AppVersionCheck {
                     logger.error("app version check: empty response")
                     return false
                 }
-                return result.version != currentVersion
+                guard
+                    let storeVersion = Version(result.version),
+                    let currentVersion = Version(currentVersion)
+                else {
+                    return false
+                }
+
+                return storeVersion > currentVersion
             } catch {
                 logger.error("app version check: \(error)")
                 return false
