@@ -9,15 +9,14 @@ struct UpdateProgressView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            VStack(spacing: 0) {
+            VStack(spacing: 8) {
                 Version(version)
                     .font(.system(size: 18, weight: .medium))
-                    .padding(.top, 14)
+
                 UpdateProgressBar(state: state)
-                    .padding(.top, 8)
                     .padding(.horizontal, 24)
+
                 UpdateProgressDescription(state: state)
-                    .padding(.top, 8)
             }
 
             Divider()

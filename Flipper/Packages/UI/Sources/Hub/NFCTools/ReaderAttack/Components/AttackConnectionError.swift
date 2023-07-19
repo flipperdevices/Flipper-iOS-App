@@ -2,7 +2,7 @@ import SwiftUI
 import Peripheral
 
 struct AttackConnectionError: View {
-    let fliperColor: FlipperColor
+    let flipperColor: FlipperColor
 
     var instructions: [AttributedString] = {
         [
@@ -27,15 +27,10 @@ struct AttackConnectionError: View {
                 .font(.system(size: 18, weight: .bold))
 
             VStack(spacing: 26) {
-                Image(
-                    fliperColor == .white
-                        ? "FlipperDeadWhite"
-                        : "FlipperDeadBlack"
-                )
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .padding(.leading, 10)
-                .padding(.trailing, 24)
+                FlipperDeadImage()
+                    .flipperColor(flipperColor)
+                    .padding(.leading, 10)
+                    .padding(.trailing, 22)
 
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(instructions.indices, id: \.self) { index in
