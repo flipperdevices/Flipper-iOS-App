@@ -31,15 +31,14 @@ struct AppIcon: View {
         let url: URL
 
         var body: some View {
-            AsyncImage(url: url) { phase in
-                if let image = phase.image {
-                    image
-                        .renderingMode(.template)
-                        .interpolation(.none)
-                        .resizable()
-                } else {
-                    AnimatedPlaceholder()
-                }
+            AsyncImage(url: url) { image in
+                image
+                    .interpolation(.none)
+                    .resizable()
+                    .scaledToFit()
+            } placeholder: {
+                AnimatedPlaceholder()
+                    .aspectRatio(1, contentMode: .fit)
             }
         }
     }
