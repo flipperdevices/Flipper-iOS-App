@@ -1,8 +1,16 @@
 import SwiftUI
 
 struct AnimatedPlaceholder: View {
-    @State private var startPoint: UnitPoint = .init(x: 0, y: 0)
-    @State private var endPoint: UnitPoint = .init(x: -10, y: 0)
+    @State private var isAnimating = false
+    @State private var points: Points = .init(
+        start: .init(x: 0, y: 0),
+        end: .init(x: -10, y: 0)
+    )
+
+    struct Points: Equatable {
+        var start: UnitPoint
+        var end: UnitPoint
+    }
 
     let color1: Color
     let color2: Color
@@ -22,15 +30,21 @@ struct AnimatedPlaceholder: View {
     var body: some View {
         LinearGradient(
             gradient: Gradient(colors: [color1, color2, color1]),
-            startPoint: startPoint,
-            endPoint: endPoint
+            startPoint: points.start,
+            endPoint: points.end
         )
         .cornerRadius(4)
+        .onAppear {
+            isAnimating = true
+        }
+        .onDisappear {
+            isAnimating = false
+        }
+        .animation(isAnimating ? animation : nil, value: points)
         .task {
-            withAnimation(animation) {
-                startPoint = .init(x: 10, y: 0)
-                endPoint = .init(x: 0, y: 0)
-            }
+            points = .init(
+                start: .init(x: 10, y: 0),
+                end: .init(x: 0, y: 0))
         }
     }
 }
