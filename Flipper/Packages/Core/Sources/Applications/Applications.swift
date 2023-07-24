@@ -374,8 +374,8 @@ extension Catalog.SortBy {
 extension Catalog.SortOrder {
     init(source: Applications.SortOption) {
         switch source {
-        case .newUpdates, .newReleases: self = .asc
-        case .oldUpdates, .oldReleases: self = .desc
+        case .newUpdates, .newReleases: self = .desc
+        case .oldUpdates, .oldReleases: self = .asc
         }
     }
 }
