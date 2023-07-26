@@ -333,9 +333,6 @@ public class Applications: ObservableObject {
     private func status(
         for application: ApplicationInfo
     ) -> ApplicationStatus {
-        guard statuses[application.id] == nil else {
-            return statuses[application.id]!
-        }
         guard let manifest = manifests[application.id] else {
             return .notInstalled
         }
@@ -344,8 +341,8 @@ public class Applications: ObservableObject {
             manifest.buildAPI == deviceInfo?.api
         else {
             return application.current.status == .ready
-            ? .outdated
-            : .building
+                ? .outdated
+                : .building
         }
         return .installed
     }
