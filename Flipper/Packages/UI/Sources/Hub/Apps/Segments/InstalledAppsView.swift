@@ -4,7 +4,7 @@ import SwiftUI
 struct InstalledAppsView: View {
     @EnvironmentObject var model: Applications
 
-    @State private var isBusy = false
+    @State private var isLoading = false
     @State private var applications: [Applications.ApplicationInfo] = []
 
     var outdated: [Applications.ApplicationInfo] {
@@ -12,7 +12,7 @@ struct InstalledAppsView: View {
     }
 
     var noApps: Bool {
-        (!isBusy && applications.isEmpty)
+        (!isLoading && applications.isEmpty)
     }
 
     var body: some View {
@@ -77,9 +77,12 @@ struct InstalledAppsView: View {
 
     func load() async {
         do {
-            isBusy = true
+            guard !isLoading else {
+                return
+            }
+            isLoading = true
+            defer { isLoading = false }
             applications = try await model.loadInstalled()
-            isBusy = false
         } catch {
             applications = []
         }

@@ -305,12 +305,20 @@ public class Applications: ObservableObject {
             return installed
         }
         do {
-            let available = try await catalog
-                .applications()
-                .uids(installed.map { $0.id })
-                .target(deviceInfo.target)
-                .api(deviceInfo.api)
-                .get()
+            var available: ApplicationsRequest.Result = []
+            while available.count < installed.count {
+                let slice = installed.dropFirst(available.count).prefix(42)
+
+                let loaded = try await catalog
+                    .applications()
+                    .uids(slice.map { $0.id })
+                    .target(deviceInfo.target)
+                    .api(deviceInfo.api)
+                    .take(slice.count)
+                    .get()
+
+                available.append(contentsOf: loaded)
+            }
 
             for application in available {
                 statuses[application.id] = status(for: application)
