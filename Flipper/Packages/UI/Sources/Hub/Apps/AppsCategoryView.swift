@@ -7,9 +7,11 @@ struct AppsCategoryView: View {
 
     let category: Applications.Category
 
-    @State var isLoading = false
-    @State var applications: [Applications.ApplicationInfo] = []
+    @State private var isLoading = false
+    @State private var isAllLoaded = false
+    @State private var applications: [Applications.ApplicationInfo] = []
     @State private var sortOrder: Applications.SortOption = .default
+    @State private var apiError: Applications.APIError?
 
     var isEmpty: Bool {
         !isLoading && applications.isEmpty
@@ -21,25 +23,35 @@ struct AppsCategoryView: View {
                 .padding(.horizontal, 24)
                 .opacity(isEmpty ? 1 : 0)
 
-            RefreshableScrollView(isEnabled: true) {
-                reload()
-            } content: {
-                VStack(spacing: 18) {
-                    HStack {
-                        Spacer()
-                        SortMenu(selected: $sortOrder)
-                    }
+            if model.isOutdatedDevice {
+                AppsNotCompatibleFirmware()
                     .padding(.horizontal, 14)
+            } else if apiError != nil {
+                AppsAPIError(error: $apiError, action: reload)
+                    .padding(.horizontal, 14)
+            } else {
+                RefreshableScrollView(isEnabled: true) {
+                    reload()
+                } onEnd: {
+                    await load()
+                } content: {
+                    VStack(spacing: 18) {
+                        HStack {
+                            Spacer()
+                            SortMenu(selected: $sortOrder)
+                        }
+                        .padding(.horizontal, 14)
 
-                    if isLoading {
-                        AppRowPreview()
-                    } else {
                         AppList(applications: applications)
+
+                        if isLoading, !isAllLoaded {
+                            AppRowPreview()
+                        }
                     }
+                    .padding(.vertical, 18)
                 }
-                .padding(.vertical, 18)
+                .opacity(!isEmpty ? 1 : 0)
             }
-            .opacity(!isEmpty ? 1 : 0)
         }
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
@@ -54,31 +66,44 @@ struct AppsCategoryView: View {
                     .padding(.leading, 8)
             }
         }
-        .task {
-            await load()
-        }
         .onChange(of: sortOrder) { _ in
-            Task {
-                await load()
-            }
+            reload()
+        }
+        .onReceive(model.$deviceInfo) { _ in
+            reload()
         }
     }
 
     func load() async {
         do {
+            guard !isLoading, !isAllLoaded else {
+                return
+            }
             isLoading = true
-            applications = try await model.loadApplications(
+            defer { isLoading = false }
+            let applications = try await model.loadApplications(
                 for: category,
-                sort: sortOrder)
-            isLoading = false
+                sort: sortOrder,
+                skip: applications.count
+            ).filter { application in
+                !self.applications.contains { $0.id == application.id }
+            }
+            guard !applications.isEmpty else {
+                isAllLoaded = true
+                return
+            }
+            self.applications.append(contentsOf: applications)
+        } catch let error as Applications.APIError {
+            apiError = error
         } catch {
             applications = []
         }
     }
 
     func reload() {
-        applications = []
         Task {
+            isAllLoaded = false
+            applications = []
             await load()
         }
     }

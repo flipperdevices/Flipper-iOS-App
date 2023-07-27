@@ -3,7 +3,7 @@ import SwiftUI
 
 struct AppsCategories: View {
     @EnvironmentObject var model: Applications
-    @State var categories: [Applications.Category] = []
+    let categories: [Applications.Category]
 
     var columns: [GridItem] {
         [.init(.flexible()), .init(.flexible()), .init(.flexible())]
@@ -24,13 +24,6 @@ struct AppsCategories: View {
                         AppsCategory(category: category)
                     }
                 }
-            }
-        }
-        .task { @MainActor in
-            do {
-                categories = try await model.loadCategories()
-            } catch {
-                categories = []
             }
         }
     }

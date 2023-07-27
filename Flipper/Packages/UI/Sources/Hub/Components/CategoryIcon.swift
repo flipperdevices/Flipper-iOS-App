@@ -35,23 +35,23 @@ struct CategoryIcon: View {
     struct RemoteImage: View {
         let url: URL
 
-        @State var svgData: Data?
+        @State var svgkImage: SVGKImage?
 
         var body: some View {
-            Group {
-                if let svgData = svgData {
-                    Image(uiImage: SVGKImage(data: svgData).uiImage)
-                        .renderingMode(.template)
-                        .interpolation(.none)
-                        .resizable()
-                } else {
-                    AnimatedPlaceholder()
-                }
+            ZStack {
+                Image(uiImage: svgkImage?.uiImage ?? .init())
+                    .renderingMode(.template)
+                    .interpolation(.none)
+                    .resizable()
+                    .opacity(svgkImage == nil ? 0 : 1)
+
+                AnimatedPlaceholder()
+                    .opacity(svgkImage == nil ? 1 : 0)
             }
             .task {
                 do {
                     let (data, _) = try await URLSession.shared.data(from: url)
-                    self.svgData = data
+                    self.svgkImage = SVGKImage(data: data)
                 } catch {
                     print(error)
                 }

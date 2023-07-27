@@ -3,7 +3,7 @@ import MarkdownUI
 import Peripheral
 
 struct ReaderDataNotFound: View {
-    let fliperColor: FlipperColor
+    let flipperColor: FlipperColor
 
     var instructions: [String] = [
         "On your Flipper Zero go to **NFC → Detect Reader**",
@@ -20,15 +20,10 @@ struct ReaderDataNotFound: View {
                 .font(.system(size: 18, weight: .bold))
 
             VStack(spacing: 34) {
-                Image(
-                    fliperColor == .white
-                        ? "FlipperDetectReaderWhite"
-                        : "FlipperDetectReaderBlack"
-                )
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .padding(.leading, 10)
-                .padding(.trailing, 24)
+                FlipperDetectReaderImage()
+                    .flipperColor(flipperColor)
+                    .padding(.leading, 10)
+                    .padding(.trailing, 22)
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text(

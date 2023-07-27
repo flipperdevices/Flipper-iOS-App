@@ -52,7 +52,7 @@ public struct Application: Decodable {
         // Full
         public let description: String
         public let changelog: String
-        public let build: Build
+        public let build: Build?
         public let links: Links
 
         public init(

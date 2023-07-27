@@ -34,26 +34,18 @@ struct DeviceUpdateView: View {
         }
     }
 
-    var image: String {
+    @ViewBuilder
+    var flipperImage: some View {
         switch state {
         case .error(let error):
             switch error {
             case .noInternet, .noDevice, .cantConnect:
-                switch device.flipper?.color {
-                case .black: return "FlipperDeadBlack"
-                default: return "FlipperDeadWhite"
-                }
+                FlipperDeadImage()
             case .noCard:
-                switch device.flipper?.color {
-                case .black: return "FlipperFlashIssueBlack"
-                default: return "FlipperFlashIssueWhite"
-                }
+                FlipperFlashingIssueImage()
             }
         default:
-            switch device.flipper?.color {
-            case .black: return "FlipperUpdatingBlack"
-            default: return "FlipperUpdatingWhite"
-            }
+            FlipperUpdatingImage()
         }
     }
 
@@ -66,21 +58,29 @@ struct DeviceUpdateView: View {
             Text(title)
                 .font(.system(size: 18, weight: .bold))
                 .padding(.top, 12)
-            Image(image)
-                .resizable()
-                .padding(.horizontal, 14)
-                .scaledToFit()
-                .padding(.top, 22)
+            flipperImage
+                .flipperColor(device.flipper?.color)
+                .padding(.leading, 22)
+                .padding(.trailing, 32)
+                .padding(.top, 19)
 
             switch state {
-            case .error(.cantConnect): NoInternetView { start() }
-            case .error(.noDevice): NoDeviceView()
-            case .error(.noCard): StorageErrorView()
+            case .error(.cantConnect):
+                NoInternetView { start() }
+                    .padding(.top, 38)
+            case .error(.noDevice):
+                NoDeviceView()
+                    .padding(.top, 38)
+            case .error(.noCard):
+                StorageErrorView()
+                    .padding(.top, 24)
             case .update(.progress(let state)):
                 UpdateProgressView(
                     state: state,
                     version: version,
-                    changelog: changelog)
+                    changelog: changelog
+                )
+                .padding(.top, 14)
             default:
                 EmptyView()
             }

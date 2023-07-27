@@ -6,6 +6,7 @@ struct AppRow: View {
     let application: Applications.ApplicationInfo
     let isInstalled: Bool
 
+    @State private var status: Applications.ApplicationStatus = .notInstalled
     @State private var showConfirmDelete = false
 
     var isBuildReady: Bool {
@@ -21,7 +22,7 @@ struct AppRow: View {
 
                 AppRowActionButton(
                     application: application,
-                    status: model.status(for: application)
+                    status: status
                 )
                 .disabled(!isBuildReady)
 
@@ -35,7 +36,7 @@ struct AppRow: View {
                             isPresented: $showConfirmDelete,
                             application: application
                         ) {
-                            model.delete(application.id)
+                            delete()
                         }
                     }
                 }
@@ -52,6 +53,15 @@ struct AppRow: View {
                     .padding(.horizontal, 14)
                     .lineLimit(2)
             }
+        }
+        .onReceive(model.$statuses) { statuses in
+            status = statuses[application.id] ?? .notInstalled
+        }
+    }
+
+    func delete() {
+        Task {
+            await model.delete(application.id)
         }
     }
 
@@ -74,7 +84,7 @@ struct AppRow: View {
                 case .notInstalled:
                     InstallAppButton {
                         if model.deviceInfo != nil {
-                            model.install(application.id)
+                            install()
                         } else {
                             isNotConnectedAlertPresented = true
                         }
@@ -84,7 +94,7 @@ struct AppRow: View {
                 case .outdated:
                     UpdateAppButton {
                         if model.deviceInfo != nil {
-                            model.update(application.id)
+                            update()
                         } else {
                             isNotConnectedAlertPresented = true
                         }
@@ -93,9 +103,6 @@ struct AppRow: View {
                     UpdateAppButton {
                     }
                     .disabled(true)
-                case .unknown:
-                    AnimatedPlaceholder()
-                        .frame(width: 92)
                 }
             }
             .frame(width: 92, height: 34)
@@ -103,6 +110,18 @@ struct AppRow: View {
             .customAlert(isPresented: $isNotConnectedAlertPresented) {
                 FlipperIsNotConnectedAlert(
                     isPresented: $isNotConnectedAlertPresented)
+            }
+        }
+
+        func install() {
+            Task {
+                await model.install(application.id)
+            }
+        }
+
+        func update() {
+            Task {
+                await model.update(application.id)
             }
         }
     }

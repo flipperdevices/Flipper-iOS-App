@@ -8,24 +8,24 @@ struct HubView: View {
 
     @EnvironmentObject var applications: Applications
 
-    @AppStorage(.isAppsEnabled) var isAppsEnabled = false
-
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
     @State private var applicationAlias: String?
     @State private var showApplication = false
+
+    // NOTE: Fixes SwiftUI focus issue in case of
+    // TextField placed in ToolbarItem inside NavigationView
+    @FocusState var isAppsSearchFieldFocused: Bool
 
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 14) {
-                    if isAppsEnabled {
-                        NavigationLink {
-                            AppsView()
-                                .environmentObject(applications)
-                        } label: {
-                            AppsRowCard()
-                                .environmentObject(applications)
-                        }
+                    NavigationLink {
+                        AppsView(_isAppsSearchFieldFocused)
+                            .environmentObject(applications)
+                    } label: {
+                        AppsRowCard()
+                            .environmentObject(applications)
                     }
 
                     HStack(spacing: 14) {

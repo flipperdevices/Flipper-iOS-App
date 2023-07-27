@@ -105,8 +105,23 @@ extension CatalogRequest {
             throw URLError(.unknown)
         }
         guard response.statusCode == 200 else {
-            throw URLError(.init(rawValue: response.statusCode))
+            if let error = try? error(decoding: data) {
+                throw CatalogError(
+                    httpCode: response.statusCode,
+                    serverError: error)
+            } else {
+                throw URLError(.init(rawValue: response.statusCode))
+            }
         }
         return data
+    }
+
+    private func error(decoding data: Data) throws -> ServerError {
+        do {
+            return try JSONDecoder().decode(ServerError.self, from: data)
+        } catch {
+            logger.error("decoding: \(error)")
+            throw error
+        }
     }
 }

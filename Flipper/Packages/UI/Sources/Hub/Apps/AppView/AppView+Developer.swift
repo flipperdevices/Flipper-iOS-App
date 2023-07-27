@@ -15,6 +15,21 @@ extension AppView {
             }
         }
 
+        struct LinkLabel: View {
+            let text: String
+
+            init(_ text: String) {
+                self.text = text
+            }
+
+            var body: some View {
+                Text(text)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.primary)
+                    .underline()
+            }
+        }
+
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
                 Title()
@@ -24,9 +39,7 @@ extension AppView {
                     Button {
                         openURL(github)
                     } label: {
-                        Text("View on GitHub")
-                            .font(.system(size: 14, weight: .medium))
-                            .underline()
+                        LinkLabel("View on GitHub")
                     }
                 }
 
@@ -35,12 +48,9 @@ extension AppView {
                     Button {
                         openURL(manifest)
                     } label: {
-                        Text("Manifest")
-                            .font(.system(size: 14, weight: .medium))
-                            .underline()
+                        LinkLabel("Manifest")
                     }
                 }
-
             }
         }
     }

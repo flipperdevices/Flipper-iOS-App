@@ -173,8 +173,10 @@ struct AppProgressButton: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack {
+                let lineWidth = min(proxy.size.height, proxy.size.width) / 16
+
                 RoundedRectangle(cornerRadius: radius)
-                    .stroke(color, lineWidth: 2)
+                    .stroke(color, lineWidth: lineWidth)
 
                 GeometryReader { reader in
                     color.frame(width: reader.size.width * progress)

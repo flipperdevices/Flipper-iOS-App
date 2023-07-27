@@ -34,17 +34,15 @@ struct AppScreens: View {
                     .stroke(.black, lineWidth: 1)
                     .padding(1)
 
-                BackportAsyncImage(url: url) { phase in
-                    if let image = phase.image {
-                        image
-                            .interpolation(.none)
-                            .resizable()
-                    } else {
-                        AnimatedPlaceholder()
-                            .frame(width: 170, height: 84)
-                    }
+                BackportAsyncImage(url: url) { image in
+                    image
+                        .interpolation(.none)
+                        .resizable()
+                        .scaledToFit()
+                } placeholder: {
+                    AnimatedPlaceholder()
+                        .aspectRatio(2, contentMode: .fit)
                 }
-                .scaledToFit()
                 .padding(cornerRadius / 2)
             }
         }

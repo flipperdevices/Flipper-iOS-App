@@ -30,11 +30,11 @@ struct DetectReaderView: View {
             VStack {
                 switch detectReader.state {
                 case .noLog:
-                    ReaderDataNotFound(fliperColor: flipperColor)
+                    ReaderDataNotFound(flipperColor: flipperColor)
                 case .noDevice:
-                    AttackConnectionError(fliperColor: flipperColor)
+                    AttackConnectionError(flipperColor: flipperColor)
                 case .noSDCard:
-                    AttackStorageError(fliperColor: flipperColor)
+                    AttackStorageError(flipperColor: flipperColor)
                 case .downloadingLog:
                     VStack(spacing: 18) {
                         Text("Calculation Started...")

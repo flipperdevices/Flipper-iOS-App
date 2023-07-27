@@ -78,6 +78,5 @@ public extension String {
     static var hasReaderLog: String { "hasReaderLog" }
 
     static var isDebugMode: String { "isDebugMode" }
-    static var isAppsEnabled: String { "isAppsEnabled" }
     static var isProvisioningDisabled: String { "isProvisioningDisabled" }
 }
