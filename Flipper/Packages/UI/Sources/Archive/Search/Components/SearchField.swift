@@ -4,8 +4,6 @@ struct SearchField: View {
     let placeholder: String
     @Binding var predicate: String
 
-    @FocusState var isFocused: Bool
-
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: "magnifyingglass")
@@ -25,13 +23,9 @@ struct SearchField: View {
                     .font(.system(size: 17))
                     .padding(.trailing, 6)
                     .padding(.vertical, 7)
-                    .focused($isFocused)
             }
 
             Spacer()
-        }
-        .task {
-            isFocused = true
         }
         .background(Color(red: 0.46, green: 0.46, blue: 0.5, opacity: 0.12))
         .cornerRadius(10)

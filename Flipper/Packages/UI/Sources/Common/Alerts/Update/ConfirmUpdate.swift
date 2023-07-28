@@ -32,12 +32,15 @@ struct ConfirmUpdateAlert: View {
             VStack(spacing: 4) {
                 Text("\(action) Firmware?")
                     .font(.system(size: 14, weight: .bold))
-
-                AttributedText(message)
-                    .font(.system(size: 14, weight: .medium))
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.black40)
-                    .padding(.horizontal, 12)
+                
+                MessageText {
+                    $0.attributedText = message
+                    $0.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+                    $0.textAlignment = .center
+                    $0.textColor = UIColor(Color.black40)
+                }
+                .padding(.horizontal, 12)
+                .fixedSize()
             }
             .padding(.top, 25)
 
@@ -49,5 +52,16 @@ struct ConfirmUpdateAlert: View {
                 onAction()
             }
         }
+    }
+}
+
+fileprivate struct MessageText: UIViewRepresentable {
+    fileprivate var configuration = { (view: UILabel) in }
+
+    func makeUIView(context: UIViewRepresentableContext<Self>) -> UILabel {
+        return UILabel()
+    }
+    func updateUIView(_ uiView: UILabel, context: UIViewRepresentableContext<Self>) {
+        configuration(uiView)
     }
 }

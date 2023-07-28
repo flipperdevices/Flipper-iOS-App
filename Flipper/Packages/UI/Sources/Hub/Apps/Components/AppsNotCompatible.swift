@@ -3,16 +3,8 @@ import SwiftUI
 struct AppsNotCompatibleFirmware: View {
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
 
-    var description: AttributedString {
-        var string: AttributedString = "To access Apps, install the latest " +
+    var description: String = "To access Apps, install the latest " +
             "firmware version from Release Channel on your Flipper"
-
-        if let range = string.range(of: "Release") {
-            string[range].foregroundColor = .sGreenUpdate
-        }
-
-        return string
-    }
 
     var body: some View {
         VStack(spacing: 12) {
