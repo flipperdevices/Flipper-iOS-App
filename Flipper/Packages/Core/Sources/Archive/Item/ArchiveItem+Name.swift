@@ -12,14 +12,10 @@ extension ArchiveItem {
 
 extension ArchiveItem.Name {
     init<T: StringProtocol>(filename: T) throws {
-        let name = filename
-            .split(separator: ".", omittingEmptySubsequences: false)
-            .dropLast()
-            .joined(separator: ".")
-        guard name.count < filename.count else {
+        guard let dotIndex = filename.lastIndex(of: ".") else {
             throw ArchiveItem.Error.invalidName(String(filename))
         }
-        self.value = String(name)
+        self.value = String(filename[..<dotIndex])
     }
 }
 
