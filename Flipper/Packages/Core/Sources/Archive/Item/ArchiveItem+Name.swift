@@ -12,7 +12,10 @@ extension ArchiveItem {
 
 extension ArchiveItem.Name {
     init<T: StringProtocol>(filename: T) throws {
-        guard let name = filename.split(separator: ".").first else {
+        guard let name = filename
+            .split(separator: ".", omittingEmptySubsequences: false)
+            .dropLast()
+            .joined(separator: ".") else {
             throw ArchiveItem.Error.invalidName(String(filename))
         }
         self.value = String(name)
