@@ -11,11 +11,10 @@ extension DeviceUpdateView {
         }
 
         var body: some View {
-            VStack(spacing: 0) {
+            VStack(spacing: 18) {
                 Text(text)
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
-                    .padding(.top, 3)
 
                 Button {
                     openURL(.helpToFactoryReset)
@@ -24,9 +23,7 @@ extension DeviceUpdateView {
                         .font(.system(size: 14, weight: .medium))
                         .underline()
                 }
-                .padding(.top, 18)
             }
-            .padding(.top, 38)
             .padding(.horizontal, 24)
         }
     }

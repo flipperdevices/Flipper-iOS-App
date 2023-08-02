@@ -8,6 +8,7 @@ struct AppsCategoryView: View {
     let category: Applications.Category
 
     @State private var isLoading = false
+    @State private var isAllLoaded = false
     @State private var applications: [Applications.ApplicationInfo] = []
     @State private var sortOrder: Applications.SortOption = .default
     @State private var apiError: Applications.APIError?
@@ -31,6 +32,8 @@ struct AppsCategoryView: View {
             } else {
                 RefreshableScrollView(isEnabled: true) {
                     reload()
+                } onEnd: {
+                    await load()
                 } content: {
                     VStack(spacing: 18) {
                         HStack {
@@ -38,11 +41,11 @@ struct AppsCategoryView: View {
                             SortMenu(selected: $sortOrder)
                         }
                         .padding(.horizontal, 14)
-                        
-                        if isLoading {
+
+                        AppList(applications: applications)
+
+                        if isLoading, !isAllLoaded {
                             AppRowPreview()
-                        } else {
-                            AppList(applications: applications)
                         }
                     }
                     .padding(.vertical, 18)
@@ -73,11 +76,23 @@ struct AppsCategoryView: View {
 
     func load() async {
         do {
+            guard !isLoading, !isAllLoaded else {
+                return
+            }
             isLoading = true
-            applications = try await model.loadApplications(
+            defer { isLoading = false }
+            let applications = try await model.loadApplications(
                 for: category,
-                sort: sortOrder)
-            isLoading = false
+                sort: sortOrder,
+                skip: applications.count
+            ).filter { application in
+                !self.applications.contains { $0.id == application.id }
+            }
+            guard !applications.isEmpty else {
+                isAllLoaded = true
+                return
+            }
+            self.applications.append(contentsOf: applications)
         } catch let error as Applications.APIError {
             apiError = error
         } catch {
@@ -86,8 +101,9 @@ struct AppsCategoryView: View {
     }
 
     func reload() {
-        applications = []
         Task {
+            isAllLoaded = false
+            applications = []
             await load()
         }
     }

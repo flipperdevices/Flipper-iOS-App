@@ -27,17 +27,11 @@ struct DeviceHeader: View {
 struct NoDeviceHeader: View {
     let flipper: Flipper?
 
-    var flipperImage: String {
-        flipper?.color == .black
-            ? "FlipperNoDeviceBlack"
-            : "FlipperNoDeviceWhite"
-    }
-
     var body: some View {
         HStack(spacing: 18) {
-            Image(flipperImage)
-                .resizable()
-                .scaledToFit()
+            FlipperDeviceImage()
+                .flipperColor(flipper?.color)
+                .flipperState(.dead)
 
             VStack(alignment: .center, spacing: 6) {
                 Text("No Device")
@@ -49,17 +43,6 @@ struct NoDeviceHeader: View {
 
 struct DeviceInfoHeader: View {
     let flipper: Flipper
-
-    var flipperImage: String {
-        guard flipper.state == .connected else {
-            return flipper.color == .black
-                ? "FlipperNoDeviceBlack"
-                : "FlipperNoDeviceWhite"
-        }
-        return flipper.color == .black
-            ? "FlipperDeviceBlack"
-            : "FlipperDeviceWhite"
-    }
 
     var batteryColor: Color {
         guard let battery = flipper.battery else {
@@ -75,9 +58,9 @@ struct DeviceInfoHeader: View {
 
     var body: some View {
         HStack(spacing: 18) {
-            Image(flipperImage)
-                .resizable()
-                .scaledToFit()
+            FlipperDeviceImage()
+                .flipperColor(flipper.color)
+                .flipperState(flipper.state == .connected ? .normal : .dead)
 
             VStack(alignment: .center, spacing: 6) {
                 Text(flipper.name)

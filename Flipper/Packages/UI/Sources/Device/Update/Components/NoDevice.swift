@@ -45,7 +45,6 @@ extension DeviceUpdateView {
                 }
                 .padding(.top, 14)
             }
-            .padding(.top, 38)
             .padding(.horizontal, 24)
         }
     }

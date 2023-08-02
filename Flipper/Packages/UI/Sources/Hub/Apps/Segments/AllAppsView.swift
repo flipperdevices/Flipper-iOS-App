@@ -4,7 +4,8 @@ import SwiftUI
 struct AllAppsView: View {
     @EnvironmentObject var model: Applications
 
-    @State private var isBusy = false
+    @State private var isLoading = false
+    @State private var isAllLoaded = false
     @State private var categories: [Applications.Category] = []
     @State private var applications: [Applications.ApplicationInfo] = []
     @State private var sortOrder: Applications.SortOption = .default
@@ -13,6 +14,8 @@ struct AllAppsView: View {
     var body: some View {
         RefreshableScrollView(isEnabled: true) {
             reload()
+        } onEnd: {
+            await loadApplications()
         } content: {
             VStack(spacing: 0) {
                 AppsCategories(categories: categories)
@@ -41,7 +44,7 @@ struct AllAppsView: View {
                     AppList(applications: applications)
                         .padding(.top, 18)
 
-                    if isBusy {
+                    if isLoading, !isAllLoaded {
                         AppRowPreview()
                             .padding(.top, 12)
                     }
@@ -67,9 +70,22 @@ struct AllAppsView: View {
 
     func loadApplications() async {
         do {
-            isBusy = true
-            defer { isBusy = false }
-            applications = try await model.loadApplications(sort: sortOrder)
+            guard !isLoading, !isAllLoaded else {
+                return
+            }
+            isLoading = true
+            defer { isLoading = false }
+            let applications = try await model.loadApplications(
+                sort: sortOrder,
+                skip: applications.count
+            ).filter { application in
+                !self.applications.contains { $0.id == application.id }
+            }
+            guard !applications.isEmpty else {
+                isAllLoaded = true
+                return
+            }
+            self.applications.append(contentsOf: applications)
         } catch let error as Applications.APIError {
             apiError = error
         } catch {
@@ -83,15 +99,16 @@ struct AllAppsView: View {
     }
 
     func reloadCategories() {
-        categories = []
         Task {
+            categories = []
             await loadCategories()
         }
     }
 
     func reloadApplications() {
-        applications = []
         Task {
+            applications = []
+            isAllLoaded = false
             await loadApplications()
         }
     }

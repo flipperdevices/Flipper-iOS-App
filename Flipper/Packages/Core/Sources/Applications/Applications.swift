@@ -256,7 +256,9 @@ public class Applications: ObservableObject {
 
     public func loadApplications(
         for category: Category? = nil,
-        sort sortOption: SortOption = .newUpdates
+        sort sortOption: SortOption = .newUpdates,
+        skip: Int = 0,
+        take: Int = 7
     ) async throws -> [ApplicationInfo] {
         try await handlingWebErrors {
             try await catalog
@@ -266,7 +268,8 @@ public class Applications: ObservableObject {
                 .order(.init(source: sortOption))
                 .target(deviceInfo?.target)
                 .api(deviceInfo?.api)
-                .take(500)
+                .skip(skip)
+                .take(take)
                 .get()
         }
     }
