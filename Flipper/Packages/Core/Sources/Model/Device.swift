@@ -399,9 +399,21 @@ extension Device {
 
     func reportRPCInfo() {
         Task {
-            guard let storage = flipper?.storage else { return }
-            let firmwareForkName = try? await getFirmwareFork()
-            let firmwareGitURL = try? await getFirmwareGit()
+            guard
+                let protobufRevision = flipper?.information?.protobufRevision,
+                let storage = flipper?.storage
+            else {
+                return
+            }
+
+            var firmwareForkName: String?
+            var firmwareGitURL: String?
+
+            if protobufRevision >= .v0_14 {
+                firmwareForkName = try? await getFirmwareFork()
+                firmwareGitURL = try? await getFirmwareGit()
+            }
+
             analytics.flipperRPCInfo(
                 sdcardIsAvailable: storage.external != nil,
                 internalFreeByte: storage.internal?.free ?? 0,
