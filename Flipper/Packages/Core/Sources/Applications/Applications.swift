@@ -305,12 +305,20 @@ public class Applications: ObservableObject {
             return installed
         }
         do {
-            let available = try await catalog
-                .applications()
-                .uids(installed.map { $0.id })
-                .target(deviceInfo.target)
-                .api(deviceInfo.api)
-                .get()
+            var available: ApplicationsRequest.Result = []
+            while available.count < installed.count {
+                let slice = installed.dropFirst(available.count).prefix(42)
+
+                let loaded = try await catalog
+                    .applications()
+                    .uids(slice.map { $0.id })
+                    .target(deviceInfo.target)
+                    .api(deviceInfo.api)
+                    .take(slice.count)
+                    .get()
+
+                available.append(contentsOf: loaded)
+            }
 
             for application in available {
                 statuses[application.id] = status(for: application)
@@ -333,9 +341,6 @@ public class Applications: ObservableObject {
     private func status(
         for application: ApplicationInfo
     ) -> ApplicationStatus {
-        guard statuses[application.id] == nil else {
-            return statuses[application.id]!
-        }
         guard let manifest = manifests[application.id] else {
             return .notInstalled
         }
@@ -344,8 +349,8 @@ public class Applications: ObservableObject {
             manifest.buildAPI == deviceInfo?.api
         else {
             return application.current.status == .ready
-            ? .outdated
-            : .building
+                ? .outdated
+                : .building
         }
         return .installed
     }
@@ -374,8 +379,8 @@ extension Catalog.SortBy {
 extension Catalog.SortOrder {
     init(source: Applications.SortOption) {
         switch source {
-        case .newUpdates, .newReleases: self = .asc
-        case .oldUpdates, .oldReleases: self = .desc
+        case .newUpdates, .newReleases: self = .desc
+        case .oldUpdates, .oldReleases: self = .asc
         }
     }
 }

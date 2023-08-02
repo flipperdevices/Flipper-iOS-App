@@ -73,7 +73,7 @@ struct RefreshableScrollView<Content: View>: View {
                     guard !isFinishedTriggered else {
                         return
                     }
-                    if offset < 1 {
+                    if offset < 0 {
                         isFinishedTriggered = false
                     } else {
                         isFinishedTriggered = true
