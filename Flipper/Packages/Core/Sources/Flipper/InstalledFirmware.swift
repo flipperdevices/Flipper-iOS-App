@@ -12,7 +12,7 @@ extension Flipper.DeviceInformation {
         case .release: version = "\(parts[1])"
         case .candidate: version = "\(parts[1])"
         case .development: version = "\(parts[0])"
-        case .custom: version = "\(parts[0])"
+        case .custom: version = "\(parts[1])"
         }
 
         return .init(name: version, channel: channel)
@@ -31,7 +31,7 @@ extension Flipper.DeviceInformation {
             versionParts.count == 3,
             versionParts.allSatisfy({ $0.allSatisfy { $0.isNumber } })
         else {
-            return .development
+            return parts[1] == "dev" ? .development : .custom
         }
 
         return .release
