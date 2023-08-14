@@ -265,6 +265,7 @@ extension FlipperColor {
         switch service {
         case .some(.flipperZeroBlack): self = .black
         case .some(.flipperZeroWhite): self = .white
+        case .some(.flipperZeroClear): self = .clear
         default: self = .unknown
         }
     }

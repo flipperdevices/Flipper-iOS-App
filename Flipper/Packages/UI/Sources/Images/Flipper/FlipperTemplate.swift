@@ -7,6 +7,7 @@ struct FlipperTemplate: View {
     enum Style: String {
         case white
         case black
+        case clear
     }
 
     enum State: String {
