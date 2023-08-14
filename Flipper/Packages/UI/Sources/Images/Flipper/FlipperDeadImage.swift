@@ -5,7 +5,7 @@ struct FlipperDeadImage: View {
     var body: some View {
         ZStack {
             FlipperTemplate()
-                .flipperState(.dead)
+                .flipperState(.disabled)
 
             Image("FZDeadContent")
                 .resizable()

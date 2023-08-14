@@ -5,7 +5,7 @@ struct FlipperFlashingIssueImage: View {
     var body: some View {
         ZStack {
             FlipperTemplate()
-                .flipperState(.dead)
+                .flipperState(.disabled)
 
             Image("FZFlashingIssueContent")
                 .resizable()
