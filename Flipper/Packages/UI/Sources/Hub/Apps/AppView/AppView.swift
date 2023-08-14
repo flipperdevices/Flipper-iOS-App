@@ -136,7 +136,7 @@ struct AppView: View {
                         HStack {
                             Image("AppReport")
 
-                            Text("Report an App")
+                            Text("Report App")
                                 .font(.system(size: 14, weight: .medium))
                         }
                         .foregroundColor(.sRed)
