@@ -38,11 +38,11 @@ struct AllAppsView: View {
 
                         SortMenu(selected: $sortOrder)
                     }
-                    .padding(.top, 24)
+                    .padding(.top, 32)
                     .padding(.horizontal, 14)
 
                     AppList(applications: applications)
-                        .padding(.top, 18)
+                        .padding(.top, 24)
 
                     if isLoading, !isAllLoaded {
                         AppRowPreview()

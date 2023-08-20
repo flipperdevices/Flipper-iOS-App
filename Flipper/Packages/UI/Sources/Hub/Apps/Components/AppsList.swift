@@ -15,7 +15,7 @@ struct AppList: View {
     }
 
     var body: some View {
-        LazyVStack(spacing: 12) {
+        LazyVStack(spacing: 24) {
             ForEach(applications) { application in
                 NavigationLink {
                     AppView(alias: application.alias)

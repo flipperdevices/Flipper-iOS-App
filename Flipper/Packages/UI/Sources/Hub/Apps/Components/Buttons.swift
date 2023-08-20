@@ -144,12 +144,18 @@ struct AppActionButton: View {
             GeometryReader { proxy in
                 HStack {
                     Text(title)
-                        .foregroundColor(.white)
+                        .foregroundColor(isEnabled ? color : .black20)
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: proxy.size.height)
-                .background(isEnabled ? color : .black20)
-                .cornerRadius(6)
+                .overlay {
+                    // TODO: Use style modifier
+                    let width: Double = proxy.size.height < 40 ? 2 : 3
+
+                    RoundedRectangle(cornerRadius: 6)
+                        .inset(by: 1)
+                        .stroke(isEnabled ? color : .black20, lineWidth: width)
+                }
             }
         }
     }
@@ -173,23 +179,26 @@ struct AppProgressButton: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                let lineWidth = min(proxy.size.height, proxy.size.width) / 16
+                // TODO: Use style modifier
+                let lineWidth: Double = proxy.size.height < 40 ? 2 : 3
 
                 RoundedRectangle(cornerRadius: radius)
+                    .inset(by: lineWidth / 2)
                     .stroke(color, lineWidth: lineWidth)
 
                 GeometryReader { reader in
-                    color.frame(width: reader.size.width * progress)
+                    color
+                        .frame(width: reader.size.width * progress)
+                        .opacity(0.3)
                 }
 
                 VStack(alignment: .center) {
                     Text(progressText)
-                        .foregroundColor(.white)
+                        .foregroundColor(color)
                         .padding(.bottom, 2)
                 }
             }
             .frame(height: proxy.size.height)
-            .background(color.opacity(0.5))
             .cornerRadius(radius)
         }
     }

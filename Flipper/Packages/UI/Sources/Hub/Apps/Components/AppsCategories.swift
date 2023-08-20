@@ -51,7 +51,7 @@ struct AppsCategories: View {
 
                         Text("\(category.applications)")
                             .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.black60)
+                            .foregroundColor(.black16Black60)
                     }
 
                     Text(category.name)

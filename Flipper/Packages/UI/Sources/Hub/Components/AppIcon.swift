@@ -19,12 +19,14 @@ struct AppIcon: View {
                     DataImage(data: data)
                 }
             }
-            .foregroundColor(.black)
+            .foregroundColor(.primary)
             .scaledToFit()
-            .padding(4)
+            .padding(5)
         }
-        .background(Color.a1)
-        .cornerRadius(6)
+        .overlay {
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(Color.black16Black60)
+        }
     }
 
     struct URLImage: View {
@@ -33,9 +35,9 @@ struct AppIcon: View {
         var body: some View {
             AsyncImage(url: url) { image in
                 image
+                    .renderingMode(.template)
                     .interpolation(.none)
                     .resizable()
-                    .scaledToFit()
             } placeholder: {
                 AnimatedPlaceholder()
                     .aspectRatio(1, contentMode: .fit)

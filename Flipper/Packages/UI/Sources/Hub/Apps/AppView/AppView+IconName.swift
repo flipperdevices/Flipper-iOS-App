@@ -13,7 +13,7 @@ extension AppView {
         var body: some View {
             HStack(spacing: 8) {
                 AppIcon(application.current.icon)
-                    .frame(width: 64, height: 64)
+                    .frame(width: 58, height: 58)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(application.current.name)
