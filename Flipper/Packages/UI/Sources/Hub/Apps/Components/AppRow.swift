@@ -45,7 +45,7 @@ struct AppRow: View {
 
             if !isInstalled {
                 Text(application.current.shortDescription)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 14)
                     .lineLimit(2)
