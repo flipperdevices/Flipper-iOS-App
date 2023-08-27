@@ -7,7 +7,7 @@ struct AppView: View {
 
     let alias: String
 
-    @State var application: Applications.Application?
+    @State private var application: Applications.Application?
 
     var applicationURL: URL {
         .init(string: "https://lab.flipper.net/apps/\(alias)")!
@@ -66,9 +66,17 @@ struct AppView: View {
 
     struct LoadedAppView: View {
         @EnvironmentObject var model: Applications
+        @Environment(\.dismiss) var dismiss
         let application: Applications.Application
 
+        @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+
+        var isHidden: Bool {
+            hiddenApps.contains(application.id)
+        }
+
         @State var status: Applications.ApplicationStatus = .notInstalled
+        @State var isHideAppPresented = false
 
         var isBuildReady: Bool {
             application.current.status == .ready
@@ -130,23 +138,60 @@ struct AppView: View {
                     Developer(github: github, manifest: manifest)
                         .padding(.horizontal, 14)
 
-                    NavigationLink {
-                        AppReportView(application: application)
-                    } label: {
-                        HStack {
-                            Image("AppReport")
+                    VStack(alignment: .leading, spacing: 12) {
+                        Button {
+                            isHidden
+                                ? unhide()
+                                : showHideAlert()
+                        } label: {
+                            HStack {
+                                Image(isHidden ? "AppUnhide" : "AppHide")
 
-                            Text("Report App")
-                                .font(.system(size: 14, weight: .medium))
+                                Text(isHidden ? "Unhide App" : "Hide App")
+                            }
                         }
-                        .foregroundColor(.sRed)
-                        .padding(.horizontal, 14)
+
+                        NavigationLink {
+                            AppReportView(application: application)
+                        } label: {
+                            HStack {
+                                Image("AppReport")
+
+                                Text("Report App")
+                            }
+                        }
                     }
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.sRed)
+                    .padding(.horizontal, 14)
                 }
             }
             .onReceive(model.$statuses) { statuses in
                 status = statuses[application.id] ?? .notInstalled
             }
+            .customAlert(isPresented: $isHideAppPresented) {
+                ConfirmHideAppAlert(
+                    isPresented: $isHideAppPresented,
+                    application: .init(application)
+                ) {
+                    hide()
+                    Task {
+                        dismiss()
+                    }
+                }
+            }
+        }
+
+        func showHideAlert() {
+            isHideAppPresented = true
+        }
+
+        func hide() {
+            hiddenApps.insert(application.id)
+        }
+
+        func unhide() {
+            hiddenApps.remove(application.id)
         }
     }
 }

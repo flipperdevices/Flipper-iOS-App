@@ -76,6 +76,7 @@ public extension String {
     static var installingVersion: String { "installingVersion" }
     static var logLevelKey: String { "logLevel" }
     static var hasReaderLog: String { "hasReaderLog" }
+    static var hiddenAppsKey: String { "hiddenApps" }
 
     static var isDebugMode: String { "isDebugMode" }
     static var isProvisioningDisabled: String { "isProvisioningDisabled" }

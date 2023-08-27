@@ -1,6 +1,6 @@
 import Foundation
 
-public struct TimeStamp: Decodable {
+public struct TimeStamp: Equatable, Decodable {
     public let date: Date
 
     public init(date: Date = .init()) {
