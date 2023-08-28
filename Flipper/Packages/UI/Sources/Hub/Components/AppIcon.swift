@@ -33,7 +33,7 @@ struct AppIcon: View {
         let url: URL
 
         var body: some View {
-            AsyncImage(url: url) { image in
+            CachedAsyncImage(url: url) { image in
                 image
                     .renderingMode(.template)
                     .interpolation(.none)
