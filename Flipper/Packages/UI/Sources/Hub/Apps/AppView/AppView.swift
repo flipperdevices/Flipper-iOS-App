@@ -127,7 +127,7 @@ struct AppView: View {
 
                 VStack(alignment: .leading, spacing: 32) {
                     AppScreens(screenshots)
-                        .frame(height: 94)
+                        .frame(height: 108)
 
                     Description(description: description)
                         .padding(.horizontal, 14)
