@@ -5,7 +5,7 @@ struct FlipperNoSDCardImage: View {
     var body: some View {
         ZStack {
             FlipperTemplate()
-                .flipperState(.dead)
+                .flipperState(.disabled)
 
             Image("FZNoSDCardContent")
                 .resizable()

@@ -83,7 +83,9 @@ struct AppView: View {
         }
 
         var description: String {
-            application.current.description
+            let short = application.current.shortDescription
+            let full = application.current.description
+            return full.starts(with: short) ? full : short + "\n" + full
         }
 
         var github: URL {
@@ -134,7 +136,7 @@ struct AppView: View {
                         HStack {
                             Image("AppReport")
 
-                            Text("Report an App")
+                            Text("Report App")
                                 .font(.system(size: 14, weight: .medium))
                         }
                         .foregroundColor(.sRed)

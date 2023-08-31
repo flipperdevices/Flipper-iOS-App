@@ -84,6 +84,12 @@ public extension Color {
         .init(red: 0.11, green: 0.11, blue: 0.11)
     }
 
+    // MARK: Theme
+
+    static var black16Black60: Color {
+        .init("Black16Black60")
+    }
+
     // MARK: SVG Icons
 
     static var blackBlack20: Color {

@@ -17,6 +17,10 @@ struct AppReportView: View {
         case description
     }
 
+    var placeholder: String {
+        "Describe why are you reporting this app (enter at least 5 characters)"
+    }
+
     var placeholderColor: Color {
         switch colorScheme {
         case .light: return .black12
@@ -29,7 +33,7 @@ struct AppReportView: View {
     }
 
     var isValid: Bool {
-        !description.isEmpty
+        description.filter { !$0.isWhitespace }.count >= 5
     }
 
     var body: some View {
@@ -39,7 +43,7 @@ struct AppReportView: View {
                     .font(.system(size: 16, weight: .bold))
 
                 ZStack(alignment: .topLeading) {
-                    Text("Describe why are you reporting this app")
+                    Text(placeholder)
                         .foregroundColor(placeholderColor)
                         .opacity(showDescriptionPlaceholder ? 1 : 0)
                         .padding(12)
@@ -80,7 +84,7 @@ struct AppReportView: View {
                 BackButton {
                     dismiss()
                 }
-                Title("Report an App")
+                Title("Report App")
             }
         }
     }

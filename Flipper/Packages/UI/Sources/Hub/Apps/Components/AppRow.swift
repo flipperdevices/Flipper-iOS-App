@@ -44,14 +44,14 @@ struct AppRow: View {
             .padding(.horizontal, 14)
 
             if !isInstalled {
-                AppScreens(application.current.screenshots)
-                    .frame(height: 84)
-                
                 Text(application.current.shortDescription)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 14)
                     .lineLimit(2)
+
+                AppScreens(application.current.screenshots)
+                    .frame(height: 84)
             }
         }
         .onReceive(model.$statuses) { statuses in

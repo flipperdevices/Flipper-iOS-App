@@ -48,6 +48,7 @@ public enum FlipperColor: String, Equatable {
     case unknown
     case black
     case white
+    case clear
 }
 
 public enum FlipperState: Equatable {

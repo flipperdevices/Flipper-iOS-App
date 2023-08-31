@@ -7,7 +7,7 @@ struct SortMenu: View {
 
     var color: Color {
         colorScheme == .light
-            ? .black4
+            ? .black8
             : .black80
     }
 

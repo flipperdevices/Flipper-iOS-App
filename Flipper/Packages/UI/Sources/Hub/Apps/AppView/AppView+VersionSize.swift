@@ -35,7 +35,7 @@ extension AppView {
             var body: some View {
                 VStack(spacing: 2) {
                     Text(key)
-                        .font(.system(size: 10, weight: .medium))
+                        .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.black40)
                         .lineLimit(1)
 

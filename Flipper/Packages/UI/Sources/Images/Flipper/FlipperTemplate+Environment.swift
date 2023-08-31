@@ -33,6 +33,17 @@ extension View {
 
 extension View {
     func flipperColor(_ color: FlipperColor?) -> some View {
-        self.environment(\.flipperStyle, color == .black ? .black : .white)
+        self.environment(\.flipperStyle, .init(color))
+    }
+}
+
+extension FlipperTemplate.Style {
+    init(_ source: FlipperColor?) {
+        switch source {
+        case .some(.white): self = .white
+        case .some(.black): self = .black
+        case .some(.clear): self = .clear
+        default: self = .white
+        }
     }
 }

@@ -5,6 +5,7 @@ extension CBUUID {
     static var flipperZerof6: CBUUID { .init(string: "3080") }
     static var flipperZeroBlack: CBUUID { .init(string: "3081") }
     static var flipperZeroWhite: CBUUID { .init(string: "3082") }
+    static var flipperZeroClear: CBUUID { .init(string: "3083") }
 
     // service
     static var deviceInformation: CBUUID { .init(string: "180A") }

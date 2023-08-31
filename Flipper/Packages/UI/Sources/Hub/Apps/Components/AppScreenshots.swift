@@ -33,7 +33,7 @@ struct AppScreens: View {
                     .stroke(.black, lineWidth: 1)
                     .padding(1)
 
-                AsyncImage(url: url) { image in
+                CachedAsyncImage(url: url) { image in
                     image
                         .interpolation(.none)
                         .resizable()

@@ -12,7 +12,12 @@ class FlipperCentral: NSObject, BluetoothCentral {
         "kCBAdvDataServiceUUIDs"
     }
     private var flipperServiceIDs: [CBUUID] {
-        [.flipperZerof6, .flipperZeroBlack, .flipperZeroWhite]
+        [
+            .flipperZerof6,
+            .flipperZeroBlack,
+            .flipperZeroWhite,
+            .flipperZeroClear
+        ]
     }
 
     // cache to preserve flipper color
