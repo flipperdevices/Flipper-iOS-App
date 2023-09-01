@@ -8,6 +8,7 @@ struct OptionsView: View {
 
     @AppStorage(.isDebugMode) var isDebugMode = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
+    @AppStorage(.isDevCatalog) var isDevCatalog = false
 
     @State private var showResetApp = false
     @State private var versionTapCount = 0
@@ -99,6 +100,10 @@ struct OptionsView: View {
                 Section(header: Text("Debug")) {
                     Toggle(isOn: $isProvisioningDisabled) {
                         Text("Disable provisioning")
+                    }
+                    .tint(.a1)
+                    Toggle(isOn: $isDevCatalog) {
+                        Text("Use dev catalog")
                     }
                     .tint(.a1)
                     NavigationLink("I'm watching you") {
