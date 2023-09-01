@@ -46,15 +46,6 @@
       }
     },
     {
-      "identity" : "sentry-cocoa",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/getsentry/sentry-cocoa.git",
-      "state" : {
-        "revision" : "e46936ed191c0112cd3276e1c10c0bb7f865268e",
-        "version" : "8.9.1"
-      }
-    },
-    {
       "identity" : "stream",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftstack/stream.git",
