@@ -34,9 +34,12 @@ class ReaderLogTests: XCTestCase {
 extension ReaderLog {
     static var testLog: String {
         """
-        Sec 2 key A cuid 2a234f80 nt0 55721809 nr0 ce9985f6 ar0 772f55be nt1 a27173f2 nr1 e386b505 ar1 5fa65203
-        Sec 2 key A cuid 2a234f80 nt0 ea47d2a6 nr0 a94ae154 ar0 38b015ae nt1 dd75bf17 nr1 380601d5 ar1 e405a440
-        Sec 2 key A cuid 2a234f80 nt0 2b6dad5a nr0 709043c8 ar0 282548af nt1 0231ea00 nr1 f4a385ae ar1 9846ae5d
+        Sec 2 key A cuid 2a234f80 nt0 55721809 nr0 ce9985f6 \
+        ar0 772f55be nt1 a27173f2 nr1 e386b505 ar1 5fa65203
+        Sec 2 key A cuid 2a234f80 nt0 ea47d2a6 nr0 a94ae154 \
+        ar0 38b015ae nt1 dd75bf17 nr1 380601d5 ar1 e405a440
+        Sec 2 key A cuid 2a234f80 nt0 2b6dad5a nr0 709043c8 \
+        ar0 282548af nt1 0231ea00 nr1 f4a385ae ar1 9846ae5d
         """
     }
 }

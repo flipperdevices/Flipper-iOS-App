@@ -43,7 +43,6 @@ public class Applications: ObservableObject {
     @Published private var flipper: Flipper?
     private var cancellables = [AnyCancellable]()
 
-
     private let catalog: CatalogService
     private let pairedDevice: PairedDevice
 
@@ -151,7 +150,6 @@ public class Applications: ObservableObject {
     public func category(for application: Application) -> Category? {
         category(categoryID: application.categoryId)
     }
-
 
     public func category(for application: ApplicationInfo) -> Category? {
         application.categoryId.isEmpty
@@ -459,7 +457,7 @@ fileprivate extension Applications {
         try await rpc.writeFile(
             at: manifestTempPath,
             string: manifestString
-        ) { progress in
+        ) { _ in
         }
 
         try await rpc.moveFile(from: appTempPath, to: appPath)

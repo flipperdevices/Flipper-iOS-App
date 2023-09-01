@@ -79,7 +79,6 @@ struct CategoryRow: View {
             Spacer()
 
             HStack(spacing: 2) {
-                // swiftlint:disable empty_count
                 Text(count == 0 ? "" : "\(count)")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.black30)

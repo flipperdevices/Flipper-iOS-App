@@ -248,9 +248,7 @@ public class Device: ObservableObject {
     }
 
     private var isProvisioningDisabled: Bool {
-        get {
-            UserDefaultsStorage.shared.isProvisioningDisabled
-        }
+        UserDefaultsStorage.shared.isProvisioningDisabled
     }
 
     private var hardwareRegion: Int? {
@@ -326,7 +324,6 @@ public class Device: ObservableObject {
             logger.error("device info: \(error)")
         }
     }
-
 
     public func getRegion() async throws -> Provisioning.Region {
         let bytes = try await rpc.readFile(at: Provisioning.location)

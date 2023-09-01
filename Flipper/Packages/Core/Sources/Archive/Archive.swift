@@ -223,7 +223,9 @@ extension Archive {
     }
 
     public func onIsFavoriteToggle(_ path: Path) async throws {
-        guard let index = _items.value.firstIndex(where: { $0.path == path }) else {
+        guard let index = _items.value.firstIndex(
+            where: { $0.path == path }
+        ) else {
             return
         }
         _items.value[index].isFavorite = try await toggleFavorite(for: path)

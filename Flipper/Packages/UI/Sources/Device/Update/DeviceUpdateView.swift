@@ -9,7 +9,7 @@ struct DeviceUpdateView: View {
     @Environment(\.scenePhase) var scenePhase
 
     @State private var state: UpdateModel.State = .update(.progress(.preparing))
-    @State private var activity: Any? = nil
+    @State private var activity: Any?
     @State private var showCancelUpdate = false
 
     let firmware: Update.Firmware

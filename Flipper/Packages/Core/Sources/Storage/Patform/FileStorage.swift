@@ -2,11 +2,12 @@ import Peripheral
 import Foundation
 
 class FileStorage {
-    // swiftlint:disable force_unwrapping
     var baseURL: URL {
+        // swiftlint:disable force_unwrapping
         FileManager
             .default
             .containerURL(forSecurityApplicationGroupIdentifier: .appGroup)!
+        // swiftlint:enable force_unwrapping
     }
 
     init() {}
@@ -41,7 +42,7 @@ class FileStorage {
         let coord = NSFileCoordinator(filePresenter: nil)
         coord.coordinate(readingItemAt: url, error: &nsReadError) { readURL in
             do {
-                content = try .init(contentsOf: url)
+                content = try .init(contentsOf: readURL)
             } catch {
                 readError = error
             }

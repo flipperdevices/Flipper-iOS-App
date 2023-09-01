@@ -20,7 +20,6 @@ public class CountlyAnalytics {
         #endif
     }
 
-    // swiftlint:disable discouraged_optional_collection
     private func recordEvent(key: String, segmentation: [String: String]?) {
         #if !DEBUG
         Countly.sharedInstance().recordEvent(key, segmentation: segmentation)

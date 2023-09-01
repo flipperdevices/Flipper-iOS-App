@@ -1,8 +1,6 @@
 import Core
 import SwiftUI
 
-// swiftlint:disable opening_brace
-
 extension Binding where
     Value: MutableCollection,
     Value: RangeReplaceableCollection,

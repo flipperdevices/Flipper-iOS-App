@@ -10,7 +10,7 @@ struct FileManagerEditor: View {
     @Environment(\.dismiss) var dismiss
 
     @State private var content: String = ""
-    @State private var error: String? = nil
+    @State private var error: String?
     @State private var isBusy = false
 
     var body: some View {

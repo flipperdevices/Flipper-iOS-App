@@ -7,4 +7,3 @@ class FileExporter: Exporter {
             content: item.content)
     }
 }
-

@@ -8,21 +8,21 @@ struct FFFEncoder {
 
 class _FFFEncoder: Encoder {
     var codingPath: [CodingKey] { [] }
-    var userInfo: [CodingUserInfoKey : Any] { [:] }
+    var userInfo: [CodingUserInfoKey: Any] { [:] }
 
     var result: String = ""
 
     func container<Key>(
         keyedBy type: Key.Type
-    ) -> KeyedEncodingContainer<Key> where Key : CodingKey {
+    ) -> KeyedEncodingContainer<Key> where Key: CodingKey {
         let container = FFFKeyedEncodingContainer<Key>(encoder: self)
         return KeyedEncodingContainer(container)
     }
-    
+
     func unkeyedContainer() -> UnkeyedEncodingContainer {
         fatalError("unreachable")
     }
-    
+
     func singleValueContainer() -> SingleValueEncodingContainer {
         fatalError("unreachable")
     }

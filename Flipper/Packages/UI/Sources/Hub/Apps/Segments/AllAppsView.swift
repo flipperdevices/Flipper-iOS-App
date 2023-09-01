@@ -55,7 +55,7 @@ struct AllAppsView: View {
             }
             .padding(.vertical, 14)
         }
-        .onChange(of: sortOrder) { newValue in
+        .onChange(of: sortOrder) { _ in
             reloadApplications()
         }
         .onReceive(model.$deviceInfo) { _ in

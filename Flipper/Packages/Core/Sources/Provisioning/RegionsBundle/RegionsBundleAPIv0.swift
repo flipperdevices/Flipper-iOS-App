@@ -45,8 +45,10 @@ public class RegionsBundleAPIv0: RegionsBundleAPI {
     }
 
     // @testable
-    init(dataProvider: @escaping () async throws -> Data) {
-        self.dataProvider = dataProvider
+    init(dataProvider: @escaping () async throws -> String) {
+        self.dataProvider = {
+            try await .init(dataProvider().utf8)
+        }
     }
 
     public func get() async throws -> RegionsBundle {

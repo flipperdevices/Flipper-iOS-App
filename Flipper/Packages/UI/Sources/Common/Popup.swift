@@ -8,7 +8,11 @@ extension View {
     ) -> some View {
         ZStack {
             self
-            Popup(isPresented: isPresented, hideOnTap: hideOnTap, content: content)
+            Popup(
+                isPresented: isPresented,
+                hideOnTap: hideOnTap,
+                content: content
+            )
         }
     }
 }

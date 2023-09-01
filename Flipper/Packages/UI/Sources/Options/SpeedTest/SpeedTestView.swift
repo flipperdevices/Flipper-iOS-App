@@ -1,8 +1,6 @@
 import Core
 import SwiftUI
 
-// swiftlint:disable vertical_parameter_alignment_on_call
-
 struct SpeedTestView: View {
     // next step
     @StateObject var speedTest: SpeedTest = .init(

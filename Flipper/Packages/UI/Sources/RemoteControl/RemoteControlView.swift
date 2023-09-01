@@ -31,7 +31,7 @@ struct RemoteControlView: View {
         return "Screenshot \(date) at \(time)"
     }
 
-    //--------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     public enum Control {
         case lock
         case unlock
@@ -40,7 +40,7 @@ struct RemoteControlView: View {
     @State var controlsQueue: [(UUID, Control)] = []
     @State var controlsStream: AsyncStream<Control>?
     @State var controlsStreamContinuation: AsyncStream<Control>.Continuation?
-    //--------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
     @Namespace var namespace
 

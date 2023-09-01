@@ -1,7 +1,7 @@
 import Foundation
 
 public class WebCatalog: CatalogService {
-    //private let baseURL = URL("https://catalog.flipp.dev/api/v0")
+    // private let baseURL = URL("https://catalog.flipp.dev/api/v0")
     private let baseURL = URL("https://catalog.flipperzero.one/api/v0")
 
     public init() {}

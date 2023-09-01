@@ -392,7 +392,6 @@ extension Request.Storage: CustomStringConvertible {
     }
 }
 
-
 extension Request.Application: CustomStringConvertible {
     public var description: String {
         switch self {

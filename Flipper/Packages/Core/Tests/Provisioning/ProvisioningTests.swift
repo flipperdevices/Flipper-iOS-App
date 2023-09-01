@@ -58,12 +58,10 @@ class ProvisioningTests: XCTestCase {
     }
 }
 
-// swiftlint:disable force_unwrapping
-
 extension ISOCode {
-    static var ad: ISOCode { .init("AD")! }
-    static var ae: ISOCode { .init("AE")! }
-    static var us: ISOCode { .init("US")! }
+    static var ad: ISOCode { "AD" }
+    static var ae: ISOCode { "AE" }
+    static var us: ISOCode { "US" }
 }
 
 extension RegionBands {

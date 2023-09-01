@@ -127,7 +127,7 @@ struct ArchiveView: View {
             provider.loadItem(
                 forTypeIdentifier: UTType.item.identifier,
                 options: nil
-            ) { (data, error) in
+            ) { (data, _) in
                 guard let url = data as? URL else { return }
                 importedItem = url
             }

@@ -1,4 +1,4 @@
-struct FFFKeyedEncodingContainer<K : CodingKey>
+struct FFFKeyedEncodingContainer<K: CodingKey>
 : KeyedEncodingContainerProtocol {
     var codingPath: [CodingKey] { [] }
 
@@ -75,14 +75,14 @@ struct FFFKeyedEncodingContainer<K : CodingKey>
     mutating func encode<T>(
         _ value: T,
         forKey key: K
-    ) throws where T : Encodable {
+    ) throws where T: Encodable {
         fatalError("not implemented")
     }
 
     mutating func nestedContainer<NestedKey>(
         keyedBy keyType: NestedKey.Type,
         forKey key: K
-    ) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
+    ) -> KeyedEncodingContainer<NestedKey> where NestedKey: CodingKey {
         fatalError("not implemented")
     }
 

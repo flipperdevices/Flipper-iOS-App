@@ -202,7 +202,7 @@ extension AppView {
             VStack(spacing: 18) {
                 VStack(spacing: 12) {
                     IconNameCategoryPreview()
-                    
+
                     VersionSizePreview()
 
                     ButtonsPreview()
@@ -226,25 +226,25 @@ extension AppView {
             }
         }
     }
-    
+
     struct IconNameCategoryPreview: View {
         var body: some View {
             HStack(spacing: 8) {
                 AnimatedPlaceholder()
                     .frame(width: 64, height: 64)
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     AnimatedPlaceholder()
                         .frame(maxWidth: .infinity)
                         .frame(height: 21)
-                    
+
                     AnimatedPlaceholder()
                         .frame(width: 68, height: 17)
                 }
             }
         }
     }
-    
+
     struct ButtonsPreview: View {
         var body: some View {
             AnimatedPlaceholder()

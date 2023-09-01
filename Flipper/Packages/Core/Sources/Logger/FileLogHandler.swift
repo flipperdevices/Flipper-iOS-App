@@ -1,8 +1,6 @@
 import Logging
 import Foundation
 
-// swiftlint:disable function_parameter_count
-
 struct FileLogHandler: LogHandler {
     private let storage: LoggerStorage
 

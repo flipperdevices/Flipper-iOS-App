@@ -1,9 +1,10 @@
 import Peripheral
 
 extension ScreenFrame {
-    // swiftlint:disable force_unwrapping
     static var updateInProgress: ScreenFrame {
+        // swiftlint:disable force_unwrapping
         .init(bytes: updatingFrameBytes, orientation: .horizontal)!
+        // swiftlint:enable force_unwrapping
     }
 
     // swiftlint:disable multiline_literal_brackets indentation_width
@@ -95,4 +96,5 @@ extension ScreenFrame {
          0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x50, 0x28, 0xC0,
          0x0C, 0xFC, 0xFF, 0x83]
     }
+    // swiftlint:enable multiline_literal_brackets indentation_width
 }

@@ -27,7 +27,6 @@ public class ServerFileImporter: Importer {
         return try .init(path: .init(string: path), content: decrypted)
     }
 
-    // swiftlint:disable large_tuple
     func parseURL(_ url: URL) -> (code: String, path: String, key: String)? {
         guard
             let fragment = url.fragment,

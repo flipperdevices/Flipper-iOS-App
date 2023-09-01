@@ -40,7 +40,7 @@ public class SharingModel: ObservableObject {
     private func logging<T>(
         _ name: String,
         _ task: () async throws -> T
-    ) async throws-> T {
+    ) async throws -> T {
         do {
             return try await task()
         } catch {

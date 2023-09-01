@@ -1,6 +1,7 @@
 import SwiftUI
 
-public struct CachedAsyncImage<Content, PlaceholderContent>: View where Content: View, PlaceholderContent: View {
+public struct CachedAsyncImage<Content, PlaceholderContent>: View
+where Content: View, PlaceholderContent: View {
     private let url: URL?
     private let scale: CGFloat
     private let transaction: Transaction?
@@ -35,7 +36,7 @@ public struct CachedAsyncImage<Content, PlaceholderContent>: View where Content:
         self.contentPhase = nil
         self.transaction = nil
     }
-    
+
     public var body: some View {
         if let cached = ImageInMemoryCache[url] {
             if contentPhase != nil {
@@ -66,14 +67,13 @@ public struct CachedAsyncImage<Content, PlaceholderContent>: View where Content:
 // MARK: Private methods
 
 private extension CachedAsyncImage {
-    
     func cacheAndRender(image: Image) -> some View {
         ImageInMemoryCache[url] = image
         return contentImage?(image)
     }
 
     func cacheAndRender(phase: AsyncImagePhase) -> some View {
-        if case .success (let image) = phase {
+        if case .success(let image) = phase {
             ImageInMemoryCache[url] = image
         }
         return contentPhase?(phase)
@@ -82,10 +82,9 @@ private extension CachedAsyncImage {
 
 // MARK: Private cache for CachedAsyncImage
 
-fileprivate class ImageInMemoryCache {
-    
+private class ImageInMemoryCache {
     static private var cache: [URL: Image] = [:]
-    
+
     static subscript(url: URL?) -> Image? {
         get {
             guard let url else { return nil }

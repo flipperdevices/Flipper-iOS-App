@@ -32,7 +32,6 @@ func share(_ url: URL?, completion: @escaping () -> Void = {}) {
     }
 }
 
-
 func shareFile(name: String, content: String) {
     guard let url = try? FileManager.default.createTempFile(
         name: name,

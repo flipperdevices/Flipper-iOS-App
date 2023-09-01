@@ -45,8 +45,8 @@ extension View {
 }
 
 // MARK: Fix back swipe with custom back button
-// swiftlint:disable override_in_extension
 
+// swiftlint:disable override_in_extension
 extension UINavigationController: UIGestureRecognizerDelegate {
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -59,3 +59,4 @@ extension UINavigationController: UIGestureRecognizerDelegate {
         viewControllers.count > 1
     }
 }
+// swiftlint:enable override_in_extension

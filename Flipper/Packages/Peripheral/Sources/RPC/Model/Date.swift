@@ -29,6 +29,7 @@ extension Date {
         let time = "\(source.hour):\(source.minute):\(source.second)"
         // swiftlint:disable force_unwrapping
         self.init(iso8601String: "\(date)T\(time)Z")!
+        // swiftlint:enable force_unwrapping
     }
 
     private init?(iso8601String string: String) {

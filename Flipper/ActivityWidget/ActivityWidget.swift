@@ -10,7 +10,7 @@ struct Provider: IntentTimelineProvider {
     func getSnapshot(
         for configuration: ConfigurationIntent,
         in context: Context,
-        completion: @escaping (Entry) -> ()
+        completion: @escaping (Entry) -> Void
     ) {
         let entry = Entry(date: Date(), configuration: configuration)
         completion(entry)
@@ -19,7 +19,7 @@ struct Provider: IntentTimelineProvider {
     func getTimeline(
         for configuration: ConfigurationIntent,
         in context: Context,
-        completion: @escaping (Timeline<Entry>) -> ()
+        completion: @escaping (Timeline<Entry>) -> Void
     ) {
         var entries: [Entry] = []
 
@@ -45,7 +45,7 @@ struct Entry: TimelineEntry {
     let configuration: ConfigurationIntent
 }
 
-struct ActivityWidgetEntryView : View {
+struct ActivityWidgetEntryView: View {
     var entry: Provider.Entry
 
     var body: some View {

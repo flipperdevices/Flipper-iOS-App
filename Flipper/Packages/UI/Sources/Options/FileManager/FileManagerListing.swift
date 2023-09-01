@@ -11,7 +11,7 @@ struct FileManagerListing: View {
     @Environment(\.dismiss) var dismiss
 
     @State private var elements: [Element] = []
-    @State private var error: String? = nil
+    @State private var error: String?
     @State private var isBusy = false
 
     @State private var name = ""

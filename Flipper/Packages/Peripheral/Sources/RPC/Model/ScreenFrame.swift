@@ -1,4 +1,3 @@
-
 public struct ScreenFrame: Equatable {
     let bytes: [UInt8]
     public let orientation: Orientation

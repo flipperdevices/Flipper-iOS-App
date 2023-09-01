@@ -24,8 +24,6 @@ public protocol BluetoothPeripheral: AnyObject {
 }
 
 public extension BluetoothPeripheral {
-    // swiftlint:disable discouraged_optional_boolean
-
     private func hasCharacteristic(_ id: String) -> Bool? {
         guard !services.isEmpty else {
             return nil

@@ -7,7 +7,7 @@ struct AppsNoInternetView: View {
         VStack(spacing: 12) {
             VStack(spacing: 4) {
                 Image("NoInternet")
-                
+
                 Text("No Internet Connection")
                     .font(.system(size: 12, weight: .bold))
                     .multilineTextAlignment(.center)
