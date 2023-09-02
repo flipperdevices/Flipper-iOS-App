@@ -35,7 +35,7 @@ struct RemoteControlView: View {
     public enum Control {
         case lock
         case unlock
-        case inputKey(InputKey)
+        case inputKey(InputKey, Bool)
     }
     @State var controlsQueue: [(UUID, Control)] = []
     @State var controlsStream: AsyncStream<Control>?
@@ -152,8 +152,8 @@ struct RemoteControlView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .coordinateSpace(name: "rcp")
 
-            DeviceControls { key in
-                controlTapped(.inputKey(key))
+            DeviceControls { key, isLong in
+                controlTapped(.inputKey(key, isLong))
             }
             .padding(.bottom, 14)
         }
@@ -235,13 +235,13 @@ struct RemoteControlView: View {
         switch control {
         case .lock: await lock()
         case .unlock: await unlock()
-        case .inputKey(let key): await pressButton(key)
+        case let .inputKey(key, isLong): await pressButton(key, isLong)
         }
     }
 
-    func pressButton(_ button: InputKey) async {
+    func pressButton(_ button: InputKey, _ isLong: Bool) async {
         feedback(style: .light)
-        try? await device.pressButton(button)
+        try? await device.pressButton(button, isLong: isLong)
         feedback(style: .light)
     }
 

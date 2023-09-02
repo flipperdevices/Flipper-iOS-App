@@ -26,9 +26,9 @@ extension RemoteControlView {
 
             var rotation: Double {
                 switch control {
-                case .inputKey(.left): return -90
-                case .inputKey(.right): return 90
-                case .inputKey(.down): return 180
+                case .inputKey(.left, _): return -90
+                case .inputKey(.right, _): return 90
+                case .inputKey(.down, _): return 180
                 default: return 0
                 }
             }
@@ -37,12 +37,12 @@ extension RemoteControlView {
                 switch control {
                 case .lock: return "QueueLock"
                 case .unlock: return "QueueUnlock"
-                case .inputKey(.up): return "QueueUp"
-                case .inputKey(.down): return "QueueUp"
-                case .inputKey(.left): return "QueueUp"
-                case .inputKey(.right): return "QueueUp"
-                case .inputKey(.enter): return "QueueEnter"
-                case .inputKey(.back): return "QueueBack"
+                case .inputKey(.up, _): return "QueueUp"
+                case .inputKey(.down, _): return "QueueUp"
+                case .inputKey(.left, _): return "QueueUp"
+                case .inputKey(.right, _): return "QueueUp"
+                case .inputKey(.enter, _): return "QueueEnter"
+                case .inputKey(.back, _): return "QueueBack"
                 }
             }
 

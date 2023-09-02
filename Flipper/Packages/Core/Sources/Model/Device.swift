@@ -218,9 +218,9 @@ public class Device: ObservableObject {
         }
     }
 
-    public func pressButton(_ button: InputKey) async throws {
+    public func pressButton(_ button: InputKey, isLong: Bool) async throws {
         do {
-            try await rpc.pressButton(button)
+            try await rpc.pressButton(button, isLong: isLong)
         } catch {
             logger.error("press button: \(error)")
             throw error
