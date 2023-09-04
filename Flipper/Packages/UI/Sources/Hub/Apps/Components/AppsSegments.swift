@@ -31,7 +31,7 @@ struct AppsSegments: View {
             )
         }
         .background(.white.opacity(0.3))
-        .cornerRadius(8)
+        .cornerRadius(10)
         .onReceive(model.$statuses) { _ in
             Task {
                 loadUpdates()
