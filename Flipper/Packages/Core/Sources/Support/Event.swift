@@ -83,7 +83,7 @@ private extension Feedback.Event {
 
         let header =
             """
-            {"type":"event","length":\(content.count)}
+            {"type":"event","length":\(content.utf8.count)}
             """
 
         return
@@ -105,7 +105,7 @@ private extension Feedback.Event {
 
         let header =
             """
-            {"type":"user_report","length":\(content.count)}
+            {"type":"user_report","length":\(content.utf8.count)}
             """
 
         return
@@ -133,7 +133,7 @@ private extension Feedback.Event {
             """
             {\
             "filename":"\(attachment.filename)",\
-            "length":\(content.count),\
+            "length":\(content.utf8.count),\
             "type":"attachment",\
             "attachment_type":"event.attachment"\
             }
