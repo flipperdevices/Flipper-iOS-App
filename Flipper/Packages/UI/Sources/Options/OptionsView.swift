@@ -86,7 +86,7 @@ struct OptionsView: View {
                 HStack {
                     Image("OptionsBug")
                         .renderingMode(.template)
-                    NavigationLink("Report a bug") {
+                    NavigationLink("Report Bug") {
                         ReportBugView()
                     }
                 }
