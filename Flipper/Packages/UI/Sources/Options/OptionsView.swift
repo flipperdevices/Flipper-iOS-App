@@ -49,9 +49,6 @@ struct OptionsView: View {
             }
 
             Section(header: Text("Remote")) {
-                NavigationLink("Screen Streaming") {
-                    RemoteMovedView()
-                }
                 NavigationLink("File Manager") {
                     FileManagerView()
                 }
