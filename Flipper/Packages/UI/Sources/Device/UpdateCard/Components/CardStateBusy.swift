@@ -4,8 +4,7 @@ extension DeviceUpdateCard {
     struct CardStateBusy: View {
         var body: some View {
             HStack {
-                Text("Update Channel")
-                    .foregroundColor(.black30)
+                UpdateChannelLabel()
 
                 Spacer()
 
