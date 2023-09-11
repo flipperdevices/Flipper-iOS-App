@@ -19,7 +19,7 @@
 		8B1A482229C113A5000169E9 /* ActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482129C113A5000169E9 /* ActivityWidget.swift */; };
 		8B1A482729C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */; };
 		8B1A482829C113A6000169E9 /* ActivityWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */; };
-		8B1A482B29C113A6000169E9 /* ActivityWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8B1A481729C113A5000169E9 /* ActivityWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8B1A482B29C113A6000169E9 /* ActivityWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8B1A481729C113A5000169E9 /* ActivityWidget.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8B1A483029C11AF8000169E9 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B1A482F29C11AF8000169E9 /* Core */; };
 		8B1BB6D429C1E67B008AE2A0 /* HaxrCorpNeue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */; };
 		8B1BB6D529C1E67B008AE2A0 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
@@ -44,10 +44,10 @@
 		8BCFDDDF277A2405002DA4CD /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BCFDDDE277A2405002DA4CD /* QuickLook.framework */; platformFilter = maccatalyst; };
 		8BCFDDE2277A2405002DA4CD /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE1277A2405002DA4CD /* PreviewViewController.swift */; };
 		8BCFDDE4277A2405002DA4CD /* PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCFDDE3277A2405002DA4CD /* PreviewProvider.swift */; };
-		8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8BCFDDEB277A2405002DA4CD /* KeyPreview.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8BF9CECA28E21A4400CD5D31 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BF9CEC928E21A4400CD5D31 /* NotificationCenter.framework */; };
 		8BF9CECD28E21A4400CD5D31 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */; };
-		8BF9CED428E21A4400CD5D31 /* TodayWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8BF9CED428E21A4400CD5D31 /* TodayWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */; };
 		F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -648,16 +648,19 @@
 /* Begin PBXTargetDependency section */
 		8B1A482A29C113A6000169E9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 8B1A481629C113A5000169E9 /* ActivityWidget */;
 			targetProxy = 8B1A482929C113A6000169E9 /* PBXContainerItemProxy */;
 		};
 		8BCFDDEA277A2405002DA4CD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 8BCFDDDC277A2405002DA4CD /* KeyPreview */;
 			targetProxy = 8BCFDDE9277A2405002DA4CD /* PBXContainerItemProxy */;
 		};
 		8BF9CED328E21A4400CD5D31 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 8BF9CEC728E21A4400CD5D31 /* TodayWidget */;
 			targetProxy = 8BF9CED228E21A4400CD5D31 /* PBXContainerItemProxy */;
 		};
@@ -690,6 +693,10 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -722,6 +729,10 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -750,6 +761,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -777,6 +792,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -803,6 +822,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -827,6 +850,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
@@ -976,7 +1003,7 @@
 				PRODUCT_NAME = Flipper;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,6";
@@ -1005,7 +1032,7 @@
 				PRODUCT_NAME = Flipper;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,6";
