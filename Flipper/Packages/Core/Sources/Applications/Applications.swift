@@ -504,7 +504,7 @@ extension Applications {
         else {
             return result
         }
-        for file in listing.files {
+        for file in listing.files.filter({ !$0.starts(with: ".") }) {
             do {
                 let manifest = try await _loadManifest(file)
                 result[manifest.uid] = manifest
