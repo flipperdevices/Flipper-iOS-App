@@ -12,7 +12,7 @@ struct AppsNoInternetView: View {
                     .font(.system(size: 12, weight: .bold))
                     .multilineTextAlignment(.center)
 
-                Text("Turn on mobile data or Wi-Fi to acces the Apps")
+                Text("Turn on mobile data or Wi-Fi to access the Apps")
                     .font(.system(size: 12, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)
