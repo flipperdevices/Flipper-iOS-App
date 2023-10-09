@@ -121,6 +121,7 @@
 		8B5E986329E8235A0057B0D7 /* PlayAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayAlert.swift; sourceTree = "<group>"; };
 		8B7480DD2807483500692304 /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		8B7C52702A1A993800AD6D81 /* Catalog */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Catalog; path = Packages/Catalog; sourceTree = "<group>"; };
+		8B82A62A2AD49D71007E9E67 /* Macro */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Macro; path = Packages/Macro; sourceTree = "<group>"; };
 		8B886F162759BA9A00D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Core/.swiftlint.yml; sourceTree = "<group>"; };
 		8B886F172759BAA500D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/UI/.swiftlint.yml; sourceTree = "<group>"; };
 		8B89527827581E7B00E4C336 /* UI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UI; path = Packages/UI; sourceTree = "<group>"; };
@@ -254,6 +255,7 @@
 		8B77A9C626CAA3BA00A3DF9F /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				8B82A62A2AD49D71007E9E67 /* Macro */,
 				8B38AA5F289D6BD800A152F3 /* Analytics */,
 				8BE40CF627F1266D00288F66 /* Peripheral */,
 				8BA49B4B2902C86C00762ADF /* MFKey32v2 */,

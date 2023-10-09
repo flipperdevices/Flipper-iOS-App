@@ -1,3 +1,4 @@
+import Macro
 import UIKit
 import Foundation
 
@@ -9,59 +10,59 @@ extension URL {
         .init(string: UIApplication.openSettingsURLString) ?? systemSettings
     }
 
-    static var systemSettings: URL {
+    static var systemSettings = #URL(
         "App-Prefs:root="
-    }
+    )
 
     // MARK: AppStore
 
-    static var appStore: URL {
+    static var appStore = #URL(
         "https://apps.apple.com/app/id1534655259"
-    }
+    )
 
     // MARK: Welcome
 
-    static var termsOfServiceURL: URL {
+    static var termsOfServiceURL = #URL(
         "https://flipp.dev/flipper-app-terms-of-service"
-    }
+    )
 
-    static var privacyPolicyURL: URL {
+    static var privacyPolicyURL = #URL(
         "https://flipp.dev/flipper-app-privacy-policy"
-    }
+    )
 
     // MARK: Help
 
-    static var helpToKnowName: URL {
+    static var helpToKnowName = #URL(
         "https://flipp.dev/passport"
-    }
+    )
 
-    static var helpToTurnOnBluetooth: URL {
+    static var helpToTurnOnBluetooth = #URL(
         "https://flipp.dev/bluetooth-on"
-    }
+    )
 
-    static var helpToInstallFirmware: URL {
+    static var helpToInstallFirmware = #URL(
         "https://flipp.dev/firmware-update"
-    }
+    )
 
-    static var helpToReboot: URL {
+    static var helpToReboot = #URL(
         "https://flipp.dev/reboot"
-    }
+    )
 
-    static var helpToFactoryReset: URL {
+    static var helpToFactoryReset = #URL(
         "https://flipp.dev/storage-repair"
-    }
+    )
 
     // MARK: Resources
 
-    static var forum: URL {
+    static var forum = #URL(
         "https://forum.flipperzero.one"
-    }
+    )
 
-    static var github: URL {
+    static var github = #URL(
         "https://github.com/flipperdevices"
-    }
+    )
 
-    static var bugReport: URL {
+    static var bugReport = #URL(
         "https://flipp.dev/mobile-app-bug-report"
-    }
+    )
 }

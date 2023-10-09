@@ -1,3 +1,4 @@
+import Macro
 import Catalog
 import Peripheral
 
@@ -178,7 +179,7 @@ public class Applications: ObservableObject {
                 priority: 0,
                 name: name,
                 color: "",
-                icon: "https://null",
+                icon: #URL("https://null"),
                 applications: 0)
         }
     }

@@ -1,3 +1,4 @@
+import Macro
 import Foundation
 
 class CentryClient {
@@ -10,7 +11,7 @@ class CentryClient {
     }
 
     private var apiURL: URL {
-        "https://sentry.flipperdevices.com/api/3/envelope/"
+        #URL("https://sentry.flipperdevices.com/api/3/envelope/")
     }
 
     private var sentryKey: String? {

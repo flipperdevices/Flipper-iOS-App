@@ -1,3 +1,4 @@
+import Macro
 import Foundation
 
 public class RegionsBundleAPIv0: RegionsBundleAPI {
@@ -39,7 +40,9 @@ public class RegionsBundleAPIv0: RegionsBundleAPI {
     public init() {
         dataProvider = {
             try await URLSession.shared.data(
-                from: "https://update.flipperzero.one/regions/api/v0/bundle"
+                from: #URL(
+                    "https://update.flipperzero.one/regions/api/v0/bundle"
+                )
             ).0
         }
     }

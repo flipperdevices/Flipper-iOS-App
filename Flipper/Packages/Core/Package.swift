@@ -1,4 +1,4 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.9
 import PackageDescription
 
 let package = Package(
@@ -14,6 +14,9 @@ let package = Package(
             targets: ["Core"])
     ],
     dependencies: [
+        .package(
+            name: "Macro",
+            path: "../Macro"),
         .package(
             name: "Analytics",
             path: "../Analytics"),
@@ -46,6 +49,7 @@ let package = Package(
         .target(
             name: "Core",
             dependencies: [
+                "Macro",
                 "Analytics",
                 "Peripheral",
                 "MFKey32v2",

@@ -1,3 +1,4 @@
+import Macro
 import Analytics
 import Peripheral
 import Catalog
@@ -142,8 +143,8 @@ public class Dependencies: ObservableObject {
 
     @MainActor
     public lazy var applications: Applications = {
-        var devURL: URL { "https://catalog.flipp.dev/api/v0" }
-        var prodURL: URL { "https://catalog.flipperzero.one/api/v0" }
+        var devURL = #URL("https://catalog.flipp.dev/api/v0")
+        var prodURL = #URL("https://catalog.flipperzero.one/api/v0")
 
         return .init(
             catalog: WebCatalog(
