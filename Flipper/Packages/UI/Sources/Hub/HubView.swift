@@ -11,6 +11,7 @@ struct HubView: View {
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
     @State private var applicationAlias: String?
     @State private var showApplication = false
+    @State private var showDetectReader = false
 
     // NOTE: Fixes SwiftUI focus issue in case of
     // TextField placed in ToolbarItem inside NavigationView
@@ -36,7 +37,7 @@ struct HubView: View {
                         }
 
                         NavigationLink {
-                            NFCToolsView()
+                            NFCToolsView($showDetectReader)
                         } label: {
                             NFCCard()
                         }
@@ -69,10 +70,18 @@ struct HubView: View {
                 applicationAlias = url.applicationAlias
                 selectedTab = .hub
                 showApplication = true
+            } else if url == .mfkey32Link {
+                selectedTab = .hub
+                showDetectReader = true
             }
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
+        .fullScreenCover(isPresented: $showDetectReader) {
+            AlertStack {
+                DetectReaderView()
+            }
+        }
     }
 
     struct NFCCard: View {
