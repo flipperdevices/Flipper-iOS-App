@@ -59,8 +59,9 @@ struct HubView: View {
                 }
             }
             .sheet(isPresented: $showRemoteControl) {
-                RemoteControlView()
-                    .modifier(AlertControllerModifier())
+                AlertStack {
+                    RemoteControlView()
+                }
             }
         }
         .onOpenURL { url in
@@ -97,22 +98,6 @@ struct HubView: View {
                 image: "HubRemoteControl",
                 hasNotification: false
             )
-        }
-    }
-}
-
-// TODO: Refactor alerts
-private struct AlertControllerModifier: ViewModifier {
-    @StateObject private var alertController: AlertController = .init()
-
-    func body(content: Content) -> some View {
-        ZStack {
-            content
-                .environmentObject(alertController)
-
-            if alertController.isPresented {
-                alertController.alert
-            }
         }
     }
 }

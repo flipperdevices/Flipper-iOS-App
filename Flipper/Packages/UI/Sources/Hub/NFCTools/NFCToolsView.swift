@@ -30,7 +30,9 @@ struct NFCToolsView: View {
             }
         }
         .fullScreenCover(isPresented: $showDetectReaderView) {
-            DetectReaderView()
+            AlertStack {
+                DetectReaderView()
+            }
         }
     }
 }

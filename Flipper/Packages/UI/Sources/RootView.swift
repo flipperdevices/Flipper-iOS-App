@@ -7,17 +7,19 @@ public struct RootView: View {
     public init() {}
 
     public var body: some View {
-        RootViewImpl()
-            .environmentObject(dependencies.router)
-            .environmentObject(dependencies.device)
-            .environmentObject(dependencies.central)
-            .environmentObject(dependencies.networkMonitor)
-            .environmentObject(dependencies.archiveModel)
-            .environmentObject(dependencies.synchronization)
-            .environmentObject(dependencies.updateModel)
-            .environmentObject(dependencies.sharing)
-            .environmentObject(dependencies.emulate)
-            .environmentObject(dependencies.applications)
+        AlertStack {
+            RootViewImpl()
+        }
+        .environmentObject(dependencies.router)
+        .environmentObject(dependencies.device)
+        .environmentObject(dependencies.central)
+        .environmentObject(dependencies.networkMonitor)
+        .environmentObject(dependencies.archiveModel)
+        .environmentObject(dependencies.synchronization)
+        .environmentObject(dependencies.updateModel)
+        .environmentObject(dependencies.sharing)
+        .environmentObject(dependencies.emulate)
+        .environmentObject(dependencies.applications)
     }
 }
 
@@ -25,7 +27,6 @@ private struct RootViewImpl: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var device: Device
 
-    @StateObject var alertController: AlertController = .init()
     @StateObject var hexKeyboardController: HexKeyboardController = .init()
 
     @Environment(\.scenePhase) var scenePhase
@@ -57,10 +58,6 @@ private struct RootViewImpl: View {
                 )
                 .offset(y: hexKeyboardController.isHidden ? 500 : 0)
             }
-
-            if alertController.isPresented {
-                alertController.alert
-            }
         }
         .customAlert(isPresented: $isPairingIssue) {
             PairingIssueAlert(isPresented: $isPairingIssue)
@@ -68,7 +65,6 @@ private struct RootViewImpl: View {
         .customAlert(isPresented: $isUpdateAvailable) {
             MobileUpdateAlert(isPresented: $isUpdateAvailable)
         }
-        .environmentObject(alertController)
         .environmentObject(hexKeyboardController)
         .onContinueUserActivity("PlayAlertIntent") { _ in
             device.playAlert()
