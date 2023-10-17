@@ -27,8 +27,6 @@ private struct RootViewImpl: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var device: Device
 
-    @StateObject var hexKeyboardController: HexKeyboardController = .init()
-
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.isPresented) var isPresented
 
@@ -38,7 +36,7 @@ private struct RootViewImpl: View {
     init() {}
 
     var body: some View {
-        ZStack {
+        Group {
             ZStack {
                 if router.isFirstLaunch {
                     WelcomeView()
@@ -48,16 +46,6 @@ private struct RootViewImpl: View {
             }
             .animation(.linear, value: router.isFirstLaunch)
             .transition(.opacity)
-
-            VStack {
-                Spacer()
-                HexKeyboard(
-                    onButton: { hexKeyboardController.onKey(.hex($0)) },
-                    onBack: { hexKeyboardController.onKey(.back) },
-                    onOK: { hexKeyboardController.onKey(.ok) }
-                )
-                .offset(y: hexKeyboardController.isHidden ? 500 : 0)
-            }
         }
         .customAlert(isPresented: $isPairingIssue) {
             PairingIssueAlert(isPresented: $isPairingIssue)
@@ -65,7 +53,6 @@ private struct RootViewImpl: View {
         .customAlert(isPresented: $isUpdateAvailable) {
             MobileUpdateAlert(isPresented: $isUpdateAvailable)
         }
-        .environmentObject(hexKeyboardController)
         .onContinueUserActivity("PlayAlertIntent") { _ in
             device.playAlert()
         }
