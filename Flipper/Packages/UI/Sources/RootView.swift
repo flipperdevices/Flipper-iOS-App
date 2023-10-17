@@ -34,8 +34,6 @@ private struct RootViewImpl: View {
     @State private var isPairingIssue = false
     @State private var isUpdateAvailable = false
 
-    @State private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
-
     init() {}
 
     var body: some View {
@@ -83,41 +81,9 @@ private struct RootViewImpl: View {
                 router.hideWelcomeScreen()
             }
         }
-        .onChange(of: scenePhase) { scenePhase in
-            switch scenePhase {
-            case .active: onActive()
-            case .inactive: onInactive()
-            default: break
-            }
-        }
         .task {
             router.recordAppOpen()
             isUpdateAvailable = await AppVersionCheck.hasUpdate
         }
-    }
-
-    func onActive() {
-        guard backgroundTaskID != .invalid else {
-            return
-        }
-        endBackgroundTask()
-    }
-
-    func onInactive() {
-        guard backgroundTaskID == .invalid else {
-            return
-        }
-        backgroundTaskID = startBackgroundTask()
-    }
-
-    private func startBackgroundTask() -> UIBackgroundTaskIdentifier {
-        UIApplication.shared.beginBackgroundTask {
-            self.endBackgroundTask()
-        }
-    }
-
-    private func endBackgroundTask() {
-        UIApplication.shared.endBackgroundTask(backgroundTaskID)
-        backgroundTaskID = .invalid
     }
 }
