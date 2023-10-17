@@ -69,13 +69,11 @@ struct ActivityWidget: Widget {
     }
 }
 
-struct ActivityWidget_Previews: PreviewProvider {
-    static var previews: some View {
-        ActivityWidgetEntryView(
-            entry: Entry(
-                date: Date(),
-                configuration: ConfigurationIntent())
-        )
-        .previewContext(WidgetPreviewContext(family: .systemSmall))
-    }
+#Preview {
+    ActivityWidgetEntryView(
+        entry: Entry(
+            date: Date(),
+            configuration: ConfigurationIntent())
+    )
+    .previewContext(WidgetPreviewContext(family: .systemSmall))
 }
