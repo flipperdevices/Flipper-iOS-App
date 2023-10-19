@@ -140,7 +140,10 @@ public class UpdateModel: ObservableObject {
             updateCurrentRegion()
         }
 
-        updateState()
+        switch state {
+        case .update(.progress): break
+        default: updateState()
+        }
     }
 
     func resetFlipperState() {
