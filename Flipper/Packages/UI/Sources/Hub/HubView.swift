@@ -28,6 +28,9 @@ struct HubView: View {
                         AppsRowCard()
                             .environmentObject(applications)
                     }
+                    .analyzingTapGesture {
+                        recordAppsOpened()
+                    }
 
                     HStack(spacing: 14) {
                         Button {
@@ -108,6 +111,12 @@ struct HubView: View {
                 hasNotification: false
             )
         }
+    }
+
+    // MARK: Analytics
+
+    func recordAppsOpened() {
+        analytics.appOpen(target: .fapHub)
     }
 }
 

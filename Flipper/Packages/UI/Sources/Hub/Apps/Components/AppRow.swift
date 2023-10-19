@@ -114,6 +114,7 @@ struct AppRow: View {
         }
 
         func install() {
+            recordAppInstall(application: application)
             Task {
                 await model.install(application.id)
             }
@@ -123,6 +124,12 @@ struct AppRow: View {
             Task {
                 await model.update(application.id)
             }
+        }
+
+        // MARK: Analytics
+
+        func recordAppInstall(application: Applications.ApplicationInfo) {
+            analytics.appOpen(target: .fapHubInstall(application.alias))
         }
     }
 }

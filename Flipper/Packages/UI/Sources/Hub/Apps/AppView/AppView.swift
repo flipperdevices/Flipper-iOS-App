@@ -174,6 +174,7 @@ struct AppView: View {
                     isPresented: $isHideAppPresented,
                     application: .init(application)
                 ) {
+                    recordAppHidden(application: application)
                     hide()
                     Task {
                         dismiss()
@@ -192,6 +193,12 @@ struct AppView: View {
 
         func unhide() {
             hiddenApps.remove(application.id)
+        }
+
+        // MARK: Analytics
+
+        func recordAppHidden(application: Applications.Application) {
+            analytics.appOpen(target: .fapHubHide(application.alias))
         }
     }
 }

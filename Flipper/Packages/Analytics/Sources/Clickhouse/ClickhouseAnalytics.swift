@@ -41,6 +41,7 @@ extension ClickhouseAnalytics: EventHandler {
         report(event: .with {
             $0.open = .with {
                 $0.target = .init(target)
+                $0.arg = target.value
             }
         })
     }
@@ -164,6 +165,12 @@ fileprivate extension Metric_Events_Open.OpenTarget {
         case .saveNFCDump: self = .saveDump
         case .mfKey32: self = .mfkey32
         case .nfcDumpEditor: self = .openNfcDumpEditor
+        case .fapHub: self = .openFaphub
+        case .fapHubCategory: self = .openFaphubCategory
+        case .fapHubSearch: self = .openFaphubSearch
+        case .fapHubApp: self = .openFaphubApp
+        case .fapHubInstall: self = .installFaphubApp
+        case .fapHubHide: self = .hideFaphubApp
         }
     }
 }

@@ -32,7 +32,8 @@ extension CountlyAnalytics: EventHandler {
         recordEvent(
             key: "app_open",
             segmentation: [
-                "target": String(target.value)
+                "target": String(target.rawValue),
+                "arg": target.value
             ])
     }
 
@@ -92,7 +93,7 @@ extension CountlyAnalytics: EventHandler {
                 "update_id": .init(id),
                 "update_from": from,
                 "update_to": to,
-                "status": .init(status.value)
+                "status": .init(status.rawValue)
             ])
     }
 
@@ -135,14 +136,14 @@ extension CountlyAnalytics: EventHandler {
                 "region_ip": ip,
                 "region_system": system,
                 "region_provided": provided,
-                "region_source": .init(source.value),
+                "region_source": .init(source.rawValue),
                 "is_roaming": "false"
             ])
     }
 }
 
 fileprivate extension OpenTarget {
-    var value: Int {
+    var rawValue: Int {
         switch self {
         case .app: return 0
         case .keyImport: return 1
@@ -157,12 +158,18 @@ fileprivate extension OpenTarget {
         case .saveNFCDump: return 10
         case .mfKey32: return 11
         case .nfcDumpEditor: return 12
+        case .fapHub: return 13
+        case .fapHubCategory: return 14
+        case .fapHubSearch: return 15
+        case .fapHubApp: return 16
+        case .fapHubInstall: return 17
+        case .fapHubHide: return 18
         }
     }
 }
 
 fileprivate extension UpdateResult {
-    var value: Int {
+    var rawValue: Int {
         switch self {
         case .completed: return 1
         case .canceled: return 2
@@ -175,7 +182,7 @@ fileprivate extension UpdateResult {
 }
 
 fileprivate extension RegionSource {
-    var value: Int {
+    var rawValue: Int {
         switch self {
         case .sim: return 1
         case .geoIP: return 2

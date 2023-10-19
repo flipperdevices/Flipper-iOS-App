@@ -27,6 +27,8 @@ struct Metric_Events_Open {
 
   var target: Metric_Events_Open.OpenTarget = .app
 
+  var arg: String = String()
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OpenTarget: SwiftProtobuf.Enum {
@@ -44,6 +46,12 @@ struct Metric_Events_Open {
     case saveDump // = 10
     case mfkey32 // = 11
     case openNfcDumpEditor // = 12
+    case openFaphub // = 13
+    case openFaphubCategory // = 14
+    case openFaphubSearch // = 15
+    case openFaphubApp // = 16
+    case installFaphubApp // = 17
+    case hideFaphubApp // = 18
     case UNRECOGNIZED(Int)
 
     init() {
@@ -65,6 +73,12 @@ struct Metric_Events_Open {
       case 10: self = .saveDump
       case 11: self = .mfkey32
       case 12: self = .openNfcDumpEditor
+      case 13: self = .openFaphub
+      case 14: self = .openFaphubCategory
+      case 15: self = .openFaphubSearch
+      case 16: self = .openFaphubApp
+      case 17: self = .installFaphubApp
+      case 18: self = .hideFaphubApp
       default: self = .UNRECOGNIZED(rawValue)
       }
     }
@@ -84,6 +98,12 @@ struct Metric_Events_Open {
       case .saveDump: return 10
       case .mfkey32: return 11
       case .openNfcDumpEditor: return 12
+      case .openFaphub: return 13
+      case .openFaphubCategory: return 14
+      case .openFaphubSearch: return 15
+      case .openFaphubApp: return 16
+      case .installFaphubApp: return 17
+      case .hideFaphubApp: return 18
       case .UNRECOGNIZED(let i): return i
       }
     }
@@ -97,7 +117,7 @@ struct Metric_Events_Open {
 
 extension Metric_Events_Open.OpenTarget: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [Metric_Events_Open.OpenTarget] = [
+  static let allCases: [Metric_Events_Open.OpenTarget] = [
     .app,
     .saveKey,
     .emulate,
@@ -111,6 +131,12 @@ extension Metric_Events_Open.OpenTarget: CaseIterable {
     .saveDump,
     .mfkey32,
     .openNfcDumpEditor,
+    .openFaphub,
+    .openFaphubCategory,
+    .openFaphubSearch,
+    .openFaphubApp,
+    .installFaphubApp,
+    .hideFaphubApp,
   ]
 }
 
@@ -129,6 +155,7 @@ extension Metric_Events_Open: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
   static let protoMessageName: String = _protobuf_package + ".Open"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "target"),
+    2: .same(proto: "arg"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -138,6 +165,7 @@ extension Metric_Events_Open: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularEnumField(value: &self.target) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.arg) }()
       default: break
       }
     }
@@ -147,11 +175,15 @@ extension Metric_Events_Open: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if self.target != .app {
       try visitor.visitSingularEnumField(value: self.target, fieldNumber: 1)
     }
+    if !self.arg.isEmpty {
+      try visitor.visitSingularStringField(value: self.arg, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: Metric_Events_Open, rhs: Metric_Events_Open) -> Bool {
     if lhs.target != rhs.target {return false}
+    if lhs.arg != rhs.arg {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -172,5 +204,11 @@ extension Metric_Events_Open.OpenTarget: SwiftProtobuf._ProtoNameProviding {
     10: .same(proto: "SAVE_DUMP"),
     11: .same(proto: "MFKEY32"),
     12: .same(proto: "OPEN_NFC_DUMP_EDITOR"),
+    13: .same(proto: "OPEN_FAPHUB"),
+    14: .same(proto: "OPEN_FAPHUB_CATEGORY"),
+    15: .same(proto: "OPEN_FAPHUB_SEARCH"),
+    16: .same(proto: "OPEN_FAPHUB_APP"),
+    17: .same(proto: "INSTALL_FAPHUB_APP"),
+    18: .same(proto: "HIDE_FAPHUB_APP"),
   ]
 }
