@@ -1,7 +1,5 @@
 import CoreTelephony
 
-// swiftlint:disable discouraged_optional_collection
-
 public class CellularRegionProvider: RegionProvider {
     private let codesProvider: () -> [String]?
 

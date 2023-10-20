@@ -12,7 +12,7 @@ struct FlipperShortcuts: AppShortcutsProvider {
                 "\(.applicationName) send item",
                 "\(.applicationName) emulate item",
                 "Send item from \(.applicationName)",
-                "Emulate item on \(.applicationName)",
+                "Emulate item on \(.applicationName)"
             ]
         )
     }

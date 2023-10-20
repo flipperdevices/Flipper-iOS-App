@@ -105,7 +105,9 @@ struct ArchiveView: View {
                 }
             }
             .sheet(item: $selectedItem) { item in
-                InfoView(item: item)
+                AlertStack {
+                    InfoView(item: item)
+                }
             }
             .sheet(item: $importedItem) { item in
                 ImportView(url: item)
@@ -127,7 +129,7 @@ struct ArchiveView: View {
             provider.loadItem(
                 forTypeIdentifier: UTType.item.identifier,
                 options: nil
-            ) { (data, error) in
+            ) { (data, _) in
                 guard let url = data as? URL else { return }
                 importedItem = url
             }

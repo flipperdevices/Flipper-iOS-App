@@ -340,7 +340,7 @@ extension Session {
         }
     }
 
-    public func pressButton(_ button: InputKey) async throws {
+    public func pressButton(_ button: InputKey, isLong: Bool) async throws {
         func send(_ type: InputType) async throws -> Response? {
             try await self.send(.gui(.button(button, type))).response
         }
@@ -348,8 +348,8 @@ extension Session {
             logger.error("sending press type failed")
             return
         }
-        guard try await send(.short) == .ok else {
-            logger.error("sending short type failed")
+        guard try await send(isLong ? .long : .short) == .ok else {
+            logger.error("sending short/long type failed")
             return
         }
         guard try await send(.release) == .ok else {

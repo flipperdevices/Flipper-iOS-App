@@ -1,13 +1,20 @@
+import Macro
 import Foundation
 
 extension URL {
-    // swiftlint:disable force_unwrapping
+    public static var flipperMobile = #URL(
+        "flipper://"
+    )
 
-    public static var flipperMobile: URL {
-        .init(string: "flipper://")!
-    }
+    public static var todayWidgetSettings = #URL(
+        "flipper://todaywidget-settings"
+    )
 
-    public static var todayWidgetSettings: URL {
-        .init(string: "flipper://todaywidget-settings")!
-    }
+    public static var updateDeviceLink = #URL(
+        "https://flpr.app/o/update"
+    )
+
+    public static var mfkey32Link = #URL(
+        "https://flpr.app/o/mfkey32"
+    )
 }

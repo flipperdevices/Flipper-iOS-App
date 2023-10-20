@@ -218,9 +218,9 @@ public class Device: ObservableObject {
         }
     }
 
-    public func pressButton(_ button: InputKey) async throws {
+    public func pressButton(_ button: InputKey, isLong: Bool) async throws {
         do {
-            try await rpc.pressButton(button)
+            try await rpc.pressButton(button, isLong: isLong)
         } catch {
             logger.error("press button: \(error)")
             throw error
@@ -248,9 +248,7 @@ public class Device: ObservableObject {
     }
 
     private var isProvisioningDisabled: Bool {
-        get {
-            UserDefaultsStorage.shared.isProvisioningDisabled
-        }
+        UserDefaultsStorage.shared.isProvisioningDisabled
     }
 
     private var hardwareRegion: Int? {
@@ -327,7 +325,6 @@ public class Device: ObservableObject {
         }
     }
 
-
     public func getRegion() async throws -> Provisioning.Region {
         let bytes = try await rpc.readFile(at: Provisioning.location)
         return try Provisioning.Region(decoding: bytes)
@@ -399,9 +396,21 @@ extension Device {
 
     func reportRPCInfo() {
         Task {
-            guard let storage = flipper?.storage else { return }
-            let firmwareForkName = try? await getFirmwareFork()
-            let firmwareGitURL = try? await getFirmwareGit()
+            guard
+                let protobufRevision = flipper?.information?.protobufRevision,
+                let storage = flipper?.storage
+            else {
+                return
+            }
+
+            var firmwareForkName: String?
+            var firmwareGitURL: String?
+
+            if protobufRevision >= .v0_14 {
+                firmwareForkName = try? await getFirmwareFork()
+                firmwareGitURL = try? await getFirmwareGit()
+            }
+
             analytics.flipperRPCInfo(
                 sdcardIsAvailable: storage.external != nil,
                 internalFreeByte: storage.internal?.free ?? 0,

@@ -20,9 +20,12 @@ extension EmulateView {
         var buttonColor: Color {
             isEnabled
                 ? isEmulating
-                    ? .init(.init(red: 0.54, green: 0.73, blue: 1.0, alpha: 1.0))
+                    ? emulatingColor
                     : Color.a2
                 : .black8
+        }
+        var emulatingColor: Color {
+            .init(.init(red: 0.54, green: 0.73, blue: 1.0, alpha: 1.0))
         }
         var borderBackgroundColor: Color {
             .init(.init(red: 0.73, green: 0.84, blue: 0.99, alpha: 1.0))
@@ -31,8 +34,12 @@ extension EmulateView {
             .a2
         }
 
+        var animation: SwiftUI.Animation {
+            .linear(duration: 3).repeatForever(autoreverses: false)
+        }
+
         func startAnimation() {
-            withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) {
+            withAnimation(animation) {
                 trimFrom = 0.667
                 trimTo = 1
             }

@@ -3,18 +3,18 @@ import Peripheral
 
 extension RemoteControlView {
     struct DeviceControls: View {
-        var action: (InputKey) -> Void
+        var action: (InputKey, Bool) -> Void
 
         var body: some View {
             HStack(alignment: .bottom, spacing: 36) {
                 ControlCircle(action: action)
-                ControlBackButton { action(.back) }
+                ControlBackButton { action(.back, $0) }
             }
         }
     }
 
     struct ControlCircle: View {
-        var action: @MainActor (InputKey) -> Void
+        var action: @MainActor (InputKey, Bool) -> Void
 
         var verticalSpacing: Double { 12 }
         var horizontalSpacing: Double { 10 }
@@ -26,17 +26,27 @@ extension RemoteControlView {
                 .overlay(
                     VStack(spacing: verticalSpacing) {
                         HStack(spacing: horizontalSpacing) {
-                            ControlButton(inputKey: .up) { action(.up) }
+                            ControlButton(inputKey: .up) {
+                                action(.up, $0)
+                            }
                         }
 
                         HStack(spacing: horizontalSpacing) {
-                            ControlButton(inputKey: .left) { action(.left) }
-                            ControlButton(inputKey: .enter) { action(.enter) }
-                            ControlButton(inputKey: .right) { action(.right) }
+                            ControlButton(inputKey: .left) {
+                                action(.left, $0)
+                            }
+                            ControlButton(inputKey: .enter) {
+                                action(.enter, $0)
+                            }
+                            ControlButton(inputKey: .right) {
+                                action(.right, $0)
+                            }
                         }
 
                         HStack(spacing: horizontalSpacing) {
-                            ControlButton(inputKey: .down) { action(.down) }
+                            ControlButton(inputKey: .down) {
+                                action(.down, $0)
+                            }
                         }
                     }
                 )
@@ -79,38 +89,71 @@ extension RemoteControlView {
 
     struct ControlButton: View {
         let inputKey: InputKey
-        var action: () -> Void
+        var action: (Bool) -> Void
 
         var body: some View {
             Button {
-                action()
             } label: {
                 ControlButtonImage(inputKey)
             }
+            .simultaneousGesture(
+                LongPressGesture()
+                    .onEnded { _ in
+                        action(true)
+                    }
+            )
+            .highPriorityGesture(
+                TapGesture()
+                    .onEnded { _ in
+                        action(false)
+                    }
+            )
         }
     }
 
     struct ControlEnterButton: View {
-        var action: () -> Void
+        var action: (Bool) -> Void
 
         var body: some View {
             Button {
-                action()
             } label: {
                 Image("RemoteControlEnter")
             }
+            .simultaneousGesture(
+                LongPressGesture()
+                    .onEnded { _ in
+                        action(true)
+                    }
+            )
+            .highPriorityGesture(
+                TapGesture()
+                    .onEnded { _ in
+                        action(false)
+                    }
+            )
         }
     }
 
     struct ControlBackButton: View {
-        var action: () -> Void
+        var action: (Bool) -> Void
 
         var body: some View {
             Button {
-                action()
             } label: {
                 Image("RemoteControlBack")
             }
+            .simultaneousGesture(
+                LongPressGesture()
+                    .onEnded { _ in
+                        action(true)
+                    }
+            )
+            .highPriorityGesture(
+                TapGesture()
+                    .onEnded { _ in
+                        action(false)
+                    }
+            )
         }
     }
 }

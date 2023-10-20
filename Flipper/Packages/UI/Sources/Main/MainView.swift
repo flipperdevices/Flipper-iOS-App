@@ -41,8 +41,14 @@ struct MainView: View {
             onItemAdded(item: item)
         }
         .onOpenURL { url in
-            if url == .todayWidgetSettings {
+            switch url {
+            case .todayWidgetSettings:
                 showTodayWidgetSettings = true
+            case .updateDeviceLink:
+                selectedTab = .device
+                tabViewController.popToRootView(for: .device)
+            default:
+                break
             }
         }
         .fullScreenCover(isPresented: $showTodayWidgetSettings) {

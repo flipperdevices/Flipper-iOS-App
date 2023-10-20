@@ -1,4 +1,4 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.9
 import PackageDescription
 
 let package = Package(
@@ -14,6 +14,9 @@ let package = Package(
             targets: ["Core"])
     ],
     dependencies: [
+        .package(
+            name: "Macro",
+            path: "../Macro"),
         .package(
             name: "Analytics",
             path: "../Analytics"),
@@ -40,15 +43,13 @@ let package = Package(
             branch: "dev"),
         .package(
             url: "https://github.com/swiftstack/dcompression.git",
-            branch: "dev"),
-        .package(
-            url: "https://github.com/getsentry/sentry-cocoa.git",
-            from: "8.4.0")
+            branch: "dev")
     ],
     targets: [
         .target(
             name: "Core",
             dependencies: [
+                "Macro",
                 "Analytics",
                 "Peripheral",
                 "MFKey32v2",
@@ -57,8 +58,7 @@ let package = Package(
                 .product(name: "DCompression", package: "dcompression"),
                 .product(name: "SwiftProtobuf", package: "swift-protobuf"),
                 .product(name: "Collections", package: "swift-collections"),
-                .product(name: "Logging", package: "swift-log"),
-                .product(name: "Sentry", package: "sentry-cocoa")
+                .product(name: "Logging", package: "swift-log")
             ],
             path: "Sources"),
         .testTarget(

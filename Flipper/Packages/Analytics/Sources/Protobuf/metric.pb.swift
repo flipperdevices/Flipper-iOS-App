@@ -79,7 +79,7 @@ struct Metric_MetricReportRequest {
 
 extension Metric_MetricReportRequest.Platform: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [Metric_MetricReportRequest.Platform] = [
+  static let allCases: [Metric_MetricReportRequest.Platform] = [
     .android,
     .androidDebug,
     .ios,

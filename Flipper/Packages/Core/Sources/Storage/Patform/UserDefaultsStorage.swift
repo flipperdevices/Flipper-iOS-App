@@ -58,6 +58,11 @@ public class UserDefaultsStorage {
         set { storage.set(newValue, forKey: .isProvisioningDisabled) }
     }
 
+    public var isDevCatalog: Bool {
+        get { storage.value(forKey: .isDevCatalog) as? Bool ?? false }
+        set { storage.set(newValue, forKey: .isDevCatalog) }
+    }
+
     func reset() {
         storage.removeObject(forKey: .isFirstLaunchKey)
         storage.removeObject(forKey: .selectedTabKey)
@@ -66,6 +71,7 @@ public class UserDefaultsStorage {
         storage.removeObject(forKey: .hasReaderLog)
         storage.removeObject(forKey: .isDebugMode)
         storage.removeObject(forKey: .isProvisioningDisabled)
+        storage.removeObject(forKey: .isDevCatalog)
     }
 }
 
@@ -76,7 +82,9 @@ public extension String {
     static var installingVersion: String { "installingVersion" }
     static var logLevelKey: String { "logLevel" }
     static var hasReaderLog: String { "hasReaderLog" }
+    static var hiddenAppsKey: String { "hiddenApps" }
 
     static var isDebugMode: String { "isDebugMode" }
     static var isProvisioningDisabled: String { "isProvisioningDisabled" }
+    static var isDevCatalog: String { "isDevCatalog" }
 }

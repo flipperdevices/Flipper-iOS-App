@@ -1,10 +1,11 @@
 import Foundation
 
 public class WebCatalog: CatalogService {
-    //private let baseURL = URL("https://catalog.flipp.dev/api/v0")
-    private let baseURL = URL("https://catalog.flipperzero.one/api/v0")
+    public let baseURL: URL
 
-    public init() {}
+    public init(baseURL: URL) {
+        self.baseURL = baseURL
+    }
 
     public func featured() -> FeaturedRequest {
         .init(baseURL: baseURL)

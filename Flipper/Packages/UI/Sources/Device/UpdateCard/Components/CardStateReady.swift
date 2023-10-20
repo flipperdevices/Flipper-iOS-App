@@ -40,8 +40,7 @@ extension DeviceUpdateCard {
         var body: some View {
             VStack(spacing: 0) {
                 HStack {
-                    Text("Update Channel")
-                        .foregroundColor(.black30)
+                    UpdateChannelLabel()
 
                     Spacer()
 

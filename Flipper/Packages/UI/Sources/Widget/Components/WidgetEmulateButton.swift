@@ -36,4 +36,3 @@ struct WidgetEmulateButton: View {
         })
     }
 }
-

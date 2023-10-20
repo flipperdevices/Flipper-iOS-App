@@ -1,4 +1,4 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.9
 import PackageDescription
 
 let package = Package(
@@ -15,6 +15,9 @@ let package = Package(
     ],
     dependencies: [
         .package(
+            name: "Macro",
+            path: "../Macro"),
+        .package(
             url: "https://github.com/apple/swift-log.git",
             from: "1.4.2")
     ],
@@ -22,6 +25,7 @@ let package = Package(
         .target(
             name: "Catalog",
             dependencies: [
+                "Macro",
                 .product(name: "Logging", package: "swift-log")
             ],
             path: "Sources"),

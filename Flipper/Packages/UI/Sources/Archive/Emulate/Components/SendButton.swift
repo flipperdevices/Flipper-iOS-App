@@ -19,13 +19,16 @@ extension EmulateView {
                 ? "Sending..."
                 : "Send"
         }
-        
+
         var buttonColor: Color {
             isEnabled
                 ? isEmulating
-                    ? .init(.init(red: 1.0, green: 0.65, blue: 0.29, alpha: 1.0))
+                    ? sendingColor
                     : Color.a1
                 : .black8
+        }
+        var sendingColor: Color {
+            .init(.init(red: 1.0, green: 0.65, blue: 0.29, alpha: 1.0))
         }
         var borderBackgroundColor: Color {
             .init(.init(red: 0.99, green: 0.79, blue: 0.59, alpha: 1.0))
@@ -90,7 +93,7 @@ extension EmulateView {
                         }
                         isPressed = true
                         onPressed()
-                        if !isEmulating  {
+                        if !isEmulating {
                             startAnimation()
                         }
                     }

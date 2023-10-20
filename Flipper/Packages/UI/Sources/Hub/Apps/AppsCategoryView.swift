@@ -5,11 +5,14 @@ struct AppsCategoryView: View {
     @EnvironmentObject var model: Applications
     @Environment(\.dismiss) var dismiss
 
+    @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+
     let category: Applications.Category
 
     @State private var isLoading = false
     @State private var isAllLoaded = false
     @State private var applications: [Applications.ApplicationInfo] = []
+    @State private var filteredApplications: [Applications.ApplicationInfo] = []
     @State private var sortOrder: Applications.SortOption = .default
     @State private var apiError: Applications.APIError?
 
@@ -42,7 +45,7 @@ struct AppsCategoryView: View {
                         }
                         .padding(.horizontal, 14)
 
-                        AppList(applications: applications)
+                        AppList(applications: filteredApplications)
 
                         if isLoading, !isAllLoaded {
                             AppRowPreview()
@@ -71,6 +74,18 @@ struct AppsCategoryView: View {
         }
         .onReceive(model.$deviceInfo) { _ in
             reload()
+        }
+        .onChange(of: applications) { _ in
+            Task { filter() }
+        }
+        .onChange(of: hiddenApps) { _ in
+            Task { filter() }
+        }
+    }
+
+    func filter() {
+        filteredApplications = applications.filter {
+            !hiddenApps.contains($0.id)
         }
     }
 

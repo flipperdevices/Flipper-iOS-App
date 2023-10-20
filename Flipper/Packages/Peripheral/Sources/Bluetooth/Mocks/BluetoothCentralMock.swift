@@ -14,8 +14,10 @@ class BluetoothCentralMock: BluetoothCentral {
 
     private let statusSubject: CurrentValueSubject<BluetoothStatus, Never> =
         .init(BluetoothStatus.poweredOn)
-    private let peripheralsSubject: CurrentValueSubject<[BluetoothPeripheral], Never> =
-        .init([BluetoothPeripheral]())
+
+    private let peripheralsSubject:
+        CurrentValueSubject<[BluetoothPeripheral], Never> =
+            .init([BluetoothPeripheral]())
 
     var status: AnyPublisher<BluetoothStatus, Never> {
         self.statusSubject.eraseToAnyPublisher()
@@ -25,12 +27,15 @@ class BluetoothCentralMock: BluetoothCentral {
         self.peripheralsSubject.eraseToAnyPublisher()
     }
 
-    private var peripheralsMap: OrderedDictionary<UUID, BluetoothPeripheralMock> = [:] {
+    private var peripheralsMap:
+        OrderedDictionary<UUID, BluetoothPeripheralMock> = [:]
+    {
         didSet { publishPeripherals() }
     }
 
     private func publishPeripherals() {
-        peripheralsSubject.value = [BluetoothPeripheralMock](peripheralsMap.values)
+        peripheralsSubject.value =
+            [BluetoothPeripheralMock](peripheralsMap.values)
     }
 
     func startScanForPeripherals() {
@@ -56,8 +61,8 @@ class BluetoothCentralMock: BluetoothCentral {
 
     // MARK: BluetoothConnector
 
-    private let connectedPeripheralsSubject: CurrentValueSubject<[BluetoothPeripheral], Never>
-        = .init([])
+    private let connectedPeripheralsSubject:
+        CurrentValueSubject<[BluetoothPeripheral], Never> = .init([])
 
     var connected: AnyPublisher<[BluetoothPeripheral], Never> {
         self.connectedPeripheralsSubject.eraseToAnyPublisher()
@@ -68,7 +73,8 @@ class BluetoothCentralMock: BluetoothCentral {
     }
 
     private func publishConnectedPeripherals() {
-        connectedPeripheralsSubject.value = [BluetoothPeripheralMock](connectedPeripheralsMap.values)
+        connectedPeripheralsSubject.value =
+            [BluetoothPeripheralMock](connectedPeripheralsMap.values)
     }
 
     func connect(to identifier: UUID) {

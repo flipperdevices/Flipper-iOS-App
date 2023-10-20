@@ -192,7 +192,7 @@ public class Emulate: ObservableObject {
 // MARK: Durations
 
 extension ArchiveItem {
-    public var duration:  Int {
+    public var duration: Int {
         isRaw
             ? emulateRawMinimum
             : emulateMinimum

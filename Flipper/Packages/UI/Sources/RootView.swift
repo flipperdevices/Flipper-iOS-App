@@ -7,17 +7,19 @@ public struct RootView: View {
     public init() {}
 
     public var body: some View {
-        RootViewImpl()
-            .environmentObject(dependencies.router)
-            .environmentObject(dependencies.device)
-            .environmentObject(dependencies.central)
-            .environmentObject(dependencies.networkMonitor)
-            .environmentObject(dependencies.archiveModel)
-            .environmentObject(dependencies.synchronization)
-            .environmentObject(dependencies.updateModel)
-            .environmentObject(dependencies.sharing)
-            .environmentObject(dependencies.emulate)
-            .environmentObject(dependencies.applications)
+        AlertStack {
+            RootViewImpl()
+        }
+        .environmentObject(dependencies.router)
+        .environmentObject(dependencies.device)
+        .environmentObject(dependencies.central)
+        .environmentObject(dependencies.networkMonitor)
+        .environmentObject(dependencies.archiveModel)
+        .environmentObject(dependencies.synchronization)
+        .environmentObject(dependencies.updateModel)
+        .environmentObject(dependencies.sharing)
+        .environmentObject(dependencies.emulate)
+        .environmentObject(dependencies.applications)
     }
 }
 
@@ -25,20 +27,15 @@ private struct RootViewImpl: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var device: Device
 
-    @StateObject var alertController: AlertController = .init()
-    @StateObject var hexKeyboardController: HexKeyboardController = .init()
-
     @Environment(\.scenePhase) var scenePhase
 
     @State private var isPairingIssue = false
     @State private var isUpdateAvailable = false
 
-    @State private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
-
     init() {}
 
     var body: some View {
-        ZStack {
+        Group {
             ZStack {
                 if router.isFirstLaunch {
                     WelcomeView()
@@ -48,20 +45,6 @@ private struct RootViewImpl: View {
             }
             .animation(.linear, value: router.isFirstLaunch)
             .transition(.opacity)
-
-            VStack {
-                Spacer()
-                HexKeyboard(
-                    onButton: { hexKeyboardController.onKey(.hex($0)) },
-                    onBack: { hexKeyboardController.onKey(.back) },
-                    onOK: { hexKeyboardController.onKey(.ok) }
-                )
-                .offset(y: hexKeyboardController.isHidden ? 500 : 0)
-            }
-
-            if alertController.isPresented {
-                alertController.alert
-            }
         }
         .customAlert(isPresented: $isPairingIssue) {
             PairingIssueAlert(isPresented: $isPairingIssue)
@@ -69,8 +52,6 @@ private struct RootViewImpl: View {
         .customAlert(isPresented: $isUpdateAvailable) {
             MobileUpdateAlert(isPresented: $isUpdateAvailable)
         }
-        .environmentObject(alertController)
-        .environmentObject(hexKeyboardController)
         .onContinueUserActivity("PlayAlertIntent") { _ in
             device.playAlert()
         }
@@ -82,41 +63,9 @@ private struct RootViewImpl: View {
                 router.hideWelcomeScreen()
             }
         }
-        .onChange(of: scenePhase) { scenePhase in
-            switch scenePhase {
-            case .active: onActive()
-            case .inactive: onInactive()
-            default: break
-            }
-        }
         .task { @MainActor in
             router.recordAppOpen()
             isUpdateAvailable = await AppVersionCheck.hasUpdate
         }
-    }
-
-    func onActive() {
-        guard backgroundTaskID != .invalid else {
-            return
-        }
-        endBackgroundTask()
-    }
-
-    func onInactive() {
-        guard backgroundTaskID == .invalid else {
-            return
-        }
-        backgroundTaskID = startBackgroundTask()
-    }
-
-    private func startBackgroundTask() -> UIBackgroundTaskIdentifier {
-        UIApplication.shared.beginBackgroundTask {
-            self.endBackgroundTask()
-        }
-    }
-
-    private func endBackgroundTask() {
-        UIApplication.shared.endBackgroundTask(backgroundTaskID)
-        backgroundTaskID = .invalid
     }
 }

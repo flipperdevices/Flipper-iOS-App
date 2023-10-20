@@ -1,6 +1,6 @@
 import Foundation
 
-public enum ImageSource: Decodable {
+public enum ImageSource: Equatable, Decodable {
     case url(URL)
     case data(Data)
 

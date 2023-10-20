@@ -1,0 +1,27 @@
+excluded:
+- Packages/**/.swiftpm
+- Packages/**/.build
+- Packages/**/Protobuf
+- Packages/Core/Sources/Utils/Version/** # swiftpm sources
+# TODO:
+- Packages/Peripheral
+
+disabled_rules:
+- todo
+- nesting
+- opening_brace
+- identifier_name
+- cyclomatic_complexity
+- void_function_in_ternary
+# TODO:
+- type_name
+- large_tuple
+- file_length
+- type_body_length
+- function_body_length
+- function_parameter_count
+- unhandled_throwing_task
+
+line_length: 80
+
+reporter: "xcode"

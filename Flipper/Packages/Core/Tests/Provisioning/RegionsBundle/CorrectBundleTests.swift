@@ -2,17 +2,15 @@ import XCTest
 
 @testable import Core
 
-// swiftlint:disable force_unwrapping
-
 class CorrectBundleTests: XCTestCase {
     func testBundle() async throws {
         let provider = RegionsBundleAPIv0 {
-            correctV0BundleJSON.data(using: .utf8)!
+            correctV0BundleJSON
         }
         let bundle = try await provider.get()
-        XCTAssertEqual(bundle.geoIP, .init("US"))
+        XCTAssertEqual(bundle.geoIP, "US")
 
-        XCTAssertEqual(bundle.bands[.init("AD")!], [
+        XCTAssertEqual(bundle.bands["AD"], [
             .init(
                 start: 433050000,
                 end: 434790000,
@@ -25,7 +23,7 @@ class CorrectBundleTests: XCTestCase {
                 maxPower: 12)
         ])
 
-        XCTAssertEqual(bundle.bands[.init("AE")!], [
+        XCTAssertEqual(bundle.bands["AE"], [
             .init(
                 start: 420000000,
                 end: 440000000,
@@ -33,7 +31,7 @@ class CorrectBundleTests: XCTestCase {
                 maxPower: -6)
         ])
 
-        XCTAssertEqual(bundle.bands[.init("US")!], [
+        XCTAssertEqual(bundle.bands["US"], [
             .init(
                 start: 304100000,
                 end: 321950000,

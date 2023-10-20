@@ -13,11 +13,11 @@ extension AppRow {
         var body: some View {
             HStack(spacing: 8) {
                 AppIcon(application.current.icon)
-                    .frame(width: 42, height: 42)
+                    .frame(width: 48, height: 48)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(application.current.name)
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundColor(.primary)
                         .lineLimit(1)
 
@@ -26,7 +26,7 @@ extension AppRow {
                             .frame(width: 14, height: 14)
 
                         CategoryName(category?.name)
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.system(size: 14, weight: .medium))
                     }
                 }
 

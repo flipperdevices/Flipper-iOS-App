@@ -15,7 +15,7 @@ struct AppList: View {
     }
 
     var body: some View {
-        LazyVStack(spacing: 12) {
+        LazyVStack(spacing: 24) {
             ForEach(applications) { application in
                 NavigationLink {
                     AppView(alias: application.alias)
@@ -27,6 +27,9 @@ struct AppList: View {
                     )
                 }
                 .foregroundColor(.primary)
+                .analyzingTapGesture {
+                    recordApplicationOpened(application: application)
+                }
 
                 if application.id != applications.last?.id {
                     Divider()
@@ -35,5 +38,11 @@ struct AppList: View {
                 }
             }
         }
+    }
+    
+    // MARK: Analytics
+
+    func recordApplicationOpened(application: Applications.ApplicationInfo) {
+        analytics.appOpen(target: .fapHubApp(application.alias))
     }
 }

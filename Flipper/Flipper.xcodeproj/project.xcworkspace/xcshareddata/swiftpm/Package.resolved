@@ -82,15 +82,6 @@
       }
     },
     {
-      "identity" : "sentry-cocoa",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/getsentry/sentry-cocoa.git",
-      "state" : {
-        "revision" : "e46936ed191c0112cd3276e1c10c0bb7f865268e",
-        "version" : "8.9.1"
-      }
-    },
-    {
       "identity" : "stream",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftstack/stream.git",
@@ -161,6 +152,15 @@
         "revision" : "ab8c9f45843694dd16be4297e6d44c0634fd9913",
         "version" : "0.8.4"
       }
+    },
+    {
+       "identity" : "swift-syntax",
+       "kind" : "remoteSourceControl",
+       "location" : "https://github.com/apple/swift-syntax.git",
+       "state" : {
+         "revision" : "74203046135342e4a4a627476dd6caf8b28fe11b",
+         "version" : "509.0.0"
+       }
     }
   ],
   "version" : 2

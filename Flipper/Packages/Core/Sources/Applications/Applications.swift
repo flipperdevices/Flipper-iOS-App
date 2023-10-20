@@ -1,3 +1,4 @@
+import Macro
 import Catalog
 import Peripheral
 
@@ -42,7 +43,6 @@ public class Applications: ObservableObject {
     private var rpc: RPC { pairedDevice.session }
     @Published private var flipper: Flipper?
     private var cancellables = [AnyCancellable]()
-
 
     private let catalog: CatalogService
     private let pairedDevice: PairedDevice
@@ -152,7 +152,6 @@ public class Applications: ObservableObject {
         category(categoryID: application.categoryId)
     }
 
-
     public func category(for application: ApplicationInfo) -> Category? {
         application.categoryId.isEmpty
             ? category(installedID: application.id)
@@ -180,7 +179,7 @@ public class Applications: ObservableObject {
                 priority: 0,
                 name: name,
                 color: "",
-                icon: "https://null",
+                icon: #URL("https://null"),
                 applications: 0)
         }
     }
@@ -459,7 +458,7 @@ fileprivate extension Applications {
         try await rpc.writeFile(
             at: manifestTempPath,
             string: manifestString
-        ) { progress in
+        ) { _ in
         }
 
         try await rpc.moveFile(from: appTempPath, to: appPath)
@@ -506,7 +505,7 @@ extension Applications {
         else {
             return result
         }
-        for file in listing.files {
+        for file in listing.files.filter({ !$0.starts(with: ".") }) {
             do {
                 let manifest = try await _loadManifest(file)
                 result[manifest.uid] = manifest

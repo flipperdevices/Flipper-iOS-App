@@ -5,7 +5,10 @@ import SwiftUI
 
 @available(iOS 16, *)
 struct ArchivedItemEntity: AppEntity {
-    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Archived Item")
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(
+        name: "Archived Item"
+    )
+
     static var defaultQuery = ArchivedItemEntityQuery()
 
     let id: String
@@ -63,7 +66,9 @@ extension ArchivedItemEntity {
             get async { await dependencies.archiveModel.items }
         }
 
-        func entities(for identifiers: [String]) async throws -> [ArchivedItemEntity] {
+        func entities(
+            for identifiers: [String]
+        ) async throws -> [ArchivedItemEntity] {
             await items
                 .filter {
                     identifiers.contains($0.id.description)

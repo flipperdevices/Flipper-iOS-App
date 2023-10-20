@@ -11,6 +11,7 @@ struct HubView: View {
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
     @State private var applicationAlias: String?
     @State private var showApplication = false
+    @State private var showDetectReader = false
 
     var body: some View {
         NavigationView {
@@ -23,6 +24,9 @@ struct HubView: View {
                         AppsRowCard()
                             .environmentObject(applications)
                     }
+                    .analyzingTapGesture {
+                        recordAppsOpened()
+                    }
 
                     HStack(spacing: 14) {
                         Button {
@@ -32,7 +36,7 @@ struct HubView: View {
                         }
 
                         NavigationLink {
-                            NFCToolsView()
+                            NFCToolsView($showDetectReader)
                         } label: {
                             NFCCard()
                         }
@@ -55,8 +59,9 @@ struct HubView: View {
                 }
             }
             .sheet(isPresented: $showRemoteControl) {
-                RemoteControlView()
-                    .modifier(AlertControllerModifier())
+                AlertStack {
+                    RemoteControlView()
+                }
             }
         }
         .onOpenURL { url in
@@ -64,10 +69,18 @@ struct HubView: View {
                 applicationAlias = url.applicationAlias
                 selectedTab = .hub
                 showApplication = true
+            } else if url == .mfkey32Link {
+                selectedTab = .hub
+                showDetectReader = true
             }
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
+        .fullScreenCover(isPresented: $showDetectReader) {
+            AlertStack {
+                DetectReaderView()
+            }
+        }
     }
 
     struct NFCCard: View {
@@ -95,21 +108,11 @@ struct HubView: View {
             )
         }
     }
-}
 
-// TODO: Refactor alerts
-private struct AlertControllerModifier: ViewModifier {
-    @StateObject private var alertController: AlertController = .init()
+    // MARK: Analytics
 
-    func body(content: Content) -> some View {
-        ZStack {
-            content
-                .environmentObject(alertController)
-
-            if alertController.isPresented {
-                alertController.alert
-            }
-        }
+    func recordAppsOpened() {
+        analytics.appOpen(target: .fapHub)
     }
 }
 

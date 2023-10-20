@@ -82,7 +82,7 @@ struct Metric_Events_UpdateFlipperEnd {
 
 extension Metric_Events_UpdateFlipperEnd.UpdateStatus: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [Metric_Events_UpdateFlipperEnd.UpdateStatus] = [
+  static let allCases: [Metric_Events_UpdateFlipperEnd.UpdateStatus] = [
     .completed,
     .canceled,
     .failedDownload,

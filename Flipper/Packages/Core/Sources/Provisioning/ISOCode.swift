@@ -18,3 +18,12 @@ extension ISOCode: CustomStringConvertible {
         return value
     }
 }
+
+extension ISOCode: ExpressibleByStringLiteral {
+    // TODO: Use macro
+    public init(stringLiteral value: StringLiteralType) {
+        // swiftlint:disable force_unwrapping
+        self.init(value)!
+        // swiftlint:enable force_unwrapping
+    }
+}

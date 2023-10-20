@@ -265,6 +265,7 @@ extension FlipperColor {
         switch service {
         case .some(.flipperZeroBlack): self = .black
         case .some(.flipperZeroWhite): self = .white
+        case .some(.flipperZeroClear): self = .clear
         default: self = .unknown
         }
     }
@@ -272,7 +273,6 @@ extension FlipperColor {
 
 extension FlipperState {
     init(_ source: CBPeripheralState) {
-        // swiftlint:disable switch_case_on_newline
         switch source {
         case .disconnected: self = .disconnected
         case .connecting: self = .connecting

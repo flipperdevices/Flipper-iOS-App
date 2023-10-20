@@ -77,6 +77,7 @@ extension AppView {
         }
 
         func install() {
+            recordAppInstall(application: application)
             Task {
                 await model.install(application.id)
             }
@@ -92,6 +93,12 @@ extension AppView {
             Task {
                 await model.delete(application.id)
             }
+        }
+
+        // MARK: Analytics
+
+        func recordAppInstall(application: Applications.Application) {
+            analytics.appOpen(target: .fapHubInstall(application.alias))
         }
     }
 }

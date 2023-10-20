@@ -5,6 +5,8 @@ struct AppSearchView: View {
     @EnvironmentObject var model: Applications
     @Environment(\.dismiss) var dismiss
 
+    @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+
     @State private var predicate = ""
     var predicateIsValid: Bool {
         predicate.count >= 2
@@ -73,7 +75,9 @@ struct AppSearchView: View {
             await debouncer.submit {
                 defer { inProgress = false }
                 do {
-                    applications = try await model.search(for: string)
+                    applications = try await model.search(for: string).filter {
+                        !self.hiddenApps.contains($0.id)
+                    }
                 } catch let error as Applications.APIError {
                     apiError = error
                 } catch {

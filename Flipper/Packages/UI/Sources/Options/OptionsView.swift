@@ -8,6 +8,7 @@ struct OptionsView: View {
 
     @AppStorage(.isDebugMode) var isDebugMode = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
+    @AppStorage(.isDevCatalog) var isDevCatalog = false
 
     @State private var showResetApp = false
     @State private var versionTapCount = 0
@@ -48,9 +49,6 @@ struct OptionsView: View {
             }
 
             Section(header: Text("Remote")) {
-                NavigationLink("Screen Streaming") {
-                    RemoteMovedView()
-                }
                 NavigationLink("File Manager") {
                     FileManagerView()
                 }
@@ -88,7 +86,7 @@ struct OptionsView: View {
                 HStack {
                     Image("OptionsBug")
                         .renderingMode(.template)
-                    NavigationLink("Report a bug") {
+                    NavigationLink("Report Bug") {
                         ReportBugView()
                     }
                 }
@@ -101,6 +99,10 @@ struct OptionsView: View {
                         Text("Disable provisioning")
                     }
                     .tintA1IfAvailable()
+                    Toggle(isOn: $isDevCatalog) {
+                        Text("Use dev catalog")
+                    }
+                    .tint(.a1)
                     NavigationLink("I'm watching you") {
                         CarrierView()
                     }

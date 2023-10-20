@@ -114,7 +114,6 @@ public struct Application: Decodable {
             public let target: String
             public let api: String
             public let isLatestRelease: Bool
-            //public let releasedAt: TimeStamp
 
             enum CodingKeys: String, CodingKey {
                 case id = "_id"
@@ -122,7 +121,6 @@ public struct Application: Decodable {
                 case target
                 case api
                 case isLatestRelease = "is_latest_release"
-                //case releasedAt = "released_at"
             }
         }
 

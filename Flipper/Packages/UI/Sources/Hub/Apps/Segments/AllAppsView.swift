@@ -4,10 +4,13 @@ import SwiftUI
 struct AllAppsView: View {
     @EnvironmentObject var model: Applications
 
+    @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+
     @State private var isLoading = false
     @State private var isAllLoaded = false
     @State private var categories: [Applications.Category] = []
     @State private var applications: [Applications.ApplicationInfo] = []
+    @State private var filteredApplications: [Applications.ApplicationInfo] = []
     @State private var sortOrder: Applications.SortOption = .default
     @State private var apiError: Applications.APIError?
 
@@ -38,11 +41,11 @@ struct AllAppsView: View {
 
                         SortMenu(selected: $sortOrder)
                     }
-                    .padding(.top, 24)
+                    .padding(.top, 32)
                     .padding(.horizontal, 14)
 
-                    AppList(applications: applications)
-                        .padding(.top, 18)
+                    AppList(applications: filteredApplications)
+                        .padding(.top, 24)
 
                     if isLoading, !isAllLoaded {
                         AppRowPreview()
@@ -52,11 +55,23 @@ struct AllAppsView: View {
             }
             .padding(.vertical, 14)
         }
-        .onChange(of: sortOrder) { newValue in
+        .onChange(of: sortOrder) { _ in
             reloadApplications()
         }
         .onReceive(model.$deviceInfo) { _ in
             reload()
+        }
+        .onChange(of: applications) { _ in
+            Task { filter() }
+        }
+        .onChange(of: hiddenApps) { _ in
+            Task { filter() }
+        }
+    }
+
+    func filter() {
+        filteredApplications = applications.filter {
+            !hiddenApps.contains($0.id)
         }
     }
 

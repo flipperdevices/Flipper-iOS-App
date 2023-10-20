@@ -30,7 +30,7 @@ struct InstalledAppsView: View {
                         }
                     }
                     .opacity(noApps ? 1 : 0)
-                    
+
                     RefreshableScrollView(isEnabled: true) {
                         reload()
                     } content: {
@@ -43,7 +43,7 @@ struct InstalledAppsView: View {
                                         }
                                         .padding(.horizontal, 14)
                                     }
-                                    
+
                                     AppList(
                                         applications: applications,
                                         isInstalled: true)

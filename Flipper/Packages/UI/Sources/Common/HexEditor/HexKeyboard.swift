@@ -111,8 +111,6 @@ struct KeyboardOKButton: View {
     }
 }
 
-struct HexKeyboard_Previews: PreviewProvider {
-    static var previews: some View {
-        HexKeyboard()
-    }
+#Preview {
+    HexKeyboard()
 }

@@ -8,6 +8,7 @@ class ChunkedOutput {
         // shouldn't throw
         // swiftlint:disable force_try
         queue.append(contentsOf: try! main.serialize())
+        // swiftlint:enable force_try
     }
 
     func drain(upTo limit: Int) -> [UInt8] {

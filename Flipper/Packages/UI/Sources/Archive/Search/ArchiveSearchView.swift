@@ -52,7 +52,9 @@ struct ArchiveSearchView: View {
             }
         }
         .sheet(item: $selectedItem) { item in
-            InfoView(item: item)
+            AlertStack {
+                InfoView(item: item)
+            }
         }
     }
 }

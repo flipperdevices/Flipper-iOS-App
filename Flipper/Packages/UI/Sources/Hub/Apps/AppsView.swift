@@ -49,7 +49,16 @@ struct AppsView: View {
                 SearchButton {
                     showSearchView = true
                 }
+                .analyzingTapGesture {
+                    recordSearchOpened()
+                }
             }
         }
+    }
+
+    // MARK: Analytics
+
+    func recordSearchOpened() {
+        analytics.appOpen(target: .fapHubSearch)
     }
 }

@@ -31,7 +31,7 @@ struct NoDeviceHeader: View {
         HStack(spacing: 18) {
             FlipperDeviceImage()
                 .flipperColor(flipper?.color)
-                .flipperState(.dead)
+                .flipperState(.disabled)
 
             VStack(alignment: .center, spacing: 6) {
                 Text("No Device")
@@ -60,7 +60,7 @@ struct DeviceInfoHeader: View {
         HStack(spacing: 18) {
             FlipperDeviceImage()
                 .flipperColor(flipper.color)
-                .flipperState(flipper.state == .connected ? .normal : .dead)
+                .flipperState(flipper.state == .connected ? .normal : .disabled)
 
             VStack(alignment: .center, spacing: 6) {
                 Text(flipper.name)

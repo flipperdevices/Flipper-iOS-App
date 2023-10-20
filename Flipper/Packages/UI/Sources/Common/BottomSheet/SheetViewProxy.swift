@@ -55,5 +55,6 @@ class HostingController<Content: View>: UIHostingController<Content> {
                 presentationController.prefersGrabberVisible = prefersGrabberVisible
             }
         }
+        // swiftlint:enable opening_brace
     }
 }

@@ -2,9 +2,10 @@ import SwiftUI
 
 extension NFCEditorView {
     struct SaveChangesAlert: View {
+        @Binding var isPresented: Bool
         let save: () -> Void
         let saveAs: () -> Void
-        let dismiss: () -> Void
+        let dontSave: () -> Void
 
         var body: some View {
             VStack(spacing: 24) {
@@ -23,6 +24,7 @@ extension NFCEditorView {
                 VStack(spacing: 14) {
                     Divider()
                     Button {
+                        isPresented = false
                         save()
                     } label: {
                         Text("Save")
@@ -32,7 +34,8 @@ extension NFCEditorView {
 
                     Divider()
                     Button {
-                        dismiss()
+                        isPresented = false
+                        dontSave()
                     } label: {
                         Text("Don't save")
                             .font(.system(size: 14, weight: .bold))
@@ -41,6 +44,7 @@ extension NFCEditorView {
 
                     Divider()
                     Button {
+                        isPresented = false
                         saveAs()
                     } label: {
                         Text("Save Dump As...")

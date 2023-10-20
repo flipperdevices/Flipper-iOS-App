@@ -25,7 +25,7 @@ struct FlipperIsNotConnectedAlert: View {
                 selectedTab = .device
                 isPresented = false
             } label: {
-                Text("Go to Device Screen")
+                Text("Go to Connecting")
                     .frame(height: 41)
                     .frame(maxWidth: .infinity)
                     .font(.system(size: 14, weight: .bold))

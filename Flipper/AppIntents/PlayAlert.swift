@@ -6,8 +6,13 @@ import AppIntents
 struct PlayAlert: AppIntent, CustomIntentMigratedAppIntent {
     static let intentClassName = "PlayAlertIntent"
 
-    static var title: LocalizedStringResource = "Play Alert"
-    static var description = IntentDescription("Play Audiovisual Alert on Flipper")
+    static var title: LocalizedStringResource {
+        "Play Alert"
+    }
+
+    static var description: IntentDescription {
+        "Play Audiovisual Alert on Flipper"
+    }
 
     func perform() async throws -> some IntentResult {
         // next step

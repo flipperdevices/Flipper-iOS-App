@@ -52,7 +52,7 @@ struct TodayWidgetSettingsView: View {
                                 }
                                 .padding(11)
                             } else {
-                                WidgetAddButton() {
+                                WidgetAddButton {
                                     showAddKeyView = true
                                 }
                                 .padding(11)

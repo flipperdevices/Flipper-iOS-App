@@ -23,6 +23,9 @@ struct AppsCategories: View {
                     } label: {
                         AppsCategory(category: category)
                     }
+                    .analyzingTapGesture {
+                        recordCategoryOpened(category: category)
+                    }
                 }
             }
         }
@@ -51,7 +54,7 @@ struct AppsCategories: View {
 
                         Text("\(category.applications)")
                             .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.black60)
+                            .foregroundColor(.black16Black60)
                     }
 
                     Text(category.name)
@@ -63,5 +66,11 @@ struct AppsCategories: View {
                 .padding(.horizontal, 10)
             }
         }
+    }
+
+    // MARK: Analytics
+
+    func recordCategoryOpened(category: Applications.Category) {
+        analytics.appOpen(target: .fapHubCategory(category.name))
     }
 }

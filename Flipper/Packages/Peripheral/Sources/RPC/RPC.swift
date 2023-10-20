@@ -50,7 +50,7 @@ public protocol RPC: AnyObject {
 
     func startStreaming() async throws
     func stopStreaming() async throws
-    func pressButton(_ button: InputKey) async throws
+    func pressButton(_ button: InputKey, isLong: Bool) async throws
     func playAlert() async throws
     func startVirtualDisplay(with frame: ScreenFrame?) async throws
     func stopVirtualDisplay() async throws

@@ -134,7 +134,7 @@ struct DeviceInfoView: View {
         let name = device.flipper?.name ?? "unknown"
         let content = array.joined(separator: "\n")
         let filename = "dump-\(name)-\(formatter.string(from: Date())).txt"
-        
+
         UI.shareFile(name: filename, content: content)
     }
 }

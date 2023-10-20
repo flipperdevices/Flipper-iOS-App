@@ -49,6 +49,7 @@ struct DeviceInfoCard: View {
         case _ where firmwareVersion.starts(with: "Dev"): return .development
         case _ where firmwareVersion.starts(with: "RC"): return .candidate
         case _ where firmwareVersion.starts(with: "Release"): return .release
+        case _ where firmwareVersion.starts(with: "Custom"): return .custom
         default: return .clear
         }
     }
