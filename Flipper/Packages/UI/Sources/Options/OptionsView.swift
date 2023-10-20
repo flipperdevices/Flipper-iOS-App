@@ -102,7 +102,6 @@ struct OptionsView: View {
                     Toggle(isOn: $isDevCatalog) {
                         Text("Use dev catalog")
                     }
-                    .tint(.a1)
                     NavigationLink("I'm watching you") {
                         CarrierView()
                     }

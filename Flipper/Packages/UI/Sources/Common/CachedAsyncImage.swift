@@ -1,11 +1,12 @@
 import SwiftUI
+import SBPAsyncImage
 
 public struct CachedAsyncImage<Content, PlaceholderContent>: View
 where Content: View, PlaceholderContent: View {
     private let url: URL?
     private let scale: CGFloat
     private let transaction: Transaction?
-    private let contentPhase: ((AsyncImagePhase) -> Content)?
+    private let contentPhase: ((SBPAsyncImage.AsyncImagePhase) -> Content)?
     private let contentImage: ((Image) -> Content)?
     private let placeholder: (() -> PlaceholderContent)?
 
@@ -13,7 +14,7 @@ where Content: View, PlaceholderContent: View {
         url: URL?,
         scale: CGFloat = 1.0,
         transaction: Transaction = Transaction(),
-        @ViewBuilder content: @escaping (AsyncImagePhase) -> Content
+        @ViewBuilder content: @escaping (SBPAsyncImage.AsyncImagePhase) -> Content
     ) {
         self.url = url
         self.scale = scale
@@ -72,7 +73,7 @@ private extension CachedAsyncImage {
         return contentImage?(image)
     }
 
-    func cacheAndRender(phase: AsyncImagePhase) -> some View {
+    func cacheAndRender(phase: SBPAsyncImage.AsyncImagePhase) -> some View {
         if case .success(let image) = phase {
             ImageInMemoryCache[url] = image
         }

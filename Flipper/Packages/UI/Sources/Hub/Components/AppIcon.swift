@@ -24,10 +24,10 @@ struct AppIcon: View {
             .scaledToFit()
             .padding(5)
         }
-        .overlay {
+        .overlay(
             RoundedRectangle(cornerRadius: 6)
                 .stroke(Color.black16Black60)
-        }
+        )
     }
 
     struct URLImage: View {

@@ -148,14 +148,11 @@ struct AppActionButton: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: proxy.size.height)
-                .overlay {
-                    // TODO: Use style modifier
-                    let width: Double = proxy.size.height < 40 ? 2 : 3
-
+                .overlay(
                     RoundedRectangle(cornerRadius: 6)
                         .inset(by: 1)
-                        .stroke(isEnabled ? color : .black20, lineWidth: width)
-                }
+                        .stroke(isEnabled ? color : .black20, lineWidth: 40)
+                )
             }
         }
     }
