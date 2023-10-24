@@ -5,8 +5,9 @@ public enum Response: Equatable {
     case ok
     case error(String)
     case system(System)
-    case application(Application)
     case storage(Storage)
+    case application(Application)
+    case desktop(Desktop)
 
     public enum System: Equatable {
         case deviceInfo(String, String)
@@ -37,10 +38,6 @@ public enum Response: Equatable {
         }
     }
 
-    public enum Application: Equatable {
-        case lockStatus(Bool)
-    }
-
     public enum Storage: Equatable {
         case info(StorageSpace)
         case list([Element])
@@ -48,6 +45,14 @@ public enum Response: Equatable {
         case file([UInt8])
         case hash(String)
         case timestamp(Date)
+    }
+
+    public enum Application: Equatable {
+        case lockStatus(Bool)
+    }
+
+    public enum Desktop: Equatable {
+        case status(Bool)
     }
 }
 
@@ -85,9 +90,6 @@ extension Response {
             self.init(decoding: response)
         case .systemUpdateResponse(let response):
             self.init(decoding: response)
-        // Applicaton
-        case .appLockStatusResponse(let response):
-            self.init(decoding: response)
         // Storage
         case .storageInfoResponse(let response):
             self.init(decoding: response)
@@ -100,6 +102,12 @@ extension Response {
         case .storageReadResponse(let response):
             self.init(decoding: response)
         case .storageMd5SumResponse(let response):
+            self.init(decoding: response)
+            // Applicaton
+        case .appLockStatusResponse(let response):
+            self.init(decoding: response)
+        // Desktop
+        case .desktopStatus(let response):
             self.init(decoding: response)
         // Not implemented
         default:
@@ -135,10 +143,6 @@ extension Response {
         self = .system(.update(.init(response.code)))
     }
 
-    init(decoding response: PBApp_LockStatusResponse) {
-        self = .application(.lockStatus(response.locked))
-    }
-
     init(decoding response: PBStorage_InfoResponse) {
         self = .storage(.info(.init(response)))
     }
@@ -161,6 +165,14 @@ extension Response {
 
     init(decoding response: PBStorage_Md5sumResponse) {
         self = .storage(.hash(response.md5Sum))
+    }
+
+    init(decoding response: PBApp_LockStatusResponse) {
+        self = .application(.lockStatus(response.locked))
+    }
+
+    init(decoding response: PBDesktop_Status) {
+        self = .desktop(.status(response.locked))
     }
 }
 
@@ -196,8 +208,9 @@ extension Response: CustomStringConvertible {
         case .ok: return "ok"
         case .error(let error): return "error(\(error))"
         case .system(let system): return "system(\(system))"
-        case .application(let application): return "application(\(application))"
         case .storage(let storage): return "storage(\(storage))"
+        case .application(let application): return "application(\(application))"
+        case .desktop(let desktop): return "desktop(\(desktop))"
         }
     }
 }
@@ -224,7 +237,7 @@ extension Response.System.Property: CustomStringConvertible {
 extension Response.Application: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .lockStatus(let status): return "lockStatus(\(status))"
+        case .lockStatus(let isLocked): return "isLocked(\(isLocked))"
         }
     }
 }

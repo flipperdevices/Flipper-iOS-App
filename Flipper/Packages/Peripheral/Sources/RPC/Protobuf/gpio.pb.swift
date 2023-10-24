@@ -70,7 +70,7 @@ enum PBGpio_GpioPin: SwiftProtobuf.Enum {
 
 extension PBGpio_GpioPin: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PBGpio_GpioPin] = [
+  static let allCases: [PBGpio_GpioPin] = [
     .pc0,
     .pc1,
     .pc3,
@@ -116,7 +116,7 @@ enum PBGpio_GpioPinMode: SwiftProtobuf.Enum {
 
 extension PBGpio_GpioPinMode: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PBGpio_GpioPinMode] = [
+  static let allCases: [PBGpio_GpioPinMode] = [
     .output,
     .input,
   ]
@@ -159,7 +159,7 @@ enum PBGpio_GpioInputPull: SwiftProtobuf.Enum {
 
 extension PBGpio_GpioInputPull: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PBGpio_GpioInputPull] = [
+  static let allCases: [PBGpio_GpioInputPull] = [
     .no,
     .up,
     .down,

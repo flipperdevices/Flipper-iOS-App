@@ -33,6 +33,8 @@ struct PBStorage_File {
 
   var data: Data = Data()
 
+  var md5Sum: String = String()
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum FileType: SwiftProtobuf.Enum {
@@ -72,7 +74,7 @@ struct PBStorage_File {
 
 extension PBStorage_File.FileType: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PBStorage_File.FileType] = [
+  static let allCases: [PBStorage_File.FileType] = [
     .file,
     .dir,
   ]
@@ -169,6 +171,10 @@ struct PBStorage_ListRequest {
   // methods supported on all messages.
 
   var path: String = String()
+
+  var includeMd5: Bool = false
+
+  var filterMaxSize: UInt32 = 0
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -365,6 +371,7 @@ extension PBStorage_File: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
     2: .same(proto: "name"),
     3: .same(proto: "size"),
     4: .same(proto: "data"),
+    5: .same(proto: "md5sum"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -377,6 +384,7 @@ extension PBStorage_File: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
       case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self.size) }()
       case 4: try { try decoder.decodeSingularBytesField(value: &self.data) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self.md5Sum) }()
       default: break
       }
     }
@@ -395,6 +403,9 @@ extension PBStorage_File: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
     if !self.data.isEmpty {
       try visitor.visitSingularBytesField(value: self.data, fieldNumber: 4)
     }
+    if !self.md5Sum.isEmpty {
+      try visitor.visitSingularStringField(value: self.md5Sum, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -403,6 +414,7 @@ extension PBStorage_File: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
     if lhs.name != rhs.name {return false}
     if lhs.size != rhs.size {return false}
     if lhs.data != rhs.data {return false}
+    if lhs.md5Sum != rhs.md5Sum {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -621,6 +633,8 @@ extension PBStorage_ListRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   static let protoMessageName: String = _protobuf_package + ".ListRequest"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "path"),
+    2: .standard(proto: "include_md5"),
+    3: .standard(proto: "filter_max_size"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -630,6 +644,8 @@ extension PBStorage_ListRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.path) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.includeMd5) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.filterMaxSize) }()
       default: break
       }
     }
@@ -639,11 +655,19 @@ extension PBStorage_ListRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     if !self.path.isEmpty {
       try visitor.visitSingularStringField(value: self.path, fieldNumber: 1)
     }
+    if self.includeMd5 != false {
+      try visitor.visitSingularBoolField(value: self.includeMd5, fieldNumber: 2)
+    }
+    if self.filterMaxSize != 0 {
+      try visitor.visitSingularUInt32Field(value: self.filterMaxSize, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: PBStorage_ListRequest, rhs: PBStorage_ListRequest) -> Bool {
     if lhs.path != rhs.path {return false}
+    if lhs.includeMd5 != rhs.includeMd5 {return false}
+    if lhs.filterMaxSize != rhs.filterMaxSize {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

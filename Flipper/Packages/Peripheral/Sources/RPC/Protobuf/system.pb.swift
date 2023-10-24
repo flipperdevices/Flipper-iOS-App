@@ -93,7 +93,7 @@ struct PBSystem_RebootRequest {
 
 extension PBSystem_RebootRequest.RebootMode: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PBSystem_RebootRequest.RebootMode] = [
+  static let allCases: [PBSystem_RebootRequest.RebootMode] = [
     .os,
     .dfu,
     .update,
@@ -336,7 +336,7 @@ struct PBSystem_UpdateResponse {
 
 extension PBSystem_UpdateResponse.UpdateResultCode: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PBSystem_UpdateResponse.UpdateResultCode] = [
+  static let allCases: [PBSystem_UpdateResponse.UpdateResultCode] = [
     .ok,
     .manifestPathInvalid,
     .manifestFolderNotFound,

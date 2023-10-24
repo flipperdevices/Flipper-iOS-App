@@ -20,7 +20,7 @@ extension Session {
     public var isDesktopLocked: Bool {
         get async throws {
             let response = try await self
-                .send(.desktop(.status))
+                .send(.desktop(.isLocked))
                 .response
             // print(response)
             // FIXME:
@@ -152,7 +152,7 @@ extension Session {
 
     public func listDirectory(at path: Path) async throws -> [Element] {
         let response = try await self
-            .send(.storage(.list(path)))
+            .send(.storage(.list(path, includingMD5: false, sizeLimit: 0)))
             .response
         guard case .storage(.list(let items)) = response else {
             throw Error.unexpectedResponse(response)

@@ -22,12 +22,14 @@ public enum Element: Equatable {
 public struct File: Equatable {
     public let name: String
     public let size: Int
-    public let data: Data?
+    public let data: Data
+    public let md5: String
 
-    public init(name: String, size: Int, data: Data) {
+    public init(name: String, size: Int, data: Data, md5: String) {
         self.name = name
         self.size = size
         self.data = data
+        self.md5 = md5
     }
 }
 
@@ -53,7 +55,8 @@ extension Element {
             self = .file(.init(
                 name: element.name,
                 size: Int(element.size),
-                data: element.data))
+                data: element.data,
+                md5: element.md5Sum))
         case .dir:
             self = .directory(.init(name: element.name))
         default:
