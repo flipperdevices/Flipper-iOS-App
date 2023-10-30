@@ -58,11 +58,17 @@ struct RefreshableScrollView<Content: View>: View {
                 }
             }
             .onPreferenceChange(TopOffsetPreferenceKey.self) { offset in
+                guard isEnabled else { return }
+                // filter redundant events to increase performanse
+                guard (self.offset - offset).magnitude > 1 else { return }
+                // update offset only in case the label should be visible
+                guard offset > 0.0 else { return }
+
                 self.offset = offset
                 // TODO: Find the reason why the offset is not 0.0 sometimes
-                if offset < 1 {
+                if offset < 1, isRefreshTriggered {
                     isRefreshTriggered = false
-                } else if offset > threshold, !isRefreshTriggered, isEnabled {
+                } else if offset > threshold, !isRefreshTriggered {
                     isRefreshTriggered = true
                     feedback(style: .soft)
                     refreshAction()
