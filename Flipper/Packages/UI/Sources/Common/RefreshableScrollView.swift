@@ -59,7 +59,7 @@ struct RefreshableScrollView<Content: View>: View {
             }
             .onPreferenceChange(TopOffsetPreferenceKey.self) { offset in
                 guard isEnabled else { return }
-                // filter redundant events to increase performanse
+                // filter redundant events to increase performance
                 guard (self.offset - offset).magnitude > 1 else { return }
                 // update offset only in case the label should be visible
                 guard offset > 0.0 else { return }
