@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import SBPAsyncImage
 
 struct AppScreens: View {
     let screenshots: [URL]

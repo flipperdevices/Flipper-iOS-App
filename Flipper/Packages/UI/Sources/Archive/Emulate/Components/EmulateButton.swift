@@ -70,11 +70,11 @@ extension EmulateView {
             .foregroundColor(.white)
             .background(buttonColor)
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay {
+            .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(borderBackgroundColor, lineWidth: 4)
                     .opacity(isEmulating ? 1 : 0)
-            }
+            )
             .overlay(
                 EmulateBorder(cornerRadius: 12)
                     .trim(from: trimFrom, to: trimTo)

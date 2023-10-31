@@ -118,7 +118,7 @@ struct InfoView: View {
                 self.current.status = item.status
             }
         }
-        .task {
+        .task { @MainActor in
             self.current = item
             self.backup = item
         }

@@ -156,6 +156,11 @@ private extension UUID {
 
 private extension Date {
     var iso8601String: String {
-        self.formatted(ISO8601FormatStyle(includingFractionalSeconds: true))
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+        
+        return dateFormatter.string(from: self).appending("Z")
     }
 }

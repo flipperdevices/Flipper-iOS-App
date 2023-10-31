@@ -37,7 +37,7 @@ struct AppsRowCard: View {
                 }
             }
         }
-        .task {
+        .task { @MainActor in
             do {
                 topApp = try await model.loadTopApp()
             } catch {

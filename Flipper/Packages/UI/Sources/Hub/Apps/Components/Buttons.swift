@@ -27,7 +27,7 @@ struct UpdateAllAppButton: View {
                         }
                         .padding(2)
                     }
-                    .background(.white.opacity(0.8))
+                    .modifier(BackgroundModifier(color: .white.opacity(0.8)))
                     .cornerRadius(4)
                 }
             }
@@ -39,7 +39,7 @@ struct UpdateAllAppButton: View {
         .onReceive(model.$statuses) { _ in
             loadUpdates()
         }
-        .task {
+        .task { @MainActor in
             loadUpdates()
         }
     }
@@ -148,14 +148,11 @@ struct AppActionButton: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: proxy.size.height)
-                .overlay {
-                    // TODO: Use style modifier
-                    let width: Double = proxy.size.height < 40 ? 2 : 3
-
+                .overlay(
                     RoundedRectangle(cornerRadius: 6)
                         .inset(by: 1)
-                        .stroke(isEnabled ? color : .black20, lineWidth: width)
-                }
+                        .stroke(isEnabled ? color : .black20, lineWidth: 40)
+                )
             }
         }
     }

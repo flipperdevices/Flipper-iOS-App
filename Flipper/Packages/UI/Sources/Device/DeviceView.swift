@@ -165,21 +165,23 @@ struct DeviceView: View {
                         .padding(.vertical, 24)
                         .padding(.horizontal, 14)
                     }
+                    
+                    NavigationLink(destination: EmptyView(), label: {})
                 }
                 .background(Color.background)
-                .confirmationDialog(
-                    "Forget Flipper?",
-                    isPresented: $showForgetAction,
-                    titleVisibility: .visible,
-                    presenting: flipper
-                ) { _ in
-                    Button("Forget Flipper", role: .destructive) {
-                        device.forgetDevice()
-                    }
-                } message: { flipper in
-                    Text(
-                        "App will no longer be paired with " +
-                        "Flipper \(flipper.name)"
+                .actionSheet(isPresented: $showForgetAction) {
+                    ActionSheet(
+                        title: Text("Forget Flipper?"),
+                        message: Text("App will no longer be paired with \(flipper?.name ?? "your Flipper")"),
+                        buttons: [
+                            .destructive(
+                                Text("Forget Flipper"),
+                                action: {
+                                    device.forgetDevice()
+                                }
+                            ),
+                            .cancel()
+                        ]
                     )
                 }
             }
@@ -208,7 +210,7 @@ struct DeviceView: View {
             default: break
             }
         }
-        .task {
+        .task { @MainActor in
             if central.state != .poweredOn {
                 central.kick()
             }

@@ -98,11 +98,10 @@ struct OptionsView: View {
                     Toggle(isOn: $isProvisioningDisabled) {
                         Text("Disable provisioning")
                     }
-                    .tint(.a1)
+                    .tintA1IfAvailable()
                     Toggle(isOn: $isDevCatalog) {
                         Text("Use dev catalog")
                     }
-                    .tint(.a1)
                     NavigationLink("I'm watching you") {
                         CarrierView()
                     }
@@ -110,10 +109,19 @@ struct OptionsView: View {
                         showResetApp = true
                     }
                     .foregroundColor(.sRed)
-                    .confirmationDialog("", isPresented: $showResetApp) {
-                        Button("Reset App", role: .destructive) {
-                            AppReset.reset()
-                        }
+                    .actionSheet(isPresented: $showResetApp) {
+                        ActionSheet(
+                            title: Text("Reset App"),
+                            buttons: [
+                                .destructive(
+                                    Text("Reset App"),
+                                    action: {
+                                        AppReset.reset()
+                                    }
+                                ),
+                                .cancel()
+                            ]
+                        )
                     }
                 }
             }

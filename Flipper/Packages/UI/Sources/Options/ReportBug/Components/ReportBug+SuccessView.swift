@@ -15,28 +15,38 @@ extension ReportBugView {
             }
         }
 
-        var text: AttributedString = {
-            var source: AttributedString = """
-                You can also post your bug on our forum so we can fix it \
-                faster. Here is the instruction how to do it.
-
-                Check the bug in TestFlight app version. If it doesn’t \
-                reproduce, then we have already fixed it.
-                """
-
-            source.foregroundColor = .black40
-
-            guard let range = source.range(
-                of: "Here is the instruction how to do it."
-            ) else {
+        var text: Any = {
+            if #available(iOS 15, *) {
+                var source: AttributedString = """
+                    You can also post your bug on our forum so we can fix it \
+                    faster. Here is the instruction how to do it.
+                    
+                    Check the bug in TestFlight app version. If it doesn’t \
+                    reproduce, then we have already fixed it.
+                    """
+                
+                source.foregroundColor = .black40
+                
+                guard let range = source.range(
+                    of: "Here is the instruction how to do it."
+                ) else {
+                    return source
+                }
+                
+                source[range].foregroundColor = .a2
+                source[range].link = .bugReport
+                source[range].underlineStyle = .single
+                
                 return source
+            } else {
+                return """
+                    You can also post your bug on our forum so we can fix it \
+                    faster.
+                    
+                    Check the bug in TestFlight app version. If it doesn’t \
+                    reproduce, then we have already fixed it.
+                    """
             }
-
-            source[range].foregroundColor = .a2
-            source[range].link = .bugReport
-            source[range].underlineStyle = .single
-
-            return source
         }()
 
         var issueID: some View {
@@ -61,10 +71,10 @@ extension ReportBugView {
                 }
                 .font(.system(size: 14, weight: .medium))
                 .padding(12)
-                .overlay {
+                .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(placeholderColor, lineWidth: 1)
-                }
+                )
             }
         }
 
@@ -82,7 +92,11 @@ extension ReportBugView {
                 VStack(spacing: 18) {
                     issueID
 
-                    Text(text)
+                    if #available(iOS 15, *) {
+                        Text(text as! AttributedString)
+                    } else {
+                        Text(text as! String)
+                    }
                 }
                 .padding(.top, 32)
 

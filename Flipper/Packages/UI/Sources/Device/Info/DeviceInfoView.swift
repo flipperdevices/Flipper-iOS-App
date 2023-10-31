@@ -81,7 +81,7 @@ struct DeviceInfoView: View {
                     values: otherKeys
                 )
             }
-            .textSelection(.enabled)
+            .enableTextSelectionIfAvailable()
             .padding(.vertical, 14)
         }
         .background(Color.background)
@@ -103,7 +103,7 @@ struct DeviceInfoView: View {
             }
         }
         .task {
-            reload()
+            await reload()
         }
     }
 

@@ -1,26 +1,18 @@
 import SwiftUI
+import MarkdownUI
 import Peripheral
 
 struct AttackConnectionError: View {
     let flipperColor: FlipperColor
 
-    var instructions: [AttributedString] = {
-        [
-            "Check Bluetooth connection with Flipper",
-            "Make sure Flipper is Turned On",
-            "If Flipper doesn’t respond, reboot it and connect to " +
-            "the app via Bluetooth",
-            "Restart **Mfkey32 (Detect Reader)**"
-        ]
-        .compactMap {
-            try? .init(
-                markdown: $0,
-                options: .init(
-                    allowsExtendedAttributes: true,
-                    interpretedSyntax: .full))
-        }
-    }()
-
+    var instructions: [String] = [
+        "Check Bluetooth connection with Flipper",
+        "Make sure Flipper is Turned On",
+        "If Flipper doesn’t respond, reboot it and connect to " +
+        "the app via Bluetooth",
+        "Restart **Mfkey32 (Detect Reader)**"
+    ]
+    
     var body: some View {
         VStack(spacing: 18) {
             Text("Flipper is not Connected")
@@ -36,7 +28,7 @@ struct AttackConnectionError: View {
                     ForEach(instructions.indices, id: \.self) { index in
                         HStack(alignment: .top, spacing: 0) {
                             Text("\(index + 1). ")
-                            Text(instructions[index])
+                            Markdown(instructions[index])
                                 .multilineTextAlignment(.leading)
                         }
                     }

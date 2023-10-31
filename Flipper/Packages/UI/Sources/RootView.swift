@@ -28,7 +28,6 @@ private struct RootViewImpl: View {
     @EnvironmentObject var device: Device
 
     @Environment(\.scenePhase) var scenePhase
-    @Environment(\.isPresented) var isPresented
 
     @State private var isPairingIssue = false
     @State private var isUpdateAvailable = false
@@ -64,7 +63,7 @@ private struct RootViewImpl: View {
                 router.hideWelcomeScreen()
             }
         }
-        .task {
+        .task { @MainActor in
             router.recordAppOpen()
             isUpdateAvailable = await AppVersionCheck.hasUpdate
         }

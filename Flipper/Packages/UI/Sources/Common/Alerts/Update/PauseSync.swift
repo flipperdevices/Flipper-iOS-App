@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import AttributedText
 
 struct PauseSyncAlert: View {
     @Binding var isPresented: Bool
@@ -19,15 +20,19 @@ struct PauseSyncAlert: View {
         isSameChannel ? "Update" : "Install"
     }
 
-    var message: AttributedString {
-        var message = AttributedString(
-            "Cannot \(messageAction) to \(availableVersion) during " +
-            "synchronization. Wait for sync to finish or pause it.")
-        if let range = message.range(of: "\(availableVersion)") {
-            message[range].foregroundColor = availableVersion.color
+    var message: NSAttributedString {
+        let message = NSMutableAttributedString(
+            string: "Cannot \(messageAction) to \(availableVersion) during " +
+            "synchronization. Wait for sync to finish or pause it."
+        )
+        
+        if let range = message.string.range(of: "\(availableVersion)") {
+            message.addAttribute(.foregroundColor, value: availableVersion.color, range: NSRange(range, in: message.string))
         }
+        
         return message
     }
+
 
     var body: some View {
         VStack(spacing: 24) {
@@ -35,7 +40,7 @@ struct PauseSyncAlert: View {
                 Text("Pause Synchronization?")
                     .font(.system(size: 14, weight: .bold))
 
-                Text(message)
+                AttributedText(message)
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)

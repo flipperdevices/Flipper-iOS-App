@@ -80,8 +80,8 @@ struct ShareView: View {
         .onAppear {
             sharing.shareInitiated()
         }
-        .task {
-            isTempLink = !sharing.canEncodeToURL(item)
+        .task { @MainActor in
+            isTempLink = await !sharing.canEncodeToURL(item)
         }
     }
 

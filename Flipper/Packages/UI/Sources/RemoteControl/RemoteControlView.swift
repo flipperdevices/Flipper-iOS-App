@@ -25,9 +25,9 @@ struct RemoteControlView: View {
     var screenshotName: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
-        let date = formatter.string(from: .now)
+        let date = formatter.string(from: Date())
         formatter.dateFormat = "HH.mm.ss"
-        let time = formatter.string(from: .now)
+        let time = formatter.string(from: Date())
         return "Screenshot \(date) at \(time)"
     }
 
@@ -194,7 +194,7 @@ struct RemoteControlView: View {
         .customAlert(isPresented: $showOutdatedAlert) {
             OutdatedVersionAlert(isPresented: $showOutdatedAlert)
         }
-        .task {
+        .task { @MainActor in
             isHorizontal = device.frame?.orientation.isHorizontal ?? true
             await runLoop()
         }

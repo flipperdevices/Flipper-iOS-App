@@ -75,7 +75,7 @@ struct DeviceUpdateCard: View {
             )
         }
         .task {
-            update()
+            await update()
         }
     }
 

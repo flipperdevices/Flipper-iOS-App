@@ -5,12 +5,19 @@ struct UpdateFailedAlert: View {
 
     let firmwareVersion: String
 
-    var message: AttributedString {
+    var commonMessagePart =
+        " wasn’t installed on your Flipper." +
+        " Try to install it again"
+
+    var message: String {
+        firmwareVersion + commonMessagePart
+    }
+
+    @available(iOS 15, *)
+    var messageAttributed: AttributedString {
         var version = AttributedString(firmwareVersion)
         version.foregroundColor = .primary
-        var message = AttributedString(
-            " wasn’t installed on your Flipper." +
-            " Try to install it again")
+        var message = AttributedString(commonMessagePart)
         message.foregroundColor = .init(uiColor: .init(.black40))
         return version + message
     }
@@ -25,7 +32,7 @@ struct UpdateFailedAlert: View {
                 .foregroundColor(.sRed)
                 .padding(.top, 24)
 
-            Text(message)
+            messageView
                 .font(.system(size: 14, weight: .medium))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 12)
@@ -43,6 +50,14 @@ struct UpdateFailedAlert: View {
                     .cornerRadius(30)
             }
             .padding(.top, 24)
+        }
+    }
+
+    var messageView: some View {
+        if #available(iOS 15, *) {
+            return Text(messageAttributed)
+        } else {
+            return Text(message)
         }
     }
 }

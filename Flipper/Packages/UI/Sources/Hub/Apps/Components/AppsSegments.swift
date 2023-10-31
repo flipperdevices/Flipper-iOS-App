@@ -30,14 +30,14 @@ struct AppsSegments: View {
                 badge: updatesCount == 0 ? nil : "\(updatesCount)"
             )
         }
-        .background(.white.opacity(0.3))
+        .modifier(BackgroundModifier(color: .white.opacity(0.3)))
         .cornerRadius(10)
         .onReceive(model.$statuses) { _ in
             Task {
                 loadUpdates()
             }
         }
-        .task {
+        .task { @MainActor in
             loadUpdates()
         }
     }

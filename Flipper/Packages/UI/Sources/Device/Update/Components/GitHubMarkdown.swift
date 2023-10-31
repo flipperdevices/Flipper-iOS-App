@@ -4,39 +4,41 @@ import MarkdownUI
 struct GitHubMarkdown: View {
     var text: String
 
-    @State private var markdown: String = ""
+    @State private var document: Document?
 
     init(_ text: String) {
         self.text = text
     }
 
     var body: some View {
-        Markdown(markdown)
-            .markdownTextStyle {
-                FontSize(14)
-            }
-            .markdownBlockStyle(\.heading2) { configuration in
-                configuration
-                    .label
-                    .markdownMargin(top: .rem(0), bottom: .rem(0.5))
-                    .markdownTextStyle {
-                        FontWeight(.semibold)
-                        FontSize(.em(1))
-                    }
-            }
+        Markdown(text)
+//            .markdownTextStyle {
+//                FontSize(14)
+//            }
+//            .markdownBlockStyle(\.heading2) { configuration in
+//                configuration
+//                    .label
+//                    .markdownMargin(top: .rem(0), bottom: .rem(0.5))
+//                    .markdownTextStyle {
+//                        FontWeight(.semibold)
+//                        FontSize(.em(1))
+//                    }
+//            }
             .task {
                 formatDocument()
             }
     }
 
     func formatDocument() {
-        markdown = text
+        let markdown = text
             .replacingPullRequestURLs
             .replacingCompareURLs
             .replacingURLs
             .replacingUsers
+        document = try? .init(markdown: markdown)
     }
 }
+
 
 private extension String {
 

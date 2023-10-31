@@ -21,7 +21,7 @@ struct BottomSheet<Content: View>: View {
                 content()
             }
             .frame(maxWidth: .infinity)
-            .background(.background)
+            .backgroundIfAvailable(.background)
             .cornerRadius(30, corners: [.topLeft, .topRight])
         }
     }

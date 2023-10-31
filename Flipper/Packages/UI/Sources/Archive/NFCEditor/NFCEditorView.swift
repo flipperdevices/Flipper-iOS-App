@@ -93,7 +93,7 @@ struct NFCEditorView: View {
         .alert(item: $error) { error in
             Alert(title: Text(error))
         }
-        .task {
+        .task { @MainActor in
             load()
         }
         .onChange(of: bytes) { _ in

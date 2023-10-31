@@ -1,6 +1,7 @@
 import Catalog
 
 import SwiftUI
+import SBPAsyncImage
 
 struct AppIcon: View {
     let source: ImageSource
@@ -23,10 +24,10 @@ struct AppIcon: View {
             .scaledToFit()
             .padding(5)
         }
-        .overlay {
+        .overlay(
             RoundedRectangle(cornerRadius: 6)
                 .stroke(Color.black16Black60)
-        }
+        )
     }
 
     struct URLImage: View {

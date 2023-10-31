@@ -67,7 +67,7 @@ struct LogsView: View {
                 .padding(.trailing, 4)
             }
         }
-        .task {
+        .task { @MainActor in
             logs.reload()
         }
     }

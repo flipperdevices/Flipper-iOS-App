@@ -9,7 +9,6 @@ extension ReportBugView {
         @State private var title = ""
         @State private var description = ""
         @State private var attachLogs = true
-        @FocusState private var focusState: Focused?
 
         enum Focused {
             case title
@@ -44,11 +43,11 @@ extension ReportBugView {
         }
 
         var showTitlePlaceholder: Bool {
-            title.isEmpty && focusState != .title
+            title.isEmpty
         }
 
         var showDescriptionPlaceholder: Bool {
-            description.isEmpty && focusState != .description
+            description.isEmpty
         }
 
         var isValid: Bool {
@@ -67,15 +66,14 @@ extension ReportBugView {
                         .padding(12)
 
                     TextField("", text: $title)
-                        .focused($focusState, equals: .title)
-                        .submitLabel(.return)
+                        .submitLabelReturnIfAvailable()
                         .padding(12)
                 }
                 .font(.system(size: 14, weight: .medium))
-                .overlay {
+                .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(placeholderColor, lineWidth: 1)
-                }
+                )
             }
         }
 
@@ -91,16 +89,15 @@ extension ReportBugView {
                         .padding(12)
 
                     TextEditor(text: $description)
-                        .focused($focusState, equals: .description)
                         .hideScrollBackground()
                         .frame(minHeight: 100, maxHeight: 220)
                         .padding(12)
                 }
                 .font(.system(size: 14, weight: .medium))
-                .overlay {
+                .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(placeholderColor, lineWidth: 1)
-                }
+                )
             }
         }
 
@@ -132,7 +129,7 @@ extension ReportBugView {
                             descriptionView
 
                             Toggle("Add logs", isOn: $attachLogs)
-                                .tint(.a1)
+                                .tintA1IfAvailable()
                         }
                         .padding(14)
                         .padding(.bottom, proxy.safeAreaInsets.bottom)
@@ -145,7 +142,7 @@ extension ReportBugView {
             }
             .ignoresSafeArea(.keyboard)
             .onTapGesture {
-                focusState = nil
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
         }
     }

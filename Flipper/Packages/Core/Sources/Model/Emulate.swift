@@ -24,7 +24,7 @@ public class Emulate: ObservableObject {
     private var stop = false
     private var forceStop = false
     private var emulateTask: Task<Void, Swift.Error>?
-    private var emulateStarted: Date = .now
+    private var emulateStarted = Date()
 
     private var pairedDevice: PairedDevice
     private var rpc: RPC { pairedDevice.session }
@@ -145,7 +145,7 @@ public class Emulate: ObservableObject {
                 state = .restricted
                 throw error
             }
-            emulateStarted = .now
+            emulateStarted = Date()
         }
         state = .emulating
         try await waitForMinimumDuration(for: item)

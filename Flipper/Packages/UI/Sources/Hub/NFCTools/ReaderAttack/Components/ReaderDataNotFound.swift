@@ -1,26 +1,18 @@
 import SwiftUI
+import MarkdownUI
 import Peripheral
 
 struct ReaderDataNotFound: View {
     let flipperColor: FlipperColor
 
-    var instructions: [AttributedString] = {
-        [
-            "On your Flipper Zero go to **NFC → Detect Reader**",
-            "Hold Flipper Zero close to the reader",
-            "Wait until you collect enough nonсes",
-            "Сomplete nonce collection",
-            "In Flipper Mobile App synchronize with your Flipper " +
-            "Zero and run the **Mfkey32 (Detect Reader)**"
-        ]
-        .compactMap {
-            try? .init(
-                markdown: $0,
-                options: .init(
-                    allowsExtendedAttributes: true,
-                    interpretedSyntax: .full))
-        }
-    }()
+    var instructions: [String] = [
+        "On your Flipper Zero go to **NFC → Detect Reader**",
+        "Hold Flipper Zero close to the reader",
+        "Wait until you collect enough nonсes",
+        "Сomplete nonce collection",
+        "In Flipper Mobile App synchronize with your Flipper " +
+        "Zero and run the **Mfkey32 (Detect Reader)**"
+    ]
 
     var body: some View {
         VStack(spacing: 18) {
@@ -44,7 +36,7 @@ struct ReaderDataNotFound: View {
                         ForEach(instructions.indices, id: \.self) { index in
                             HStack(alignment: .top, spacing: 0) {
                                 Text("\(index + 1). ")
-                                Text(instructions[index])
+                                Markdown(instructions[index])
                                     .multilineTextAlignment(.leading)
                             }
                         }

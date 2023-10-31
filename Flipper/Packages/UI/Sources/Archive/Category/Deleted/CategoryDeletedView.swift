@@ -56,14 +56,19 @@ struct CategoryDeletedView: View {
                             .foregroundColor(toolbarActionsColor)
                     }
                     .disabled(archive.items.isEmpty)
-                    .confirmationDialog(
-                        restoreSheetTitle,
-                        isPresented: $showRestoreSheet,
-                        titleVisibility: .visible
-                    ) {
-                        Button("Restore All") {
-                            archive.restoreAll()
-                        }
+                    .actionSheet(isPresented: $showRestoreSheet) {
+                        ActionSheet(
+                            title: Text(restoreSheetTitle),
+                            buttons: [
+                                .default(
+                                    Text("Restore All"),
+                                    action: {
+                                        archive.restoreAll()
+                                    }
+                                ),
+                                .cancel()
+                            ]
+                        )
                     }
 
                     NavBarButton {
@@ -74,14 +79,19 @@ struct CategoryDeletedView: View {
                             .foregroundColor(toolbarActionsColor)
                     }
                     .disabled(archive.items.isEmpty)
-                    .confirmationDialog(
-                        deleteSheetTitle,
-                        isPresented: $showDeleteSheet,
-                        titleVisibility: .visible
-                    ) {
-                        Button("Delete All", role: .destructive) {
-                            archive.deleteAll()
-                        }
+                    .actionSheet(isPresented: $showDeleteSheet) {
+                        ActionSheet(
+                            title: Text(deleteSheetTitle),
+                            buttons: [
+                                .destructive(
+                                    Text("Delete All"),
+                                    action: {
+                                        archive.deleteAll()
+                                    }
+                                ),
+                                .cancel()
+                            ]
+                        )
                     }
                 }
             }

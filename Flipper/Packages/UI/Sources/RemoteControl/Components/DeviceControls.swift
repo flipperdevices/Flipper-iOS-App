@@ -23,7 +23,7 @@ extension RemoteControlView {
 
         var body: some View {
             Image("RemoteControlBackground")
-                .overlay {
+                .overlay(
                     VStack(spacing: verticalSpacing) {
                         HStack(spacing: horizontalSpacing) {
                             ControlButton(inputKey: .up) {
@@ -49,7 +49,7 @@ extension RemoteControlView {
                             }
                         }
                     }
-                }
+                )
         }
     }
 

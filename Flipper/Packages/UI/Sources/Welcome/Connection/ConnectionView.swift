@@ -98,32 +98,28 @@ struct ConnectionView: View {
             HelpView()
                 .customBackground(Color.background)
         }
-        .alert(
-            "Connection Failed",
-            isPresented: $central.isConnectTimeout
-        ) {
-            Button("Cancel") {}
-            Button("Retry") {
-                central.stopScan()
-                central.startScan()
-            }
-        } message: {
-            Text("Unable to connect to Flipper. " +
-                 "Try to connect again or use Help")
-        }
-        .alert(
-            "Unable to Connect to Flipper",
-            isPresented: $isCanceledOrInvalidPin
-        ) {
-            Button("Cancel") {}
-            Button("Retry") {
-                if let uuid = lastUUID {
-                    central.connect(to: uuid)
+        .alert(isPresented: $central.isConnectTimeout) {
+            Alert(
+                title: Text("Connection Failed"),
+                message: Text("Unable to connect to Flipper. Try to connect again or use Help"),
+                primaryButton: .default(Text("Cancel")),
+                secondaryButton: .destructive(Text("Retry")) {
+                    central.stopScan()
+                    central.startScan()
                 }
-            }
-        } message: {
-            Text("Connection was canceled or the pairing " +
-                 "code was entered incorrectly")
+            )
+        }
+        .alert(isPresented: $isCanceledOrInvalidPin) {
+            Alert(
+                title: Text("Unable to Connect to Flipper"),
+                message: Text("Connection was canceled or the pairing code was entered incorrectly"),
+                primaryButton: .default(Text("Cancel")),
+                secondaryButton: .destructive(Text("Retry")) {
+                    if let uuid = lastUUID {
+                        central.connect(to: uuid)
+                    }
+                }
+            )
         }
         .onAppear {
             if central.state == .poweredOn {

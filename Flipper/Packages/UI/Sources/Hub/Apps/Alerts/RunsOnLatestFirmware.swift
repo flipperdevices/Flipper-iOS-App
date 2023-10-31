@@ -1,20 +1,24 @@
 import SwiftUI
+import AttributedText
 
 struct RunsOnLatestFirmwareAlert: View {
     @Binding var isPresented: Bool
 
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
 
-    var message: AttributedString {
-        var string = AttributedString(
-            "Connect your Flipper with latest firmware Release " +
+    var message: NSAttributedString {
+        let string = NSMutableAttributedString(
+            string: "Connect your Flipper with latest firmware Release " +
             "version to install this app"
         )
-        if let range = string.range(of: "Release") {
-            string[range].foregroundColor = .sGreenUpdate
+        
+        if let range = string.string.range(of: "Release") {
+            string.addAttribute(.foregroundColor, value: UIColor.systemGreen, range: NSRange(range, in: string.string))
         }
+        
         return string
     }
+
 
     var body: some View {
         VStack(spacing: 24) {
@@ -25,7 +29,7 @@ struct RunsOnLatestFirmwareAlert: View {
                 Text("Runs on Latest Firmware Release")
                     .font(.system(size: 14, weight: .bold))
 
-                Text(message)
+                AttributedText(message)
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)
