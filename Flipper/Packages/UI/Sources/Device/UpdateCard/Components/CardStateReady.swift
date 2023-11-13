@@ -63,7 +63,7 @@ extension DeviceUpdateCard {
 
                     VStack {
                         Text(
-                            "Use the firmware (.tgz) from your files to update"
+                            "Use the firmware from .tgz files to update"
                         )
                         .font(.system(size: 12, weight: .medium))
                         .multilineTextAlignment(.center)

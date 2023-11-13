@@ -13,8 +13,8 @@ extension DeviceUpdateCard {
             VStack {
                 Text(
                     "Flipper is updating in offline mode. " +
-                    "Look at the device screen for info and " +
-                    "wait for reconnection."
+                    "Check the device screen for info and wait for " +
+                    "reconnect."
                 )
                 .font(.system(size: 14, weight: .medium))
                 .multilineTextAlignment(.center)

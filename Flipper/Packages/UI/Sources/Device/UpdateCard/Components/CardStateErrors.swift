@@ -11,7 +11,7 @@ extension DeviceUpdateCard {
                 Text("No SD сard")
                     .font(.system(size: 14, weight: .medium))
                 HStack {
-                    Text("Install SD card in Flipper to update firmware")
+                    Text("Insert microSD card in Flipper to update firmware")
                         .font(.system(size: 14, weight: .medium))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.black30)

@@ -110,7 +110,7 @@ struct InstalledAppsView: View {
 
     struct NoApps: View {
         var body: some View {
-            Text("No apps installed on your Flipper yet")
+            Text("You haven't installed any apps yet")
                 .font(.system(size: 14, weight: .medium))
                 .multilineTextAlignment(.center)
                 .foregroundColor(.black40)
@@ -123,7 +123,7 @@ struct InstalledAppsView: View {
                 Image("AppAlertNotConnected")
 
                 VStack(spacing: 4) {
-                    Text("Flipper is Not Connected")
+                    Text("Flipper Not Connected")
                         .font(.system(size: 14, weight: .bold))
 
                     Text("Connect your Flipper to see the installed apps")

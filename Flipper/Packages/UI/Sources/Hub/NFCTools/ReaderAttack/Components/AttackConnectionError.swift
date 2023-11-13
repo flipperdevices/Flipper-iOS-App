@@ -23,7 +23,7 @@ struct AttackConnectionError: View {
 
     var body: some View {
         VStack(spacing: 18) {
-            Text("Flipper is not Connected")
+            Text("Flipper Not Connected")
                 .font(.system(size: 18, weight: .bold))
 
             VStack(spacing: 26) {

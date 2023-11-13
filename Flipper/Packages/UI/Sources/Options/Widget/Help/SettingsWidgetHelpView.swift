@@ -17,21 +17,21 @@ struct SettingsWidgetHelpView: View {
                         image: nil
                     )
                     WidgetHelpPoint(
-                        text: "2. Scroll down to the bottom and press “Edit”",
+                        text: "2. Scroll down to the bottom and tap “Edit”",
                         image: "WidgetHelpEdit"
                     )
                     WidgetHelpPoint(
-                        text: "3. Press the “Customize” button at the " +
+                        text: "3. Tap the “Customize” button at the " +
                             "end of the widget list",
                         image: "WidgetHelpCustomize"
                     )
                     WidgetHelpPoint(
                         text: "4. Find the Flipper App, add it to the " +
-                            "list of widgets and press “Done”",
+                            "list of widgets and tap “Done”",
                         image: "WidgetHelpFind"
                     )
                     WidgetHelpPoint(
-                        text: "5. Press “Done” in the upper right corner " +
+                        text: "5. Tap “Done” in the upper right corner " +
                             "after adding the widget on the screen",
                         image: "WidgetHelpDone"
                     )

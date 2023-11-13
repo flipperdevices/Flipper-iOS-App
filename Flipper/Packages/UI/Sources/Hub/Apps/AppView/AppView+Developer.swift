@@ -39,7 +39,7 @@ extension AppView {
                     Button {
                         openURL(github)
                     } label: {
-                        LinkLabel("View on GitHub")
+                        LinkLabel("Repository")
                     }
                 }
 
