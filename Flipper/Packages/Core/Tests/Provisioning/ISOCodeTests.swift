@@ -10,8 +10,8 @@ class ISOCodeTests: XCTestCase {
     }
 
     func testInvalidISOCode() {
-        XCTAssertNil(ISOCode(""))
-        XCTAssertNil(ISOCode("A"))
-        XCTAssertNil(ISOCode("invalid"))
+        XCTAssertNil(ISOCode(String("")))
+        XCTAssertNil(ISOCode(String("A")))
+        XCTAssertNil(ISOCode(String("invalid")))
     }
 }

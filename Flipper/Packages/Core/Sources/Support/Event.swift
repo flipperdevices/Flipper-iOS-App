@@ -1,6 +1,10 @@
 import Analytics
 
+import Foundation
+
+#if canImport(UIKIt)
 import UIKit
+#endif
 
 extension Feedback {
     struct Event {
@@ -48,7 +52,11 @@ private extension Feedback.Event {
     }
 
     var systemNameVersion: String {
+        #if canImport(UIKIt)
         "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)"
+        #else
+        "unknown"
+        #endif
     }
 
     var appBundleVersionBuild: String {

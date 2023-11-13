@@ -1,3 +1,4 @@
+#if canImport(ActivityKit)
 import ActivityKit
 
 public struct UpdateActivityAttibutes: ActivityAttributes {
@@ -10,3 +11,4 @@ public struct UpdateActivityAttibutes: ActivityAttributes {
         self.version = version
     }
 }
+#endif
