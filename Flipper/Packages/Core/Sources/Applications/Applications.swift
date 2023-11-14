@@ -13,7 +13,15 @@ public class Applications: ObservableObject {
     public typealias ApplicationInfo = Catalog.ApplicationInfo
 
     private var categories: [Category] = []
-    @Published public var manifests: [Application.ID: Manifest] = [:]
+
+    public enum InstalledStatus {
+        case loading
+        case loaded
+        case error
+    }
+
+    @Published public var installed: [ApplicationInfo] = []
+    @Published public var installedStatus: InstalledStatus = .error
     @Published public var statuses: [Application.ID: ApplicationStatus] = [:]
 
     public var outdatedCount: Int {
@@ -38,6 +46,8 @@ public class Applications: ObservableObject {
 
     public enum Error: Swift.Error {
         case unknownSDK
+        case invalidIcon
+        case invalidBuild
     }
 
     private var rpc: RPC { pairedDevice.session }
@@ -47,8 +57,15 @@ public class Applications: ObservableObject {
     private let catalog: CatalogService
     private let pairedDevice: PairedDevice
 
-    public init(catalog: CatalogService, pairedDevice: PairedDevice) {
+    private let flipperApps: FlipperApps
+
+    init(
+        catalog: CatalogService,
+        flipperApps: FlipperApps,
+        pairedDevice: PairedDevice
+    ) {
         self.catalog = catalog
+        self.flipperApps = flipperApps
         self.pairedDevice = pairedDevice
 
         subscribeToPublishers()
@@ -81,21 +98,21 @@ public class Applications: ObservableObject {
                 return
             }
             Task {
-                manifests = try await _loadManifests()
-                deviceInfo = try await getDeviceInfo()
+                try await getDeviceInfo()
+                try await loadInstalled()
             }
         } else if oldValue?.state == .connected, flipper?.state != .connected {
             isOutdatedDevice = false
             deviceInfo = nil
-            manifests = [:]
+            installed = []
             statuses = [:]
         }
     }
 
-    private func getDeviceInfo() async throws -> DeviceInfo {
+    private func getDeviceInfo() async throws {
         let target = try await getFlipperTarget()
         let api = try await getFlipperAPI()
-        return .init(target: target, api: api)
+        deviceInfo = .init(target: target, api: api)
     }
 
     private func demoDelay() async {
@@ -141,7 +158,8 @@ public class Applications: ObservableObject {
 
     public func delete(_ id: Application.ID) async {
         do {
-            try await _delete(id)
+            try await flipperApps.delete(id)
+            installed.removeAll { $0.id == id }
             statuses[id] = nil
         } catch {
             logger.error("delete app: \(error)")
@@ -163,25 +181,8 @@ public class Applications: ObservableObject {
     }
 
     private func category(installedID id: Application.ID) -> Category? {
-        guard let manifest = manifests[id] else {
-            return nil
-        }
-        let parts = manifest.path.split(separator: "/")
-        guard parts.count == 4 else {
-            return nil
-        }
-        let name = String(parts[2])
-        if let category = categories.first(where: { $0.name == name }) {
-            return category
-        } else {
-            return .init(
-                id: "",
-                priority: 0,
-                name: name,
-                color: "",
-                icon: #URL("https://null"),
-                applications: 0)
-        }
+        let name = flipperApps.category(forInstalledId: id)
+        return categories.first(where: { $0.name == name })
     }
 
     private func getFlipperTarget() async throws -> String {
@@ -295,15 +296,15 @@ public class Applications: ObservableObject {
         }
     }
 
-    public func loadInstalled() async throws -> [ApplicationInfo] {
-        let installed = manifests.compactMap {
-            ApplicationInfo($0.value)
-        }
-        guard let deviceInfo else {
-            installed.forEach { statuses[$0.id] = .installed }
-            return installed
-        }
+    public func loadInstalled() async throws {
+        guard installedStatus != .loading else { return }
+        installedStatus = .loading
+
+        installed = try await flipperApps.load()
+        installed.forEach { statuses[$0.id] = .checking }
+
         do {
+            guard let deviceInfo else { return }
             var available: ApplicationsRequest.Result = []
             while available.count < installed.count {
                 let slice = installed.dropFirst(available.count).prefix(42)
@@ -316,16 +317,17 @@ public class Applications: ObservableObject {
                     .take(slice.count)
                     .get()
 
+                slice.forEach { statuses[$0.id] = status(for: $0) }
+
                 available.append(contentsOf: loaded)
             }
 
-            for application in available {
-                statuses[application.id] = status(for: application)
-            }
+            installedStatus = .loaded
         } catch {
+            installedStatus = .error
+            installed.forEach { statuses[$0.id] = .installed }
             logger.error("load installed: \(error)")
         }
-        return installed
     }
 
     public enum ApplicationStatus: Equatable {
@@ -335,12 +337,14 @@ public class Applications: ObservableObject {
         case installed
         case outdated
         case building
+        case checking
     }
 
     private func status(
         for application: ApplicationInfo
     ) -> ApplicationStatus {
-        guard let manifest = manifests[application.id] else {
+        // FIXME:
+        guard let manifest = flipperApps.manifests[application.id] else {
             return .notInstalled
         }
         guard
@@ -384,23 +388,21 @@ extension Catalog.SortOrder {
     }
 }
 
-// MARK: MVP0 🙈
+// MARK: MVP1 🙈
 
 fileprivate extension Applications {
-    var tempPath: Path { "/ext/.tmp" }
-    var iosTempPath: Path { "\(tempPath)/ios" }
-
-    var appsPath: Path { "/ext/apps" }
-    var manifestsPath: Path { "/ext/apps_manifests" }
-
     func _install(
         _ id: Application.ID,
         progress: (Double) -> Void
     ) async throws {
-        let application = try await loadApplication(id: id)
-
         guard let deviceInfo else {
             return
+        }
+
+        let application = try await loadApplication(id: id)
+
+        if !installed.contains(where: { $0.id == id }) {
+            installed.append(.init(application))
         }
 
         let data = try await catalog.build(forVersionID: application.current.id)
@@ -408,80 +410,44 @@ fileprivate extension Applications {
             .api(deviceInfo.api)
             .get()
 
-        try? await rpc.createDirectory(at: tempPath)
-        try? await rpc.createDirectory(at: iosTempPath)
-
         guard let category = category(categoryID: application.categoryId) else {
             return
         }
-        let appCategoryPath: Path = "\(appsPath)/\(category.name)"
 
-        try? await rpc.createDirectory(at: appsPath)
-        try? await rpc.createDirectory(at: appCategoryPath)
-        try? await rpc.createDirectory(at: manifestsPath)
+        try await flipperApps.install(
+            application: application,
+            category: category,
+            bundle: data,
+            progress: progress)
 
-        let appName = "\(application.alias).fap"
-        let manifestName = "\(application.alias).fim"
+    }
+}
 
-        let appTempPath: Path = "\(iosTempPath)/\(appName)"
-        let manifestTempPath: Path = "\(iosTempPath)/\(manifestName)"
-
-        let appPath: Path = "\(appCategoryPath)/\(appName)"
-        let manifestPath: Path = "\(manifestsPath)/\(manifestName)"
-
-        try await rpc.writeFile(
-            at: appTempPath,
-            bytes: .init(data)
-        ) { writeProgress in
-            progress(writeProgress)
-        }
-
+extension Applications.Manifest {
+    init(
+        application: Catalog.Application,
+        category: Catalog.Category
+    ) async throws {
         guard case .url(let iconURL) = application.current.icon else {
-            return
+            throw Applications.Error.invalidIcon
         }
         let (icon, _) = try await URLSession.shared.data(from: iconURL)
 
         guard let build = application.current.build else {
-            return
+            throw Applications.Error.invalidBuild
         }
 
-        let manifest = Applications.Manifest(
+        let path: Path = .appPath(
+            alias: application.alias,
+            category: category.name)
+
+        self.init(
             fullName: application.current.name,
             icon: icon,
             buildAPI: build.sdk.api,
             uid: application.id,
             versionUID: application.current.id,
-            path: appPath.string)
-
-        let manifestString = try FFFEncoder.encode(manifest)
-
-        try await rpc.writeFile(
-            at: manifestTempPath,
-            string: manifestString
-        ) { _ in
-        }
-
-        try await rpc.moveFile(from: appTempPath, to: appPath)
-        try await rpc.moveFile(from: manifestTempPath, to: manifestPath)
-
-        manifests[application.id] = manifest
-    }
-
-    func _delete(_ id: Application.ID) async throws {
-        guard let manifest = manifests[id] else {
-            return
-        }
-        guard let alias = manifest.alias else {
-            return
-        }
-
-        let appPath: Path = .init(string: manifest.path)
-        let manifestPath: Path = "\(manifestsPath)/\(alias).fim"
-
-        try await rpc.deleteFile(at: appPath)
-        try await rpc.deleteFile(at: manifestPath)
-
-        manifests[id] = nil
+            path: path.string)
     }
 }
 
@@ -494,32 +460,6 @@ extension Applications.Manifest {
             return nil
         }
         return .init(alias)
-    }
-}
-
-extension Applications {
-    func _loadManifests() async throws -> [Application.ID: Manifest] {
-        var result: [Application.ID: Manifest] = [:]
-        guard
-            let listing = try? await rpc.listDirectory(at: manifestsPath)
-        else {
-            return result
-        }
-        for file in listing.files.filter({ !$0.starts(with: ".") }) {
-            do {
-                let manifest = try await _loadManifest(file)
-                result[manifest.uid] = manifest
-            } catch {
-                logger.error("load manifest: \(error)")
-            }
-        }
-        return result
-    }
-
-    func _loadManifest(_ name: String) async throws -> Manifest {
-        let data = try await rpc.readFile(at: "\(manifestsPath)/\(name)")
-        let manifest = try FFFDecoder.decode(Manifest.self, from: data)
-        return manifest
     }
 }
 

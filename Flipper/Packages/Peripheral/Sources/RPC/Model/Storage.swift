@@ -83,12 +83,12 @@ extension Directory: ExpressibleByStringLiteral {
 // MARK: Filter
 
 extension Array where Element == Peripheral.Element {
-    public var files: [String] {
+    public var files: [File] {
         self.compactMap {
             guard case .file(let file) = $0 else {
                 return nil
             }
-            return file.name
+            return file
         }
     }
 }

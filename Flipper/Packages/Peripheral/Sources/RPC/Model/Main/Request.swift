@@ -22,7 +22,7 @@ public enum Request {
 
     public enum Storage {
         case info(Path)
-        case list(Path, includingMD5: Bool, sizeLimit: Int)
+        case list(Path, calculatingMD5: Bool, sizeLimit: Int)
         case stat(Path)
         case read(Path)
         case write(Path, [UInt8])

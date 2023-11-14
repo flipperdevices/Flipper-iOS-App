@@ -67,6 +67,8 @@ extension AppView {
                     UpdateAppButton {
                     }
                     .font(.born2bSportyV2(size: 32))
+                case .checking:
+                    AnimatedPlaceholder()
                 }
             }
             .frame(height: 46)

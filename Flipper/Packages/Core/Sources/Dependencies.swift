@@ -151,6 +151,9 @@ public class Dependencies: ObservableObject {
                 baseURL: UserDefaultsStorage.shared.isDevCatalog
                     ? devURL
                     : prodURL),
+            flipperApps: .init(
+                storage: FlipperStorageAPI(pairedDevice: pairedDevice),
+                cache: CacheStorage()),
             pairedDevice: pairedDevice
         )
     }()

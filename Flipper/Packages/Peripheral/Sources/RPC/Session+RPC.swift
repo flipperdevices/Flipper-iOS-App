@@ -150,9 +150,17 @@ extension Session {
         return result
     }
 
-    public func listDirectory(at path: Path) async throws -> [Element] {
+    public func listDirectory(
+        at path: Path,
+        calculatingMD5: Bool,
+        sizeLimit: Int
+    ) async throws -> [Element] {
         let response = try await self
-            .send(.storage(.list(path, includingMD5: false, sizeLimit: 0)))
+            .send(.storage(.list(
+                path,
+                calculatingMD5: calculatingMD5,
+                sizeLimit: sizeLimit))
+            )
             .response
         guard case .storage(.list(let items)) = response else {
             throw Error.unexpectedResponse(response)

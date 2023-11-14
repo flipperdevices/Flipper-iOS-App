@@ -20,7 +20,7 @@ public protocol RPC: AnyObject {
     // MARK: Storage
 
     func getStorageInfo(at path: Path) async throws -> StorageSpace
-    func listDirectory(at path: Path) async throws -> [Element]
+    func listDirectory(at path: Path, calculatingMD5: Bool, sizeLimit: Int) async throws -> [Element]
     func getSize(at path: Path) async throws -> Int
     func getTimestamp(at path: Path) async throws -> Date
     func createFile(at path: Path, isDirectory: Bool) async throws
@@ -64,6 +64,19 @@ public extension RPC {
             result[key] = value
         }
         return result
+    }
+
+    func listDirectory(
+        at path: Path,
+        calculatingMD5: Bool
+    ) async throws -> [Element] {
+        try await self.listDirectory(at: path, calculatingMD5: calculatingMD5, sizeLimit: 0)
+    }
+
+    func listDirectory(
+        at path: Path
+    ) async throws -> [Element] {
+        try await self.listDirectory(at: path, calculatingMD5: false, sizeLimit: 0)
     }
 
     func readFile(at path: Path) async throws -> [UInt8] {

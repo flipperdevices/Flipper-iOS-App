@@ -13,6 +13,13 @@ public struct Hash: Equatable {
     }
 }
 
+extension Hash: Decodable {
+    public init(from decoder: Decoder) throws {
+        let string = try decoder.singleValueContainer().decode(String.self)
+        self.init(string)
+    }
+}
+
 public extension Data {
     var md5: String {
         Insecure.MD5.hash(data: self).map {

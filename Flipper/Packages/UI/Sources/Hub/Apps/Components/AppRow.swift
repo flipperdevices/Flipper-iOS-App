@@ -103,6 +103,8 @@ struct AppRow: View {
                     UpdateAppButton {
                     }
                     .disabled(true)
+                case .checking:
+                    AnimatedPlaceholder()
                 }
             }
             .frame(width: 92, height: 34)

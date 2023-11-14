@@ -4,7 +4,7 @@ import Foundation
 class PlainArchiveStorage: ArchiveStorage {
     let storage: FileStorage = .init()
 
-    private let root: Path
+    let root: Path
 
     init(root: Path) {
         self.root = root
