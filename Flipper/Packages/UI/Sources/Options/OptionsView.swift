@@ -68,7 +68,7 @@ struct OptionsView: View {
 
             Section {
                 HStack {
-                    Image("OptionsForum")
+                    Image("ListForum")
                         .renderingMode(.template)
                     Link(destination: .forum) {
                         Text("Forum")
@@ -76,7 +76,7 @@ struct OptionsView: View {
                     }
                 }
                 HStack {
-                    Image("OptionsGitHub")
+                    Image("ListGitHub")
                         .renderingMode(.template)
                     Link(destination: .github) {
                         Text("GitHub")
@@ -84,7 +84,7 @@ struct OptionsView: View {
                     }
                 }
                 HStack {
-                    Image("OptionsBug")
+                    Image("ListBug")
                         .renderingMode(.template)
                     NavigationLink("Report Bug") {
                         ReportBugView()

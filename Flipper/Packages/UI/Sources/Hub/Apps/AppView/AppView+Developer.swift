@@ -15,42 +15,13 @@ extension AppView {
             }
         }
 
-        struct LinkLabel: View {
-            let text: String
-
-            init(_ text: String) {
-                self.text = text
-            }
-
-            var body: some View {
-                Text(text)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.primary)
-                    .underline()
-            }
-        }
-
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
                 Title()
 
-                HStack(spacing: 8) {
-                    Image("GitHub")
-                    Button {
-                        openURL(github)
-                    } label: {
-                        LinkLabel("Repository")
-                    }
-                }
+                UnderlinedURL(image: "GitHub", label: "Repository", url: github)
 
-                HStack(spacing: 8) {
-                    Image("GitHub")
-                    Button {
-                        openURL(manifest)
-                    } label: {
-                        LinkLabel("Manifest")
-                    }
-                }
+                UnderlinedURL(image: "GitHub", label: "Manifest", url: manifest)
             }
         }
     }
