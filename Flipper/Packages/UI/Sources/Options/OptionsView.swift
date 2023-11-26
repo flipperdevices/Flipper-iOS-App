@@ -10,14 +10,8 @@ struct OptionsView: View {
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
     @AppStorage(.isDevCatalog) var isDevCatalog = false
 
-    @State private var showResetApp = false
-    @State private var versionTapCount = 0
 
     @State private var showWidgetSettings = false
-
-    var appVersion: String {
-        Bundle.releaseVersion
-    }
 
     var isDeviceAvailable: Bool {
         device.status == .connected ||
@@ -106,33 +100,13 @@ struct OptionsView: View {
                     NavigationLink("I'm watching you") {
                         CarrierView()
                     }
-                    Button("Reset App") {
-                        showResetApp = true
-                    }
-                    .foregroundColor(.sRed)
-                    .confirmationDialog("", isPresented: $showResetApp) {
-                        Button("Reset App", role: .destructive) {
-                            AppReset.reset()
-                        }
-                    }
+                    ResetButton()
                 }
             }
 
             Section {
             } footer: {
-                VStack(alignment: .center) {
-                    Text("Flipper Mobile App")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.black20)
-                    Text("Version: \(appVersion)")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.black40)
-                }
-                .padding(.vertical, 20)
-                .frame(maxWidth: .infinity)
-                .onTapGesture {
-                    onVersionTapGesture()
-                }
+                Version(isDebugMode: $isDebugMode)
             }
             .padding(.top, -40)
             .padding(.bottom, 20)
@@ -152,11 +126,57 @@ struct OptionsView: View {
         }
     }
 
-    func onVersionTapGesture() {
-        versionTapCount += 1
-        if versionTapCount == 10 {
-            isDebugMode = true
-            versionTapCount = 0
+
+}
+
+extension OptionsView {
+    struct ResetButton: View {
+        @State private var showResetApp = false
+
+        var body: some View {
+            Button("Reset App") {
+                showResetApp = true
+            }
+            .foregroundColor(.sRed)
+            .confirmationDialog("", isPresented: $showResetApp) {
+                Button("Reset App", role: .destructive) {
+                    AppReset.reset()
+                }
+            }
+        }
+    }
+
+    struct Version: View {
+        @Binding var isDebugMode: Bool
+
+        @State private var versionTapCount = 0
+
+        var appVersion: String {
+            Bundle.releaseVersion
+        }
+
+        var body: some View {
+            VStack(alignment: .center) {
+                Text("Flipper Mobile App")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.black20)
+                Text("Version: \(appVersion)")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.black40)
+            }
+            .padding(.vertical, 20)
+            .frame(maxWidth: .infinity)
+            .onTapGesture {
+                onVersionTapGesture()
+            }
+        }
+
+        func onVersionTapGesture() {
+            versionTapCount += 1
+            if versionTapCount == 10 {
+                isDebugMode = true
+                versionTapCount = 0
+            }
         }
     }
 }
