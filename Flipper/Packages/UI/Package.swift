@@ -21,6 +21,9 @@ let package = Package(
             name: "Analytics",
             path: "../Analytics"),
         .package(
+            name: "Notifications",
+            path: "../Notifications"),
+        .package(
             url: "https://github.com/airbnb/lottie-ios.git",
             from: "3.3.0"),
         .package(
@@ -36,6 +39,7 @@ let package = Package(
             dependencies: [
                 "Core",
                 "Analytics",
+                "Notifications",
                 .product(name: "SVGKit", package: "SVGKit"),
                 .product(name: "Lottie", package: "lottie-ios"),
                 .product(name: "MarkdownUI", package: "swift-markdown-ui")

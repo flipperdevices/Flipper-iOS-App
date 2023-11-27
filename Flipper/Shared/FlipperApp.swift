@@ -4,6 +4,8 @@ import SwiftUI
 
 @main
 struct FlipperApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     init() {
         #if !DEBUG
         Core.migration()

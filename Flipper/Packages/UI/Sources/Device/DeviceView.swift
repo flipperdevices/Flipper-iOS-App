@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import Notifications
 
 struct DeviceView: View {
     @EnvironmentObject var router: Router
@@ -7,12 +8,17 @@ struct DeviceView: View {
     @EnvironmentObject var device: Device
     @EnvironmentObject var synchronization: Synchronization
     @EnvironmentObject var updateModel: UpdateModel
+    @EnvironmentObject var notifications: Notifications
 
     @Environment(\.scenePhase) var scenePhase
 
     @State private var showForgetAction = false
     @State private var showOutdatedFirmwareAlert = false
     @State private var showOutdatedMobileAlert = false
+
+    @AppStorage(.notificationsSuggested) var notificationsSuggested = false
+    @State private var showNotificationsAlert: Bool = false
+    @State private var showNotificationsError: Bool = false
 
     var flipper: Flipper? {
         device.flipper
@@ -212,6 +218,19 @@ struct DeviceView: View {
             if central.state != .poweredOn {
                 central.kick()
             }
+
+            if !notificationsSuggested {
+                notificationsSuggested = true
+                showNotificationsAlert = true
+            }
+        }
+        .customAlert(isPresented: $showNotificationsAlert) {
+            EnableNotificationsAlert(isPresented: $showNotificationsAlert) {
+                Task { await enableNotifications() }
+            }
+        }
+        .customAlert(isPresented: $showNotificationsError) {
+            NotificationsDisabledAlert(isPresented: $showNotificationsError)
         }
     }
 
@@ -237,6 +256,14 @@ struct DeviceView: View {
 
     func disconnect() {
         device.disconnect()
+    }
+
+    func enableNotifications() async {
+        do {
+            try await notifications.enable()
+        } catch {
+            showNotificationsError = true
+        }
     }
 }
 

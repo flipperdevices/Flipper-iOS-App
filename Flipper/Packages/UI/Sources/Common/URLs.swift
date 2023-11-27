@@ -10,6 +10,18 @@ extension URL {
         .init(string: UIApplication.openSettingsURLString) ?? systemSettings
     }
 
+    static var notificationSettings: URL {
+        var url: URL? = nil
+        if #available(iOS 16, *) {
+            url = .init(string: UIApplication.openNotificationSettingsURLString)
+        } else if #available(iOS 15.4, *) {
+            url = .init(string: UIApplicationOpenNotificationSettingsURLString)
+        } else {
+            url = .init(string: UIApplication.openSettingsURLString)
+        }
+        return url ?? systemSettings
+    }
+
     static var systemSettings = #URL(
         "App-Prefs:root="
     )

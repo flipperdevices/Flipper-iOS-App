@@ -1,4 +1,6 @@
 import Core
+import Notifications
+
 import SwiftUI
 
 struct OptionsView: View {
@@ -9,7 +11,6 @@ struct OptionsView: View {
     @AppStorage(.isDebugMode) var isDebugMode = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
     @AppStorage(.isDevCatalog) var isDevCatalog = false
-
 
     @State private var showWidgetSettings = false
 
@@ -54,6 +55,8 @@ struct OptionsView: View {
             .disabled(!isDeviceAvailable)
 
             Section {
+                NotificationsToggle()
+
                 Button("Widget Settings") {
                     showWidgetSettings = true
                 }
@@ -125,11 +128,63 @@ struct OptionsView: View {
             TodayWidgetSettingsView()
         }
     }
-
-
 }
 
 extension OptionsView {
+    struct NotificationsToggle: View {
+        @EnvironmentObject var notifications: Notifications
+
+        @AppStorage(.isNotificationsOn) var isNotificationsOn = false
+
+        //@State var showSpinner: Bool = false
+        @State var showNotificationsError: Bool = false
+
+        var body: some View {
+            Toggle(isOn: $isNotificationsOn) {
+                VStack(alignment: .leading) {
+                    Text("Push notifications")
+                    Text("Notify about new firmware releases")
+                        .font(.system(size: 12))
+                        .foregroundColor(.black40)
+                }
+            }
+            .tint(.a1)
+            .onChange(of: isNotificationsOn) { newValue in
+                enableNotifications(newValue)
+            }
+            .customAlert(isPresented: $showNotificationsError) {
+                NotificationsDisabledAlert(isPresented: $showNotificationsError)
+            }
+            .task {
+                await reloadPermissions()
+            }
+        }
+
+        func reloadPermissions() async {
+            let isEnabled = await notifications.isEnabled
+            if isEnabled != isNotificationsOn {
+                isNotificationsOn = isEnabled
+            }
+        }
+
+        func enableNotifications(_ newValue: Bool) async {
+            do {
+                if newValue {
+                    try await notifications.enable()
+                } else {
+                    await notifications.disable()
+                }
+            } catch {
+                isNotificationsOn = false
+                showNotificationsError = true
+            }
+        }
+        
+        func enableNotifications(_ newValue: Bool) {
+            Task { await enableNotifications(newValue) }
+        }
+    }
+
     struct ResetButton: View {
         @State private var showResetApp = false
 
