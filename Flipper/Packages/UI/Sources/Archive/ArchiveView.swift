@@ -105,9 +105,7 @@ struct ArchiveView: View {
                 }
             }
             .sheet(item: $selectedItem) { item in
-                AlertStack {
-                    InfoView(item: item)
-                }
+                InfoView(item: item)
             }
             .sheet(item: $importedItem) { item in
                 ImportView(url: item)

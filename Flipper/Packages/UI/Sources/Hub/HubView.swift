@@ -63,9 +63,7 @@ struct HubView: View {
                 }
             }
             .sheet(isPresented: $showRemoteControl) {
-                AlertStack {
-                    RemoteControlView()
-                }
+                RemoteControlView()
             }
         }
         .onOpenURL { url in
@@ -81,9 +79,7 @@ struct HubView: View {
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
         .fullScreenCover(isPresented: $showDetectReader) {
-            AlertStack {
-                DetectReaderView()
-            }
+            DetectReaderView()
         }
     }
 

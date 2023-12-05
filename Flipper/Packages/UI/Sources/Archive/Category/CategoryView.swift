@@ -39,9 +39,7 @@ struct CategoryView: View {
             }
         }
         .sheet(item: $selectedItem) { item in
-            AlertStack {
-                InfoView(item: item)
-            }
+            InfoView(item: item)
         }
     }
 }

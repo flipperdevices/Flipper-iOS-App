@@ -28,16 +28,16 @@ extension AppView {
             } label: {
                 AppStatus(status: status)
             }
-            .customAlert(isPresented: $isRunsOnReleasePresented) {
+            .alert(isPresented: $isRunsOnReleasePresented) {
                 RunsOnLatestFirmwareAlert(
                     isPresented: $isRunsOnReleasePresented)
             }
-            .customAlert(isPresented: $isRebuildingAlertPresented) {
+            .alert(isPresented: $isRebuildingAlertPresented) {
                 AppIsRebuildingAlert(
                     isPresented: $isRebuildingAlertPresented,
                     application: .init(application))
             }
-            .customAlert(isPresented: $isOutdatedAppAlertPresented) {
+            .alert(isPresented: $isOutdatedAppAlertPresented) {
                 AppsOutdatedAppAlert(
                     isPresented: $isOutdatedAppAlertPresented,
                     application: .init(application)
@@ -45,7 +45,7 @@ extension AppView {
                     openURL(application.current.links.source.uri)
                 }
             }
-            .customAlert(isPresented: $isOutdatedDeviceAlertPresented) {
+            .alert(isPresented: $isOutdatedDeviceAlertPresented) {
                 AppsOutdatedFlipperAlert(
                     isPresented: $isOutdatedDeviceAlertPresented)
             }

@@ -152,7 +152,7 @@ extension OptionsView {
             .onChange(of: isNotificationsOn) { newValue in
                 enableNotifications(newValue)
             }
-            .customAlert(isPresented: $showNotificationsError) {
+            .alert(isPresented: $showNotificationsError) {
                 NotificationsDisabledAlert(isPresented: $showNotificationsError)
             }
             .task {

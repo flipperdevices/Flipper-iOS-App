@@ -7,23 +7,24 @@ public struct RootView: View {
     @StateObject var dependencies: Dependencies = .shared
     @StateObject var notifications: Notifications = .init()
 
+    @StateObject var overlayController: OverlayController = .init()
+
     public init() {}
 
     public var body: some View {
-        AlertStack {
-            RootViewImpl()
-        }
-        .environmentObject(dependencies.router)
-        .environmentObject(dependencies.device)
-        .environmentObject(dependencies.central)
-        .environmentObject(dependencies.networkMonitor)
-        .environmentObject(dependencies.archiveModel)
-        .environmentObject(dependencies.synchronization)
-        .environmentObject(dependencies.updateModel)
-        .environmentObject(dependencies.sharing)
-        .environmentObject(dependencies.emulate)
-        .environmentObject(dependencies.applications)
-        .environmentObject(notifications)
+        RootViewImpl()
+            .environmentObject(dependencies.router)
+            .environmentObject(dependencies.device)
+            .environmentObject(dependencies.central)
+            .environmentObject(dependencies.networkMonitor)
+            .environmentObject(dependencies.archiveModel)
+            .environmentObject(dependencies.synchronization)
+            .environmentObject(dependencies.updateModel)
+            .environmentObject(dependencies.sharing)
+            .environmentObject(dependencies.emulate)
+            .environmentObject(dependencies.applications)
+            .environmentObject(notifications)
+            .environmentObject(overlayController)
     }
 }
 
@@ -51,10 +52,10 @@ private struct RootViewImpl: View {
             .animation(.linear, value: router.isFirstLaunch)
             .transition(.opacity)
         }
-        .customAlert(isPresented: $isPairingIssue) {
+        .alert(isPresented: $isPairingIssue) {
             PairingIssueAlert(isPresented: $isPairingIssue)
         }
-        .customAlert(isPresented: $isUpdateAvailable) {
+        .alert(isPresented: $isUpdateAvailable) {
             MobileUpdateAlert(isPresented: $isUpdateAvailable)
         }
         .onContinueUserActivity("PlayAlertIntent") { _ in

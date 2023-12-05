@@ -21,7 +21,7 @@ struct SelectChannel: View {
         .onPreferenceChange(SelectChannelOffsetKey.self) {
             channelSelectorOffset = $0
         }
-        .popup(isPresented: $showChannelSelector, hideOnTap: true) {
+        .popup(isPresented: $showChannelSelector) {
             SelectChannelPopup {
                 showChannelSelector = false
                 onChannelSelected($0)

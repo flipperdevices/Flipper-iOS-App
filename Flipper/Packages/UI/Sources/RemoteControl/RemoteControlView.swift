@@ -192,7 +192,7 @@ struct RemoteControlView: View {
             @unknown default: break
             }
         }
-        .customAlert(isPresented: $showOutdatedAlert) {
+        .alert(isPresented: $showOutdatedAlert) {
             OutdatedVersionAlert(isPresented: $showOutdatedAlert)
         }
         .task {

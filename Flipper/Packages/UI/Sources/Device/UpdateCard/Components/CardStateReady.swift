@@ -88,7 +88,7 @@ extension DeviceUpdateCard {
                     .padding(.horizontal, 12)
                 }
             }
-            .customAlert(isPresented: $showPauseSync) {
+            .alert(isPresented: $showPauseSync) {
                 PauseSyncAlert(
                     isPresented: $showPauseSync,
                     installedVersion: updateModel.installed!,
@@ -98,7 +98,7 @@ extension DeviceUpdateCard {
                     updateModel.startUpdate()
                 }
             }
-            .customAlert(isPresented: $showConfirmUpdate) {
+            .alert(isPresented: $showConfirmUpdate) {
                 ConfirmUpdateAlert(
                     isPresented: $showConfirmUpdate,
                     installedVersion: updateModel.installed!,
@@ -107,7 +107,7 @@ extension DeviceUpdateCard {
                     updateModel.startUpdate()
                 }
             }
-            .customAlert(isPresented: $showCharge) {
+            .alert(isPresented: $showCharge) {
                 LowBatteryAlert(isPresented: $showCharge)
             }
             .fileImporter(

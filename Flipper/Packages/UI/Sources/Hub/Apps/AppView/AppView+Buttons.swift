@@ -25,7 +25,7 @@ extension AppView {
                         confirmDelete = true
                     }
                     .frame(width: 46, height: 46)
-                    .customAlert(isPresented: $confirmDelete) {
+                    .alert(isPresented: $confirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $confirmDelete,
                             application: .init(application)
@@ -72,7 +72,7 @@ extension AppView {
                 }
             }
             .frame(height: 46)
-            .customAlert(isPresented: $isNotConnectedAlertPresented) {
+            .alert(isPresented: $isNotConnectedAlertPresented) {
                 RunsOnLatestFirmwareAlert(
                     isPresented: $isNotConnectedAlertPresented)
             }

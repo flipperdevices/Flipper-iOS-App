@@ -101,9 +101,7 @@ struct InfoView: View {
             .environmentObject(networkMonitor)
         }
         .fullScreenCover(isPresented: $showDumpEditor) {
-            AlertStack {
-                NFCEditorView(item: $current)
-            }
+            NFCEditorView(item: $current)
         }
         .alert(item: $error) { error in
             Alert(title: Text(error))

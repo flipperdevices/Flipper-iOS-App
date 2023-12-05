@@ -169,7 +169,7 @@ struct AppView: View {
             .onReceive(model.$statuses) { statuses in
                 status = statuses[application.id] ?? .notInstalled
             }
-            .customAlert(isPresented: $isHideAppPresented) {
+            .alert(isPresented: $isHideAppPresented) {
                 ConfirmHideAppAlert(
                     isPresented: $isHideAppPresented,
                     application: .init(application)

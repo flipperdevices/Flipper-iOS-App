@@ -189,7 +189,7 @@ struct DetectReaderView: View {
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
-        .customAlert(isPresented: $showCancelAttack) {
+        .alert(isPresented: $showCancelAttack) {
             CancelAttackAlert(isPresented: $showCancelAttack) {
                 dismiss()
             }

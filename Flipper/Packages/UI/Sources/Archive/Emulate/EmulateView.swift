@@ -77,10 +77,10 @@ struct EmulateView: View {
         }
         .padding(.horizontal, 24)
         .padding(.top, 18)
-        .customAlert(isPresented: $showAppLocked) {
+        .alert(isPresented: $showAppLocked) {
             FlipperBusyAlert(isPresented: $showAppLocked)
         }
-        .customAlert(isPresented: $showRestricted) {
+        .alert(isPresented: $showRestricted) {
             TransmissionRestrictedAlert(isPresented: $showRestricted)
         }
         .onDisappear {

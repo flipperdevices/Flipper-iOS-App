@@ -193,10 +193,10 @@ struct DeviceView: View {
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
-        .customAlert(isPresented: $showOutdatedFirmwareAlert) {
+        .alert(isPresented: $showOutdatedFirmwareAlert) {
             OutdatedFirmwareAlert(isPresented: $showOutdatedFirmwareAlert)
         }
-        .customAlert(isPresented: $showOutdatedMobileAlert) {
+        .alert(isPresented: $showOutdatedMobileAlert) {
             OutdatedMobileAlert(isPresented: $showOutdatedMobileAlert)
         }
         .onChange(of: device.status) { status in
@@ -218,19 +218,24 @@ struct DeviceView: View {
             if central.state != .poweredOn {
                 central.kick()
             }
-
-            if !notificationsSuggested {
-                notificationsSuggested = true
-                showNotificationsAlert = true
-            }
+            suggestNotifications()
         }
-        .customAlert(isPresented: $showNotificationsAlert) {
+        .alert(isPresented: $showNotificationsAlert) {
             EnableNotificationsAlert(isPresented: $showNotificationsAlert) {
                 Task { await enableNotifications() }
             }
         }
-        .customAlert(isPresented: $showNotificationsError) {
+        .alert(isPresented: $showNotificationsError) {
             NotificationsDisabledAlert(isPresented: $showNotificationsError)
+        }
+    }
+
+    func suggestNotifications() {
+        guard !notificationsSuggested else { return }
+        Task { @MainActor in
+            try? await Task.sleep(seconds: 1)
+            notificationsSuggested = true
+            showNotificationsAlert = true
         }
     }
 

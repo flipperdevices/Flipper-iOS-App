@@ -31,7 +31,7 @@ struct AppRow: View {
                         showConfirmDelete = true
                     }
                     .frame(width: 34, height: 34)
-                    .customAlert(isPresented: $showConfirmDelete) {
+                    .alert(isPresented: $showConfirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $showConfirmDelete,
                             application: application
@@ -109,7 +109,7 @@ struct AppRow: View {
             }
             .frame(width: 92, height: 34)
             .font(.born2bSportyV2(size: 18))
-            .customAlert(isPresented: $isNotConnectedAlertPresented) {
+            .alert(isPresented: $isNotConnectedAlertPresented) {
                 FlipperIsNotConnectedAlert(
                     isPresented: $isNotConnectedAlertPresented)
             }

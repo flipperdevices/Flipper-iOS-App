@@ -80,7 +80,7 @@ struct NFCEditorView: View {
                 }
             }
             .navigationBarHidden(true)
-            .customAlert(isPresented: $showSaveChanges) {
+            .alert(isPresented: $showSaveChanges) {
                 SaveChangesAlert(
                     isPresented: $showSaveChanges,
                     save: save,
