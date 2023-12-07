@@ -10,7 +10,7 @@ struct MainView: View {
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
 
     @State private var importedName = ""
-    @State private var importedOpacity = 0.0
+    @State private var showImported = false
 
     @State private var showTodayWidgetSettings = false
 
@@ -23,11 +23,11 @@ struct MainView: View {
                     .opacity(selectedTab == .archive ? 1 : 0)
                 HubView()
                     .opacity(selectedTab == .hub ? 1 : 0)
-
-                ImportedBanner(itemName: importedName)
-                    .opacity(importedOpacity)
             }
-
+            .notification(isPresented: $showImported) {
+                ImportedBanner(itemName: importedName)
+            }
+ 
             if !tabViewController.isHidden {
                 TabView(selected: $selectedTab) {
                     tabViewController.popToRootView(for: selectedTab)
@@ -57,12 +57,10 @@ struct MainView: View {
     }
 
     func onItemAdded(item: ArchiveItem) {
-        importedName = item.name.value
         Task { @MainActor in
-            try? await Task.sleep(milliseconds: 200)
-            withAnimation { importedOpacity = 1.0 }
-            try? await Task.sleep(seconds: 3)
-            withAnimation { importedOpacity = 0 }
+            try? await Task.sleep(seconds: 1)
+            importedName = item.name.value
+            showImported = true
         }
     }
 }
