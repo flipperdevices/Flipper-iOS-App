@@ -305,9 +305,9 @@ public class Applications: ObservableObject {
 
         do {
             guard let deviceInfo else { return }
-            var available: ApplicationsRequest.Result = []
-            while available.count < installed.count {
-                let slice = installed.dropFirst(available.count).prefix(42)
+            let step = 42
+            for processed in stride(from: 0, to: installed.count, by: step)  {
+                let slice = installed.dropFirst(processed).prefix(step)
 
                 let loaded = try await catalog
                     .applications()
@@ -318,14 +318,12 @@ public class Applications: ObservableObject {
                     .get()
 
                 let missing = slice
-                    .filter { !loaded.contains($0) }
+                    .filter { !loaded.map(\.id).contains($0.id) }
 
                 loaded
                     .forEach { statuses[$0.id] = status(for: $0) }
                 missing
                     .forEach { statuses[$0.id] = .building }
-
-                available.append(contentsOf: loaded)
             }
 
             installedStatus = .loaded
