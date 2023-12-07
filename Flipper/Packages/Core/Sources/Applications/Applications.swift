@@ -317,7 +317,13 @@ public class Applications: ObservableObject {
                     .take(slice.count)
                     .get()
 
-                slice.forEach { statuses[$0.id] = status(for: $0) }
+                let missing = slice
+                    .filter { !loaded.contains($0) }
+
+                loaded
+                    .forEach { statuses[$0.id] = status(for: $0) }
+                missing
+                    .forEach { statuses[$0.id] = .building }
 
                 available.append(contentsOf: loaded)
             }
