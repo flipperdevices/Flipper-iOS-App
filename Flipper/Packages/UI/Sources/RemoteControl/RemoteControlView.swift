@@ -14,6 +14,7 @@ struct RemoteControlView: View {
         guard let image = UIImage(frame: frame) else { return nil }
         switch frame.orientation {
         case .horizontalFlipped: return image.withOrientation(.down)
+        case .verticalFlipped: return image.withOrientation(.down)
         default: return image
         }
     }
