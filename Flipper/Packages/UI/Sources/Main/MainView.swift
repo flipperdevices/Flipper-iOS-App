@@ -9,9 +9,6 @@ struct MainView: View {
 
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
 
-    @State private var importedName = ""
-    @State private var showImported = false
-
     @State private var showTodayWidgetSettings = false
 
     var body: some View {
@@ -24,9 +21,6 @@ struct MainView: View {
                 HubView()
                     .opacity(selectedTab == .hub ? 1 : 0)
             }
-            .notification(isPresented: $showImported) {
-                ImportedBanner(itemName: importedName)
-            }
  
             if !tabViewController.isHidden {
                 TabView(selected: $selectedTab) {
@@ -37,9 +31,7 @@ struct MainView: View {
         }
         .ignoresSafeArea(.keyboard)
         .environmentObject(tabViewController)
-        .onReceive(archive.imported) { item in
-            onItemAdded(item: item)
-        }
+        
         .onOpenURL { url in
             switch url {
             case .todayWidgetSettings:
@@ -53,14 +45,6 @@ struct MainView: View {
         }
         .fullScreenCover(isPresented: $showTodayWidgetSettings) {
             TodayWidgetSettingsView()
-        }
-    }
-
-    func onItemAdded(item: ArchiveItem) {
-        Task { @MainActor in
-            try? await Task.sleep(seconds: 1)
-            importedName = item.name.value
-            showImported = true
         }
     }
 }
