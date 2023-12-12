@@ -28,7 +28,8 @@ extension AppView {
                     .alert(isPresented: $confirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $confirmDelete,
-                            application: .init(application)
+                            application: .init(application),
+                            category: model.category(for: application)
                         ) {
                             delete()
                         }

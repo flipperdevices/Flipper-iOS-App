@@ -118,7 +118,10 @@ struct AppView: View {
                     .disabled(!isBuildReady)
 
                     if !isBuildReady || model.deviceInfo == nil {
-                        AppStatusButton(application: application)
+                        AppStatusButton(
+                            application: application,
+                            category: model.category(for: application)
+                        )
                     }
 
                     Divider()
@@ -173,6 +176,7 @@ struct AppView: View {
                 ConfirmHideAppAlert(
                     isPresented: $isHideAppPresented,
                     application: .init(application)
+                    category: model.category(for: application)
                 ) {
                     recordAppHidden(application: application)
                     hide()

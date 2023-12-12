@@ -16,7 +16,10 @@ struct AppRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                IconNameCategory(application: application)
+                IconNameCategory(
+                    application: application,
+                    category: model.category(for: application)
+                )
 
                 Spacer()
 
@@ -34,7 +37,8 @@ struct AppRow: View {
                     .alert(isPresented: $showConfirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $showConfirmDelete,
-                            application: application
+                            application: application,
+                            category: model.category(for: application)
                         ) {
                             delete()
                         }
