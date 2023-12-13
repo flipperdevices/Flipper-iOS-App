@@ -49,10 +49,14 @@ struct AppIcon: View {
         let data: Data
 
         var body: some View {
-            Image(uiImage: .init(data: data)!)
-                .renderingMode(.template)
-                .interpolation(.none)
-                .resizable()
+            if let uiImage = UIImage(data: data) {
+                Image(uiImage: uiImage)
+                    .renderingMode(.template)
+                    .interpolation(.none)
+                    .resizable()
+            } else {
+                AnimatedPlaceholder()
+            }
         }
     }
 }
