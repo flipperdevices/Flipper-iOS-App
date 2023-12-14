@@ -70,6 +70,7 @@ struct AppView: View {
         let application: Applications.Application
 
         @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+        @Environment(\.notifications) private var notifications
 
         var isHidden: Bool {
             hiddenApps.contains(application.id)
@@ -175,14 +176,18 @@ struct AppView: View {
             .alert(isPresented: $isHideAppPresented) {
                 ConfirmHideAppAlert(
                     isPresented: $isHideAppPresented,
-                    application: .init(application)
+                    application: .init(application),
                     category: model.category(for: application)
                 ) {
                     recordAppHidden(application: application)
                     hide()
-                    Task {
-                        dismiss()
-                    }
+                    dismiss()
+                    notifications.apps.showHidden = true
+                }
+            }
+            .notification(isPresented: notifications.apps.showHidden) {
+                AppHideBanner(isPresented: notifications.apps.showHidden) {
+                    unhide()
                 }
             }
         }

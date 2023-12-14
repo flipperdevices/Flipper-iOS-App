@@ -2,9 +2,14 @@ import SwiftUI
 
 struct InAppNotifications {
     var archive: Archive = .init()
+    var apps: Apps = .init()
 
     struct Archive {
         var showImported = false
+    }
+
+    struct Apps {
+        var showHidden = false
     }
 }
 
@@ -12,6 +17,11 @@ extension Binding where Value == InAppNotifications {
     var archive: Value.Archive {
         get { wrappedValue.archive }
         nonmutating set { wrappedValue.archive = newValue }
+    }
+
+    var apps: Value.Apps {
+        get { wrappedValue.apps }
+        nonmutating set { wrappedValue.apps = newValue }
     }
 }
 
