@@ -10,7 +10,6 @@ class OverlayController: ObservableObject {
     }
 
     func present<Content: View>(
-        isPresented: Binding<Bool>,
         @ViewBuilder content: @escaping () -> Content
     ) {
         guard let overlay else { return }

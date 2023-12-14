@@ -20,9 +20,7 @@ struct OverlayModifier<AlertContent: View>: ViewModifier {
             // change doesn't fire when containing view was dismissed
             .onChange(of: isPresented.wrappedValue) { newValue in
                 if newValue {
-                    controller.present(
-                        isPresented: isPresented,
-                        content: alertContent)
+                    controller.present(content: alertContent)
                 }
             }
     }
