@@ -366,7 +366,14 @@ public class Applications: ObservableObject {
         _ application: Application,
         description: String
     ) async throws {
-        try await catalog.report(uid: application.id, description: description)
+        do {
+            try await catalog.report(
+                uid: application.id,
+                description: description)
+        } catch {
+            logger.error("report concern: \(error)")
+            throw error
+        }
     }
 }
 

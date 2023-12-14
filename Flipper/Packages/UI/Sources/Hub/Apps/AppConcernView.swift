@@ -1,7 +1,7 @@
 import Core
 import SwiftUI
 
-struct AppAbuseView: View {
+struct AppConcernView: View {
     @EnvironmentObject var model: Applications
 
     let application: Applications.Application
@@ -12,6 +12,8 @@ struct AppAbuseView: View {
     @State private var description = ""
     @State private var attachLogs = true
     @FocusState private var focusState: Focused?
+
+    @Environment(\.notifications) var notifications
 
     enum Focused {
         case description
@@ -87,6 +89,9 @@ struct AppAbuseView: View {
                 Title("Report Abuse")
             }
         }
+        .notification(isPresented: notifications.apps.showReported) {
+            AppReportBanner()
+        }
     }
 
     func report() {
@@ -94,8 +99,9 @@ struct AppAbuseView: View {
             do {
                 try await model.report(application, description: description)
                 dismiss()
+                notifications.apps.showReported = true
             } catch {
-                print("report abuse: \(error)")
+                // TODO: show error
             }
         }
     }

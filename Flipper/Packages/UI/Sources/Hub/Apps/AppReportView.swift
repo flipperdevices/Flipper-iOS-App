@@ -7,6 +7,8 @@ struct AppReportView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) var dismiss
 
+    @Environment(\.notifications) var notifications
+
     var backgroundColor: Color {
         switch colorScheme {
         case .light: return .black12
@@ -20,8 +22,8 @@ struct AppReportView: View {
                 AppIssueView(application: application)
             }
 
-            NavigationListItem(image: "ListConcern", title: "Report Abuse") {
-                AppAbuseView(application: application)
+            NavigationListItem(image: "ListConcern", title: "Report Concern") {
+                AppConcernView(application: application)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -32,6 +34,12 @@ struct AppReportView: View {
                     dismiss()
                 }
                 Title("Report App")
+            }
+        }
+        // TODO: why not? dreaming of NavigationStack
+        .onChange(of: notifications.apps.showReported) { newValue in
+            if newValue {
+                dismiss()
             }
         }
     }

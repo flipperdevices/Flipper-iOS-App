@@ -10,6 +10,7 @@ struct InAppNotifications {
 
     struct Apps {
         var showHidden = false
+        var showReported = false
     }
 }
 
