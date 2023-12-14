@@ -13,13 +13,16 @@ struct AppsSegments: View {
 
     @State var updatesCount: Int = 0
 
+    @Namespace private var animation
+
     var body: some View {
         HStack(spacing: 2) {
             AppsSegment(
                 selected: $selected,
                 id: .all,
                 image: "AllApps",
-                title: "All Apps"
+                title: "All Apps",
+                namespace: animation
             )
 
             AppsSegment(
@@ -27,7 +30,8 @@ struct AppsSegments: View {
                 id: .installed,
                 image: "InstalledApps",
                 title: "Installed",
-                badge: updatesCount == 0 ? nil : "\(updatesCount)"
+                badge: updatesCount == 0 ? nil : "\(updatesCount)",
+                namespace: animation
             )
         }
         .background(.white.opacity(0.3))
@@ -60,44 +64,56 @@ struct AppsSegment: View {
     let title: String
     let badge: String?
 
+    let namespace: Namespace.ID
+
     init(
         selected: Binding<AppsSegments.Segment>,
         id: AppsSegments.Segment,
         image: String,
         title: String,
-        badge: String? = nil
+        badge: String? = nil,
+        namespace: Namespace.ID
     ) {
         self._selected = selected
         self.id = id
         self.image = image
         self.title = title
         self.badge = badge
+        self.namespace = namespace
     }
 
     var body: some View {
-        HStack {
-            HStack(spacing: 8) {
-                Spacer(minLength: 0)
-                ZStack {
-                    Image(image)
-                        .renderingMode(.template)
-                        .foregroundColor(.primary)
+        HStack(spacing: 8) {
+            Spacer(minLength: 0)
+            ZStack {
+                Image(image)
+                    .renderingMode(.template)
+                    .foregroundColor(.primary)
 
-                    if let badge {
-                        Badge(text: badge)
-                            .offset(x: 8, y: -7)
-                    }
+                if let badge {
+                    Badge(text: badge)
+                        .offset(x: 8, y: -7)
                 }
-                Text(title)
-                    .font(.system(size: 12, weight: .bold))
-                Spacer(minLength: 0)
             }
-            .padding(6)
-            .background(isSelected ? Color.a1 : .clear)
-            .cornerRadius(8)
+            Text(title)
+                .font(.system(size: 12, weight: .bold))
+            Spacer(minLength: 0)
         }
+        .padding(6)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isSelected ? Color.a1 : .clear)
+                .matchedGeometryEffect(
+                    id: "Segment",
+                    in: namespace,
+                    properties: .frame,
+                    isSource: isSelected
+                )
+        )
         .onTapGesture {
-            selected = id
+            withAnimation(.linear(duration: 0.1)) {
+                selected = id
+            }
         }
         .padding(2)
     }
