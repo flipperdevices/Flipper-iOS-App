@@ -1,17 +1,17 @@
 import SwiftUI
 
-struct OverlayModifier<AlertContent: View>: ViewModifier {
+struct OverlayModifier<OverlayContent: View>: ViewModifier {
     var isPresented: Binding<Bool>
-    @ViewBuilder var alertContent: () -> AlertContent
+    @ViewBuilder var overlayContent: () -> OverlayContent
 
     @EnvironmentObject private var controller: OverlayController
 
     init(
         isPresented: Binding<Bool>,
-        @ViewBuilder alertContent: @escaping () -> AlertContent
+        @ViewBuilder overlayContent: @escaping () -> OverlayContent
     ) {
         self.isPresented = isPresented
-        self.alertContent = alertContent
+        self.overlayContent = overlayContent
     }
 
     func body(content: Content) -> some View {
@@ -20,7 +20,7 @@ struct OverlayModifier<AlertContent: View>: ViewModifier {
             // change doesn't fire when containing view was dismissed
             .onChange(of: isPresented.wrappedValue) { newValue in
                 if newValue {
-                    controller.present(content: alertContent)
+                    controller.present(content: overlayContent)
                 }
             }
     }
