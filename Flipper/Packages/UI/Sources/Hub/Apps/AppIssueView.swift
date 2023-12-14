@@ -41,7 +41,14 @@ struct AppIssueView: View {
                 )
                 .font(.system(size: 16))
 
-                Image("GitHubNewIssue")
+                Image("GitHubIssueContent")
+                    .resizable()
+                    .scaledToFit()
+                    .background(
+                        Image("GitHubIssueBackground")
+                            .resizable()
+                            .scaledToFit()
+                    )
 
                 Text(instruction)
 
