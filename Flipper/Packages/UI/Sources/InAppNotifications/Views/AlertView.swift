@@ -2,10 +2,13 @@ import SwiftUI
 
 struct AlertView<Content: View>: View {
     @Binding var isPresented: Bool
-    var hideOnTap: Bool = false
     let content: Content
 
     @State private var isPresentedAnimated: Bool = false
+
+    @EnvironmentObject private var controller: OverlayController
+
+    var animationDuration: Double { 0.1 }
 
     var body: some View {
         ZStack {
@@ -40,14 +43,26 @@ struct AlertView<Content: View>: View {
         }
         .onChange(of: isPresented) { newValue in
             guard !newValue else { return }
-            withAnimation(.linear(duration: 0.1)) {
-                isPresentedAnimated = false
-            }
+            hide()
         }
         .onAppear {
-            withAnimation(.linear(duration: 0.1)) {
-                isPresentedAnimated = true
+            show()
+        }
+    }
+
+    func show() {
+        withAnimation(.linear(duration: animationDuration)) {
+            isPresentedAnimated = true
+        }
+    }
+
+    func hide() {
+        Task {
+            withAnimation(.linear(duration: animationDuration)) {
+                isPresentedAnimated = false
             }
+            try? await Task.sleep(seconds: animationDuration)
+            controller.dismiss()
         }
     }
 }
@@ -61,7 +76,6 @@ extension View {
         self.modifier(OverlayModifier(isPresented: isPresented) {
             AlertView(
                 isPresented: isPresented,
-                hideOnTap: false,
                 content: content())
         })
     }

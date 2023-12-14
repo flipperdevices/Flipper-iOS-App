@@ -6,6 +6,10 @@ struct PopupView<Content: View>: View {
 
     @State private var isPresentedAnimated: Bool = false
 
+    @EnvironmentObject var controller: OverlayController
+
+    var animationDuration: Double { 0.1 }
+
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.black.opacity(0.3)
@@ -20,14 +24,26 @@ struct PopupView<Content: View>: View {
         }
         .onChange(of: isPresented) { newValue in
             guard !newValue else { return }
-            withAnimation(.linear(duration: 0.1)) {
-                isPresentedAnimated = false
-            }
+            hide()
         }
         .onAppear {
-            withAnimation(.linear(duration: 0.1)) {
-                isPresentedAnimated = true
+            show()
+        }
+    }
+
+    func show() {
+        withAnimation(.linear(duration: animationDuration)) {
+            isPresentedAnimated = true
+        }
+    }
+
+    func hide() {
+        Task {
+            withAnimation(.linear(duration: animationDuration)) {
+                isPresentedAnimated = false
             }
+            try? await Task.sleep(seconds: animationDuration)
+            controller.dismiss()
         }
     }
 }

@@ -11,7 +11,7 @@ struct ArchiveView: View {
 
     @State private var importingItem: URL?
     @State private var importedName = ""
-    @State private var showImported = false
+    @Environment(\.notifications) private var notifications
 
     @State private var selectedItem: ArchiveItem?
     @State private var showSearchView = false
@@ -116,7 +116,7 @@ struct ArchiveView: View {
             .onReceive(archive.imported) { item in
                 onItemAdded(item: item)
             }
-            .notification(isPresented: $showImported) {
+            .notification(isPresented: notifications.archive.showImported) {
                 ImportedBanner(itemName: importedName)
             }
             .fullScreenCover(isPresented: $showSearchView) {
@@ -152,7 +152,7 @@ struct ArchiveView: View {
         Task { @MainActor in
             try? await Task.sleep(seconds: 1)
             importedName = item.name.value
-            showImported = true
+            notifications.archive.showImported = true
         }
     }
 }

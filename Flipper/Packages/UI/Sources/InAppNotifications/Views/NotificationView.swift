@@ -6,6 +6,11 @@ struct NotificationView<Content: View>: View {
 
     @State private var isPresentedAnimated: Bool = false
 
+    @EnvironmentObject var controller: OverlayController
+
+    var animationDuration: Double { 0.1 }
+    var presentingDuration: Double { 3.0 }
+
     var body: some View {
         ZStack(alignment: .bottom) {
             content
@@ -14,16 +19,31 @@ struct NotificationView<Content: View>: View {
         }
         .onChange(of: isPresented) { newValue in
             guard !newValue else { return }
-            withAnimation(.linear(duration: 0.1)) {
-                isPresentedAnimated = false
-            }
+            hide()
         }
         .task {
-            withAnimation(.linear(duration: 0.1)) {
+            show()
+
+        }
+    }
+
+    func show() {
+        Task {
+            withAnimation(.linear(duration: animationDuration)) {
                 isPresentedAnimated = true
             }
-            try? await Task.sleep(seconds: 3)
+            try? await Task.sleep(seconds: presentingDuration)
             isPresented = false
+        }
+    }
+
+    func hide() {
+        Task {
+            withAnimation(.linear(duration: animationDuration)) {
+                isPresentedAnimated = false
+            }
+            try? await Task.sleep(seconds: animationDuration)
+            controller.dismiss()
         }
     }
 }

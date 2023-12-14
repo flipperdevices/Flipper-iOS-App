@@ -10,18 +10,21 @@ class OverlayController: ObservableObject {
     }
 
     func present<Content: View>(
+        isPresented: Binding<Bool>,
         @ViewBuilder content: @escaping () -> Content
     ) {
         guard let overlay else { return }
 
         let viewController = UIHostingController(
             rootView: content()
+                .environmentObject(self)
         )
         viewController.view.backgroundColor = .clear
 
+        views.append(viewController.view)
+
         if let rootViewController = overlay.rootViewController {
             viewController.view.frame = rootViewController.view.frame
-            views.append(viewController.view)
         } else {
             overlay.rootViewController = viewController
             overlay.isUserInteractionEnabled = true
@@ -32,25 +35,26 @@ class OverlayController: ObservableObject {
     func dismiss() {
         guard let overlay else { return }
 
-        Task { @MainActor in
-            try? await Task.sleep(seconds: 0.1)
+        guard !views.isEmpty else {
+            return
+        }
 
-            if views.isEmpty {
-                overlay.isHidden = true
-                overlay.isUserInteractionEnabled = false
-                overlay.rootViewController = nil
-            } else {
-                let first = views.removeFirst()
-                guard
-                    let rootViewController = overlay.rootViewController
-                else {
-                    return
-                }
-                rootViewController.view.subviews.forEach { view in
-                    view.removeFromSuperview()
-                }
-                rootViewController.view.addSubview(first)
+        views.removeFirst()
+
+        if let first = views.first {
+            guard
+                let rootViewController = overlay.rootViewController
+            else {
+                return
             }
+            rootViewController.view.subviews.forEach { view in
+                view.removeFromSuperview()
+            }
+            rootViewController.view.addSubview(first)
+        } else {
+            overlay.isHidden = true
+            overlay.isUserInteractionEnabled = false
+            overlay.rootViewController = nil
         }
     }
 }
