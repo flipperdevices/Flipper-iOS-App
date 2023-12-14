@@ -21,9 +21,8 @@ struct NotificationView<Content: View>: View {
             guard !newValue else { return }
             hide()
         }
-        .task {
+        .onAppear {
             show()
-
         }
     }
 
