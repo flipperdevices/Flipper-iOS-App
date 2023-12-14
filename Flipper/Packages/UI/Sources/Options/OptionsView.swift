@@ -133,11 +133,11 @@ struct OptionsView: View {
 extension OptionsView {
     struct NotificationsToggle: View {
         @EnvironmentObject var notifications: Notifications
+        @Environment(\.notifications) var inApp
 
         @AppStorage(.isNotificationsOn) var isNotificationsOn = false
 
         //@State var showSpinner: Bool = false
-        @State var showNotificationsError: Bool = false
 
         var body: some View {
             Toggle(isOn: $isNotificationsOn) {
@@ -151,9 +151,6 @@ extension OptionsView {
             .tint(.a1)
             .onChange(of: isNotificationsOn) { newValue in
                 enableNotifications(newValue)
-            }
-            .alert(isPresented: $showNotificationsError) {
-                NotificationsDisabledAlert(isPresented: $showNotificationsError)
             }
             .task {
                 await reloadPermissions()
@@ -176,7 +173,7 @@ extension OptionsView {
                 }
             } catch {
                 isNotificationsOn = false
-                showNotificationsError = true
+                inApp.notifications.showDisabled = true
             }
         }
         

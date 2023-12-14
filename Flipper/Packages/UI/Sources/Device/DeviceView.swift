@@ -9,7 +9,7 @@ struct DeviceView: View {
     @EnvironmentObject var synchronization: Synchronization
     @EnvironmentObject var updateModel: UpdateModel
     @EnvironmentObject var notifications: Notifications
-
+    
     @Environment(\.scenePhase) var scenePhase
 
     @State private var showForgetAction = false
@@ -18,7 +18,7 @@ struct DeviceView: View {
 
     @AppStorage(.notificationsSuggested) var notificationsSuggested = false
     @State private var showNotificationsAlert: Bool = false
-    @State private var showNotificationsError: Bool = false
+    @Environment(\.notifications) var inApp
 
     var flipper: Flipper? {
         device.flipper
@@ -225,8 +225,9 @@ struct DeviceView: View {
                 Task { await enableNotifications() }
             }
         }
-        .alert(isPresented: $showNotificationsError) {
-            NotificationsDisabledAlert(isPresented: $showNotificationsError)
+        .notification(isPresented: inApp.notifications.showDisabled) {
+            NotificationsDisabledBanner(
+                isPresented: inApp.notifications.showDisabled)
         }
     }
 
@@ -267,7 +268,7 @@ struct DeviceView: View {
         do {
             try await notifications.enable()
         } catch {
-            showNotificationsError = true
+            inApp.notifications.showDisabled = true
         }
     }
 }

@@ -1,33 +1,19 @@
 import Core
 import SwiftUI
 
-struct NotificationsDisabledAlert: View {
+struct NotificationsDisabledBanner: View {
     @Binding var isPresented: Bool
-
     @Environment(\.openURL) var openURL
 
     var body: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 4) {
-                Image("NotificationsAlert")
-
-                Text("Notifications Not Enabled")
-                    .font(.system(size: 14, weight: .bold))
-
-                Text("You can enable them in app Settings")
-                    .font(.system(size: 14, weight: .medium))
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.black40)
-                    .padding(.horizontal, 12)
-            }
-            .padding(.top, 25)
-
-            Button {
-                openURL(.notificationSettings)
+        Banner(
+            image: "Warning",
+            title: "Notifications not enabled",
+            description: "Allow notifications in settings"
+        ) {
+            Button("Go to Settings") {
                 isPresented = false
-            } label: {
-                Text("Go to Settings")
-                    .roundedButtonStyle(maxWidth: .infinity)
+                openURL(.notificationSettings)
             }
         }
     }

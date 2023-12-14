@@ -24,7 +24,7 @@ struct Banner<Action: View>: View {
                     Text(description)
                         .font(.system(size: 12, weight: .medium))
                 }
-                Spacer()
+                Spacer(minLength: 0)
                 action()
                     .font(.system(size: 12, weight: .bold))
             }
