@@ -17,6 +17,7 @@ struct DeviceView: View {
     @State private var showOutdatedMobileAlert = false
 
     @AppStorage(.notificationsSuggested) var notificationsSuggested = false
+    @AppStorage(.isNotificationsOn) var isNotificationsOn = false
     @State private var showNotificationsAlert: Bool = false
     @Environment(\.notifications) var inApp
 
@@ -225,6 +226,10 @@ struct DeviceView: View {
                 Task { await enableNotifications() }
             }
         }
+        .notification(isPresented: inApp.notifications.showEnabled) {
+            NotificationsEnabledBanner(
+                isPresented: inApp.notifications.showEnabled)
+        }
         .notification(isPresented: inApp.notifications.showDisabled) {
             NotificationsDisabledBanner(
                 isPresented: inApp.notifications.showDisabled)
@@ -267,6 +272,8 @@ struct DeviceView: View {
     func enableNotifications() async {
         do {
             try await notifications.enable()
+            isNotificationsOn = true
+            inApp.notifications.showEnabled = true
         } catch {
             inApp.notifications.showDisabled = true
         }

@@ -15,6 +15,7 @@ struct InAppNotifications {
     }
 
     struct Notifications {
+        var showEnabled = false
         var showDisabled = false
     }
 }

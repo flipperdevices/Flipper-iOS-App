@@ -168,6 +168,7 @@ extension OptionsView {
             do {
                 if newValue {
                     try await notifications.enable()
+                    inApp.notifications.showEnabled = true
                 } else {
                     await notifications.disable()
                 }
