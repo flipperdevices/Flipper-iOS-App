@@ -13,7 +13,7 @@ extension AppView {
             switch status {
             case .installed: return true
             case .outdated: return true
-            case .open: return true
+            case .canOpen: return true
             default: return false
             }
         }
@@ -76,8 +76,8 @@ extension AppView {
                     .font(.born2bSportyV2(size: 32))
                 case .checking:
                     AnimatedPlaceholder()
-                case .open:
-                    OpenAppButton(action: `open`)
+                case .canOpen:
+                    OpenAppButton(action: openApp)
                         .font(.born2bSportyV2(size: 32))
                 case .opening:
                     OpeningAppButton()
@@ -120,9 +120,9 @@ extension AppView {
             }
         }
 
-        func open() {
+        func openApp() {
             Task {
-                await model.open(application.id) { result in
+                await model.openApp(by: application.id) { result in
                     switch result {
                     case .success:
                         goToRemoteScreen()

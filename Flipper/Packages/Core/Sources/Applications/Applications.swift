@@ -172,14 +172,14 @@ public class Applications: ObservableObject {
         case error
     }
 
-    public func open(
-        _ id: Application.ID,
+    public func openApp(
+        by id: Application.ID,
         callback: (OpenAppStatus) -> Void
     ) async {
         do {
             statuses[id] = .opening
             defer {
-                statuses[id] = .open
+                statuses[id] = .canOpen
             }
 
             guard
@@ -382,7 +382,7 @@ public class Applications: ObservableObject {
         case outdated
         case building
         case checking
-        case open
+        case canOpen
         case opening
     }
 
@@ -390,8 +390,7 @@ public class Applications: ObservableObject {
         guard let flipper = self.flipper, flipper.hasOpenAppSupport else {
             return .installed
         }
-
-        return .open
+        return .canOpen
     }
 
     private func status(

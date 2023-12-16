@@ -114,8 +114,8 @@ struct AppRow: View {
                     .disabled(true)
                 case .checking:
                     AnimatedPlaceholder()
-                case .open:
-                    OpenAppButton(action: open)
+                case .canOpen:
+                    OpenAppButton(action: openApp)
                 case .opening:
                     OpeningAppButton()
                 }
@@ -151,9 +151,9 @@ struct AppRow: View {
             }
         }
 
-        func open() {
+        func openApp() {
             Task {
-                await model.open(application.id) { result in
+                await model.openApp(by: application.id) { result in
                     switch result {
                     case .success:
                         goToRemoteScreen()
