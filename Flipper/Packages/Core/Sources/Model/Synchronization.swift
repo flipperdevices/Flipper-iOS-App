@@ -104,7 +104,7 @@ public class Synchronization: ObservableObject {
     func measure(_ task: () async throws -> Void) async rethrows -> Int {
         let start = Date()
         try await task()
-        return Int(Date().timeIntervalSince(start) * 1000)
+        return Int(Date().timeIntervalSince(start))
     }
 
     // MARK: Analytics

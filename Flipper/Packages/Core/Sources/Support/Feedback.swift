@@ -12,9 +12,15 @@ public class Feedback {
     private var logsLimit = 3
 
     private var attachments: [Attachment] {
-        loggerStorage.list().suffix(logsLimit).map { name in
-            let content = loggerStorage.read(name).joined(separator: "\n")
-            return .init(filename: "\(name).txt", content: content)
+        get async {
+            var result: [Attachment] = []
+            for file in await loggerStorage.list().suffix(logsLimit) {
+                let content = await loggerStorage
+                    .read(file)
+                    .joined(separator: "\n")
+                result.append(.init(filename: "\(file).txt", content: content))
+            }
+            return result
         }
     }
 
@@ -26,7 +32,7 @@ public class Feedback {
          let event = Event(
             subject: subject,
             message: message,
-            attachments: attachLogs ? attachments : [])
+            attachments: attachLogs ? await attachments : [])
 
         let client = CentryClient()
         let response = try await client.capture(event)

@@ -6,12 +6,12 @@ class MobileFavorites: FavoritesProtocol {
     var path: Path { .init(string: filename) }
 
     func read() async throws -> Favorites {
-        storage.isExists(path)
+        await storage.isExists(path)
             ? try storage.read(path)
             : .init()
     }
 
     func write(_ favorites: Favorites) async throws {
-        try storage.write(favorites, at: path)
+        try await storage.write(favorites, at: path)
     }
 }

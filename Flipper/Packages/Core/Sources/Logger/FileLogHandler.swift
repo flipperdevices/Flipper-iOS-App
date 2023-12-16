@@ -38,6 +38,8 @@ struct FileLogHandler: LogHandler {
         #if DEBUG
         print("[\(time)][\(level)]: \(message)")
         #endif
-        storage.write("[\(time)][\(level)]: \(message)")
+        Task {
+            await storage.write("[\(time)][\(level)]: \(message)")
+        }
     }
 }

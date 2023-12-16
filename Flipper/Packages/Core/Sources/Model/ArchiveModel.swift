@@ -125,8 +125,8 @@ public class ArchiveModel: ObservableObject {
         }
     }
 
-    public func backupKeys() -> URL? {
-        archive.backupKeys()
+    public func backupKeys() async -> URL? {
+        await archive.backupKeys()
     }
 
     // MARK: Analytics

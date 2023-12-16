@@ -1,7 +1,7 @@
 import Foundation
 
 extension Archive {
-    public func backupKeys() -> URL? {
-        mobileArchive.compress()
+    public func backupKeys() async -> URL? {
+        await mobileArchive.compress()
     }
 }

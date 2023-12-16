@@ -38,7 +38,7 @@ struct OptionsView: View {
                     LogsView()
                 }
                 Button("Backup Keys") {
-                    share(archive.backupKeys())
+                    Task { share(await archive.backupKeys()) }
                 }
                 .disabled(archive.items.isEmpty)
             }
@@ -193,7 +193,7 @@ extension OptionsView {
             .foregroundColor(.sRed)
             .confirmationDialog("", isPresented: $showResetApp) {
                 Button("Reset App", role: .destructive) {
-                    AppReset.reset()
+                    Task { await AppReset.reset() }
                 }
             }
         }

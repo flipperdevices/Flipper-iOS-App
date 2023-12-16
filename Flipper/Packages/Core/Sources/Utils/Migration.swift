@@ -1,6 +1,6 @@
 import Foundation
 
-public func migration() {
+public func migration() async {
     // check if version is changed
     guard UserDefaults.lastVersion != Bundle.fullVersion else {
         return
@@ -13,7 +13,7 @@ public func migration() {
 
     // guard pre-migration apps
     guard UserDefaults.lastVersion != "()" else {
-        resetStorage()
+        await resetStorage()
         return
     }
     guard // ignore developer build
@@ -25,7 +25,7 @@ public func migration() {
 
     // reset storage on downgrade
     guard currentBuild > previousBuild else {
-        resetStorage()
+        await resetStorage()
         return
     }
 
@@ -35,9 +35,9 @@ public func migration() {
     }
 }
 
-private func resetStorage() {
+private func resetStorage() async {
     UserDefaultsStorage.shared.reset()
-    try? FileStorage().reset()
+    try? await FileStorage().reset()
 }
 
 func migrateStorage() throws {

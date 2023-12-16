@@ -15,14 +15,14 @@ class JSONTodayWidgetStorage: NSObject, TodayWidgetKeysStorage {
 
     func read() async throws -> [WidgetKey] {
         do {
-            return (try storage.read(path)) ?? []
+            return (try await storage.read(path)) ?? []
         } catch let error as NSError where error.code == 260 {
             return []
         }
     }
 
     func write(_ keys: [WidgetKey]) async throws {
-        try storage.write(keys, at: path)
+        try await storage.write(keys, at: path)
     }
 
     override init() {

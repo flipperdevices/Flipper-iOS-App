@@ -18,17 +18,17 @@ class PlainArchiveStorage: ArchiveStorage {
 
     func get(_ path: Path) async throws -> String {
         let path = makePath(for: path)
-        return try storage.read(path)
+        return try await storage.read(path)
     }
 
     func upsert(_ content: String, at path: Path) async throws {
         let path = makePath(for: path)
-        try storage.write(content, at: path)
+        try await storage.write(content, at: path)
     }
 
     func delete(_ path: Path) async throws {
         let path = makePath(for: path)
-        try storage.delete(path)
+        try await storage.delete(path)
     }
 
     private func makePath(for path: Path) -> Path {
@@ -37,8 +37,8 @@ class PlainArchiveStorage: ArchiveStorage {
 }
 
 extension PlainArchiveStorage: Compressable {
-    func compress() -> URL? {
+    func compress() async -> URL? {
         let name = root.lastComponent ?? "archive"
-        return storage.archive(root.string, to: "\(name).zip")
+        return await storage.archive(root.string, to: "\(name).zip")
     }
 }

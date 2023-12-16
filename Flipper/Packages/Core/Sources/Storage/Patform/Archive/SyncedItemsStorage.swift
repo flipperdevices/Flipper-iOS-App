@@ -6,17 +6,17 @@ class SyncedItemsStorage: ManifestStorage {
     private var manifestPath: Path { .init(string: filename) }
 
     func get() async throws -> Manifest {
-        storage.isExists(manifestPath)
+        await storage.isExists(manifestPath)
             ? try storage.read(manifestPath)
             : .init()
 
     }
 
     func upsert(_ manifest: Manifest) async throws {
-        try storage.write(manifest, at: manifestPath)
+        try await storage.write(manifest, at: manifestPath)
     }
 
     func delete() async throws {
-        try storage.delete(manifestPath)
+        try await storage.delete(manifestPath)
     }
 }

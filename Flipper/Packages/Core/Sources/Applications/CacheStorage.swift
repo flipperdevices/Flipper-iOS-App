@@ -7,11 +7,11 @@ class CacheStorage: PlainArchiveStorage {
         get async throws {
             let path = root.appending("ext").appending("apps_manifests")
 
-            guard storage.isExists(path) else {
+            guard await storage.isExists(path) else {
                 return .init()
             }
 
-            let files = try storage.list(at: path)
+            let files = try await storage.list(at: path)
                 .filter { !$0.hasPrefix(".") }
                 .filter { $0.hasSuffix(".fim") }
                 .map { path.appending($0) }

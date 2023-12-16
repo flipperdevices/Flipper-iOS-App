@@ -1,8 +1,8 @@
 import Peripheral
 import Foundation
 
-class FileStorage {
-    var baseURL: URL {
+actor FileStorage {
+    nonisolated var baseURL: URL {
         // swiftlint:disable force_unwrapping
         FileManager
             .default

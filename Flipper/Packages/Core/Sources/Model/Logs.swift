@@ -11,21 +11,25 @@ public class Logs: ObservableObject {
     @Published public var records: [String] = []
 
     public func reload() {
-        records = loggerStorage.list()
+        Task { @MainActor in
+            records = await loggerStorage.list()
+        }
     }
 
-    public func read(_ name: String) -> [String] {
-        loggerStorage.read(name)
+    public func read(_ name: String) async -> [String] {
+        await loggerStorage.read(name)
     }
 
-    public func deleteAll() {
-        records.forEach(loggerStorage.delete)
+    public func deleteAll() async {
+        for record in records {
+            await loggerStorage.delete(record)
+        }
         reload()
     }
 
-    public func delete(_ indexSet: IndexSet) {
+    public func delete(_ indexSet: IndexSet) async {
         for index in indexSet {
-            loggerStorage.delete(records[index])
+            await loggerStorage.delete(records[index])
         }
         reload()
     }

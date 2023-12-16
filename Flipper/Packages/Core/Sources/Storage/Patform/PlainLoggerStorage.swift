@@ -2,7 +2,7 @@ import Peripheral
 import Foundation
 import OrderedCollections
 
-class PlainLoggerStorage: LoggerStorage {
+actor PlainLoggerStorage: LoggerStorage {
     let storage: FileStorage = .init()
     private let directory = Path("logs")
 
@@ -22,16 +22,18 @@ class PlainLoggerStorage: LoggerStorage {
 
     init(recordsLimit: Int = 10) {
         currentLogName = formatter.string(from: Date())
-        cleanup(limit: 10)
+        Task { await cleanup(limit: 10) }
     }
 
-    private func cleanup(limit: Int) {
-        try? storage.append("", at: currentLogPath)
-        list().dropLast(limit).forEach(delete)
+    private func cleanup(limit: Int) async {
+        try? await storage.append("", at: currentLogPath)
+        for item in await list().dropLast(limit) {
+            await delete(item)
+        }
     }
 
-    func list() -> [String] {
-        let files = (try? storage.list(at: directory)) ?? []
+    func list() async -> [String] {
+        let files = (try? await storage.list(at: directory)) ?? []
         return files.sorted {
             guard let first = formatter.date(from: $0) else { return false }
             guard let second = formatter.date(from: $1) else { return false }
@@ -39,18 +41,18 @@ class PlainLoggerStorage: LoggerStorage {
         }
     }
 
-    func read(_ name: String) -> [String] {
-        guard let log = try? storage.read(directory.appending(name)) else {
+    func read(_ name: String) async -> [String] {
+        guard let log = try? await storage.read(directory.appending(name)) else {
             return []
         }
         return log.split(separator: "\n").map { String($0) }
     }
 
-    func write(_ message: String) {
-        try? storage.append("\(message)\n", at: currentLogPath)
+    func write(_ message: String) async {
+        try? await storage.append("\(message)\n", at: currentLogPath)
     }
 
-    func delete(_ name: String) {
-        try? storage.delete(directory.appending(name))
+    func delete(_ name: String) async {
+        try? await storage.delete(directory.appending(name))
     }
 }
