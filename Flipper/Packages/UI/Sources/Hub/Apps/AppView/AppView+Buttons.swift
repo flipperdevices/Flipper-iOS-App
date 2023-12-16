@@ -77,7 +77,7 @@ extension AppView {
                 case .checking:
                     AnimatedPlaceholder()
                 case .open:
-                    OpenAppButton(action: self.open)
+                    OpenAppButton(action: `open`)
                         .font(.born2bSportyV2(size: 32))
                 case .opening:
                     OpeningAppButton()
@@ -97,7 +97,7 @@ extension AppView {
             }
             .sheet(isPresented: $showRemoteControl) {
                 RemoteControlView()
-                    .environmentObject(self.device)
+                    .environmentObject(device)
             }
         }
 

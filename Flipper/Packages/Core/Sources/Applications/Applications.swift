@@ -183,14 +183,14 @@ public class Applications: ObservableObject {
             }
 
             guard
-                let category = self.category(installedID: id),
-                let app = self.installed.first(where: { $0.id == id })
+                let category = category(installedID: id),
+                let app = installed.first(where: { $0.id == id })
             else { return }
 
             let path = "/ext/apps/\(category.name)/\(app.alias).fap"
             logger.info("open app \(id) by \(path)")
 
-            try await self.rpc.appStart(path, args: "RPC")
+            try await rpc.appStart(path, args: "RPC")
             logger.info("open app success")
             callback(.success)
         } catch {
@@ -389,9 +389,8 @@ public class Applications: ObservableObject {
     private func getFinalAppStatus(id: Application.ID) -> ApplicationStatus {
         guard
             let flipper = self.flipper,
-            flipper.hasSupportOpenApp,
-            let application = installed.first(where: { $0.id == id}),
-            application.current.status == .building
+            flipper.hasOpenAppSupport,
+            let application = installed.first(where: { $0.id == id })
         else {
             return .installed
         }
@@ -540,7 +539,7 @@ extension Flipper {
         return true
     }
 
-    var hasSupportOpenApp: Bool {
+    var hasOpenAppSupport: Bool {
         guard
             let protobuf = information?.protobufRevision,
             protobuf >= .v0_18

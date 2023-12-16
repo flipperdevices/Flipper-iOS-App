@@ -134,7 +134,7 @@ struct AppRow: View {
             }
             .sheet(isPresented: $showRemoteControl) {
                 RemoteControlView()
-                    .environmentObject(self.device)
+                    .environmentObject(device)
             }
         }
 
