@@ -387,11 +387,7 @@ public class Applications: ObservableObject {
     }
 
     private func getFinalAppStatus(id: Application.ID) -> ApplicationStatus {
-        guard
-            let flipper = self.flipper,
-            flipper.hasOpenAppSupport,
-            let application = installed.first(where: { $0.id == id })
-        else {
+        guard let flipper = self.flipper, flipper.hasOpenAppSupport else {
             return .installed
         }
 
