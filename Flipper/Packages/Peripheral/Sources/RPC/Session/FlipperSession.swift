@@ -54,6 +54,7 @@ public class FlipperSession: Session {
                     }
                     output.finish()
                 } catch {
+                    logger.debug("< error(\(error))")
                     output.finish(throwing: error)
                 }
 
@@ -64,6 +65,7 @@ public class FlipperSession: Session {
                     }
                     input.finish()
                 } catch {
+                    logger.debug("< error(\(error))")
                     input.finish(throwing: error)
                 }
             }
