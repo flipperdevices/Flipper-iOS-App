@@ -41,6 +41,7 @@
 		8BB7DF3029119296005C38C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 		8BB7DF3129119CED005C38C9 /* HaxrCorpNeue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */; };
 		8BB7DF3229119CED005C38C9 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
+		8BC7F2E02B2FA3CC002F66A5 /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC7F2DF2B2FA3CC002F66A5 /* LaunchScreenView.swift */; };
 		8BCB0168278F135C00DA66F5 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 8BCB0167278F135C00DA66F5 /* Intents.intentdefinition */; };
 		8BCE39EB289D47EA00FB5704 /* HaxrCorpNeue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */; };
 		8BCFDDDF277A2405002DA4CD /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BCFDDDE277A2405002DA4CD /* QuickLook.framework */; platformFilter = maccatalyst; };
@@ -140,6 +141,7 @@
 		8BA57F1C273AD21D00A3A33B /* irda.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = irda.png; sourceTree = "<group>"; };
 		8BB7DF2F2911922D005C38C9 /* TodayWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodayWidget.entitlements; sourceTree = "<group>"; };
 		8BC4791227FB2D9400863945 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Peripheral/Sources/RPC/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
+		8BC7F2DF2B2FA3CC002F66A5 /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
 		8BCB0167278F135C00DA66F5 /* Intents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Intents.intentdefinition; sourceTree = "<group>"; };
 		8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HaxrCorpNeue.ttf; sourceTree = "<group>"; };
 		8BCFDDDD277A2405002DA4CD /* KeyPreview.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = KeyPreview.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -382,6 +384,7 @@
 				8B7480D42807474900692304 /* Fonts */,
 				F0DBFA1A24EF2F9600EB2880 /* FlipperApp.swift */,
 				8B5B6C142B13FDAD00B76D83 /* AppDelegate.swift */,
+				8BC7F2DF2B2FA3CC002F66A5 /* LaunchScreenView.swift */,
 				8BA14F322B14A5DB0026B9E9 /* GoogleService-Info.plist */,
 				F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */,
 			);
@@ -655,6 +658,7 @@
 				F0DBFA4324EF2F9900EB2880 /* FlipperApp.swift in Sources */,
 				0A228A9D29DE0D2F000D7D10 /* FlipperShortcuts.swift in Sources */,
 				0AD5C05E29D9A04E00E0F97E /* SendArchivedItem.swift in Sources */,
+				8BC7F2E02B2FA3CC002F66A5 /* LaunchScreenView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
