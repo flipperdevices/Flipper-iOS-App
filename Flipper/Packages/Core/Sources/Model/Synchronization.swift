@@ -64,6 +64,9 @@ public class Synchronization: ObservableObject {
                 device.status = .connected
             } catch {
                 logger.error("synchronize: \(error)")
+                if device.status == .synchronizing {
+                    device.status = .connected
+                }
             }
         }
     }
