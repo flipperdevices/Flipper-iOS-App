@@ -297,14 +297,15 @@ public class Applications: ObservableObject {
     }
 
     public func loadInstalled() async throws {
-        guard installedStatus != .loading else { return }
-        installedStatus = .loading
-
-        installed = try await flipperApps.load()
-        installed.forEach { statuses[$0.id] = .checking }
-
         do {
             guard let deviceInfo else { return }
+
+            guard installedStatus != .loading else { return }
+            installedStatus = .loading
+
+            installed = try await flipperApps.load()
+            installed.forEach { statuses[$0.id] = .checking }
+
             let step = 42
             for processed in stride(from: 0, to: installed.count, by: step)  {
                 let slice = installed.dropFirst(processed).prefix(step)
