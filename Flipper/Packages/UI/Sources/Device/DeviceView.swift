@@ -27,7 +27,8 @@ struct DeviceView: View {
 
     var isDeviceAvailable: Bool {
         device.status == .connected ||
-        device.status == .synchronized
+        device.status == .synchronized ||
+        device.status == .synchronizing
     }
 
     var isOutdatedVersion: Bool {
