@@ -71,7 +71,6 @@ struct AppRow: View {
 
     struct AppRowActionButton: View {
         @EnvironmentObject var model: Applications
-        @EnvironmentObject var device: Device
 
         let application: Applications.ApplicationInfo
         let status: Applications.ApplicationStatus
@@ -136,7 +135,6 @@ struct AppRow: View {
             }
             .sheet(isPresented: $showRemoteControl) {
                 RemoteControlView()
-                    .environmentObject(device)
             }
         }
 
