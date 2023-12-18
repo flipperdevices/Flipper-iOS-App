@@ -71,10 +71,15 @@ struct AppRow: View {
 
     struct AppRowActionButton: View {
         @EnvironmentObject var model: Applications
+        @EnvironmentObject var device: Device
+
         let application: Applications.ApplicationInfo
         let status: Applications.ApplicationStatus
 
         @State var isNotConnectedAlertPresented = false
+        @State var isFlipperBusyAlertPresented = false
+
+        @State var showRemoteControl = false
 
         var body: some View {
             Group {
@@ -109,6 +114,10 @@ struct AppRow: View {
                     .disabled(true)
                 case .checking:
                     AnimatedPlaceholder()
+                case .canOpen:
+                    OpenAppButton(action: openApp)
+                case .opening:
+                    OpeningAppButton()
                 }
             }
             .frame(width: 92, height: 34)
@@ -116,6 +125,16 @@ struct AppRow: View {
             .alert(isPresented: $isNotConnectedAlertPresented) {
                 FlipperIsNotConnectedAlert(
                     isPresented: $isNotConnectedAlertPresented)
+            }
+            .alert(isPresented: $isFlipperBusyAlertPresented) {
+                FlipperIsBusyAlert(
+                    isPresented: $isFlipperBusyAlertPresented,
+                    goToRemote: goToRemoteScreen
+                )
+            }
+            .sheet(isPresented: $showRemoteControl) {
+                RemoteControlView()
+                    .environmentObject(device)
             }
         }
 
@@ -130,6 +149,24 @@ struct AppRow: View {
             Task {
                 await model.update(application.id)
             }
+        }
+
+        func openApp() {
+            Task {
+                await model.openApp(by: application.id) { result in
+                    switch result {
+                    case .success:
+                        goToRemoteScreen()
+                    case .busy:
+                        isFlipperBusyAlertPresented = true
+                    case .error: ()
+                    }
+                }
+            }
+        }
+
+        func goToRemoteScreen() {
+            showRemoteControl = true
         }
 
         // MARK: Analytics

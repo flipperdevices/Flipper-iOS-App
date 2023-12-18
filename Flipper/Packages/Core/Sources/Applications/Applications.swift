@@ -127,7 +127,7 @@ public class Applications: ObservableObject {
                     statuses[id] = .installing(progress)
                 }
             }
-            statuses[id] = .installed
+            statuses[id] = installedAppStatus()
         } catch {
             logger.error("install app: \(error)")
         }
@@ -141,7 +141,7 @@ public class Applications: ObservableObject {
                     statuses[id] = .updating(progress)
                 }
             }
-            statuses[id] = .installed
+            statuses[id] = installedAppStatus()
         } catch {
             logger.error("update app: \(error)")
         }
@@ -163,6 +163,46 @@ public class Applications: ObservableObject {
             statuses[id] = nil
         } catch {
             logger.error("delete app: \(error)")
+        }
+    }
+
+    public enum OpenAppStatus {
+        case success
+        case busy
+        case error
+    }
+
+    public func openApp(
+        by id: Application.ID,
+        callback: (OpenAppStatus) -> Void
+    ) async {
+        do {
+            statuses[id] = .opening
+            defer {
+                statuses[id] = .canOpen
+            }
+
+            guard
+                let category = category(installedID: id),
+                let app = installed.first(where: { $0.id == id })
+            else { return }
+
+            let path = "/ext/apps/\(category.name)/\(app.alias).fap"
+            logger.info("open app \(id) by \(path)")
+
+            try await rpc.appStart(path, args: "RPC")
+            logger.info("open app success")
+            callback(.success)
+        } catch {
+            logger.error("open app: \(error)")
+            if
+                let appError = error as? Peripheral.Error,
+                    appError == .application(.systemLocked) {
+                callback(.busy)
+            }
+            else {
+                callback(.error)
+            }
         }
     }
 
@@ -330,7 +370,7 @@ public class Applications: ObservableObject {
             installedStatus = .loaded
         } catch {
             installedStatus = .error
-            installed.forEach { statuses[$0.id] = .installed }
+            installed.forEach { statuses[$0.id] = installedAppStatus() }
             logger.error("load installed: \(error)")
         }
     }
@@ -343,6 +383,12 @@ public class Applications: ObservableObject {
         case outdated
         case building
         case checking
+        case canOpen
+        case opening
+    }
+
+    private func installedAppStatus() -> ApplicationStatus {
+        flipper?.hasOpenAppSupport == true ? .canOpen : .installed
     }
 
     private func status(
@@ -360,7 +406,7 @@ public class Applications: ObservableObject {
                 ? .outdated
                 : .building
         }
-        return .installed
+        return installedAppStatus()
     }
 
     public func report(
@@ -480,6 +526,16 @@ extension Flipper {
         guard
             let protobuf = information?.protobufRevision,
             protobuf >= .v0_17
+        else {
+            return false
+        }
+        return true
+    }
+
+    var hasOpenAppSupport: Bool {
+        guard
+            let protobuf = information?.protobufRevision,
+            protobuf >= .v0_18
         else {
             return false
         }
