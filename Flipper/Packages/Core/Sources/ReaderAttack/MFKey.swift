@@ -39,6 +39,9 @@ public struct MFKey32: Hashable, Sendable {
 extension String {
     init<T: BinaryInteger>(paddingHexadecimal value: T) {
         let string = String(value, radix: 16)
-        self = String(repeating: "0", count: max(0, 12 - string.count)) + string
+        self = String(
+            repeating: "0",
+            count: Swift.max(0, 12 - string.count)
+        ) + string
     }
 }
