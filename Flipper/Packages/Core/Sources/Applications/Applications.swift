@@ -127,7 +127,7 @@ public class Applications: ObservableObject {
                     statuses[id] = .installing(progress)
                 }
             }
-            statuses[id] = getFinalAppStatus(id: id)
+            statuses[id] = installedAppStatus()
         } catch {
             logger.error("install app: \(error)")
         }
@@ -141,7 +141,7 @@ public class Applications: ObservableObject {
                     statuses[id] = .updating(progress)
                 }
             }
-            statuses[id] = getFinalAppStatus(id: id)
+            statuses[id] = installedAppStatus()
         } catch {
             logger.error("update app: \(error)")
         }
@@ -369,7 +369,7 @@ public class Applications: ObservableObject {
             installedStatus = .loaded
         } catch {
             installedStatus = .error
-            installed.forEach { statuses[$0.id] = getFinalAppStatus(id: $0.id) }
+            installed.forEach { statuses[$0.id] = installedAppStatus() }
             logger.error("load installed: \(error)")
         }
     }
@@ -386,11 +386,8 @@ public class Applications: ObservableObject {
         case opening
     }
 
-    private func getFinalAppStatus(id: Application.ID) -> ApplicationStatus {
-        guard let flipper = self.flipper, flipper.hasOpenAppSupport else {
-            return .installed
-        }
-        return .canOpen
+    private func installedAppStatus() -> ApplicationStatus {
+        flipper?.hasOpenAppSupport == true ? .canOpen : .installed
     }
 
     private func status(
@@ -408,7 +405,7 @@ public class Applications: ObservableObject {
                 ? .outdated
                 : .building
         }
-        return getFinalAppStatus(id: application.current.id)
+        return installedAppStatus()
     }
 
     public func report(
