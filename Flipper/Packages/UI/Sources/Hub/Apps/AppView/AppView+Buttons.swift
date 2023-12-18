@@ -43,6 +43,8 @@ extension AppView {
                 }
 
                 switch status {
+                case _ where model.installedStatus == .loading:
+                    AnimatedPlaceholder()
                 case .installing(let progress):
                     InstallingAppButton(progress: progress)
                         .font(.haxrCorpNeue(size: 36))
