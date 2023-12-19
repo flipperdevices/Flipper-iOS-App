@@ -85,6 +85,7 @@ struct EmulateView: View {
         }
         .sheet(isPresented: $showRemoteControl) {
             RemoteControlView()
+                .environmentObject(device)
         }
         .alert(isPresented: $showRestricted) {
             TransmissionRestrictedAlert(isPresented: $showRestricted)

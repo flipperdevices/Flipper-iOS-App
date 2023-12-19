@@ -4,6 +4,7 @@ import SwiftUI
 extension AppView {
     struct Buttons: View {
         @EnvironmentObject var model: Applications
+        @EnvironmentObject var device: Device
 
         let application: Applications.Application
         let status: Applications.ApplicationStatus
@@ -98,6 +99,7 @@ extension AppView {
             }
             .sheet(isPresented: $showRemoteControl) {
                 RemoteControlView()
+                    .environmentObject(device)
             }
         }
 
