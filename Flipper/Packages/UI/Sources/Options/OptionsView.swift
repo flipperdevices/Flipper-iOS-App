@@ -13,6 +13,7 @@ struct OptionsView: View {
     @AppStorage(.isDevCatalog) var isDevCatalog = false
 
     @State private var showWidgetSettings = false
+    @State private var showRestartTheApp = false
 
     var isDeviceAvailable: Bool {
         device.status == .connected ||
@@ -126,6 +127,12 @@ struct OptionsView: View {
         }
         .fullScreenCover(isPresented: $showWidgetSettings) {
             TodayWidgetSettingsView()
+        }
+        .onChange(of: isDevCatalog) { _ in
+            showRestartTheApp = true
+        }
+        .alert(isPresented: $showRestartTheApp) {
+            RestartTheAppAlert(isPresented: $showRestartTheApp)
         }
     }
 }

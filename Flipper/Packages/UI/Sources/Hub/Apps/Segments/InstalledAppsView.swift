@@ -4,9 +4,9 @@ import SwiftUI
 struct InstalledAppsView: View {
     @EnvironmentObject var model: Applications
 
-    @State private var applications: [Applications.ApplicationInfo] = []
+    @State private var applications: [Applications.Application] = []
 
-    var outdated: [Applications.ApplicationInfo] {
+    var outdated: [Applications.Application] {
         applications.filter { model.statuses[$0.id] == .outdated }
     }
 
@@ -66,7 +66,7 @@ struct InstalledAppsView: View {
     }
 
     func update(
-        installed: [Applications.ApplicationInfo],
+        installed: [Applications.Application],
         statuses: [Applications.Application.ID : Applications.ApplicationStatus]
     ) {
         // TODO: improve sorting
@@ -98,7 +98,7 @@ struct InstalledAppsView: View {
 
     func updateAll() {
         Task {
-            await model.update(outdated.map { $0.id })
+            await model.update(outdated)
         }
     }
 

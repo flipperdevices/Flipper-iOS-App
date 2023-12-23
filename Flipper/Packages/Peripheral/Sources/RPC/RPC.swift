@@ -36,7 +36,7 @@ public protocol RPC: AnyObject {
 
     func appStart(_ name: String, args: String) async throws
     func appLoadFile(_ path: Path) async throws
-    func appButtonPress(_ button: String) async throws
+    func appButtonPress(_ args: String, _ index: Int32) async throws
     func appButtonRelease() async throws
     func appExit() async throws
 
@@ -103,8 +103,8 @@ public extension RPC {
         try await createFile(at: path, isDirectory: true)
     }
 
-    func appButtonPress() async throws {
-        try await appButtonPress("")
+    func appButtonPress(args: String = "", index: Int = 0) async throws {
+        try await appButtonPress(args, Int32(index))
     }
 }
 

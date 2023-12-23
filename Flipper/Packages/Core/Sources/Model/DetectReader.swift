@@ -14,6 +14,7 @@ public class DetectReader: ObservableObject {
     }
 
     public enum State {
+        case connecting
         case noLog
         case noDevice
         case noSDCard
@@ -32,8 +33,14 @@ public class DetectReader: ObservableObject {
         !isError && state != .finished
     }
 
+    public var isConnecting: Bool {
+        state == .connecting
+    }
+
     public var isError: Bool {
-        state == .noLog || state == .noDevice || state == .noSDCard
+        state == .noLog ||
+        state == .noDevice ||
+        state == .noSDCard
     }
 
     public var showCalculatedKeysSpinner: Bool {
@@ -68,7 +75,9 @@ public class DetectReader: ObservableObject {
 
     @Published public var flipper: Flipper? {
         didSet {
-            if flipper?.state != .connected {
+            if flipper?.state == .connecting {
+                state = .connecting
+            } else if flipper?.state != .connected {
                 state = .noDevice
             }
         }

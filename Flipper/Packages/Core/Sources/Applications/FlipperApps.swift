@@ -11,17 +11,25 @@ class FlipperApps {
 
     var manifests: [Application.ID: Manifest] = [:]
 
+    var isDevCatalog: Bool {
+        UserDefaultsStorage.shared.isDevCatalog
+    }
+
     init(storage: StorageAPI, cache: Cache) {
         self.storage = storage
         self.cache = cache
     }
 
-    func load() async throws -> [ApplicationInfo] {
+    func load() async throws -> [Application] {
         manifests = try await reloadManifests()
 
-        return manifests.compactMap {
-            ApplicationInfo($0.value)
-        }
+        return manifests
+            .filter {
+                $0.value.isDevCatalog == isDevCatalog
+            }
+            .compactMap {
+                Application($0.value)
+            }
     }
 
     func category(forInstalledId id: Application.ID) -> String? {
@@ -114,7 +122,9 @@ class FlipperApps {
 
         let manifest = try await Applications.Manifest(
             application: application,
-            category: category)
+            category: category,
+            isDevCatalog: isDevCatalog
+        )
 
         let manifestString = try FFFEncoder.encode(manifest)
 
@@ -126,7 +136,6 @@ class FlipperApps {
 
         try await storage.move(at: appTempPath, to: appPath)
         try await storage.move(at: manifestTempPath, to: manifestPath)
-
 
         manifests[application.id] = manifest
         try await cache.upsert(manifestString, at: manifestPath)

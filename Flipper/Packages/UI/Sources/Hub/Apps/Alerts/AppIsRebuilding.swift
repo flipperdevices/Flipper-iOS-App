@@ -3,7 +3,7 @@ import SwiftUI
 
 struct AppIsRebuildingAlert: View {
     @Binding var isPresented: Bool
-    let application: Applications.ApplicationInfo
+    let application: Applications.Application
     let category: Applications.Category?
 
     var body: some View {

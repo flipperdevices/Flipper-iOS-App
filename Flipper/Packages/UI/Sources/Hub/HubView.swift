@@ -4,11 +4,12 @@ import Catalog
 import SwiftUI
 
 struct HubView: View {
-    @State var showRemoteControl = false
-
     @EnvironmentObject var applications: Applications
+    @EnvironmentObject var device: Device
 
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
+
+    @State private var showRemoteControl = false
     @State private var applicationAlias: String?
     @State private var showApplication = false
     @State private var showDetectReader = false
@@ -64,6 +65,7 @@ struct HubView: View {
             }
             .sheet(isPresented: $showRemoteControl) {
                 RemoteControlView()
+                    .environmentObject(device)
             }
         }
         .onOpenURL { url in

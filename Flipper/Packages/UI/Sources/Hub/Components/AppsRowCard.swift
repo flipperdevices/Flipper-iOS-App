@@ -4,7 +4,7 @@ import SwiftUI
 struct AppsRowCard: View {
     @EnvironmentObject var model: Applications
 
-    @State private var topApp: Applications.ApplicationInfo?
+    @State private var topApp: Applications.Application?
     @State private var isError: Bool = false
 
     var body: some View {
@@ -69,7 +69,7 @@ struct AppsRowCard: View {
 
     struct ApplicationDescription: View {
         @EnvironmentObject var model: Applications
-        let item: Applications.ApplicationInfo
+        let item: Applications.Application
 
         var category: Applications.Category? {
             model.category(for: item)

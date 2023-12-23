@@ -10,7 +10,6 @@ import Foundation
 public class Applications: ObservableObject {
     public typealias Category = Catalog.Category
     public typealias Application = Catalog.Application
-    public typealias ApplicationInfo = Catalog.ApplicationInfo
 
     private var categories: [Category] = []
 
@@ -20,7 +19,7 @@ public class Applications: ObservableObject {
         case error
     }
 
-    @Published public var installed: [ApplicationInfo] = []
+    @Published public var installed: [Application] = []
     @Published public var installedStatus: InstalledStatus = .error
     @Published public var statuses: [Application.ID: ApplicationStatus] = [:]
 
@@ -40,11 +39,9 @@ public class Applications: ObservableObject {
         public static var `default`: SortOption { .newUpdates }
     }
 
-    public enum APIError: Swift.Error {
-        case noInternet
-    }
-
     public enum Error: Swift.Error {
+        case notFound
+        case noInternet
         case unknownSDK
         case invalidIcon
         case invalidBuild
@@ -119,40 +116,40 @@ public class Applications: ObservableObject {
         try? await Task.sleep(seconds: 1)
     }
 
-    public func install(_ id: Application.ID) async {
+    public func install(_ application: Application) async {
         do {
-            statuses[id] = .installing(0)
-            try await _install(id) { progress in
+            statuses[application.id] = .installing(0)
+            try await _install(application) { progress in
                 Task {
-                    statuses[id] = .installing(progress)
+                    statuses[application.id] = .installing(progress)
                 }
             }
-            statuses[id] = installedAppStatus()
+            statuses[application.id] = installedAppStatus()
         } catch {
             logger.error("install app: \(error)")
         }
     }
 
-    public func update(_ id: Application.ID) async {
+    public func update(_ application: Application) async {
         do {
-            statuses[id] = .updating(0)
-            try await _install(id) { progress in
+            statuses[application.id] = .updating(0)
+            try await _install(application) { progress in
                 Task {
-                    statuses[id] = .updating(progress)
+                    statuses[application.id] = .updating(progress)
                 }
             }
-            statuses[id] = installedAppStatus()
+            statuses[application.id] = installedAppStatus()
         } catch {
             logger.error("update app: \(error)")
         }
     }
 
-    public func update(_ ids: [Application.ID]) async {
-        for id in ids {
-            statuses[id] = .updating(0)
+    public func update(_ applications: [Application]) async {
+        for application in applications {
+            statuses[application.id] = .updating(0)
         }
-        for id in ids {
-            await update(id)
+        for application in applications {
+            await update(application)
         }
     }
 
@@ -207,10 +204,6 @@ public class Applications: ObservableObject {
     }
 
     public func category(for application: Application) -> Category? {
-        category(categoryID: application.categoryId)
-    }
-
-    public func category(for application: ApplicationInfo) -> Category? {
         application.categoryId.isEmpty
             ? category(installedID: application.id)
             : category(categoryID: application.categoryId)
@@ -252,22 +245,26 @@ public class Applications: ObservableObject {
         do {
             return try await body()
         } catch let error as Catalog.CatalogError where error.isUnknownSDK {
-            logger.error("unknown sdk")
+            logger.error("apps: unknown sdk")
+            isOutdatedDevice = true
             throw Error.unknownSDK
+        } catch let error as Catalog.CatalogError where error.httpCode == 404 {
+            logger.error("apps: not found")
+            throw Error.notFound
         } catch let error as URLError {
             logger.error("web: \(error)")
-            throw APIError.noInternet
+            throw Error.noInternet
         } catch {
             logger.error("web: \(error)")
             throw error
         }
     }
 
-    public func loadTopApp() async throws -> ApplicationInfo {
+    public func loadTopApp() async throws -> Application {
         try await handlingWebErrors {
             _ = try await loadCategories()
             guard let app = try await catalog.featured().get().first else {
-                throw APIError.noInternet
+                throw Error.noInternet
             }
             return app
         }
@@ -299,7 +296,7 @@ public class Applications: ObservableObject {
         sort sortOption: SortOption = .newUpdates,
         skip: Int = 0,
         take: Int = 7
-    ) async throws -> [ApplicationInfo] {
+    ) async throws -> [Application] {
         try await handlingWebErrors {
             try await catalog
                 .applications()
@@ -324,7 +321,7 @@ public class Applications: ObservableObject {
         }
     }
 
-    public func search(for string: String) async throws -> [ApplicationInfo] {
+    public func search(for string: String) async throws -> [Application] {
         try await handlingWebErrors {
             try await catalog
                 .applications()
@@ -358,6 +355,9 @@ public class Applications: ObservableObject {
                     .take(slice.count)
                     .get()
 
+                loaded
+                    .forEach { updateInstalledApp($0) }
+
                 let missing = slice
                     .filter { !loaded.map(\.id).contains($0.id) }
 
@@ -372,6 +372,12 @@ public class Applications: ObservableObject {
             installedStatus = .error
             installed.forEach { statuses[$0.id] = installedAppStatus() }
             logger.error("load installed: \(error)")
+        }
+    }
+
+    func updateInstalledApp(_ app: Application) {
+        if let index = installed.firstIndex(where: { $0.id == app.id }) {
+            installed[index] = app
         }
     }
 
@@ -392,7 +398,7 @@ public class Applications: ObservableObject {
     }
 
     private func status(
-        for application: ApplicationInfo
+        for application: Application
     ) -> ApplicationStatus {
         // FIXME:
         guard let manifest = flipperApps.manifests[application.id] else {
@@ -400,7 +406,7 @@ public class Applications: ObservableObject {
         }
         guard
             manifest.versionUID == application.current.id,
-            manifest.buildAPI == deviceInfo?.api
+            manifest.buildAPI == application.current.build?.sdk.api
         else {
             return application.current.status == .ready
                 ? .outdated
@@ -426,7 +432,6 @@ public class Applications: ObservableObject {
 
 extension Catalog.Category: Identifiable {}
 extension Catalog.Application: Identifiable {}
-extension Catalog.ApplicationInfo: Identifiable {}
 
 extension Catalog.SortBy {
     init(source: Applications.SortOption) {
@@ -450,17 +455,15 @@ extension Catalog.SortOrder {
 
 fileprivate extension Applications {
     func _install(
-        _ id: Application.ID,
+        _ application: Application,
         progress: (Double) -> Void
     ) async throws {
         guard let deviceInfo else {
             return
         }
 
-        let application = try await loadApplication(id: id)
-
-        if !installed.contains(where: { $0.id == id }) {
-            installed.append(.init(application))
+        if !installed.contains(where: { $0.id == application.id }) {
+            installed.append(application)
         }
 
         let data = try await catalog.build(forVersionID: application.current.id)
@@ -468,7 +471,7 @@ fileprivate extension Applications {
             .api(deviceInfo.api)
             .get()
 
-        guard let category = category(categoryID: application.categoryId) else {
+        guard let category = category(for: application) else {
             return
         }
 
@@ -477,14 +480,14 @@ fileprivate extension Applications {
             category: category,
             bundle: data,
             progress: progress)
-
     }
 }
 
 extension Applications.Manifest {
     init(
         application: Catalog.Application,
-        category: Catalog.Category
+        category: Catalog.Category,
+        isDevCatalog: Bool
     ) async throws {
         guard case .url(let iconURL) = application.current.icon else {
             throw Applications.Error.invalidIcon
@@ -505,7 +508,9 @@ extension Applications.Manifest {
             buildAPI: build.sdk.api,
             uid: application.id,
             versionUID: application.current.id,
-            path: path.string)
+            path: path.string,
+            isDevCatalog: isDevCatalog
+        )
     }
 }
 

@@ -294,9 +294,9 @@ extension Session {
         }
     }
 
-    public func appButtonPress(_ button: String) async throws {
+    public func appButtonPress(_ args: String, _ index: Int32) async throws {
         let response = try await self
-            .send(.application(.pressButton(button)))
+            .send(.application(.pressButton(args, index)))
             .response
         guard case .ok = response else {
             throw Error.unexpectedResponse(response)

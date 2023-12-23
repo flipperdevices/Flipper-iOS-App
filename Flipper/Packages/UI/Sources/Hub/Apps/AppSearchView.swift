@@ -13,8 +13,8 @@ struct AppSearchView: View {
     }
 
     @State private var inProgress: Bool = false
-    @State private var applications: [Applications.ApplicationInfo] = []
-    @State private var apiError: Applications.APIError?
+    @State private var applications: [Applications.Application] = []
+    @State private var error: Applications.Error?
 
     let debouncer = Debouncer(seconds: 1)
 
@@ -25,8 +25,8 @@ struct AppSearchView: View {
             if model.isOutdatedDevice {
                 AppsNotCompatibleFirmware()
                     .padding(.horizontal, 14)
-            } else if apiError != nil {
-                AppsAPIError(error: $apiError, action: reload)
+            } else if error != nil {
+                AppsAPIError(error: $error, action: reload)
                     .padding(.horizontal, 14)
             } else if !predicateIsValid {
                 Placeholder()
@@ -81,8 +81,8 @@ struct AppSearchView: View {
                     applications = try await model.search(for: string).filter {
                         !self.hiddenApps.contains($0.id)
                     }
-                } catch let error as Applications.APIError {
-                    apiError = error
+                } catch let error as Applications.Error {
+                    self.error = error
                 } catch {
                     applications = []
                 }

@@ -18,6 +18,7 @@ extension Applications {
         public let uid: String
         public let versionUID: String
         public let path: String
+        public let isDevCatalog: Bool
 
         init(
             fullName: String,
@@ -25,7 +26,8 @@ extension Applications {
             buildAPI: String,
             uid: String,
             versionUID: String,
-            path: String
+            path: String,
+            isDevCatalog: Bool
         ) {
             self.fullName = fullName
             self.icon = icon
@@ -33,6 +35,7 @@ extension Applications {
             self.uid = uid
             self.versionUID = versionUID
             self.path = path
+            self.isDevCatalog = isDevCatalog
         }
 
         enum CodingKeys: String, CodingKey {
@@ -44,6 +47,7 @@ extension Applications {
             case uid = "UID"
             case versionUID = "Version UID"
             case path = "Path"
+            case isDevCatalog = "DevCatalog"
         }
 
         public init(from decoder: Decoder) throws {
@@ -57,6 +61,9 @@ extension Applications {
             self.versionUID = try container
                 .decode(String.self, forKey: .versionUID)
             self.path = try container.decode(String.self, forKey: .path)
+            self.isDevCatalog = container.contains(.isDevCatalog)
+                ? try container.decode(Bool.self, forKey: .isDevCatalog)
+                : false
         }
 
         public func encode(to encoder: Encoder) throws {
@@ -70,13 +77,16 @@ extension Applications {
             try container.encode(uid, forKey: .uid)
             try container.encode(versionUID, forKey: .versionUID)
             try container.encode(path, forKey: .path)
+            if isDevCatalog == true {
+                try container.encode(true, forKey: .isDevCatalog)
+            }
         }
     }
 }
 
 import Catalog
 
-extension Catalog.ApplicationInfo {
+extension Catalog.Application {
     init?(_ manifest: Applications.Manifest) {
         guard let filename = manifest.path.split(separator: "/").last else {
             return nil
@@ -99,6 +109,12 @@ extension Catalog.ApplicationInfo {
                 shortDescription: "",
                 icon: .data(manifest.icon),
                 screenshots: [],
-                status: .ready))
+                status: .ready,
+                build: nil,
+                description: nil,
+                changelog: nil,
+                links: nil
+            )
+        )
     }
 }

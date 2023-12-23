@@ -3,41 +3,39 @@ import SwiftUI
 
 struct CardDataView: View {
     @Binding var item: ArchiveItem
-    let isEditing: Bool
-    @Binding var focusedField: String
 
     var body: some View {
         switch item.kind {
         case .rfid:
-            RFIDCardView(
-                item: _item,
-                isEditing: isEditing,
-                focusedField: $focusedField
-            )
+            CardDataInternalView {
+                RFIDCardView(item: _item)
+            }
         case .subghz:
-            SUBGHZCardView(
-                item: _item,
-                isEditing: isEditing,
-                focusedField: $focusedField
-            )
+            CardDataInternalView {
+                SUBGHZCardView(item: _item)
+            }
         case .nfc:
-            NFCCardView(
-                item: _item,
-                isEditing: isEditing,
-                focusedField: $focusedField
-            )
+            CardDataInternalView {
+                NFCCardView(item: _item)
+            }
         case .ibutton:
-            IButtonCardView(
-                item: _item,
-                isEditing: isEditing,
-                focusedField: $focusedField
-            )
+            CardDataInternalView {
+                IButtonCardView(item: _item)
+            }
         case .infrared:
-            InfraredCardView(
-                item: _item,
-                isEditing: isEditing,
-                focusedField: $focusedField
-            )
+            EmptyView()
+        }
+    }
+
+    struct CardDataInternalView<Content: View>: View {
+        @ViewBuilder var content: () -> Content
+
+        var body: some View {
+            Divider()
+                .frame(height: 1)
+                .background(Color.black12)
+            content()
+                .padding(.horizontal, 12)
         }
     }
 }
