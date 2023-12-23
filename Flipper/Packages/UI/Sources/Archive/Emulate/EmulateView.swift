@@ -71,8 +71,8 @@ struct EmulateView: View {
                     item: item,
                     status: device.status,
                     isEmulating: isEmulating)
-            default:
-                EmptyView()
+            case .infrared:
+                InfraredEmulateView(item: item)
             }
         }
         .padding(.horizontal, 24)

@@ -125,6 +125,8 @@ struct PBApp_AppButtonPressRequest {
 
   var args: String = String()
 
+  var index: Int32 = 0
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -358,6 +360,7 @@ extension PBApp_AppButtonPressRequest: SwiftProtobuf.Message, SwiftProtobuf._Mes
   static let protoMessageName: String = _protobuf_package + ".AppButtonPressRequest"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "args"),
+    2: .same(proto: "index"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -367,6 +370,7 @@ extension PBApp_AppButtonPressRequest: SwiftProtobuf.Message, SwiftProtobuf._Mes
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.args) }()
+      case 2: try { try decoder.decodeSingularInt32Field(value: &self.index) }()
       default: break
       }
     }
@@ -376,11 +380,15 @@ extension PBApp_AppButtonPressRequest: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if !self.args.isEmpty {
       try visitor.visitSingularStringField(value: self.args, fieldNumber: 1)
     }
+    if self.index != 0 {
+      try visitor.visitSingularInt32Field(value: self.index, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: PBApp_AppButtonPressRequest, rhs: PBApp_AppButtonPressRequest) -> Bool {
     if lhs.args != rhs.args {return false}
+    if lhs.index != rhs.index {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

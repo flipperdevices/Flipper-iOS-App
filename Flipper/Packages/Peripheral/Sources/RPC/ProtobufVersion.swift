@@ -73,6 +73,9 @@ public struct ProtobufVersion {
     // Storage ListRequest message now has a file size filter.
     public static var v0_20: ProtobufVersion = .init(major: 0, minor: 20)
 
+    // Add index field to AppButtonPressRequest message
+    public static var v0_21: ProtobufVersion = .init(major: 0, minor: 21)
+
     // Future release
     public static var v1_0: ProtobufVersion = .init(major: 1, minor: 0)
 }
