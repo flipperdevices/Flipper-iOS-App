@@ -40,11 +40,9 @@ public class Applications: ObservableObject {
         public static var `default`: SortOption { .newUpdates }
     }
 
-    public enum APIError: Swift.Error {
-        case noInternet
-    }
-
     public enum Error: Swift.Error {
+        case notFound
+        case noInternet
         case unknownSDK
         case invalidIcon
         case invalidBuild
@@ -252,11 +250,14 @@ public class Applications: ObservableObject {
         do {
             return try await body()
         } catch let error as Catalog.CatalogError where error.isUnknownSDK {
-            logger.error("unknown sdk")
+            logger.error("apps: unknown sdk")
             throw Error.unknownSDK
+        } catch let error as Catalog.CatalogError where error.httpCode == 404 {
+            logger.error("apps: not found")
+            throw Error.notFound
         } catch let error as URLError {
             logger.error("web: \(error)")
-            throw APIError.noInternet
+            throw Error.noInternet
         } catch {
             logger.error("web: \(error)")
             throw error
@@ -267,7 +268,7 @@ public class Applications: ObservableObject {
         try await handlingWebErrors {
             _ = try await loadCategories()
             guard let app = try await catalog.featured().get().first else {
-                throw APIError.noInternet
+                throw Error.noInternet
             }
             return app
         }

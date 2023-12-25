@@ -14,7 +14,7 @@ struct AppsCategoryView: View {
     @State private var applications: [Applications.ApplicationInfo] = []
     @State private var filteredApplications: [Applications.ApplicationInfo] = []
     @State private var sortOrder: Applications.SortOption = .default
-    @State private var apiError: Applications.APIError?
+    @State private var error: Applications.Error?
 
     var isEmpty: Bool {
         !isLoading && applications.isEmpty
@@ -29,8 +29,8 @@ struct AppsCategoryView: View {
             if model.isOutdatedDevice {
                 AppsNotCompatibleFirmware()
                     .padding(.horizontal, 14)
-            } else if apiError != nil {
-                AppsAPIError(error: $apiError, action: reload)
+            } else if error != nil {
+                AppsAPIError(error: $error, action: reload)
                     .padding(.horizontal, 14)
             } else {
                 RefreshableScrollView(isEnabled: true) {
@@ -108,8 +108,8 @@ struct AppsCategoryView: View {
                 return
             }
             self.applications.append(contentsOf: applications)
-        } catch let error as Applications.APIError {
-            apiError = error
+        } catch let error as Applications.Error {
+            self.error = error
         } catch {
             applications = []
         }
