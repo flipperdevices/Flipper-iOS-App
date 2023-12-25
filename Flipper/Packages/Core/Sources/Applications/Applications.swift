@@ -251,6 +251,7 @@ public class Applications: ObservableObject {
             return try await body()
         } catch let error as Catalog.CatalogError where error.isUnknownSDK {
             logger.error("apps: unknown sdk")
+            isOutdatedDevice = true
             throw Error.unknownSDK
         } catch let error as Catalog.CatalogError where error.httpCode == 404 {
             logger.error("apps: not found")
