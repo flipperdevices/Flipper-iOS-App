@@ -406,7 +406,7 @@ public class Applications: ObservableObject {
         }
         guard
             manifest.versionUID == application.current.id,
-            manifest.buildAPI == deviceInfo?.api
+            manifest.buildAPI == application.current.build?.sdk.api
         else {
             return application.current.status == .ready
                 ? .outdated
