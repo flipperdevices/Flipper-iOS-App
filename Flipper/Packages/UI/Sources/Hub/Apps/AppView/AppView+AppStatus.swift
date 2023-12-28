@@ -36,17 +36,17 @@ extension AppView {
             .alert(isPresented: $isRebuildingAlertPresented) {
                 AppIsRebuildingAlert(
                     isPresented: $isRebuildingAlertPresented,
-                    application: .init(application),
+                    application: application,
                     category: category
                 )
             }
             .alert(isPresented: $isOutdatedAppAlertPresented) {
                 AppsOutdatedAppAlert(
                     isPresented: $isOutdatedAppAlertPresented,
-                    application: .init(application),
+                    application: application,
                     category: category
                 ) {
-                    openURL(application.current.links.source.uri)
+                    openURL(application.current.links.github)
                 }
             }
             .alert(isPresented: $isOutdatedDeviceAlertPresented) {

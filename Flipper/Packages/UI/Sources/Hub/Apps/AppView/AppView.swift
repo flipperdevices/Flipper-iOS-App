@@ -104,17 +104,17 @@ struct AppView: View {
         }
 
         var changelog: String {
-            application.current.changelog
+            application.current.changelog ?? ""
         }
 
         var description: String {
             let short = application.current.shortDescription
-            let full = application.current.description
+            let full = application.current.description ?? ""
             return full.starts(with: short) ? full : short + "\n" + full
         }
 
         var github: URL {
-            application.current.links.source.uri
+            application.current.links.github
         }
 
         var manifest: URL {
@@ -192,7 +192,7 @@ struct AppView: View {
             .alert(isPresented: $isHideAppPresented) {
                 ConfirmHideAppAlert(
                     isPresented: $isHideAppPresented,
-                    application: .init(application),
+                    application: application,
                     category: model.category(for: application)
                 ) {
                     recordAppHidden(application: application)

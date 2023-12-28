@@ -1,7 +1,7 @@
 import Foundation
 
 public struct FeaturedRequest: CatalogRequest {
-    public typealias Result = [ApplicationInfo]
+    public typealias Result = [Application]
 
     var path: String { "application/featured" }
     var queryItems: [URLQueryItem] = []

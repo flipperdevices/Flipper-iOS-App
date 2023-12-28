@@ -12,7 +12,7 @@ extension AppView {
         var length: String? {
             guard let application else { return nil }
             guard let build = application.current.build else { return "-" }
-            return build.asset.length.hr
+            return build.asset?.length.hr ?? "-"
         }
 
         var body: some View {

@@ -16,11 +16,11 @@ class FlipperApps {
         self.cache = cache
     }
 
-    func load() async throws -> [ApplicationInfo] {
+    func load() async throws -> [Application] {
         manifests = try await reloadManifests()
 
         return manifests.compactMap {
-            ApplicationInfo($0.value)
+            Application($0.value)
         }
     }
 
@@ -126,7 +126,6 @@ class FlipperApps {
 
         try await storage.move(at: appTempPath, to: appPath)
         try await storage.move(at: manifestTempPath, to: manifestPath)
-
 
         manifests[application.id] = manifest
         try await cache.upsert(manifestString, at: manifestPath)
