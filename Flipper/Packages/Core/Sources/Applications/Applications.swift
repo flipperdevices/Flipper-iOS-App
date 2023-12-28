@@ -486,7 +486,8 @@ fileprivate extension Applications {
 extension Applications.Manifest {
     init(
         application: Catalog.Application,
-        category: Catalog.Category
+        category: Catalog.Category,
+        isDevCatalog: Bool
     ) async throws {
         guard case .url(let iconURL) = application.current.icon else {
             throw Applications.Error.invalidIcon
@@ -507,7 +508,9 @@ extension Applications.Manifest {
             buildAPI: build.sdk.api,
             uid: application.id,
             versionUID: application.current.id,
-            path: path.string)
+            path: path.string,
+            isDevCatalog: isDevCatalog
+        )
     }
 }
 
