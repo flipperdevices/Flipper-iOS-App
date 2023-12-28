@@ -28,6 +28,8 @@ struct DetectReaderView: View {
         VStack(spacing: 18) {
             VStack {
                 switch detectReader.state {
+                case .connecting:
+                    ReaderConnecting(flipperColor: flipperColor)
                 case .noLog:
                     ReaderDataNotFound(flipperColor: flipperColor)
                 case .noDevice:
@@ -141,7 +143,7 @@ struct DetectReaderView: View {
                 }
             }
 
-            if !detectReader.isError {
+            if !detectReader.isConnecting && !detectReader.isError {
                 VStack(alignment: .leading, spacing: 32) {
                     CalculatedKeys(
                         results: detectReader.results,
