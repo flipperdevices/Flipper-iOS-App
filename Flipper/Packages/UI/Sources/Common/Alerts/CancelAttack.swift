@@ -7,7 +7,7 @@ struct CancelAttackAlert: View {
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 4) {
-                Text("Abort Keys Сalculation?")
+                Text("Stop Keys Calculation?")
                     .font(.system(size: 14, weight: .bold))
 
                 Text("You can restart it later")
@@ -20,7 +20,7 @@ struct CancelAttackAlert: View {
 
             AlertButtons(
                 isPresented: $isPresented,
-                text: "Abort",
+                text: "Stop",
                 cancel: "Continue"
             ) {
                 onAbort()

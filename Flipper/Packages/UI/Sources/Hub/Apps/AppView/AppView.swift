@@ -7,7 +7,7 @@ struct AppView: View {
 
     let alias: String
 
-    @State var application: Applications.Application?
+    @State private var application: Applications.Application?
 
     var applicationURL: URL {
         .init(string: "https://lab.flipper.net/apps/\(alias)")!
@@ -66,9 +66,18 @@ struct AppView: View {
 
     struct LoadedAppView: View {
         @EnvironmentObject var model: Applications
+        @Environment(\.dismiss) var dismiss
         let application: Applications.Application
 
+        @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+        @Environment(\.notifications) private var notifications
+
+        var isHidden: Bool {
+            hiddenApps.contains(application.id)
+        }
+
         @State var status: Applications.ApplicationStatus = .notInstalled
+        @State var isHideAppPresented = false
 
         var isBuildReady: Bool {
             application.current.status == .ready
@@ -110,7 +119,10 @@ struct AppView: View {
                     .disabled(!isBuildReady)
 
                     if !isBuildReady || model.deviceInfo == nil {
-                        AppStatusButton(application: application)
+                        AppStatusButton(
+                            application: application,
+                            category: model.category(for: application)
+                        )
                     }
 
                     Divider()
@@ -119,7 +131,7 @@ struct AppView: View {
 
                 VStack(alignment: .leading, spacing: 32) {
                     AppScreens(screenshots)
-                        .frame(height: 94)
+                        .frame(height: 108)
 
                     Description(description: description)
                         .padding(.horizontal, 14)
@@ -130,23 +142,72 @@ struct AppView: View {
                     Developer(github: github, manifest: manifest)
                         .padding(.horizontal, 14)
 
-                    NavigationLink {
-                        AppReportView(application: application)
-                    } label: {
-                        HStack {
-                            Image("AppReport")
+                    VStack(alignment: .leading, spacing: 12) {
+                        Button {
+                            isHidden
+                                ? unhide()
+                                : showHideAlert()
+                        } label: {
+                            HStack {
+                                Image(isHidden ? "AppUnhide" : "AppHide")
 
-                            Text("Report App")
-                                .font(.system(size: 14, weight: .medium))
+                                Text(isHidden ? "Unhide App" : "Hide App")
+                            }
                         }
-                        .foregroundColor(.sRed)
-                        .padding(.horizontal, 14)
+
+                        NavigationLink {
+                            AppReportView(application: application)
+                        } label: {
+                            HStack {
+                                Image("AppReport")
+
+                                Text("Report App")
+                            }
+                        }
                     }
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.sRed)
+                    .padding(.horizontal, 14)
                 }
             }
             .onReceive(model.$statuses) { statuses in
                 status = statuses[application.id] ?? .notInstalled
             }
+            .alert(isPresented: $isHideAppPresented) {
+                ConfirmHideAppAlert(
+                    isPresented: $isHideAppPresented,
+                    application: .init(application),
+                    category: model.category(for: application)
+                ) {
+                    recordAppHidden(application: application)
+                    hide()
+                    dismiss()
+                    notifications.apps.showHidden = true
+                }
+            }
+            .notification(isPresented: notifications.apps.showHidden) {
+                AppHideBanner(isPresented: notifications.apps.showHidden) {
+                    unhide()
+                }
+            }
+        }
+
+        func showHideAlert() {
+            isHideAppPresented = true
+        }
+
+        func hide() {
+            hiddenApps.insert(application.id)
+        }
+
+        func unhide() {
+            hiddenApps.remove(application.id)
+        }
+
+        // MARK: Analytics
+
+        func recordAppHidden(application: Applications.Application) {
+            analytics.appOpen(target: .fapHubHide(application.alias))
         }
     }
 }
@@ -157,7 +218,7 @@ extension AppView {
             VStack(spacing: 18) {
                 VStack(spacing: 12) {
                     IconNameCategoryPreview()
-                    
+
                     VersionSizePreview()
 
                     ButtonsPreview()
@@ -181,25 +242,25 @@ extension AppView {
             }
         }
     }
-    
+
     struct IconNameCategoryPreview: View {
         var body: some View {
             HStack(spacing: 8) {
                 AnimatedPlaceholder()
                     .frame(width: 64, height: 64)
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     AnimatedPlaceholder()
                         .frame(maxWidth: .infinity)
                         .frame(height: 21)
-                    
+
                     AnimatedPlaceholder()
                         .frame(width: 68, height: 17)
                 }
             }
         }
     }
-    
+
     struct ButtonsPreview: View {
         var body: some View {
             AnimatedPlaceholder()

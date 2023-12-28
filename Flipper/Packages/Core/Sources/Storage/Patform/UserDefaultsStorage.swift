@@ -58,25 +58,40 @@ public class UserDefaultsStorage {
         set { storage.set(newValue, forKey: .isProvisioningDisabled) }
     }
 
+    public var isDevCatalog: Bool {
+        get { storage.value(forKey: .isDevCatalog) as? Bool ?? false }
+        set { storage.set(newValue, forKey: .isDevCatalog) }
+    }
+
     func reset() {
         storage.removeObject(forKey: .isFirstLaunchKey)
         storage.removeObject(forKey: .selectedTabKey)
+        storage.removeObject(forKey: .notificationsSuggested)
+        storage.removeObject(forKey: .isNotificationsOn)
         storage.removeObject(forKey: .updateChannel)
+        storage.removeObject(forKey: .installingVersion)
         storage.removeObject(forKey: .logLevelKey)
         storage.removeObject(forKey: .hasReaderLog)
+        storage.removeObject(forKey: .hiddenAppsKey)
+
         storage.removeObject(forKey: .isDebugMode)
         storage.removeObject(forKey: .isProvisioningDisabled)
+        storage.removeObject(forKey: .isDevCatalog)
     }
 }
 
 public extension String {
     static var isFirstLaunchKey: String { "isFirstLaunch" }
     static var selectedTabKey: String { "selectedTab" }
+    static var notificationsSuggested: String { "notificationsSuggested" }
+    static var isNotificationsOn: String { "isNotificationsOn" }
     static var updateChannel: String { "updateChannel" }
     static var installingVersion: String { "installingVersion" }
     static var logLevelKey: String { "logLevel" }
     static var hasReaderLog: String { "hasReaderLog" }
+    static var hiddenAppsKey: String { "hiddenApps" }
 
     static var isDebugMode: String { "isDebugMode" }
     static var isProvisioningDisabled: String { "isProvisioningDisabled" }
+    static var isDevCatalog: String { "isDevCatalog" }
 }

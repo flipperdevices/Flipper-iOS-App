@@ -35,6 +35,8 @@ struct CategoryIcon: View {
     struct RemoteImage: View {
         let url: URL
 
+        static var cache: [URL: SVGKImage] = [:]
+
         @State var svgkImage: SVGKImage?
 
         var body: some View {
@@ -50,8 +52,16 @@ struct CategoryIcon: View {
             }
             .task {
                 do {
-                    let (data, _) = try await URLSession.shared.data(from: url)
-                    self.svgkImage = SVGKImage(data: data)
+                    if let svgkImage = Self.cache[url] {
+                        self.svgkImage = svgkImage
+                    } else {
+                        let (data, _) = try await URLSession
+                            .shared
+                            .data(from: url)
+                        let svgkImage = SVGKImage(data: data)
+                        Self.cache[url] = svgkImage
+                        self.svgkImage = svgkImage
+                    }
                 } catch {
                     print(error)
                 }

@@ -32,4 +32,3 @@ extension DetectReaderView {
         }
     }
 }
-

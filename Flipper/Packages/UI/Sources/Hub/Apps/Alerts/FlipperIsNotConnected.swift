@@ -11,7 +11,7 @@ struct FlipperIsNotConnectedAlert: View {
                 .padding(.top, 17)
 
             VStack(spacing: 4) {
-                Text("Flipper is Not Connected")
+                Text("Flipper Not Connected")
                     .font(.system(size: 14, weight: .bold))
 
                 Text("Connect your Flipper Zero to install this app")
@@ -25,7 +25,7 @@ struct FlipperIsNotConnectedAlert: View {
                 selectedTab = .device
                 isPresented = false
             } label: {
-                Text("Go to Device Screen")
+                Text("Go to Connection")
                     .frame(height: 41)
                     .frame(maxWidth: .infinity)
                     .font(.system(size: 14, weight: .bold))

@@ -64,6 +64,9 @@ public class Synchronization: ObservableObject {
                 device.status = .connected
             } catch {
                 logger.error("synchronize: \(error)")
+                if device.status == .synchronizing {
+                    device.status = .connected
+                }
             }
         }
     }
@@ -104,7 +107,7 @@ public class Synchronization: ObservableObject {
     func measure(_ task: () async throws -> Void) async rethrows -> Int {
         let start = Date()
         try await task()
-        return Int(Date().timeIntervalSince(start) * 1000)
+        return Int(Date().timeIntervalSince(start))
     }
 
     // MARK: Analytics

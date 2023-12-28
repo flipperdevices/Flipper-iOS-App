@@ -121,7 +121,7 @@ extension ReportBugView {
             }
             .disabled(!isValid)
         }
-        
+
         var body: some View {
             VStack(alignment: .leading, spacing: 0) {
                 GeometryReader { proxy in

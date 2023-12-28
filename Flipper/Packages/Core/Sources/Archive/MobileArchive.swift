@@ -46,7 +46,7 @@ class MobileArchive: ArchiveProtocol {
 }
 
 extension MobileArchive: Compressable {
-    func compress() -> URL? {
-        (storage as? Compressable)?.compress()
+    func compress() async -> URL? {
+        await (storage as? Compressable)?.compress()
     }
 }

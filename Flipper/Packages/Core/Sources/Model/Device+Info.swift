@@ -177,4 +177,3 @@ extension Device.Info.Radio.Stack {
         return "\(major).\(minor).\(patch) (\(typeString ?? "Unknown"))"
     }
 }
-

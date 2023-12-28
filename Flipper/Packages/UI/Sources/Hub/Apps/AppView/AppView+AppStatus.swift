@@ -6,6 +6,7 @@ extension AppView {
         @Environment(\.openURL) var openURL
 
         let application: Applications.Application
+        let category: Applications.Category?
 
         var status: Applications.Application.Status {
             application.current.status
@@ -28,26 +29,30 @@ extension AppView {
             } label: {
                 AppStatus(status: status)
             }
-            .customAlert(isPresented: $isRunsOnReleasePresented) {
+            .alert(isPresented: $isRunsOnReleasePresented) {
                 RunsOnLatestFirmwareAlert(
                     isPresented: $isRunsOnReleasePresented)
             }
-            .customAlert(isPresented: $isRebuildingAlertPresented) {
+            .alert(isPresented: $isRebuildingAlertPresented) {
                 AppIsRebuildingAlert(
                     isPresented: $isRebuildingAlertPresented,
-                    application: .init(application))
+                    application: .init(application),
+                    category: category
+                )
             }
-            .customAlert(isPresented: $isOutdatedAppAlertPresented) {
+            .alert(isPresented: $isOutdatedAppAlertPresented) {
                 AppsOutdatedAppAlert(
                     isPresented: $isOutdatedAppAlertPresented,
-                    application: .init(application)
+                    application: .init(application),
+                    category: category
                 ) {
                     openURL(application.current.links.source.uri)
                 }
             }
-            .customAlert(isPresented: $isOutdatedDeviceAlertPresented) {
+            .alert(isPresented: $isOutdatedDeviceAlertPresented) {
                 AppsOutdatedFlipperAlert(
-                    isPresented: $isOutdatedDeviceAlertPresented)
+                    isPresented: $isOutdatedDeviceAlertPresented
+                )
             }
         }
     }

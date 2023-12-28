@@ -218,9 +218,9 @@ public class Device: ObservableObject {
         }
     }
 
-    public func pressButton(_ button: InputKey) async throws {
+    public func pressButton(_ button: InputKey, isLong: Bool) async throws {
         do {
-            try await rpc.pressButton(button)
+            try await rpc.pressButton(button, isLong: isLong)
         } catch {
             logger.error("press button: \(error)")
             throw error
@@ -248,9 +248,7 @@ public class Device: ObservableObject {
     }
 
     private var isProvisioningDisabled: Bool {
-        get {
-            UserDefaultsStorage.shared.isProvisioningDisabled
-        }
+        UserDefaultsStorage.shared.isProvisioningDisabled
     }
 
     private var hardwareRegion: Int? {
@@ -326,7 +324,6 @@ public class Device: ObservableObject {
             logger.error("device info: \(error)")
         }
     }
-
 
     public func getRegion() async throws -> Provisioning.Region {
         let bytes = try await rpc.readFile(at: Provisioning.location)

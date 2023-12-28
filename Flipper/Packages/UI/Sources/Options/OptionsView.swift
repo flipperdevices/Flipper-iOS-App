@@ -1,4 +1,6 @@
 import Core
+import Notifications
+
 import SwiftUI
 
 struct OptionsView: View {
@@ -8,15 +10,9 @@ struct OptionsView: View {
 
     @AppStorage(.isDebugMode) var isDebugMode = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
-
-    @State private var showResetApp = false
-    @State private var versionTapCount = 0
+    @AppStorage(.isDevCatalog) var isDevCatalog = false
 
     @State private var showWidgetSettings = false
-
-    var appVersion: String {
-        Bundle.releaseVersion
-    }
 
     var isDeviceAvailable: Bool {
         device.status == .connected ||
@@ -42,15 +38,12 @@ struct OptionsView: View {
                     LogsView()
                 }
                 Button("Backup Keys") {
-                    share(archive.backupKeys())
+                    Task { share(await archive.backupKeys()) }
                 }
                 .disabled(archive.items.isEmpty)
             }
 
             Section(header: Text("Remote")) {
-                NavigationLink("Screen Streaming") {
-                    RemoteMovedView()
-                }
                 NavigationLink("File Manager") {
                     FileManagerView()
                 }
@@ -62,6 +55,8 @@ struct OptionsView: View {
             .disabled(!isDeviceAvailable)
 
             Section {
+                NotificationsToggle()
+
                 Button("Widget Settings") {
                     showWidgetSettings = true
                 }
@@ -70,7 +65,7 @@ struct OptionsView: View {
 
             Section {
                 HStack {
-                    Image("OptionsForum")
+                    Image("ListForum")
                         .renderingMode(.template)
                     Link(destination: .forum) {
                         Text("Forum")
@@ -78,7 +73,7 @@ struct OptionsView: View {
                     }
                 }
                 HStack {
-                    Image("OptionsGitHub")
+                    Image("ListGitHub")
                         .renderingMode(.template)
                     Link(destination: .github) {
                         Text("GitHub")
@@ -86,9 +81,9 @@ struct OptionsView: View {
                     }
                 }
                 HStack {
-                    Image("OptionsBug")
+                    Image("ListBug")
                         .renderingMode(.template)
-                    NavigationLink("Report a bug") {
+                    NavigationLink("Report Bug") {
                         ReportBugView()
                     }
                 }
@@ -101,36 +96,20 @@ struct OptionsView: View {
                         Text("Disable provisioning")
                     }
                     .tint(.a1)
+                    Toggle(isOn: $isDevCatalog) {
+                        Text("Use dev catalog")
+                    }
+                    .tint(.a1)
                     NavigationLink("I'm watching you") {
                         CarrierView()
                     }
-                    Button("Reset App") {
-                        showResetApp = true
-                    }
-                    .foregroundColor(.sRed)
-                    .confirmationDialog("", isPresented: $showResetApp) {
-                        Button("Reset App", role: .destructive) {
-                            AppReset.reset()
-                        }
-                    }
+                    ResetButton()
                 }
             }
 
             Section {
             } footer: {
-                VStack(alignment: .center) {
-                    Text("Flipper Mobile App")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.black20)
-                    Text("Version: \(appVersion)")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.black40)
-                }
-                .padding(.vertical, 20)
-                .frame(maxWidth: .infinity)
-                .onTapGesture {
-                    onVersionTapGesture()
-                }
+                Version(isDebugMode: $isDebugMode)
             }
             .padding(.top, -40)
             .padding(.bottom, 20)
@@ -149,12 +128,108 @@ struct OptionsView: View {
             TodayWidgetSettingsView()
         }
     }
+}
 
-    func onVersionTapGesture() {
-        versionTapCount += 1
-        if versionTapCount == 10 {
-            isDebugMode = true
-            versionTapCount = 0
+extension OptionsView {
+    struct NotificationsToggle: View {
+        @EnvironmentObject var notifications: Notifications
+        @Environment(\.notifications) var inApp
+
+        @AppStorage(.isNotificationsOn) var isNotificationsOn = false
+
+        //@State var showSpinner: Bool = false
+
+        var body: some View {
+            Toggle(isOn: $isNotificationsOn) {
+                VStack(alignment: .leading) {
+                    Text("Push notifications")
+                    Text("Notify about new firmware releases")
+                        .font(.system(size: 12))
+                        .foregroundColor(.black40)
+                }
+            }
+            .tint(.a1)
+            .onChange(of: isNotificationsOn) { newValue in
+                enableNotifications(newValue)
+            }
+            .task {
+                await reloadPermissions()
+            }
+        }
+
+        func reloadPermissions() async {
+            let isEnabled = await notifications.isEnabled
+            if isEnabled != isNotificationsOn {
+                isNotificationsOn = isEnabled
+            }
+        }
+
+        func enableNotifications(_ newValue: Bool) async {
+            do {
+                if newValue {
+                    try await notifications.enable()
+                    inApp.notifications.showEnabled = true
+                } else {
+                    await notifications.disable()
+                }
+            } catch {
+                isNotificationsOn = false
+                inApp.notifications.showDisabled = true
+            }
+        }
+        
+        func enableNotifications(_ newValue: Bool) {
+            Task { await enableNotifications(newValue) }
+        }
+    }
+
+    struct ResetButton: View {
+        @State private var showResetApp = false
+
+        var body: some View {
+            Button("Reset App") {
+                showResetApp = true
+            }
+            .foregroundColor(.sRed)
+            .confirmationDialog("", isPresented: $showResetApp) {
+                Button("Reset App", role: .destructive) {
+                    Task { await AppReset.reset() }
+                }
+            }
+        }
+    }
+
+    struct Version: View {
+        @Binding var isDebugMode: Bool
+
+        @State private var versionTapCount = 0
+
+        var appVersion: String {
+            Bundle.releaseVersion
+        }
+
+        var body: some View {
+            VStack(alignment: .center) {
+                Text("Flipper Mobile App")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.black20)
+                Text("Version: \(appVersion)")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.black40)
+            }
+            .padding(.vertical, 20)
+            .frame(maxWidth: .infinity)
+            .onTapGesture {
+                onVersionTapGesture()
+            }
+        }
+
+        func onVersionTapGesture() {
+            versionTapCount += 1
+            if versionTapCount == 10 {
+                isDebugMode = true
+                versionTapCount = 0
+            }
         }
     }
 }

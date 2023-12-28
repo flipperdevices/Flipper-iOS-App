@@ -62,13 +62,13 @@ struct DeviceUpdateCard: View {
             default: break
             }
         }
-        .customAlert(isPresented: $showUpdateSuccess) {
+        .alert(isPresented: $showUpdateSuccess) {
             UpdateSucceededAlert(
                 isPresented: $showUpdateSuccess,
                 firmwareVersion: updateVersion
             )
         }
-        .customAlert(isPresented: $showUpdateFailure) {
+        .alert(isPresented: $showUpdateFailure) {
             UpdateFailedAlert(
                 isPresented: $showUpdateFailure,
                 firmwareVersion: updateVersion

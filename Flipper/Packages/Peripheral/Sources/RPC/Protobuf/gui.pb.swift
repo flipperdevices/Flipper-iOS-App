@@ -64,7 +64,7 @@ enum PBGui_InputKey: SwiftProtobuf.Enum {
 
 extension PBGui_InputKey: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PBGui_InputKey] = [
+  static let allCases: [PBGui_InputKey] = [
     .up,
     .down,
     .right,
@@ -127,7 +127,7 @@ enum PBGui_InputType: SwiftProtobuf.Enum {
 
 extension PBGui_InputType: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PBGui_InputType] = [
+  static let allCases: [PBGui_InputType] = [
     .press,
     .release,
     .short,
@@ -184,7 +184,7 @@ enum PBGui_ScreenOrientation: SwiftProtobuf.Enum {
 
 extension PBGui_ScreenOrientation: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PBGui_ScreenOrientation] = [
+  static let allCases: [PBGui_ScreenOrientation] = [
     .horizontal,
     .horizontalFlip,
     .vertical,

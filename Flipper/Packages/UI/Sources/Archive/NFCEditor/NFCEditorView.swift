@@ -3,7 +3,6 @@ import SwiftUI
 
 struct NFCEditorView: View {
     @EnvironmentObject var archive: ArchiveModel
-    @StateObject var alertController: AlertController = .init()
     @StateObject var hexKeyboardController: HexKeyboardController = .init()
     @Environment(\.dismiss) private var dismiss
 
@@ -30,72 +29,66 @@ struct NFCEditorView: View {
 
     var body: some View {
         NavigationView {
-            ZStack {
-                VStack(spacing: 0) {
-                    Header(
-                        title: "Edit Dump",
-                        description: item.name.value,
-                        onCancel: {
-                            cancel()
-                        },
-                        onSave: {
-                            save()
-                        },
-                        onSaveAs: {
-                            saveAs()
-                        }
-                    )
-                    .simultaneousGesture(TapGesture().onEnded {
-                        hexKeyboardController.onKey(.ok)
-                    })
-
-                    ScrollView {
-                        VStack(spacing: 24) {
-                            NFCCard(
-                                mifareType: mifareType,
-                                uid: uid,
-                                atqa: atqa,
-                                sak: sak)
-
-                            HexEditor(
-                                bytes: $bytes,
-                                width: UIScreen.main.bounds.width - 28
-                            )
-                        }
-                        .padding(14)
+            VStack(spacing: 0) {
+                Header(
+                    title: "Edit Dump",
+                    description: item.name.value,
+                    onCancel: {
+                        cancel()
+                    },
+                    onSave: {
+                        save()
+                    },
+                    onSaveAs: {
+                        saveAs()
                     }
+                )
+                .simultaneousGesture(TapGesture().onEnded {
+                    hexKeyboardController.onKey(.ok)
+                })
 
-                    NavigationLink("", isActive: $showSaveAs) {
-                        SaveAsView(item: $item)
-                            .onDisappear {
-                                dismiss()
-                            }
-                    }
+                ScrollView {
+                    VStack(spacing: 24) {
+                        NFCCard(
+                            mifareType: mifareType,
+                            uid: uid,
+                            atqa: atqa,
+                            sak: sak)
 
-                    if !hexKeyboardController.isHidden {
-                        HexKeyboard(
-                            onButton: { hexKeyboardController.onKey(.hex($0)) },
-                            onBack: { hexKeyboardController.onKey(.back) },
-                            onOK: { hexKeyboardController.onKey(.ok) }
+                        HexEditor(
+                            bytes: $bytes,
+                            width: UIScreen.main.bounds.width - 28
                         )
-                        .transition(.move(edge: .bottom))
                     }
+                    .padding(14)
                 }
-                .navigationBarHidden(true)
-                .customAlert(isPresented: $showSaveChanges) {
-                    SaveChangesAlert(
-                        save: save,
-                        saveAs: saveAs,
-                        dismiss: dismiss
-                    )
-                }
-                .environmentObject(alertController)
-                .environmentObject(hexKeyboardController)
 
-                if alertController.isPresented {
-                    alertController.alert
+                NavigationLink("", isActive: $showSaveAs) {
+                    SaveAsView(item: $item)
+                        .onDisappear {
+                            dismiss()
+                        }
+                }
+
+                if !hexKeyboardController.isHidden {
+                    HexKeyboard(
+                        onButton: { hexKeyboardController.onKey(.hex($0)) },
+                        onBack: { hexKeyboardController.onKey(.back) },
+                        onOK: { hexKeyboardController.onKey(.ok) }
+                    )
+                    .transition(.move(edge: .bottom))
                 }
             }
+            .navigationBarHidden(true)
+            .alert(isPresented: $showSaveChanges) {
+                SaveChangesAlert(
+                    isPresented: $showSaveChanges,
+                    save: save,
+                    saveAs: saveAs,
+                    dontSave: dontSave
+                )
+            }
+            .environmentObject(hexKeyboardController)
         }
         .alert(item: $error) { error in
             Alert(title: Text(error))
@@ -191,6 +184,10 @@ struct NFCEditorView: View {
         item.atqa = atqa
         item.nfcBlocks = bytes
         showSaveAs = true
+    }
+
+    func dontSave() {
+        dismiss()
     }
 
     func showError(_ error: Swift.Error) {

@@ -7,7 +7,6 @@ struct DetectReaderView: View {
     @EnvironmentObject private var device: Device
     @StateObject private var detectReader: DetectReader = .init()
 
-    @StateObject private var alertController: AlertController = .init()
     @Environment(\.dismiss) private var dismiss
 
     @State private var showCancelAttack = false
@@ -164,44 +163,37 @@ struct DetectReaderView: View {
     }
 
     var body: some View {
-        ZStack {
-            VStack {
-                ScrollView {
-                    content
-                    Spacer()
-                }
-
-                if detectReader.state != .finished {
-                    HStack {
-                        Spacer()
-                        Button {
-                            detectReader.inProgress
-                                ? showCancelAttack = true
-                                : dismiss()
-                        } label: {
-                            Text(detectReader.isError ? "Close" : "Cancel")
-                                .font(.system(size: 16, weight: .medium))
-                                .padding(.horizontal, 8)
-                                .tappableFrame()
-                        }
-                        Spacer()
-                    }
-                }
+        VStack {
+            ScrollView {
+                content
+                Spacer()
             }
 
-            if alertController.isPresented {
-                alertController.alert
+            if detectReader.state != .finished {
+                HStack {
+                    Spacer()
+                    Button {
+                        detectReader.inProgress
+                        ? showCancelAttack = true
+                        : dismiss()
+                    } label: {
+                        Text(detectReader.isError ? "Close" : "Cancel")
+                            .font(.system(size: 16, weight: .medium))
+                            .padding(.horizontal, 8)
+                            .tappableFrame()
+                    }
+                    Spacer()
+                }
             }
         }
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
-        .customAlert(isPresented: $showCancelAttack) {
+        .alert(isPresented: $showCancelAttack) {
             CancelAttackAlert(isPresented: $showCancelAttack) {
                 dismiss()
             }
         }
-        .environmentObject(alertController)
         .onAppear {
             detectReader.start()
         }

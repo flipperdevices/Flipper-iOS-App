@@ -1,68 +1,80 @@
+import Macro
 import UIKit
 import Foundation
 
 extension URL {
-    // swiftlint:disable force_unwrapping
 
     // MARK: System
 
     static var settings: URL {
-        .init(string: UIApplication.openSettingsURLString)!
+        .init(string: UIApplication.openSettingsURLString) ?? systemSettings
     }
 
-    static var systemSettings: URL {
-        .init(string: "App-Prefs:root=")!
+    static var notificationSettings: URL {
+        var url: URL? = nil
+        if #available(iOS 16, *) {
+            url = .init(string: UIApplication.openNotificationSettingsURLString)
+        } else if #available(iOS 15.4, *) {
+            url = .init(string: UIApplicationOpenNotificationSettingsURLString)
+        } else {
+            url = .init(string: UIApplication.openSettingsURLString)
+        }
+        return url ?? systemSettings
     }
+
+    static var systemSettings = #URL(
+        "App-Prefs:root="
+    )
 
     // MARK: AppStore
 
-    static var appStore: URL {
-        .init(string: "https://apps.apple.com/app/id1534655259")!
-    }
+    static var appStore = #URL(
+        "https://apps.apple.com/app/id1534655259"
+    )
 
     // MARK: Welcome
 
-    static var termsOfServiceURL: URL {
-        .init(string: "https://flipp.dev/flipper-app-terms-of-service")!
-    }
+    static var termsOfServiceURL = #URL(
+        "https://flipp.dev/flipper-app-terms-of-service"
+    )
 
-    static var privacyPolicyURL: URL {
-        .init(string: "https://flipp.dev/flipper-app-privacy-policy")!
-    }
+    static var privacyPolicyURL = #URL(
+        "https://flipp.dev/flipper-app-privacy-policy"
+    )
 
     // MARK: Help
 
-    static var helpToKnowName: URL {
-        .init(string: "https://flipp.dev/passport")!
-    }
+    static var helpToKnowName = #URL(
+        "https://flipp.dev/passport"
+    )
 
-    static var helpToTurnOnBluetooth: URL {
-        .init(string: "https://flipp.dev/bluetooth-on")!
-    }
+    static var helpToTurnOnBluetooth = #URL(
+        "https://flipp.dev/bluetooth-on"
+    )
 
-    static var helpToInstallFirmware: URL {
-        .init(string: "https://flipp.dev/firmware-update")!
-    }
+    static var helpToInstallFirmware = #URL(
+        "https://flipp.dev/firmware-update"
+    )
 
-    static var helpToReboot: URL {
-        .init(string: "https://flipp.dev/reboot")!
-    }
+    static var helpToReboot = #URL(
+        "https://flipp.dev/reboot"
+    )
 
-    static var helpToFactoryReset: URL {
-        .init(string: "https://flipp.dev/storage-repair")!
-    }
+    static var helpToFactoryReset = #URL(
+        "https://flipp.dev/storage-repair"
+    )
 
     // MARK: Resources
 
-    static var forum: URL {
-        .init(string: "https://forum.flipperzero.one")!
-    }
+    static var forum = #URL(
+        "https://forum.flipperzero.one"
+    )
 
-    static var github: URL {
-        .init(string: "https://github.com/flipperdevices")!
-    }
+    static var github = #URL(
+        "https://github.com/flipperdevices"
+    )
 
-    static var bugReport: URL {
-        .init(string: "https://flipp.dev/mobile-app-bug-report")!
-    }
+    static var bugReport = #URL(
+        "https://flipp.dev/mobile-app-bug-report"
+    )
 }

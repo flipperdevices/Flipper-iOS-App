@@ -40,8 +40,7 @@ extension DeviceUpdateCard {
         var body: some View {
             VStack(spacing: 0) {
                 HStack {
-                    Text("Update Channel")
-                        .foregroundColor(.black30)
+                    UpdateChannelLabel()
 
                     Spacer()
 
@@ -64,7 +63,7 @@ extension DeviceUpdateCard {
 
                     VStack {
                         Text(
-                            "Use the firmware (.tgz) from your files to update"
+                            "Use the firmware from .tgz files to update"
                         )
                         .font(.system(size: 12, weight: .medium))
                         .multilineTextAlignment(.center)
@@ -89,7 +88,7 @@ extension DeviceUpdateCard {
                     .padding(.horizontal, 12)
                 }
             }
-            .customAlert(isPresented: $showPauseSync) {
+            .alert(isPresented: $showPauseSync) {
                 PauseSyncAlert(
                     isPresented: $showPauseSync,
                     installedVersion: updateModel.installed!,
@@ -99,7 +98,7 @@ extension DeviceUpdateCard {
                     updateModel.startUpdate()
                 }
             }
-            .customAlert(isPresented: $showConfirmUpdate) {
+            .alert(isPresented: $showConfirmUpdate) {
                 ConfirmUpdateAlert(
                     isPresented: $showConfirmUpdate,
                     installedVersion: updateModel.installed!,
@@ -108,7 +107,7 @@ extension DeviceUpdateCard {
                     updateModel.startUpdate()
                 }
             }
-            .customAlert(isPresented: $showCharge) {
+            .alert(isPresented: $showCharge) {
                 LowBatteryAlert(isPresented: $showCharge)
             }
             .fileImporter(

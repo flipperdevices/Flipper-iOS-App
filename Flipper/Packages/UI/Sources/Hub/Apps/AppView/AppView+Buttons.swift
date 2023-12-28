@@ -4,6 +4,8 @@ import SwiftUI
 extension AppView {
     struct Buttons: View {
         @EnvironmentObject var model: Applications
+        @EnvironmentObject var device: Device
+
         let application: Applications.Application
         let status: Applications.ApplicationStatus
 
@@ -11,12 +13,16 @@ extension AppView {
             switch status {
             case .installed: return true
             case .outdated: return true
+            case .canOpen: return true
             default: return false
             }
         }
 
         @State var confirmDelete = false
         @State var isNotConnectedAlertPresented = false
+        @State var isFlipperBusyAlertPresented = false
+
+        @State var showRemoteControl = false
 
         var body: some View {
             HStack(alignment: .center, spacing: 12) {
@@ -25,10 +31,11 @@ extension AppView {
                         confirmDelete = true
                     }
                     .frame(width: 46, height: 46)
-                    .customAlert(isPresented: $confirmDelete) {
+                    .alert(isPresented: $confirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $confirmDelete,
-                            application: .init(application)
+                            application: .init(application),
+                            category: model.category(for: application)
                         ) {
                             delete()
                         }
@@ -36,6 +43,8 @@ extension AppView {
                 }
 
                 switch status {
+                case _ where model.installedStatus == .loading:
+                    AnimatedPlaceholder()
                 case .installing(let progress):
                     InstallingAppButton(progress: progress)
                         .font(.haxrCorpNeue(size: 36))
@@ -67,16 +76,35 @@ extension AppView {
                     UpdateAppButton {
                     }
                     .font(.born2bSportyV2(size: 32))
+                case .checking:
+                    AnimatedPlaceholder()
+                case .canOpen:
+                    OpenAppButton(action: openApp)
+                        .font(.born2bSportyV2(size: 32))
+                case .opening:
+                    OpeningAppButton()
+                        .font(.born2bSportyV2(size: 32))
                 }
             }
             .frame(height: 46)
-            .customAlert(isPresented: $isNotConnectedAlertPresented) {
+            .alert(isPresented: $isNotConnectedAlertPresented) {
                 RunsOnLatestFirmwareAlert(
                     isPresented: $isNotConnectedAlertPresented)
+            }
+            .alert(isPresented: $isFlipperBusyAlertPresented) {
+                FlipperIsBusyAlert(
+                    isPresented: $isFlipperBusyAlertPresented,
+                    goToRemote: goToRemoteScreen
+                )
+            }
+            .sheet(isPresented: $showRemoteControl) {
+                RemoteControlView()
+                    .environmentObject(device)
             }
         }
 
         func install() {
+            recordAppInstall(application: application)
             Task {
                 await model.install(application.id)
             }
@@ -92,6 +120,30 @@ extension AppView {
             Task {
                 await model.delete(application.id)
             }
+        }
+
+        func openApp() {
+            Task {
+                await model.openApp(by: application.id) { result in
+                    switch result {
+                    case .success:
+                        goToRemoteScreen()
+                    case .busy:
+                        isFlipperBusyAlertPresented = true
+                    case .error: ()
+                    }
+                }
+            }
+        }
+
+        func goToRemoteScreen() {
+            showRemoteControl = true
+        }
+
+        // MARK: Analytics
+
+        func recordAppInstall(application: Applications.Application) {
+            analytics.appOpen(target: .fapHubInstall(application.alias))
         }
     }
 }

@@ -14,6 +14,7 @@ public struct Flipper: Equatable, Identifiable {
     // swiftlint:disable discouraged_optional_boolean
     public var hasProtobufVersion: Bool?
     public var hasBatteryPowerState: Bool?
+    // swiftlint:enable discouraged_optional_boolean
 
     public init(
         id: UUID,

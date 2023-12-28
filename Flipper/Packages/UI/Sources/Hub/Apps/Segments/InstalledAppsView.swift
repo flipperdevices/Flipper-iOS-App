@@ -4,7 +4,6 @@ import SwiftUI
 struct InstalledAppsView: View {
     @EnvironmentObject var model: Applications
 
-    @State private var isLoading = false
     @State private var applications: [Applications.ApplicationInfo] = []
 
     var outdated: [Applications.ApplicationInfo] {
@@ -12,7 +11,7 @@ struct InstalledAppsView: View {
     }
 
     var noApps: Bool {
-        (!isLoading && applications.isEmpty)
+        (model.installedStatus != .loading && applications.isEmpty)
     }
 
     var body: some View {
@@ -30,7 +29,7 @@ struct InstalledAppsView: View {
                         }
                     }
                     .opacity(noApps ? 1 : 0)
-                    
+
                     RefreshableScrollView(isEnabled: true) {
                         reload()
                     } content: {
@@ -43,7 +42,7 @@ struct InstalledAppsView: View {
                                         }
                                         .padding(.horizontal, 14)
                                     }
-                                    
+
                                     AppList(
                                         applications: applications,
                                         isInstalled: true)
@@ -58,15 +57,43 @@ struct InstalledAppsView: View {
                 }
             }
         }
-        .onReceive(model.$manifests) { _ in
-            reload()
+        .onReceive(model.$installed) { installed in
+            update(installed: installed, statuses: model.statuses)
         }
-        .onReceive(model.$deviceInfo) { _ in
-            reload()
+        .onReceive(model.$statuses) { statuses in
+            update(installed: applications, statuses: statuses)
         }
-        .task {
-            await load()
-        }
+    }
+
+    func update(
+        installed: [Applications.ApplicationInfo],
+        statuses: [Applications.Application.ID : Applications.ApplicationStatus]
+    ) {
+        // TODO: improve sorting
+        let sorted = installed.sorted { $0.alias < $1.alias }
+
+        applications = []
+        applications.append(contentsOf: sorted.filter {
+            switch model.statuses[$0.id] {
+            case .installing: return true
+            default: return false
+            }
+        })
+        applications.append(contentsOf: sorted.filter {
+            switch model.statuses[$0.id] {
+            case .updating: return true
+            default: return false
+            }
+        })
+        applications.append(contentsOf: sorted.filter {
+            switch model.statuses[$0.id] {
+            case .outdated: return true
+            default: return false
+            }
+        })
+        applications.append(contentsOf: sorted.filter { sorted in
+            !applications.contains { $0.alias == sorted.alias }
+        })
     }
 
     func updateAll() {
@@ -75,23 +102,10 @@ struct InstalledAppsView: View {
         }
     }
 
-    func load() async {
-        do {
-            guard !isLoading else {
-                return
-            }
-            isLoading = true
-            defer { isLoading = false }
-            applications = try await model.loadInstalled()
-        } catch {
-            applications = []
-        }
-    }
-
     func reload() {
         applications = []
         Task {
-            await load()
+            try await model.loadInstalled()
         }
     }
 
@@ -110,7 +124,7 @@ struct InstalledAppsView: View {
 
     struct NoApps: View {
         var body: some View {
-            Text("No apps installed on your Flipper yet")
+            Text("You haven't installed any apps yet")
                 .font(.system(size: 14, weight: .medium))
                 .multilineTextAlignment(.center)
                 .foregroundColor(.black40)
@@ -123,7 +137,7 @@ struct InstalledAppsView: View {
                 Image("AppAlertNotConnected")
 
                 VStack(spacing: 4) {
-                    Text("Flipper is Not Connected")
+                    Text("Flipper Not Connected")
                         .font(.system(size: 14, weight: .bold))
 
                     Text("Connect your Flipper to see the installed apps")

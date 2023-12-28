@@ -2,8 +2,6 @@ import XCTest
 
 @testable import Core
 
-// swiftlint:disable force_unwrapping
-
 class InvalidCountryBundleTests: XCTestCase {
     func testUnknownCountry() async throws {
         let provider = RegionsBundleAPIv0 {
@@ -17,7 +15,7 @@ class InvalidCountryBundleTests: XCTestCase {
                     "default": []
                 }
             }
-            """.data(using: .utf8)!
+            """
         }
         let bundle = try await provider.get()
         XCTAssertNil(bundle.geoIP)
@@ -35,7 +33,7 @@ class InvalidCountryBundleTests: XCTestCase {
                     "default": []
                 }
             }
-            """.data(using: .utf8)!
+            """
         }
         let bundle = try await provider.get()
         XCTAssertNil(bundle.geoIP)
@@ -53,7 +51,7 @@ class InvalidCountryBundleTests: XCTestCase {
                     "default": []
                 }
             }
-            """.data(using: .utf8)!
+            """
         }
         let bundle = try await provider.get()
         XCTAssertNil(bundle.geoIP)
@@ -70,7 +68,7 @@ class InvalidCountryBundleTests: XCTestCase {
                     "default": []
                 }
             }
-            """.data(using: .utf8)!
+            """
         }
         let bundle = try await provider.get()
         XCTAssertNil(bundle.geoIP)

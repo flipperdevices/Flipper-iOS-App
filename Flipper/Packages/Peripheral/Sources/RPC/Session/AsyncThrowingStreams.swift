@@ -17,4 +17,5 @@ public struct AsyncThrowingStreams {
         }
         builder(outputContinuation, inputContinuation)
     }
+    // swiftlint:enable implicitly_unwrapped_optional
 }

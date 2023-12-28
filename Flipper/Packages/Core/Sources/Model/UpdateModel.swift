@@ -3,8 +3,6 @@ import Peripheral
 import Combine
 import Foundation
 
-//swiftlint:disable type_body_length
-
 @MainActor
 public class UpdateModel: ObservableObject {
     @Published public var state: State = .loading {
@@ -142,7 +140,10 @@ public class UpdateModel: ObservableObject {
             updateCurrentRegion()
         }
 
-        updateState()
+        switch state {
+        case .update(.progress): break
+        default: updateState()
+        }
     }
 
     func resetFlipperState() {

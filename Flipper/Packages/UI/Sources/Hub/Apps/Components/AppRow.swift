@@ -16,7 +16,10 @@ struct AppRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                IconNameCategory(application: application)
+                IconNameCategory(
+                    application: application,
+                    category: model.category(for: application)
+                )
 
                 Spacer()
 
@@ -31,10 +34,11 @@ struct AppRow: View {
                         showConfirmDelete = true
                     }
                     .frame(width: 34, height: 34)
-                    .customAlert(isPresented: $showConfirmDelete) {
+                    .alert(isPresented: $showConfirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $showConfirmDelete,
-                            application: application
+                            application: application,
+                            category: model.category(for: application)
                         ) {
                             delete()
                         }
@@ -67,14 +71,21 @@ struct AppRow: View {
 
     struct AppRowActionButton: View {
         @EnvironmentObject var model: Applications
+        @EnvironmentObject var device: Device
+
         let application: Applications.ApplicationInfo
         let status: Applications.ApplicationStatus
 
         @State var isNotConnectedAlertPresented = false
+        @State var isFlipperBusyAlertPresented = false
+
+        @State var showRemoteControl = false
 
         var body: some View {
             Group {
                 switch status {
+                case _ where model.installedStatus == .loading:
+                    AnimatedPlaceholder()
                 case .installing(let progress):
                     InstallingAppButton(progress: progress)
                         .font(.haxrCorpNeue(size: 28))
@@ -103,17 +114,34 @@ struct AppRow: View {
                     UpdateAppButton {
                     }
                     .disabled(true)
+                case .checking:
+                    AnimatedPlaceholder()
+                case .canOpen:
+                    OpenAppButton(action: openApp)
+                case .opening:
+                    OpeningAppButton()
                 }
             }
             .frame(width: 92, height: 34)
             .font(.born2bSportyV2(size: 18))
-            .customAlert(isPresented: $isNotConnectedAlertPresented) {
+            .alert(isPresented: $isNotConnectedAlertPresented) {
                 FlipperIsNotConnectedAlert(
                     isPresented: $isNotConnectedAlertPresented)
+            }
+            .alert(isPresented: $isFlipperBusyAlertPresented) {
+                FlipperIsBusyAlert(
+                    isPresented: $isFlipperBusyAlertPresented,
+                    goToRemote: goToRemoteScreen
+                )
+            }
+            .sheet(isPresented: $showRemoteControl) {
+                RemoteControlView()
+                    .environmentObject(device)
             }
         }
 
         func install() {
+            recordAppInstall(application: application)
             Task {
                 await model.install(application.id)
             }
@@ -123,6 +151,30 @@ struct AppRow: View {
             Task {
                 await model.update(application.id)
             }
+        }
+
+        func openApp() {
+            Task {
+                await model.openApp(by: application.id) { result in
+                    switch result {
+                    case .success:
+                        goToRemoteScreen()
+                    case .busy:
+                        isFlipperBusyAlertPresented = true
+                    case .error: ()
+                    }
+                }
+            }
+        }
+
+        func goToRemoteScreen() {
+            showRemoteControl = true
+        }
+
+        // MARK: Analytics
+
+        func recordAppInstall(application: Applications.ApplicationInfo) {
+            analytics.appOpen(target: .fapHubInstall(application.alias))
         }
     }
 }

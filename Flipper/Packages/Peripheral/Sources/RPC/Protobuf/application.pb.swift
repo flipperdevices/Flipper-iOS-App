@@ -52,7 +52,7 @@ enum PBApp_AppState: SwiftProtobuf.Enum {
 
 extension PBApp_AppState: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PBApp_AppState] = [
+  static let allCases: [PBApp_AppState] = [
     .appClosed,
     .appStarted,
   ]

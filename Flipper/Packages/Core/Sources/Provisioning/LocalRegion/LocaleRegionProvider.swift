@@ -1,10 +1,14 @@
 import Foundation
 
 public class LocaleRegionProvider: RegionProvider {
-    public init() {}
+    var locale: Locale
+
+    public init(_ locale: Locale) {
+        self.locale = locale
+    }
 
     public var regionCode: ISOCode? {
-        guard let regionCode = Locale.current.regionCode else {
+        guard let regionCode = locale.regionCode else {
             return nil
         }
         return .init(regionCode)

@@ -167,7 +167,7 @@ enum PB_CommandStatus: SwiftProtobuf.Enum {
 
 extension PB_CommandStatus: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [PB_CommandStatus] = [
+  static let allCases: [PB_CommandStatus] = [
     .ok,
     .error,
     .errorDecode,
@@ -746,6 +746,30 @@ struct PB_Main {
     set {content = .desktopUnlockRequest(newValue)}
   }
 
+  var desktopStatusSubscribeRequest: PBDesktop_StatusSubscribeRequest {
+    get {
+      if case .desktopStatusSubscribeRequest(let v)? = content {return v}
+      return PBDesktop_StatusSubscribeRequest()
+    }
+    set {content = .desktopStatusSubscribeRequest(newValue)}
+  }
+
+  var desktopStatusUnsubscribeRequest: PBDesktop_StatusUnsubscribeRequest {
+    get {
+      if case .desktopStatusUnsubscribeRequest(let v)? = content {return v}
+      return PBDesktop_StatusUnsubscribeRequest()
+    }
+    set {content = .desktopStatusUnsubscribeRequest(newValue)}
+  }
+
+  var desktopStatus: PBDesktop_Status {
+    get {
+      if case .desktopStatus(let v)? = content {return v}
+      return PBDesktop_Status()
+    }
+    set {content = .desktopStatus(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Content: Equatable {
@@ -813,6 +837,9 @@ struct PB_Main {
     case propertyGetResponse(PBProperty_GetResponse)
     case desktopIsLockedRequest(PBDesktop_IsLockedRequest)
     case desktopUnlockRequest(PBDesktop_UnlockRequest)
+    case desktopStatusSubscribeRequest(PBDesktop_StatusSubscribeRequest)
+    case desktopStatusUnsubscribeRequest(PBDesktop_StatusUnsubscribeRequest)
+    case desktopStatus(PBDesktop_Status)
 
   #if !swift(>=4.1)
     static func ==(lhs: PB_Main.OneOf_Content, rhs: PB_Main.OneOf_Content) -> Bool {
@@ -1076,6 +1103,18 @@ struct PB_Main {
         guard case .desktopUnlockRequest(let l) = lhs, case .desktopUnlockRequest(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
+      case (.desktopStatusSubscribeRequest, .desktopStatusSubscribeRequest): return {
+        guard case .desktopStatusSubscribeRequest(let l) = lhs, case .desktopStatusSubscribeRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.desktopStatusUnsubscribeRequest, .desktopStatusUnsubscribeRequest): return {
+        guard case .desktopStatusUnsubscribeRequest(let l) = lhs, case .desktopStatusUnsubscribeRequest(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.desktopStatus, .desktopStatus): return {
+        guard case .desktopStatus(let l) = lhs, case .desktopStatus(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       default: return false
       }
     }
@@ -1269,6 +1308,9 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     62: .standard(proto: "property_get_response"),
     66: .standard(proto: "desktop_is_locked_request"),
     67: .standard(proto: "desktop_unlock_request"),
+    68: .standard(proto: "desktop_status_subscribe_request"),
+    69: .standard(proto: "desktop_status_unsubscribe_request"),
+    70: .standard(proto: "desktop_status"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2112,6 +2154,45 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
           self.content = .desktopUnlockRequest(v)
         }
       }()
+      case 68: try {
+        var v: PBDesktop_StatusSubscribeRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .desktopStatusSubscribeRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .desktopStatusSubscribeRequest(v)
+        }
+      }()
+      case 69: try {
+        var v: PBDesktop_StatusUnsubscribeRequest?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .desktopStatusUnsubscribeRequest(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .desktopStatusUnsubscribeRequest(v)
+        }
+      }()
+      case 70: try {
+        var v: PBDesktop_Status?
+        var hadOneofValue = false
+        if let current = self.content {
+          hadOneofValue = true
+          if case .desktopStatus(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.content = .desktopStatus(v)
+        }
+      }()
       default: break
       }
     }
@@ -2387,6 +2468,18 @@ extension PB_Main: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     case .desktopUnlockRequest?: try {
       guard case .desktopUnlockRequest(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 67)
+    }()
+    case .desktopStatusSubscribeRequest?: try {
+      guard case .desktopStatusSubscribeRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 68)
+    }()
+    case .desktopStatusUnsubscribeRequest?: try {
+      guard case .desktopStatusUnsubscribeRequest(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 69)
+    }()
+    case .desktopStatus?: try {
+      guard case .desktopStatus(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 70)
     }()
     case nil: break
     }

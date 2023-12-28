@@ -20,7 +20,7 @@ class FFFDecoder {
 
 class _FFFDecoder: Decoder {
     var codingPath: [CodingKey] { [] }
-    var userInfo: [CodingUserInfoKey : Any] { [:] }
+    var userInfo: [CodingUserInfoKey: Any] { [:] }
 
     let dictionary: [String: String]
 
@@ -44,7 +44,7 @@ class _FFFDecoder: Decoder {
 
     func container<Key>(
         keyedBy type: Key.Type
-    ) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
+    ) throws -> KeyedDecodingContainer<Key> where Key: CodingKey {
         let container = FFFKeyedDecodingContainer<Key>(dictionary)
         return KeyedDecodingContainer(container)
     }

@@ -36,7 +36,7 @@ class ManifestTests: XCTestCase {
             "Flipper Application Installation Manifest"
         )
 
-        XCTAssertEqual(manifest.version, "1")
+        XCTAssertEqual(manifest.version, 1)
 
         XCTAssertEqual(manifest.fullName, "Spectrum Analyzer")
 
@@ -53,7 +53,6 @@ class ManifestTests: XCTestCase {
 
     func testEncoder() throws {
         let manifest = Applications.Manifest(
-            version: "1",
             fullName: "Spectrum Analyzer",
             icon: iconData,
             buildAPI: "28.2",

@@ -11,3 +11,9 @@ public extension Task where Success == Never, Failure == Never {
         try await sleep(seconds: minutes * 60)
     }
 }
+
+public extension Task where Success == Never, Failure == Never {
+    static func sleep(seconds: Double) async throws {
+        try await Task.sleep(milliseconds: Int(seconds * 1000))
+    }
+}

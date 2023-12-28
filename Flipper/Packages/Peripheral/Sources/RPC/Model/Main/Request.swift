@@ -22,7 +22,7 @@ public enum Request {
 
     public enum Storage {
         case info(Path)
-        case list(Path)
+        case list(Path, calculatingMD5: Bool, sizeLimit: Int)
         case stat(Path)
         case read(Path)
         case write(Path, [UInt8])
@@ -43,8 +43,10 @@ public enum Request {
     }
 
     public enum Desktop {
-        case status
+        case isLocked
         case unlock
+        case statusSubscribe
+        case statusUnsubscribe
     }
 
     public enum GUI {
@@ -122,10 +124,12 @@ extension Request.Storage {
                     $0.path = path.string
                 }
             }
-        case let .list(path):
+        case let .list(path, includingMD5, sizeLimit):
             return .with {
                 $0.storageListRequest = .with {
                     $0.path = path.string
+                    $0.includeMd5 = includingMD5
+                    $0.filterMaxSize = .init(sizeLimit)
                 }
             }
         case let .stat(path):
@@ -231,13 +235,21 @@ extension Request.Application {
 extension Request.Desktop {
     func serialize() -> PB_Main {
         switch self {
-        case .status:
+        case .isLocked:
             return .with {
                 $0.desktopIsLockedRequest = .init()
             }
         case .unlock:
             return .with {
                 $0.desktopUnlockRequest = .init()
+            }
+        case .statusSubscribe:
+            return .with {
+                $0.desktopStatusSubscribeRequest = .init()
+            }
+        case .statusUnsubscribe:
+            return .with {
+                $0.desktopStatusUnsubscribeRequest = .init()
             }
         }
     }
@@ -370,8 +382,8 @@ extension Request.Storage: CustomStringConvertible {
         switch self {
         case let .info(path):
             return "info(\(path))"
-        case let .list(path):
-            return "list(\(path))"
+        case let .list(path, includingMD5, sizeLimit):
+            return "list(\(path), \(includingMD5), \(sizeLimit)"
         case let .stat(path):
             return "stat(\(path))"
         case let .read(path):
@@ -391,7 +403,6 @@ extension Request.Storage: CustomStringConvertible {
         }
     }
 }
-
 
 extension Request.Application: CustomStringConvertible {
     public var description: String {
@@ -415,10 +426,14 @@ extension Request.Application: CustomStringConvertible {
 extension Request.Desktop: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .status:
-            return "status"
+        case .isLocked:
+            return "isLocked"
         case .unlock:
             return "unlock"
+        case .statusSubscribe:
+            return "statusSubscribe"
+        case .statusUnsubscribe:
+            return "statusUnsubscribe"
         }
     }
 }

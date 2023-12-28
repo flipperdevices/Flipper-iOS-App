@@ -9,7 +9,10 @@ struct ArchiveView: View {
     @EnvironmentObject var archive: ArchiveModel
     @EnvironmentObject var synchronization: Synchronization
 
-    @State private var importedItem: URL?
+    @State private var importingItem: URL?
+    @State private var importedName = ""
+    @Environment(\.notifications) private var notifications
+
     @State private var selectedItem: ArchiveItem?
     @State private var showSearchView = false
 
@@ -107,8 +110,14 @@ struct ArchiveView: View {
             .sheet(item: $selectedItem) { item in
                 InfoView(item: item)
             }
-            .sheet(item: $importedItem) { item in
+            .sheet(item: $importingItem) { item in
                 ImportView(url: item)
+            }
+            .onReceive(archive.imported) { item in
+                onItemAdded(item: item)
+            }
+            .notification(isPresented: notifications.archive.showImported) {
+                ImportedBanner(itemName: importedName)
             }
             .fullScreenCover(isPresented: $showSearchView) {
                 ArchiveSearchView()
@@ -118,8 +127,8 @@ struct ArchiveView: View {
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
         .onOpenURL { url in
-            if (url.isKeyFile || url.isKeyURL), importedItem == nil {
-                importedItem = url
+            if (url.isKeyFile || url.isKeyURL), importingItem == nil {
+                importingItem = url
             }
         }
         .onDrop(of: [.item], isTargeted: nil) { providers in
@@ -127,9 +136,9 @@ struct ArchiveView: View {
             provider.loadItem(
                 forTypeIdentifier: UTType.item.identifier,
                 options: nil
-            ) { (data, error) in
+            ) { (data, _) in
                 guard let url = data as? URL else { return }
-                importedItem = url
+                importingItem = url
             }
             return true
         }
@@ -137,6 +146,14 @@ struct ArchiveView: View {
 
     func refresh() {
         synchronization.start()
+    }
+
+    func onItemAdded(item: ArchiveItem) {
+        Task { @MainActor in
+            try? await Task.sleep(seconds: 1)
+            importedName = item.name.value
+            notifications.archive.showImported = true
+        }
     }
 }
 

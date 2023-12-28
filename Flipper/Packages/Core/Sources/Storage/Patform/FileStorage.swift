@@ -1,12 +1,13 @@
 import Peripheral
 import Foundation
 
-class FileStorage {
-    // swiftlint:disable force_unwrapping
-    var baseURL: URL {
+actor FileStorage {
+    nonisolated var baseURL: URL {
+        // swiftlint:disable force_unwrapping
         FileManager
             .default
             .containerURL(forSecurityApplicationGroupIdentifier: .appGroup)!
+        // swiftlint:enable force_unwrapping
     }
 
     init() {}
@@ -19,9 +20,12 @@ class FileStorage {
         makeURL(for: path).isDirectory
     }
 
-    func makeDirectory(for path: Path) throws {
-        let subdirectory = path.removingLastComponent
-        let directory = baseURL.appendingPathComponent(subdirectory.string)
+    func makeDirectory(for file: Path) throws {
+        try makeDirectory(at: file.removingLastComponent)
+    }
+
+    func makeDirectory(at path: Path) throws {
+        let directory = baseURL.appendingPathComponent(path.string)
         if !FileManager.default.fileExists(atPath: directory.path) {
             try FileManager.default.createDirectory(
                 at: directory,
@@ -41,7 +45,7 @@ class FileStorage {
         let coord = NSFileCoordinator(filePresenter: nil)
         coord.coordinate(readingItemAt: url, error: &nsReadError) { readURL in
             do {
-                content = try .init(contentsOf: url)
+                content = try .init(contentsOf: readURL)
             } catch {
                 readError = error
             }

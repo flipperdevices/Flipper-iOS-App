@@ -7,13 +7,17 @@ class PlainDeviceStorage: DeviceStorage {
 
     var flipper: Flipper? {
         get {
-            try? storage.read(path)
+            SyncTask { [self] in
+                try? await storage.read(path)
+            }.get()
         }
         set {
-            if let newValue = newValue {
-                try? storage.write(newValue, at: path)
-            } else {
-                try? storage.delete(path)
+            Task {
+                if let newValue = newValue {
+                    try? await storage.write(newValue, at: path)
+                } else {
+                    try? await storage.delete(path)
+                }
             }
         }
     }

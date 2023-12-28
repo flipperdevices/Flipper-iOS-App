@@ -9,9 +9,6 @@ struct MainView: View {
 
     @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
 
-    @State private var importedName = ""
-    @State private var importedOpacity = 0.0
-
     @State private var showTodayWidgetSettings = false
 
     var body: some View {
@@ -23,11 +20,8 @@ struct MainView: View {
                     .opacity(selectedTab == .archive ? 1 : 0)
                 HubView()
                     .opacity(selectedTab == .hub ? 1 : 0)
-
-                ImportedBanner(itemName: importedName)
-                    .opacity(importedOpacity)
             }
-
+ 
             if !tabViewController.isHidden {
                 TabView(selected: $selectedTab) {
                     tabViewController.popToRootView(for: selectedTab)
@@ -37,26 +31,20 @@ struct MainView: View {
         }
         .ignoresSafeArea(.keyboard)
         .environmentObject(tabViewController)
-        .onReceive(archive.imported) { item in
-            onItemAdded(item: item)
-        }
+        
         .onOpenURL { url in
-            if url == .todayWidgetSettings {
+            switch url {
+            case .todayWidgetSettings:
                 showTodayWidgetSettings = true
+            case .updateDeviceLink:
+                selectedTab = .device
+                tabViewController.popToRootView(for: .device)
+            default:
+                break
             }
         }
         .fullScreenCover(isPresented: $showTodayWidgetSettings) {
             TodayWidgetSettingsView()
-        }
-    }
-
-    func onItemAdded(item: ArchiveItem) {
-        importedName = item.name.value
-        Task { @MainActor in
-            try? await Task.sleep(milliseconds: 200)
-            withAnimation { importedOpacity = 1.0 }
-            try? await Task.sleep(seconds: 3)
-            withAnimation { importedOpacity = 0 }
         }
     }
 }

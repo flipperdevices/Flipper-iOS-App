@@ -1,3 +1,4 @@
+import Macro
 import Analytics
 import Peripheral
 import Catalog
@@ -142,8 +143,17 @@ public class Dependencies: ObservableObject {
 
     @MainActor
     public lazy var applications: Applications = {
-        .init(
-            catalog: WebCatalog(),
+        var devURL = #URL("https://catalog.flipp.dev/api/v0")
+        var prodURL = #URL("https://catalog.flipperzero.one/api/v0")
+
+        return .init(
+            catalog: WebCatalog(
+                baseURL: UserDefaultsStorage.shared.isDevCatalog
+                    ? devURL
+                    : prodURL),
+            flipperApps: .init(
+                storage: FlipperStorageAPI(pairedDevice: pairedDevice),
+                cache: CacheStorage()),
             pairedDevice: pairedDevice
         )
     }()

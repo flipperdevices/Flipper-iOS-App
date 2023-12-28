@@ -12,6 +12,7 @@ struct EmulateView: View {
     @State private var showBubble = false
     @State private var showAppLocked = false
     @State private var showRestricted = false
+    @State private var showRemoteControl = false
 
     var showProgressButton: Bool {
         device.status == .connecting ||
@@ -77,10 +78,16 @@ struct EmulateView: View {
         }
         .padding(.horizontal, 24)
         .padding(.top, 18)
-        .customAlert(isPresented: $showAppLocked) {
-            FlipperBusyAlert(isPresented: $showAppLocked)
+        .alert(isPresented: $showAppLocked) {
+            FlipperIsBusyAlert(isPresented: $showAppLocked) {
+                showRemoteControl = true
+            }
         }
-        .customAlert(isPresented: $showRestricted) {
+        .sheet(isPresented: $showRemoteControl) {
+            RemoteControlView()
+                .environmentObject(device)
+        }
+        .alert(isPresented: $showRestricted) {
             TransmissionRestrictedAlert(isPresented: $showRestricted)
         }
         .onDisappear {

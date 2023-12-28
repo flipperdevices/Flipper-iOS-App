@@ -14,8 +14,6 @@ public enum MFKey32v2 {
 
     // ported from mfkey32v2.c
 
-    // swiftlint:disable function_parameter_count identifier_name
-
     private static func recover(
         uid: UInt32,
         nt0: UInt32,

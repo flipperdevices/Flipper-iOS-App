@@ -1,3 +1,4 @@
+import Macro
 import Foundation
 
 public class RegionsBundleAPIv0: RegionsBundleAPI {
@@ -39,14 +40,18 @@ public class RegionsBundleAPIv0: RegionsBundleAPI {
     public init() {
         dataProvider = {
             try await URLSession.shared.data(
-                from: "https://update.flipperzero.one/regions/api/v0/bundle"
+                from: #URL(
+                    "https://update.flipperzero.one/regions/api/v0/bundle"
+                )
             ).0
         }
     }
 
     // @testable
-    init(dataProvider: @escaping () async throws -> Data) {
-        self.dataProvider = dataProvider
+    init(dataProvider: @escaping () async throws -> String) {
+        self.dataProvider = {
+            try await .init(dataProvider().utf8)
+        }
     }
 
     public func get() async throws -> RegionsBundle {

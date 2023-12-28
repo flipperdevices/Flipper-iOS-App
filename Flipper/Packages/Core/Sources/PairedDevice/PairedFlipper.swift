@@ -22,7 +22,9 @@ class PairedFlipper: PairedDevice, ObservableObject {
     private var bluetoothPeripheral: BluetoothPeripheral? {
         didSet {
             guard let peripheral = bluetoothPeripheral else {
-                session = ClosedSession.shared
+                let session = session
+                Task { await session.close() }
+                self.session = ClosedSession.shared
                 return
             }
             if oldValue == nil {

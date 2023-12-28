@@ -1,8 +1,13 @@
 import Core
+import Notifications
+
 import SwiftUI
 
 public struct RootView: View {
     @StateObject var dependencies: Dependencies = .shared
+    @StateObject var notifications: Notifications = .init()
+
+    @StateObject var overlayController: OverlayController = .init()
 
     public init() {}
 
@@ -18,6 +23,8 @@ public struct RootView: View {
             .environmentObject(dependencies.sharing)
             .environmentObject(dependencies.emulate)
             .environmentObject(dependencies.applications)
+            .environmentObject(notifications)
+            .environmentObject(overlayController)
     }
 }
 
@@ -25,21 +32,19 @@ private struct RootViewImpl: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var device: Device
 
-    @StateObject var alertController: AlertController = .init()
-    @StateObject var hexKeyboardController: HexKeyboardController = .init()
-
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.isPresented) var isPresented
 
     @State private var isPairingIssue = false
     @State private var isUpdateAvailable = false
 
-    @State private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
+    @State var inAppNotifications: InAppNotifications = .init()
+    @State var showArchiveItemImported: Bool = .init()
 
     init() {}
 
     var body: some View {
-        ZStack {
+        Group {
             ZStack {
                 if router.isFirstLaunch {
                     WelcomeView()
@@ -49,29 +54,13 @@ private struct RootViewImpl: View {
             }
             .animation(.linear, value: router.isFirstLaunch)
             .transition(.opacity)
-
-            VStack {
-                Spacer()
-                HexKeyboard(
-                    onButton: { hexKeyboardController.onKey(.hex($0)) },
-                    onBack: { hexKeyboardController.onKey(.back) },
-                    onOK: { hexKeyboardController.onKey(.ok) }
-                )
-                .offset(y: hexKeyboardController.isHidden ? 500 : 0)
-            }
-
-            if alertController.isPresented {
-                alertController.alert
-            }
         }
-        .customAlert(isPresented: $isPairingIssue) {
+        .alert(isPresented: $isPairingIssue) {
             PairingIssueAlert(isPresented: $isPairingIssue)
         }
-        .customAlert(isPresented: $isUpdateAvailable) {
+        .alert(isPresented: $isUpdateAvailable) {
             MobileUpdateAlert(isPresented: $isUpdateAvailable)
         }
-        .environmentObject(alertController)
-        .environmentObject(hexKeyboardController)
         .onContinueUserActivity("PlayAlertIntent") { _ in
             device.playAlert()
         }
@@ -83,41 +72,10 @@ private struct RootViewImpl: View {
                 router.hideWelcomeScreen()
             }
         }
-        .onChange(of: scenePhase) { scenePhase in
-            switch scenePhase {
-            case .active: onActive()
-            case .inactive: onInactive()
-            default: break
-            }
-        }
         .task {
             router.recordAppOpen()
             isUpdateAvailable = await AppVersionCheck.hasUpdate
         }
-    }
-
-    func onActive() {
-        guard backgroundTaskID != .invalid else {
-            return
-        }
-        endBackgroundTask()
-    }
-
-    func onInactive() {
-        guard backgroundTaskID == .invalid else {
-            return
-        }
-        backgroundTaskID = startBackgroundTask()
-    }
-
-    private func startBackgroundTask() -> UIBackgroundTaskIdentifier {
-        UIApplication.shared.beginBackgroundTask {
-            self.endBackgroundTask()
-        }
-    }
-
-    private func endBackgroundTask() {
-        UIApplication.shared.endBackgroundTask(backgroundTaskID)
-        backgroundTaskID = .invalid
+        .environment(\.notifications, $inAppNotifications)
     }
 }

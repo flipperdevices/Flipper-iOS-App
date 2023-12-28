@@ -40,7 +40,7 @@ struct LogView: View {
             }
         }
         .task {
-            messages = logs.read(name).map { .init($0) }
+            messages = await logs.read(name).map { .init($0) }
         }
     }
 

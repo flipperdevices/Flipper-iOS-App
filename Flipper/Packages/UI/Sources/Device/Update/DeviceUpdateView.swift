@@ -9,7 +9,7 @@ struct DeviceUpdateView: View {
     @Environment(\.scenePhase) var scenePhase
 
     @State private var state: UpdateModel.State = .update(.progress(.preparing))
-    @State private var activity: Any? = nil
+    @State private var activity: Any?
     @State private var showCancelUpdate = false
 
     let firmware: Update.Firmware
@@ -98,12 +98,12 @@ struct DeviceUpdateView: View {
         }
         .alert(isPresented: $showCancelUpdate) {
             Alert(
-                title: Text("Abort Update?"),
+                title: Text("Stop Update?"),
                 message: Text(
-                    "Updating will be interrupted. " +
-                    "Flipper will still have the previous firmware version."),
+                    "Flipper will still have the previous firmware version"
+                ),
                 primaryButton: .default(.init("Continue")),
-                secondaryButton: .default(.init("Abort")) {
+                secondaryButton: .default(.init("Stop")) {
                     cancel()
                 })
         }

@@ -6,11 +6,11 @@ struct ReaderDataNotFound: View {
 
     var instructions: [AttributedString] = {
         [
-            "On your Flipper Zero go to **NFC → Detect Reader**",
+            "On your Flipper Zero, go to **NFC → Detect Reader**",
             "Hold Flipper Zero close to the reader",
             "Wait until you collect enough nonсes",
             "Сomplete nonce collection",
-            "In Flipper Mobile App synchronize with your Flipper " +
+            "In Flipper Mobile App, synchronize with your Flipper " +
             "Zero and run the **Mfkey32 (Detect Reader)**"
         ]
         .compactMap {
@@ -35,8 +35,8 @@ struct ReaderDataNotFound: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text(
-                        "To extract keys from the reader you first need to " +
-                        "collect nonces with your Flipper Zero:"
+                        "To extract keys from the reader, collect nonces " +
+                        "with your Flipper Zero first:"
                     )
                     .font(.system(size: 16, weight: .medium))
 

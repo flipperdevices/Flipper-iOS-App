@@ -49,10 +49,8 @@ struct AnimatedPlaceholder: View {
     }
 }
 
-struct AnimatedPlaceholderPreview: PreviewProvider {
-    static var previews: some View {
-        AnimatedPlaceholder()
-            .frame(width: 50, height: 17)
-            .padding(.horizontal, 50)
-    }
+#Preview {
+    AnimatedPlaceholder()
+        .frame(width: 50, height: 17)
+        .padding(.horizontal, 50)
 }

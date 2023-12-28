@@ -1,6 +1,6 @@
 import Foundation
 
-public struct ApplicationInfo: Decodable {
+public struct ApplicationInfo: Equatable, Decodable {
     public let id: String
     public let alias: String
     public let categoryId: String
@@ -33,7 +33,7 @@ public struct ApplicationInfo: Decodable {
         case current = "current_version"
     }
 
-    public struct Current: Decodable {
+    public struct Current: Equatable, Decodable {
         public let id: String
         public let name: String
         public let version: String

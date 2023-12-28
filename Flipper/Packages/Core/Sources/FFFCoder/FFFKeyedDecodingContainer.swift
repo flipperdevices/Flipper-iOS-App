@@ -1,4 +1,4 @@
-struct FFFKeyedDecodingContainer<K : CodingKey>
+struct FFFKeyedDecodingContainer<K: CodingKey>
 : KeyedDecodingContainerProtocol {
     var codingPath: [CodingKey] { [] }
 
@@ -6,7 +6,7 @@ struct FFFKeyedDecodingContainer<K : CodingKey>
 
     let properties: [String: String]
 
-    init(_ properties: [String : String]) {
+    init(_ properties: [String: String]) {
         self.properties = properties
     }
 
@@ -84,7 +84,7 @@ struct FFFKeyedDecodingContainer<K : CodingKey>
     func decode<T>(
         _ type: T.Type,
         forKey key: K
-    ) throws -> T where T : Decodable {
+    ) throws -> T where T: Decodable {
         fatalError("not implemented")
     }
 
@@ -93,7 +93,7 @@ struct FFFKeyedDecodingContainer<K : CodingKey>
         forKey key: K
     ) throws -> KeyedDecodingContainer<
         NestedKey
-    > where NestedKey : CodingKey {
+    > where NestedKey: CodingKey {
         fatalError("not implemented")
     }
 

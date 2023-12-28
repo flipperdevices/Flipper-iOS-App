@@ -67,6 +67,12 @@ public struct ProtobufVersion {
     // Loader is now able to load apps from SD card
     public static var v0_18: ProtobufVersion = .init(major: 0, minor: 18)
 
+    // Storage ListRequest message now supports md5sum calculation for each file
+    public static var v0_19: ProtobufVersion = .init(major: 0, minor: 19)
+
+    // Storage ListRequest message now has a file size filter.
+    public static var v0_20: ProtobufVersion = .init(major: 0, minor: 20)
+
     // Future release
     public static var v1_0: ProtobufVersion = .init(major: 1, minor: 0)
 }

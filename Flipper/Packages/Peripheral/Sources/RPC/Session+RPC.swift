@@ -20,7 +20,7 @@ extension Session {
     public var isDesktopLocked: Bool {
         get async throws {
             let response = try await self
-                .send(.desktop(.status))
+                .send(.desktop(.isLocked))
                 .response
             // print(response)
             // FIXME:
@@ -150,9 +150,17 @@ extension Session {
         return result
     }
 
-    public func listDirectory(at path: Path) async throws -> [Element] {
+    public func listDirectory(
+        at path: Path,
+        calculatingMD5: Bool,
+        sizeLimit: Int
+    ) async throws -> [Element] {
         let response = try await self
-            .send(.storage(.list(path)))
+            .send(.storage(.list(
+                path,
+                calculatingMD5: calculatingMD5,
+                sizeLimit: sizeLimit))
+            )
             .response
         guard case .storage(.list(let items)) = response else {
             throw Error.unexpectedResponse(response)
@@ -340,7 +348,7 @@ extension Session {
         }
     }
 
-    public func pressButton(_ button: InputKey) async throws {
+    public func pressButton(_ button: InputKey, isLong: Bool) async throws {
         func send(_ type: InputType) async throws -> Response? {
             try await self.send(.gui(.button(button, type))).response
         }
@@ -348,8 +356,8 @@ extension Session {
             logger.error("sending press type failed")
             return
         }
-        guard try await send(.short) == .ok else {
-            logger.error("sending short type failed")
+        guard try await send(isLong ? .long : .short) == .ok else {
+            logger.error("sending short/long type failed")
             return
         }
         guard try await send(.release) == .ok else {

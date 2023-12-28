@@ -2,7 +2,7 @@ import Foundation
 
 public struct ApplicationsRequest: CatalogRequest {
     public typealias Result = [ApplicationInfo]
-    
+
     var path: String { "application" }
     var queryItems: [URLQueryItem] = []
 
@@ -36,8 +36,8 @@ public struct ApplicationsRequest: CatalogRequest {
         setQueryItem(name: "applications", value: uids)
     }
 
-    public func sort(by: SortBy) -> Self {
-        setQueryItem(name: "sort_by", value: by)
+    public func sort(by sortBy: SortBy) -> Self {
+        setQueryItem(name: "sort_by", value: sortBy)
     }
 
     public func order(_ order: SortOrder) -> Self {

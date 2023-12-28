@@ -1,6 +1,8 @@
 public protocol EventHandler {
     func appOpen(target: OpenTarget)
+
     func flipperGATTInfo(flipperVersion: String)
+
     func flipperRPCInfo(
         sdcardIsAvailable: Bool,
         internalFreeByte: Int,
@@ -10,17 +12,20 @@ public protocol EventHandler {
         firmwareForkName: String,
         firmwareGitURL: String
     )
+
     func flipperUpdateStart(
         id: Int,
         from: String,
         to: String
     )
+
     func flipperUpdateResult(
         id: Int,
         from: String,
         to: String,
         status: UpdateResult
     )
+
     func synchronizationResult(
         subGHzCount: Int,
         rfidCount: Int,
@@ -30,6 +35,7 @@ public protocol EventHandler {
         synchronizationTime: Int,
         changesCount: Int
     )
+    
     func subghzProvisioning(
         sim1: String,
         sim2: String,
@@ -54,6 +60,22 @@ public enum OpenTarget: Sendable {
     case nfcDumpEditor
     case saveNFCDump
     case mfKey32
+    case fapHub
+    case fapHubCategory(String)
+    case fapHubSearch
+    case fapHubApp(String)
+    case fapHubInstall(String)
+    case fapHubHide(String)
+
+    public var value: String {
+        switch self {
+        case .fapHubCategory(let category): return category
+        case .fapHubApp(let application): return application
+        case .fapHubInstall(let application): return application
+        case .fapHubHide(let application): return application
+        default: return ""
+        }
+    }
 }
 
 public enum UpdateResult: Sendable {

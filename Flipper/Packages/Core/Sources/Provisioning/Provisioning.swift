@@ -26,7 +26,7 @@ public class Provisioning {
     }
 
     public init() {
-        self.localeRegionProvider = LocaleRegionProvider()
+        self.localeRegionProvider = LocaleRegionProvider(.current)
         self.regionsBundleAPI = RegionsBundleAPIv0()
     }
 

@@ -1,5 +1,6 @@
 import Core
 import SwiftUI
+import Notifications
 
 struct DeviceView: View {
     @EnvironmentObject var router: Router
@@ -7,12 +8,18 @@ struct DeviceView: View {
     @EnvironmentObject var device: Device
     @EnvironmentObject var synchronization: Synchronization
     @EnvironmentObject var updateModel: UpdateModel
-
+    @EnvironmentObject var notifications: Notifications
+    
     @Environment(\.scenePhase) var scenePhase
 
     @State private var showForgetAction = false
     @State private var showOutdatedFirmwareAlert = false
     @State private var showOutdatedMobileAlert = false
+
+    @AppStorage(.notificationsSuggested) var notificationsSuggested = false
+    @AppStorage(.isNotificationsOn) var isNotificationsOn = false
+    @State private var showNotificationsAlert: Bool = false
+    @Environment(\.notifications) var inApp
 
     var flipper: Flipper? {
         device.flipper
@@ -20,7 +27,8 @@ struct DeviceView: View {
 
     var isDeviceAvailable: Bool {
         device.status == .connected ||
-        device.status == .synchronized
+        device.status == .synchronized ||
+        device.status == .synchronizing
     }
 
     var isOutdatedVersion: Bool {
@@ -187,10 +195,10 @@ struct DeviceView: View {
         }
         .navigationViewStyle(.stack)
         .navigationBarColors(foreground: .primary, background: .a1)
-        .customAlert(isPresented: $showOutdatedFirmwareAlert) {
+        .alert(isPresented: $showOutdatedFirmwareAlert) {
             OutdatedFirmwareAlert(isPresented: $showOutdatedFirmwareAlert)
         }
-        .customAlert(isPresented: $showOutdatedMobileAlert) {
+        .alert(isPresented: $showOutdatedMobileAlert) {
             OutdatedMobileAlert(isPresented: $showOutdatedMobileAlert)
         }
         .onChange(of: device.status) { status in
@@ -212,6 +220,29 @@ struct DeviceView: View {
             if central.state != .poweredOn {
                 central.kick()
             }
+            suggestNotifications()
+        }
+        .alert(isPresented: $showNotificationsAlert) {
+            EnableNotificationsAlert(isPresented: $showNotificationsAlert) {
+                Task { await enableNotifications() }
+            }
+        }
+        .notification(isPresented: inApp.notifications.showEnabled) {
+            NotificationsEnabledBanner(
+                isPresented: inApp.notifications.showEnabled)
+        }
+        .notification(isPresented: inApp.notifications.showDisabled) {
+            NotificationsDisabledBanner(
+                isPresented: inApp.notifications.showDisabled)
+        }
+    }
+
+    func suggestNotifications() {
+        guard !notificationsSuggested else { return }
+        Task { @MainActor in
+            try? await Task.sleep(seconds: 1)
+            notificationsSuggested = true
+            showNotificationsAlert = true
         }
     }
 
@@ -237,6 +268,16 @@ struct DeviceView: View {
 
     func disconnect() {
         device.disconnect()
+    }
+
+    func enableNotifications() async {
+        do {
+            try await notifications.enable()
+            isNotificationsOn = true
+            inApp.notifications.showEnabled = true
+        } catch {
+            inApp.notifications.showDisabled = true
+        }
     }
 }
 

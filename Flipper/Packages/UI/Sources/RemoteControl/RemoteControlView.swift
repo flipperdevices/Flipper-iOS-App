@@ -14,6 +14,7 @@ struct RemoteControlView: View {
         guard let image = UIImage(frame: frame) else { return nil }
         switch frame.orientation {
         case .horizontalFlipped: return image.withOrientation(.down)
+        case .verticalFlipped: return image.withOrientation(.down)
         default: return image
         }
     }
@@ -31,16 +32,16 @@ struct RemoteControlView: View {
         return "Screenshot \(date) at \(time)"
     }
 
-    //--------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     public enum Control {
         case lock
         case unlock
-        case inputKey(InputKey)
+        case inputKey(InputKey, Bool)
     }
     @State var controlsQueue: [(UUID, Control)] = []
     @State var controlsStream: AsyncStream<Control>?
     @State var controlsStreamContinuation: AsyncStream<Control>.Continuation?
-    //--------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
     @Namespace var namespace
 
@@ -152,8 +153,8 @@ struct RemoteControlView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .coordinateSpace(name: "rcp")
 
-            DeviceControls { key in
-                controlTapped(.inputKey(key))
+            DeviceControls { key, isLong in
+                controlTapped(.inputKey(key, isLong))
             }
             .padding(.bottom, 14)
         }
@@ -191,7 +192,7 @@ struct RemoteControlView: View {
             @unknown default: break
             }
         }
-        .customAlert(isPresented: $showOutdatedAlert) {
+        .alert(isPresented: $showOutdatedAlert) {
             OutdatedVersionAlert(isPresented: $showOutdatedAlert)
         }
         .task {
@@ -235,13 +236,13 @@ struct RemoteControlView: View {
         switch control {
         case .lock: await lock()
         case .unlock: await unlock()
-        case .inputKey(let key): await pressButton(key)
+        case let .inputKey(key, isLong): await pressButton(key, isLong)
         }
     }
 
-    func pressButton(_ button: InputKey) async {
+    func pressButton(_ button: InputKey, _ isLong: Bool) async {
         feedback(style: .light)
-        try? await device.pressButton(button)
+        try? await device.pressButton(button, isLong: isLong)
         feedback(style: .light)
     }
 

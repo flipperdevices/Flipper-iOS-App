@@ -2,15 +2,19 @@ import Peripheral
 import Foundation
 
 extension FileStorage {
-    func getManifest(at root: Path) async throws -> Manifest {
-        try await getManifest(at: root) { _ in }
+    func getManifest(
+        at root: Path,
+        drive: String = "any"
+    ) async throws -> Manifest {
+        try await getManifest(at: root, drive: drive) { _ in }
     }
 
     func getManifest(
         at root: Path,
+        drive: String = "any",
         progress: (Double) -> Void
     ) async throws -> Manifest {
-        let root = root.appending("any")
+        let root = root.appending(drive)
         let paths = try await listAllFiles(at: root) { listingProgress in
             progress(listingProgress / 2)
         }

@@ -7,8 +7,8 @@ struct RunsOnLatestFirmwareAlert: View {
 
     var message: AttributedString {
         var string = AttributedString(
-            "Connect your Flipper with latest firmware Release " +
-            "version to install this app"
+            "Connect your Flipper with the latest Release " +
+            "firmware version to install this app"
         )
         if let range = string.range(of: "Release") {
             string[range].foregroundColor = .sGreenUpdate
@@ -37,7 +37,7 @@ struct RunsOnLatestFirmwareAlert: View {
                 selectedTab = .device
                 isPresented = false
             } label: {
-                Text("Go to Device Screen")
+                Text("Go to Connection")
                     .frame(height: 41)
                     .frame(maxWidth: .infinity)
                     .font(.system(size: 14, weight: .bold))

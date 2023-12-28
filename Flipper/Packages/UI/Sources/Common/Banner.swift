@@ -1,9 +1,10 @@
 import SwiftUI
 
-struct Banner: View {
+struct Banner<Action: View>: View {
     let image: String
     let title: String
     let description: String
+    @ViewBuilder let action: () -> Action
 
     @Environment(\.colorScheme) var colorScheme
 
@@ -23,7 +24,9 @@ struct Banner: View {
                     Text(description)
                         .font(.system(size: 12, weight: .medium))
                 }
-                Spacer()
+                Spacer(minLength: 0)
+                action()
+                    .font(.system(size: 12, weight: .bold))
             }
             .padding(12)
             .frame(height: 48)
@@ -32,5 +35,14 @@ struct Banner: View {
             .cornerRadius(8)
         }
         .padding(12)
+    }
+}
+
+extension Banner where Action == EmptyView {
+    init(image: String, title: String, description: String) {
+        self.image = image
+        self.title = title
+        self.description = description
+        self.action = { EmptyView() }
     }
 }

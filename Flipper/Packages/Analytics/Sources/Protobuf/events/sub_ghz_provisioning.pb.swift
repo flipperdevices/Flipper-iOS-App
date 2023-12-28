@@ -87,7 +87,7 @@ struct Metric_Events_SubGhzProvisioning {
 
 extension Metric_Events_SubGhzProvisioning.RegionSource: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [Metric_Events_SubGhzProvisioning.RegionSource] = [
+  static let allCases: [Metric_Events_SubGhzProvisioning.RegionSource] = [
     .simNetwork,
     .simCountry,
     .geoIp,

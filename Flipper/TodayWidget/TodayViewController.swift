@@ -38,7 +38,7 @@ import Core
 
     func subscribeToKeysChanged() {
         widget.$keys
-            .sink { [weak self] keys in
+            .sink { [weak self] _ in
                 guard let self else { return }
                 self.view.setNeedsLayout()
             }

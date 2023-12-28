@@ -2,80 +2,29 @@ import Core
 import SwiftUI
 
 struct AppReportView: View {
-    @EnvironmentObject var model: Applications
-
     let application: Applications.Application
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) var dismiss
 
-    @State private var description = ""
-    @State private var attachLogs = true
-    @FocusState private var focusState: Focused?
+    @Environment(\.notifications) var notifications
 
-    enum Focused {
-        case description
-    }
-
-    var placeholder: String {
-        "Describe why are you reporting this app (enter at least 5 characters)"
-    }
-
-    var placeholderColor: Color {
+    var backgroundColor: Color {
         switch colorScheme {
         case .light: return .black12
         default: return .black60
         }
     }
 
-    var showDescriptionPlaceholder: Bool {
-        description.isEmpty && focusState != .description
-    }
-
-    var isValid: Bool {
-        description.filter { !$0.isWhitespace }.count >= 5
-    }
-
     var body: some View {
-        VStack {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Description")
-                    .font(.system(size: 16, weight: .bold))
-
-                ZStack(alignment: .topLeading) {
-                    Text(placeholder)
-                        .foregroundColor(placeholderColor)
-                        .opacity(showDescriptionPlaceholder ? 1 : 0)
-                        .padding(12)
-
-                    TextEditor(text: $description)
-                        .focused($focusState, equals: .description)
-                        .hideScrollBackground()
-                        .frame(minHeight: 100, maxHeight: 220)
-                        .padding(12)
-                }
-                .font(.system(size: 14, weight: .medium))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(placeholderColor, lineWidth: 1)
-                }
-
-                Spacer()
-
-                Button {
-                    report()
-                } label: {
-                    Text("Submit")
-                        .font(.system(size: 16, weight: .bold))
-                        .frame(height: 47)
-                        .frame(maxWidth: .infinity)
-                        .background(isValid ? Color.a2 : .black30)
-                        .cornerRadius(30)
-                        .foregroundColor(.white)
-                }
-                .disabled(!isValid)
+        List {
+            NavigationListItem(image: "ListBug", title: "Report Bug") {
+                AppIssueView(application: application)
             }
-            .padding(14)
+
+            NavigationListItem(image: "ListConcern", title: "Report Concern") {
+                AppConcernView(application: application)
+            }
         }
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
@@ -87,15 +36,37 @@ struct AppReportView: View {
                 Title("Report App")
             }
         }
+        // TODO: why not? dreaming of NavigationStack
+        .onChange(of: notifications.apps.showReported) { newValue in
+            if newValue {
+                dismiss()
+            }
+        }
+    }
+}
+
+struct NavigationListItem<Destination: View>: View {
+    let image: String
+    let title: String
+
+    var destination: () -> Destination
+
+    init(
+        image: String,
+        title: String,
+        @ViewBuilder destination: @escaping () -> Destination
+    ) {
+        self.image = image
+        self.title = title
+        self.destination = destination
     }
 
-    func report() {
-        Task {
-            do {
-                try await model.report(application, description: description)
-                dismiss()
-            } catch {
-                print("report an app: \(error)")
+    var body: some View {
+        HStack {
+            Image(image)
+                .renderingMode(.template)
+            NavigationLink(title) {
+                destination()
             }
         }
     }

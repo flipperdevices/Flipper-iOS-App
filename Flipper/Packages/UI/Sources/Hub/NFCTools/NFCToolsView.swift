@@ -4,14 +4,18 @@ import SwiftUI
 struct NFCToolsView: View {
     @Environment(\.dismiss) private var dismiss
 
-    @State private var showDetectReaderView = false
+    @Binding var showDetectReader: Bool
     @AppStorage(.hasReaderLog) var hasReaderLog = false
+
+    init(_ showDetectReader: Binding<Bool>) {
+        self._showDetectReader = showDetectReader
+    }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 14) {
                 Button {
-                    showDetectReaderView = true
+                    showDetectReader = true
                 } label: {
                     DetectReaderCard(hasNotification: hasReaderLog)
                 }
@@ -28,9 +32,6 @@ struct NFCToolsView: View {
                 }
                 Title("NFC Tools")
             }
-        }
-        .fullScreenCover(isPresented: $showDetectReaderView) {
-            DetectReaderView()
         }
     }
 }

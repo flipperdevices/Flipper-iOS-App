@@ -7,12 +7,12 @@ struct AppsNoInternetView: View {
         VStack(spacing: 12) {
             VStack(spacing: 4) {
                 Image("NoInternet")
-                
+
                 Text("No Internet Connection")
                     .font(.system(size: 12, weight: .bold))
                     .multilineTextAlignment(.center)
 
-                Text("Turn on mobile data or Wi-Fi to acces the Apps")
+                Text("Turn on mobile data or Wi-Fi to access Apps")
                     .font(.system(size: 12, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)

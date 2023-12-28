@@ -87,8 +87,8 @@ struct LiveActivity: Widget {
                         Image("UpdateStartedActivity")
                         Text(
                             "Flipper is updating in offline mode. " +
-                            "Look at the device \nscreen for info and " +
-                            "wait for reconnection."
+                            "Check the device \nscreen for info and " +
+                            "wait for reconnect."
                         )
                         .font(.system(size: 12, weight: .medium))
                         .lineLimit(2, reservesSpace: true)

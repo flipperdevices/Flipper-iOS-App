@@ -129,6 +129,59 @@ struct UpdatingAppButton: View {
     }
 }
 
+struct OpenAppButton: View {
+    var action: () -> Void
+
+    var body: some View {
+        AppActionButton(
+            title: "OPEN",
+            color: .accentColor,
+            progress: 1,
+            action: action
+        )
+    }
+}
+
+struct OpeningAppButton: View {
+    private let color: Color = .accentColor
+    private let borderRadius = 6.0
+
+    @State private var trimFrom: Double = 0
+    @State private var trimTo: Double = 0.333
+    private var animation: SwiftUI.Animation {
+        .linear(duration: 3).repeatForever(autoreverses: false)
+    }
+
+
+    var body: some View {
+        GeometryReader { proxy in
+            let lineWidth: Double = proxy.size.height < 40 ? 2 : 3
+
+            HStack {
+                Text("OPENING...")
+                    .foregroundColor(color)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: proxy.size.height)
+            .overlay {
+                RoundedRectangle(cornerRadius: borderRadius)
+                    .stroke(color.opacity(0.4), lineWidth: lineWidth)
+            }
+            .overlay {
+                EmulateBorder(cornerRadius: borderRadius)
+                    .trim(from: trimFrom, to: trimTo)
+                    .stroke(color, lineWidth: lineWidth)
+            }
+        }
+        .onAppear {
+            withAnimation(animation) {
+                trimFrom = 0.667
+                trimTo = 1
+            }
+        }
+    }
+}
+
 struct AppActionButton: View {
     let title: String
     let color: Color

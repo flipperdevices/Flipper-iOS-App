@@ -70,5 +70,5 @@ extension ArchiveProtocol {
 }
 
 protocol Compressable {
-    func compress() -> URL?
+    func compress() async -> URL?
 }

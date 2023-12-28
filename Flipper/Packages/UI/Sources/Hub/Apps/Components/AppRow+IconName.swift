@@ -3,12 +3,8 @@ import SwiftUI
 
 extension AppRow {
     struct IconNameCategory: View {
-        @EnvironmentObject var model: Applications
         let application: Applications.ApplicationInfo
-
-        var category: Applications.Category? {
-            model.category(for: application)
-        }
+        let category: Applications.Category?
 
         var body: some View {
             HStack(spacing: 8) {

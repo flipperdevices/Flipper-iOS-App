@@ -25,7 +25,7 @@ struct LogsView: View {
                 }
             }
             .onDelete { indexSet in
-                logs.delete(indexSet)
+                Task { await logs.delete(indexSet) }
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -58,7 +58,7 @@ struct LogsView: View {
                 }
 
                 NavBarButton {
-                    logs.deleteAll()
+                    Task { await logs.deleteAll() }
                 } label: {
                     Text("Delete All")
                         .font(.system(size: 14, weight: .bold))
