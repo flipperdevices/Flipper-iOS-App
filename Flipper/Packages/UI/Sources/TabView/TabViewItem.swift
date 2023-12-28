@@ -9,10 +9,9 @@ struct TabViewItem: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            VStack(spacing: 4) {
+            VStack(spacing: 2) {
                 ZStack(alignment: .topTrailing) {
                     image
-                        .padding(.top, 6)
 
                     Circle()
                         .frame(width: 12, height: 12)
@@ -23,15 +22,17 @@ struct TabViewItem: View {
 
                 Text(name)
                     .font(.system(size: 10, weight: .bold))
-                    .padding(.bottom, 4)
-                    .padding(.horizontal, 12)
             }
+            .padding(.vertical, 4)
+            .padding(.horizontal, 8)
             .frame(minWidth: 69)
-            .background(isSelected ? Color.black4 : Color.clear)
-            .cornerRadius(8)
+            .background(
+                isSelected
+                    ? RoundedRectangle(cornerRadius: 8).fill(Color.black4)
+                    : nil
+            )
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 46)
         .onTapGesture {
             onItemSelected()
         }
