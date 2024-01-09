@@ -3,7 +3,7 @@ import Foundation
 public struct FeaturedRequest: CatalogRequest {
     public typealias Result = [Application]
 
-    var path: String { "application/featured" }
+    var path: String { "0/application/featured" }
     var queryItems: [URLQueryItem] = []
 
     let baseURL: URL

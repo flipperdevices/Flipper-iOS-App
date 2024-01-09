@@ -3,7 +3,7 @@ import Foundation
 public struct ApplicationRequest: CatalogRequest {
     public typealias Result = Application
 
-    var path: String { "application/\(uid)" }
+    var path: String { "0/application/\(uid)" }
     var queryItems: [URLQueryItem] = []
 
     let baseURL: URL
