@@ -144,7 +144,7 @@ extension OptionsView {
 
         @AppStorage(.isNotificationsOn) var isNotificationsOn = false
 
-        //@State var showSpinner: Bool = false
+        // @State var showSpinner: Bool = false
 
         var body: some View {
             Toggle(isOn: $isNotificationsOn) {
@@ -184,7 +184,7 @@ extension OptionsView {
                 inApp.notifications.showDisabled = true
             }
         }
-        
+
         func enableNotifications(_ newValue: Bool) {
             Task { await enableNotifications(newValue) }
         }

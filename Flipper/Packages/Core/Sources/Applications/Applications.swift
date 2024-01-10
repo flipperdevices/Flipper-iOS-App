@@ -194,10 +194,10 @@ public class Applications: ObservableObject {
             logger.error("open app: \(error)")
             if
                 let appError = error as? Peripheral.Error,
-                    appError == .application(.systemLocked) {
+                appError == .application(.systemLocked)
+            {
                 callback(.busy)
-            }
-            else {
+            } else {
                 callback(.error)
             }
         }

@@ -31,8 +31,7 @@ struct AppView: View {
                     if let application {
                         LoadedAppView(application: application)
                             .padding(.vertical, 32)
-                    }
-                    else {
+                    } else {
                         LoadingAppView()
                             .padding(.vertical, 32)
                     }

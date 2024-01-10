@@ -13,7 +13,9 @@ struct InfraredSheetHeader: View {
     var body: some View {
         NavBar(
             leading: {
-                NavBarButton(action: { showInfraredOption = true }) {
+                NavBarButton {
+                    showInfraredOption = true
+                } label: {
                     Image(systemName: "ellipsis")
                         .font(.system(size: 18, weight: .medium))
                 }
@@ -83,7 +85,6 @@ struct InfraredSheetHeader: View {
         let image: String
         let color: Color
         let action: () -> Void
-
 
         init(
             title: String,

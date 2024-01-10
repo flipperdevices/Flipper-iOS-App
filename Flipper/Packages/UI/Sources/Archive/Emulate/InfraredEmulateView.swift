@@ -45,7 +45,7 @@ struct InfraredEmulateView: View {
             EmulateSupportView(text: "Update firmware to use this feature")
         case .synchronizing:
             VStack(alignment: .center, spacing: 12.0) {
-                ForEach(0 ..< remotes.count, id: \.self) { index in
+                ForEach(0 ..< remotes.count, id: \.self) { _ in
                     ConnectingButton()
                 }
             }
@@ -74,7 +74,6 @@ struct InfraredEmulateView: View {
             }
         }
     }
-
 
     struct EmulateSupportView: View {
         let text: String

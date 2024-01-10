@@ -50,7 +50,7 @@ struct AppIssueView: View {
 
                 UnderlinedURL(
                     image: "GitHub",
-                    label: "Go to Repository", 
+                    label: "Go to Repository",
                     url: application.current.links.github
                 )
             }

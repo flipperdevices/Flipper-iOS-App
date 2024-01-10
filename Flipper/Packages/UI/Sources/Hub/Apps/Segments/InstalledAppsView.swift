@@ -67,7 +67,7 @@ struct InstalledAppsView: View {
 
     func update(
         installed: [Applications.Application],
-        statuses: [Applications.Application.ID : Applications.ApplicationStatus]
+        statuses: [Applications.Application.ID: Applications.ApplicationStatus]
     ) {
         // TODO: improve sorting
         let sorted = installed.sorted { $0.alias < $1.alias }

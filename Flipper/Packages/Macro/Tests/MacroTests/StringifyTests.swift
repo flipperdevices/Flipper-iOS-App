@@ -9,7 +9,7 @@ import XCTest
 import MacroPlugin
 
 let stringifyMacros: [String: Macro.Type] = [
-    "stringify": StringifyMacro.self,
+    "stringify": StringifyMacro.self
 ]
 #endif
 
@@ -26,7 +26,9 @@ final class MacroTests: XCTestCase {
             macros: stringifyMacros
         )
         #else
-        throw XCTSkip("macros are only supported when running tests for the host platform")
+        throw XCTSkip(
+            "macros are only supported when running tests for the host platform"
+        )
         #endif
     }
 
@@ -42,7 +44,9 @@ final class MacroTests: XCTestCase {
             macros: stringifyMacros
         )
         #else
-        throw XCTSkip("macros are only supported when running tests for the host platform")
+        throw XCTSkip(
+            "macros are only supported when running tests for the host platform"
+        )
         #endif
     }
 }

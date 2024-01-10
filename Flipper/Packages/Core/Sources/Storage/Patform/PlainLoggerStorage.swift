@@ -42,7 +42,9 @@ actor PlainLoggerStorage: LoggerStorage {
     }
 
     func read(_ name: String) async -> [String] {
-        guard let log = try? await storage.read(directory.appending(name)) else {
+        guard
+            let log = try? await storage.read(directory.appending(name))
+        else {
             return []
         }
         return log.split(separator: "\n").map { String($0) }

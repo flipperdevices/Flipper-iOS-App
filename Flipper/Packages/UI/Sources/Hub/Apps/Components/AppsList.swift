@@ -39,7 +39,7 @@ struct AppList: View {
             }
         }
     }
-    
+
     // MARK: Analytics
 
     func recordApplicationOpened(application: Applications.Application) {

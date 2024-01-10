@@ -75,7 +75,7 @@ extension InfraredEmulateView {
                     .onEnded { _ in
                         startEmulate()
                     }.sequenced(before: DragGesture(minimumDistance: 0)
-                        .onEnded { value in
+                        .onEnded { _ in
                             stopEmulate()
                         }
                     )

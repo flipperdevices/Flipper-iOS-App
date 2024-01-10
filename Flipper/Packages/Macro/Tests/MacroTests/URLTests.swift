@@ -9,7 +9,7 @@ import XCTest
 import MacroPlugin
 
 let urlMacros: [String: Macro.Type] = [
-    "URL": URLMacro.self,
+    "URL": URLMacro.self
 ]
 #endif
 

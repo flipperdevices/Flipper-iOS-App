@@ -155,7 +155,6 @@ struct OpeningAppButton: View {
         .linear(duration: 3).repeatForever(autoreverses: false)
     }
 
-
     var body: some View {
         GeometryReader { proxy in
             let lineWidth: Double = proxy.size.height < 40 ? 2 : 3
