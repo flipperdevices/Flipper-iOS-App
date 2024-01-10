@@ -9,21 +9,13 @@ struct InfraredSheetHeader: View {
 
     @State private var showHowToUse: Bool = false
     @State private var showInfraredOption = false
-    @State private var infraredOptionOffset: Double = .zero
 
     var body: some View {
         NavBar(
             leading: {
-                NavBarButton(action: { showInfraredOption = true } ) {
+                NavBarButton(action: { showInfraredOption = true }) {
                     Image(systemName: "ellipsis")
                         .font(.system(size: 18, weight: .medium))
-                        .overlay(GeometryReader { proxy in
-                            Color.clear
-                                .onAppear {
-                                    let frame = proxy.frame(in: .global)
-                                    infraredOptionOffset = frame.maxY
-                                }
-                        })
                 }
             },
             principal: {
@@ -80,8 +72,9 @@ struct InfraredSheetHeader: View {
                 }
             }
             .frame(width: 220)
-            .offset(y: infraredOptionOffset)
-            .padding(.leading, 32)
+            .padding(.leading, 14)
+            // FIXME: or not
+            .offset(y: 60)
         }
     }
 
