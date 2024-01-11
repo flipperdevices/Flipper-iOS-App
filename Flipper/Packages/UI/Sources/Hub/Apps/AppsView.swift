@@ -32,6 +32,7 @@ struct AppsView: View {
                 .opacity(installedSelected ? 1 : 0)
         }
         .background(Color.background)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

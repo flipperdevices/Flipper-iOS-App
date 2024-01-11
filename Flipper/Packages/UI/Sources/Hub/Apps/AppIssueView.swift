@@ -57,6 +57,7 @@ struct AppIssueView: View {
             .padding(.vertical, 24)
             .padding(.horizontal, 14)
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

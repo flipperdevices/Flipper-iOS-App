@@ -79,6 +79,7 @@ struct AppConcernView: View {
             }
             .padding(14)
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

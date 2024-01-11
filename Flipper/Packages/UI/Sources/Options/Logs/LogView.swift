@@ -24,6 +24,7 @@ struct LogView: View {
                 Text(message.text)
             }
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

@@ -44,7 +44,7 @@ struct ArchiveView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 if device.status == .connecting {
                     VStack(spacing: 4) {
@@ -93,9 +93,10 @@ struct ArchiveView: View {
                     }
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
+            .navigationBarBackground(Color.a1)
             .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("")
             .toolbar {
                 LeadingToolbarItems {
                     Title("Archive")
@@ -122,10 +123,7 @@ struct ArchiveView: View {
             .fullScreenCover(isPresented: $showSearchView) {
                 ArchiveSearchView()
             }
-            .navigationTitle("")
         }
-        .navigationViewStyle(.stack)
-        .navigationBarColors(foreground: .primary, background: .a1)
         .onOpenURL { url in
             if (url.isKeyFile || url.isKeyURL), importingItem == nil {
                 importingItem = url

@@ -112,6 +112,7 @@ struct OptionsView: View {
             .padding(.top, -40)
             .padding(.bottom, 20)
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

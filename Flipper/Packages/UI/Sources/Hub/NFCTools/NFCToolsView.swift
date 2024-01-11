@@ -23,6 +23,7 @@ struct NFCToolsView: View {
             .padding(14)
         }
         .background(Color.background)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

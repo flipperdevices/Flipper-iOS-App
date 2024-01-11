@@ -15,7 +15,7 @@ struct HubView: View {
     @State private var showDetectReader = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 14) {
                     NavigationLink {
@@ -52,6 +52,7 @@ struct HubView: View {
                 }
             }
             .background(Color.background)
+            .navigationBarBackground(Color.a1)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 LeadingToolbarItems {
@@ -74,8 +75,6 @@ struct HubView: View {
                 showDetectReader = true
             }
         }
-        .navigationViewStyle(.stack)
-        .navigationBarColors(foreground: .primary, background: .a1)
         .fullScreenCover(isPresented: $showDetectReader) {
             DetectReaderView()
         }

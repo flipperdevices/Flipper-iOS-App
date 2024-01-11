@@ -26,6 +26,7 @@ struct AppReportView: View {
                 AppConcernView(application: application)
             }
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

@@ -87,6 +87,7 @@ struct FileManagerListing: View {
                 }
             }
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

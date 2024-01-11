@@ -39,6 +39,7 @@ struct SpeedTestView: View {
             .padding(.bottom, 50)
         }
         .padding(14)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

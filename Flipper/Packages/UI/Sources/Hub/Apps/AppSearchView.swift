@@ -42,6 +42,7 @@ struct AppSearchView: View {
                 .customBackground(.background)
             }
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

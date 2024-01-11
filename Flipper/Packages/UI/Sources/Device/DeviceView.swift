@@ -61,7 +61,7 @@ struct DeviceView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 DeviceHeader(device: flipper)
 
@@ -192,9 +192,8 @@ struct DeviceView: View {
                 }
             }
             .navigationBarHidden(true)
+            .navigationBarBackground(Color.a1)
         }
-        .navigationViewStyle(.stack)
-        .navigationBarColors(foreground: .primary, background: .a1)
         .alert(isPresented: $showOutdatedFirmwareAlert) {
             OutdatedFirmwareAlert(isPresented: $showOutdatedFirmwareAlert)
         }

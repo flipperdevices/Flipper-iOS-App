@@ -189,6 +189,7 @@ struct DetectReaderView: View {
             }
         }
         .background(Color.background)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .alert(isPresented: $showCancelAttack) {
