@@ -5,11 +5,10 @@ import CompilerPluginSupport
 let package = Package(
     name: "Macro",
     platforms: [
-        .macOS(.v10_15),
-        .iOS(.v13),
-        .tvOS(.v13),
-        .watchOS(.v6),
-        .macCatalyst(.v13)
+        .iOS(.v16),
+        .watchOS(.v9),
+        .macOS(.v13),
+        .tvOS(.v16)
     ],
     products: [
         .library(
