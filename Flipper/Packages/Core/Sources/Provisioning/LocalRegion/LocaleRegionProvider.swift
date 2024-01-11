@@ -8,7 +8,7 @@ public class LocaleRegionProvider: RegionProvider {
     }
 
     public var regionCode: ISOCode? {
-        guard let regionCode = locale.regionCode else {
+        guard let regionCode = locale.region?.identifier else {
             return nil
         }
         return .init(regionCode)

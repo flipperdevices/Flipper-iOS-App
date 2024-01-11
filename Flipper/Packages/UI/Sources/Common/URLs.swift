@@ -7,19 +7,13 @@ extension URL {
     // MARK: System
 
     static var settings: URL {
-        .init(string: UIApplication.openSettingsURLString) ?? systemSettings
+        .init(string: UIApplication.openSettingsURLString)
+            ?? systemSettings
     }
 
     static var notificationSettings: URL {
-        var url: URL?
-        if #available(iOS 16, *) {
-            url = .init(string: UIApplication.openNotificationSettingsURLString)
-        } else if #available(iOS 15.4, *) {
-            url = .init(string: UIApplicationOpenNotificationSettingsURLString)
-        } else {
-            url = .init(string: UIApplication.openSettingsURLString)
-        }
-        return url ?? systemSettings
+        .init(string: UIApplication.openNotificationSettingsURLString)
+            ?? systemSettings
     }
 
     static var systemSettings = #URL(
