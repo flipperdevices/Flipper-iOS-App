@@ -65,9 +65,7 @@ struct DeviceView: View {
             VStack(spacing: 0) {
                 DeviceHeader(device: flipper)
 
-                RefreshableScrollView(isEnabled: isDeviceAvailable) {
-                    updateModel.updateAvailableFirmware()
-                } content: {
+                LazyScrollView {
                     VStack(spacing: 0) {
                         switch device.status {
                         case .unsupported:
@@ -189,6 +187,9 @@ struct DeviceView: View {
                         "App will no longer be paired with " +
                         "Flipper \(flipper.name)"
                     )
+                }
+                .refreshable(isEnabled: isDeviceAvailable) {
+                    updateModel.updateAvailableFirmware()
                 }
             }
             .navigationBarHidden(true)

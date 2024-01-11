@@ -25,9 +25,7 @@ struct AppView: View {
                 AppNotFoundView()
                     .padding(24)
             } else {
-                RefreshableScrollView(isEnabled: true) {
-                    reload()
-                } content: {
+                LazyScrollView {
                     if let application {
                         LoadedAppView(application: application)
                             .padding(.vertical, 32)
@@ -35,6 +33,9 @@ struct AppView: View {
                         LoadingAppView()
                             .padding(.vertical, 32)
                     }
+                }
+                .refreshable {
+                    reload()
                 }
             }
         }

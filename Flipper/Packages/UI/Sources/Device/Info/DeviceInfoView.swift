@@ -41,9 +41,7 @@ struct DeviceInfoView: View {
     }
 
     var body: some View {
-        RefreshableScrollView(isEnabled: canRefresh) {
-            reload()
-        } content: {
+        LazyScrollView {
             VStack(spacing: 14) {
                 DeviceInfoViewCard(
                     title: "Flipper Device",
@@ -102,6 +100,9 @@ struct DeviceInfoView: View {
                 .disabled(!device.isInfoReady)
                 .opacity(device.isInfoReady ? 1 : 0.4)
             }
+        }
+        .refreshable(isEnabled: canRefresh) {
+            reload()
         }
         .task {
             reload()

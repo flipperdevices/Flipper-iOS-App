@@ -65,10 +65,7 @@ struct ArchiveView: View {
                         .foregroundColor(.black30)
                     }
                 } else {
-                    RefreshableScrollView(
-                        isEnabled: canPullToRefresh,
-                        action: refresh
-                    ) {
+                    LazyScrollView {
                         CategoryCard(
                             groups: groups,
                             deletedCount: archive.deleted.count
@@ -90,6 +87,9 @@ struct ArchiveView: View {
                             .padding(.horizontal, 14)
                             .padding(.bottom, 14)
                         }
+                    }
+                    .refreshable(isEnabled: canPullToRefresh) {
+                        refresh()
                     }
                 }
             }

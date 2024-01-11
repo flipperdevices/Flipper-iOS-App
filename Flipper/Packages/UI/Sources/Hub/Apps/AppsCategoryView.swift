@@ -33,9 +33,7 @@ struct AppsCategoryView: View {
                 AppsAPIError(error: $error, action: reload)
                     .padding(.horizontal, 14)
             } else {
-                RefreshableScrollView(isEnabled: true) {
-                    reload()
-                } onEnd: {
+                LazyScrollView {
                     await load()
                 } content: {
                     VStack(spacing: 18) {
@@ -52,6 +50,9 @@ struct AppsCategoryView: View {
                         }
                     }
                     .padding(.vertical, 18)
+                    .refreshable { 
+                        reload()
+                    }
                 }
                 .opacity(!isEmpty ? 1 : 0)
             }

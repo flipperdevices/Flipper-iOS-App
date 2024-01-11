@@ -15,9 +15,7 @@ struct AllAppsView: View {
     @State private var error: Applications.Error?
 
     var body: some View {
-        RefreshableScrollView(isEnabled: true) {
-            reload()
-        } onEnd: {
+        LazyScrollView {
             await loadApplications()
         } content: {
             VStack(spacing: 0) {
@@ -66,6 +64,9 @@ struct AllAppsView: View {
         }
         .onChange(of: hiddenApps) { _ in
             Task { filter() }
+        }
+        .refreshable {
+            reload()
         }
     }
 

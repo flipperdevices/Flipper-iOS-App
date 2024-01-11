@@ -30,9 +30,7 @@ struct InstalledAppsView: View {
                     }
                     .opacity(noApps ? 1 : 0)
 
-                    RefreshableScrollView(isEnabled: true) {
-                        reload()
-                    } content: {
+                    LazyScrollView {
                         Group {
                             if !applications.isEmpty {
                                 VStack(spacing: 18) {
@@ -53,6 +51,9 @@ struct InstalledAppsView: View {
                             }
                         }
                         .opacity(noApps ? 0 : 1)
+                        .refreshable { 
+                            reload()
+                        }
                     }
                 }
             }
