@@ -18,8 +18,6 @@ struct AppSearchView: View {
 
     let debouncer = Debouncer(seconds: 1)
 
-    @FocusState var isSearchFieldFocused: Bool
-
     var body: some View {
         VStack(spacing: 0) {
             if model.isOutdatedDevice {
@@ -56,8 +54,7 @@ struct AppSearchView: View {
             PrincipalToolbarItems {
                 SearchField(
                     placeholder: "App name, description",
-                    predicate: $predicate,
-                    isFocused: _isSearchFieldFocused
+                    predicate: $predicate
                 )
                 .offset(x: -10)
             }
