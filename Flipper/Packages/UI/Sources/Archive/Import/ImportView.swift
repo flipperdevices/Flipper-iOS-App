@@ -34,19 +34,7 @@ struct ImportView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            if isEditing {
-                SheetEditHeader(
-                    title: "Edit Key",
-                    onSave: saveChanges,
-                    onCancel: undoChanges
-                )
-            } else {
-                SheetHeader(title: "Add Key") {
-                    dismiss()
-                }
-            }
-
+        Group {
             switch state {
             case .loading:
                 ScrollView {
@@ -111,6 +99,44 @@ struct ImportView: View {
                         .opacity(isEditing ? 0 : 1)
 
                         Spacer()
+                    }
+                }
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            LeadingToolbarItems {
+                if isEditing {
+                    NavBarButton {
+                        undoChanges()
+                    } label: {
+                        Text("Cancel")
+                            .font(.system(size: 14, weight: .medium))
+                            .padding(.horizontal, 8)
+                    }
+                } else {
+                    BackButton {
+                        dismiss()
+                    }
+                }
+            }
+
+            PrincipalToolbarItems {
+                Title(
+                    isEditing ? "Edit Key" : "Add Key",
+                    description: item.name.value
+                )
+            }
+
+            TrailingToolbarItems {
+                if isEditing {
+                    NavBarButton {
+                        saveChanges()
+                    } label: {
+                        Text("Save")
+                            .font(.system(size: 14, weight: .medium))
+                            .padding(.horizontal, 8)
                     }
                 }
             }

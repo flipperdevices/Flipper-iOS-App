@@ -12,39 +12,41 @@ struct MainView: View {
     @State private var showTodayWidgetSettings = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            ZStack {
-                DeviceView()
-                    .opacity(selectedTab == .device ? 1 : 0)
-                ArchiveView()
-                    .opacity(selectedTab == .archive ? 1 : 0)
-                HubView()
-                    .opacity(selectedTab == .hub ? 1 : 0)
-            }
-
-            if !tabViewController.isHidden {
-                TabView(selected: $selectedTab) {
-                    tabViewController.popToRootView(for: selectedTab)
+        NavigationView {
+            VStack(spacing: 0) {
+                ZStack {
+                    DeviceView()
+                        .opacity(selectedTab == .device ? 1 : 0)
+                    ArchiveView()
+                        .opacity(selectedTab == .archive ? 1 : 0)
+                    HubView()
+                        .opacity(selectedTab == .hub ? 1 : 0)
                 }
-                .transition(.move(edge: .bottom))
-            }
-        }
-        .ignoresSafeArea(.keyboard)
-        .environmentObject(tabViewController)
 
-        .onOpenURL { url in
-            switch url {
-            case .todayWidgetSettings:
-                showTodayWidgetSettings = true
-            case .updateDeviceLink:
-                selectedTab = .device
-                tabViewController.popToRootView(for: .device)
-            default:
-                break
+                if !tabViewController.isHidden {
+                    TabView(selected: $selectedTab) {
+                        tabViewController.popToRootView(for: selectedTab)
+                    }
+                    .transition(.move(edge: .bottom))
+                }
+            }
+            .ignoresSafeArea(.keyboard)
+            .environmentObject(tabViewController)
+            .onOpenURL { url in
+                switch url {
+                case .todayWidgetSettings:
+                    showTodayWidgetSettings = true
+                case .updateDeviceLink:
+                    selectedTab = .device
+                    tabViewController.popToRootView(for: .device)
+                default:
+                    break
+                }
+            }
+            .fullScreenCover(isPresented: $showTodayWidgetSettings) {
+                TodayWidgetSettingsView()
             }
         }
-        .fullScreenCover(isPresented: $showTodayWidgetSettings) {
-            TodayWidgetSettingsView()
-        }
+        .navigationViewStyle(.stack)
     }
 }

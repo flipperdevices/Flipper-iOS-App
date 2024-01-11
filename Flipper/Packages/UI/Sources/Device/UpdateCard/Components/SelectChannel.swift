@@ -7,7 +7,7 @@ struct SelectChannel: View {
     let onChannelSelected: (Update.Channel) -> Void
 
     @State private var showChannelSelector = false
-    @State private var channelSelectorOffset: Double = .zero
+    @State private var channelSelectorOffset = 0.0
 
     var body: some View {
         SelectChannelButton(version: version) {

@@ -11,9 +11,11 @@ struct ArchiveView: View {
 
     @State private var importingItem: URL?
     @State private var importedName = ""
+    @State private var showImportView = false
     @Environment(\.notifications) private var notifications
 
     @State private var selectedItem: ArchiveItem?
+    @State private var showInfoView = false
     @State private var showSearchView = false
 
     var canPullToRefresh: Bool {
@@ -75,6 +77,7 @@ struct ArchiveView: View {
                         if !favoriteItems.isEmpty {
                             FavoritesSection(items: favoriteItems) { item in
                                 selectedItem = item
+                                showInfoView = true
                             }
                             .padding(.horizontal, 14)
                             .padding(.bottom, 14)
@@ -83,6 +86,7 @@ struct ArchiveView: View {
                         if !archive.items.isEmpty {
                             AllItemsSection(items: sortedItems) { item in
                                 selectedItem = item
+                                showInfoView = true
                             }
                             .padding(.horizontal, 14)
                             .padding(.bottom, 14)
@@ -108,12 +112,6 @@ struct ArchiveView: View {
                     }
                 }
             }
-            .sheet(item: $selectedItem) { item in
-                InfoView(item: item)
-            }
-            .sheet(item: $importingItem) { item in
-                ImportView(url: item)
-            }
             .onReceive(archive.imported) { item in
                 onItemAdded(item: item)
             }
@@ -125,8 +123,9 @@ struct ArchiveView: View {
             }
         }
         .onOpenURL { url in
-            if (url.isKeyFile || url.isKeyURL), importingItem == nil {
+            if (url.isKeyFile || url.isKeyURL), !showImportView {
                 importingItem = url
+                showImportView = true
             }
         }
         .onDrop(of: [.item], isTargeted: nil) { providers in
@@ -137,8 +136,19 @@ struct ArchiveView: View {
             ) { (data, _) in
                 guard let url = data as? URL else { return }
                 importingItem = url
+                showImportView = true
             }
             return true
+        }
+        NavigationLink("", isActive: $showInfoView) {
+            if let selectedItem {
+                InfoView(item: selectedItem)
+            }
+        }
+        NavigationLink("", isActive: $showImportView) {
+            if let importingItem {
+                ImportView(url: importingItem)
+            }
         }
     }
 

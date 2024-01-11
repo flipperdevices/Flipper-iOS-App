@@ -9,13 +9,6 @@ struct EditInfoView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            SheetEditHeader(
-                title: "Editing",
-                description: current.name.value,
-                onSave: saveChanges,
-                onCancel: undoChanges
-            )
-
             CardView(
                 item: $current,
                 isEditing: $isEditing,
@@ -25,6 +18,33 @@ struct EditInfoView: View {
             .padding(.horizontal, 24)
 
             Spacer()
+        }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            LeadingToolbarItems {
+                NavBarButton {
+                    undoChanges()
+                } label: {
+                    Text("Cancel")
+                        .font(.system(size: 14, weight: .medium))
+                        .padding(.horizontal, 8)
+                }
+            }
+
+            PrincipalToolbarItems {
+                Title("Editing", description: current.name.value)
+            }
+
+            TrailingToolbarItems {
+                NavBarButton {
+                    saveChanges()
+                } label: {
+                    Text("Save")
+                        .font(.system(size: 14, weight: .medium))
+                        .padding(.horizontal, 8)
+                }
+            }
         }
     }
 }
