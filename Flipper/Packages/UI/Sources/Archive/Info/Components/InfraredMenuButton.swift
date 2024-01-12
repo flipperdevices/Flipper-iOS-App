@@ -16,10 +16,10 @@ struct InfraredMenuButton: View {
                 .font(.system(size: 18, weight: .medium))
         }
         .background(GeometryReader {
-            let frame = $0.frame(in: .global)
+            let frame = $0.frame(in: .local)
             Color.clear.preference(
                 key: MenuOffsetKey.self,
-                value: frame.origin.y)
+                value: frame.maxY)
         })
         .onPreferenceChange(MenuOffsetKey.self) {
             menuOffset = $0
@@ -38,7 +38,7 @@ struct InfraredMenuButton: View {
                 )
             }
             .padding(.horizontal, 14)
-            .offset(y: menuOffset + 28)
+            .offset(y: menuOffset)
         }
     }
 }
