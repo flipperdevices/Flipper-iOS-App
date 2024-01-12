@@ -5,7 +5,8 @@ struct ArchiveSearchView: View {
     @EnvironmentObject var archive: ArchiveModel
     @Environment(\.dismiss) private var dismiss
 
-    @State private var predicate = ""
+    @Binding var predicate: String
+
     @State private var selectedItem: ArchiveItem?
     @State private var showInfoView = false
 
@@ -20,41 +21,23 @@ struct ArchiveSearchView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                if filteredItems.isEmpty {
-                    NothingFoundView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .customBackground(.background)
-                } else {
-                    ScrollView {
-                        CategoryList(items: filteredItems) { item in
-                            selectedItem = item
-                            showInfoView = true
-                        }
-                        .padding(14)
-                    }
+        VStack(spacing: 0) {
+            if filteredItems.isEmpty {
+                NothingFoundView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .customBackground(.background)
-                }
-            }
-            .navigationBarBackButtonHidden(true)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                LeadingToolbarItems {
-                    BackButton {
-                        dismiss()
+            } else {
+                ScrollView {
+                    CategoryList(items: filteredItems) { item in
+                        selectedItem = item
+                        showInfoView = true
                     }
+                    .padding(14)
                 }
-
-                PrincipalToolbarItems {
-                    SearchField(
-                        placeholder: "Search by name and note",
-                        predicate: $predicate
-                    )
-                    .offset(x: -10)
-                }
+                .customBackground(.background)
             }
-
+        }
+        .background {
             NavigationLink("", isActive: $showInfoView) {
                 if let selectedItem {
                     InfoView(item: selectedItem)

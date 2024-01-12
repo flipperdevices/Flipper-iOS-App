@@ -5,10 +5,12 @@ struct AppsView: View {
     @EnvironmentObject var model: Applications
     @Environment(\.dismiss) var dismiss
 
-    @State var showSearchView: Bool = false
-    @State var selectedSegment: AppsSegments.Segment = .all
+    @State private var predicate = ""
+    @State private var showSearchView = false
 
-    @State var isNotConnectedAlertPresented = false
+    @State private var selectedSegment: AppsSegments.Segment = .all
+
+    @State private var isNotConnectedAlertPresented = false
 
     var allSelected: Bool {
         selectedSegment == .all
@@ -20,38 +22,54 @@ struct AppsView: View {
 
     var body: some View {
         ZStack {
-            NavigationLink("", isActive: $showSearchView) {
-                AppSearchView()
-                    .environmentObject(model)
-            }
-
             AllAppsView()
-                .opacity(allSelected ? 1 : 0)
+                .opacity(allSelected && predicate.isEmpty ? 1 : 0)
 
             InstalledAppsView()
-                .opacity(installedSelected ? 1 : 0)
+                .opacity(installedSelected && predicate.isEmpty ? 1 : 0)
+
+            AppSearchView(predicate: $predicate)
+                .environmentObject(model)
+                .opacity(!predicate.isEmpty ? 1 : 0)
         }
         .background(Color.background)
         .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            LeadingToolbarItems {
-                BackButton {
-                    dismiss()
+            if !showSearchView {
+                LeadingToolbarItems {
+                    BackButton {
+                        dismiss()
+                    }
                 }
-            }
 
-            PrincipalToolbarItems {
-                AppsSegments(selected: $selectedSegment)
-            }
-
-            TrailingToolbarItems {
-                SearchButton {
-                    showSearchView = true
+                PrincipalToolbarItems {
+                    AppsSegments(selected: $selectedSegment)
                 }
-                .analyzingTapGesture {
-                    recordSearchOpened()
+
+                TrailingToolbarItems {
+                    SearchButton {
+                        selectedSegment = .all
+                        showSearchView = true
+                    }
+                    .analyzingTapGesture {
+                        recordSearchOpened()
+                    }
+                }
+            } else {
+                PrincipalToolbarItems {
+                    HStack(spacing: 14) {
+                        SearchField(
+                            placeholder: "App name, description",
+                            predicate: $predicate
+                        )
+
+                        CancelSearchButton {
+                            predicate = ""
+                            showSearchView = false
+                        }
+                    }
                 }
             }
         }

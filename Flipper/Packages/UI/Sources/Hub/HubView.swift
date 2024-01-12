@@ -65,6 +65,7 @@ struct HubView: View {
                     .environmentObject(device)
             }
         }
+        .tint(Color.primary)
         .onOpenURL { url in
             if url.isApplicationURL {
                 applicationAlias = url.applicationAlias

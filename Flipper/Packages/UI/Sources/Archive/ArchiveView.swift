@@ -9,13 +9,16 @@ struct ArchiveView: View {
     @EnvironmentObject var archive: ArchiveModel
     @EnvironmentObject var synchronization: Synchronization
 
+    @Environment(\.notifications) private var notifications
+
     @State private var importingItem: URL?
     @State private var importedName = ""
     @State private var showImportView = false
-    @Environment(\.notifications) private var notifications
 
     @State private var selectedItem: ArchiveItem?
     @State private var showInfoView = false
+
+    @State private var predicate = ""
     @State private var showSearchView = false
 
     var canPullToRefresh: Bool {
@@ -66,6 +69,8 @@ struct ArchiveView: View {
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.black30)
                     }
+                } else if !predicate.isEmpty {
+                    ArchiveSearchView(predicate: $predicate)
                 } else {
                     LazyScrollView {
                         CategoryCard(
@@ -102,13 +107,30 @@ struct ArchiveView: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle("")
             .toolbar {
-                LeadingToolbarItems {
-                    Title("Archive")
-                        .padding(.leading, 8)
-                }
-                TrailingToolbarItems {
-                    SearchButton {
-                        showSearchView = true
+                if !showSearchView {
+                    LeadingToolbarItems {
+                        Title("Archive")
+                            .padding(.leading, 8)
+                    }
+
+                    TrailingToolbarItems {
+                        SearchButton {
+                            showSearchView = true
+                        }
+                    }
+                } else {
+                    PrincipalToolbarItems {
+                        HStack(spacing: 14) {
+                            SearchField(
+                                placeholder: "Search by name and note",
+                                predicate: $predicate
+                            )
+
+                            CancelSearchButton {
+                                predicate = ""
+                                showSearchView = false
+                            }
+                        }
                     }
                 }
             }
@@ -118,11 +140,8 @@ struct ArchiveView: View {
             .notification(isPresented: notifications.archive.showImported) {
                 ImportedBanner(itemName: importedName)
             }
-
-            NavigationLink("", isActive: $showSearchView) {
-                ArchiveSearchView()
-            }
         }
+        .tint(Color.primary)
         .onOpenURL { url in
             if (url.isKeyFile || url.isKeyURL), !showImportView {
                 importingItem = url
@@ -141,14 +160,18 @@ struct ArchiveView: View {
             }
             return true
         }
-        NavigationLink("", isActive: $showInfoView) {
-            if let selectedItem {
-                InfoView(item: selectedItem)
-            }
-        }
-        NavigationLink("", isActive: $showImportView) {
-            if let importingItem {
-                ImportView(url: importingItem)
+        .background {
+            ZStack {
+                NavigationLink("", isActive: $showInfoView) {
+                    if let selectedItem {
+                        InfoView(item: selectedItem)
+                    }
+                }
+                NavigationLink("", isActive: $showImportView) {
+                    if let importingItem {
+                        ImportView(url: importingItem)
+                    }
+                }
             }
         }
     }

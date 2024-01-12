@@ -11,3 +11,14 @@ struct CancelButton: View {
         }
     }
 }
+
+struct CancelSearchButton: View {
+    var action: () -> Void
+
+    var body: some View {
+        NavBarButton(action: action) {
+            Text("Cancel")
+                .font(.system(size: 17))
+        }
+    }
+}

@@ -7,7 +7,7 @@ struct AppSearchView: View {
 
     @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
 
-    @State private var predicate = ""
+    @Binding var predicate: String
     var predicateIsValid: Bool {
         predicate.count >= 2
     }
@@ -40,24 +40,6 @@ struct AppSearchView: View {
                         .padding(14)
                 }
                 .customBackground(.background)
-            }
-        }
-        .navigationBarBackground(Color.a1)
-        .navigationBarBackButtonHidden(true)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            LeadingToolbarItems {
-                BackButton {
-                    dismiss()
-                }
-            }
-
-            PrincipalToolbarItems {
-                SearchField(
-                    placeholder: "App name, description",
-                    predicate: $predicate
-                )
-                .offset(x: -10)
             }
         }
         .onChange(of: predicate) { newValue in

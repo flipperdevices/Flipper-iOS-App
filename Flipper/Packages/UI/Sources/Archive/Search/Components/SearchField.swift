@@ -43,6 +43,7 @@ private struct FocusedTextField: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
+        textField.tintColor = .label
         textField.returnKeyType = .done
         textField.becomeFirstResponder()
         return textField
