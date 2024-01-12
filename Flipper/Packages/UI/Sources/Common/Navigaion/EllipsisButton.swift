@@ -1,11 +1,11 @@
 import SwiftUI
 
-struct BackButton: View {
+struct EllipsisButton: View {
     var action: () -> Void
 
     var body: some View {
         NavBarButton(action: action) {
-            Image(systemName: "chevron.backward")
+            Image(systemName: "ellipsis")
                 .font(.system(size: 18, weight: .medium))
         }
     }

@@ -39,10 +39,8 @@ struct FileManagerEditor: View {
                 Title(path.lastComponent ?? "")
             }
             TrailingToolbarItems {
-                NavBarButton {
+                SaveButton {
                     save()
-                } label: {
-                    Text("Save")
                 }
             }
         }

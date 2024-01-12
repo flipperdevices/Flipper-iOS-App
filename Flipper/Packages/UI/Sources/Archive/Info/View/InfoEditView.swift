@@ -23,12 +23,8 @@ struct EditInfoView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             LeadingToolbarItems {
-                NavBarButton {
+                CancelButton {
                     undoChanges()
-                } label: {
-                    Text("Cancel")
-                        .font(.system(size: 14, weight: .medium))
-                        .padding(.horizontal, 8)
                 }
             }
 
@@ -37,13 +33,9 @@ struct EditInfoView: View {
             }
 
             TrailingToolbarItems {
-                NavBarButton {
+                SaveButton {
                     saveChanges()
-                } label: {
-                    Text("Save")
-                        .font(.system(size: 14, weight: .medium))
-                        .padding(.horizontal, 8)
-                }
+                } 
             }
         }
     }

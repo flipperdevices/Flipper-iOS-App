@@ -108,12 +108,8 @@ struct ImportView: View {
         .toolbar {
             LeadingToolbarItems {
                 if isEditing {
-                    NavBarButton {
+                    CancelButton {
                         undoChanges()
-                    } label: {
-                        Text("Cancel")
-                            .font(.system(size: 14, weight: .medium))
-                            .padding(.horizontal, 8)
                     }
                 } else {
                     BackButton {
@@ -131,12 +127,8 @@ struct ImportView: View {
 
             TrailingToolbarItems {
                 if isEditing {
-                    NavBarButton {
+                    SaveButton {
                         saveChanges()
-                    } label: {
-                        Text("Save")
-                            .font(.system(size: 14, weight: .medium))
-                            .padding(.horizontal, 8)
                     }
                 }
             }

@@ -9,11 +9,8 @@ struct InfraredMenuButton: View {
     @State private var menuOffset = 0.0
 
     var body: some View {
-        NavBarButton {
+        EllipsisButton {
             showInfraredOption = true
-        } label: {
-            Image(systemName: "ellipsis")
-                .font(.system(size: 18, weight: .medium))
         }
         .background(GeometryReader {
             let frame = $0.frame(in: .global)
