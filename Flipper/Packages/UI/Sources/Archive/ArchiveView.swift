@@ -143,7 +143,6 @@ struct ArchiveView: View {
                 ImportedBanner(itemName: importedName)
             }
         }
-        .tint(Color.primary)
         .onOpenURL { url in
             if (url.isKeyFile || url.isKeyURL), !showImportView {
                 importingItem = url

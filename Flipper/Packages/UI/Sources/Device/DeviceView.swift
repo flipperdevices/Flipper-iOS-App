@@ -195,7 +195,6 @@ struct DeviceView: View {
             .navigationBarHidden(true)
             .navigationBarBackground(Color.a1)
         }
-        .tint(Color.primary)
         .alert(isPresented: $showOutdatedFirmwareAlert) {
             OutdatedFirmwareAlert(isPresented: $showOutdatedFirmwareAlert)
         }
