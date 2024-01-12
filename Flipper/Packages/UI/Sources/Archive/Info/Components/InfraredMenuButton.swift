@@ -13,12 +13,11 @@ struct InfraredMenuButton: View {
             showInfraredOption = true
         }
         .background(GeometryReader {
-            let frame = $0.frame(in: .global)
             Color.clear.preference(
-                key: MenuOffsetKey.self,
-                value: frame.origin.y)
+                key: OffsetKey.self,
+                value: $0.frame(in: .global).origin.y)
         })
-        .onPreferenceChange(MenuOffsetKey.self) {
+        .onPreferenceChange(OffsetKey.self) {
             menuOffset = $0
         }
         .alert(isPresented: $showHowToUse) {
@@ -35,17 +34,7 @@ struct InfraredMenuButton: View {
                 )
             }
             .padding(.horizontal, 14)
-            .offset(y: menuOffset + 28)
+            .offset(y: menuOffset + platformOffset)
         }
-    }
-}
-
-private struct MenuOffsetKey: PreferenceKey {
-    typealias Value = Double
-
-    static var defaultValue = Double.zero
-
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value = nextValue()
     }
 }

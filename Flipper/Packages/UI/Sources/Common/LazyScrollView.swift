@@ -19,13 +19,13 @@ struct LazyScrollView<Content: View>: View {
             ScrollView {
                 content()
                     .anchorPreference(
-                        key: BottomOffsetPreferenceKey.self,
+                        key: OffsetKey.self,
                         value: .bottom
                     ) {
                         geometry.size.height - geometry[$0].y
                     }
             }
-            .onPreferenceChange(BottomOffsetPreferenceKey.self) { offset in
+            .onPreferenceChange(OffsetKey.self) { offset in
                 Task {
                     guard !isLoadTriggered else {
                         return
@@ -40,15 +40,5 @@ struct LazyScrollView<Content: View>: View {
                 }
             }
         }
-    }
-}
-
-private struct BottomOffsetPreferenceKey: PreferenceKey {
-    typealias Value = Double
-
-    static var defaultValue = Double.zero
-
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value = nextValue()
     }
 }
