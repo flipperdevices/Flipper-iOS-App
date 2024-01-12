@@ -22,23 +22,6 @@ struct ArchiveSearchView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                HStack(spacing: 14) {
-                    SearchField(
-                        placeholder: "Search by name and note",
-                        predicate: $predicate
-                    )
-                    .frame(height: 36)
-
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Cancel")
-                            .font(.system(size: 18, weight: .regular))
-                    }
-                }
-                .padding(.vertical, 14)
-                .padding(.horizontal, 16)
-
                 if filteredItems.isEmpty {
                     NothingFoundView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -52,6 +35,23 @@ struct ArchiveSearchView: View {
                         .padding(14)
                     }
                     .customBackground(.background)
+                }
+            }
+            .navigationBarBackButtonHidden(true)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                LeadingToolbarItems {
+                    BackButton {
+                        dismiss()
+                    }
+                }
+
+                PrincipalToolbarItems {
+                    SearchField(
+                        placeholder: "Search by name and note",
+                        predicate: $predicate
+                    )
+                    .offset(x: -10)
                 }
             }
 

@@ -118,7 +118,8 @@ struct ArchiveView: View {
             .notification(isPresented: notifications.archive.showImported) {
                 ImportedBanner(itemName: importedName)
             }
-            .fullScreenCover(isPresented: $showSearchView) {
+
+            NavigationLink("", isActive: $showSearchView) {
                 ArchiveSearchView()
             }
         }
