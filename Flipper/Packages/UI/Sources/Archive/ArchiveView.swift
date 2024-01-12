@@ -102,6 +102,8 @@ struct ArchiveView: View {
                     }
                 }
             }
+            // NOTE: Fixes Connecting/Syncing views size
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
             .navigationBarBackground(Color.a1)
             .navigationBarTitleDisplayMode(.inline)
