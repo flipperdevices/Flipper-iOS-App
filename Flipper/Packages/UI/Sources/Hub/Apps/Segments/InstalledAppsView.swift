@@ -51,7 +51,7 @@ struct InstalledAppsView: View {
                             }
                         }
                         .opacity(noApps ? 0 : 1)
-                        .refreshable { 
+                        .refreshable {
                             reload()
                         }
                     }

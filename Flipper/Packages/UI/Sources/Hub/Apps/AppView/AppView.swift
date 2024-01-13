@@ -86,7 +86,7 @@ struct AppView: View {
         @Environment(\.dismiss) var dismiss
         let application: Applications.Application
 
-        @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+        @AppStorage(.hiddenApps) var hiddenApps: Set<String> = []
         @Environment(\.notifications) private var notifications
 
         var isHidden: Bool {

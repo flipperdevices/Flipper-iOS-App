@@ -3,95 +3,92 @@ import Foundation
 
 public class UserDefaultsStorage {
     public static let shared: UserDefaultsStorage = .init()
-    private var storage: UserDefaults { .standard }
+    var storage: UserDefaults { .standard }
 
-    public var isFirstLaunch: Bool {
-        get { storage.value(forKey: .isFirstLaunchKey) as? Bool ?? true }
-        set { storage.set(newValue, forKey: .isFirstLaunchKey) }
-    }
+    @UserDefault(key: .isFirstLaunch, defaultValue: true)
+    public var isFirstLaunch: Bool
 
-    public var selectedTab: String {
-        get { storage.value(forKey: .selectedTabKey) as? String ?? "" }
-        set { storage.set(newValue, forKey: .selectedTabKey) }
-    }
+    @UserDefault(key: .selectedTab, defaultValue: "")
+    public var selectedTab: String
 
-    public var updateChannel: Update.Channel {
-        get {
-            if let channel = storage.value(forKey: .updateChannel) as? String {
-                return .init(rawValue: channel) ?? .release
-            } else {
-                return .release
-            }
-        }
-        set {
-            storage.set(newValue.rawValue, forKey: .updateChannel)
-        }
-    }
+    @UserDefault(key: .updateChannel, defaultValue: .release)
+    public var updateChannel: Update.Channel
 
-    public var logLevel: Logger.Level {
-        get {
-            if let level = storage.value(forKey: .logLevelKey) as? String {
-                return .init(rawValue: level) ?? .debug
-            } else {
-                return .debug
-            }
-        }
-        set {
-            storage.set(newValue.rawValue, forKey: .logLevelKey)
-        }
-    }
+    @UserDefault(key: .logLevelKey, defaultValue: .debug)
+    public var logLevel: Logger.Level
 
-    public var hasReaderLog: Bool {
-        get { storage.value(forKey: .hasReaderLog) as? Bool ?? false }
-        set { storage.set(newValue, forKey: .hasReaderLog) }
-    }
+    @UserDefault(key: .hasReaderLog, defaultValue: false)
+    public var hasReaderLog: Bool
 
     // MARK: Debug
 
-    public var isDebugMode: Bool {
-        get { storage.value(forKey: .isDebugMode) as? Bool ?? false }
-        set { storage.set(newValue, forKey: .isDebugMode) }
-    }
+    @UserDefault(key: .isDebugMode, defaultValue: false)
+    public var isDebugMode: Bool
 
-    public var isProvisioningDisabled: Bool {
-        get { storage.value(forKey: .isProvisioningDisabled) as? Bool ?? false }
-        set { storage.set(newValue, forKey: .isProvisioningDisabled) }
-    }
+    @UserDefault(key: .isProvisioningDisabled, defaultValue: false)
+    public var isProvisioningDisabled: Bool
 
-    public var isDevCatalog: Bool {
-        get { storage.value(forKey: .isDevCatalog) as? Bool ?? false }
-        set { storage.set(newValue, forKey: .isDevCatalog) }
-    }
+    @UserDefault(key: .isDevCatalog, defaultValue: false)
+    public var isDevCatalog: Bool
 
     func reset() {
-        storage.removeObject(forKey: .isFirstLaunchKey)
-        storage.removeObject(forKey: .selectedTabKey)
-        storage.removeObject(forKey: .notificationsSuggested)
-        storage.removeObject(forKey: .isNotificationsOn)
-        storage.removeObject(forKey: .updateChannel)
-        storage.removeObject(forKey: .installingVersion)
-        storage.removeObject(forKey: .logLevelKey)
-        storage.removeObject(forKey: .hasReaderLog)
-        storage.removeObject(forKey: .hiddenAppsKey)
-
-        storage.removeObject(forKey: .isDebugMode)
-        storage.removeObject(forKey: .isProvisioningDisabled)
-        storage.removeObject(forKey: .isDevCatalog)
+        UserDefaults.Keys
+            .allCases
+            .map { $0.rawValue }
+            .forEach(storage.removeObject)
     }
 }
 
-public extension String {
-    static var isFirstLaunchKey: String { "isFirstLaunch" }
-    static var selectedTabKey: String { "selectedTab" }
-    static var notificationsSuggested: String { "notificationsSuggested" }
-    static var isNotificationsOn: String { "isNotificationsOn" }
-    static var updateChannel: String { "updateChannel" }
-    static var installingVersion: String { "installingVersion" }
-    static var logLevelKey: String { "logLevel" }
-    static var hasReaderLog: String { "hasReaderLog" }
-    static var hiddenAppsKey: String { "hiddenApps" }
+@propertyWrapper
+public struct UserDefault<T> {
+    var getter: () -> T
+    var setter: (T) -> Void
 
-    static var isDebugMode: String { "isDebugMode" }
-    static var isProvisioningDisabled: String { "isProvisioningDisabled" }
-    static var isDevCatalog: String { "isDevCatalog" }
+    public var wrappedValue: T {
+        get { getter() }
+        set { setter(newValue) }
+    }
+
+    init(key: UserDefaults.Keys, defaultValue: T) {
+        getter = {
+            UserDefaults.standard.object(forKey: key.rawValue) as? T
+                ?? defaultValue
+        }
+        setter = { newValue in
+            UserDefaults.standard.set(newValue, forKey: key.rawValue)
+        }
+    }
+
+    init(key: UserDefaults.Keys, defaultValue: T) where T: RawRepresentable {
+        getter = {
+            guard
+                let value = UserDefaults.standard.object(forKey: key.rawValue)
+                    as? T.RawValue
+            else {
+                return defaultValue
+            }
+            return T(rawValue: value) ?? defaultValue
+        }
+        setter = { newValue in
+            UserDefaults.standard.set(newValue.rawValue, forKey: key.rawValue)
+        }
+    }
+}
+
+public extension UserDefaults {
+    enum Keys: String, CaseIterable {
+        case isFirstLaunch = "isFirstLaunch"
+        case selectedTab = "selectedTab"
+        case notificationsSuggested = "notificationsSuggested"
+        case isNotificationsOn = "isNotificationsOn"
+        case updateChannel = "updateChannel"
+        case installingVersion = "installingVersion"
+        case logLevelKey = "logLevel"
+        case hasReaderLog = "hasReaderLog"
+        case hiddenApps = "hiddenApps"
+
+        case isDebugMode = "isDebugMode"
+        case isProvisioningDisabled = "isProvisioningDisabled"
+        case isDevCatalog = "isDevCatalog"
+    }
 }

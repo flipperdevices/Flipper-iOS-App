@@ -4,7 +4,7 @@ import SwiftUI
 struct AllAppsView: View {
     @EnvironmentObject var model: Applications
 
-    @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+    @AppStorage(.hiddenApps) var hiddenApps: Set<String> = []
 
     @State private var isLoading = false
     @State private var isAllLoaded = false

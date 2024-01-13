@@ -7,7 +7,7 @@ struct MainView: View {
 
     @StateObject var tabViewController: TabViewController = .init()
 
-    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
+    @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
 
     @State private var showTodayWidgetSettings = false
 

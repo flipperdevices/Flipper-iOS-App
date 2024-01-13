@@ -7,7 +7,7 @@ struct HubView: View {
     @EnvironmentObject var applications: Applications
     @EnvironmentObject var device: Device
 
-    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
+    @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
 
     @State private var showRemoteControl = false
     @State private var applicationAlias: String?

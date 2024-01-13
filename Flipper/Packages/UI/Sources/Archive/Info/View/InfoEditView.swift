@@ -35,7 +35,7 @@ struct EditInfoView: View {
             TrailingToolbarItems {
                 SaveButton {
                     saveChanges()
-                } 
+                }
             }
         }
     }

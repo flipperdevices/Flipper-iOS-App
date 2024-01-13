@@ -5,7 +5,7 @@ struct AppSearchView: View {
     @EnvironmentObject var model: Applications
     @Environment(\.dismiss) var dismiss
 
-    @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+    @AppStorage(.hiddenApps) var hiddenApps: Set<String> = []
 
     @Binding var predicate: String
     var predicateIsValid: Bool {

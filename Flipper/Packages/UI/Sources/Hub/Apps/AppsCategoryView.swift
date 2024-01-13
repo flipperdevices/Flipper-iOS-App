@@ -5,7 +5,7 @@ struct AppsCategoryView: View {
     @EnvironmentObject var model: Applications
     @Environment(\.dismiss) var dismiss
 
-    @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+    @AppStorage(.hiddenApps) var hiddenApps: Set<String> = []
 
     let category: Applications.Category
 
@@ -50,7 +50,7 @@ struct AppsCategoryView: View {
                         }
                     }
                     .padding(.vertical, 18)
-                    .refreshable { 
+                    .refreshable {
                         reload()
                     }
                 }
