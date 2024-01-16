@@ -7,8 +7,8 @@ struct DeviceUpdateCard: View {
 
     @State private var showUpdate = false
 
-    @State private var showUpdateSuccess = false
-    @State private var showUpdateFailure = false
+    @Environment(\.alerts.device.showUpdateSuccess) var showUpdateSuccess
+    @Environment(\.alerts.device.showUpdateFailure) var showUpdateFailure
 
     private var updateVersion: String {
         updateModel.intent?.desiredVersion.description ?? ""
@@ -57,20 +57,20 @@ struct DeviceUpdateCard: View {
                 return
             }
             switch result {
-            case .succeeded: showUpdateSuccess = true
-            case .failed: showUpdateFailure = true
+            case .succeeded: showUpdateSuccess.wrappedValue = true
+            case .failed: showUpdateFailure.wrappedValue = true
             default: break
             }
         }
-        .alert(isPresented: $showUpdateSuccess) {
+        .alert(isPresented: showUpdateSuccess) {
             UpdateSucceededAlert(
-                isPresented: $showUpdateSuccess,
+                isPresented: showUpdateSuccess,
                 firmwareVersion: updateVersion
             )
         }
-        .alert(isPresented: $showUpdateFailure) {
+        .alert(isPresented: showUpdateFailure) {
             UpdateFailedAlert(
-                isPresented: $showUpdateFailure,
+                isPresented: showUpdateFailure,
                 firmwareVersion: updateVersion
             )
         }
