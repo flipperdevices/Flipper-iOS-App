@@ -36,8 +36,8 @@ private struct RootViewImpl: View {
     @State private var isPairingIssue = false
     @State private var isUpdateAvailable = false
 
+    @State var alerts: Alerts = .init()
     @State var inAppNotifications: InAppNotifications = .init()
-    @State var showArchiveItemImported: Bool = .init()
 
     init() {}
 
@@ -74,6 +74,7 @@ private struct RootViewImpl: View {
             router.recordAppOpen()
             isUpdateAvailable = await AppVersionCheck.hasUpdate
         }
+        .environment(\.alerts, $alerts)
         .environment(\.notifications, $inAppNotifications)
     }
 }

@@ -19,7 +19,7 @@ extension DeviceUpdateCard {
         @EnvironmentObject var device: Device
         @EnvironmentObject var synchronization: Synchronization
 
-        @State private var showConfirmUpdate = false
+        @Environment(\.alerts.device.showConfirmUpdate) var showConfirmUpdate
         @State private var showFileImporter = false
 
         @State private var showPauseSync = false
@@ -98,9 +98,9 @@ extension DeviceUpdateCard {
                     updateModel.startUpdate()
                 }
             }
-            .alert(isPresented: $showConfirmUpdate) {
+            .alert(isPresented: showConfirmUpdate) {
                 ConfirmUpdateAlert(
-                    isPresented: $showConfirmUpdate,
+                    isPresented: showConfirmUpdate,
                     installedVersion: updateModel.installed!,
                     availableVersion: updateModel.available!
                 ) {
@@ -147,7 +147,7 @@ extension DeviceUpdateCard {
                 showPauseSync = true
                 return
             }
-            showConfirmUpdate = true
+            showConfirmUpdate.wrappedValue = true
         }
     }
 }
