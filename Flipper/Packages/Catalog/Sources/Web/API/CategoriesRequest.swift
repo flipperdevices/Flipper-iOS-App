@@ -3,7 +3,7 @@ import Foundation
 public struct CategoriesRequest: CatalogRequest {
     public typealias Result = [Category]
 
-    var path: String { "category" }
+    var path: String { "0/category" }
     var queryItems: [URLQueryItem] = []
 
     let baseURL: URL

@@ -5,6 +5,8 @@ import FirebaseMessaging
 
 @MainActor
 public class Notifications: NSObject, ObservableObject {
+    public static let shared: Notifications = .init()
+
     let firmwareReleaseTopic = "flipper_update_firmware_release"
 
     public enum Error: Swift.Error {
@@ -20,7 +22,7 @@ public class Notifications: NSObject, ObservableObject {
         }
     }
 
-    public override init() {
+    private override init() {
         super.init()
         setup()
     }

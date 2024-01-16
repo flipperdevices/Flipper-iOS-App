@@ -28,10 +28,6 @@ struct AppIssueView: View {
         return text
     }
 
-    var github: URL {
-        application.current.links.source.uri
-    }
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
@@ -54,8 +50,8 @@ struct AppIssueView: View {
 
                 UnderlinedURL(
                     image: "GitHub",
-                    label: "Go to Repository", 
-                    url: github
+                    label: "Go to Repository",
+                    url: application.current.links.github
                 )
             }
             .padding(.vertical, 24)

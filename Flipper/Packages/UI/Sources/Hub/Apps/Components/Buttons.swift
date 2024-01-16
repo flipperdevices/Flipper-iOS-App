@@ -14,7 +14,7 @@ struct UpdateAllAppButton: View {
         } label: {
             HStack {
                 Text("UPDATE ALL")
-                    .foregroundColor(.white)
+                    .foregroundColor(.sGreenUpdate)
                     .font(.born2bSportyV2(size: 18))
 
                 if let updatesCount {
@@ -22,19 +22,22 @@ struct UpdateAllAppButton: View {
                         Group {
                             Text("\(updatesCount)")
                                 .font(.system(size: 12, weight: .bold))
-                                .foregroundColor(.sGreenUpdate)
+                                .foregroundColor(.white)
                                 .padding(.horizontal, 4)
                         }
                         .padding(2)
                     }
-                    .background(.white.opacity(0.8))
+                    .background(Color.sGreenUpdate)
                     .cornerRadius(4)
                 }
             }
             .frame(maxWidth: .infinity)
             .frame(height: 36)
-            .background(Color.sGreenUpdate)
-            .cornerRadius(8)
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .inset(by: 1)
+                    .stroke(Color.sGreenUpdate, lineWidth: 2)
+            }
         }
         .onReceive(model.$statuses) { _ in
             loadUpdates()
@@ -151,7 +154,6 @@ struct OpeningAppButton: View {
     private var animation: SwiftUI.Animation {
         .linear(duration: 3).repeatForever(autoreverses: false)
     }
-
 
     var body: some View {
         GeometryReader { proxy in

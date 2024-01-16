@@ -3,11 +3,11 @@ import SwiftUI
 
 struct AppList: View {
     @EnvironmentObject var model: Applications
-    let applications: [Applications.ApplicationInfo]
+    let applications: [Applications.Application]
     let isInstalled: Bool
 
     init(
-        applications: [Applications.ApplicationInfo],
+        applications: [Applications.Application],
         isInstalled: Bool = false
     ) {
         self.applications = applications
@@ -39,10 +39,10 @@ struct AppList: View {
             }
         }
     }
-    
+
     // MARK: Analytics
 
-    func recordApplicationOpened(application: Applications.ApplicationInfo) {
+    func recordApplicationOpened(application: Applications.Application) {
         analytics.appOpen(target: .fapHubApp(application.alias))
     }
 }

@@ -19,6 +19,11 @@ public class Emulate: ObservableObject {
         case restricted
     }
 
+    public enum EmulateConfig {
+        case none
+        case byIndex(Int)
+    }
+
     var item: ArchiveItem?
 
     private var stop = false
@@ -55,7 +60,10 @@ public class Emulate: ObservableObject {
         }
     }
 
-    public func startEmulate(_ item: ArchiveItem) {
+    public func startEmulate(
+        _ item: ArchiveItem,
+        config: EmulateConfig = .none
+    ) {
         guard self.item == nil else {
             return
         }
@@ -64,7 +72,7 @@ public class Emulate: ObservableObject {
             do {
                 try await startApp(item.kind.application)
                 try await loadFile(item.path)
-                try await startLoaded(item)
+                try await startLoaded(item, config: config)
                 recordEmulate()
             } catch {
                 logger.error("emilating key: \(error)")
@@ -134,13 +142,28 @@ public class Emulate: ObservableObject {
         state = .loaded
     }
 
-    private func startLoaded(_ item: ArchiveItem) async throws {
+    private func startLoaded(
+        _ item: ArchiveItem,
+        config: EmulateConfig
+    ) async throws {
         guard state == .loaded else {
             return
         }
         if item.kind == .subghz {
             do {
                 try await rpc.appButtonPress()
+            } catch let error as Error where error == .application(.cmdError) {
+                state = .restricted
+                throw error
+            }
+            emulateStarted = .now
+        }
+        if
+            item.kind == .infrared,
+            case .byIndex(let index) = config
+        {
+            do {
+                try await rpc.appButtonPress(index: index)
             } catch let error as Error where error == .application(.cmdError) {
                 state = .restricted
                 throw error
@@ -165,7 +188,7 @@ public class Emulate: ObservableObject {
         guard state == .emulating else {
             return
         }
-        if item.kind == .subghz {
+        if item.kind == .subghz || item.kind == .infrared {
             try await rpc.appButtonRelease()
         }
     }

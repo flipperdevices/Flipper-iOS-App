@@ -17,7 +17,7 @@ class CacheStorage: PlainArchiveStorage {
                 .map { path.appending($0) }
 
             let items = try await storage.getAllHashes(for: files) { _ in }
-            
+
             var result: [Path: Hash] = [:]
             for (key, value) in items {
                 result[key.removingFirstComponent] = value

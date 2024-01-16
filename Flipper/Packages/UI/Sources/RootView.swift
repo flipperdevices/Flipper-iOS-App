@@ -5,8 +5,6 @@ import SwiftUI
 
 public struct RootView: View {
     @StateObject var dependencies: Dependencies = .shared
-    @StateObject var notifications: Notifications = .init()
-
     @StateObject var overlayController: OverlayController = .init()
 
     public init() {}
@@ -23,7 +21,7 @@ public struct RootView: View {
             .environmentObject(dependencies.sharing)
             .environmentObject(dependencies.emulate)
             .environmentObject(dependencies.applications)
-            .environmentObject(notifications)
+            .environmentObject(Notifications.shared)
             .environmentObject(overlayController)
     }
 }

@@ -3,7 +3,7 @@ import SwiftUI
 
 struct AppsOutdatedAppAlert: View {
     @Binding var isPresented: Bool
-    let application: Applications.ApplicationInfo
+    let application: Applications.Application
     let category: Applications.Category?
 
     var action: () -> Void

@@ -13,6 +13,7 @@ struct OptionsView: View {
     @AppStorage(.isDevCatalog) var isDevCatalog = false
 
     @State private var showWidgetSettings = false
+    @State private var showRestartTheApp = false
 
     var isDeviceAvailable: Bool {
         device.status == .connected ||
@@ -100,9 +101,6 @@ struct OptionsView: View {
                         Text("Use dev catalog")
                     }
                     .tint(.a1)
-                    NavigationLink("I'm watching you") {
-                        CarrierView()
-                    }
                     ResetButton()
                 }
             }
@@ -127,6 +125,12 @@ struct OptionsView: View {
         .fullScreenCover(isPresented: $showWidgetSettings) {
             TodayWidgetSettingsView()
         }
+        .onChange(of: isDevCatalog) { _ in
+            showRestartTheApp = true
+        }
+        .alert(isPresented: $showRestartTheApp) {
+            RestartTheAppAlert(isPresented: $showRestartTheApp)
+        }
     }
 }
 
@@ -137,7 +141,7 @@ extension OptionsView {
 
         @AppStorage(.isNotificationsOn) var isNotificationsOn = false
 
-        //@State var showSpinner: Bool = false
+        // @State var showSpinner: Bool = false
 
         var body: some View {
             Toggle(isOn: $isNotificationsOn) {
@@ -177,7 +181,7 @@ extension OptionsView {
                 inApp.notifications.showDisabled = true
             }
         }
-        
+
         func enableNotifications(_ newValue: Bool) {
             Task { await enableNotifications(newValue) }
         }

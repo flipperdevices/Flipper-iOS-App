@@ -3,7 +3,7 @@ import SwiftUI
 
 extension AppRow {
     struct IconNameCategory: View {
-        let application: Applications.ApplicationInfo
+        let application: Applications.Application
         let category: Applications.Category?
 
         var body: some View {

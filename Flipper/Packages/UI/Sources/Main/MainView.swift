@@ -21,7 +21,7 @@ struct MainView: View {
                 HubView()
                     .opacity(selectedTab == .hub ? 1 : 0)
             }
- 
+
             if !tabViewController.isHidden {
                 TabView(selected: $selectedTab) {
                     tabViewController.popToRootView(for: selectedTab)
@@ -31,7 +31,7 @@ struct MainView: View {
         }
         .ignoresSafeArea(.keyboard)
         .environmentObject(tabViewController)
-        
+
         .onOpenURL { url in
             switch url {
             case .todayWidgetSettings:

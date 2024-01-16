@@ -28,20 +28,11 @@ struct CardView: View {
                 focusedField: $focusedField
             )
             .padding(.top, 21)
+            .padding(.bottom, 18)
             .padding(.horizontal, 12)
 
-            Divider()
-                .frame(height: 1)
-                .background(Color.black12)
-                .padding(.top, 18)
-
-            CardDataView(
-                item: $item,
-                isEditing: isEditing,
-                focusedField: $focusedField
-            )
-            .padding(.horizontal, 12)
-            .padding(.vertical, 18)
+            CardDataView(item: $item)
+                .padding(.bottom, 18)
         }
         .background(Color.groupedBackground)
         .cornerRadius(16)

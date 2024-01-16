@@ -7,22 +7,35 @@ struct AppView: View {
 
     let alias: String
 
+    var title: String {
+        guard !showNotFound else { return "" }
+        return application?.current.name ?? "Loading..."
+    }
+
     @State private var application: Applications.Application?
+    @State private var showNotFound = false
 
     var applicationURL: URL {
         .init(string: "https://lab.flipper.net/apps/\(alias)")!
     }
 
     var body: some View {
-        RefreshableScrollView(isEnabled: true) {
-            reload()
-        } content: {
-            if let application {
-                LoadedAppView(application: application)
-                    .padding(.vertical, 32)
+        Group {
+            if showNotFound {
+                AppNotFoundView()
+                    .padding(24)
             } else {
-                LoadingAppView()
-                    .padding(.vertical, 32)
+                RefreshableScrollView(isEnabled: true) {
+                    reload()
+                } content: {
+                    if let application {
+                        LoadedAppView(application: application)
+                            .padding(.vertical, 32)
+                    } else {
+                        LoadingAppView()
+                            .padding(.vertical, 32)
+                    }
+                }
             }
         }
         .background(Color.background)
@@ -34,7 +47,7 @@ struct AppView: View {
                     dismiss()
                 }
 
-                Title(application?.current.name ?? "Loading...")
+                Title(title)
                     .padding(.leading, 8)
             }
 
@@ -52,6 +65,8 @@ struct AppView: View {
     func load() async {
         do {
             application = try await model.loadApplication(id: alias)
+        } catch let error as Applications.Error where error == .notFound {
+            showNotFound = true
         } catch {
             print(error)
         }
@@ -88,17 +103,17 @@ struct AppView: View {
         }
 
         var changelog: String {
-            application.current.changelog
+            application.current.changelog ?? ""
         }
 
         var description: String {
             let short = application.current.shortDescription
-            let full = application.current.description
+            let full = application.current.description ?? ""
             return full.starts(with: short) ? full : short + "\n" + full
         }
 
         var github: URL {
-            application.current.links.source.uri
+            application.current.links.github
         }
 
         var manifest: URL {
@@ -176,7 +191,7 @@ struct AppView: View {
             .alert(isPresented: $isHideAppPresented) {
                 ConfirmHideAppAlert(
                     isPresented: $isHideAppPresented,
-                    application: .init(application),
+                    application: application,
                     category: model.category(for: application)
                 ) {
                     recordAppHidden(application: application)
@@ -213,6 +228,33 @@ struct AppView: View {
 }
 
 extension AppView {
+    struct AppNotFoundView: View {
+        var body: some View {
+            VStack(spacing: 24) {
+                Image("FlipperShrugging")
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundColor(.blackBlack20)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 92)
+
+                VStack(spacing: 4) {
+                    Text("App Not Found")
+                        .font(.system(size: 14, weight: .bold))
+                    Text(
+                        """
+                        This app doesn’t exist or it was removed
+                        from the App Catalog
+                        """
+                    )
+                    .font(.system(size: 14, weight: .medium))
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.black40)
+                }
+            }
+        }
+    }
+
     struct LoadingAppView: View {
         var body: some View {
             VStack(spacing: 18) {

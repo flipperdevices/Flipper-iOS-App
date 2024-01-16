@@ -11,7 +11,7 @@ extension URL {
     }
 
     static var notificationSettings: URL {
-        var url: URL? = nil
+        var url: URL?
         if #available(iOS 16, *) {
             url = .init(string: UIApplication.openNotificationSettingsURLString)
         } else if #available(iOS 15.4, *) {

@@ -3,7 +3,7 @@ import SwiftUI
 
 struct AppRow: View {
     @EnvironmentObject var model: Applications
-    let application: Applications.ApplicationInfo
+    let application: Applications.Application
     let isInstalled: Bool
 
     @State private var status: Applications.ApplicationStatus = .notInstalled
@@ -73,7 +73,7 @@ struct AppRow: View {
         @EnvironmentObject var model: Applications
         @EnvironmentObject var device: Device
 
-        let application: Applications.ApplicationInfo
+        let application: Applications.Application
         let status: Applications.ApplicationStatus
 
         @State var isNotConnectedAlertPresented = false
@@ -143,13 +143,13 @@ struct AppRow: View {
         func install() {
             recordAppInstall(application: application)
             Task {
-                await model.install(application.id)
+                await model.install(application)
             }
         }
 
         func update() {
             Task {
-                await model.update(application.id)
+                await model.update(application)
             }
         }
 
@@ -173,7 +173,7 @@ struct AppRow: View {
 
         // MARK: Analytics
 
-        func recordAppInstall(application: Applications.ApplicationInfo) {
+        func recordAppInstall(application: Applications.Application) {
             analytics.appOpen(target: .fapHubInstall(application.alias))
         }
     }

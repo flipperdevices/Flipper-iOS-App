@@ -25,6 +25,14 @@ public protocol Request {
 
 protocol CatalogRequest: Endpoint, Request {
     var queryItems: [URLQueryItem] { get set }
+
+    var method: String? { get }
+    var body: Encodable? { get }
+}
+
+extension CatalogRequest {
+    var method: String? { nil }
+    var body: Encodable? { nil }
 }
 
 extension CatalogRequest {
@@ -74,12 +82,24 @@ extension CatalogRequest {
 
 extension CatalogRequest {
     public func get() async throws -> Result {
+        var request = URLRequest(url: try makeURL())
+        if let method {
+            request.httpMethod = method
+        }
+        if let body {
+            request.contentType = ""
+            request.httpBody = try JSONEncoder().encode(body)
+        }
+        return try await object(for: request)
+    }
+
+    private func makeURL() throws -> URL {
         guard !queryItems.isEmpty else {
-            return try await object(from: endpoint)
+            return endpoint
         }
         guard var components = URLComponents(
-                url: endpoint,
-                resolvingAgainstBaseURL: false
+            url: endpoint,
+            resolvingAgainstBaseURL: false
         ) else {
             throw URLError(.badURL)
         }
@@ -87,19 +107,19 @@ extension CatalogRequest {
         guard let url = components.url else {
             throw URLError(.badURL)
         }
-        return try await object(from: url)
+        return url
     }
 
-    private func object(from url: URL) async throws -> Result {
-        let data = try await data(from: url)
+    private func object(for request: URLRequest) async throws -> Result {
+        let data = try await data(for: request)
         switch data {
         case let data as Result: return data
         default: return try JSONDecoder().decode(Result.self, from: data)
         }
     }
 
-    private func data(from url: URL) async throws -> Data {
-        let (data, response) = try await URLSession.shared.data(from: url)
+    private func data(for request: URLRequest) async throws -> Data {
+        let (data, response) = try await URLSession.shared.data(for: request)
         guard let response = response as? HTTPURLResponse else {
             throw URLError(.unknown)
         }
@@ -122,5 +142,12 @@ extension CatalogRequest {
             logger.error("decoding: \(error)")
             throw error
         }
+    }
+}
+
+private extension URLRequest {
+    var contentType: String? {
+        get { value(forHTTPHeaderField: "Content-Type") }
+        set { setValue(newValue, forHTTPHeaderField: "Content-Type") }
     }
 }

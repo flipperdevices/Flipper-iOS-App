@@ -9,7 +9,7 @@ struct DeviceView: View {
     @EnvironmentObject var synchronization: Synchronization
     @EnvironmentObject var updateModel: UpdateModel
     @EnvironmentObject var notifications: Notifications
-    
+
     @Environment(\.scenePhase) var scenePhase
 
     @State private var showForgetAction = false

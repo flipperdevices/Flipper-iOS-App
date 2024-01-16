@@ -35,7 +35,7 @@ public protocol EventHandler {
         synchronizationTime: Int,
         changesCount: Int
     )
-    
+
     func subghzProvisioning(
         sim1: String,
         sim2: String,

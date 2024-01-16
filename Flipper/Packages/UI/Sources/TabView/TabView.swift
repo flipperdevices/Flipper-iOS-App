@@ -63,8 +63,7 @@ struct TabView: View {
                 }
                 .foregroundColor(hubColor)
             }
-            .padding(.vertical, 6)
-            .padding(.horizontal, 8)
+            .padding(3)
         }
         .background(systemBackground)
     }

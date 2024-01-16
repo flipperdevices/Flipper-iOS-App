@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct AppsAPIError: View {
-    let error: Binding<Applications.APIError?>
+    let error: Binding<Applications.Error?>
     let action: () -> Void
 
     var body: some View {

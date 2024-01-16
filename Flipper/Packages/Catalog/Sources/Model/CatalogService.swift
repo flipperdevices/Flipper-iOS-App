@@ -12,12 +12,12 @@ public protocol CatalogService {
     func report(uid: String, description: String) async throws
 }
 
-public enum SortBy: String {
+public enum SortBy: String, Encodable {
     case updated = "updated_at"
     case created = "created_at"
 }
 
-public enum SortOrder: Int {
+public enum SortOrder: Int, Encodable {
     case asc = 1
     case desc = -1
 }

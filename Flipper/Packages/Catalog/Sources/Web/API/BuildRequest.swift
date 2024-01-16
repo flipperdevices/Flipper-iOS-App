@@ -2,7 +2,7 @@ import Foundation
 
 public struct BuildRequest: CatalogRequest {
     public typealias Result = Data
-    var path: String { "application/version/\(uid)/build/compatible" }
+    var path: String { "0/application/version/\(uid)/build/compatible" }
     var queryItems: [URLQueryItem] = []
 
     let baseURL: URL

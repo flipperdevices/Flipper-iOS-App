@@ -13,20 +13,18 @@ struct AppSearchView: View {
     }
 
     @State private var inProgress: Bool = false
-    @State private var applications: [Applications.ApplicationInfo] = []
-    @State private var apiError: Applications.APIError?
+    @State private var applications: [Applications.Application] = []
+    @State private var error: Applications.Error?
 
     let debouncer = Debouncer(seconds: 1)
-
-    @FocusState var isSearchFieldFocused: Bool
 
     var body: some View {
         VStack(spacing: 0) {
             if model.isOutdatedDevice {
                 AppsNotCompatibleFirmware()
                     .padding(.horizontal, 14)
-            } else if apiError != nil {
-                AppsAPIError(error: $apiError, action: reload)
+            } else if error != nil {
+                AppsAPIError(error: $error, action: reload)
                     .padding(.horizontal, 14)
             } else if !predicateIsValid {
                 Placeholder()
@@ -56,8 +54,7 @@ struct AppSearchView: View {
             PrincipalToolbarItems {
                 SearchField(
                     placeholder: "App name, description",
-                    predicate: $predicate,
-                    isFocused: _isSearchFieldFocused
+                    predicate: $predicate
                 )
                 .offset(x: -10)
             }
@@ -81,8 +78,8 @@ struct AppSearchView: View {
                     applications = try await model.search(for: string).filter {
                         !self.hiddenApps.contains($0.id)
                     }
-                } catch let error as Applications.APIError {
-                    apiError = error
+                } catch let error as Applications.Error {
+                    self.error = error
                 } catch {
                     applications = []
                 }

@@ -34,7 +34,7 @@ extension AppView {
                     .alert(isPresented: $confirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $confirmDelete,
-                            application: .init(application),
+                            application: application,
                             category: model.category(for: application)
                         ) {
                             delete()
@@ -106,13 +106,13 @@ extension AppView {
         func install() {
             recordAppInstall(application: application)
             Task {
-                await model.install(application.id)
+                await model.install(application)
             }
         }
 
         func update() {
             Task {
-                await model.update(application.id)
+                await model.update(application)
             }
         }
 
