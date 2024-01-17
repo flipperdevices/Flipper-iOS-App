@@ -100,6 +100,7 @@ extension AppView {
             .sheet(isPresented: $showRemoteControl) {
                 RemoteControlView()
                     .environmentObject(device)
+                    .navigationBarHidden(true)
             }
         }
 

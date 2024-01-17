@@ -137,6 +137,7 @@ struct AppRow: View {
             .sheet(isPresented: $showRemoteControl) {
                 RemoteControlView()
                     .environmentObject(device)
+                    .navigationBarHidden(true)
             }
         }
 
