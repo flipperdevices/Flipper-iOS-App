@@ -95,6 +95,8 @@ struct FileManagerListing: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title(path.lastComponent ?? "/")
             }
             TrailingToolbarItems {

@@ -59,6 +59,8 @@ struct StressTestView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Stress Test")
             }
         }

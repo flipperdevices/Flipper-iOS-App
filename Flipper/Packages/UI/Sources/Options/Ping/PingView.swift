@@ -62,6 +62,8 @@ struct PingView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Ping")
             }
         }

@@ -48,11 +48,10 @@ struct AppView: View {
                 BackButton {
                     dismiss()
                 }
-
-                Title(title)
-                    .padding(.leading, 8)
             }
-
+            PrincipalToolbarItems(alignment: .leading) {
+                Title(title)
+            }
             TrailingToolbarItems {
                 ShareButton {
                     share(applicationURL)

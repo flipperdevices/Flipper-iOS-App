@@ -173,6 +173,8 @@ struct RemoteControlView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Remote Control")
             }
         }

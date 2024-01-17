@@ -87,6 +87,8 @@ struct AppConcernView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Report Abuse")
             }
         }

@@ -36,6 +36,8 @@ struct LogsView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Logs")
             }
             TrailingToolbarItems {

@@ -32,6 +32,8 @@ struct LogView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title(name)
             }
             TrailingToolbarItems {

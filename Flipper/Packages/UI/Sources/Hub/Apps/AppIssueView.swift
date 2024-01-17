@@ -65,6 +65,8 @@ struct AppIssueView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Report Bug")
             }
         }

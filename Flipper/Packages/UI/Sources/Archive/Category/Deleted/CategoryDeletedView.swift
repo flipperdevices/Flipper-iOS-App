@@ -52,7 +52,9 @@ struct CategoryDeletedView: View {
                 BackButton {
                     dismiss()
                 }
-                Title("Deleted")
+            }
+            PrincipalToolbarItems(alignment: .leading) {
+                Title("Delete")
             }
             TrailingToolbarItems {
                 HStack(spacing: 8) {

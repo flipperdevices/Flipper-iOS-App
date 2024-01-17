@@ -47,6 +47,8 @@ struct SpeedTestView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Speed Test")
             }
         }

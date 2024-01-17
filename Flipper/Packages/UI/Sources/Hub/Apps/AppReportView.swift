@@ -34,6 +34,8 @@ struct AppReportView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Report App")
             }
         }

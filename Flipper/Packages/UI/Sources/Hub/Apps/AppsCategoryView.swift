@@ -66,9 +66,9 @@ struct AppsCategoryView: View {
                 BackButton {
                     dismiss()
                 }
-
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title(category.name)
-                    .padding(.leading, 8)
             }
         }
         .onChange(of: sortOrder) { _ in

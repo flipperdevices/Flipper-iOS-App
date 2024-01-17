@@ -91,6 +91,8 @@ struct DeviceInfoView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Device Info")
             }
             TrailingToolbarItems {

@@ -31,6 +31,8 @@ struct NFCToolsView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("NFC Tools")
             }
         }

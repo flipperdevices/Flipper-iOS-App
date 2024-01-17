@@ -120,6 +120,8 @@ struct OptionsView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Options")
             }
         }
