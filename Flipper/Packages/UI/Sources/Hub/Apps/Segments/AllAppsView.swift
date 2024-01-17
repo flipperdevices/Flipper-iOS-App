@@ -11,7 +11,8 @@ struct AllAppsView: View {
     @State private var categories: [Applications.Category] = []
     @State private var applications: [Applications.Application] = []
     @State private var filteredApplications: [Applications.Application] = []
-    @State private var sortOrder: Applications.SortOption = .default
+    @AppStorage(.appsSortOrder)
+    private var sortOrder: Applications.SortOption = .default
     @State private var error: Applications.Error?
 
     var body: some View {

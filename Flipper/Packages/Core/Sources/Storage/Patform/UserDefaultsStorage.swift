@@ -90,5 +90,7 @@ public extension UserDefaults {
         case isDebugMode = "isDebugMode"
         case isProvisioningDisabled = "isProvisioningDisabled"
         case isDevCatalog = "isDevCatalog"
+
+        case appsSortOrder = "appsSortOrder"
     }
 }
