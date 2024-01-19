@@ -5,10 +5,23 @@ struct InfraredMenu: View {
     let onShare: () -> Void
     let onHowTo: () -> Void
     let onDelete: () -> Void
+    let onEdit: () -> Void
 
     var body: some View {
         Card {
             VStack(alignment: .leading, spacing: 0) {
+                InfraredMenuItem(
+                    title: "Edit Remote",
+                    image: "InfraredEditor"
+                ) {
+                    isPresented = false
+                    onEdit()
+                }
+                .padding(12)
+
+                Divider()
+                    .padding(0)
+
                 InfraredMenuItem(
                     title: "Share Remote",
                     image: "Share"
@@ -72,6 +85,7 @@ struct InfraredMenu: View {
                         .renderingMode(.template)
                     Text(title)
                         .font(.system(size: 14, weight: .medium))
+                    Spacer()
                 }
                 .foregroundColor(color)
             }

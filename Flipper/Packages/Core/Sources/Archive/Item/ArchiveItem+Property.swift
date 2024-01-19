@@ -3,6 +3,12 @@ extension ArchiveItem {
         public let key: String
         public var value: String
         public var description: [String] = []
+
+        public init(key: String, value: String, description: [String] = []) {
+            self.key = key
+            self.value = value
+            self.description = description
+        }
     }
 }
 

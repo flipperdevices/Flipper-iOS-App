@@ -58,7 +58,8 @@ class ManifestTests: XCTestCase {
             buildAPI: "28.2",
             uid: "64799d29f571401a6007823d",
             versionUID: "6479fab100a677734210cf52",
-            path: "/ext/apps/Sub-GHz/spectrum_analyzer.fap")
+            path: "/ext/apps/Sub-GHz/spectrum_analyzer.fap",
+            isDevCatalog: false)
 
         let result = try FFFEncoder.encode(manifest)
 

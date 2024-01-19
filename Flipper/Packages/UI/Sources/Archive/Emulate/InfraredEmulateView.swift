@@ -12,7 +12,7 @@ struct InfraredEmulateView: View {
 
     init(item: ArchiveItem) {
         self.item = item
-        self.remotes = item.getInfraredRemotes()
+        self.remotes = item.getInfraredRemoteNames
     }
 
     enum InfraredEmulateStatus {
@@ -115,14 +115,6 @@ struct InfraredEmulateView: View {
     }
 }
 
-extension ArchiveItem {
-    func getInfraredRemotes() -> [String] {
-        return self.properties
-            .filter { $0.key == "name" }
-            .map { $0.value }
-    }
-}
-
 extension Flipper {
     var hasInfraredEmulateSupport: Bool {
         guard
@@ -132,5 +124,13 @@ extension Flipper {
             return false
         }
         return true
+    }
+}
+
+extension ArchiveItem {
+    public var getInfraredRemoteNames: [String] {
+        return self.properties
+            .filter { $0.key == "name" }
+            .map { $0.value }
     }
 }

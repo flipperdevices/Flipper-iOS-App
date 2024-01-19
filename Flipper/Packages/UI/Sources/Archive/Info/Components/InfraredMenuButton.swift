@@ -3,6 +3,7 @@ import SwiftUI
 struct InfraredMenuButton: View {
     let onShare: () -> Void
     let onDelete: () -> Void
+    let onEdit: () -> Void
 
     @State private var showMenu = false
     @State private var showHowToUse: Bool = false
@@ -21,7 +22,8 @@ struct InfraredMenuButton: View {
                     isPresented: $showMenu,
                     onShare: onShare,
                     onHowTo: { showHowToUse = true },
-                    onDelete: onDelete
+                    onDelete: onDelete,
+                    onEdit: onEdit
                 )
             }
             .padding(.horizontal, 14)

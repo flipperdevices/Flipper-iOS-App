@@ -10,6 +10,7 @@ struct InfraredInfoView: View {
 
     @State private var showHowToUse: Bool = false
     @State private var showInfraredOption = false
+    @State private var showEditor = false
 
     @Environment(\.dismiss) private var dismiss
 
@@ -43,9 +44,20 @@ struct InfraredInfoView: View {
             }
 
             TrailingToolbarItems {
-                InfraredMenuButton(onShare: onShare, onDelete: onDelete)
+                InfraredMenuButton(
+                    onShare: onShare,
+                    onDelete: onDelete,
+                    onEdit: openEditor
+                )
             }
         }
+        .fullScreenCover(isPresented: $showEditor) {
+            InfraredEditorView(item: $current)
+        }
+    }
+
+    private func openEditor() {
+        showEditor = true
     }
 
     struct InfraredMenuItem: View {
