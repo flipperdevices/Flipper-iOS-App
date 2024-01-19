@@ -124,3 +124,16 @@ extension ArchiveItem {
         properties["Filetype"] == "Flipper SubGhz RAW File"
     }
 }
+
+extension ArchiveItem {
+    static var allowedCharacters: String {
+        #"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"# +
+        #"!#\$%&'()-@^_`{}~ "#
+    }
+
+    public static func filterInvalidCharacters(
+        _ string: any StringProtocol
+    ) -> String {
+        .init(string.filter { allowedCharacters.contains($0) })
+    }
+}

@@ -1,62 +1,29 @@
-import Core
-
 extension ArchiveItem {
     public struct InfraredRemote: Equatable {
-        public static func == (
-            lhs: Core.ArchiveItem.InfraredRemote,
-            rhs: Core.ArchiveItem.InfraredRemote
-        ) -> Bool {
-            lhs.name == rhs.name && lhs.type == rhs.type
-        }
+        public var name: String
+        public let type: RemoteType
 
-        var name: String
-        let type: InfraredRemoteType
+        public enum RemoteType: Equatable {
+            case raw(Raw)
+            case parsed(Parsed)
 
-        public init(name: String, type: InfraredRemoteType) {
-            self.name = name
-            self.type = type
-        }
-    }
+            public struct Raw: Equatable {
+                let frequency: String
+                let dutyCycle: String
+                let data: String
+            }
 
-    public typealias InfraredRemoteRaw = (
-        frequency: String,
-        dutyCycle: String,
-        data: String
-    )
-
-    public typealias InfraredRemoteParsed = (
-        protocol: String,
-        address: String,
-        command: String
-    )
-
-    public enum InfraredRemoteType: Equatable {
-        public static func == (
-            lhs: Core.ArchiveItem.InfraredRemoteType,
-            rhs: Core.ArchiveItem.InfraredRemoteType
-        ) -> Bool {
-            switch (lhs, rhs) {
-            case let (.raw(lhsRaw), .raw(rhsRaw)):
-                return lhsRaw == rhsRaw
-            case let (.parsed(lhsParsed), .parsed(rhsParsed)):
-                return lhsParsed == rhsParsed
-            default:
-                return false
+            public struct Parsed: Equatable {
+                let `protocol`: String
+                let address: String
+                let command: String
             }
         }
-
-        case raw(InfraredRemoteRaw)
-        case parsed(InfraredRemoteParsed)
     }
 
     public var infraredRemotes: [InfraredRemote] {
-        get {
-            let splitedProperties = splitProperty(by: "name")
-            return buildInfraredRemote(from: splitedProperties)
-        }
-        set {
-            self.properties = buildInfraredProperties(by: newValue)
-        }
+        get { buildInfraredRemotes(from: splitProperty(by: "name")) }
+        set { properties = buildInfraredProperties(by: newValue) }
     }
 
     private var metaKeyProperty: [String] {
@@ -66,6 +33,7 @@ extension ArchiveItem {
     private func splitProperty(by key: String) -> [[Property]] {
         var result: [[Property]] = []
         var currentGroup: [Property] = []
+
         for property in properties {
             if property.key == key {
                 if !currentGroup.isEmpty {
@@ -77,6 +45,7 @@ extension ArchiveItem {
                 currentGroup.append(property)
             }
         }
+
         if !currentGroup.isEmpty {
             result.append(currentGroup)
         }
@@ -84,7 +53,7 @@ extension ArchiveItem {
         return result
     }
 
-    private func buildInfraredRemote(
+    private func buildInfraredRemotes(
         from propertyGroups: [[Property]]
     ) -> [InfraredRemote] {
         var result: [InfraredRemote] = []
@@ -103,12 +72,11 @@ extension ArchiveItem {
                     let data = group["data"]
                 else { continue }
 
-                let raw = (
+                let remote = InfraredRemote(name: name, type: .raw(.init(
                     frequency: frequency,
                     dutyCycle: dutyCycle,
                     data: data
-                )
-                let remote = InfraredRemote(name: name, type: .raw(raw))
+                )))
 
                 result.append(remote)
             case "parsed":
@@ -118,15 +86,15 @@ extension ArchiveItem {
                     let command = group["command"]
                 else { continue }
 
-                let parsed = (
+                let remote = InfraredRemote(name: name, type: .parsed(.init(
                     protocol: proto,
                     address: address,
                     command: command
-                )
-                let remote = InfraredRemote(name: name, type: .parsed(parsed))
+                )))
 
                 result.append(remote)
-            default: continue
+            default:
+                continue
             }
         }
 
@@ -146,23 +114,22 @@ extension ArchiveItem {
 
             switch remote.type {
             case .raw(let raw):
-                let remoteProperties = [
+                result.append(contentsOf: [
                     Property(key: "type", value: "raw"),
                     Property(key: "frequency", value: raw.frequency),
                     Property(key: "duty_cycle", value: raw.dutyCycle),
                     Property(key: "data", value: raw.data)
-                ]
-                result += remoteProperties
+                ])
             case .parsed(let parsed):
-                let remoteProperties = [
+                result.append(contentsOf: [
                     Property(key: "type", value: "parsed"),
                     Property(key: "protocol", value: parsed.protocol),
                     Property(key: "address", value: parsed.address),
                     Property(key: "command", value: parsed.command)
-                ]
-                result += remoteProperties
+                ])
             }
         }
+
         return result
     }
 }

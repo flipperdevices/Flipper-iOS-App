@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 import Combine
 
@@ -31,23 +32,19 @@ extension InfraredEditorView {
                     .foregroundColor(.red)
                     .onTapGesture(perform: onDelete)
             }
-            .onReceive(Just(text)) { newValue in
-                let remoteNameLimit = 21
-                let filtered = newValue.prefix(remoteNameLimit)
-                guard filtered != newValue else { return }
-                text = String(filtered)
+            .onChange(of: text) { _ in
+                updateName()
+            }
+            .onAppear {
+                updateName()
             }
         }
-    }
-}
 
-private extension StringProtocol {
-    var allowedCharacters: String {
-        #"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"# +
-        #"!#\$%&'()-@^_`{}~ "#
-    }
-
-    func filtered() -> String {
-        .init(filter { allowedCharacters.contains($0) })
+        func updateName() {
+            let remoteNameLimit = 21
+            let prefix = text.prefix(remoteNameLimit)
+            let filtered = ArchiveItem.filterInvalidCharacters(prefix)
+            guard filtered != text else { return }
+        }
     }
 }

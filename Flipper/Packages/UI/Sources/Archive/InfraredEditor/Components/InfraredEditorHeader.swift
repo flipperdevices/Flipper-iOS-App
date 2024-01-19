@@ -28,7 +28,7 @@ extension InfraredEditorView {
                         onSave()
                     } label: {
                         Text("Save")
-                            .foregroundColor(canSave ? .a2 : .black40)
+                            .foregroundColor(canSave ? .primary : .black40)
                             .font(.system(size: 14, weight: .medium))
                             .padding(.horizontal, 14)
                     }

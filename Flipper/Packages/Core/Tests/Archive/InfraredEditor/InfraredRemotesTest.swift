@@ -1,5 +1,4 @@
-import UI
-import Core
+@testable import Core
 import XCTest
 
 class InfraredRemoteParserTest: XCTestCase {
@@ -27,11 +26,17 @@ class InfraredRemoteParserTest: XCTestCase {
     static let mockRemotes = [
         ArchiveItem.InfraredRemote(
             name: "Up",
-            type: .parsed(("NECext", "EE 87 00 00", "0B A0 00 00"))
+            type: .parsed(.init(
+                protocol: "NECext",
+                address: "EE 87 00 00",
+                command: "0B A0 00 00"))
         ),
         ArchiveItem.InfraredRemote(
             name: "Right",
-            type: .raw(("38000", "0.330000", "3491 1722 433 435"))
+            type: .raw(.init(
+                frequency: "38000",
+                dutyCycle: "0.330000",
+                data: "3491 1722 433 435"))
         )
     ]
 

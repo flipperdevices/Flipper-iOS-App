@@ -19,6 +19,9 @@ struct InfraredMenu: View {
                 }
                 .padding(12)
 
+                Divider()
+                    .padding(0)
+
                 InfraredMenuItem(
                     title: "Share Remote",
                     image: "Share"
@@ -82,6 +85,7 @@ struct InfraredMenu: View {
                         .renderingMode(.template)
                     Text(title)
                         .font(.system(size: 14, weight: .medium))
+                    Spacer()
                 }
                 .foregroundColor(color)
             }
