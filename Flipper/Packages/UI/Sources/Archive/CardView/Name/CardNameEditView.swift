@@ -19,11 +19,6 @@ extension CardView {
                     focusedField: $focusedField
                 )
                 .font(.system(size: 14, weight: .medium))
-                .onReceive(Just(item.name.value)) { newValue in
-                    let filtered = newValue.filtered().prefix(nameLimit)
-                    guard filtered != newValue else { return }
-                    item.name.value = String(filtered)
-                }
 
                 UTextField(
                     title: "Note:",
@@ -32,23 +27,35 @@ extension CardView {
                     focusedField: $focusedField
                 )
                 .font(.system(size: 14, weight: .medium))
-                .onReceive(Just(item.name.value)) { newValue in
-                    let filtered = newValue.prefix(noteLimit)
-                    guard filtered != newValue else { return }
-                    item.name.value = String(filtered)
-                }
+            }
+            .onChange(of: item.name.value) { _ in
+                updateName()
+            }
+            .onChange(of: item.note) { _ in
+                updateNote()
+            }
+            .onAppear {
+                updateName()
+                updateNote()
             }
         }
-    }
-}
 
-private extension StringProtocol {
-    var allowedCharacters: String {
-        #"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"# +
-        #"!#\$%&'()-@^_`{}~ "#
-    }
+        func updateName() {
+            let filtered = ArchiveItem
+                .filterInvalidCharacters(item.name.value)
+                .prefix(nameLimit)
 
-    func filtered() -> String {
-        .init(filter { allowedCharacters.contains($0) })
+            guard filtered != item.name.value else { return }
+            item.name.value = String(filtered)
+        }
+
+        func updateNote() {
+            let filtered = ArchiveItem
+                .filterInvalidCharacters(item.note)
+                .prefix(noteLimit)
+
+            guard filtered != item.note else { return }
+            item.note = String(filtered)
+        }
     }
 }

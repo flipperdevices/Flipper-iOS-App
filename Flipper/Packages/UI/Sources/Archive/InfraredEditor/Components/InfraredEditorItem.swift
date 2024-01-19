@@ -7,6 +7,8 @@ extension InfraredEditorView {
         @Binding var text: String
         let onDelete: () -> Void
 
+        let nameLimit = 21
+
         var body: some View {
             HStack(spacing: 18) {
                 HStack {
@@ -41,10 +43,12 @@ extension InfraredEditorView {
         }
 
         func updateName() {
-            let remoteNameLimit = 21
-            let prefix = text.prefix(remoteNameLimit)
-            let filtered = ArchiveItem.filterInvalidCharacters(prefix)
+            let filtered = ArchiveItem
+                .filterInvalidCharacters(text)
+                .prefix(nameLimit)
+
             guard filtered != text else { return }
+            text = String(filtered)
         }
     }
 }
