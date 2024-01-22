@@ -13,7 +13,6 @@ extension AppView {
             switch status {
             case .installed: return true
             case .outdated: return true
-            case .canOpen: return true
             default: return false
             }
         }
@@ -60,8 +59,14 @@ extension AppView {
                         }
                     }
                     .font(.born2bSportyV2(size: 32))
-                case .installed:
+                case .installed where !model.hasOpenAppSupport:
                     InstalledAppButton()
+                        .font(.born2bSportyV2(size: 32))
+                case .installed:
+                    OpenAppButton(action: openApp)
+                        .font(.born2bSportyV2(size: 32))
+                case .opening:
+                    OpeningAppButton()
                         .font(.born2bSportyV2(size: 32))
                 case .outdated:
                     UpdateAppButton {
@@ -78,12 +83,6 @@ extension AppView {
                     .font(.born2bSportyV2(size: 32))
                 case .checking:
                     AnimatedPlaceholder()
-                case .canOpen:
-                    OpenAppButton(action: openApp)
-                        .font(.born2bSportyV2(size: 32))
-                case .opening:
-                    OpeningAppButton()
-                        .font(.born2bSportyV2(size: 32))
                 }
             }
             .frame(height: 46)

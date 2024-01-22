@@ -6,7 +6,10 @@ struct AppRow: View {
     let application: Applications.Application
     let isInstalled: Bool
 
-    @State private var status: Applications.ApplicationStatus = .notInstalled
+    var status: Applications.ApplicationStatus {
+        model.statuses[application.id] ?? .notInstalled
+    }
+
     @State private var showConfirmDelete = false
 
     var isBuildReady: Bool {
@@ -58,9 +61,6 @@ struct AppRow: View {
                     .frame(height: 84)
             }
         }
-        .onReceive(model.$statuses) { statuses in
-            status = statuses[application.id] ?? .notInstalled
-        }
     }
 
     func delete() {
@@ -100,8 +100,12 @@ struct AppRow: View {
                             isNotConnectedAlertPresented = true
                         }
                     }
-                case .installed:
+                case .installed where !model.hasOpenAppSupport:
                     InstalledAppButton()
+                case .installed:
+                    OpenAppButton(action: openApp)
+                case .opening:
+                    OpeningAppButton()
                 case .outdated:
                     UpdateAppButton {
                         if model.deviceInfo != nil {
@@ -116,10 +120,6 @@ struct AppRow: View {
                     .disabled(true)
                 case .checking:
                     AnimatedPlaceholder()
-                case .canOpen:
-                    OpenAppButton(action: openApp)
-                case .opening:
-                    OpeningAppButton()
                 }
             }
             .frame(width: 92, height: 34)

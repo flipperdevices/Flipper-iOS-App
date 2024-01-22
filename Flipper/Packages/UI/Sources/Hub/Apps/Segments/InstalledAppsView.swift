@@ -4,7 +4,20 @@ import SwiftUI
 struct InstalledAppsView: View {
     @EnvironmentObject var model: Applications
 
-    @State private var applications: [Applications.Application] = []
+    var applications: [Applications.Application] {
+        model.installed.sorted {
+            guard
+                let priority0 = model.statuses[$0.id]?.priotiry,
+                let priority1 = model.statuses[$1.id]?.priotiry
+            else {
+                return false
+            }
+            guard priority0 != priority1 else {
+                return $0.current.name < $1.current.name
+            }
+            return priority0 < priority1
+        }
+    }
 
     var outdated: [Applications.Application] {
         applications.filter { model.statuses[$0.id] == .outdated }
@@ -51,50 +64,13 @@ struct InstalledAppsView: View {
                             }
                         }
                         .opacity(noApps ? 0 : 1)
-                        .refreshable {
-                            reload()
-                        }
+                    }
+                    .refreshable {
+                        reload()
                     }
                 }
             }
         }
-        .onReceive(model.$installed) { installed in
-            update(installed: installed, statuses: model.statuses)
-        }
-        .onReceive(model.$statuses) { statuses in
-            update(installed: applications, statuses: statuses)
-        }
-    }
-
-    func update(
-        installed: [Applications.Application],
-        statuses: [Applications.Application.ID: Applications.ApplicationStatus]
-    ) {
-        // TODO: improve sorting
-        let sorted = installed.sorted { $0.alias < $1.alias }
-
-        applications = []
-        applications.append(contentsOf: sorted.filter {
-            switch model.statuses[$0.id] {
-            case .installing: return true
-            default: return false
-            }
-        })
-        applications.append(contentsOf: sorted.filter {
-            switch model.statuses[$0.id] {
-            case .updating: return true
-            default: return false
-            }
-        })
-        applications.append(contentsOf: sorted.filter {
-            switch model.statuses[$0.id] {
-            case .outdated: return true
-            default: return false
-            }
-        })
-        applications.append(contentsOf: sorted.filter { sorted in
-            !applications.contains { $0.alias == sorted.alias }
-        })
     }
 
     func updateAll() {
@@ -104,7 +80,6 @@ struct InstalledAppsView: View {
     }
 
     func reload() {
-        applications = []
         Task {
             try await model.loadInstalled()
         }

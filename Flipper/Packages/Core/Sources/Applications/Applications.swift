@@ -124,7 +124,7 @@ public class Applications: ObservableObject {
                     statuses[application.id] = .installing(progress)
                 }
             }
-            statuses[application.id] = installedAppStatus()
+            statuses[application.id] = .installed
         } catch {
             logger.error("install app: \(error)")
         }
@@ -138,7 +138,7 @@ public class Applications: ObservableObject {
                     statuses[application.id] = .updating(progress)
                 }
             }
-            statuses[application.id] = installedAppStatus()
+            statuses[application.id] = .installed
         } catch {
             logger.error("update app: \(error)")
         }
@@ -176,7 +176,7 @@ public class Applications: ObservableObject {
         do {
             statuses[id] = .opening
             defer {
-                statuses[id] = .canOpen
+                statuses[id] = .installed
             }
 
             guard
@@ -370,7 +370,7 @@ public class Applications: ObservableObject {
             installedStatus = .loaded
         } catch {
             installedStatus = .error
-            installed.forEach { statuses[$0.id] = installedAppStatus() }
+            installed.forEach { statuses[$0.id] = .installed }
             logger.error("load installed: \(error)")
         }
     }
@@ -389,12 +389,23 @@ public class Applications: ObservableObject {
         case outdated
         case building
         case checking
-        case canOpen
         case opening
+
+        public var priotiry: Int {
+            switch self {
+            case .installing: return 1
+            case .updating: return 2
+            case .notInstalled: return 3
+            case .outdated: return 4
+            case .installed, .opening: return 5
+            case .building: return 7
+            case .checking: return 8
+            }
+        }
     }
 
-    private func installedAppStatus() -> ApplicationStatus {
-        flipper?.hasOpenAppSupport == true ? .canOpen : .installed
+    public var hasOpenAppSupport: Bool {
+        flipper?.hasOpenAppSupport ?? false
     }
 
     private func status(
@@ -412,7 +423,7 @@ public class Applications: ObservableObject {
                 ? .outdated
                 : .building
         }
-        return installedAppStatus()
+        return .installed
     }
 
     public func report(
