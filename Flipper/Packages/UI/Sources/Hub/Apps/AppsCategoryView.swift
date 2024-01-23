@@ -23,16 +23,15 @@ struct AppsCategoryView: View {
 
     var body: some View {
         ZStack {
-            EmptyCategoryView()
-                .padding(.horizontal, 24)
-                .opacity(isEmpty ? 1 : 0)
-
             if model.isOutdatedDevice {
                 AppsNotCompatibleFirmware()
                     .padding(.horizontal, 14)
             } else if error != nil {
                 AppsAPIError(error: $error, action: reload)
                     .padding(.horizontal, 14)
+            } else if isEmpty {
+                EmptyCategoryView()
+                    .padding(.horizontal, 24)
             } else {
                 LazyScrollView {
                     await load()
@@ -55,7 +54,6 @@ struct AppsCategoryView: View {
                         reload()
                     }
                 }
-                .opacity(!isEmpty ? 1 : 0)
             }
         }
         .background(Color.background)
