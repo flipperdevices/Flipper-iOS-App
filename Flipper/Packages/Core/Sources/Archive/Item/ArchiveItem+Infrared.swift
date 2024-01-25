@@ -132,4 +132,8 @@ extension ArchiveItem {
 
         return result
     }
+
+    public var getInfraredRemoteNames: [String] {
+        return infraredRemotes.map { $0.name }
+    }
 }

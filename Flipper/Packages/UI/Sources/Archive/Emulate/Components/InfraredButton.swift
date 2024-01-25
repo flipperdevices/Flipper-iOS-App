@@ -21,7 +21,7 @@ extension InfraredEmulateView {
                 ? isEmulating
                     ? sendingColor
                     : Color.a1
-                : .black8
+                : .emulateDisabled
         }
         var sendingColor: Color {
             .init(.init(red: 1.0, green: 0.65, blue: 0.29, alpha: 1.0))

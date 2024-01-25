@@ -26,6 +26,7 @@ struct InfraredInfoView: View {
                 .padding(.horizontal, 24)
 
                 EmulateView(item: current)
+                    .padding(.bottom, 12)
 
                 Spacer()
             }
@@ -40,7 +41,7 @@ struct InfraredInfoView: View {
             }
 
             PrincipalToolbarItems {
-                Title("Key Info", description: current.name.value)
+                Title(current.name.value, description: "Remote Info")
             }
 
             TrailingToolbarItems {

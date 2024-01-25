@@ -158,6 +158,10 @@ public extension Color {
         .init(red: 1.0, green: 0.75, blue: 0.91)
     }
 
+    static var emulateDisabled: Color {
+        .init("EmulateDisable")
+    }
+
     // HEX Editor
 
     static var hexSelection: Color {
