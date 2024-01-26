@@ -50,9 +50,7 @@ extension CardView {
         }
 
         func updateNote() {
-            let filtered = ArchiveItem
-                .filterInvalidCharacters(item.note)
-                .prefix(noteLimit)
+            let filtered = item.note.prefix(noteLimit)
 
             guard filtered != item.note else { return }
             item.note = String(filtered)
