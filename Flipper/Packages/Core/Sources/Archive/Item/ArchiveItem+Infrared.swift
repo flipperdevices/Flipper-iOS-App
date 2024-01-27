@@ -1,9 +1,9 @@
 extension ArchiveItem {
-    public struct InfraredRemote: Equatable {
+    public struct InfraredSignal: Equatable {
         public var name: String
-        public let type: RemoteType
+        public let type: SignalType
 
-        public enum RemoteType: Equatable {
+        public enum SignalType: Equatable {
             case raw(Raw)
             case parsed(Parsed)
 
@@ -21,21 +21,21 @@ extension ArchiveItem {
         }
     }
 
-    public var infraredRemotes: [InfraredRemote] {
-        get { buildInfraredRemotes(from: splitProperty(by: "name")) }
-        set { properties = buildInfraredProperties(by: newValue) }
+    public var infraredSignals: [InfraredSignal] {
+        get { parseSignals(from: splitProperties()) }
+        set { properties = joinProperties(signals: newValue) }
     }
 
     private var metaKeyProperty: [String] {
         ["Filetype", "Version"]
     }
 
-    private func splitProperty(by key: String) -> [[Property]] {
+    private func splitProperties() -> [[Property]] {
         var result: [[Property]] = []
         var currentGroup: [Property] = []
 
         for property in properties {
-            if property.key == key {
+            if property.key == "name" {
                 if !currentGroup.isEmpty {
                     result.append(currentGroup)
                     currentGroup = []
@@ -53,10 +53,10 @@ extension ArchiveItem {
         return result
     }
 
-    private func buildInfraredRemotes(
+    private func parseSignals(
         from propertyGroups: [[Property]]
-    ) -> [InfraredRemote] {
-        var result: [InfraredRemote] = []
+    ) -> [InfraredSignal] {
+        var result: [InfraredSignal] = []
 
         for group in propertyGroups {
             guard
@@ -72,7 +72,7 @@ extension ArchiveItem {
                     let data = group["data"]
                 else { continue }
 
-                let remote = InfraredRemote(name: name, type: .raw(.init(
+                let remote = InfraredSignal(name: name, type: .raw(.init(
                     frequency: frequency,
                     dutyCycle: dutyCycle,
                     data: data
@@ -86,7 +86,7 @@ extension ArchiveItem {
                     let command = group["command"]
                 else { continue }
 
-                let remote = InfraredRemote(name: name, type: .parsed(.init(
+                let remote = InfraredSignal(name: name, type: .parsed(.init(
                     protocol: proto,
                     address: address,
                     command: command
@@ -101,18 +101,18 @@ extension ArchiveItem {
         return result
     }
 
-    private func buildInfraredProperties(
-        by remotes: [InfraredRemote]
+    private func joinProperties(
+        signals: [InfraredSignal]
     ) -> [Property] {
         var result: [Property] = [
             Property(key: "Filetype", value: "IR signals file"),
             Property(key: "Version", value: "1")
         ]
 
-        for remote in remotes {
-            result.append(Property(key: "name", value: remote.name))
+        for signal in signals {
+            result.append(Property(key: "name", value: signal.name))
 
-            switch remote.type {
+            switch signal.type {
             case .raw(let raw):
                 result.append(contentsOf: [
                     Property(key: "type", value: "raw"),
@@ -133,7 +133,7 @@ extension ArchiveItem {
         return result
     }
 
-    public var getInfraredRemoteNames: [String] {
-        return infraredRemotes.map { $0.name }
+    public var infraredSignalNames: [String] {
+        return infraredSignals.map { $0.name }
     }
 }

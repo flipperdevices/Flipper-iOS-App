@@ -7,7 +7,7 @@ struct InfraredEditorView: View {
 
     @Binding var item: ArchiveItem
 
-    @State private var remotes: [ArchiveItem.InfraredRemote] = []
+    @State private var remotes: [ArchiveItem.InfraredSignal] = []
     @State private var showSaveChanges = false
     @State private var error: String?
 
@@ -60,7 +60,7 @@ struct InfraredEditorView: View {
     }
 
     private func cancel() {
-        if remotes != item.infraredRemotes {
+        if remotes != item.infraredSignals {
             showSaveChanges = true
         } else {
             dismiss()
@@ -68,7 +68,7 @@ struct InfraredEditorView: View {
     }
 
     private func save() {
-        item.infraredRemotes = remotes
+        item.infraredSignals = remotes
         Task {
             do {
                 try await archive.save(item, as: item)
@@ -88,6 +88,6 @@ struct InfraredEditorView: View {
     }
 
     private func load() {
-        remotes = item.infraredRemotes
+        remotes = item.infraredSignals
     }
 }
