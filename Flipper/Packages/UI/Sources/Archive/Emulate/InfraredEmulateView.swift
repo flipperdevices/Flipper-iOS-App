@@ -8,11 +8,11 @@ struct InfraredEmulateView: View {
     @State var currentEmulateIndex: Int?
 
     let item: ArchiveItem
-    let remotes: [String]
+    let names: [String]
 
     init(item: ArchiveItem) {
         self.item = item
-        self.remotes = item.getInfraredRemoteNames
+        self.names = item.infraredSignalNames
     }
 
     enum InfraredEmulateStatus {
@@ -37,8 +37,8 @@ struct InfraredEmulateView: View {
         return .canEmulate(item.status == .synchronized)
     }
 
-    var isEmptyRemotes: Bool {
-        remotes.isEmpty
+    var isEmptySignals: Bool {
+        names.isEmpty
     }
 
     var body: some View {
@@ -46,27 +46,27 @@ struct InfraredEmulateView: View {
         case .disconnected:
             notSupportEmulateView()
             EmulateSupportView(text: "Flipper not connected")
-                .padding(.bottom, isEmptyRemotes ? 0 : 4)
+                .padding(.bottom, isEmptySignals ? 0 : 4)
         case .notSupported:
             notSupportEmulateView()
             EmulateSupportView(text: "Update firmware to use this feature")
-                .padding(.bottom, isEmptyRemotes ? 0 : 4)
+                .padding(.bottom, isEmptySignals ? 0 : 4)
         case .synchronizing:
-            if isEmptyRemotes {
+            if isEmptySignals {
                 ConnectingButton()
             } else {
                 VStack(alignment: .center, spacing: 12.0) {
-                    ForEach(0 ..< remotes.count, id: \.self) { _ in
+                    ForEach(0 ..< names.count, id: \.self) { _ in
                         ConnectingButton()
                     }
                 }
             }
         case .canEmulate(let synchronized):
-            if isEmptyRemotes {
+            if isEmptySignals {
                 EmulateEmptyView()
             } else {
                 VStack(alignment: .center, spacing: 12.0) {
-                    ForEach(0 ..< remotes.count, id: \.self) { index in
+                    ForEach(0 ..< names.count, id: \.self) { index in
                         infraredRemoteView(index: index)
                             .disabled(!synchronized)
                     }
@@ -113,7 +113,7 @@ struct InfraredEmulateView: View {
 
     @ViewBuilder private func infraredRemoteView(index: Int) -> some View {
         InfraredButton(
-            text: remotes[index],
+            text: names[index],
             isEmulating: currentEmulateIndex == index,
             emulateDuration: item.duration,
             onPressed: { processStartEmulate(index: index) },
@@ -123,11 +123,11 @@ struct InfraredEmulateView: View {
 
     @ViewBuilder private func notSupportEmulateView() -> some View {
         VStack(alignment: .center, spacing: 12.0) {
-            if remotes.count > 3 {
+            if names.count > 3 {
                 infraredRemoteView(index: 0)
                 infraredRemoteView(index: 1)
                 HStack(alignment: .center) {
-                    Text(remotes[2])
+                    Text(names[2])
                         .font(.born2bSportyV2(size: 23))
                 }
                 .frame(height: 48)
@@ -142,7 +142,7 @@ struct InfraredEmulateView: View {
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
-                ForEach(0 ..< remotes.count, id: \.self) { index in
+                ForEach(0 ..< names.count, id: \.self) { index in
                     infraredRemoteView(index: index)
                 }
             }

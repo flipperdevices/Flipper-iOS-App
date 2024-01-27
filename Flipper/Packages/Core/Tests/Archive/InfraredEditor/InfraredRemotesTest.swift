@@ -24,14 +24,14 @@ class InfraredRemoteParserTest: XCTestCase {
     ]
 
     static let mockRemotes = [
-        ArchiveItem.InfraredRemote(
+        ArchiveItem.InfraredSignal(
             name: "Up",
             type: .parsed(.init(
                 protocol: "NECext",
                 address: "EE 87 00 00",
                 command: "0B A0 00 00"))
         ),
-        ArchiveItem.InfraredRemote(
+        ArchiveItem.InfraredSignal(
             name: "Right",
             type: .raw(.init(
                 frequency: "38000",
@@ -49,7 +49,7 @@ class InfraredRemoteParserTest: XCTestCase {
         )
         XCTAssertEqual(
             InfraredRemoteParserTest.mockRemotes,
-            item.infraredRemotes
+            item.infraredSignals
         )
     }
 
@@ -60,7 +60,7 @@ class InfraredRemoteParserTest: XCTestCase {
             properties: [],
             shadowCopy: []
         )
-        item.infraredRemotes = InfraredRemoteParserTest.mockRemotes
+        item.infraredSignals = InfraredRemoteParserTest.mockRemotes
         XCTAssertEqual(
             item.properties,
             InfraredRemoteParserTest.mockProperties

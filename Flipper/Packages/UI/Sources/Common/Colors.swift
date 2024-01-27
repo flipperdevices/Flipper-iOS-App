@@ -159,7 +159,7 @@ public extension Color {
     }
 
     static var emulateDisabled: Color {
-        .init("EmulateDisable")
+        .init("EmulateDisabled")
     }
 
     // HEX Editor
