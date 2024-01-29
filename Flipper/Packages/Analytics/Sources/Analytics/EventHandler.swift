@@ -44,6 +44,8 @@ public protocol EventHandler {
         provided: String,
         source: RegionSource
     )
+
+    func debug(info: DebugInfo)
 }
 
 public enum OpenTarget: Sendable {
@@ -74,6 +76,22 @@ public enum OpenTarget: Sendable {
         case .fapHubInstall(let application): return application
         case .fapHubHide(let application): return application
         default: return ""
+        }
+    }
+}
+
+public enum DebugInfo: Sendable {
+    case unknownNFCVersion(String)
+
+    public var key: String {
+        switch self {
+        case .unknownNFCVersion(_): return "nfc_failed_parse"
+        }
+    }
+
+    public var value: String {
+        switch self {
+        case .unknownNFCVersion(let value): return value
         }
     }
 }

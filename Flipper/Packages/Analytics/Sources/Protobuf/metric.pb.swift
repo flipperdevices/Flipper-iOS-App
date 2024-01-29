@@ -152,6 +152,14 @@ struct Metric_MetricEventsCollection {
     set {event = .subghzProvisioning(newValue)}
   }
 
+  var debugInfo: Metric_Events_DebugInfo {
+    get {
+      if case .debugInfo(let v)? = event {return v}
+      return Metric_Events_DebugInfo()
+    }
+    set {event = .debugInfo(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Event: Equatable {
@@ -162,6 +170,7 @@ struct Metric_MetricEventsCollection {
     case updateFlipperEnd(Metric_Events_UpdateFlipperEnd)
     case synchronizationEnd(Metric_Events_SynchronizationEnd)
     case subghzProvisioning(Metric_Events_SubGhzProvisioning)
+    case debugInfo(Metric_Events_DebugInfo)
 
   #if !swift(>=4.1)
     static func ==(lhs: Metric_MetricEventsCollection.OneOf_Event, rhs: Metric_MetricEventsCollection.OneOf_Event) -> Bool {
@@ -195,6 +204,10 @@ struct Metric_MetricEventsCollection {
       }()
       case (.subghzProvisioning, .subghzProvisioning): return {
         guard case .subghzProvisioning(let l) = lhs, case .subghzProvisioning(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.debugInfo, .debugInfo): return {
+        guard case .debugInfo(let l) = lhs, case .debugInfo(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -292,6 +305,7 @@ extension Metric_MetricEventsCollection: SwiftProtobuf.Message, SwiftProtobuf._M
     5: .standard(proto: "update_flipper_end"),
     12: .standard(proto: "synchronization_end"),
     13: .standard(proto: "subghz_provisioning"),
+    14: .standard(proto: "debug_info"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -391,6 +405,19 @@ extension Metric_MetricEventsCollection: SwiftProtobuf.Message, SwiftProtobuf._M
           self.event = .subghzProvisioning(v)
         }
       }()
+      case 14: try {
+        var v: Metric_Events_DebugInfo?
+        var hadOneofValue = false
+        if let current = self.event {
+          hadOneofValue = true
+          if case .debugInfo(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.event = .debugInfo(v)
+        }
+      }()
       default: break
       }
     }
@@ -429,6 +456,10 @@ extension Metric_MetricEventsCollection: SwiftProtobuf.Message, SwiftProtobuf._M
     case .subghzProvisioning?: try {
       guard case .subghzProvisioning(let v)? = self.event else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
+    }()
+    case .debugInfo?: try {
+      guard case .debugInfo(let v)? = self.event else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
     }()
     case nil: break
     }
