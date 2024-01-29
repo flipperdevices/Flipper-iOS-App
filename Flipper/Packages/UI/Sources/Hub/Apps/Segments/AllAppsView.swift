@@ -16,58 +16,60 @@ struct AllAppsView: View {
     @State private var error: Applications.Error?
 
     var body: some View {
-        LazyScrollView {
-            await loadApplications()
-        } content: {
-            VStack(spacing: 0) {
-                AppsCategories(categories: categories)
-                    .padding(.horizontal, 14)
-
-                if model.isOutdatedDevice {
-                    AppsNotCompatibleFirmware()
+        if error != nil {
+            AppsAPIError(error: $error, action: reload)
+                .padding(.horizontal, 14)
+        } else {
+            LazyScrollView {
+                await loadApplications()
+            } content: {
+                VStack(spacing: 0) {
+                    AppsCategories(categories: categories)
                         .padding(.horizontal, 14)
+
+                    if model.isOutdatedDevice {
+                        AppsNotCompatibleFirmware()
+                            .padding(.horizontal, 14)
+                            .padding(.top, 32)
+                    } else {
+                        HStack {
+                            Text("All Apps")
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundColor(.primary)
+
+                            Spacer()
+
+                            SortMenu(selected: $sortOrder)
+                        }
                         .padding(.top, 32)
-                } else if error != nil {
-                    AppsAPIError(error: $error, action: reload)
                         .padding(.horizontal, 14)
-                } else {
-                    HStack {
-                        Text("All Apps")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.primary)
 
-                        Spacer()
+                        AppList(applications: filteredApplications)
+                            .padding(.top, 24)
 
-                        SortMenu(selected: $sortOrder)
-                    }
-                    .padding(.top, 32)
-                    .padding(.horizontal, 14)
-
-                    AppList(applications: filteredApplications)
-                        .padding(.top, 24)
-
-                    if isLoading, !isAllLoaded {
-                        AppRowPreview()
-                            .padding(.top, 12)
+                        if isLoading, !isAllLoaded {
+                            AppRowPreview()
+                                .padding(.top, 12)
+                        }
                     }
                 }
+                .padding(.vertical, 14)
             }
-            .padding(.vertical, 14)
-        }
-        .onChange(of: sortOrder) { _ in
-            reloadApplications()
-        }
-        .onReceive(model.$deviceInfo) { _ in
-            reload()
-        }
-        .onChange(of: applications) { _ in
-            Task { filter() }
-        }
-        .onChange(of: hiddenApps) { _ in
-            Task { filter() }
-        }
-        .refreshable {
-            reload()
+            .onChange(of: sortOrder) { _ in
+                reloadApplications()
+            }
+            .onReceive(model.$deviceInfo) { _ in
+                reload()
+            }
+            .onChange(of: applications) { _ in
+                Task { filter() }
+            }
+            .onChange(of: hiddenApps) { _ in
+                Task { filter() }
+            }
+            .refreshable {
+                reload()
+            }
         }
     }
 
