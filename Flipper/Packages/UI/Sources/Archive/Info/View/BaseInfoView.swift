@@ -75,14 +75,14 @@ struct BaseInfoView: View {
         guard
             current.isNFC,
             current.isMifareClassicType,
-            !current.isSupportedNfcVersion
+            !current.isSupportedNFCVersion
         else { return }
-        
+
         analytics.debug(info: .unknownNFCVersion(current.version ?? ""))
     }
 }
 
-extension ArchiveItem {
+private extension ArchiveItem {
     var isNFC: Bool {
         kind == .nfc
     }
@@ -90,9 +90,9 @@ extension ArchiveItem {
     var version: String? {
         properties["Version"]
     }
-    
+
     var isMifareClassicType: Bool {
-        return properties["Device type"] == "Mifare Classic"
+        properties["Device type"] == "Mifare Classic"
     }
 
     var isEditableNFC: Bool {
@@ -102,12 +102,12 @@ extension ArchiveItem {
 
         return ["MINI", "1K", "4K"].contains(type)
     }
-    
-    var isSupportedNfcVersion: Bool {
+
+    var isSupportedNFCVersion: Bool {
         guard isNFC, let version = version else {
             return false
         }
-        
+
         return ["2", "3", "4"].contains(version)
     }
 }

@@ -92,3 +92,9 @@ struct DeletedInfoView: View {
         self.error = String(describing: error)
     }
 }
+
+private extension ArchiveItem {
+    var isNFC: Bool {
+        kind == .nfc
+    }
+}
