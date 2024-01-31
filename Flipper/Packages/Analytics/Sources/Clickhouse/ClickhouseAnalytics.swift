@@ -147,6 +147,15 @@ extension ClickhouseAnalytics: EventHandler {
             }
         })
     }
+
+    public func debug(info: DebugInfo) {
+        report(event: .with {
+            $0.debugInfo = .with {
+                $0.key = info.key
+                $0.value = info.value
+            }
+        })
+    }
 }
 
 fileprivate extension Metric_Events_Open.OpenTarget {

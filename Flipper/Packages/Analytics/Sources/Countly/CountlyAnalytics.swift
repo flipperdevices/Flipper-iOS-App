@@ -140,6 +140,15 @@ extension CountlyAnalytics: EventHandler {
                 "is_roaming": "false"
             ])
     }
+
+    public func debug(info: DebugInfo) {
+        recordEvent(
+            key: "debug",
+            segmentation: [
+                "key": info.key,
+                "value": info.value,
+            ])
+    }
 }
 
 fileprivate extension OpenTarget {

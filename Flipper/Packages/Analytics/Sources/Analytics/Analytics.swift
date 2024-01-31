@@ -89,4 +89,8 @@ public class Analytics: EventHandler {
             provided: provided,
             source: source)
     }
+
+    public func debug(info: DebugInfo) {
+        AnalyticsSystem.handler?.debug(info: info)
+    }
 }
