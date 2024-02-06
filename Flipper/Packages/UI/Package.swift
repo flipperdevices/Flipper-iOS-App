@@ -25,8 +25,8 @@ let package = Package(
             name: "Notifications",
             path: "../Notifications"),
         .package(
-            url: "https://github.com/airbnb/lottie-ios.git",
-            from: "3.3.0"),
+            url: "https://github.com/airbnb/lottie-spm.git",
+            from: "4.4.0"),
         .package(
             url: "https://github.com/gonzalezreal/swift-markdown-ui",
             from: "2.0.2"),
@@ -42,7 +42,7 @@ let package = Package(
                 "Analytics",
                 "Notifications",
                 .product(name: "SVGKit", package: "SVGKit"),
-                .product(name: "Lottie", package: "lottie-ios"),
+                .product(name: "Lottie", package: "lottie-spm"),
                 .product(name: "MarkdownUI", package: "swift-markdown-ui")
             ],
             path: "Sources"),
