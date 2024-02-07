@@ -33,7 +33,8 @@ public enum Update {
         case development
         case candidate
         case release
-        case custom
+        case file
+        case url
     }
 
     public enum Target: String {
@@ -89,7 +90,8 @@ private extension Update.Channel {
         case .development: return "development"
         case .candidate: return "release-candidate"
         case .release: return "release"
-        case .custom: return "custom"
+        case .file: return "file"
+        case .url: return "url"
         }
     }
 }
@@ -100,7 +102,8 @@ extension Update.Version: CustomStringConvertible {
         case .development: return "Dev \(name)"
         case .candidate: return "RC \(name.dropLast(3))"
         case .release: return "Release \(name)"
-        case .custom: return "Custom \(name)"
+        case .file: return "Custom \(name)"
+        case .url: return name
         }
     }
 }

@@ -47,7 +47,7 @@ struct SelectChannelPopup: View {
                         title: "Custom",
                         color: .custom,
                         description: "Upload file with custom firmware",
-                        onPress: { onChannelSelected(.custom) }
+                        onPress: { onChannelSelected(.file) }
                     )
                     .padding(12)
                 }

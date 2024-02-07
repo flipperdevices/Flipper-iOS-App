@@ -235,6 +235,7 @@ struct DeviceView: View {
             NotificationsDisabledBanner(
                 isPresented: inApp.notifications.showDisabled)
         }
+        .onOpenURL(perform: processUrlUpdate)
     }
 
     func suggestNotifications() {
@@ -278,6 +279,33 @@ struct DeviceView: View {
         } catch {
             inApp.notifications.showDisabled = true
         }
+    }
+
+    func processUrlUpdate(from: URL) {
+        let components = URLComponents(
+            url: from,
+            resolvingAgainstBaseURL: false
+        )
+        guard
+            let queryItems = components?.queryItems,
+            let link = queryItems["url"],
+            let updateUrl = URL(string: link),
+            let channel = queryItems["channel"],
+            let version = queryItems["version"]
+        else { return }
+
+       updateModel.customFirmware = .init(
+            version: .init(name: "\(channel) \(version)", channel: .url),
+            changelog: "",
+            url: updateUrl
+       )
+        updateModel.updateChannel = .url
+    }
+}
+
+extension Array where Element == URLQueryItem {
+    public subscript(key: String) -> String? {
+        first { $0.name == key }?.value
     }
 }
 

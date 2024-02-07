@@ -56,7 +56,7 @@ extension DeviceUpdateCard {
 
                 Divider()
 
-                if updateChannel == .custom {
+                if updateChannel == .file {
                     ChooseFileButton {
                         showFileImporter = true
                     }
@@ -121,7 +121,7 @@ extension DeviceUpdateCard {
             }
             .onOpenURL { url in
                 if url.isFileURL, url.pathExtension == "tgz" {
-                    updateChannel = .custom
+                    updateChannel = .file
                     customUpdateFileChosen(url)
                 }
             }
@@ -131,7 +131,7 @@ extension DeviceUpdateCard {
             updateModel.customFirmware = .init(
                 version: .init(
                     name: url.lastPathComponent,
-                    channel: .custom),
+                    channel: .file),
                 changelog: "",
                 url: url
             )

@@ -41,7 +41,8 @@ struct SelectChannelButton: View {
         case .development: return "Dev \(version.name)"
         case .candidate: return "RC \(version.name.dropLast(3))"
         case .release: return "Release \(version.name)"
-        case .custom: return "Custom"
+        case .file: return "Custom"
+        case .url: return version.name
         }
     }
 
@@ -55,6 +56,7 @@ struct SelectChannelButton: View {
                 Text(text)
                     .font(.system(size: 14, weight: .regular))
                     .foregroundColor(version.color)
+                    .lineLimit(1)
 
                 Image(systemName: "chevron.down")
                     .foregroundColor(.black30)

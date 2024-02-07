@@ -30,7 +30,8 @@ public class UpdateModel: ObservableObject {
         case .release: return manifest?.release
         case .candidate: return manifest?.candidate
         case .development: return manifest?.development
-        case .custom: return customFirmware
+        case .file: return customFirmware
+        case .url: return customFirmware
         }
     }
 
@@ -38,10 +39,10 @@ public class UpdateModel: ObservableObject {
         flipper?.information?.firmwareVersion
     }
     public var available: Update.Version? {
-        guard updateChannel != .custom else {
+        guard updateChannel != .file else {
             return .init(
                 name: customFirmware?.version.name ?? "unknown",
-                channel: .custom)
+                channel: .file)
         }
         return firmware?.version
     }
@@ -234,6 +235,7 @@ public class UpdateModel: ObservableObject {
         guard validateUpdateResult() else { return }
         guard validateAvailableFirmware() else { return }
 
+        guard checkUrlUpdate() else { return }
         guard checkChannelUpdate() else { return }
         guard checkVersionUpdate() else { return }
 
@@ -325,6 +327,14 @@ public class UpdateModel: ObservableObject {
         return true
     }
 
+    func checkUrlUpdate() -> Bool {
+        guard updateChannel != .url else {
+            state = .ready(.channelUpdate)
+            return false
+        }
+        return true
+    }
+
     func checkChannelUpdate() -> Bool {
         guard let installed = installed else {
             return false
@@ -359,6 +369,11 @@ public class UpdateModel: ObservableObject {
             logger.error("update in progress")
             return
         }
+
+        if updateChannel == .url {
+            updateChannel = Update.Channel.load()
+        }
+
         updateTaskHandle = Task {
             do {
                 let bytes = try await downloadFirmware(firmware.url)
@@ -455,6 +470,7 @@ private extension Update.Channel {
     }
 
     func save() {
+        guard self != .url else { return }
         UserDefaultsStorage.shared.updateChannel = self
     }
 }
