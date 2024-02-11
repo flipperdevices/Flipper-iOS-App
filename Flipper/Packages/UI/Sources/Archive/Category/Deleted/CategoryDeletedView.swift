@@ -19,7 +19,7 @@ struct CategoryDeletedView: View {
     }
 
     var toolbarActionsColor: Color {
-        archive.items.isEmpty ? .primary.opacity(0.5) : .primary
+        archive.deleted.isEmpty ? .primary.opacity(0.5) : .primary
     }
 
     var body: some View {
@@ -27,7 +27,7 @@ struct CategoryDeletedView: View {
             Text("No deleted keys")
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(.black40)
-                .opacity(archive.items.isEmpty ? 1 : 0)
+                .opacity(archive.deleted.isEmpty ? 1 : 0)
 
             ScrollView {
                 CategoryList(items: archive.deleted) { item in
@@ -54,7 +54,7 @@ struct CategoryDeletedView: View {
                 }
             }
             PrincipalToolbarItems(alignment: .leading) {
-                Title("Delete")
+                Title("Deleted")
             }
             TrailingToolbarItems {
                 HStack(spacing: 8) {
@@ -65,7 +65,6 @@ struct CategoryDeletedView: View {
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(toolbarActionsColor)
                     }
-                    .disabled(archive.items.isEmpty)
                     .confirmationDialog(
                         restoreSheetTitle,
                         isPresented: $showRestoreSheet,
@@ -83,7 +82,6 @@ struct CategoryDeletedView: View {
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(toolbarActionsColor)
                     }
-                    .disabled(archive.items.isEmpty)
                     .confirmationDialog(
                         deleteSheetTitle,
                         isPresented: $showDeleteSheet,
@@ -94,6 +92,7 @@ struct CategoryDeletedView: View {
                         }
                     }
                 }
+                .disabled(archive.deleted.isEmpty)
             }
         }
     }
