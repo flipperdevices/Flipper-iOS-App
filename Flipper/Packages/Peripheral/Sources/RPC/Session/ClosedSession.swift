@@ -1,4 +1,4 @@
-public class ClosedSession: Session, RPC {
+public class ClosedSession: Session {
     public static let shared: ClosedSession = .init()
 
     enum Error: Swift.Error {

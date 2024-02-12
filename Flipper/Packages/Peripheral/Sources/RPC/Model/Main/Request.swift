@@ -37,7 +37,7 @@ public enum Request {
         case start(String, String)
         case lockStatus
         case loadFile(Path)
-        case pressButton(String, Int32)
+        case pressButton(String, Int)
         case releaseButton
         case exit
     }
@@ -218,7 +218,7 @@ extension Request.Application {
             return .with {
                 $0.appButtonPressRequest = .with {
                     $0.args = args
-                    $0.index = index
+                    $0.index = .init(index)
                 }
             }
         case .releaseButton:

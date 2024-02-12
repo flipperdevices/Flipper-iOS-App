@@ -31,16 +31,15 @@ public class Emulate: ObservableObject {
     private var emulateTask: Task<Void, Swift.Error>?
     private var emulateStarted: Date = .now
 
-    private var pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
+    private var application: ApplicationAPI
 
-    public init(pairedDevice: PairedDevice) {
-        self.pairedDevice = pairedDevice
+    public init(application: ApplicationAPI) {
+        self.application = application
         subscribeToPublishers()
     }
 
     func subscribeToPublishers() {
-        rpc.onAppStateChanged = { [weak self] state in
+        application.onAppStateChanged = { [weak self] state in
             guard let self else { return }
             Task { @MainActor in
                 self.onFlipperAppStateChanged(state)
@@ -119,7 +118,7 @@ public class Emulate: ObservableObject {
     private func startApp(_ name: String) async throws {
         do {
             state = .staring
-            try await rpc.appStart(name, args: "RPC")
+            try await application.start(name, args: "RPC")
             try await waitForAppStartedEvent()
             return
         } catch let error as Error {
@@ -138,7 +137,7 @@ public class Emulate: ObservableObject {
 
     private func loadFile(_ path: Peripheral.Path) async throws {
         state = .loading
-        try await rpc.appLoadFile(path)
+        try await application.loadFile(path)
         state = .loaded
     }
 
@@ -151,7 +150,7 @@ public class Emulate: ObservableObject {
         }
         if item.kind == .subghz {
             do {
-                try await rpc.appButtonPress()
+                try await application.buttonPress()
             } catch let error as Error where error == .application(.cmdError) {
                 state = .restricted
                 throw error
@@ -163,7 +162,7 @@ public class Emulate: ObservableObject {
             case .byIndex(let index) = config
         {
             do {
-                try await rpc.appButtonPress(index: index)
+                try await application.buttonPress(index: index)
             } catch let error as Error where error == .application(.cmdError) {
                 state = .restricted
                 throw error
@@ -189,7 +188,7 @@ public class Emulate: ObservableObject {
             return
         }
         if item.kind == .subghz || item.kind == .infrared {
-            try await rpc.appButtonRelease()
+            try await application.buttonRelease()
         }
     }
 
@@ -202,7 +201,7 @@ public class Emulate: ObservableObject {
             return
         }
         state = .closing
-        try await rpc.appExit()
+        try await application.exit()
     }
 
     // MARK: Analytics

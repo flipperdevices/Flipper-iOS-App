@@ -1,19 +1,18 @@
 import Peripheral
 
 class FlipperArchive: ArchiveProtocol {
-    private let pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
+    private let storage: StorageAPI
 
-    init(pairedDevice: PairedDevice) {
-        self.pairedDevice = pairedDevice
+    init(storage: StorageAPI) {
+        self.storage = storage
     }
 
     func getManifest(progress: (Double) -> Void) async throws -> Manifest {
-        try await rpc.getManifest(progress: progress)
+        try await storage.getManifest(progress: progress)
     }
 
     func read(_ path: Path, progress: (Double) -> Void) async throws -> String {
-        try await rpc.readFile(at: path, progress: progress)
+        try await storage.read(at: path, progress: progress)
     }
 
     func upsert(
@@ -21,10 +20,10 @@ class FlipperArchive: ArchiveProtocol {
         at path: Path,
         progress: (Double) -> Void
     ) async throws {
-        try await rpc.writeFile(at: path, string: content, progress: progress)
+        try await storage.write(at: path, string: content, progress: progress)
     }
 
     func delete(_ path: Path) async throws {
-        try await rpc.deleteFile(at: path)
+        try await storage.delete(at: path)
     }
 }

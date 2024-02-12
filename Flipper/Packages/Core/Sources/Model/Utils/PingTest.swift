@@ -7,11 +7,10 @@ import Foundation
 
 @MainActor
 public class PingTest: ObservableObject {
-    private var pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
+    private let system: SystemAPI
 
-    public init(pairedDevice: PairedDevice) {
-        self.pairedDevice = pairedDevice
+    public init(system: SystemAPI) {
+        self.system = system
     }
 
     @Published public var payloadSize: Double = 1024
@@ -40,7 +39,7 @@ public class PingTest: ObservableObject {
                 sent = Int(payloadSize)
                 requestTimestamp = now
                 let sent: [UInt8] = .random(size: sent)
-                let received = try await rpc.ping(sent)
+                let received = try await system.ping(sent)
                 responseTimestamp = now
 
                 if received != sent {

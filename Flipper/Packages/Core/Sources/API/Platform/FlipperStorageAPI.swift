@@ -1,8 +1,9 @@
 import Peripheral
+
 import Foundation
 
 class FlipperStorageAPI: StorageAPI {
-    private var rpc: RPC { pairedDevice.session }
+    private var rpc: Session { pairedDevice.session }
     private let pairedDevice: PairedDevice
 
     init(pairedDevice: PairedDevice) {
