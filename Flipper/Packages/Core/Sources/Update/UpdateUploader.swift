@@ -1,11 +1,10 @@
 import Peripheral
 
-class FirmwareUploader {
-    private var pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
+public class FirmwareUploader {
+    private var storage: StorageAPI
 
-    init(pairedDevice: PairedDevice) {
-        self.pairedDevice = pairedDevice
+    init(storage: StorageAPI) {
+        self.storage = storage
     }
 
     public func upload(
@@ -16,8 +15,8 @@ class FirmwareUploader {
             throw Update.Error.invalidFirmware
         }
         let bundlePath = Path.update.appending(directory)
-        try? await rpc.createDirectory(at: .update)
-        try? await rpc.createDirectory(at: bundlePath)
+        try? await storage.createDirectory(at: .update)
+        try? await storage.createDirectory(at: bundlePath)
 
         let files = await filterExisting(bundle.files, at: .update)
 
@@ -39,7 +38,7 @@ class FirmwareUploader {
 
         for file in files {
             let path = path.appending(file.name)
-            for try await sent in rpc.writeFile(at: path, bytes: file.data) {
+            for try await sent in storage.write(at: path, bytes: file.data) {
                 totalSent += sent
                 progress(Double(totalSent) / Double(totalSize))
             }
@@ -62,6 +61,6 @@ class FirmwareUploader {
     }
 
     private func hash(for path: Path) async -> Hash? {
-        try? await rpc.calculateFileHash(at: path)
+        try? await storage.hash(of: path)
     }
 }

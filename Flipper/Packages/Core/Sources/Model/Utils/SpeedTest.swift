@@ -7,11 +7,10 @@ import Foundation
 
 @MainActor
 public class SpeedTest: ObservableObject {
-    private var pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
+    private let system: SystemAPI
 
-    public init(pairedDevice: PairedDevice) {
-        self.pairedDevice = pairedDevice
+    public init(system: SystemAPI) {
+        self.system = system
     }
 
     public let defaultPacketSize = 444
@@ -34,7 +33,7 @@ public class SpeedTest: ObservableObject {
                 let sent = [UInt8].random(size: Int(packetSize))
 
                 let start = Date()
-                let received = try await rpc.ping(sent)
+                let received = try await system.ping(sent)
                 let time = Date().timeIntervalSince(start)
                 bps = Int(Double(sent.count + received.count) * (1.0 / time))
 

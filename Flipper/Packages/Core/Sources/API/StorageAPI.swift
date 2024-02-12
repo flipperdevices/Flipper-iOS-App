@@ -2,7 +2,7 @@ import Peripheral
 
 import Foundation
 
-protocol StorageAPI {
+public protocol StorageAPI {
     typealias ByteStream = AsyncThrowingStream<[UInt8], Swift.Error>
     typealias ByteCountStream = AsyncThrowingStream<Int, Swift.Error>
 

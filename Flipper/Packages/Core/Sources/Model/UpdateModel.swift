@@ -98,15 +98,16 @@ public class UpdateModel: ObservableObject {
     public init(
         device: Device,
         pairedDevice: PairedDevice,
-        manifestSource: TargetManifestSource
+        manifestSource: TargetManifestSource,
+        firmwareProvider: FirmwareProvider,
+        firmwareUploder: FirmwareUploader
     ) {
         self.device = device
         self.pairedDevice = pairedDevice
         self.manifestSource = manifestSource
-
         // next step
-        self.provider = .init()
-        self.uploader = .init(pairedDevice: pairedDevice)
+        self.provider = firmwareProvider
+        self.uploader = firmwareUploder
 
         subscribeToPublishers()
     }

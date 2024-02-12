@@ -3,7 +3,7 @@ import Peripheral
 
 // TODO: use manifest api when available
 
-extension RPC {
+extension StorageAPI {
     private var root: Path { .init(components: ["any"]) }
 
     func getManifest(progress: (Double) -> Void) async throws -> Manifest {
@@ -21,7 +21,7 @@ extension RPC {
     }
 
     private func createDirectories() async throws {
-        let list = try await listDirectory(at: root).map { $0.name }
+        let list = try await list(at: root).map { $0.name }
 
         let missing = FileType.allCases.filter {
             !list.contains($0.location)
@@ -58,10 +58,6 @@ extension RPC {
         return result
     }
 
-    private func list(at path: Path) async throws -> [Element] {
-        try await listDirectory(at: path)
-    }
-
     func getAllHashes(
         for paths: [Path],
         progress: (Double) -> Void
@@ -71,14 +67,10 @@ extension RPC {
         progress(0)
 
         for (index, path) in paths.enumerated() {
-            items[path] = try await getFileHash(at: path)
+            items[path] = try await hash(of: path)
             progress(Double(index + 1) / Double(paths.count))
         }
 
         return items
-    }
-
-    private func getFileHash(at path: Path) async throws -> Hash {
-        try await calculateFileHash(at: path)
     }
 }

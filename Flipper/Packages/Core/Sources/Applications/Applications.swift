@@ -48,7 +48,8 @@ public class Applications: ObservableObject {
         case invalidBuild
     }
 
-    private var rpc: RPC { pairedDevice.session }
+    private var system: SystemAPI
+    private var application: ApplicationAPI
     @Published private var flipper: Flipper?
     private var cancellables = [AnyCancellable]()
 
@@ -60,11 +61,15 @@ public class Applications: ObservableObject {
     init(
         catalog: CatalogService,
         flipperApps: FlipperApps,
-        pairedDevice: PairedDevice
+        pairedDevice: PairedDevice,
+        system: SystemAPI,
+        application: ApplicationAPI
     ) {
         self.catalog = catalog
         self.flipperApps = flipperApps
         self.pairedDevice = pairedDevice
+        self.system = system
+        self.application = application
 
         subscribeToPublishers()
     }
@@ -183,7 +188,7 @@ public class Applications: ObservableObject {
             let path = "/ext/apps/\(app.category.name)/\(app.alias).fap"
             logger.info("open app \(app.id) by \(path)")
 
-            try await rpc.appStart(path, args: "RPC")
+            try await application.start(path, args: "RPC")
             logger.info("open app success")
             return .success
         } catch {
@@ -201,7 +206,7 @@ public class Applications: ObservableObject {
 
     private func getFlipperTarget() async throws -> String {
         var target: String = ""
-        for try await property in rpc.property("devinfo.hardware.target") {
+        for try await property in system.property("devinfo.hardware.target") {
             target = property.value
         }
         return "f\(target)"
@@ -210,7 +215,7 @@ public class Applications: ObservableObject {
     private func getFlipperAPI() async throws -> String {
         var major: String = "0"
         var minor: String = "0"
-        for try await property in rpc.property("devinfo.firmware.api") {
+        for try await property in system.property("devinfo.firmware.api") {
             switch property.key {
             case "firmware.api.major": major = property.value
             case "firmware.api.minor": minor = property.value

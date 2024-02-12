@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol Session: RPC, AnyObject {
+public protocol Session: AnyObject {
     var onScreenFrame: ((ScreenFrame) -> Void)? { get set }
     var onAppStateChanged: ((Message.AppState) -> Void)? { get set }
 

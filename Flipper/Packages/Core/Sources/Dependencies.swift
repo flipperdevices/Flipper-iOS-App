@@ -53,6 +53,12 @@ public class Dependencies: ObservableObject {
         )
     }()
 
+    // api
+
+    private lazy var api: API = {
+        .init(pairedDevice: pairedDevice)
+    }()
+
     // archive
 
     public lazy var mobileArchiveStorage: ArchiveStorage = {
@@ -69,14 +75,14 @@ public class Dependencies: ObservableObject {
         return Archive(
             archiveSync: ArchiveSync(
                 flipperArchive: FlipperArchive(
-                    pairedDevice: pairedDevice
+                    storage: api.storage
                 ),
                 mobileArchive: mobileArchive,
                 syncedManifest: syncedManifest),
             favoritesSync: FavoritesSync(
                 mobileFavorites: mobileFavorites,
                 flipperFavorites: FlipperFavorites(
-                    pairedDevice: pairedDevice
+                    storage: api.storage
                 ),
                 syncedFavorites: SyncedFavorites()),
             mobileFavorites: mobileFavorites,
@@ -104,7 +110,11 @@ public class Dependencies: ObservableObject {
     public lazy var device: Device = {
         .init(
             central: central,
-            pairedDevice: pairedDevice)
+            pairedDevice: pairedDevice,
+            system: api.system,
+            storage: api.storage,
+            desktop: api.desktop,
+            gui: api.gui)
     }()
 
     @MainActor
@@ -119,7 +129,11 @@ public class Dependencies: ObservableObject {
 
     @MainActor
     public lazy var synchronization: Synchronization = {
-        .init(pairedDevice: pairedDevice, archive: archive, device: device)
+        .init(
+            archive: archive,
+            device: device,
+            system: api.system,
+            storage: api.storage)
     }()
 
     @MainActor
@@ -128,18 +142,29 @@ public class Dependencies: ObservableObject {
             device: device,
             pairedDevice: pairedDevice,
             manifestSource: RemoteTargetManifestSource(
-                manifestSource: RemoteFirmwareManifestSource()))
+                manifestSource: RemoteFirmwareManifestSource()),
+            firmwareProvider: .init(),
+            firmwareUploder: .init(storage: api.storage)
+        )
     }()
 
     @MainActor
     public lazy var emulate: Emulate = {
-        .init(pairedDevice: pairedDevice)
+        .init(application: api.application)
     }()
 
     @MainActor
     public lazy var sharing: SharingModel = {
         .init()
     }()
+
+    @MainActor
+    public var detectReader: DetectReader {
+        .init(
+            pairedDevice: pairedDevice,
+            storage: api.storage,
+            mfKnownKeys: .init(storage: api.storage))
+    }
 
     @MainActor
     public lazy var applications: Applications = {
@@ -152,9 +177,11 @@ public class Dependencies: ObservableObject {
                     ? devURL
                     : prodURL),
             flipperApps: .init(
-                storage: FlipperStorageAPI(pairedDevice: pairedDevice),
+                storage: api.storage,
                 cache: CacheStorage()),
-            pairedDevice: pairedDevice
+            pairedDevice: pairedDevice,
+            system: api.system,
+            application: api.application
         )
     }()
 
@@ -169,4 +196,36 @@ public class Dependencies: ObservableObject {
             central: central,
             device: pairedDevice)
     }()
+
+    // utils
+
+    @MainActor
+    public var pingTest: PingTest {
+        .init(system: api.system)
+    }
+    @MainActor
+    public var speedTest: SpeedTest {
+        .init(system: api.system)
+    }
+    @MainActor
+    public var stressTest: StressTest {
+        .init(
+            pairedDevice: pairedDevice,
+            storage: api.storage)
+    }
+    @MainActor
+    public var fileManager: RemoteFileManager {
+        .init(storage: api.storage)
+    }
+}
+
+extension API {
+    init(pairedDevice: PairedDevice) {
+        self.init(
+            system: FlipperSystemAPI(pairedDevice: pairedDevice),
+            storage: FlipperStorageAPI(pairedDevice: pairedDevice),
+            desktop: FlipperDesktopAPI(pairedDevice: pairedDevice),
+            gui: FlipperGUIAPI(pairedDevice: pairedDevice),
+            application: FlipperApplicationAPI(pairedDevice: pairedDevice))
+    }
 }
