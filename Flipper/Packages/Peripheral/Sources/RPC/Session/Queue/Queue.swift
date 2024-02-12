@@ -53,7 +53,7 @@ actor Queue {
         return result
     }
 
-    func didReceiveData(_ data: Data) throws -> Message? {
+    func didReceiveData(_ data: Data) throws -> IncomingMessage? {
         // single PB_Main can be split into ble chunks;
         // returns nil if data.count < main.size
         guard let nextMain = try chunkedInput.feed(data) else {

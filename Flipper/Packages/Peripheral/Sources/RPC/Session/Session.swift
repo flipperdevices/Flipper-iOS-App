@@ -1,10 +1,9 @@
 import Foundation
 
 public protocol Session: AnyObject {
-    var onScreenFrame: ((ScreenFrame) -> Void)? { get set }
-    var onAppStateChanged: ((Message.AppState) -> Void)? { get set }
+    var message: AsyncStream<IncomingMessage> { get }
 
-    func send(_ message: Message) async throws
+    func send(_ message: OutgoingMessage) async throws
     func send(_ request: Request) async -> AsyncThrowingStreams
 
     func close() async

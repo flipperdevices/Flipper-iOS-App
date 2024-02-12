@@ -308,16 +308,6 @@ extension PB_Main {
     }
 }
 
-extension PBSystem_RebootRequest.RebootMode {
-    init(_ source: Message.RebootMode) {
-        switch source {
-        case .os: self = .os
-        case .dfu: self = .dfu
-        case .update: self = .update
-        }
-    }
-}
-
 extension PBGui_InputKey {
     init(_ source: InputKey) {
         switch source {
