@@ -1,8 +1,7 @@
 import Peripheral
 
 public protocol GUIAPI {
-    // TODO: Use async sequence
-    var onScreenFrame: ((ScreenFrame) -> Void)? { get set }
+    var screenFrame: AsyncStream<ScreenFrame> { get }
 
     func startStreaming() async throws
     func stopStreaming() async throws

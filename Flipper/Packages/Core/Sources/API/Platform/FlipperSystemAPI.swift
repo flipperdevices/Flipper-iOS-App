@@ -27,7 +27,7 @@ class FlipperSystemAPI: SystemAPI {
         try await rpc.ping(bytes)
     }
 
-    func reboot(to mode: Message.RebootMode) async throws {
+    func reboot(to mode: OutgoingMessage.RebootMode) async throws {
         try await rpc.reboot(to: mode)
     }
 

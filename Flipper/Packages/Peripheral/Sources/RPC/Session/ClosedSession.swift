@@ -1,14 +1,18 @@
 public class ClosedSession: Session {
-    public static let shared: ClosedSession = .init()
-
     enum Error: Swift.Error {
         case closed
     }
 
-    public var onScreenFrame: ((ScreenFrame) -> Void)?
-    public var onAppStateChanged: ((Message.AppState) -> Void)?
+    var messageStream: BroadcastStream<IncomingMessage> = .init()
 
-    public func send(_ message: Message) async throws {
+    public var message: AsyncStream<IncomingMessage> {
+        messageStream.subscribe()
+    }
+
+    public init() {
+    }
+
+    public func send(_ message: OutgoingMessage) async throws {
         throw Error.closed
     }
 

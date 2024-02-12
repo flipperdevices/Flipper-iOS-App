@@ -53,10 +53,11 @@ public class Device: ObservableObject {
             }
             .store(in: &cancellables)
 
-        gui.onScreenFrame = { [weak self] frame in
-            guard let self else { return }
-            Task { @MainActor in
-                self.frame = frame
+        Task { @MainActor in
+            while !Task.isCancelled {
+                for await frame in gui.screenFrame {
+                    self.frame = frame
+                }
             }
         }
     }

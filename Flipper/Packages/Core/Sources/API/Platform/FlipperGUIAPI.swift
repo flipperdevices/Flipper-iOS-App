@@ -10,9 +10,15 @@ class FlipperGUIAPI: GUIAPI {
         self.pairedDevice = pairedDevice
     }
 
-    var onScreenFrame: ((ScreenFrame ) -> Void)? {
-        get { rpc.onScreenFrame }
-        set { rpc.onScreenFrame = newValue }
+    var screenFrame: AsyncStream<ScreenFrame> {
+        rpc.message.compactMap { message in
+            switch message {
+            case .screenFrame(let frame):
+                return frame
+            default:
+                return nil
+            }
+        }
     }
 
     func startStreaming() async throws {

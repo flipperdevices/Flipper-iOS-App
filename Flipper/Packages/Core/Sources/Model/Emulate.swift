@@ -39,15 +39,16 @@ public class Emulate: ObservableObject {
     }
 
     func subscribeToPublishers() {
-        application.onAppStateChanged = { [weak self] state in
-            guard let self else { return }
-            Task { @MainActor in
-                self.onFlipperAppStateChanged(state)
+        Task { @MainActor in
+            while !Task.isCancelled {
+                for await state in application.state {
+                    onFlipperAppStateChanged(state)
+                }
             }
         }
     }
 
-    func onFlipperAppStateChanged(_ newValue: Message.AppState) {
+    func onFlipperAppStateChanged(_ newValue: IncomingMessage.AppState) {
         switch newValue {
         case .started:
             self.state = .started

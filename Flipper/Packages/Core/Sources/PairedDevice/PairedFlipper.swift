@@ -9,7 +9,7 @@ class PairedFlipper: PairedDevice, ObservableObject {
     private var central: BluetoothCentral
     private var cancellables: [AnyCancellable] = .init()
 
-    var session: Session = ClosedSession.shared
+    var session: Session = ClosedSession()
 
     var flipper: AnyPublisher<Flipper?, Never> {
         _flipper.eraseToAnyPublisher()
@@ -24,7 +24,7 @@ class PairedFlipper: PairedDevice, ObservableObject {
             guard let peripheral = bluetoothPeripheral else {
                 let session = session
                 Task { await session.close() }
-                self.session = ClosedSession.shared
+                self.session = ClosedSession()
                 return
             }
             if oldValue == nil {
@@ -62,10 +62,7 @@ class PairedFlipper: PairedDevice, ObservableObject {
     }
 
     func restartSession(with peripheral: BluetoothPeripheral) {
-        let backup = session
         session = FlipperSession(peripheral: peripheral)
-        session.onScreenFrame = backup.onScreenFrame
-        session.onAppStateChanged = backup.onAppStateChanged
     }
 
     func subscribeToUpdates() {

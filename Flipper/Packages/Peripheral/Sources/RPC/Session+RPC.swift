@@ -106,7 +106,7 @@ extension Session {
         return result
     }
 
-    public func reboot(to mode: Message.RebootMode) async throws {
+    public func reboot(to mode: OutgoingMessage.RebootMode) async throws {
         try await self.send(.reboot(mode))
     }
 

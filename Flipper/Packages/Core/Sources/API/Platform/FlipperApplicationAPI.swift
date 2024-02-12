@@ -10,9 +10,15 @@ class FlipperApplicationAPI: ApplicationAPI {
         self.pairedDevice = pairedDevice
     }
 
-    var onAppStateChanged: ((Message.AppState) -> Void)? {
-        get { rpc.onAppStateChanged }
-        set { rpc.onAppStateChanged = newValue }
+    var state: AsyncStream<IncomingMessage.AppState> {
+        rpc.message.compactMap { message in
+            switch message {
+            case .appState(let state):
+                return state
+            default:
+                return nil
+            }
+        }
     }
 
     var isLocked: Bool {
