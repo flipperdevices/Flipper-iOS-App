@@ -85,7 +85,6 @@ public class FlipperSession: Session {
             let size = peripheral.maximumWriteValueLength
             let next = await queue.drain(upTo: size)
             peripheral.send(.init(next))
-            setupTimeoutTimer()
         }
     }
 
@@ -106,7 +105,6 @@ extension FlipperSession {
     func didReceiveData(_ data: Data) {
         Task {
             do {
-                setupTimeoutTimer()
                 if let message = try await queue.didReceiveData(data) {
                     onMessage(message)
                 }
@@ -128,27 +126,6 @@ extension FlipperSession {
             logger.error("unknown command: \(command)")
         default:
             logger.error("unhandled message: \(message)")
-        }
-    }
-}
-
-// MARK: Timeout
-
-extension FlipperSession {
-    var timeoutNanoseconds: UInt64 { 30 * 1_000 * 1_000_000 }
-
-    func setupTimeoutTimer() {
-        if let current = timeoutTask {
-            current.cancel()
-        }
-        timeoutTask = Task {
-            try await Task.sleep(nanoseconds: timeoutNanoseconds)
-            guard self.peripheral.state == .connected else { return }
-            guard await queue.isBusy else { return }
-            logger.debug("time is out")
-            Task { @MainActor in
-                self.onError?(.timeout)
-            }
         }
     }
 }
