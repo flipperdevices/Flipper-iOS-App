@@ -373,6 +373,7 @@ public class UpdateModel: ObservableObject {
                 logger.error("update: \(error)")
             }
             updateTaskHandle = nil
+            updateChannel = Update.Channel.load()
         }
     }
 
@@ -455,6 +456,7 @@ private extension Update.Channel {
     }
 
     func save() {
+        guard self != .custom else { return }
         UserDefaultsStorage.shared.updateChannel = self
     }
 }

@@ -123,6 +123,13 @@ extension DeviceUpdateCard {
                 if url.isFileURL, url.pathExtension == "tgz" {
                     updateChannel = .custom
                     customUpdateFileChosen(url)
+                    return
+                }
+
+                if let urlUpdate = url.firmwareUpdate() {
+                    updateChannel = .custom
+                    updateModel.customFirmware = urlUpdate
+                    startUpdate()
                 }
             }
         }
@@ -149,5 +156,34 @@ extension DeviceUpdateCard {
             }
             showConfirmUpdate.wrappedValue = true
         }
+    }
+}
+
+private extension URL {
+    func firmwareUpdate() -> Update.Firmware? {
+        let components = URLComponents(
+            url: self,
+            resolvingAgainstBaseURL: false
+        )
+
+        guard
+            let queryItems = components?.queryItems,
+            let link = queryItems["url"],
+            let updateUrl = URL(string: link),
+            let channel = queryItems["channel"],
+            let version = queryItems["version"]
+        else { return nil }
+
+        return .init(
+            version: .init(name: "\(channel) \(version)", channel: .custom),
+            changelog: "",
+            url: updateUrl
+        )
+    }
+}
+
+private extension Array where Element == URLQueryItem {
+    subscript(key: String) -> String? {
+        first { $0.name == key }?.value
     }
 }
