@@ -120,29 +120,32 @@ extension DeviceUpdateCard {
                 customUpdateFileChosen(url)
             }
             .onOpenURL { url in
-                if url.isFileURL, url.pathExtension == "tgz" {
-                    updateChannel = .custom
-                    customUpdateFileChosen(url)
-                    return
-                }
+                detectCustomUpdateURL(url)
+            }
+        }
 
-                if let urlUpdate = url.firmwareUpdate() {
-                    updateChannel = .custom
-                    updateModel.customFirmware = urlUpdate
-                    startUpdate()
-                }
+        func detectCustomUpdateURL(_ url: URL) {
+            if url.isFileURL, url.pathExtension == "tgz" {
+                customUpdateFileChosen(url)
+            } else if url.host == "lab.flipper.net" {
+                customUpdateURLChosen(url)
             }
         }
 
         func customUpdateFileChosen(_ url: URL) {
-            updateModel.customFirmware = .init(
-                version: .init(
-                    name: url.lastPathComponent,
-                    channel: .custom),
-                changelog: "",
-                url: url
-            )
-            startUpdate()
+            if let firmware = Update.Firmware(decodingFileURL: url) {
+                updateChannel = .custom
+                updateModel.customFirmware = firmware
+                startUpdate()
+            }
+        }
+
+        func customUpdateURLChosen(_ url: URL) {
+            if let firmware = Update.Firmware(decodingWebURL: url) {
+                updateChannel = .custom
+                updateModel.customFirmware = firmware
+                startUpdate()
+            }
         }
 
         func startUpdate() {
@@ -159,22 +162,32 @@ extension DeviceUpdateCard {
     }
 }
 
-private extension URL {
-    func firmwareUpdate() -> Update.Firmware? {
+private extension Update.Firmware {
+    init?(decodingFileURL url: URL) {
+        self.init(
+            version: .init(
+                name: url.lastPathComponent,
+                channel: .custom),
+            changelog: "",
+            url: url
+        )
+    }
+
+    init?(decodingWebURL url: URL) {
         let components = URLComponents(
-            url: self,
+            url: url,
             resolvingAgainstBaseURL: false
         )
 
         guard
             let queryItems = components?.queryItems,
-            let link = queryItems["url"],
+            let link = queryItems.firstValue(forKey: "url"),
             let updateUrl = URL(string: link),
-            let channel = queryItems["channel"],
-            let version = queryItems["version"]
+            let channel = queryItems.firstValue(forKey: "channel"),
+            let version = queryItems.firstValue(forKey: "version")
         else { return nil }
 
-        return .init(
+        self.init(
             version: .init(name: "\(channel) \(version)", channel: .custom),
             changelog: "",
             url: updateUrl
@@ -183,7 +196,7 @@ private extension URL {
 }
 
 private extension Array where Element == URLQueryItem {
-    subscript(key: String) -> String? {
+    func firstValue(forKey key: String) -> String? {
         first { $0.name == key }?.value
     }
 }
