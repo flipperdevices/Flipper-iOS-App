@@ -17,7 +17,9 @@ public class UpdateModel: ObservableObject {
     @Published public var customFirmware: Update.Firmware?
     @Published public var updateChannel: Update.Channel = .load() {
         didSet {
-            updateChannel.save()
+            if updateChannel != .custom {
+                updateChannel.save()
+            }
             updateState()
         }
     }
@@ -373,6 +375,7 @@ public class UpdateModel: ObservableObject {
                 logger.error("update: \(error)")
             }
             updateTaskHandle = nil
+            updateChannel = .load()
         }
     }
 
