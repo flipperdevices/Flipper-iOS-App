@@ -92,18 +92,15 @@ public class UpdateModel: ObservableObject {
     private let provider: FirmwareProvider
     private let uploader: FirmwareUploader
 
-    private var pairedDevice: PairedDevice
     private var cancellables: [AnyCancellable] = .init()
 
     public init(
         device: Device,
-        pairedDevice: PairedDevice,
         manifestSource: TargetManifestSource,
         firmwareProvider: FirmwareProvider,
         firmwareUploder: FirmwareUploader
     ) {
         self.device = device
-        self.pairedDevice = pairedDevice
         self.manifestSource = manifestSource
         // next step
         self.provider = firmwareProvider
@@ -122,7 +119,7 @@ public class UpdateModel: ObservableObject {
     }
 
     func subscribeToPublishers() {
-        pairedDevice.flipper
+        device.$flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
             .store(in: &cancellables)

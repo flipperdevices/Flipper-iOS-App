@@ -122,7 +122,7 @@ public class Device: ObservableObject {
                 }
                 status = .connected
                 logger.info("connected")
-                try await updateStorageInfo()
+                try await loadStorageInfo()
                 reportRPCInfo()
             } catch {
                 logger.error("did connect: \(error)")
@@ -200,10 +200,10 @@ public class Device: ObservableObject {
 
     // MARK: API
 
-    public func updateStorageInfo() async throws {
+    private func loadStorageInfo() async throws {
         var storageInfo = Flipper.StorageInfo()
         defer {
-            pairedDevice.updateStorageInfo(storageInfo)
+            flipper?.storage = storageInfo
         }
         do {
             storageInfo.internal = try await storage.space(of: "/int")
