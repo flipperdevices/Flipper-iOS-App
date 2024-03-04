@@ -9,6 +9,4 @@ public protocol PairedDevice {
     func connect()
     func disconnect()
     func forget()
-
-    func updateStorageInfo(_ storageInfo: Flipper.StorageInfo)
 }

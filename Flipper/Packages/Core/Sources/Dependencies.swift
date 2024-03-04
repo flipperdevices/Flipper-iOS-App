@@ -140,7 +140,6 @@ public class Dependencies: ObservableObject {
     public lazy var updateModel: UpdateModel = {
         .init(
             device: device,
-            pairedDevice: pairedDevice,
             manifestSource: RemoteTargetManifestSource(
                 manifestSource: RemoteFirmwareManifestSource()),
             firmwareProvider: .init(),
