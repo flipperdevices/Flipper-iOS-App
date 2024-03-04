@@ -1,59 +1,26 @@
 import SwiftUI
 
 class OverlayController: ObservableObject {
-    private var overlay: UIWindow?
-    private var views: [UIView]
+    var rootVC: UIViewController?
 
-    init() {
-        self.overlay = OverlayWindow()
-        self.views = []
-    }
-
-    func present<Content: View>(
+    @MainActor func present<Content: View>(
         @ViewBuilder content: @escaping () -> Content
     ) {
-        guard let overlay else { return }
-
-        let viewController = UIHostingController(
-            rootView: content()
-                .environmentObject(self)
-        )
+        let viewController = UIHostingController(rootView: content())
         viewController.view.backgroundColor = .clear
+        viewController.modalTransitionStyle = .crossDissolve
+        viewController.modalPresentationStyle = .overCurrentContext
 
-        views.append(viewController.view)
+        self.rootVC = UIApplication
+            .shared
+            .connectedScenes
+            .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
+            .first(where: { $0.isKeyWindow })?.rootViewController
 
-        if let rootViewController = overlay.rootViewController {
-            viewController.view.frame = rootViewController.view.frame
-        } else {
-            overlay.rootViewController = viewController
-            overlay.isUserInteractionEnabled = true
-            overlay.isHidden = false
-        }
+        rootVC?.present(viewController, animated: true)
     }
 
-    func dismiss() {
-        guard let overlay else { return }
-
-        guard !views.isEmpty else {
-            return
-        }
-
-        views.removeFirst()
-
-        if let first = views.first {
-            guard
-                let rootViewController = overlay.rootViewController
-            else {
-                return
-            }
-            rootViewController.view.subviews.forEach { view in
-                view.removeFromSuperview()
-            }
-            rootViewController.view.addSubview(first)
-        } else {
-            overlay.isHidden = true
-            overlay.isUserInteractionEnabled = false
-            overlay.rootViewController = nil
-        }
+    @MainActor func dismiss() {
+        rootVC?.dismiss(animated: false)
     }
 }
