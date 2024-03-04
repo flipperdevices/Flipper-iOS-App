@@ -61,7 +61,7 @@ public class Synchronization: ObservableObject {
                 if syncDateTime {
                     try await self.synchronizeDateTime()
                 }
-                try await checkMFLogFile()
+                try await synchronizeMFLogFile()
                 try await synchronizeArchive()
 
                 device.status = .synchronized
@@ -77,7 +77,7 @@ public class Synchronization: ObservableObject {
         }
     }
 
-    private func checkMFLogFile() async throws {
+    private func synchronizeMFLogFile() async throws {
         UserDefaultsStorage.shared.hasReaderLog =
             try await storage.fileExists(at: .mfKey32Log)
     }
