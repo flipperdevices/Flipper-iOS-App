@@ -33,17 +33,24 @@ struct AppRow: View {
                 .disabled(!isBuildReady)
 
                 if isInstalled {
-                    DeleteAppButton {
-                        showConfirmDelete = true
-                    }
-                    .frame(width: 34, height: 34)
-                    .alert(isPresented: $showConfirmDelete) {
-                        ConfirmDeleteAppAlert(
-                            isPresented: $showConfirmDelete,
-                            application: application,
-                            category: model.category(for: application)
-                        ) {
-                            delete()
+                    if status.hasCancelOpportunity {
+                        CancelProgressAppButton {
+                            cancel()
+                        }
+                        .frame(width: 34, height: 34)
+                    } else  {
+                        DeleteAppButton {
+                            showConfirmDelete = true
+                        }
+                        .frame(width: 34, height: 34)
+                        .alert(isPresented: $showConfirmDelete) {
+                            ConfirmDeleteAppAlert(
+                                isPresented: $showConfirmDelete,
+                                application: application,
+                                category: model.category(for: application)
+                            ) {
+                                delete()
+                            }
                         }
                     }
                 }
@@ -66,6 +73,12 @@ struct AppRow: View {
     func delete() {
         Task {
             await model.delete(application.id)
+        }
+    }
+
+    func cancel() {
+        Task {
+            await model.cancel(application.id)
         }
     }
 

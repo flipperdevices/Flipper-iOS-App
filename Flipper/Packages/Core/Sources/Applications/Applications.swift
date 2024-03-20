@@ -12,6 +12,7 @@ public class Applications: ObservableObject {
     public typealias Application = Catalog.Application
 
     private var categories: [Category] = []
+    private var taskStorage: [Application.ID: Task<Void, Never>] = [:]
 
     public enum InstalledStatus {
         case loading
@@ -117,30 +118,40 @@ public class Applications: ObservableObject {
     }
 
     public func install(_ application: Application) async {
-        do {
-            statuses[application.id] = .installing(0)
-            try await _install(application) { progress in
-                Task {
-                    statuses[application.id] = .installing(progress)
+        taskStorage[application.id]?.cancel()
+
+        taskStorage[application.id] = Task {
+            do {
+                statuses[application.id] = .installing(0)
+                try await _install(application) { progress in
+                    Task {
+                        statuses[application.id] = .installing(progress)
+                    }
                 }
+                statuses[application.id] = .installed
+            } catch {
+                logger.error("install app: \(error)")
             }
-            statuses[application.id] = .installed
-        } catch {
-            logger.error("install app: \(error)")
+            taskStorage[application.id] = nil
         }
     }
 
     public func update(_ application: Application) async {
-        do {
-            statuses[application.id] = .updating(0)
-            try await _install(application) { progress in
-                Task {
-                    statuses[application.id] = .updating(progress)
+        taskStorage[application.id]?.cancel()
+
+        taskStorage[application.id] = Task {
+            do {
+                statuses[application.id] = .updating(0)
+                try await _install(application) { progress in
+                    Task {
+                        statuses[application.id] = .updating(progress)
+                    }
                 }
+                statuses[application.id] = .installed
+            } catch {
+                logger.error("update app: \(error)")
             }
-            statuses[application.id] = .installed
-        } catch {
-            logger.error("update app: \(error)")
+            taskStorage[application.id] = nil
         }
     }
 
@@ -160,6 +171,26 @@ public class Applications: ObservableObject {
             statuses[id] = nil
         } catch {
             logger.error("delete app: \(error)")
+        }
+    }
+
+    public func cancel(_ id: Application.ID) async {
+        guard
+            let status = statuses[id],
+            let task = taskStorage[id]
+        else { return }
+
+        guard status.hasCancelOpportunity else { return }
+        task.cancel()
+
+        switch status {
+        case .updating:
+            statuses[id] = .outdated
+        case .installing:
+            installed.removeAll { $0.id == id }
+            statuses[id] = .notInstalled
+        default:
+            return
         }
     }
 
@@ -400,6 +431,14 @@ public class Applications: ObservableObject {
             case .installed, .opening: return 5
             case .building: return 7
             case .checking: return 8
+            }
+        }
+
+        public var hasCancelOpportunity: Bool {
+            switch self {
+            case .installing: return true
+            case .updating: return true
+            default: return false
             }
         }
     }

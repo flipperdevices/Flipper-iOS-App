@@ -25,7 +25,12 @@ extension AppView {
 
         var body: some View {
             HStack(alignment: .center, spacing: 12) {
-                if canDelete {
+                if status.hasCancelOpportunity {
+                    CancelProgressAppButton {
+                        cancel()
+                    }
+                    .frame(width: 46, height: 46)
+                } else if canDelete {
                     DeleteAppButton {
                         confirmDelete = true
                     }
@@ -119,6 +124,12 @@ extension AppView {
         func delete() {
             Task {
                 await model.delete(application.id)
+            }
+        }
+
+        func cancel() {
+            Task {
+                await model.cancel(application.id)
             }
         }
 

@@ -52,21 +52,38 @@ struct UpdateAllAppButton: View {
     }
 }
 
-struct DeleteAppButton: View {
-    var action: () -> Void
+private struct ActionAppButton: View {
+    let image: String
+    let action: () -> Void
 
     var body: some View {
         Button {
             action()
         } label: {
             GeometryReader { proxy in
-                Image("AppDelete")
+                Image(image)
                     .resizable()
                     .frame(
                         width: proxy.size.width,
                         height: proxy.size.height)
             }
         }
+    }
+}
+
+struct DeleteAppButton: View {
+    var action: () -> Void
+
+    var body: some View {
+        ActionAppButton(image: "AppDelete", action: action)
+    }
+}
+
+struct CancelProgressAppButton: View {
+    var action: () -> Void
+
+    var body: some View {
+        ActionAppButton(image: "AppCancel", action: action)
     }
 }
 
