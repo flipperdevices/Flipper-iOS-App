@@ -40,9 +40,19 @@ public struct Path: Equatable, Hashable {
         }
     }
 
+    public mutating func append(_ path: Path) {
+        components.append(contentsOf: path.components)
+    }
+
     public func appending(_ component: String) -> Path {
         var path = self
         path.append(component)
+        return path
+    }
+
+    public func appending(_ other: Path) -> Path {
+        var path = self
+        path.append(other)
         return path
     }
 

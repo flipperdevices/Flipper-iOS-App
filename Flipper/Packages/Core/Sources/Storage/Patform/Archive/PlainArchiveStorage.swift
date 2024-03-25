@@ -3,16 +3,22 @@ import Foundation
 
 class PlainArchiveStorage: ArchiveStorage {
     let storage: FileStorage = .init()
+    let fsManifest: FileSystemManifest
 
     let root: Path
 
     init(root: Path) {
         self.root = root
+        self.fsManifest = .init(listing: MobileFileListing(
+            storage: storage,
+            root: root.appending("any")
+        ))
     }
 
     var manifest: Manifest {
         get async throws {
-            try await storage.getManifest(at: root)
+            let (manifest, _) = try await fsManifest.get { _ in }
+            return manifest.appendingPrefix("/any")
         }
     }
 
@@ -32,7 +38,7 @@ class PlainArchiveStorage: ArchiveStorage {
     }
 
     private func makePath(for path: Path) -> Path {
-        root.appending(path.string)
+        root.appending(path)
     }
 }
 

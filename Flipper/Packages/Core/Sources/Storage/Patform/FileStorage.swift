@@ -37,6 +37,14 @@ actor FileStorage {
         baseURL.appendingPathComponent(path.string)
     }
 
+    func size(_ path: Path) throws -> Int {
+        try read(path).count
+    }
+
+    func hash(_ path: Path) throws -> String {
+        try read(path).md5
+    }
+
     func read(_ path: Path) throws -> String {
         var content = ""
         let url = makeURL(for: path)

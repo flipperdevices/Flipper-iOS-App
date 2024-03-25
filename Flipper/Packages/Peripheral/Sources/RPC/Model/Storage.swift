@@ -91,4 +91,13 @@ extension Array where Element == Peripheral.Element {
             return file
         }
     }
+
+    public var directories: [Directory] {
+        self.compactMap {
+            guard case .directory(let directory) = $0 else {
+                return nil
+            }
+            return directory
+        }
+    }
 }

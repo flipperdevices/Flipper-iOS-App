@@ -3,7 +3,7 @@ import Foundation
 
 @testable import Core
 
-class ManifestTests: XCTestCase {
+class ApplicationManifestTests: XCTestCase {
     var rawManifest: String = """
         Filetype: Flipper Application Installation Manifest
         Version: 1
