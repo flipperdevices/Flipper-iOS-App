@@ -13,7 +13,7 @@ class MobileArchive: ArchiveProtocol {
     func getManifest(
         progress: (Double) -> Void
     ) async throws -> Manifest {
-        progress(1)
+        defer { progress(1.0) }
         if let manifest = manifest {
             return manifest
         } else {
@@ -27,7 +27,8 @@ class MobileArchive: ArchiveProtocol {
         _ path: Path,
         progress: (Double) -> Void
     ) async throws -> String {
-        try await storage.get(path)
+        defer { progress(1.0) }
+        return try await storage.get(path)
     }
 
     func upsert(
@@ -35,6 +36,7 @@ class MobileArchive: ArchiveProtocol {
         at path: Path,
         progress: (Double) -> Void
     ) async throws {
+        defer { progress(1.0) }
         try await storage.upsert(content, at: path)
         manifest?[path] = .init(content.md5)
     }

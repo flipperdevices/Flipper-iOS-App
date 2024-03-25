@@ -16,11 +16,10 @@ class CacheStorage: PlainArchiveStorage {
                 .filter { $0.hasSuffix(".fim") }
                 .map { path.appending($0) }
 
-            let items = try await storage.getAllHashes(for: files) { _ in }
-
             var result: [Path: Hash] = [:]
-            for (key, value) in items {
-                result[key.removingFirstComponent] = value
+            for path in files {
+                let hash = try await storage.hash(path)
+                result[path.removingFirstComponent] = .init(hash)
             }
             return .init(result)
         }
