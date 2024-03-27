@@ -423,6 +423,7 @@
 			buildConfigurationList = F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "Flipper(iOS)" */;
 			buildPhases = (
 				49CE8F942525E73200B9CBE4 /* Check code with SwiftLint */,
+				8BE9EF8C2BB31B7900FC82E2 /* Clear .XCInstall */,
 				F0DBFA1D24EF2F9900EB2880 /* Sources */,
 				F0DBFA1E24EF2F9900EB2880 /* Frameworks */,
 				F0DBFA1F24EF2F9900EB2880 /* Resources */,
@@ -556,6 +557,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Initiate lint\n${PROJECT_DIR}/perform_lint.sh\n";
+		};
+		8BE9EF8C2BB31B7900FC82E2 /* Clear .XCInstall */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Clear .XCInstall";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -rf $TARGET_BUILD_DIR/.XCInstall/*\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
