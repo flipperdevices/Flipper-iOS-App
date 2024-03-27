@@ -2,11 +2,9 @@ import Peripheral
 
 class FlipperFileListing: FileListing {
     let storage: StorageAPI
-    let root: Path
 
-    init(storage: StorageAPI, root: Path) {
+    init(storage: StorageAPI) {
         self.storage = storage
-        self.root = root
     }
 
     func list(
@@ -14,8 +12,6 @@ class FlipperFileListing: FileListing {
         calculatingMD5: Bool,
         sizeLimit: Int
     ) async throws -> [Element] {
-        let path = root.appending(path)
-
         let list = try await storage.list(
             at: path,
             calculatingMD5: calculatingMD5,

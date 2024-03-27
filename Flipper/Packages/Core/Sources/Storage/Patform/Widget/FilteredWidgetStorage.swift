@@ -4,18 +4,18 @@ import Combine
 
 class FilteredWidgetStorage: TodayWidgetKeysStorage {
     private var widgetStorage: TodayWidgetKeysStorage
-    private var mobileStorage: ArchiveStorage
+    private var mobileArchive: ArchiveProtocol
 
     var didChange: AnyPublisher<Void, Never> { widgetStorage.didChange }
 
-    init(widgetStorage: TodayWidgetKeysStorage, mobileStorage: ArchiveStorage) {
+    init(widgetStorage: TodayWidgetKeysStorage, mobileArchive: ArchiveProtocol) {
         self.widgetStorage = widgetStorage
-        self.mobileStorage = mobileStorage
+        self.mobileArchive = mobileArchive
     }
 
     func read() async throws -> [WidgetKey] {
         let storedKeys = try await widgetStorage.read()
-        let manifest = try await mobileStorage.manifest
+        let manifest = try await mobileArchive.getManifest()
         return storedKeys.filter { manifest.items[$0.path] != nil }
     }
 

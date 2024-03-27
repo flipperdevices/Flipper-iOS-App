@@ -23,12 +23,20 @@ class ArchiveTests: XCTestCase {
     }
 
     func testMobileManifest() async throws {
-        let archive = MobileArchive(storage: InMemoryArchiveStorage())
+        let archive = MobileArchive(storage: InMemoryStorageAPI(entries: [
+            "mobile": .directory(.init(entries: [
+                "any": .directory(.init())
+            ]))
+        ]))
         try await _testManifest(archive: archive)
     }
 
     func testMobileArchive() async throws {
-        let archive = MobileArchive(storage: InMemoryArchiveStorage())
+        let archive = MobileArchive(storage: InMemoryStorageAPI(entries: [
+            "mobile": .directory(.init(entries: [
+                "any": .directory(.init())
+            ]))
+        ]))
         try await _testArchive(archive: archive)
     }
 

@@ -9,7 +9,7 @@ class FileSystemManifestTests: XCTestCase {
         let fsManifest = FileSystemManifest(listing: inMemoryStorage)
 
         var progress: [Double] = []
-        let (manifest, knownDirectories) = try await fsManifest.get {
+        let (manifest, knownDirectories) = try await fsManifest.get(at: "/") {
             progress.append($0)
         }
         XCTAssertEqual(progress, [1.0])
@@ -30,7 +30,8 @@ class FileSystemManifestTests: XCTestCase {
         ])
         let fsManifest = FileSystemManifest(listing: inMemoryStorage)
 
-        let (manifest, knownDirectories) = try await fsManifest.get { _ in }
+        let (manifest, knownDirectories) = try await fsManifest.get(at: "/") 
+        { _ in }
 
         XCTAssertEqual(manifest.items, [
             "/nfc/key.nfc": .init("content".md5)
@@ -46,7 +47,7 @@ class FileSystemManifestTests: XCTestCase {
             ]))
         ])
         let fsManifest = FileSystemManifest(listing: inMemoryStorage)
-        let (manifest, _) = try await fsManifest.get { _ in }
+        let (manifest, _) = try await fsManifest.get(at: "/") { _ in }
 
         XCTAssertEqual(manifest.items, [
             "/nfc/key.nfc": .init("content".md5),
@@ -65,7 +66,7 @@ class FileSystemManifestTests: XCTestCase {
         let fsManifest = FileSystemManifest(listing: inMemoryStorage)
 
         var progress: [Double] = []
-        let (manifest, knownDirectories) = try await fsManifest.get {
+        let (manifest, knownDirectories) = try await fsManifest.get(at: "/") {
             progress.append($0)
         }
         XCTAssertEqual(
@@ -97,7 +98,7 @@ class FileSystemManifestTests: XCTestCase {
         ])
         let fsManifest = FileSystemManifest(listing: inMemoryStorage)
 
-        let (manifest, knownDirectories) = try await fsManifest.get { _ in }
+        let (manifest, knownDirectories) = try await fsManifest.get(at: "/") { _ in }
 
         XCTAssertEqual(manifest.items, [
             "/nfc/key.nfc": .init("content".md5)
