@@ -1,6 +1,6 @@
 import Peripheral
 
-class FlipperFavorites: FavoritesProtocol {
+class FlipperFavorites: FavoritesStorage {
     let filename = "favorites.txt"
     var path: Path { .init(components: ["any", filename]) }
 

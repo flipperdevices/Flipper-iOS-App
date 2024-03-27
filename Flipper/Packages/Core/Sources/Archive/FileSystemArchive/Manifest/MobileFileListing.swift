@@ -2,11 +2,9 @@ import Peripheral
 
 class MobileFileListing: FileListing {
     let storage: FileStorage
-    let root: Path
 
-    init(storage: FileStorage, root: Path) {
+    init(storage: FileStorage) {
         self.storage = storage
-        self.root = root
     }
 
     func list(
@@ -14,16 +12,16 @@ class MobileFileListing: FileListing {
         calculatingMD5: Bool,
         sizeLimit: Int
     ) async throws -> [Element] {
-        let path = root.appending(path)
         guard await storage.isExists(path) else {
             return []
         }
 
         var result: [Element] = []
 
-        for name in try await storage.list(at: path) {
+        let elements = try await storage.list(at: path)
+        for name in elements {
             let itemPath = path.appending(name)
-            
+
             if await storage.isDirectory(itemPath) {
                 result.append(.directory(.init(
                     name: name)))
@@ -32,11 +30,14 @@ class MobileFileListing: FileListing {
                 guard sizeLimit == 0 || size <= sizeLimit else {
                     continue
                 }
-                result.append(.file(await .init(
+                let hash = calculatingMD5
+                    ? try await storage.hash(itemPath)
+                    : ""
+                result.append(.file(.init(
                     name: name,
                     size: size,
                     data: .init(),
-                    md5: calculatingMD5 ? try storage.hash(itemPath) : "")))
+                    md5: hash)))
             }
         }
 

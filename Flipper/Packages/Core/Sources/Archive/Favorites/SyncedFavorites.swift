@@ -1,6 +1,6 @@
 import Peripheral
 
-class SyncedFavorites: FavoritesProtocol {
+class SyncedFavorites: FavoritesStorage {
     let storage: FileStorage = .init()
     let filename = "synced_favorites.txt"
     var path: Path { .init(string: filename) }

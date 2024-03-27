@@ -2,7 +2,7 @@
 @testable import Peripheral
 import Foundation
 
-class InMemoryStorageAPI: StorageAPI {
+class InMemoryStorageAPI: StorageAPI, FileSystemArchiveAPI {
     var fileSystem: InMemoryFileSystem
 
     convenience init() {
@@ -34,8 +34,8 @@ class InMemoryStorageAPI: StorageAPI {
             return try fileSystem.list(at: path).compactMap {
                 switch $0.value {
                 case .file(let file):
-                    guard 
-                        sizeLimit == 0 || 
+                    guard
+                        sizeLimit == 0 ||
                         file.content.count <= sizeLimit
                     else {
                         return nil
@@ -127,6 +127,20 @@ class InMemoryStorageAPI: StorageAPI {
         } catch {
             throw Error.StorageError(error)
         }
+    }
+}
+
+extension InMemoryStorageAPI {
+    func delete(at path: Path) async throws {
+        try await self.delete(at: path, force: false)
+    }
+
+    func write(
+        at path: Path,
+        content: String,
+        progress: (Double) -> Void
+    ) async throws {
+        try await write(at: path, string: content, progress: progress)
     }
 }
 

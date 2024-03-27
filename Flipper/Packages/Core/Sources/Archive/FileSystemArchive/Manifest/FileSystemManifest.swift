@@ -12,12 +12,13 @@ class FileSystemManifest {
     }
 
     func get(
+        at root: Path,
         progress: (Double) -> Void
     ) async throws -> (Manifest, KnownDirectories) {
         var result: [Path: Hash] = .init()
 
         let rootDirectories = try await listing.list(
-            at: "/",
+            at: root,
             calculatingMD5: false,
             sizeLimit: 0
         )
@@ -42,7 +43,7 @@ class FileSystemManifest {
             let path = Path(string: type.location)
 
             try await listing.list(
-                at: path,
+                at: root.appending(path),
                 calculatingMD5: true,
                 sizeLimit: fileSizeLimit
             )

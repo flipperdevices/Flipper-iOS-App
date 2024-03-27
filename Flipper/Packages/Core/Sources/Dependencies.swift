@@ -61,16 +61,13 @@ public class Dependencies: ObservableObject {
 
     // archive
 
-    public lazy var mobileArchiveStorage: ArchiveStorage = {
-        MobileArchiveStorage()
+    lazy var mobileArchive: ArchiveProtocol & Compressable = {
+        MobileArchive(storage: FileStorage())
     }()
 
     public lazy var archive: Archive = {
-        let mobileArchive = MobileArchive(
-            storage: mobileArchiveStorage
-        )
         let mobileFavorites = MobileFavorites()
-        let syncedManifest = SyncedItemsStorage()
+        let syncedManifest = SyncedManifest()
 
         return Archive(
             archiveSync: ArchiveSync(
@@ -87,10 +84,8 @@ public class Dependencies: ObservableObject {
                 syncedFavorites: SyncedFavorites()),
             mobileFavorites: mobileFavorites,
             mobileArchive: mobileArchive,
-            mobileNotes: NotesArchiveStorage(),
-            deletedArchive: DeletedArchive(
-                storage: DeletedArchiveStorage()
-            ),
+            mobileNotes: NotesArchive(storage: FileStorage()),
+            deletedArchive: DeletedArchive(storage: FileStorage()),
             syncedManifest: syncedManifest)
     }()
 
@@ -177,7 +172,7 @@ public class Dependencies: ObservableObject {
                     : prodURL),
             flipperApps: .init(
                 storage: api.storage,
-                cache: CacheStorage()),
+                cache: CacheStorage(storage: FileStorage())),
             pairedDevice: pairedDevice,
             system: api.system,
             application: api.application
@@ -189,7 +184,7 @@ public class Dependencies: ObservableObject {
         .init(
             widgetStorage: FilteredWidgetStorage(
                 widgetStorage: JSONTodayWidgetStorage(),
-                mobileStorage: mobileArchiveStorage),
+                mobileArchive: mobileArchive),
             emulate: emulate,
             archive: archive,
             central: central,
