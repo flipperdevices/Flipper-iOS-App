@@ -1,15 +1,8 @@
-public enum Message {
+public enum IncomingMessage {
     case error(Error)
     case screenFrame(ScreenFrame)
     case appState(AppState)
-    case reboot(RebootMode)
     case unknown(String)
-
-    public enum RebootMode {
-        case os
-        case dfu
-        case update
-    }
 
     public enum AppState {
         case closed
@@ -18,7 +11,7 @@ public enum Message {
     }
 }
 
-extension Message {
+extension IncomingMessage {
     init(decoding main: PB_Main) {
         guard main.commandStatus == .ok else {
             self = .error(.init(main.commandStatus))
@@ -62,27 +55,6 @@ extension ScreenFrame.Orientation {
         case .vertical: self = .vertical
         case .verticalFlip: self = .verticalFlipped
         case .UNRECOGNIZED: self = .horizontal
-        }
-    }
-}
-
-extension Message {
-    func serialize() -> PB_Main {
-        switch self {
-        case .screenFrame(let screenFrame):
-            return .with {
-                $0.guiScreenFrame = .with {
-                    $0.data = .init(screenFrame.bytes)
-                }
-            }
-        case .reboot(let mode):
-            return .with {
-                $0.systemRebootRequest = .with {
-                    $0.mode = .init(mode)
-                }
-            }
-        default:
-            fatalError("unreachable")
         }
     }
 }

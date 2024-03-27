@@ -5,7 +5,8 @@ import enum Peripheral.FlipperColor
 
 struct DetectReaderView: View {
     @EnvironmentObject private var device: Device
-    @StateObject private var detectReader: DetectReader = .init()
+    @StateObject private var detectReader: DetectReader =
+        Dependencies.shared.detectReader
 
     @Environment(\.dismiss) private var dismiss
 

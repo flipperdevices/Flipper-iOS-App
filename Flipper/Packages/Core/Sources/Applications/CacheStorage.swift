@@ -1,32 +1,31 @@
 import Peripheral
 
-typealias Cache = ArchiveStorage
+typealias Cache = ArchiveProtocol
 
-class CacheStorage: PlainArchiveStorage {
-    override var manifest: Manifest {
-        get async throws {
-            let path = root.appending("ext").appending("apps_manifests")
+class CacheStorage: FileSystemArchive {
+    override func getManifest(
+        progress: (Double) -> Void
+    ) async throws -> Manifest {
+        let path = Path("/ext/apps_manifests")
+        let fullPath = root.appending(path)
 
-            guard await storage.isExists(path) else {
-                return .init()
-            }
+        let files = try await storage.list(
+            at: fullPath,
+            calculatingMD5: true,
+            sizeLimit: 0
+        )
+        .files
+        .filter { !$0.name.hasPrefix(".") }
+        .filter { $0.name.hasSuffix(".fim") }
 
-            let files = try await storage.list(at: path)
-                .filter { !$0.hasPrefix(".") }
-                .filter { $0.hasSuffix(".fim") }
-                .map { path.appending($0) }
-
-            let items = try await storage.getAllHashes(for: files) { _ in }
-
-            var result: [Path: Hash] = [:]
-            for (key, value) in items {
-                result[key.removingFirstComponent] = value
-            }
-            return .init(result)
+        var result: [Path: Hash] = [:]
+        for file in files {
+            result[path.appending(file.name)] = .init(file.md5)
         }
+        return .init(result)
     }
 
-    init() {
-        super.init(root: "cache")
+    init(storage: FileSystemArchiveAPI) {
+        super.init(storage: storage, root: "cache")
     }
 }

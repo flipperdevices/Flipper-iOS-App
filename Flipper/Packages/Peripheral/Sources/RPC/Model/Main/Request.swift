@@ -37,7 +37,7 @@ public enum Request {
         case start(String, String)
         case lockStatus
         case loadFile(Path)
-        case pressButton(String, Int32)
+        case pressButton(String, Int)
         case releaseButton
         case exit
     }
@@ -218,7 +218,7 @@ extension Request.Application {
             return .with {
                 $0.appButtonPressRequest = .with {
                     $0.args = args
-                    $0.index = index
+                    $0.index = .init(index)
                 }
             }
         case .releaseButton:
@@ -305,16 +305,6 @@ extension PB_Main {
         let stream = OutputByteStream()
         try BinaryDelimited.serialize(message: self, to: stream)
         return stream.bytes
-    }
-}
-
-extension PBSystem_RebootRequest.RebootMode {
-    init(_ source: Message.RebootMode) {
-        switch source {
-        case .os: self = .os
-        case .dfu: self = .dfu
-        case .update: self = .update
-        }
     }
 }
 

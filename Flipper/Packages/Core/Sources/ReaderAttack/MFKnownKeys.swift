@@ -1,27 +1,26 @@
 import Peripheral
 
 public class MFKnownKeys {
-    private var pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
+    private var storage: StorageAPI
 
-    init(pairedDevice: PairedDevice) {
-        self.pairedDevice = pairedDevice
+    init(storage: StorageAPI) {
+        self.storage = storage
     }
 
     private var flipperKeysExist: Bool {
         get async throws {
-            try await rpc.fileExists(at: .mfClassicDict)
+            try await storage.fileExists(at: .mfClassicDict)
         }
     }
 
     private var userKeysExist: Bool {
         get async throws {
-            try await rpc.fileExists(at: .mfClassicDictUser)
+            try await storage.fileExists(at: .mfClassicDictUser)
         }
     }
 
     private func readKeys(at path: Path) async throws -> Set<MFKey64> {
-        let bytes = try await rpc.readFile(at: path)
+        let bytes = try await storage.read(at: path)
         let array = String(decoding: bytes, as: UTF8.self)
             .split { $0 == "\n" || $0 == "\r\n" }
             .compactMap { line in
@@ -34,7 +33,7 @@ public class MFKnownKeys {
         let string = keys
             .map(\.hexValue)
             .joined(separator: "\n")
-        try await rpc.writeFile(at: path, string: string)
+        try await storage.write(at: path, string: string)
     }
 
     public func readFlipperKeys() async throws -> Set<MFKey64> {

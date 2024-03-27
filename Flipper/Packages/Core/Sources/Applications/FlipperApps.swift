@@ -53,7 +53,7 @@ class FlipperApps {
 
     private func loadManifests() async throws -> [Manifest] {
         var result: [Manifest] = []
-        let cached = try await cache.manifest
+        let cached = try await cache.getManifest()
 
         let listing = try await storage.list(
             at: .appsManifests,
@@ -84,7 +84,7 @@ class FlipperApps {
     }
 
     func loadLocalManifest(_ path: Path) async throws -> Manifest {
-        let data = try await cache.get(path)
+        let data = try await cache.read(path)
         let manifest = try FFFDecoder.decode(Manifest.self, from: data)
         return manifest
     }

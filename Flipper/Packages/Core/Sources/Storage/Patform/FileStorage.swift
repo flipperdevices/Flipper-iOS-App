@@ -37,15 +37,23 @@ actor FileStorage {
         baseURL.appendingPathComponent(path.string)
     }
 
-    func read(_ path: Path) throws -> String {
-        var content = ""
+    func size(_ path: Path) throws -> Int {
+        (try read(path) as Data).count
+    }
+
+    func hash(_ path: Path) throws -> String {
+        (try read(path) as Data).md5
+    }
+
+    func read(_ path: Path) throws -> Data {
+        var data: Data = .init()
         let url = makeURL(for: path)
         var readError: Swift.Error?
         var nsReadError: NSError?
         let coord = NSFileCoordinator(filePresenter: nil)
         coord.coordinate(readingItemAt: url, error: &nsReadError) { readURL in
             do {
-                content = try .init(contentsOf: readURL)
+                data = try .init(contentsOf: readURL)
             } catch {
                 readError = error
             }
@@ -56,7 +64,11 @@ actor FileStorage {
         if let error = nsReadError {
             throw error
         }
-        return content
+        return data
+    }
+
+    func read(_ path: Path) throws -> String {
+        .init(decoding: try read(path), as: UTF8.self)
     }
 
     func write(_ content: String, at path: Path) throws {

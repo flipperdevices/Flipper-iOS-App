@@ -1,6 +1,6 @@
 public enum Content {
     case request(Request)
-    case message(Message)
+    case message(OutgoingMessage)
 }
 
 extension Content {

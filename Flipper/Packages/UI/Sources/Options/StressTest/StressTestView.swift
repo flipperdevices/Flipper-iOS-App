@@ -3,9 +3,7 @@ import SwiftUI
 
 struct StressTestView: View {
     // next step
-    @StateObject var stressTest: StressTest = .init(
-        pairedDevice: Dependencies.shared.pairedDevice
-    )
+    @StateObject var stressTest = Dependencies.shared.stressTest
     @Environment(\.dismiss) private var dismiss
 
     @State private var events: [StressTest.Event] = []
