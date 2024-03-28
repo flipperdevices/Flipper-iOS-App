@@ -1,98 +1,80 @@
+import Core
 import SwiftUI
 
-public struct CachedAsyncImage<Content, PlaceholderContent>: View
-where Content: View, PlaceholderContent: View {
-    private let url: URL?
-    private let scale: CGFloat
-    private let transaction: Transaction?
-    private let contentPhase: ((AsyncImagePhase) -> Content)?
-    private let contentImage: ((Image) -> Content)?
-    private let placeholder: (() -> PlaceholderContent)?
+public struct CachedAsyncImage<Content, PlaceholderContent, ErrorContent>: View
+where Content: View, PlaceholderContent: View, ErrorContent: View {
+
+    public typealias ContentImage = ((Image) -> Content)
+    public typealias ContentPlaceholder = (() -> PlaceholderContent)
+    public typealias ContentError = (() -> ErrorContent)
+
+    private let url: URL
+    private let contentImage: ContentImage
+    private let placeholder: ContentPlaceholder
+    private let contentError: ContentError?
+
+    enum ImageState {
+        case ready(Image)
+        case inProgress
+        case error
+    }
+
+    @State private var state: ImageState = .inProgress
 
     public init(
-        url: URL?,
-        scale: CGFloat = 1.0,
-        transaction: Transaction = Transaction(),
-        @ViewBuilder content: @escaping (AsyncImagePhase) -> Content
-    ) {
+        url: URL,
+        @ViewBuilder content: @escaping ContentImage,
+        @ViewBuilder placeholder: @escaping ContentPlaceholder
+    )  where ErrorContent == Never {
         self.url = url
-        self.scale = scale
-        self.transaction = transaction
-        self.contentPhase = content
-        self.contentImage = nil
-        self.placeholder = nil
+        self.contentImage = content
+        self.placeholder = placeholder
+        self.contentError = nil
     }
 
     public init(
-        url: URL?,
-        scale: CGFloat = 1,
-        @ViewBuilder content: @escaping (Image) -> Content,
-        @ViewBuilder placeholder: @escaping () -> PlaceholderContent
+        url: URL,
+        @ViewBuilder content: @escaping ContentImage,
+        @ViewBuilder placeholder: @escaping ContentPlaceholder,
+        @ViewBuilder error: @escaping ContentError
     ) {
         self.url = url
-        self.scale = scale
         self.contentImage = content
         self.placeholder = placeholder
-        self.contentPhase = nil
-        self.transaction = nil
+        self.contentError = error
     }
 
     public var body: some View {
-        if let cached = ImageInMemoryCache[url] {
-            if contentPhase != nil {
-                contentPhase?(.success(cached))
-            } else if contentImage != nil {
-                contentImage?(cached)
-            }
-        } else {
-            if contentPhase != nil {
-                AsyncImage(
-                    url: url,
-                    scale: scale,
-                    transaction: transaction ?? Transaction(),
-                    content: { cacheAndRender(phase: $0) }
-                )
-            } else if contentImage != nil, let placeholder {
-                AsyncImage(
-                    url: url,
-                    scale: scale,
-                    content: { cacheAndRender(image: $0) },
-                    placeholder: placeholder
-                )
+        Group {
+            switch state {
+            case .inProgress:
+                placeholder()
+            case .error:
+                if let errorView = contentError?() {
+                    errorView
+                } else {
+                    placeholder()
+                }
+            case .ready(let image):
+                contentImage(image)
             }
         }
-    }
-}
-
-// MARK: Private methods
-
-private extension CachedAsyncImage {
-    func cacheAndRender(image: Image) -> some View {
-        ImageInMemoryCache[url] = image
-        return contentImage?(image)
+        .task { await getImage() }
     }
 
-    func cacheAndRender(phase: AsyncImagePhase) -> some View {
-        if case .success(let image) = phase {
-            ImageInMemoryCache[url] = image
-        }
-        return contentPhase?(phase)
-    }
-}
+    private func getImage() async {
+        do {
+            let data = try await CachedNetworkLoader.shared.get(url)
 
-// MARK: Private cache for CachedAsyncImage
+            guard let uiImage = UIImage(data: data) else {
+                self.state = .error
+                return
+            }
 
-private class ImageInMemoryCache {
-    static private var cache: [URL: Image] = [:]
-
-    static subscript(url: URL?) -> Image? {
-        get {
-            guard let url else { return nil }
-            return ImageInMemoryCache.cache[url]
-        }
-        set {
-            guard let url else { return }
-            ImageInMemoryCache.cache[url] = newValue
+            let image = Image(uiImage: uiImage)
+            self.state = .ready(image)
+        } catch {
+            self.state = .error
         }
     }
 }
