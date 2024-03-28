@@ -10,6 +10,8 @@ extension CardView {
         var isFavorite: Bool { item.isFavorite }
         var isDeleted: Bool { item.status == .deleted }
 
+        @EnvironmentObject private var emulate: Emulate
+
         var body: some View {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 8) {
@@ -26,9 +28,14 @@ extension CardView {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 24, height: 24)
-                            .foregroundColor(.primary)
+                            .foregroundColor(
+                                emulate.inProgress
+                                ? .emulateDisabled
+                                : .primary
+                            )
                             .opacity(kind != .deleted ? 1 : 0)
                     }
+                    .disabled(emulate.inProgress)
                 }
 
                 if item.note.isEmpty {

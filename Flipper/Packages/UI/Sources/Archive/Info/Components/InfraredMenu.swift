@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 
 struct InfraredMenu: View {
@@ -6,6 +7,8 @@ struct InfraredMenu: View {
     let onHowTo: () -> Void
     let onDelete: () -> Void
     let onEdit: () -> Void
+
+    @EnvironmentObject private var emulate: Emulate
 
     var body: some View {
         Card {
@@ -17,6 +20,12 @@ struct InfraredMenu: View {
                     isPresented = false
                     onEdit()
                 }
+                .foregroundColor(
+                    emulate.inProgress 
+                    ? .emulateDisabled
+                    : .primary
+                )
+                .disabled(emulate.inProgress)
                 .padding(12)
 
                 Divider()
@@ -29,6 +38,7 @@ struct InfraredMenu: View {
                     isPresented = false
                     onShare()
                 }
+                .foregroundColor(.primary)
                 .padding(12)
 
                 Divider()
@@ -41,6 +51,7 @@ struct InfraredMenu: View {
                     isPresented = false
                     onHowTo()
                 }
+                .foregroundColor(.primary)
                 .padding(12)
 
                 Divider()
@@ -48,12 +59,12 @@ struct InfraredMenu: View {
 
                 InfraredMenuItem(
                     title: "Delete",
-                    image: "Delete",
-                    color: .red
+                    image: "Delete"
                 ) {
                     isPresented = false
                     onDelete()
                 }
+                .foregroundColor(.red)
                 .padding(12)
             }
         }
@@ -63,18 +74,15 @@ struct InfraredMenu: View {
     struct InfraredMenuItem: View {
         let title: String
         let image: String
-        let color: Color
         let action: () -> Void
 
         init(
             title: String,
             image: String,
-            color: Color = .primary,
             action: @escaping () -> Void
         ) {
             self.title = title
             self.image = image
-            self.color = color
             self.action = action
         }
 
@@ -87,7 +95,6 @@ struct InfraredMenu: View {
                         .font(.system(size: 14, weight: .medium))
                     Spacer()
                 }
-                .foregroundColor(color)
             }
         }
     }

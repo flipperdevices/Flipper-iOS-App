@@ -11,6 +11,8 @@ struct BaseInfoView: View {
 
     @Environment(\.dismiss) private var dismiss
 
+    @EnvironmentObject private var emulate: Emulate
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -31,7 +33,10 @@ struct BaseInfoView: View {
                             title: "Edit Dump",
                             action: onOpenNFCEdit
                         )
-                        .foregroundColor(.primary)
+                        .foregroundColor(
+                            emulate.inProgress ? .emulateDisabled : .primary
+                        )
+                        .disabled(emulate.inProgress)
                     }
                     InfoButton(
                         image: "Share",

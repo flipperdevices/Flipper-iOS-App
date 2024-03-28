@@ -8,8 +8,7 @@ struct InfoButton: View {
     init(
         image: String,
         title: String,
-        action: @escaping () -> Void,
-        longPressAction: @escaping () -> Void = {}
+        action: @escaping () -> Void
     ) {
         self.image = image
         self.title = title
@@ -17,8 +16,7 @@ struct InfoButton: View {
     }
 
     var body: some View {
-        Button {
-        } label: {
+        Button(action: action) {
             HStack(spacing: 8) {
                 Image(image)
                     .renderingMode(.template)
@@ -28,8 +26,5 @@ struct InfoButton: View {
             .frame(minWidth: 44, minHeight: 44)
             .padding(.trailing, 44)
         }
-        .simultaneousGesture(TapGesture().onEnded {
-            action()
-        })
     }
 }
