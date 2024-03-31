@@ -43,11 +43,9 @@ struct AppsCategoryView: View {
                         }
                         .padding(.horizontal, 14)
 
-                        AppList(applications: filteredApplications)
-
-                        if isLoading, !isAllLoaded {
-                            AppRowPreview()
-                        }
+                        AppList(
+                            applications: filteredApplications,
+                            showPlaceholder: isLoading && !isAllLoaded)
                     }
                     .padding(.vertical, 18)
                     .refreshable {

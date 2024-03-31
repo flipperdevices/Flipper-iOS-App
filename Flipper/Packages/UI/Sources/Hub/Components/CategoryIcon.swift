@@ -27,6 +27,7 @@ struct CategoryIcon: View {
                 RemoteImage(url: url)
             } else {
                 Image("UnknownCategory")
+                    .renderingMode(.template)
             }
         }
         .foregroundColor(fixme ? .primary : color)

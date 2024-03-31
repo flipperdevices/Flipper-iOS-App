@@ -23,8 +23,12 @@ struct InstalledAppsView: View {
         applications.filter { model.statuses[$0.id] == .outdated }
     }
 
+    var isLoading: Bool {
+        model.installedStatus == .loading
+    }
+
     var noApps: Bool {
-        (model.installedStatus != .loading && applications.isEmpty)
+        (!isLoading && applications.isEmpty)
     }
 
     var body: some View {
@@ -44,28 +48,30 @@ struct InstalledAppsView: View {
                     .opacity(noApps ? 1 : 0)
 
                     LazyScrollView {
-                        Group {
-                            if !applications.isEmpty {
-                                VStack(spacing: 18) {
-                                    if model.outdatedCount > 0 {
-                                        UpdateAllAppButton {
-                                            updateAll()
-                                        }
-                                        .padding(.horizontal, 14)
+                        VStack(spacing: 18) {
+                            Group {
+                                if model.outdatedCount > 0 {
+                                    UpdateAllAppButton {
+                                        updateAll()
                                     }
-
-                                    AppList(
-                                        applications: applications,
-                                        isInstalled: true)
+                                } else {
+                                    UpdateAllAppButton.Placeholder()
                                 }
-                                .padding(.vertical, 14)
-                            } else {
-                                InstalledAppsPreview()
+                            }
+                            .padding(.horizontal, 14)
+
+                            Group {
+                                AppList(
+                                    applications: applications,
+                                    isInstalled: true,
+                                    showPlaceholder: isLoading
+                                )
                             }
                         }
+                        .padding(.vertical, 14)
                         .opacity(noApps ? 0 : 1)
                     }
-                    .refreshable {
+                    .refreshable(isEnabled: !isLoading) {
                         reload()
                     }
                 }
@@ -82,19 +88,6 @@ struct InstalledAppsView: View {
     func reload() {
         Task {
             try await model.loadInstalled()
-        }
-    }
-
-    struct InstalledAppsPreview: View {
-        var body: some View {
-            VStack(spacing: 18) {
-                AnimatedPlaceholder()
-                    .frame(height: 36)
-                    .padding(.horizontal, 14)
-
-                AppRowPreview(isInstalled: true)
-            }
-            .padding(.vertical, 14)
         }
     }
 

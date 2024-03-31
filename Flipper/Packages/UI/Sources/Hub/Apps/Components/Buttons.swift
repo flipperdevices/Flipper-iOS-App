@@ -8,6 +8,13 @@ struct UpdateAllAppButton: View {
 
     let action: () -> Void
 
+    struct Placeholder: View {
+        var body: some View {
+            AnimatedPlaceholder()
+                .frame(height: 36)
+        }
+    }
+
     var body: some View {
         Button {
             action()
