@@ -94,7 +94,7 @@ public class Synchronization: ObservableObject {
             }
         }
         reportSynchronizationResult(time: time, changesCount: changesCount)
-        logger.info("syncing archive: (\(time)s)")
+        logger.info("syncing archive: \(time) ms")
     }
 
     public func cancelSync() {
@@ -105,7 +105,7 @@ public class Synchronization: ObservableObject {
         let time = try await measure {
             try await system.setDate(.init())
         }
-        logger.info("syncing date: (\(time)s)")
+        logger.info("syncing date: \(time) ms")
     }
 
     // MARK: Debug
@@ -113,7 +113,7 @@ public class Synchronization: ObservableObject {
     func measure(_ task: () async throws -> Void) async rethrows -> Int {
         let start = Date()
         try await task()
-        return Int(Date().timeIntervalSince(start))
+        return Int(Date().timeIntervalSince(start) * 1_000)
     }
 
     // MARK: Analytics
