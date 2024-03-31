@@ -20,16 +20,27 @@ class FlipperApps {
         self.cache = cache
     }
 
-    func load() async throws -> [Application] {
-        manifests = try await reloadManifests()
-
-        return manifests
-            .filter {
-                $0.value.isDevCatalog == isDevCatalog
+    func load() async throws -> AsyncStream<Application> {
+        let manifests = try await loadManifests()
+        return .init { continuation in
+            let task = Task {
+                for await manifest in manifests {
+                    guard manifest.isDevCatalog == isDevCatalog else {
+                        continue
+                    }
+                    self.manifests[manifest.uid] = manifest
+                    if let application = Application(manifest) {
+                        continuation.yield(application)
+                    }
+                }
+                continuation.finish()
             }
-            .compactMap {
-                Application($0.value)
+            continuation.onTermination = {
+                if $0 == .cancelled {
+                    task.cancel()
+                }
             }
+        }
     }
 
     func category(forInstalledId id: Application.ID) -> String? {
@@ -43,47 +54,52 @@ class FlipperApps {
         return String(parts[2])
     }
 
-    private func reloadManifests() async throws -> [Application.ID: Manifest] {
-        var result: [Application.ID: Manifest] = [:]
-        try await loadManifests().forEach { manifest in
-            result[manifest.uid] = manifest
-        }
-        return result
+    private func listManifests() async throws -> [File] {
+        try await storage.list(
+            at: .appsManifests,
+            calculatingMD5: true
+        )
+        .files
+        .filter({ $0.name.hasSuffix(".fim") })
+        .filter({ !$0.name.hasPrefix(".") })
     }
 
-    private func loadManifests() async throws -> [Manifest] {
-        var result: [Manifest] = []
+    private func loadManifests() async throws -> AsyncStream<Manifest> {
         let cached = try await cache.manifest
 
-        let listing = try await storage.list(
-            at: .appsManifests,
-            calculatingMD5: true)
-
-        for file in listing.files.filter({ !$0.name.starts(with: ".") }) {
-            do {
-                let path: Path = .appsManifests.appending(file.name)
-                let hash = Hash(file.md5)
-                if let localHash = cached.items[path], localHash == hash {
-                    result.append(try await loadLocalManifest(path))
-                } else {
-                    result.append(try await loadManifest(path))
+        return .init { continuation in
+            let task = Task {
+                for file in try await listManifests() {
+                    do {
+                        let path: Path = .appsManifests.appending(file.name)
+                        let hash = Hash(file.md5)
+                        if !hash.value.isEmpty, cached.items[path] == hash {
+                            continuation.yield(try await cachedManifest(path))
+                        } else {
+                            continuation.yield(try await remoteManifest(path))
+                        }
+                    } catch {
+                        logger.error("load manifest: \(error)")
+                    }
                 }
-            } catch {
-                logger.error("load manifest: \(error)")
+                continuation.finish()
+            }
+            continuation.onTermination = { termination in
+                if termination == .cancelled {
+                    task.cancel()
+                }
             }
         }
-
-        return result
     }
 
-    func loadManifest(_ path: Path) async throws -> Manifest {
+    func remoteManifest(_ path: Path) async throws -> Manifest {
         let data = try await storage.read(at: path)
         try await cache.upsert(String(decoding: data, as: UTF8.self), at: path)
         let manifest = try FFFDecoder.decode(Manifest.self, from: data)
         return manifest
     }
 
-    func loadLocalManifest(_ path: Path) async throws -> Manifest {
+    func cachedManifest(_ path: Path) async throws -> Manifest {
         let data = try await cache.get(path)
         let manifest = try FFFDecoder.decode(Manifest.self, from: data)
         return manifest

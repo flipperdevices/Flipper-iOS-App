@@ -340,16 +340,47 @@ public class Applications: ObservableObject {
             guard installedStatus != .loading else { return }
             installedStatus = .loading
 
-            installed = try await flipperApps.load()
-            installed.forEach { statuses[$0.id] = .checking }
+            let updater = Task {
+                await runUpdater(deviceInfo: deviceInfo)
+            }
 
-            let step = 42
-            for processed in stride(from: 0, to: installed.count, by: step)  {
-                let slice = installed.dropFirst(processed).prefix(step)
+            installed = []
+            statuses = [:]
+            for await app in try await flipperApps.load() {
+                installed.append(app)
+                statuses[app.id] = .checking
+            }
 
+            if installedStatus == .loading {
+                installedStatus = .loaded
+            }
+
+            await updater.value
+        } catch {
+            installedStatus = .error
+            installed.forEach { statuses[$0.id] = offlineStatus(for: $0) }
+            logger.error("load installed: \(error)")
+        }
+    }
+
+    private func runUpdater(deviceInfo: DeviceInfo) async {
+        var checking: [Application] {
+            installed.filter { statuses[$0.id] == .checking }
+        }
+
+        let step = 42
+        while installedStatus == .loading || !checking.isEmpty {
+            let slice = checking.prefix(step)
+
+            guard !slice.isEmpty else {
+                try? await Task.sleep(milliseconds: 10)
+                continue
+            }
+
+            do {
                 let loaded = try await catalog
                     .applications()
-                    .uids(slice.map { $0.id })
+                    .uids(slice.map(\.id))
                     .target(deviceInfo.target)
                     .api(deviceInfo.api)
                     .take(slice.count)
@@ -365,17 +396,16 @@ public class Applications: ObservableObject {
                     .forEach { statuses[$0.id] = status(for: $0) }
                 missing
                     .forEach { statuses[$0.id] = .building }
+            } catch {
+                slice.forEach { app in
+                    statuses[app.id] = offlineStatus(for: app)
+                }
+                installedStatus = .error
             }
-
-            installedStatus = .loaded
-        } catch {
-            installedStatus = .error
-            installed.forEach { statuses[$0.id] = .installed }
-            logger.error("load installed: \(error)")
         }
     }
 
-    func updateInstalledApp(_ app: Application) {
+    private func updateInstalledApp(_ app: Application) {
         if let index = installed.firstIndex(where: { $0.id == app.id }) {
             installed[index] = app
         }
@@ -423,6 +453,24 @@ public class Applications: ObservableObject {
                 ? .outdated
                 : .building
         }
+        return .installed
+    }
+
+    private func offlineStatus(
+        for application: Application
+    ) -> ApplicationStatus {
+        // FIXME:
+        guard let manifest = flipperApps.manifests[application.id] else {
+            return .notInstalled
+        }
+        guard
+            let installedMajor = manifest.buildAPI.split(separator: ".").first,
+            let flipperMajor = deviceInfo?.api.split(separator: ".").first,
+            installedMajor == flipperMajor
+        else {
+            return .building
+        }
+
         return .installed
     }
 
