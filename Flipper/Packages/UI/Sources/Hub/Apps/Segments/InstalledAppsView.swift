@@ -27,8 +27,32 @@ struct InstalledAppsView: View {
         model.installedStatus == .loading
     }
 
+    var isNetworkIssue: Bool {
+        model.installedStatus == .error
+    }
+
     var noApps: Bool {
         (!isLoading && applications.isEmpty)
+    }
+
+    struct NetworkIssue: View {
+        var body: some View {
+            VStack(alignment: .center) {
+                Text("Unable to browse apps due to network issues")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.sRed)
+            }
+            .frame(height: 38)
+            .frame(maxWidth: .infinity)
+            .background {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.sRed.opacity(0.1))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.sRed.opacity(0.3), lineWidth: 1)
+            }
+        }
     }
 
     var body: some View {
@@ -50,7 +74,9 @@ struct InstalledAppsView: View {
                     LazyScrollView {
                         VStack(spacing: 18) {
                             Group {
-                                if model.outdatedCount > 0 {
+                                if isNetworkIssue {
+                                    NetworkIssue()
+                                } else if model.outdatedCount > 0 {
                                     UpdateAllAppButton {
                                         updateAll()
                                     }
