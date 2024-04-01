@@ -4,7 +4,7 @@ import SwiftUI
 struct InstalledAppsView: View {
     @EnvironmentObject var model: Applications
 
-    var applications: [Applications.Application] {
+    var applications: [Application] {
         model.installed.sorted {
             guard
                 let priority0 = model.statuses[$0.id]?.priotiry,
@@ -17,10 +17,6 @@ struct InstalledAppsView: View {
             }
             return priority0 < priority1
         }
-    }
-
-    var outdated: [Applications.Application] {
-        applications.filter { model.statuses[$0.id] == .outdated }
     }
 
     var isLoading: Bool {
@@ -86,13 +82,11 @@ struct InstalledAppsView: View {
                             }
                             .padding(.horizontal, 14)
 
-                            Group {
-                                AppList(
-                                    applications: applications,
-                                    isInstalled: true,
-                                    showPlaceholder: isLoading
-                                )
-                            }
+                            AppList(
+                                applications: applications,
+                                isInstalled: true,
+                                showPlaceholder: isLoading
+                            )
                         }
                         .padding(.vertical, 14)
                         .opacity(noApps ? 0 : 1)
@@ -107,7 +101,7 @@ struct InstalledAppsView: View {
 
     func updateAll() {
         Task {
-            await model.update(outdated)
+            await model.update(model.outdated)
         }
     }
 

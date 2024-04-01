@@ -3,19 +3,15 @@ import SwiftUI
 
 struct ConfirmDeleteAppAlert: View {
     @Binding var isPresented: Bool
-    let application: Applications.Application
-    let category: Applications.Category?
+    let application: Application
 
     var onAction: () -> Void
 
     var body: some View {
         VStack(spacing: 24) {
             VStack(alignment: .center) {
-                AppRow.IconNameCategory(
-                    application: application,
-                    category: category
-                )
-                .padding(16)
+                AppRow.IconNameCategory(application: application)
+                    .padding(16)
             }
             .frame(maxWidth: .infinity)
             .background(Color("AppAlertBackground"))

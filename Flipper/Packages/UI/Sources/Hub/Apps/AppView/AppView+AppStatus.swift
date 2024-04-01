@@ -5,10 +5,9 @@ extension AppView {
     struct AppStatusButton: View {
         @Environment(\.openURL) var openURL
 
-        let application: Applications.Application
-        let category: Applications.Category?
+        let application: Application
 
-        var status: Applications.Application.Status {
+        var status: Application.BuildStatus {
             application.current.status
         }
 
@@ -36,15 +35,13 @@ extension AppView {
             .alert(isPresented: $isRebuildingAlertPresented) {
                 AppIsRebuildingAlert(
                     isPresented: $isRebuildingAlertPresented,
-                    application: application,
-                    category: category
+                    application: application
                 )
             }
             .alert(isPresented: $isOutdatedAppAlertPresented) {
                 AppsOutdatedAppAlert(
                     isPresented: $isOutdatedAppAlertPresented,
-                    application: application,
-                    category: category
+                    application: application
                 ) {
                     openURL(application.current.links.github)
                 }
@@ -58,7 +55,7 @@ extension AppView {
     }
 
     struct AppStatus: View {
-        let status: Applications.Application.Status
+        let status: Application.BuildStatus
 
         var foregroundColor: Color {
             switch status {

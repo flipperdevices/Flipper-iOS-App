@@ -4,11 +4,7 @@ import SwiftUI
 extension AppView {
     struct IconNameCategory: View {
         @EnvironmentObject var model: Applications
-        let application: Applications.Application
-
-        var category: Applications.Category? {
-            model.category(for: application)
-        }
+        let application: Application
 
         var body: some View {
             HStack(spacing: 8) {
@@ -22,10 +18,10 @@ extension AppView {
                         .lineLimit(1)
 
                     HStack(spacing: 4) {
-                        CategoryIcon(category?.icon)
+                        CategoryIcon(application.category.icon.url)
                             .frame(width: 18, height: 18)
 
-                        CategoryName(category?.name)
+                        CategoryName(application.category.name)
                             .font(.system(size: 14, weight: .medium))
                     }
                 }

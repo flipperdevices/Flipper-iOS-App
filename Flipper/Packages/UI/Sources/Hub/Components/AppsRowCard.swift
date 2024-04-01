@@ -4,7 +4,7 @@ import SwiftUI
 struct AppsRowCard: View {
     @EnvironmentObject var model: Applications
 
-    @State private var topApp: Applications.Application?
+    @State private var topApp: Application?
     @State private var isError: Bool = false
 
     var body: some View {
@@ -28,8 +28,8 @@ struct AppsRowCard: View {
                     HubChevron()
                 }
 
-                if let topApp = topApp {
-                    ApplicationDescription(item: topApp)
+                if let topApp {
+                    ApplicationDescription(application: topApp)
                 } else if isError {
                     DefaultDescription()
                 } else {
@@ -69,32 +69,28 @@ struct AppsRowCard: View {
 
     struct ApplicationDescription: View {
         @EnvironmentObject var model: Applications
-        let item: Applications.Application
-
-        var category: Applications.Category? {
-            model.category(for: item)
-        }
+        let application: Application
 
         var body: some View {
             HStack(spacing: 8) {
-                AppIcon(item.current.icon)
+                AppIcon(application.current.icon)
                     .frame(width: 42, height: 42)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(item.current.name)
+                    Text(application.current.name)
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.primary)
                         .lineLimit(1)
 
                     HStack(alignment: .bottom, spacing: 4) {
-                        CategoryIcon(category?.icon)
+                        CategoryIcon(application.category.icon.url)
                             .frame(width: 12, height: 12)
 
-                        CategoryName(category?.name)
+                        CategoryName(application.category.name)
                             .font(.system(size: 10, weight: .medium))
                     }
 
-                    Text(item.current.shortDescription)
+                    Text(application.current.shortDescription)
                         .font(.system(size: 10, weight: .regular))
                         .foregroundColor(.primary)
                         .lineLimit(1)

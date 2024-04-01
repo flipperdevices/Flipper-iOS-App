@@ -9,8 +9,8 @@ struct AllAppsView: View {
     @State private var isLoading = false
     @State private var isAllLoaded = false
     @State private var categories: [Applications.Category] = []
-    @State private var applications: [Applications.Application] = []
-    @State private var filteredApplications: [Applications.Application] = []
+    @State private var applications: [Application] = []
+    @State private var filteredApplications: [Application] = []
     @AppStorage(.appsSortOrder)
     private var sortOrder: Applications.SortOption = .default
     @State private var error: Applications.Error?

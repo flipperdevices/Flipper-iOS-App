@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct AppIssueView: View {
-    let application: Applications.Application
+    let application: Application
 
     @Environment(\.openURL) var openURL
     @Environment(\.dismiss) var dismiss

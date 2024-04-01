@@ -86,7 +86,7 @@ extension Applications {
 
 import Catalog
 
-extension Catalog.Application {
+extension Application {
     init?(_ manifest: Applications.Manifest) {
         guard let filename = manifest.path.split(separator: "/").last else {
             return nil
@@ -96,7 +96,7 @@ extension Catalog.Application {
             .dropLast()
             .joined(separator: ".")
 
-        self.init(
+        let application = Catalog.Application(
             id: manifest.uid,
             alias: alias,
             categoryId: "",
@@ -116,5 +116,21 @@ extension Catalog.Application {
                 links: nil
             )
         )
+
+        guard let category = Category(path: manifest.path) else {
+            return nil
+        }
+
+        self.init(application: application, category: category)
+    }
+}
+
+private extension Application.Category {
+    init?(path: String) {
+        let parts = path.split(separator: "/")
+        guard parts.count == 4 else {
+            return nil
+        }
+        self.init(name: String(parts[2]))
     }
 }

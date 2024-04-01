@@ -13,7 +13,7 @@ struct AppSearchView: View {
     }
 
     @State private var inProgress: Bool = false
-    @State private var applications: [Applications.Application] = []
+    @State private var applications: [Application] = []
     @State private var error: Applications.Error?
 
     let debouncer = Debouncer(seconds: 1)

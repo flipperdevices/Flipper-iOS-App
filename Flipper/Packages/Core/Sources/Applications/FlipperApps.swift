@@ -1,9 +1,8 @@
-import Catalog
 import Peripheral
 
 import Foundation
 
-class FlipperApps {
+actor FlipperApps {
     private let storage: StorageAPI
     private let cache: Cache
 
@@ -41,17 +40,6 @@ class FlipperApps {
                 }
             }
         }
-    }
-
-    func category(forInstalledId id: Application.ID) -> String? {
-        guard let manifest = manifests[id] else {
-            return nil
-        }
-        let parts = manifest.path.split(separator: "/")
-        guard parts.count == 4 else {
-            return nil
-        }
-        return String(parts[2])
     }
 
     private func listManifests() async throws -> [File] {
@@ -107,10 +95,10 @@ class FlipperApps {
 
     func install(
         application: Application,
-        category: Catalog.Category,
         bundle: Data,
         progress: (Double) -> Void
     ) async throws {
+        let category = application.category
         try? await storage.createDirectory(at: .temp)
         try? await storage.createDirectory(at: .iosTemp)
 
@@ -138,7 +126,6 @@ class FlipperApps {
 
         let manifest = try await Applications.Manifest(
             application: application,
-            category: category,
             isDevCatalog: isDevCatalog
         )
 

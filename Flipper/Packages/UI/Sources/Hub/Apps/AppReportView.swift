@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct AppReportView: View {
-    let application: Applications.Application
+    let application: Application
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) var dismiss

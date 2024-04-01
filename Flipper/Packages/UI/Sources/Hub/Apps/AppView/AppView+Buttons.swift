@@ -6,8 +6,17 @@ extension AppView {
         @EnvironmentObject var model: Applications
         @EnvironmentObject var device: Device
 
-        let application: Applications.Application
-        let status: Applications.ApplicationStatus
+        let application: Application
+
+        var status: Applications.ApplicationStatus {
+            if let status = model.statuses[application.id] {
+                return status
+            } else if model.installedStatus == .loading {
+                return .checking
+            } else {
+                return .notInstalled
+            }
+        }
 
         var canDelete: Bool {
             switch status {
@@ -33,8 +42,7 @@ extension AppView {
                     .alert(isPresented: $confirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $confirmDelete,
-                            application: application,
-                            category: model.category(for: application)
+                            application: application
                         ) {
                             delete()
                         }
@@ -124,14 +132,10 @@ extension AppView {
 
         func openApp() {
             Task {
-                await model.openApp(by: application.id) { result in
-                    switch result {
-                    case .success:
-                        goToRemoteScreen()
-                    case .busy:
-                        isFlipperBusyAlertPresented = true
-                    case .error: ()
-                    }
+                switch await model.openApp(application) {
+                case .success: goToRemoteScreen()
+                case .busy: isFlipperBusyAlertPresented = true
+                case .error: break
                 }
             }
         }
@@ -142,7 +146,7 @@ extension AppView {
 
         // MARK: Analytics
 
-        func recordAppInstall(application: Applications.Application) {
+        func recordAppInstall(application: Application) {
             analytics.appOpen(target: .fapHubInstall(application.alias))
         }
     }

@@ -4,7 +4,7 @@ import SwiftUI
 struct AppConcernView: View {
     @EnvironmentObject var model: Applications
 
-    let application: Applications.Application
+    let application: Application
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) var dismiss

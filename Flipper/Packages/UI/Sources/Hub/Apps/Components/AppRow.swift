@@ -3,12 +3,8 @@ import SwiftUI
 
 struct AppRow: View {
     @EnvironmentObject var model: Applications
-    let application: Applications.Application
+    let application: Application
     let isInstalled: Bool
-
-    var status: Applications.ApplicationStatus {
-        model.statuses[application.id] ?? .notInstalled
-    }
 
     @State private var showConfirmDelete = false
 
@@ -19,18 +15,12 @@ struct AppRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                IconNameCategory(
-                    application: application,
-                    category: model.category(for: application)
-                )
+                IconNameCategory(application: application)
 
                 Spacer()
 
-                AppRowActionButton(
-                    application: application,
-                    status: status
-                )
-                .disabled(!isBuildReady)
+                AppRowActionButton(application: application)
+                    .disabled(!isBuildReady)
 
                 if isInstalled {
                     DeleteAppButton {
@@ -40,8 +30,7 @@ struct AppRow: View {
                     .alert(isPresented: $showConfirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $showConfirmDelete,
-                            application: application,
-                            category: model.category(for: application)
+                            application: application
                         ) {
                             delete()
                         }
@@ -73,8 +62,17 @@ struct AppRow: View {
         @EnvironmentObject var model: Applications
         @EnvironmentObject var device: Device
 
-        let application: Applications.Application
-        let status: Applications.ApplicationStatus
+        let application: Application
+
+        var status: Applications.ApplicationStatus {
+            if let status = model.statuses[application.id] {
+                return status
+            } else if model.installedStatus == .loading {
+                return .checking
+            } else {
+                return .notInstalled
+            }
+        }
 
         @State var isNotConnectedAlertPresented = false
         @State var isFlipperBusyAlertPresented = false
@@ -154,14 +152,10 @@ struct AppRow: View {
 
         func openApp() {
             Task {
-                await model.openApp(by: application.id) { result in
-                    switch result {
-                    case .success:
-                        goToRemoteScreen()
-                    case .busy:
-                        isFlipperBusyAlertPresented = true
-                    case .error: ()
-                    }
+                switch await model.openApp(application) {
+                case .success: goToRemoteScreen()
+                case .busy: isFlipperBusyAlertPresented = true
+                case .error: break
                 }
             }
         }
@@ -172,7 +166,7 @@ struct AppRow: View {
 
         // MARK: Analytics
 
-        func recordAppInstall(application: Applications.Application) {
+        func recordAppInstall(application: Application) {
             analytics.appOpen(target: .fapHubInstall(application.alias))
         }
     }

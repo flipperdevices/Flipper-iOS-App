@@ -3,7 +3,7 @@ import SwiftUI
 
 extension AppView {
     struct VersionSize: View {
-        let application: Applications.Application?
+        let application: Application?
 
         var version: String? {
             application?.current.version
