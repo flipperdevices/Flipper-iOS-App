@@ -23,8 +23,36 @@ struct InstalledAppsView: View {
         applications.filter { model.statuses[$0.id] == .outdated }
     }
 
+    var isLoading: Bool {
+        model.installedStatus == .loading
+    }
+
+    var isNetworkIssue: Bool {
+        model.installedStatus == .error
+    }
+
     var noApps: Bool {
-        (model.installedStatus != .loading && applications.isEmpty)
+        (!isLoading && applications.isEmpty)
+    }
+
+    struct NetworkIssue: View {
+        var body: some View {
+            VStack(alignment: .center) {
+                Text("Unable to browse apps due to network issues")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.sRed)
+            }
+            .frame(height: 38)
+            .frame(maxWidth: .infinity)
+            .background {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.sRed.opacity(0.1))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.sRed.opacity(0.3), lineWidth: 1)
+            }
+        }
     }
 
     var body: some View {
@@ -44,28 +72,32 @@ struct InstalledAppsView: View {
                     .opacity(noApps ? 1 : 0)
 
                     LazyScrollView {
-                        Group {
-                            if !applications.isEmpty {
-                                VStack(spacing: 18) {
-                                    if model.outdatedCount > 0 {
-                                        UpdateAllAppButton {
-                                            updateAll()
-                                        }
-                                        .padding(.horizontal, 14)
+                        VStack(spacing: 18) {
+                            Group {
+                                if isNetworkIssue {
+                                    NetworkIssue()
+                                } else if model.outdatedCount > 0 {
+                                    UpdateAllAppButton {
+                                        updateAll()
                                     }
-
-                                    AppList(
-                                        applications: applications,
-                                        isInstalled: true)
+                                } else {
+                                    UpdateAllAppButton.Placeholder()
                                 }
-                                .padding(.vertical, 14)
-                            } else {
-                                InstalledAppsPreview()
+                            }
+                            .padding(.horizontal, 14)
+
+                            Group {
+                                AppList(
+                                    applications: applications,
+                                    isInstalled: true,
+                                    showPlaceholder: isLoading
+                                )
                             }
                         }
+                        .padding(.vertical, 14)
                         .opacity(noApps ? 0 : 1)
                     }
-                    .refreshable {
+                    .refreshable(isEnabled: !isLoading) {
                         reload()
                     }
                 }
@@ -82,19 +114,6 @@ struct InstalledAppsView: View {
     func reload() {
         Task {
             try await model.loadInstalled()
-        }
-    }
-
-    struct InstalledAppsPreview: View {
-        var body: some View {
-            VStack(spacing: 18) {
-                AnimatedPlaceholder()
-                    .frame(height: 36)
-                    .padding(.horizontal, 14)
-
-                AppRowPreview(isInstalled: true)
-            }
-            .padding(.vertical, 14)
         }
     }
 

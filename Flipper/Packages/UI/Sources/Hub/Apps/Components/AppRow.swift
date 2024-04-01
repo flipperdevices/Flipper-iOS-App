@@ -84,8 +84,6 @@ struct AppRow: View {
         var body: some View {
             Group {
                 switch status {
-                case _ where model.installedStatus == .loading:
-                    AnimatedPlaceholder()
                 case .installing(let progress):
                     InstallingAppButton(progress: progress)
                         .font(.haxrCorpNeue(size: 28))
