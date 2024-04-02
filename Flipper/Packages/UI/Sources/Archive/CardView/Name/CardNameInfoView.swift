@@ -17,15 +17,12 @@ extension CardView {
                         .font(.system(size: 16, weight: .bold))
                         .lineLimit(1)
 
-                    Button {
+                    CardNameEditButton {
                         withAnimation {
                             isEditing = true
                         }
-                    } label: {
-                        SmallImage("Edit")
-                            .foregroundColor(.primary)
-                            .opacity(kind != .deleted ? 1 : 0)
                     }
+                    .opacity(kind != .deleted ? 1 : 0)
                 }
 
                 if item.note.isEmpty {
@@ -39,6 +36,21 @@ extension CardView {
                         .foregroundColor(.black30)
                         .lineLimit(3)
                 }
+            }
+        }
+    }
+
+    struct CardNameEditButton: View {
+        let action: () -> Void
+
+        init(action: @escaping () -> Void) {
+            self.action = action
+        }
+
+        var body: some View {
+            Button(action: action) {
+                SmallImage("Edit")
+                    .foregroundColor(.primary)
             }
         }
     }
