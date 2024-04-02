@@ -25,7 +25,12 @@ struct AppsRowCard: View {
 
                     Spacer(minLength: 8)
 
-                    HubChevron()
+                    HStack(spacing: 2) {
+                        if model.outdatedCount > 0 {
+                            UpdatesAvailable()
+                        }
+                        HubChevron()
+                    }
                 }
 
                 if let topApp {
@@ -43,6 +48,19 @@ struct AppsRowCard: View {
             } catch {
                 isError = true
             }
+        }
+    }
+
+    struct UpdatesAvailable: View {
+        var body: some View {
+            Text("Updates Available")
+                .font(.system(size: 10, weight: .bold))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background {
+                    RoundedRectangle(cornerRadius: 30)
+                        .fill(Color.sGreenUpdate)
+                }
         }
     }
 

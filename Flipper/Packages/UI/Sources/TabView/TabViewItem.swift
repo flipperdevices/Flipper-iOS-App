@@ -7,15 +7,26 @@ struct TabViewItem: View {
     let hasNotification: Bool
     let onItemSelected: () -> Void
 
+    struct Badge: View {
+        var body: some View {
+            Circle()
+                .frame(width: 12, height: 12)
+                .foregroundColor(.white)
+                .overlay(alignment: .center) {
+                    Circle()
+                        .frame(width: 10, height: 10)
+                        .foregroundColor(.sGreenUpdate)
+                }
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 2) {
                 image
                     .overlay {
                         GeometryReader { proxy in
-                            Circle()
-                                .frame(width: 12, height: 12)
-                                .foregroundColor(.a1)
+                            Badge()
                                 .opacity(hasNotification ? 1 : 0)
                                 .offset(x: proxy.size.width - 6, y: -4)
                         }
