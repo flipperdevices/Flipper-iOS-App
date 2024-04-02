@@ -18,8 +18,7 @@ extension NFCEditorView {
                             Text("MIFARE Classic \(mifareType)")
                                 .font(.system(size: 12, weight: .heavy))
 
-                            Image("NFCCardWaves")
-                                .frame(width: 24, height: 24)
+                            SmallImage("NFCCardWaves")
                         }
 
                         Spacer()

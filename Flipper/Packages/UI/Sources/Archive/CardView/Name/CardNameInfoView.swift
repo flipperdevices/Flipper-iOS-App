@@ -22,10 +22,7 @@ extension CardView {
                             isEditing = true
                         }
                     } label: {
-                        Image("Edit")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 24, height: 24)
+                        SmallImage("Edit")
                             .foregroundColor(.primary)
                             .opacity(kind != .deleted ? 1 : 0)
                     }
