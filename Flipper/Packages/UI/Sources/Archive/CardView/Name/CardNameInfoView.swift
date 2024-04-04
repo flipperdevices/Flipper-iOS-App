@@ -3,6 +3,8 @@ import SwiftUI
 
 extension CardView {
     struct CardNameInfoView: View {
+        @Environment(\.isEditable) private var isEditable
+
         @Binding var item: ArchiveItem
         let kind: Kind
         @Binding var isEditing: Bool
@@ -23,6 +25,7 @@ extension CardView {
                         }
                     }
                     .opacity(kind != .deleted ? 1 : 0)
+                    .disabled(!isEditable)
                 }
 
                 if item.note.isEmpty {
@@ -41,6 +44,8 @@ extension CardView {
     }
 
     struct CardNameEditButton: View {
+        @Environment(\.isEnabled) private var isEnabled
+
         let action: () -> Void
 
         init(action: @escaping () -> Void) {
@@ -50,7 +55,7 @@ extension CardView {
         var body: some View {
             Button(action: action) {
                 SmallImage("Edit")
-                    .foregroundColor(.primary)
+                    .foregroundColor(isEnabled ? .primary : .emulateDisabled)
             }
         }
     }

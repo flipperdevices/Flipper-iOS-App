@@ -5,6 +5,7 @@ struct InfoView: View {
     @EnvironmentObject var archive: ArchiveModel
     @EnvironmentObject var sharing: SharingModel
     @EnvironmentObject var networkMonitor: NetworkMonitor
+    @EnvironmentObject var emulate: Emulate
 
     @Environment(\.dismiss) private var dismiss
 
@@ -20,6 +21,11 @@ struct InfoView: View {
     @State private var isEditing = false
 
     @State private var error: String?
+
+    // Don`t forget to change logic in InfraredMenu too
+    private var isEditable: Bool {
+        !emulate.inProgress
+    }
 
     var body: some View {
         Group {
@@ -77,6 +83,7 @@ struct InfoView: View {
                 self.current.status = item.status
             }
         }
+        .isEditable(isEditable)
         .task {
             self.current = item
             self.backup = item

@@ -258,3 +258,11 @@ fileprivate extension Double {
         Int(self * 1000)
     }
 }
+
+public extension Emulate {
+    var inProgress: Bool {
+        self.state != .closed &&
+        self.state != .locked &&
+        self.state != .restricted
+    }
+}
