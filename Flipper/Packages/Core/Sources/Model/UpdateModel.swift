@@ -375,7 +375,6 @@ public class UpdateModel: ObservableObject {
                 logger.error("update: \(error)")
             }
             updateTaskHandle = nil
-            updateChannel = .load()
         }
     }
 
