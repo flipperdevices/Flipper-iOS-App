@@ -252,6 +252,13 @@ public class Applications: ObservableObject {
         return .init(category: category)
     }
 
+    private func category(name: String) -> Application.Category {
+        guard let category = categories.first(where: { $0.name == name }) else {
+            return .init(name: name)
+        }
+        return .init(category: category)
+    }
+
     public func loadTopApp() async throws -> Application {
         try await handlingWebErrors {
             _ = try await loadCategories()
@@ -342,7 +349,9 @@ public class Applications: ObservableObject {
 
             installed = []
             statuses = [:]
-            for await app in try await flipperApps.load() {
+            for await var app in try await flipperApps.load() {
+                // TODO: Cache categories to show without internet connection
+                app.category = category(name: app.category.name)
                 installed.append(app)
                 setStatus(.checking, for: app)
             }
