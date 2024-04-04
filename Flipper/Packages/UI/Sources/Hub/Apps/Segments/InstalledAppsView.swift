@@ -76,7 +76,7 @@ struct InstalledAppsView: View {
                                     UpdateAllAppButton {
                                         updateAll()
                                     }
-                                } else {
+                                } else if isLoading {
                                     UpdateAllAppButton.Placeholder()
                                 }
                             }
