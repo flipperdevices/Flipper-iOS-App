@@ -1,11 +1,18 @@
+import Core
 import SwiftUI
 
 struct InfraredMenu: View {
+    @EnvironmentObject var emulate: Emulate
+
     @Binding var isPresented: Bool
     let onShare: () -> Void
     let onHowTo: () -> Void
     let onDelete: () -> Void
     let onEdit: () -> Void
+
+    var isEditable: Bool {
+        !emulate.inProgress
+    }
 
     var body: some View {
         Card {
@@ -17,7 +24,7 @@ struct InfraredMenu: View {
                     isPresented = false
                     onEdit()
                 }
-                .padding(12)
+                .disabled(!isEditable)
 
                 Divider()
                     .padding(0)
@@ -29,7 +36,6 @@ struct InfraredMenu: View {
                     isPresented = false
                     onShare()
                 }
-                .padding(12)
 
                 Divider()
                     .padding(0)
@@ -41,7 +47,6 @@ struct InfraredMenu: View {
                     isPresented = false
                     onHowTo()
                 }
-                .padding(12)
 
                 Divider()
                     .padding(0)
@@ -49,33 +54,48 @@ struct InfraredMenu: View {
                 InfraredMenuItem(
                     title: "Delete",
                     image: "Delete",
-                    color: .red
+                    role: .destructive
                 ) {
                     isPresented = false
                     onDelete()
                 }
-                .padding(12)
+                .disabled(!isEditable)
             }
         }
         .frame(width: 220)
     }
 
     struct InfraredMenuItem: View {
+        @Environment(\.isEnabled) private var isEnabled
+
         let title: String
         let image: String
-        let color: Color
         let action: () -> Void
+        let role: ButtonRole?
 
         init(
             title: String,
             image: String,
-            color: Color = .primary,
+            role: ButtonRole? = nil,
             action: @escaping () -> Void
         ) {
             self.title = title
             self.image = image
-            self.color = color
             self.action = action
+            self.role = role
+        }
+
+        var color: Color {
+            switch (role, isEnabled) {
+            case (.destructive, true):
+                return .red
+            case (.destructive, false):
+                return .red.opacity(0.5)
+            case (_, true):
+                return .primary
+            case (_, false):
+                return .emulateDisabled
+            }
         }
 
         var body: some View {
@@ -87,8 +107,9 @@ struct InfraredMenu: View {
                         .font(.system(size: 14, weight: .medium))
                     Spacer()
                 }
-                .foregroundColor(color)
             }
+            .foregroundColor(color)
+            .padding(12)
         }
     }
 }

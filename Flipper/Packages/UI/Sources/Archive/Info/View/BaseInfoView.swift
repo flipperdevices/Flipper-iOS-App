@@ -10,6 +10,7 @@ struct BaseInfoView: View {
     @Binding var isEditing: Bool
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.isEditable) private var isEditable
 
     var body: some View {
         ScrollView {
@@ -31,18 +32,22 @@ struct BaseInfoView: View {
                             title: "Edit Dump",
                             action: onOpenNFCEdit
                         )
-                        .foregroundColor(.primary)
+                        .disabled(!isEditable)
+
                     }
                     InfoButton(
                         image: "Share",
                         title: "Share",
-                        action: onShare)
-                    .foregroundColor(.primary)
+                        action: onShare
+                    )
+
                     InfoButton(
                         image: "Delete",
                         title: "Delete",
-                        action: onDelete)
-                    .foregroundColor(.sRed)
+                        action: onDelete,
+                        role: .destructive
+                    )
+                    .disabled(!isEditable)
                 }
                 .padding(.top, 8)
                 .padding(.horizontal, 24)

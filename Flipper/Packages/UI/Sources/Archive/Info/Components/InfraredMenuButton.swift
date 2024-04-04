@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 
 struct InfraredMenuButton: View {
@@ -7,6 +8,9 @@ struct InfraredMenuButton: View {
 
     @State private var showMenu = false
     @State private var showHowToUse: Bool = false
+
+    // FIXME: Rewrite by use more flexible env object
+    @EnvironmentObject var emulate: Emulate
 
     var body: some View {
         EllipsisButton {
@@ -25,6 +29,7 @@ struct InfraredMenuButton: View {
                     onDelete: onDelete,
                     onEdit: onEdit
                 )
+                .environmentObject(emulate)
             }
             .padding(.horizontal, 14)
             .offset(y: 44)

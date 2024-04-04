@@ -21,10 +21,7 @@ extension CardView {
                 Button {
                     item.isFavorite.toggle()
                 } label: {
-                    Image(item.isFavorite ? "StarFilled" : "Star")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 24, height: 24)
+                    SmallImage(item.isFavorite ? "StarFilled" : "Star")
                         .foregroundColor(.sYellow)
                 }
                 .padding(8)
