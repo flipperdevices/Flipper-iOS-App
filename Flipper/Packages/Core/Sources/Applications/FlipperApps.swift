@@ -19,9 +19,11 @@ actor FlipperApps {
         self.cache = cache
     }
 
+    private var cachedListing: [Path: [File]] = [:]
     private var cachedManifests: [Path: Hash] = [:]
 
     func load() async throws -> AsyncStream<Application> {
+        cachedListing = [:]
         cachedManifests = try await cache.manifest.items
 
         let manifests = try await loadManifests()
@@ -46,12 +48,32 @@ actor FlipperApps {
     @Sendable
     private func validate(_ manifest: Manifest) async -> Bool {
         guard validateCatalogPreference(manifest) else { return false }
+        guard await validateAppExists(manifest) else { return false }
         return true
     }
 
     // filter by current catalog preference
     private func validateCatalogPreference(_ manifest: Manifest) -> Bool {
         manifest.isDevCatalog == isDevCatalog
+    }
+
+    // filter invalid/deleted apps
+    private func validateAppExists(_ manifest: Manifest) async -> Bool {
+        do {
+            let appPath = Path(string: manifest.path)
+            let appFileName = appPath.lastComponent
+            let appDirectory = appPath.removingLastComponent
+            if cachedListing[appDirectory] == nil {
+                cachedListing[appDirectory] = try await storage
+                    .list(at: appDirectory)
+                    .files
+            }
+            return cachedListing[appDirectory, default: []]
+                .contains { $0.name == appFileName }
+        } catch {
+            logger.error("validate app exists: \(error)")
+            return false
+        }
     }
 
     private func listManifests() async throws -> [File] {
