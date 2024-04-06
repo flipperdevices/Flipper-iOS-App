@@ -27,10 +27,7 @@ actor FlipperApps {
         let manifests = try await loadManifests()
         return .init { continuation in
             let task = Task {
-                for await manifest in manifests {
-                    guard manifest.isDevCatalog == isDevCatalog else {
-                        continue
-                    }
+                for await manifest in manifests.filter(validate) {
                     self.manifests[manifest.uid] = manifest
                     if let application = Application(manifest) {
                         continuation.yield(application)
@@ -44,6 +41,17 @@ actor FlipperApps {
                 }
             }
         }
+    }
+
+    @Sendable
+    private func validate(_ manifest: Manifest) async -> Bool {
+        guard validateCatalogPreference(manifest) else { return false }
+        return true
+    }
+
+    // filter by current catalog preference
+    private func validateCatalogPreference(_ manifest: Manifest) -> Bool {
+        manifest.isDevCatalog == isDevCatalog
     }
 
     private func listManifests() async throws -> [File] {
