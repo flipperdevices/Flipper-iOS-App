@@ -4,6 +4,8 @@ import SwiftUI
 struct AppsRowCard: View {
     @EnvironmentObject var model: Applications
 
+    @Environment(\.notifications) private var notifications
+
     @State private var topApp: Application?
     @State private var isError: Bool = false
 
@@ -41,6 +43,15 @@ struct AppsRowCard: View {
                     PlaceholderDescription()
                 }
             }
+        }
+        .onChange(of: model.installedStatus) { newValue in
+            if newValue == .loaded, model.outdatedCount > 0 {
+                notifications.apps.showUpdateAvailable = true
+            }
+        }
+        .notification(isPresented: notifications.apps.showUpdateAvailable) {
+            AppsUpdateAvailableBanner(
+                isPresented: notifications.apps.showUpdateAvailable)
         }
         .task {
             do {

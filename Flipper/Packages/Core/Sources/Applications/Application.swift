@@ -9,7 +9,6 @@ public struct Application: Identifiable, Equatable {
 
     public var category: Category
 
-
     init(
         application: Catalog.Application,
         category: Category
