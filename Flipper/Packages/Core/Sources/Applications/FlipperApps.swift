@@ -19,7 +19,11 @@ actor FlipperApps {
         self.cache = cache
     }
 
+    private var cachedManifests: [Path: Hash] = [:]
+
     func load() async throws -> AsyncStream<Application> {
+        cachedManifests = try await cache.manifest.items
+
         let manifests = try await loadManifests()
         return .init { continuation in
             let task = Task {
@@ -53,19 +57,11 @@ actor FlipperApps {
     }
 
     private func loadManifests() async throws -> AsyncStream<Manifest> {
-        let cached = try await cache.manifest
-
-        return .init { continuation in
+        .init { continuation in
             let task = Task {
                 for file in try await listManifests() {
                     do {
-                        let path: Path = .appsManifests.appending(file.name)
-                        let hash = Hash(file.md5)
-                        if !hash.value.isEmpty, cached.items[path] == hash {
-                            continuation.yield(try await cachedManifest(path))
-                        } else {
-                            continuation.yield(try await remoteManifest(path))
-                        }
+                        continuation.yield(try await loadManifest(file))
                     } catch {
                         logger.error("load manifest: \(error)")
                     }
@@ -80,14 +76,24 @@ actor FlipperApps {
         }
     }
 
-    func remoteManifest(_ path: Path) async throws -> Manifest {
+    private func loadManifest(_ file: File) async throws -> Manifest {
+        let path: Path = .appsManifests.appending(file.name)
+        let hash = Hash(file.md5)
+        if !hash.value.isEmpty, cachedManifests[path] == hash {
+            return try await cachedManifest(path)
+        } else {
+            return try await remoteManifest(path)
+        }
+    }
+
+    private func remoteManifest(_ path: Path) async throws -> Manifest {
         let data = try await storage.read(at: path)
         try await cache.upsert(String(decoding: data, as: UTF8.self), at: path)
         let manifest = try FFFDecoder.decode(Manifest.self, from: data)
         return manifest
     }
 
-    func cachedManifest(_ path: Path) async throws -> Manifest {
+    private func cachedManifest(_ path: Path) async throws -> Manifest {
         let data = try await cache.get(path)
         let manifest = try FFFDecoder.decode(Manifest.self, from: data)
         return manifest
