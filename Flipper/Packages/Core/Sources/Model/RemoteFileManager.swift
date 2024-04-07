@@ -5,9 +5,7 @@ import Foundation
 
 @MainActor
 public class RemoteFileManager: ObservableObject {
-    // next step
-    let pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
+    private let storage: StorageAPI
 
     private var supportedExtensions: [String] = [
         ".ibtn", ".nfc", ".shd", ".sub", ".rfid", ".ir",
@@ -19,15 +17,15 @@ public class RemoteFileManager: ObservableObject {
         case unknown(String)
     }
 
-    public init(pairedDevice: PairedDevice) {
-        self.pairedDevice = pairedDevice
+    public init(storage: StorageAPI) {
+        self.storage = storage
     }
 
     // MARK: Directory
 
     public func list(at path: Path) async throws -> [Element] {
         do {
-            return try await rpc.listDirectory(at: path)
+            return try await storage.list(at: path)
         } catch {
             logger.error("list directory: \(error)")
             throw Error.unknown(.init(describing: error))
@@ -44,7 +42,7 @@ public class RemoteFileManager: ObservableObject {
 
     public func readFile(at path: Path) async throws -> String {
         do {
-            let bytes = try await rpc.readFile(at: path)
+            let bytes = try await storage.read(at: path)
             return .init(decoding: bytes, as: UTF8.self)
         } catch {
             logger.error("read file: \(error)")
@@ -54,7 +52,7 @@ public class RemoteFileManager: ObservableObject {
 
     public func writeFile(_ content: String, at path: Path) async throws {
         do {
-            try await rpc.writeFile(at: path, string: content)
+            try await storage.write(at: path, string: content)
         } catch {
             logger.error("write file: \(error)")
             throw Error.unknown(.init(describing: error))
@@ -79,7 +77,7 @@ public class RemoteFileManager: ObservableObject {
 
             let path = path.appending(name)
             let bytes = try [UInt8](Data(contentsOf: url))
-            try await rpc.writeFile(at: path, bytes: bytes)
+            try await storage.write(at: path, bytes: bytes)
         } catch {
             logger.error("import file: \(error)")
             throw Error.unknown(.init(describing: error))
@@ -93,7 +91,7 @@ public class RemoteFileManager: ObservableObject {
         isDirectory: Bool
     ) async throws {
         do {
-            try await rpc.createFile(at: path, isDirectory: isDirectory)
+            try await storage.create(at: path, isDirectory: isDirectory)
         } catch {
             logger.error("create file: \(error)")
             throw Error.unknown(.init(describing: error))
@@ -109,7 +107,7 @@ public class RemoteFileManager: ObservableObject {
     ) async throws {
         do {
             let path = path.appending(element.name)
-            try await rpc.deleteFile(at: path, force: force)
+            try await storage.delete(at: path, force: force)
         } catch let error as Peripheral.Error
                     where error == .storage(.notEmpty) {
             throw Error.directoryIsNotEmpty

@@ -70,8 +70,9 @@ public class DetectReader: ObservableObject {
     }
 
     private let pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
     private var cancellables: [AnyCancellable] = .init()
+
+    private let storage: StorageAPI
 
     @Published public var flipper: Flipper? {
         didSet {
@@ -91,16 +92,17 @@ public class DetectReader: ObservableObject {
     private var forceStop = false
     private let mfKnownKeys: MFKnownKeys
 
-    public init(pairedDevice: PairedDevice) {
+    public init(
+        pairedDevice: PairedDevice,
+        storage: StorageAPI,
+        mfKnownKeys: MFKnownKeys
+    ) {
         self.pairedDevice = pairedDevice
         // next step
-        self.mfKnownKeys = .init(pairedDevice: pairedDevice)
+        self.storage = storage
+        self.mfKnownKeys = mfKnownKeys
 
         subscribeToPublishers()
-    }
-
-    public convenience init() {
-        self.init(pairedDevice: Dependencies.shared.pairedDevice)
     }
 
     func subscribeToPublishers() {
@@ -157,7 +159,7 @@ public class DetectReader: ObservableObject {
 
     public func checkLog() async {
         do {
-            hasReaderLog = try await rpc.fileExists(at: .mfKey32Log)
+            hasReaderLog = try await storage.fileExists(at: .mfKey32Log)
         } catch {
             logger.error("check log: \(error)")
         }
@@ -165,7 +167,7 @@ public class DetectReader: ObservableObject {
 
     private func readLog() async throws -> String {
         try Task.checkCancellation()
-        return try await rpc.readFile(at: .mfKey32Log) { progress in
+        return try await storage.read(at: .mfKey32Log) { progress in
             Task { @MainActor in
                 self.progress = progress
             }
@@ -173,7 +175,7 @@ public class DetectReader: ObservableObject {
     }
 
     private func deleteLog() async throws {
-        try await rpc.deleteFile(at: .mfKey32Log)
+        try await storage.delete(at: .mfKey32Log)
         hasReaderLog = false
     }
 

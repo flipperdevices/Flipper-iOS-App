@@ -18,8 +18,8 @@ extension Request {
     }
 }
 
-extension Message {
-    func split() -> [Message] {
+extension OutgoingMessage {
+    func split() -> [OutgoingMessage] {
         return [self]
     }
 }

@@ -10,16 +10,22 @@ public class Synchronization: ObservableObject {
 
     @Published public var progress: Int = 0
 
-    private var pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
+    private var system: SystemAPI
+    private var storage: StorageAPI
 
     private var archive: Archive
     private var cancellables: [AnyCancellable] = .init()
 
-    init(pairedDevice: PairedDevice, archive: Archive, device: Device) {
-        self.pairedDevice = pairedDevice
+    init(
+        archive: Archive,
+        device: Device,
+        system: SystemAPI,
+        storage: StorageAPI
+    ) {
         self.archive = archive
         self.device = device
+        self.system = system
+        self.storage = storage
 
         subscribeToPublishers()
     }
@@ -55,7 +61,7 @@ public class Synchronization: ObservableObject {
                 if syncDateTime {
                     try await self.synchronizeDateTime()
                 }
-                try await checkMFLogFile()
+                try await synchronizeMFLogFile()
                 try await synchronizeArchive()
 
                 device.status = .synchronized
@@ -71,9 +77,9 @@ public class Synchronization: ObservableObject {
         }
     }
 
-    private func checkMFLogFile() async throws {
+    private func synchronizeMFLogFile() async throws {
         UserDefaultsStorage.shared.hasReaderLog =
-            try await rpc.fileExists(at: .mfKey32Log)
+            try await storage.fileExists(at: .mfKey32Log)
     }
 
     private func synchronizeArchive() async throws {
@@ -88,7 +94,7 @@ public class Synchronization: ObservableObject {
             }
         }
         reportSynchronizationResult(time: time, changesCount: changesCount)
-        logger.info("syncing archive: (\(time)s)")
+        logger.info("syncing archive: \(time) ms")
     }
 
     public func cancelSync() {
@@ -97,9 +103,9 @@ public class Synchronization: ObservableObject {
 
     private func synchronizeDateTime() async throws {
         let time = try await measure {
-            try await rpc.setDate(.init())
+            try await system.setDate(.init())
         }
-        logger.info("syncing date: (\(time)s)")
+        logger.info("syncing date: \(time) ms")
     }
 
     // MARK: Debug
@@ -107,7 +113,7 @@ public class Synchronization: ObservableObject {
     func measure(_ task: () async throws -> Void) async rethrows -> Int {
         let start = Date()
         try await task()
-        return Int(Date().timeIntervalSince(start))
+        return Int(Date().timeIntervalSince(start) * 1_000)
     }
 
     // MARK: Analytics

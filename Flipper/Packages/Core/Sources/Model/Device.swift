@@ -9,8 +9,12 @@ public class Device: ObservableObject {
 
     private var central: Central
     private var pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
     private var cancellables = [AnyCancellable]()
+
+    private var system: SystemAPI
+    private var storage: StorageAPI
+    private var desktop: DesktopAPI
+    private var gui: GUIAPI
 
     @Published public var isLocked = false
 
@@ -20,9 +24,21 @@ public class Device: ObservableObject {
     @Published public private(set) var info: Info = .init()
     @Published public private(set) var isInfoReady = false
 
-    public init(central: Central, pairedDevice: PairedDevice) {
+    public init(
+        central: Central,
+        pairedDevice: PairedDevice,
+        system: SystemAPI,
+        storage: StorageAPI,
+        desktop: DesktopAPI,
+        gui: GUIAPI
+    ) {
         self.central = central
         self.pairedDevice = pairedDevice
+        self.system = system
+        self.storage = storage
+        self.desktop = desktop
+        self.gui = gui
+
         subscribeToPublishers()
     }
 
@@ -37,10 +53,11 @@ public class Device: ObservableObject {
             }
             .store(in: &cancellables)
 
-        rpc.onScreenFrame = { [weak self] frame in
-            guard let self else { return }
-            Task { @MainActor in
-                self.frame = frame
+        Task { @MainActor in
+            while !Task.isCancelled {
+                for await frame in gui.screenFrame {
+                    self.frame = frame
+                }
             }
         }
     }
@@ -105,7 +122,7 @@ public class Device: ObservableObject {
                 }
                 status = .connected
                 logger.info("connected")
-                try await updateStorageInfo()
+                try await loadStorageInfo()
                 reportRPCInfo()
             } catch {
                 logger.error("did connect: \(error)")
@@ -183,14 +200,14 @@ public class Device: ObservableObject {
 
     // MARK: API
 
-    public func updateStorageInfo() async throws {
+    private func loadStorageInfo() async throws {
         var storageInfo = Flipper.StorageInfo()
         defer {
-            pairedDevice.updateStorageInfo(storageInfo)
+            flipper?.storage = storageInfo
         }
         do {
-            storageInfo.internal = try await rpc.getStorageInfo(at: "/int")
-            storageInfo.external = try await rpc.getStorageInfo(at: "/ext")
+            storageInfo.internal = try await storage.space(of: "/int")
+            storageInfo.external = try await storage.space(of: "/ext")
         } catch {
             logger.error("updating storage info")
             throw error
@@ -200,7 +217,7 @@ public class Device: ObservableObject {
     public func startScreenStreaming() {
         Task {
             do {
-                try await rpc.startStreaming()
+                try await gui.startStreaming()
             } catch {
                 logger.error("start streaming: \(error)")
             }
@@ -211,7 +228,7 @@ public class Device: ObservableObject {
     public func stopScreenStreaming() {
         Task {
             do {
-                try await rpc.stopStreaming()
+                try await gui.stopStreaming()
             } catch {
                 logger.error("stop streaming: \(error)")
             }
@@ -220,7 +237,7 @@ public class Device: ObservableObject {
 
     public func pressButton(_ button: InputKey, isLong: Bool) async throws {
         do {
-            try await rpc.pressButton(button, isLong: isLong)
+            try await gui.pressButton(button, isLong: isLong)
         } catch {
             logger.error("press button: \(error)")
             throw error
@@ -230,7 +247,7 @@ public class Device: ObservableObject {
     public func playAlert() {
         Task {
             do {
-                try await rpc.playAlert()
+                try await gui.playAlert()
             } catch {
                 logger.error("play alert intent: \(error)")
             }
@@ -240,7 +257,7 @@ public class Device: ObservableObject {
     public func reboot() {
         Task {
             do {
-                try await rpc.reboot(to: .os)
+                try await system.reboot(to: .os)
             } catch {
                 logger.error("reboot flipper: \(error)")
             }
@@ -253,7 +270,7 @@ public class Device: ObservableObject {
 
     private var hardwareRegion: Int? {
         get async throws {
-            let info = try await rpc.deviceInfo()
+            let info = try await system.deviceInfo()
             return Int(info["hardware_region"] ?? "")
         }
     }
@@ -268,22 +285,22 @@ public class Device: ObservableObject {
         if isProvisioningDisabled, await canDisableProvisioning {
             return
         }
-        try await rpc.writeFile(
+        try await storage.write(
             at: Provisioning.location,
             bytes: Provisioning().provideRegion().encode())
     }
 
     public func showUpdatingFrame() async throws {
-        try await rpc.startVirtualDisplay(with: .updateInProgress)
+        try await gui.startVirtualDisplay(with: .updateInProgress)
     }
 
     public func hideUpdatingFrame() async throws {
-        try await rpc.stopVirtualDisplay()
+        try await gui.stopVirtualDisplay()
     }
 
     public func startUpdateProcess(from path: Path) async throws {
-        try await rpc.update(manifest: path.appending("update.fuf"))
-        try await rpc.reboot(to: .update)
+        try await system.update(manifest: path.appending("update.fuf"))
+        try await system.reboot(to: .update)
         status = .updating
         logger.info("update started")
     }
@@ -307,7 +324,7 @@ public class Device: ObservableObject {
 
     func updateValues(_ key: String) async {
         do {
-            for try await property in rpc.property(key) {
+            for try await property in system.property(key) {
                 info.update(key: property.key, value: property.value)
             }
         } catch {
@@ -317,7 +334,7 @@ public class Device: ObservableObject {
 
     public func getDeviceInfo() async {
         do {
-            for try await (key, value) in rpc.deviceInfo() {
+            for try await (key, value) in system.deviceInfo() {
                 info.update(key: key, value: value)
             }
         } catch {
@@ -326,13 +343,13 @@ public class Device: ObservableObject {
     }
 
     public func getRegion() async throws -> Provisioning.Region {
-        let bytes = try await rpc.readFile(at: Provisioning.location)
+        let bytes = try await storage.read(at: Provisioning.location)
         return try Provisioning.Region(decoding: bytes)
     }
 
     public func hasAssetsManifest() async throws -> Bool {
         do {
-            _ = try await rpc.getSize(at: .manifest)
+            _ = try await storage.size(of: .manifest)
             return true
         } catch let error as Peripheral.Error
                     where error == .storage(.doesNotExist)
@@ -343,7 +360,7 @@ public class Device: ObservableObject {
 
     public func getPowerInfo() async {
         do {
-            for try await (key, value) in rpc.powerInfo() {
+            for try await (key, value) in system.powerInfo() {
                 info.update(key: key, value: value)
             }
         } catch {
@@ -367,7 +384,7 @@ public class Device: ObservableObject {
         else {
             throw Error.CommonError.notImplemented
         }
-        try await rpc.unlock()
+        try await desktop.unlock()
         updateLockStatus()
     }
 
@@ -430,14 +447,16 @@ extension Device {
 
 fileprivate extension Device {
     private func getFirmwareFork() async throws -> String {
-        for try await property in rpc.property("devinfo.firmware.origin.fork") {
-            return property.value
-        }
-        return ""
+        try await getProperty("devinfo.firmware.origin.fork")
     }
 
     private func getFirmwareGit() async throws -> String {
-        for try await property in rpc.property("devinfo.firmware.origin.git") {
+        try await getProperty("devinfo.firmware.origin.git")
+    }
+
+    // TODO: Move to SystemAPI extension
+    private func getProperty(_ path: String) async throws -> String {
+        for try await property in system.property(path) {
             return property.value
         }
         return ""

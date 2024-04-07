@@ -3,9 +3,7 @@ import SwiftUI
 
 struct SpeedTestView: View {
     // next step
-    @StateObject var speedTest: SpeedTest = .init(
-        pairedDevice: Dependencies.shared.pairedDevice
-    )
+    @StateObject var speedTest: SpeedTest = Dependencies.shared.speedTest
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {

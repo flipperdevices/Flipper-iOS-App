@@ -7,8 +7,8 @@ import Foundation
 
 @MainActor
 public class StressTest: ObservableObject {
-    private var pairedDevice: PairedDevice
-    private var rpc: RPC { pairedDevice.session }
+    private let pairedDevice: PairedDevice
+    private let storage: StorageAPI
     private var cancellables: [AnyCancellable] = .init()
 
     var flipper: Flipper? {
@@ -38,8 +38,9 @@ public class StressTest: ObservableObject {
         }
     }
 
-    public init(pairedDevice: PairedDevice) {
+    public init(pairedDevice: PairedDevice, storage: StorageAPI) {
         self.pairedDevice = pairedDevice
+        self.storage = storage
         subscribeToPublishers()
     }
 
@@ -61,14 +62,14 @@ public class StressTest: ObservableObject {
         self.log(.info, "starting stress test")
 
         Task {
-            try? await rpc.deleteFile(at: temp)
+            try? await storage.delete(at: temp)
 
             let bytes: [UInt8] = .random(size: 1024)
             let path = temp
 
             while isRunning {
                 do {
-                    try await rpc.writeFile(at: path, bytes: bytes)
+                    try await storage.write(at: path, bytes: bytes)
                     log(.debug, "did write \(bytes.count) bytes at \(path)")
                 } catch {
                     log(.error, "error wiring at \(path): \(error)")
@@ -77,7 +78,7 @@ public class StressTest: ObservableObject {
                 guard isRunning else { return }
 
                 do {
-                    let received = try await rpc.readFile(at: path)
+                    let received = try await storage.read(at: path)
                     log(.debug, "did read \(received.count) bytes from \(path)")
                     switch bytes == received {
                     case true: log(.success, "buffers are equal")

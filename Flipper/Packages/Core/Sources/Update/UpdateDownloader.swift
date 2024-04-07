@@ -1,6 +1,6 @@
 import Foundation
 
-class FirmwareProvider {
+public class FirmwareProvider {
     public func data(
         from url: URL,
         progress: @escaping (Double) -> Void

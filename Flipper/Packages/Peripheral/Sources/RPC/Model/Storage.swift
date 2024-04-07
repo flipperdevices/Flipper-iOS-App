@@ -68,7 +68,7 @@ extension Element {
 extension Element: CustomStringConvertible {
     public var description: String {
         switch self {
-        case let .file(item): return item.name
+        case let .file(item): return "\(item.name):\(item.size):\(item.md5))"
         case let .directory(item): return item.name
         }
     }
@@ -89,6 +89,15 @@ extension Array where Element == Peripheral.Element {
                 return nil
             }
             return file
+        }
+    }
+
+    public var directories: [Directory] {
+        self.compactMap {
+            guard case .directory(let directory) = $0 else {
+                return nil
+            }
+            return directory
         }
     }
 }

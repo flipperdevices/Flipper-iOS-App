@@ -24,7 +24,7 @@ actor FlipperApps {
 
     func load() async throws -> AsyncStream<Application> {
         cachedListing = [:]
-        cachedManifests = try await cache.manifest.items
+        cachedManifests = try await cache.getManifest().items
 
         let manifests = try await loadManifests()
         return .init { continuation in
@@ -124,7 +124,7 @@ actor FlipperApps {
     }
 
     private func cachedManifest(_ path: Path) async throws -> Manifest {
-        let data = try await cache.get(path)
+        let data = try await cache.read(path)
         let manifest = try FFFDecoder.decode(Manifest.self, from: data)
         return manifest
     }

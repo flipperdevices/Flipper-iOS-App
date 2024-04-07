@@ -36,7 +36,6 @@ class ArchiveSync: ArchiveSyncProtocol {
         guard state == .idle else { return 0 }
         state = .running
         defer { state = .idle }
-        progress(0)
         return try await sync(progress)
     }
 
@@ -59,6 +58,12 @@ class ArchiveSync: ArchiveSyncProtocol {
         let actions = resolveActions(
             mobileChanges: mobileChanges,
             flipperChanges: flipperChanges)
+
+        guard !actions.isEmpty else {
+            try await syncedManifest.upsert(mobileArchive.getManifest())
+            progress(1)
+            return 0
+        }
 
         let syncItemFactor = syncProgressFactor / Double(actions.count)
         var currentProgress = manifestProgressFactor

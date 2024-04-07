@@ -13,11 +13,7 @@ extension FileStorage {
 
 extension FileStorage {
     func read<T: Codable>(_ path: Path) throws -> T? {
-        let string = try read(path)
-        guard let data = string.data(using: .utf8) else {
-            return nil
-        }
-        return try? JSONDecoder().decode(T.self, from: data)
+        return try? JSONDecoder().decode(T.self, from: read(path))
     }
 
     func write<T: Codable>(_ value: T, at path: Path) throws {
