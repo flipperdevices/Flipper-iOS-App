@@ -51,7 +51,9 @@ struct AppsRowCard: View {
         }
         .notification(isPresented: notifications.apps.showUpdateAvailable) {
             AppsUpdateAvailableBanner(
-                isPresented: notifications.apps.showUpdateAvailable)
+                isPresented: notifications.apps.showUpdateAvailable
+            )
+            .environment(\.notifications, notifications)
         }
         .task {
             do {

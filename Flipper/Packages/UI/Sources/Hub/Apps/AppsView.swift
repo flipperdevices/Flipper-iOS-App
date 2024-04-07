@@ -10,6 +10,7 @@ struct AppsView: View {
 
     @State private var selectedSegment: AppsSegments.Segment = .all
 
+    @Environment(\.notifications) private var notifications
     @State private var isNotConnectedAlertPresented = false
 
     var allSelected: Bool {
@@ -72,6 +73,9 @@ struct AppsView: View {
                     }
                 }
             }
+        }
+        .task {
+            selectedSegment = model.outdatedCount > 0 ? .installed : .all
         }
     }
 

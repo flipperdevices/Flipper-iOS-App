@@ -4,7 +4,7 @@ import SwiftUI
 struct AppsUpdateAvailableBanner: View {
     @Binding var isPresented: Bool
 
-    @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
+    @Environment(\.notifications) private var notifications
 
     var image: Image {
         Image("AppsUpdate")
@@ -19,7 +19,7 @@ struct AppsUpdateAvailableBanner: View {
         ) {
             Button("Go to Update") {
                 isPresented = false
-                selectedTab = .hub
+                notifications.apps.showApps = true
             }
         }
     }

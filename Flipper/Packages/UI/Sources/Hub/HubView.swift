@@ -7,6 +7,8 @@ struct HubView: View {
     @EnvironmentObject var applications: Applications
     @EnvironmentObject var device: Device
 
+    @Environment(\.notifications) private var notifications
+
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
 
     @State private var showRemoteControl = false
@@ -18,7 +20,7 @@ struct HubView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 14) {
-                    NavigationLink {
+                    NavigationLink(isActive: notifications.apps.showApps) {
                         AppsView()
                             .environmentObject(applications)
                     } label: {
@@ -49,6 +51,11 @@ struct HubView: View {
                     if let applicationAlias {
                         AppView(alias: applicationAlias)
                     }
+                }
+            }
+            .onChange(of: notifications.apps.showApps) { newValue in
+                if newValue {
+                    selectedTab = .hub
                 }
             }
             .background(Color.background)
