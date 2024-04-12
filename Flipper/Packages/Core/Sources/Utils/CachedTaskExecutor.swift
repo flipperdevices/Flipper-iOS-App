@@ -1,6 +1,6 @@
 import Foundation
 
-actor CachedTaskExecutor<Key: Hashable, Value> {
+public actor CachedTaskExecutor<Key: Hashable, Value> {
     enum State {
         case ready(Value)
         case inProgress(Task<Value, Error>)
@@ -13,7 +13,7 @@ actor CachedTaskExecutor<Key: Hashable, Value> {
         self.dataSource = dataSource
     }
 
-    func get(_ key: Key) async throws -> Value {
+    public func get(_ key: Key) async throws -> Value {
         if let current = cache[key] {
             switch current {
             case .ready(let data):
