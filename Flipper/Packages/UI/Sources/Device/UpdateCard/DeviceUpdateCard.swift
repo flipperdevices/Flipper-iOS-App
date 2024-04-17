@@ -61,6 +61,7 @@ struct DeviceUpdateCard: View {
             case .failed: showUpdateFailure.wrappedValue = true
             default: break
             }
+            update()
         }
         .alert(isPresented: showUpdateSuccess) {
             UpdateSucceededAlert(

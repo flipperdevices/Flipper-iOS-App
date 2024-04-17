@@ -210,7 +210,8 @@ public class UpdateModel: ObservableObject {
 
     public func updateAvailableFirmware() {
         switch state {
-        case .update: return
+        case .update(.progress): return
+        case .update(.result(.started)): return
         case .error(.noInternet): return
         default: break
         }
