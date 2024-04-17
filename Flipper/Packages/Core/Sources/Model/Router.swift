@@ -6,6 +6,8 @@ public class Router: ObservableObject {
         didSet { UserDefaultsStorage.shared.isFirstLaunch = isFirstLaunch }
     }
 
+    public var showApps: PassthroughSubject<Void, Never> = .init()
+
     public init() {
         isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
     }

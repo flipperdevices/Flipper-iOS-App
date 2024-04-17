@@ -4,7 +4,7 @@ import SwiftUI
 struct AppsUpdateAvailableBanner: View {
     @Binding var isPresented: Bool
 
-    @Environment(\.notifications) private var notifications
+    @EnvironmentObject var router: Router
 
     var image: Image {
         Image("AppsUpdate")
@@ -19,7 +19,7 @@ struct AppsUpdateAvailableBanner: View {
         ) {
             Button("Go to Update") {
                 isPresented = false
-                notifications.apps.showApps = true
+                router.showApps.send()
             }
         }
     }

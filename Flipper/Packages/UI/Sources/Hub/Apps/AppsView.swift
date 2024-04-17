@@ -8,7 +8,7 @@ struct AppsView: View {
     @State private var predicate = ""
     @State private var showSearchView = false
 
-    @State private var selectedSegment: AppsSegments.Segment = .all
+    @Binding private var selectedSegment: AppsSegments.Segment
 
     @Environment(\.notifications) private var notifications
     @State private var isNotConnectedAlertPresented = false
@@ -19,6 +19,10 @@ struct AppsView: View {
 
     var installedSelected: Bool {
         selectedSegment == .installed
+    }
+
+    init(selectedSegment: Binding<AppsSegments.Segment>) {
+        _selectedSegment = selectedSegment
     }
 
     var body: some View {
@@ -73,9 +77,6 @@ struct AppsView: View {
                     }
                 }
             }
-        }
-        .task {
-            selectedSegment = model.outdatedCount > 0 ? .installed : .all
         }
     }
 

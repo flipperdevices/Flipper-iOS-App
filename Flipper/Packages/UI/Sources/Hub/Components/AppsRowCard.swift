@@ -3,6 +3,7 @@ import SwiftUI
 
 struct AppsRowCard: View {
     @EnvironmentObject var model: Applications
+    @EnvironmentObject var router: Router
 
     @Environment(\.notifications) private var notifications
 
@@ -53,7 +54,7 @@ struct AppsRowCard: View {
             AppsUpdateAvailableBanner(
                 isPresented: notifications.apps.showUpdateAvailable
             )
-            .environment(\.notifications, notifications)
+            .environmentObject(router)
         }
         .task {
             do {

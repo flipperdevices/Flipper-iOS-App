@@ -6,26 +6,38 @@ import SwiftUI
 struct HubView: View {
     @EnvironmentObject var applications: Applications
     @EnvironmentObject var device: Device
+    @EnvironmentObject var router: Router
 
     @Environment(\.notifications) private var notifications
 
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
 
+    @State private var appsState: AppsState = .init()
     @State private var showRemoteControl = false
-    @State private var applicationAlias: String?
-    @State private var showApplication = false
     @State private var showDetectReader = false
+
+    struct AppsState {
+        var showApplications = false
+        var applicationAlias: String?
+        var showApplication = false
+        var selectedSegment: AppsSegments.Segment = .all
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 14) {
-                    NavigationLink(isActive: notifications.apps.showApps) {
-                        AppsView()
+                    NavigationLink(isActive: $appsState.showApplications) {
+                        AppsView(selectedSegment: $appsState.selectedSegment)
                             .environmentObject(applications)
                     } label: {
                         AppsRowCard()
                             .environmentObject(applications)
+                    }
+                    .onReceive(router.showApps) {
+                        appsState.selectedSegment = .installed
+                        appsState.showApplications = true
+                        selectedTab = .hub
                     }
                     .analyzingTapGesture {
                         recordAppsOpened()
@@ -47,15 +59,10 @@ struct HubView: View {
                 }
                 .padding(14)
 
-                NavigationLink("", isActive: $showApplication) {
-                    if let applicationAlias {
+                NavigationLink("", isActive: $appsState.showApplication) {
+                    if let applicationAlias = appsState.applicationAlias{
                         AppView(alias: applicationAlias)
                     }
-                }
-            }
-            .onChange(of: notifications.apps.showApps) { newValue in
-                if newValue {
-                    selectedTab = .hub
                 }
             }
             .background(Color.background)
@@ -74,9 +81,9 @@ struct HubView: View {
         }
         .onOpenURL { url in
             if url.isApplicationURL {
-                applicationAlias = url.applicationAlias
+                appsState.applicationAlias = url.applicationAlias
                 selectedTab = .hub
-                showApplication = true
+                appsState.showApplication = true
             } else if url == .mfkey32Link {
                 selectedTab = .hub
                 showDetectReader = true
