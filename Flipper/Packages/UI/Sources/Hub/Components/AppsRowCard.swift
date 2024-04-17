@@ -3,8 +3,10 @@ import SwiftUI
 
 struct AppsRowCard: View {
     @EnvironmentObject var model: Applications
+    @EnvironmentObject var update: UpdateModel
     @EnvironmentObject var router: Router
 
+    @AppStorage(.showAppsUpdate) var showAppsUpdate = false
     @Environment(\.notifications) private var notifications
 
     @State private var topApp: Application?
@@ -45,10 +47,14 @@ struct AppsRowCard: View {
                 }
             }
         }
+        .onChange(of: update.state) { newValue in
+            guard newValue == .update(.result(.succeeded)) else { return }
+            showAppsUpdate = true
+            showAppsUpdateIfNeeded()
+        }
         .onChange(of: model.installedStatus) { newValue in
-            if newValue == .loaded, model.outdatedCount > 0 {
-                notifications.apps.showUpdateAvailable = true
-            }
+            guard newValue == .loaded else { return }
+            showAppsUpdateIfNeeded()
         }
         .notification(isPresented: notifications.apps.showUpdateAvailable) {
             AppsUpdateAvailableBanner(
@@ -62,6 +68,13 @@ struct AppsRowCard: View {
             } catch {
                 isError = true
             }
+        }
+    }
+
+    func showAppsUpdateIfNeeded() {
+        if model.outdatedCount > 0, showAppsUpdate {
+            showAppsUpdate = false
+            notifications.apps.showUpdateAvailable = true
         }
     }
 

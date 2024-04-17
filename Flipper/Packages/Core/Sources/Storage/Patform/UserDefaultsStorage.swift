@@ -85,6 +85,7 @@ public extension UserDefaults {
         case installingVersion = "installingVersion"
         case logLevelKey = "logLevel"
         case hasReaderLog = "hasReaderLog"
+        case showAppsUpdate = "showAppsUpdate"
         case hiddenApps = "hiddenApps"
 
         case isDebugMode = "isDebugMode"
