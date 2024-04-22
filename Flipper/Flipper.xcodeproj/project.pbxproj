@@ -14,6 +14,8 @@
 		65CAD4C22BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 65CAD4C12BD6946000628789 /* PrivacyInfo.xcprivacy */; };
 		65CAD4C42BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 65CAD4C12BD6946000628789 /* PrivacyInfo.xcprivacy */; };
 		65CAD4C52BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 65CAD4C12BD6946000628789 /* PrivacyInfo.xcprivacy */; };
+		8B064D5D2BD6C8F6008C00B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B064D5C2BD6C8F6008C00B3 /* Assets.xcassets */; };
+		8B064D5F2BD6DE41008C00B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B064D5E2BD6DE41008C00B3 /* Assets.xcassets */; };
 		8B10BF4C29A77D53007FC0F3 /* BlackHole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */; };
 		8B1A481929C113A5000169E9 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1A481829C113A5000169E9 /* WidgetKit.framework */; };
 		8B1A481B29C113A5000169E9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1A481A29C113A5000169E9 /* SwiftUI.framework */; };
@@ -26,7 +28,6 @@
 		8B1A483029C11AF8000169E9 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8B1A482F29C11AF8000169E9 /* Core */; };
 		8B1BB6D429C1E67B008AE2A0 /* HaxrCorpNeue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */; };
 		8B1BB6D529C1E67B008AE2A0 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
-		8B1BB6D629C1E681008AE2A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 		8B1BB6D829C1E725008AE2A0 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B1BB6D729C1E725008AE2A0 /* UI */; };
 		8B5B6C152B13FDAD00B76D83 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5B6C142B13FDAD00B76D83 /* AppDelegate.swift */; };
 		8B5E986429E8235A0057B0D7 /* PlayAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E986329E8235A0057B0D7 /* PlayAlert.swift */; };
@@ -41,7 +42,6 @@
 		8BA57F21273AD21D00A3A33B /* irda.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA57F1C273AD21D00A3A33B /* irda.png */; };
 		8BB7DF2C29115FC3005C38C9 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = 8BB7DF2B29115FC3005C38C9 /* UI */; };
 		8BB7DF2E29115FC7005C38C9 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 8BB7DF2D29115FC7005C38C9 /* Core */; };
-		8BB7DF3029119296005C38C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */; };
 		8BB7DF3129119CED005C38C9 /* HaxrCorpNeue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */; };
 		8BB7DF3229119CED005C38C9 /* Born2bSportyV2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7480DD2807483500692304 /* Born2bSportyV2.ttf */; };
 		8BC7F2E02B2FA3CC002F66A5 /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC7F2DF2B2FA3CC002F66A5 /* LaunchScreenView.swift */; };
@@ -116,6 +116,8 @@
 		44A5B59224F05647009EE7FB /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
 		49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		65CAD4C12BD6946000628789 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		8B064D5C2BD6C8F6008C00B3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8B064D5E2BD6DE41008C00B3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlackHole.swift; sourceTree = "<group>"; };
 		8B1A481729C113A5000169E9 /* ActivityWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ActivityWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B1A481829C113A5000169E9 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -238,6 +240,7 @@
 				8B1A482129C113A5000169E9 /* ActivityWidget.swift */,
 				8B1A482329C113A5000169E9 /* ActivityWidget.intentdefinition */,
 				8B1A482629C113A6000169E9 /* Info.plist */,
+				8B064D5C2BD6C8F6008C00B3 /* Assets.xcassets */,
 			);
 			path = ActivityWidget;
 			sourceTree = "<group>";
@@ -304,6 +307,7 @@
 				8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */,
 				8BF9CECC28E21A4400CD5D31 /* TodayViewController.swift */,
 				8BF9CED128E21A4400CD5D31 /* Info.plist */,
+				8B064D5E2BD6DE41008C00B3 /* Assets.xcassets */,
 			);
 			path = TodayWidget;
 			sourceTree = "<group>";
@@ -332,8 +336,8 @@
 				8B5B6C142B13FDAD00B76D83 /* AppDelegate.swift */,
 				8BC7F2DF2B2FA3CC002F66A5 /* LaunchScreenView.swift */,
 				8BA14F322B14A5DB0026B9E9 /* GoogleService-Info.plist */,
-				F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */,
 				65CAD4C12BD6946000628789 /* PrivacyInfo.xcprivacy */,
+				F0DBFA1C24EF2F9900EB2880 /* Assets.xcassets */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -503,9 +507,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B1BB6D629C1E681008AE2A0 /* Assets.xcassets in Resources */,
 				8B1BB6D429C1E67B008AE2A0 /* HaxrCorpNeue.ttf in Resources */,
 				65CAD4C52BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */,
+				8B064D5D2BD6C8F6008C00B3 /* Assets.xcassets in Resources */,
 				8B1BB6D529C1E67B008AE2A0 /* Born2bSportyV2.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -524,7 +528,7 @@
 				8BB7DF3129119CED005C38C9 /* HaxrCorpNeue.ttf in Resources */,
 				8BB7DF3229119CED005C38C9 /* Born2bSportyV2.ttf in Resources */,
 				65CAD4C42BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */,
-				8BB7DF3029119296005C38C9 /* Assets.xcassets in Resources */,
+				8B064D5F2BD6DE41008C00B3 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -533,15 +537,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				8B7480DE2807483500692304 /* Born2bSportyV2.ttf in Resources */,
-				65CAD4C22BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */,
 				8BCE39EB289D47EA00FB5704 /* HaxrCorpNeue.ttf in Resources */,
-				8BA57F20273AD21D00A3A33B /* subhz.png in Resources */,
-				8BA57F1F273AD21D00A3A33B /* rfid.png in Resources */,
-				8BA57F21273AD21D00A3A33B /* irda.png in Resources */,
 				8BA57F1E273AD21D00A3A33B /* ibutton.png in Resources */,
+				8BA57F21273AD21D00A3A33B /* irda.png in Resources */,
+				8BA57F1D273AD21D00A3A33B /* nfc.png in Resources */,
+				8BA57F1F273AD21D00A3A33B /* rfid.png in Resources */,
+				8BA57F20273AD21D00A3A33B /* subhz.png in Resources */,
 				49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */,
 				8BA14F332B14A5DB0026B9E9 /* GoogleService-Info.plist in Resources */,
-				8BA57F1D273AD21D00A3A33B /* nfc.png in Resources */,
+				65CAD4C22BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */,
 				F0DBFA4724EF2F9900EB2880 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
