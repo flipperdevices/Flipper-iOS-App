@@ -1,10 +1,11 @@
-import Core
 import SwiftUI
 
-public struct UpdateProgressBar: View {
-    let state: UpdateModel.State.Update.Progress
+// Copied & Adapted from UI
 
-    public init(state: UpdateModel.State.Update.Progress) {
+public struct UpdateProgressBar: View {
+    let state: Update.State.Progress
+
+    public init(state: Update.State.Progress) {
         self.state = state
     }
 
@@ -37,7 +38,7 @@ public struct UpdateProgressBar: View {
     }
 
     public var body: some View {
-        ProgressBarView(
+        ProgressBar(
             color: color,
             progress: progress,
             image: image,

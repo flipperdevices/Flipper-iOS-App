@@ -2,8 +2,7 @@
 import ActivityKit
 
 public struct UpdateActivityAttibutes: ActivityAttributes {
-
-    public typealias ContentState = UpdateModel.State.Update
+    public typealias ContentState = Update.State
 
     public var version: Update.Version
 

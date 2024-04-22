@@ -22,6 +22,9 @@ let package = Package(
             name: "Analytics",
             path: "../Analytics"),
         .package(
+            name: "Activity",
+            path: "../Activity"),
+        .package(
             name: "Peripheral",
             path: "../Peripheral"),
         .package(
@@ -52,6 +55,7 @@ let package = Package(
             dependencies: [
                 "Macro",
                 "Analytics",
+                "Activity",
                 "Peripheral",
                 "MFKey32v2",
                 "Catalog",

@@ -1,4 +1,6 @@
 import Core
+import Activity
+
 import SwiftUI
 import ActivityKit
 
@@ -12,9 +14,9 @@ struct DeviceUpdateView: View {
     @State private var activity: Any?
     @State private var showCancelUpdate = false
 
-    let firmware: Update.Firmware
+    let firmware: Core.Update.Firmware
 
-    var version: Update.Version {
+    var version: Core.Update.Version {
         firmware.version
     }
 
@@ -140,7 +142,7 @@ struct DeviceUpdateView: View {
 
     func startActivity() {
         if #available(iOS 16.2, *), !ProcessInfo.processInfo.isiOSAppOnMac {
-            let attributes = UpdateActivityAttibutes(version: firmware.version)
+            let attributes = UpdateActivityAttibutes(firmware.version)
             activity = try? Activity<UpdateActivityAttibutes>.request(
                 attributes: attributes,
                 content: .init(state: .progress(.preparing), staleDate: nil))
@@ -169,12 +171,12 @@ struct DeviceUpdateView: View {
 
                 case .update(.progress(let progress)):
                     await activity?.update(.init(
-                        state: .progress(progress),
+                        state: .progress(.init(progress)),
                         staleDate: .now.addingTimeInterval(6)))
 
                 case .update(.result(let result)):
                     await activity?.update(.init(
-                        state: .result(result),
+                        state: .result(.init(result)),
                         staleDate: nil))
                     stopActivity()
 
