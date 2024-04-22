@@ -16,6 +16,7 @@ struct FlipperApp: App {
                 RootView()
             } else {
                 LaunchScreenView()
+                    .ignoresSafeArea(.all)
                     .task {
                         await Core.migration()
                         showRootView = true
