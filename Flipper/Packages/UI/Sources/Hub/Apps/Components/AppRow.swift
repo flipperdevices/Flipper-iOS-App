@@ -3,10 +3,9 @@ import SwiftUI
 
 struct AppRow: View {
     @EnvironmentObject var model: Applications
-    let application: Applications.Application
+    let application: Application
     let isInstalled: Bool
 
-    @State private var status: Applications.ApplicationStatus = .notInstalled
     @State private var showConfirmDelete = false
 
     var isBuildReady: Bool {
@@ -16,18 +15,12 @@ struct AppRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                IconNameCategory(
-                    application: application,
-                    category: model.category(for: application)
-                )
+                IconNameCategory(application: application)
 
                 Spacer()
 
-                AppRowActionButton(
-                    application: application,
-                    status: status
-                )
-                .disabled(!isBuildReady)
+                AppRowActionButton(application: application)
+                    .disabled(!isBuildReady)
 
                 if isInstalled {
                     DeleteAppButton {
@@ -37,8 +30,7 @@ struct AppRow: View {
                     .alert(isPresented: $showConfirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $showConfirmDelete,
-                            application: application,
-                            category: model.category(for: application)
+                            application: application
                         ) {
                             delete()
                         }
@@ -58,9 +50,6 @@ struct AppRow: View {
                     .frame(height: 84)
             }
         }
-        .onReceive(model.$statuses) { statuses in
-            status = statuses[application.id] ?? .notInstalled
-        }
     }
 
     func delete() {
@@ -73,8 +62,17 @@ struct AppRow: View {
         @EnvironmentObject var model: Applications
         @EnvironmentObject var device: Device
 
-        let application: Applications.Application
-        let status: Applications.ApplicationStatus
+        let application: Application
+
+        var status: Applications.ApplicationStatus {
+            if let status = model.statuses[application.id] {
+                return status
+            } else if model.installedStatus == .loading {
+                return .checking
+            } else {
+                return .notInstalled
+            }
+        }
 
         @State var isNotConnectedAlertPresented = false
         @State var isFlipperBusyAlertPresented = false
@@ -84,8 +82,6 @@ struct AppRow: View {
         var body: some View {
             Group {
                 switch status {
-                case _ where model.installedStatus == .loading:
-                    AnimatedPlaceholder()
                 case .installing(let progress):
                     InstallingAppButton(progress: progress)
                         .font(.haxrCorpNeue(size: 28))
@@ -100,8 +96,12 @@ struct AppRow: View {
                             isNotConnectedAlertPresented = true
                         }
                     }
-                case .installed:
+                case .installed where !model.hasOpenAppSupport:
                     InstalledAppButton()
+                case .installed:
+                    OpenAppButton(action: openApp)
+                case .opening:
+                    OpeningAppButton()
                 case .outdated:
                     UpdateAppButton {
                         if model.deviceInfo != nil {
@@ -116,10 +116,6 @@ struct AppRow: View {
                     .disabled(true)
                 case .checking:
                     AnimatedPlaceholder()
-                case .canOpen:
-                    OpenAppButton(action: openApp)
-                case .opening:
-                    OpeningAppButton()
                 }
             }
             .frame(width: 92, height: 34)
@@ -137,6 +133,7 @@ struct AppRow: View {
             .sheet(isPresented: $showRemoteControl) {
                 RemoteControlView()
                     .environmentObject(device)
+                    .navigationBarHidden(true)
             }
         }
 
@@ -155,14 +152,10 @@ struct AppRow: View {
 
         func openApp() {
             Task {
-                await model.openApp(by: application.id) { result in
-                    switch result {
-                    case .success:
-                        goToRemoteScreen()
-                    case .busy:
-                        isFlipperBusyAlertPresented = true
-                    case .error: ()
-                    }
+                switch await model.openApp(application) {
+                case .success: goToRemoteScreen()
+                case .busy: isFlipperBusyAlertPresented = true
+                case .error: break
                 }
             }
         }
@@ -173,7 +166,7 @@ struct AppRow: View {
 
         // MARK: Analytics
 
-        func recordAppInstall(application: Applications.Application) {
+        func recordAppInstall(application: Application) {
             analytics.appOpen(target: .fapHubInstall(application.alias))
         }
     }

@@ -3,8 +3,13 @@ import SwiftUI
 
 struct AppsRowCard: View {
     @EnvironmentObject var model: Applications
+    @EnvironmentObject var update: UpdateModel
+    @EnvironmentObject var router: Router
 
-    @State private var topApp: Applications.Application?
+    @AppStorage(.showAppsUpdate) var showAppsUpdate = false
+    @Environment(\.notifications) private var notifications
+
+    @State private var topApp: Application?
     @State private var isError: Bool = false
 
     var body: some View {
@@ -25,11 +30,16 @@ struct AppsRowCard: View {
 
                     Spacer(minLength: 8)
 
-                    HubChevron()
+                    HStack(spacing: 2) {
+                        if model.outdatedCount > 0 {
+                            UpdatesAvailable()
+                        }
+                        HubChevron()
+                    }
                 }
 
-                if let topApp = topApp {
-                    ApplicationDescription(item: topApp)
+                if let topApp {
+                    ApplicationDescription(application: topApp)
                 } else if isError {
                     DefaultDescription()
                 } else {
@@ -37,12 +47,47 @@ struct AppsRowCard: View {
                 }
             }
         }
+        .onChange(of: update.state) { newValue in
+            guard newValue == .update(.result(.succeeded)) else { return }
+            showAppsUpdate = true
+            showAppsUpdateIfNeeded()
+        }
+        .onChange(of: model.installedStatus) { newValue in
+            guard newValue == .loaded else { return }
+            showAppsUpdateIfNeeded()
+        }
+        .notification(isPresented: notifications.apps.showUpdateAvailable) {
+            AppsUpdateAvailableBanner(
+                isPresented: notifications.apps.showUpdateAvailable
+            )
+            .environmentObject(router)
+        }
         .task {
             do {
                 topApp = try await model.loadTopApp()
             } catch {
                 isError = true
             }
+        }
+    }
+
+    func showAppsUpdateIfNeeded() {
+        if model.outdatedCount > 0, showAppsUpdate {
+            showAppsUpdate = false
+            notifications.apps.showUpdateAvailable = true
+        }
+    }
+
+    struct UpdatesAvailable: View {
+        var body: some View {
+            Text("Updates Available")
+                .font(.system(size: 10, weight: .bold))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background {
+                    RoundedRectangle(cornerRadius: 30)
+                        .fill(Color.sGreenUpdate)
+                }
         }
     }
 
@@ -69,32 +114,28 @@ struct AppsRowCard: View {
 
     struct ApplicationDescription: View {
         @EnvironmentObject var model: Applications
-        let item: Applications.Application
-
-        var category: Applications.Category? {
-            model.category(for: item)
-        }
+        let application: Application
 
         var body: some View {
             HStack(spacing: 8) {
-                AppIcon(item.current.icon)
+                AppIcon(application.current.icon)
                     .frame(width: 42, height: 42)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(item.current.name)
+                    Text(application.current.name)
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.primary)
                         .lineLimit(1)
 
                     HStack(alignment: .bottom, spacing: 4) {
-                        CategoryIcon(category?.icon)
+                        CategoryIcon(application.category.icon.url)
                             .frame(width: 12, height: 12)
 
-                        CategoryName(category?.name)
+                        CategoryName(application.category.name)
                             .font(.system(size: 10, weight: .medium))
                     }
 
-                    Text(item.current.shortDescription)
+                    Text(application.current.shortDescription)
                         .font(.system(size: 10, weight: .regular))
                         .foregroundColor(.primary)
                         .lineLimit(1)

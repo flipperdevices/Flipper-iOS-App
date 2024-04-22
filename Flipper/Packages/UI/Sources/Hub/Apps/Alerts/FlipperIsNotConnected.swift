@@ -3,7 +3,7 @@ import SwiftUI
 struct FlipperIsNotConnectedAlert: View {
     @Binding var isPresented: Bool
 
-    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
+    @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
 
     var body: some View {
         VStack(spacing: 24) {

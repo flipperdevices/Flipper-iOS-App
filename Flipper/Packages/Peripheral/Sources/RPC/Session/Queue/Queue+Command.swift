@@ -24,7 +24,7 @@ extension Queue {
 
         enum Delimited {
             case request([Request])
-            case message([Message])
+            case message([OutgoingMessage])
         }
     }
 }

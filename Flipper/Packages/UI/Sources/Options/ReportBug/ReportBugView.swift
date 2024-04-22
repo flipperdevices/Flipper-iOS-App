@@ -36,6 +36,7 @@ struct ReportBugView: View {
                 FailureView()
             }
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -43,6 +44,8 @@ struct ReportBugView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Report Bug")
             }
         }

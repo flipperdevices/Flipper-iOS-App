@@ -7,6 +7,7 @@ struct CategoryView: View {
 
     let kind: ArchiveItem.Kind
     @State private var selectedItem: ArchiveItem?
+    @State private var showInfoView = false
 
     var items: [ArchiveItem] {
         archive.items.filter { $0.kind == kind }
@@ -22,11 +23,19 @@ struct CategoryView: View {
             ScrollView {
                 CategoryList(items: items) { item in
                     selectedItem = item
+                    showInfoView = true
                 }
                 .padding(14)
             }
+
+            NavigationLink("", isActive: $showInfoView) {
+                if let selectedItem {
+                    InfoView(item: selectedItem)
+                }
+            }
         }
         .background(Color.background)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -37,9 +46,6 @@ struct CategoryView: View {
                 Text(kind.name)
                     .font(.system(size: 20, weight: .bold))
             }
-        }
-        .sheet(item: $selectedItem) { item in
-            InfoView(item: item)
         }
     }
 }

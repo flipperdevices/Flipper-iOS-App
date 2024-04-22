@@ -11,4 +11,11 @@ public enum ImageSource: Equatable, Decodable {
             ? .url(.init(string: string)!)
             : .data(.init(base64Encoded: string)!)
     }
+
+    public var url: URL? {
+        switch self {
+        case .url(let url): return url
+        default: return nil
+        }
+    }
 }

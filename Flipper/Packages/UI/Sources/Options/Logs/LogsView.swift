@@ -28,6 +28,7 @@ struct LogsView: View {
                 Task { await logs.delete(indexSet) }
             }
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -35,6 +36,8 @@ struct LogsView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Logs")
             }
             TrailingToolbarItems {

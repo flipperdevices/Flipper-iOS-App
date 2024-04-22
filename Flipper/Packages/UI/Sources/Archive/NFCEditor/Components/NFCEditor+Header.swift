@@ -15,7 +15,6 @@ extension NFCEditorView {
                         onCancel()
                     } label: {
                         Text("Close")
-                            .foregroundColor(.primary)
                             .font(.system(size: 14, weight: .medium))
                             .padding(.horizontal, 14)
                     }
@@ -29,7 +28,6 @@ extension NFCEditorView {
                         Button("Save Dump as...", action: onSaveAs)
                     } label: {
                         Text("Save")
-                            .foregroundColor(.primary)
                             .font(.system(size: 14, weight: .medium))
                             .padding(.horizontal, 14)
                     }

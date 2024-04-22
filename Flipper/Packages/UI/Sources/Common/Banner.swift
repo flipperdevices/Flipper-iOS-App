@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct Banner<Action: View>: View {
-    let image: String
+    let image: Image
     let title: String
     let description: String
     @ViewBuilder let action: () -> Action
@@ -16,7 +16,8 @@ struct Banner<Action: View>: View {
         VStack {
             Spacer()
             HStack(spacing: 12) {
-                Image(image)
+                image
+                    .foregroundColor(.primary)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .lineLimit(1)
@@ -28,8 +29,8 @@ struct Banner<Action: View>: View {
                 action()
                     .font(.system(size: 12, weight: .bold))
             }
-            .padding(12)
-            .frame(height: 48)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
             .frame(maxWidth: .infinity)
             .background(backgroundColor)
             .cornerRadius(8)
@@ -39,10 +40,31 @@ struct Banner<Action: View>: View {
 }
 
 extension Banner where Action == EmptyView {
-    init(image: String, title: String, description: String) {
+    init(image: Image, title: String, description: String) {
         self.image = image
         self.title = title
         self.description = description
         self.action = { EmptyView() }
+    }
+
+    init(image: String, title: String, description: String) {
+        self.image = Image(image)
+        self.title = title
+        self.description = description
+        self.action = { EmptyView() }
+    }
+}
+
+extension Banner {
+    init(
+        image: String,
+        title: String,
+        description: String,
+        action: @escaping () -> Action
+    ) {
+        self.image = Image(image)
+        self.title = title
+        self.description = description
+        self.action = action
     }
 }

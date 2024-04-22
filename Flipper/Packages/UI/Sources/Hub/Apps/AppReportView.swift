@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct AppReportView: View {
-    let application: Applications.Application
+    let application: Application
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) var dismiss
@@ -26,6 +26,7 @@ struct AppReportView: View {
                 AppConcernView(application: application)
             }
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -33,6 +34,8 @@ struct AppReportView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Report App")
             }
         }

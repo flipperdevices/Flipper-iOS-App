@@ -6,14 +6,22 @@ extension AppView {
         @EnvironmentObject var model: Applications
         @EnvironmentObject var device: Device
 
-        let application: Applications.Application
-        let status: Applications.ApplicationStatus
+        let application: Application
+
+        var status: Applications.ApplicationStatus {
+            if let status = model.statuses[application.id] {
+                return status
+            } else if model.installedStatus == .loading {
+                return .checking
+            } else {
+                return .notInstalled
+            }
+        }
 
         var canDelete: Bool {
             switch status {
             case .installed: return true
             case .outdated: return true
-            case .canOpen: return true
             default: return false
             }
         }
@@ -34,8 +42,7 @@ extension AppView {
                     .alert(isPresented: $confirmDelete) {
                         ConfirmDeleteAppAlert(
                             isPresented: $confirmDelete,
-                            application: application,
-                            category: model.category(for: application)
+                            application: application
                         ) {
                             delete()
                         }
@@ -60,8 +67,14 @@ extension AppView {
                         }
                     }
                     .font(.born2bSportyV2(size: 32))
-                case .installed:
+                case .installed where !model.hasOpenAppSupport:
                     InstalledAppButton()
+                        .font(.born2bSportyV2(size: 32))
+                case .installed:
+                    OpenAppButton(action: openApp)
+                        .font(.born2bSportyV2(size: 32))
+                case .opening:
+                    OpeningAppButton()
                         .font(.born2bSportyV2(size: 32))
                 case .outdated:
                     UpdateAppButton {
@@ -78,12 +91,6 @@ extension AppView {
                     .font(.born2bSportyV2(size: 32))
                 case .checking:
                     AnimatedPlaceholder()
-                case .canOpen:
-                    OpenAppButton(action: openApp)
-                        .font(.born2bSportyV2(size: 32))
-                case .opening:
-                    OpeningAppButton()
-                        .font(.born2bSportyV2(size: 32))
                 }
             }
             .frame(height: 46)
@@ -100,6 +107,7 @@ extension AppView {
             .sheet(isPresented: $showRemoteControl) {
                 RemoteControlView()
                     .environmentObject(device)
+                    .navigationBarHidden(true)
             }
         }
 
@@ -124,14 +132,10 @@ extension AppView {
 
         func openApp() {
             Task {
-                await model.openApp(by: application.id) { result in
-                    switch result {
-                    case .success:
-                        goToRemoteScreen()
-                    case .busy:
-                        isFlipperBusyAlertPresented = true
-                    case .error: ()
-                    }
+                switch await model.openApp(application) {
+                case .success: goToRemoteScreen()
+                case .busy: isFlipperBusyAlertPresented = true
+                case .error: break
                 }
             }
         }
@@ -142,7 +146,7 @@ extension AppView {
 
         // MARK: Analytics
 
-        func recordAppInstall(application: Applications.Application) {
+        func recordAppInstall(application: Application) {
             analytics.appOpen(target: .fapHubInstall(application.alias))
         }
     }

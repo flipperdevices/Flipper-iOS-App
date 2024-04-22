@@ -7,34 +7,46 @@ struct TabViewItem: View {
     let hasNotification: Bool
     let onItemSelected: () -> Void
 
+    struct Badge: View {
+        var body: some View {
+            Circle()
+                .frame(width: 12, height: 12)
+                .foregroundColor(.white)
+                .overlay(alignment: .center) {
+                    Circle()
+                        .frame(width: 10, height: 10)
+                        .foregroundColor(.sGreenUpdate)
+                }
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 2) {
-                ZStack(alignment: .topTrailing) {
-                    image
-
-                    Circle()
-                        .frame(width: 12, height: 12)
-                        .offset(x: -3, y: 3)
-                        .foregroundColor(.a1)
-                        .opacity(hasNotification ? 1 : 0)
-                }
+                image
+                    .overlay {
+                        GeometryReader { proxy in
+                            Badge()
+                                .opacity(hasNotification ? 1 : 0)
+                                .offset(x: proxy.size.width - 6, y: -4)
+                        }
+                    }
 
                 Text(name)
                     .font(.system(size: 10, weight: .bold))
             }
-            .padding(.vertical, 4)
             .padding(.horizontal, 8)
-            .frame(minWidth: 69)
+            .frame(minWidth: 69, minHeight: 46)
             .background(
                 isSelected
                     ? RoundedRectangle(cornerRadius: 8).fill(Color.black4)
                     : nil
             )
+            .contentShape(Rectangle())
+            .onTapGesture {
+                onItemSelected()
+            }
         }
         .frame(maxWidth: .infinity)
-        .onTapGesture {
-            onItemSelected()
-        }
     }
 }

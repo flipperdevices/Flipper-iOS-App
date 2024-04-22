@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AppsNotCompatibleFirmware: View {
-    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
+    @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
 
     var description: AttributedString {
         var string: AttributedString = "To access Apps, install the latest " +

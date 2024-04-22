@@ -3,9 +3,7 @@ import SwiftUI
 
 struct SpeedTestView: View {
     // next step
-    @StateObject var speedTest: SpeedTest = .init(
-        pairedDevice: Dependencies.shared.pairedDevice
-    )
+    @StateObject var speedTest: SpeedTest = Dependencies.shared.speedTest
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -39,6 +37,7 @@ struct SpeedTestView: View {
             .padding(.bottom, 50)
         }
         .padding(14)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -46,6 +45,8 @@ struct SpeedTestView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Speed Test")
             }
         }

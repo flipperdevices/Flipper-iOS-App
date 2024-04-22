@@ -28,7 +28,7 @@ struct NFCEditorView: View {
     @State private var error: String?
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 Header(
                     title: "Edit Dump",

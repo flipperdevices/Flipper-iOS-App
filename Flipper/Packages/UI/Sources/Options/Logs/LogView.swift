@@ -24,6 +24,7 @@ struct LogView: View {
                 Text(message.text)
             }
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -31,6 +32,8 @@ struct LogView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title(name)
             }
             TrailingToolbarItems {

@@ -22,7 +22,7 @@ extension EmulateView {
                 ? isEmulating
                     ? emulatingColor
                     : Color.a2
-                : .black8
+                : .emulateDisabled
         }
         var emulatingColor: Color {
             .init(.init(red: 0.54, green: 0.73, blue: 1.0, alpha: 1.0))

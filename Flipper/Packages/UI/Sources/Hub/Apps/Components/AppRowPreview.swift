@@ -12,15 +12,15 @@ struct AppRowPreview: View {
         var body: some View {
             HStack(spacing: 8) {
                 AnimatedPlaceholder()
-                    .frame(width: 42, height: 42)
+                    .frame(width: 48, height: 48)
 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 4) {
                     AnimatedPlaceholder()
                         .frame(maxWidth: .infinity)
-                        .frame(height: 17)
+                        .frame(width: 102, height: 18)
 
                     AnimatedPlaceholder()
-                        .frame(width: 62, height: 14)
+                        .frame(width: 42, height: 14)
                 }
             }
         }
@@ -35,6 +35,11 @@ struct AppRowPreview: View {
 
                 AnimatedPlaceholder()
                     .frame(width: 92, height: 34)
+
+                if isInstalled {
+                    AnimatedPlaceholder()
+                        .frame(width: 34, height: 34)
+                }
             }
             .padding(.horizontal, 14)
 

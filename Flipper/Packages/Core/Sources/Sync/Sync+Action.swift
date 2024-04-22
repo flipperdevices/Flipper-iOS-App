@@ -26,11 +26,6 @@ extension ArchiveSync {
             let mobileItemState = mobileChanges[id]
             let flipperItemState = flipperChanges[id]
 
-            // ignore identical changes
-            guard mobileItemState != flipperItemState else {
-                continue
-            }
-
             switch (mobileItemState, flipperItemState) {
             // changes on mobile
             case let (.some(change), .none):
@@ -52,10 +47,11 @@ extension ArchiveSync {
                 case (.modified, .deleted): result[id] = .update(.flipper)
                 // possible conflicts
                 case (.modified, .modified): result[id] = .conflict
-                default: fatalError("unreachable")
+                // nothing to do
+                case (.deleted, .deleted): continue
                 }
-            default:
-                fatalError("unreachable")
+            case (.none, .none):
+                continue
             }
         }
 

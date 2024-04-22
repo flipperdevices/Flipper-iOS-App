@@ -4,9 +4,10 @@ import PackageDescription
 let package = Package(
     name: "UI",
     platforms: [
-        .iOS(.v15),
-        .macOS(.v12),
-        .tvOS(.v15)
+        .iOS(.v16),
+        .watchOS(.v9),
+        .macOS(.v13),
+        .tvOS(.v16)
     ],
     products: [
         .library(
@@ -24,14 +25,11 @@ let package = Package(
             name: "Notifications",
             path: "../Notifications"),
         .package(
-            url: "https://github.com/airbnb/lottie-ios.git",
-            from: "3.3.0"),
+            url: "https://github.com/airbnb/lottie-spm.git",
+            from: "4.4.0"),
         .package(
             url: "https://github.com/gonzalezreal/swift-markdown-ui",
-            from: "2.0.2"),
-        .package(
-            url: "https://github.com/SVGKit/SVGKit.git",
-            from: "3.0.0")
+            from: "2.0.2")
     ],
     targets: [
         .target(
@@ -40,8 +38,7 @@ let package = Package(
                 "Core",
                 "Analytics",
                 "Notifications",
-                .product(name: "SVGKit", package: "SVGKit"),
-                .product(name: "Lottie", package: "lottie-ios"),
+                .product(name: "Lottie", package: "lottie-spm"),
                 .product(name: "MarkdownUI", package: "swift-markdown-ui")
             ],
             path: "Sources"),

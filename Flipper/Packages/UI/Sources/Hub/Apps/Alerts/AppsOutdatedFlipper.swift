@@ -3,7 +3,7 @@ import SwiftUI
 struct AppsOutdatedFlipperAlert: View {
     @Binding var isPresented: Bool
 
-    @AppStorage(.selectedTabKey) var selectedTab: TabView.Tab = .device
+    @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
 
     var message: AttributedString {
         var string = AttributedString(

@@ -87,6 +87,7 @@ struct FileManagerListing: View {
                 }
             }
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -94,6 +95,8 @@ struct FileManagerListing: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title(path.lastComponent ?? "/")
             }
             TrailingToolbarItems {

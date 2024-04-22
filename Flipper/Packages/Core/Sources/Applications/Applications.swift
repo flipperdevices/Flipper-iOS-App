@@ -8,8 +8,8 @@ import Foundation
 
 @MainActor
 public class Applications: ObservableObject {
-    public typealias Category = Catalog.Category
-    public typealias Application = Catalog.Application
+    public typealias Category = Core.Category
+    public typealias Application = Core.Application
 
     private var categories: [Category] = []
 
@@ -23,11 +23,12 @@ public class Applications: ObservableObject {
     @Published public var installedStatus: InstalledStatus = .error
     @Published public var statuses: [Application.ID: ApplicationStatus] = [:]
 
+    public var outdated: [Application] {
+        installed.filter { statuses[$0.id] == .outdated }
+    }
+
     public var outdatedCount: Int {
-        statuses
-            .map { $0.value }
-            .filter { $0 == .outdated }
-            .count
+        outdated.count
     }
 
     public enum SortOption: String, CaseIterable {
@@ -47,7 +48,8 @@ public class Applications: ObservableObject {
         case invalidBuild
     }
 
-    private var rpc: RPC { pairedDevice.session }
+    private var system: SystemAPI
+    private var application: ApplicationAPI
     @Published private var flipper: Flipper?
     private var cancellables = [AnyCancellable]()
 
@@ -59,11 +61,15 @@ public class Applications: ObservableObject {
     init(
         catalog: CatalogService,
         flipperApps: FlipperApps,
-        pairedDevice: PairedDevice
+        pairedDevice: PairedDevice,
+        system: SystemAPI,
+        application: ApplicationAPI
     ) {
         self.catalog = catalog
         self.flipperApps = flipperApps
         self.pairedDevice = pairedDevice
+        self.system = system
+        self.application = application
 
         subscribeToPublishers()
     }
@@ -116,15 +122,20 @@ public class Applications: ObservableObject {
         try? await Task.sleep(seconds: 1)
     }
 
+    private func setStatus(_ status: ApplicationStatus, for app: Application) {
+        Task { @MainActor in
+            statuses[app.id] = status
+        }
+    }
+
     public func install(_ application: Application) async {
         do {
-            statuses[application.id] = .installing(0)
+            installed.append(application)
+            setStatus(.installing(0), for: application)
             try await _install(application) { progress in
-                Task {
-                    statuses[application.id] = .installing(progress)
-                }
+                setStatus(.installing(progress), for: application)
             }
-            statuses[application.id] = installedAppStatus()
+            setStatus(.installed, for: application)
         } catch {
             logger.error("install app: \(error)")
         }
@@ -132,13 +143,11 @@ public class Applications: ObservableObject {
 
     public func update(_ application: Application) async {
         do {
-            statuses[application.id] = .updating(0)
+            setStatus(.updating(0), for: application)
             try await _install(application) { progress in
-                Task {
-                    statuses[application.id] = .updating(progress)
-                }
+                setStatus(.updating(progress), for: application)
             }
-            statuses[application.id] = installedAppStatus()
+            setStatus(.installed, for: application)
         } catch {
             logger.error("update app: \(error)")
         }
@@ -146,7 +155,7 @@ public class Applications: ObservableObject {
 
     public func update(_ applications: [Application]) async {
         for application in applications {
-            statuses[application.id] = .updating(0)
+            setStatus(.updating(0), for: application)
         }
         for application in applications {
             await update(application)
@@ -169,58 +178,35 @@ public class Applications: ObservableObject {
         case error
     }
 
-    public func openApp(
-        by id: Application.ID,
-        callback: (OpenAppStatus) -> Void
-    ) async {
+    public func openApp(_ app: Application) async -> OpenAppStatus {
         do {
-            statuses[id] = .opening
+            setStatus(.opening, for: app)
             defer {
-                statuses[id] = .canOpen
+                setStatus(.installed, for: app)
             }
 
-            guard
-                let category = category(installedID: id),
-                let app = installed.first(where: { $0.id == id })
-            else { return }
+            let path = "/ext/apps/\(app.category.name)/\(app.alias).fap"
+            logger.info("open app \(app.id) by \(path)")
 
-            let path = "/ext/apps/\(category.name)/\(app.alias).fap"
-            logger.info("open app \(id) by \(path)")
-
-            try await rpc.appStart(path, args: "RPC")
+            try await application.start(path, args: "RPC")
             logger.info("open app success")
-            callback(.success)
+            return .success
         } catch {
             logger.error("open app: \(error)")
             if
                 let appError = error as? Peripheral.Error,
                 appError == .application(.systemLocked)
             {
-                callback(.busy)
+                return .busy
             } else {
-                callback(.error)
+                return .error
             }
         }
     }
 
-    public func category(for application: Application) -> Category? {
-        application.categoryId.isEmpty
-            ? category(installedID: application.id)
-            : category(categoryID: application.categoryId)
-    }
-
-    private func category(categoryID id: String) -> Category? {
-        return categories.first { $0.id == id }
-    }
-
-    private func category(installedID id: Application.ID) -> Category? {
-        let name = flipperApps.category(forInstalledId: id)
-        return categories.first(where: { $0.name == name })
-    }
-
     private func getFlipperTarget() async throws -> String {
         var target: String = ""
-        for try await property in rpc.property("devinfo.hardware.target") {
+        for try await property in system.property("devinfo.hardware.target") {
             target = property.value
         }
         return "f\(target)"
@@ -229,7 +215,7 @@ public class Applications: ObservableObject {
     private func getFlipperAPI() async throws -> String {
         var major: String = "0"
         var minor: String = "0"
-        for try await property in rpc.property("devinfo.firmware.api") {
+        for try await property in system.property("devinfo.firmware.api") {
             switch property.key {
             case "firmware.api.major": major = property.value
             case "firmware.api.minor": minor = property.value
@@ -260,13 +246,31 @@ public class Applications: ObservableObject {
         }
     }
 
+    private func mapApp(from app: Catalog.Application) -> Application {
+        .init(application: app, category: category(id: app.categoryId))
+    }
+
+    private func category(id: String) -> Application.Category {
+        guard let category = categories.first(where: { $0.id == id }) else {
+            return .init(name: "Unknown")
+        }
+        return .init(category: category)
+    }
+
+    private func category(name: String) -> Application.Category {
+        guard let category = categories.first(where: { $0.name == name }) else {
+            return .init(name: name)
+        }
+        return .init(category: category)
+    }
+
     public func loadTopApp() async throws -> Application {
         try await handlingWebErrors {
             _ = try await loadCategories()
             guard let app = try await catalog.featured().get().first else {
                 throw Error.noInternet
             }
-            return app
+            return mapApp(from: app)
         }
     }
 
@@ -277,17 +281,19 @@ public class Applications: ObservableObject {
             return try await task.value
         } else {
             let task = Task<[Category], Swift.Error> {
-                categories = try await handlingWebErrors {
+                try await handlingWebErrors {
                     try await catalog
                         .categories()
                         .target(deviceInfo?.target)
                         .api(deviceInfo?.api)
                         .get()
                 }
-                categoriesTask = nil
-                return categories
+                .map { .init($0) }
             }
-            return try await task.value
+            categoriesTask = task
+            categories = try await task.value
+            categoriesTask = nil
+            return categories
         }
     }
 
@@ -309,16 +315,17 @@ public class Applications: ObservableObject {
                 .take(take)
                 .get()
         }
+        .map { mapApp(from: $0) }
     }
 
     public func loadApplication(id: String) async throws -> Application {
-        try await handlingWebErrors {
+        mapApp(from: try await handlingWebErrors {
             try await catalog
                 .application(uid: id)
                 .target(deviceInfo?.target)
                 .api(deviceInfo?.api)
                 .get()
-        }
+        })
     }
 
     public func search(for string: String) async throws -> [Application] {
@@ -331,6 +338,7 @@ public class Applications: ObservableObject {
                 .take(500)
                 .get()
         }
+        .map { mapApp(from: $0) }
     }
 
     public func loadInstalled() async throws {
@@ -340,20 +348,56 @@ public class Applications: ObservableObject {
             guard installedStatus != .loading else { return }
             installedStatus = .loading
 
-            installed = try await flipperApps.load()
-            installed.forEach { statuses[$0.id] = .checking }
+            let updater = Task {
+                await runUpdater(deviceInfo: deviceInfo)
+            }
 
-            let step = 42
-            for processed in stride(from: 0, to: installed.count, by: step)  {
-                let slice = installed.dropFirst(processed).prefix(step)
+            installed = []
+            statuses = [:]
+            for await var app in try await flipperApps.load() {
+                // TODO: Cache categories to show without internet connection
+                app.category = category(name: app.category.name)
+                installed.append(app)
+                setStatus(.checking, for: app)
+            }
 
+            if installedStatus == .loading {
+                installedStatus = .loaded
+            }
+
+            await updater.value
+        } catch {
+            installedStatus = .error
+            await installed.forEach {
+                setStatus(await offlineStatus(for: $0), for: $0)
+            }
+            logger.error("load installed: \(error)")
+        }
+    }
+
+    private func runUpdater(deviceInfo: DeviceInfo) async {
+        var checking: [Application] {
+            installed.filter { statuses[$0.id] == .checking }
+        }
+
+        let step = 42
+        while installedStatus == .loading || !checking.isEmpty {
+            let slice = checking.prefix(step)
+
+            guard !slice.isEmpty else {
+                try? await Task.sleep(milliseconds: 10)
+                continue
+            }
+
+            do {
                 let loaded = try await catalog
                     .applications()
-                    .uids(slice.map { $0.id })
+                    .uids(slice.map(\.id))
                     .target(deviceInfo.target)
                     .api(deviceInfo.api)
                     .take(slice.count)
                     .get()
+                    .map { mapApp(from: $0) }
 
                 loaded
                     .forEach { updateInstalledApp($0) }
@@ -361,21 +405,20 @@ public class Applications: ObservableObject {
                 let missing = slice
                     .filter { !loaded.map(\.id).contains($0.id) }
 
-                loaded
-                    .forEach { statuses[$0.id] = status(for: $0) }
+                await loaded
+                    .forEach { setStatus(await status(for: $0), for: $0) }
                 missing
-                    .forEach { statuses[$0.id] = .building }
+                    .forEach { setStatus(.building, for: $0) }
+            } catch {
+                await slice.forEach {
+                    setStatus(await offlineStatus(for: $0), for: $0)
+                }
+                installedStatus = .error
             }
-
-            installedStatus = .loaded
-        } catch {
-            installedStatus = .error
-            installed.forEach { statuses[$0.id] = installedAppStatus() }
-            logger.error("load installed: \(error)")
         }
     }
 
-    func updateInstalledApp(_ app: Application) {
+    private func updateInstalledApp(_ app: Application) {
         if let index = installed.firstIndex(where: { $0.id == app.id }) {
             installed[index] = app
         }
@@ -389,19 +432,30 @@ public class Applications: ObservableObject {
         case outdated
         case building
         case checking
-        case canOpen
         case opening
+
+        public var priotiry: Int {
+            switch self {
+            case .installing: return 1
+            case .updating: return 2
+            case .notInstalled: return 3
+            case .outdated: return 4
+            case .installed, .opening: return 5
+            case .building: return 7
+            case .checking: return 8
+            }
+        }
     }
 
-    private func installedAppStatus() -> ApplicationStatus {
-        flipper?.hasOpenAppSupport == true ? .canOpen : .installed
+    public var hasOpenAppSupport: Bool {
+        flipper?.hasOpenAppSupport ?? false
     }
 
     private func status(
         for application: Application
-    ) -> ApplicationStatus {
+    ) async -> ApplicationStatus {
         // FIXME:
-        guard let manifest = flipperApps.manifests[application.id] else {
+        guard let manifest = await flipperApps.manifests[application.id] else {
             return .notInstalled
         }
         guard
@@ -412,7 +466,25 @@ public class Applications: ObservableObject {
                 ? .outdated
                 : .building
         }
-        return installedAppStatus()
+        return .installed
+    }
+
+    private func offlineStatus(
+        for application: Application
+    ) async -> ApplicationStatus {
+        // FIXME:
+        guard let manifest = await flipperApps.manifests[application.id] else {
+            return .notInstalled
+        }
+        guard
+            let installedMajor = manifest.buildAPI.split(separator: ".").first,
+            let flipperMajor = deviceInfo?.api.split(separator: ".").first,
+            installedMajor == flipperMajor
+        else {
+            return .building
+        }
+
+        return .installed
     }
 
     public func report(
@@ -462,22 +534,13 @@ fileprivate extension Applications {
             return
         }
 
-        if !installed.contains(where: { $0.id == application.id }) {
-            installed.append(application)
-        }
-
         let data = try await catalog.build(forVersionID: application.current.id)
             .target(deviceInfo.target)
             .api(deviceInfo.api)
             .get()
 
-        guard let category = category(for: application) else {
-            return
-        }
-
         try await flipperApps.install(
             application: application,
-            category: category,
             bundle: data,
             progress: progress)
     }
@@ -485,8 +548,7 @@ fileprivate extension Applications {
 
 extension Applications.Manifest {
     init(
-        application: Catalog.Application,
-        category: Catalog.Category,
+        application: Application,
         isDevCatalog: Bool
     ) async throws {
         guard case .url(let iconURL) = application.current.icon else {
@@ -500,7 +562,7 @@ extension Applications.Manifest {
 
         let path: Path = .appPath(
             alias: application.alias,
-            category: category.name)
+            category: application.category.name)
 
         self.init(
             fullName: application.current.name,
@@ -545,5 +607,15 @@ extension Flipper {
             return false
         }
         return true
+    }
+}
+
+extension Sequence {
+    @inlinable public func forEach(
+        _ body: (Element) async throws -> Void
+    ) async rethrows {
+        for item in self {
+            try await body(item)
+        }
     }
 }

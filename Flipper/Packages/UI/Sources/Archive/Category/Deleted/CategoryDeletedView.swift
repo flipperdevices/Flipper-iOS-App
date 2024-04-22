@@ -6,6 +6,7 @@ struct CategoryDeletedView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedItem: ArchiveItem?
+    @State private var showDeletedView = false
     @State private var showRestoreSheet = false
     @State private var showDeleteSheet = false
 
@@ -18,7 +19,7 @@ struct CategoryDeletedView: View {
     }
 
     var toolbarActionsColor: Color {
-        archive.items.isEmpty ? .primary.opacity(0.5) : .primary
+        archive.deleted.isEmpty ? .primary.opacity(0.5) : .primary
     }
 
     var body: some View {
@@ -26,17 +27,24 @@ struct CategoryDeletedView: View {
             Text("No deleted keys")
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(.black40)
-                .opacity(archive.items.isEmpty ? 1 : 0)
+                .opacity(archive.deleted.isEmpty ? 1 : 0)
 
             ScrollView {
                 CategoryList(items: archive.deleted) { item in
                     selectedItem = item
+                    showDeletedView = true
                 }
                 .padding(14)
             }
-        }
 
+            NavigationLink("", isActive: $showDeletedView) {
+                if let selectedItem {
+                    DeletedInfoView(item: selectedItem)
+                }
+            }
+        }
         .background(Color.background)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -44,6 +52,8 @@ struct CategoryDeletedView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Deleted")
             }
             TrailingToolbarItems {
@@ -55,7 +65,6 @@ struct CategoryDeletedView: View {
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(toolbarActionsColor)
                     }
-                    .disabled(archive.items.isEmpty)
                     .confirmationDialog(
                         restoreSheetTitle,
                         isPresented: $showRestoreSheet,
@@ -73,7 +82,6 @@ struct CategoryDeletedView: View {
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(toolbarActionsColor)
                     }
-                    .disabled(archive.items.isEmpty)
                     .confirmationDialog(
                         deleteSheetTitle,
                         isPresented: $showDeleteSheet,
@@ -84,10 +92,8 @@ struct CategoryDeletedView: View {
                         }
                     }
                 }
+                .disabled(archive.deleted.isEmpty)
             }
-        }
-        .sheet(item: $selectedItem) { item in
-            DeletedInfoView(item: item)
         }
     }
 }

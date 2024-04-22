@@ -1,15 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "cocoalumberjack",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/CocoaLumberjack/CocoaLumberjack.git",
-      "state" : {
-        "revision" : "363ed23d19a931809ea834a7d722da830353806a",
-        "version" : "3.8.2"
-      }
-    },
-    {
       "identity" : "countly-sdk-ios",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Countly/countly-sdk-ios.git",
@@ -55,12 +46,12 @@
       }
     },
     {
-      "identity" : "lottie-ios",
+      "identity" : "lottie-spm",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/airbnb/lottie-ios.git",
+      "location" : "https://github.com/airbnb/lottie-spm.git",
       "state" : {
-        "revision" : "b4bd0604ded9574807f41b4004b57dd1226a30a4",
-        "version" : "3.5.0"
+        "revision" : "26d84192430ed5b104d64b8086872bb4979d65a4",
+        "version" : "4.4.0"
       }
     },
     {
@@ -106,15 +97,6 @@
       "state" : {
         "branch" : "dev",
         "revision" : "84dfcfe6822fad398ff1d3a51cc7850dbcfea7ef"
-      }
-    },
-    {
-      "identity" : "svgkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/SVGKit/SVGKit.git",
-      "state" : {
-        "revision" : "58152b9f7c85eab239160b36ffdfd364aa43d666",
-        "version" : "3.0.0"
       }
     },
     {

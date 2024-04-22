@@ -11,6 +11,8 @@ public struct Version: View {
     public var body: some View {
         Text(version.description)
             .foregroundColor(version.color)
+            .lineLimit(1)
+            .padding(.horizontal, 12)
     }
 }
 

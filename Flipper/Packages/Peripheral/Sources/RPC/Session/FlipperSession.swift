@@ -9,11 +9,11 @@ public class FlipperSession: Session {
 
     let queue: Queue = .init()
 
-    public var onMessage: ((Message) -> Void)?
-    public var onError: ((Error) -> Void)?
+    let messageStream: BroadcastStream<IncomingMessage> = .init()
 
-    public var onScreenFrame: ((ScreenFrame) -> Void)?
-    public var onAppStateChanged: ((Message.AppState) -> Void)?
+    public var message: AsyncStream<IncomingMessage> {
+        messageStream.subscribe()
+    }
 
     var timeoutTask: Task<Void, Swift.Error>?
 
@@ -37,7 +37,7 @@ public class FlipperSession: Session {
             .store(in: &subscriptions)
     }
 
-    public func send(_ message: Message) async throws {
+    public func send(_ message: OutgoingMessage) async throws {
         logger.debug(">> \(message)")
         for try await _ in await send(.message(message)).output { }
     }
@@ -85,7 +85,6 @@ public class FlipperSession: Session {
             let size = peripheral.maximumWriteValueLength
             let next = await queue.drain(upTo: size)
             peripheral.send(.init(next))
-            setupTimeoutTimer()
         }
     }
 
@@ -106,7 +105,6 @@ extension FlipperSession {
     func didReceiveData(_ data: Data) {
         Task {
             do {
-                setupTimeoutTimer()
                 if let message = try await queue.didReceiveData(data) {
                     onMessage(message)
                 }
@@ -116,39 +114,15 @@ extension FlipperSession {
         }
     }
 
-    func onMessage(_ message: Message) {
+    func onMessage(_ message: IncomingMessage) {
         switch message {
         case .error(let error):
             logger.error("error message: \(error)")
-        case .screenFrame(let screenFrame):
-            onScreenFrame?(screenFrame)
-        case .appState(let state):
-            onAppStateChanged?(state)
         case .unknown(let command):
             logger.error("unknown command: \(command)")
         default:
-            logger.error("unhandled message: \(message)")
+            break
         }
-    }
-}
-
-// MARK: Timeout
-
-extension FlipperSession {
-    var timeoutNanoseconds: UInt64 { 30 * 1_000 * 1_000_000 }
-
-    func setupTimeoutTimer() {
-        if let current = timeoutTask {
-            current.cancel()
-        }
-        timeoutTask = Task {
-            try await Task.sleep(nanoseconds: timeoutNanoseconds)
-            guard self.peripheral.state == .connected else { return }
-            guard await queue.isBusy else { return }
-            logger.debug("time is out")
-            Task { @MainActor in
-                self.onError?(.timeout)
-            }
-        }
+        messageStream.yield(message)
     }
 }

@@ -82,7 +82,6 @@ struct ConnectionView: View {
         .background(Color.background)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarColors(foreground: .primary, background: Color.background)
         .toolbar {
             LeadingToolbarItems {
                 BackButton {

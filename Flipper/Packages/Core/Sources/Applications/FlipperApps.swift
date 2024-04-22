@@ -1,9 +1,8 @@
-import Catalog
 import Peripheral
 
 import Foundation
 
-class FlipperApps {
+actor FlipperApps {
     private let storage: StorageAPI
     private let cache: Cache
 
@@ -20,81 +19,122 @@ class FlipperApps {
         self.cache = cache
     }
 
-    func load() async throws -> [Application] {
-        manifests = try await reloadManifests()
+    private var cachedListing: [Path: [File]] = [:]
+    private var cachedManifests: [Path: Hash] = [:]
 
-        return manifests
-            .filter {
-                $0.value.isDevCatalog == isDevCatalog
-            }
-            .compactMap {
-                Application($0.value)
-            }
-    }
+    func load() async throws -> AsyncStream<Application> {
+        cachedListing = [:]
+        cachedManifests = try await cache.getManifest().items
 
-    func category(forInstalledId id: Application.ID) -> String? {
-        guard let manifest = manifests[id] else {
-            return nil
-        }
-        let parts = manifest.path.split(separator: "/")
-        guard parts.count == 4 else {
-            return nil
-        }
-        return String(parts[2])
-    }
-
-    private func reloadManifests() async throws -> [Application.ID: Manifest] {
-        var result: [Application.ID: Manifest] = [:]
-        try await loadManifests().forEach { manifest in
-            result[manifest.uid] = manifest
-        }
-        return result
-    }
-
-    private func loadManifests() async throws -> [Manifest] {
-        var result: [Manifest] = []
-        let cached = try await cache.manifest
-
-        let listing = try await storage.list(
-            at: .appsManifests,
-            calculatingMD5: true)
-
-        for file in listing.files.filter({ !$0.name.starts(with: ".") }) {
-            do {
-                let path: Path = .appsManifests.appending(file.name)
-                let hash = Hash(file.md5)
-                if let localHash = cached.items[path], localHash == hash {
-                    result.append(try await loadLocalManifest(path))
-                } else {
-                    result.append(try await loadManifest(path))
+        let manifests = try await loadManifests()
+        return .init { continuation in
+            let task = Task {
+                for await manifest in manifests.filter(validate) {
+                    self.manifests[manifest.uid] = manifest
+                    if let application = Application(manifest) {
+                        continuation.yield(application)
+                    }
                 }
-            } catch {
-                logger.error("load manifest: \(error)")
+                continuation.finish()
+            }
+            continuation.onTermination = {
+                if $0 == .cancelled {
+                    task.cancel()
+                }
             }
         }
-
-        return result
     }
 
-    func loadManifest(_ path: Path) async throws -> Manifest {
+    @Sendable
+    private func validate(_ manifest: Manifest) async -> Bool {
+        guard validateCatalogPreference(manifest) else { return false }
+        guard await validateAppExists(manifest) else { return false }
+        return true
+    }
+
+    // filter by current catalog preference
+    private func validateCatalogPreference(_ manifest: Manifest) -> Bool {
+        manifest.isDevCatalog == isDevCatalog
+    }
+
+    // filter invalid/deleted apps
+    private func validateAppExists(_ manifest: Manifest) async -> Bool {
+        do {
+            let appPath = Path(string: manifest.path)
+            let appFileName = appPath.lastComponent
+            let appDirectory = appPath.removingLastComponent
+            if cachedListing[appDirectory] == nil {
+                cachedListing[appDirectory] = try await storage
+                    .list(at: appDirectory)
+                    .files
+            }
+            return cachedListing[appDirectory, default: []]
+                .contains { $0.name == appFileName }
+        } catch {
+            logger.error("validate app exists: \(error)")
+            return false
+        }
+    }
+
+    private func listManifests() async throws -> [File] {
+        try await storage.list(
+            at: .appsManifests,
+            calculatingMD5: true
+        )
+        .files
+        .filter({ $0.name.hasSuffix(".fim") })
+        .filter({ !$0.name.hasPrefix(".") })
+    }
+
+    private func loadManifests() async throws -> AsyncStream<Manifest> {
+        .init { continuation in
+            let task = Task {
+                for file in try await listManifests() {
+                    do {
+                        continuation.yield(try await loadManifest(file))
+                    } catch {
+                        logger.error("load manifest: \(error)")
+                    }
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { termination in
+                if termination == .cancelled {
+                    task.cancel()
+                }
+            }
+        }
+    }
+
+    private func loadManifest(_ file: File) async throws -> Manifest {
+        let path: Path = .appsManifests.appending(file.name)
+        let hash = Hash(file.md5)
+        if !hash.value.isEmpty, cachedManifests[path] == hash {
+            return try await cachedManifest(path)
+        } else {
+            return try await remoteManifest(path)
+        }
+    }
+
+    private func remoteManifest(_ path: Path) async throws -> Manifest {
         let data = try await storage.read(at: path)
         try await cache.upsert(String(decoding: data, as: UTF8.self), at: path)
         let manifest = try FFFDecoder.decode(Manifest.self, from: data)
         return manifest
     }
 
-    func loadLocalManifest(_ path: Path) async throws -> Manifest {
-        let data = try await cache.get(path)
+    private func cachedManifest(_ path: Path) async throws -> Manifest {
+        let data = try await cache.read(path)
         let manifest = try FFFDecoder.decode(Manifest.self, from: data)
         return manifest
     }
 
     func install(
         application: Application,
-        category: Catalog.Category,
         bundle: Data,
         progress: (Double) -> Void
     ) async throws {
+        let category = application.category
         try? await storage.createDirectory(at: .temp)
         try? await storage.createDirectory(at: .iosTemp)
 
@@ -122,7 +162,6 @@ class FlipperApps {
 
         let manifest = try await Applications.Manifest(
             application: application,
-            category: category,
             isDevCatalog: isDevCatalog
         )
 

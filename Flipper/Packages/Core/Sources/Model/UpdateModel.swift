@@ -17,7 +17,9 @@ public class UpdateModel: ObservableObject {
     @Published public var customFirmware: Update.Firmware?
     @Published public var updateChannel: Update.Channel = .load() {
         didSet {
-            updateChannel.save()
+            if updateChannel != .custom {
+                updateChannel.save()
+            }
             updateState()
         }
     }
@@ -90,21 +92,19 @@ public class UpdateModel: ObservableObject {
     private let provider: FirmwareProvider
     private let uploader: FirmwareUploader
 
-    private var pairedDevice: PairedDevice
     private var cancellables: [AnyCancellable] = .init()
 
     public init(
         device: Device,
-        pairedDevice: PairedDevice,
-        manifestSource: TargetManifestSource
+        manifestSource: TargetManifestSource,
+        firmwareProvider: FirmwareProvider,
+        firmwareUploder: FirmwareUploader
     ) {
         self.device = device
-        self.pairedDevice = pairedDevice
         self.manifestSource = manifestSource
-
         // next step
-        self.provider = .init()
-        self.uploader = .init(pairedDevice: pairedDevice)
+        self.provider = firmwareProvider
+        self.uploader = firmwareUploder
 
         subscribeToPublishers()
     }
@@ -119,7 +119,7 @@ public class UpdateModel: ObservableObject {
     }
 
     func subscribeToPublishers() {
-        pairedDevice.flipper
+        device.$flipper
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
             .store(in: &cancellables)
@@ -210,7 +210,8 @@ public class UpdateModel: ObservableObject {
 
     public func updateAvailableFirmware() {
         switch state {
-        case .update: return
+        case .update(.progress): return
+        case .update(.result(.started)): return
         case .error(.noInternet): return
         default: break
         }

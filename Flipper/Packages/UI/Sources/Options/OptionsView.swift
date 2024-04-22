@@ -112,6 +112,7 @@ struct OptionsView: View {
             .padding(.top, -40)
             .padding(.bottom, 20)
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -119,6 +120,8 @@ struct OptionsView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Options")
             }
         }

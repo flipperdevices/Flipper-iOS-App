@@ -6,10 +6,7 @@ struct DetectReaderCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 12) {
-                Image("nfc")
-                    .resizable()
-                    .renderingMode(.template)
-                    .frame(width: 24, height: 24)
+                SmallImage("nfc")
                     .foregroundColor(.primary)
 
                 Text("MIFARE Classic")

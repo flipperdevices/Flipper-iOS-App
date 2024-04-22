@@ -6,9 +6,9 @@ public class Archive {
     let archiveSync: ArchiveSyncProtocol
     let favoritesSync: FavoritesSyncProtocol
 
-    let mobileFavorites: FavoritesProtocol
+    let mobileFavorites: FavoritesStorage
     let mobileArchive: ArchiveProtocol & Compressable
-    let mobileNotes: ArchiveStorage
+    let mobileNotes: ArchiveProtocol
     let deletedArchive: ArchiveProtocol
 
     let syncedManifest: ManifestStorage
@@ -16,9 +16,9 @@ public class Archive {
     init(
         archiveSync: ArchiveSyncProtocol,
         favoritesSync: FavoritesSyncProtocol,
-        mobileFavorites: FavoritesProtocol,
+        mobileFavorites: FavoritesStorage,
         mobileArchive: ArchiveProtocol & Compressable,
-        mobileNotes: ArchiveStorage,
+        mobileNotes: ArchiveProtocol,
         deletedArchive: ArchiveProtocol,
         syncedManifest: ManifestStorage
     ) {
@@ -132,7 +132,7 @@ public class Archive {
     }
 
     private func loadNote(for path: Path) async throws -> String {
-        (try? await mobileNotes.get(path)) ?? ""
+        (try? await mobileNotes.read(path)) ?? ""
     }
 }
 

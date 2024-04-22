@@ -101,4 +101,10 @@ extension WantMoarEventHandler: EventHandler {
                 source: source)
         }
     }
+
+    func debug(info: DebugInfo) {
+        handlers.forEach {
+            $0.debug(info: info)
+        }
+    }
 }

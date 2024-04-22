@@ -106,7 +106,7 @@ extension Session {
         return result
     }
 
-    public func reboot(to mode: Message.RebootMode) async throws {
+    public func reboot(to mode: OutgoingMessage.RebootMode) async throws {
         try await self.send(.reboot(mode))
     }
 
@@ -294,7 +294,7 @@ extension Session {
         }
     }
 
-    public func appButtonPress(_ args: String, _ index: Int32) async throws {
+    public func appButtonPress(args: String, index: Int) async throws {
         let response = try await self
             .send(.application(.pressButton(args, index)))
             .response

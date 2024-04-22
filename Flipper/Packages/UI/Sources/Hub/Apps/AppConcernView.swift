@@ -4,7 +4,7 @@ import SwiftUI
 struct AppConcernView: View {
     @EnvironmentObject var model: Applications
 
-    let application: Applications.Application
+    let application: Application
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) var dismiss
@@ -79,6 +79,7 @@ struct AppConcernView: View {
             }
             .padding(14)
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -86,6 +87,8 @@ struct AppConcernView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Report Abuse")
             }
         }

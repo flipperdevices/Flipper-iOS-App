@@ -165,6 +165,7 @@ struct RemoteControlView: View {
         }
         .frame(maxWidth: .infinity)
         .background(Color.background)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -172,6 +173,8 @@ struct RemoteControlView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Remote Control")
             }
         }

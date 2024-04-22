@@ -5,15 +5,16 @@ struct AppsCategoryView: View {
     @EnvironmentObject var model: Applications
     @Environment(\.dismiss) var dismiss
 
-    @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+    @AppStorage(.hiddenApps) var hiddenApps: Set<String> = []
 
     let category: Applications.Category
 
     @State private var isLoading = false
     @State private var isAllLoaded = false
-    @State private var applications: [Applications.Application] = []
-    @State private var filteredApplications: [Applications.Application] = []
-    @State private var sortOrder: Applications.SortOption = .default
+    @State private var applications: [Application] = []
+    @State private var filteredApplications: [Application] = []
+    @AppStorage(.appsSortOrder)
+    private var sortOrder: Applications.SortOption = .default
     @State private var error: Applications.Error?
 
     var isEmpty: Bool {
@@ -22,20 +23,17 @@ struct AppsCategoryView: View {
 
     var body: some View {
         ZStack {
-            EmptyCategoryView()
-                .padding(.horizontal, 24)
-                .opacity(isEmpty ? 1 : 0)
-
             if model.isOutdatedDevice {
                 AppsNotCompatibleFirmware()
                     .padding(.horizontal, 14)
             } else if error != nil {
                 AppsAPIError(error: $error, action: reload)
                     .padding(.horizontal, 14)
+            } else if isEmpty {
+                EmptyCategoryView()
+                    .padding(.horizontal, 24)
             } else {
-                RefreshableScrollView(isEnabled: true) {
-                    reload()
-                } onEnd: {
+                LazyScrollView {
                     await load()
                 } content: {
                     VStack(spacing: 18) {
@@ -45,18 +43,19 @@ struct AppsCategoryView: View {
                         }
                         .padding(.horizontal, 14)
 
-                        AppList(applications: filteredApplications)
-
-                        if isLoading, !isAllLoaded {
-                            AppRowPreview()
-                        }
+                        AppList(
+                            applications: filteredApplications,
+                            showPlaceholder: isLoading && !isAllLoaded)
                     }
                     .padding(.vertical, 18)
+                    .refreshable {
+                        reload()
+                    }
                 }
-                .opacity(!isEmpty ? 1 : 0)
             }
         }
         .background(Color.background)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -64,9 +63,9 @@ struct AppsCategoryView: View {
                 BackButton {
                     dismiss()
                 }
-
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title(category.name)
-                    .padding(.leading, 8)
             }
         }
         .onChange(of: sortOrder) { _ in

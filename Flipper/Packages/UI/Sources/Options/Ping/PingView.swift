@@ -3,9 +3,7 @@ import SwiftUI
 
 struct PingView: View {
     // next step
-    @StateObject var pingTest: PingTest = .init(
-        pairedDevice: Dependencies.shared.pairedDevice
-    )
+    @StateObject var pingTest = Dependencies.shared.pingTest
     @Environment(\.dismiss) private var dismiss
     @State private var entered: String = ""
 
@@ -54,6 +52,7 @@ struct PingView: View {
             }
         }
         .padding(14)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -61,6 +60,8 @@ struct PingView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Ping")
             }
         }

@@ -3,9 +3,7 @@ import SwiftUI
 
 struct StressTestView: View {
     // next step
-    @StateObject var stressTest: StressTest = .init(
-        pairedDevice: Dependencies.shared.pairedDevice
-    )
+    @StateObject var stressTest = Dependencies.shared.stressTest
     @Environment(\.dismiss) private var dismiss
 
     @State private var events: [StressTest.Event] = []
@@ -51,6 +49,7 @@ struct StressTestView: View {
             }
             .padding(.vertical, 20)
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -58,6 +57,8 @@ struct StressTestView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Stress Test")
             }
         }

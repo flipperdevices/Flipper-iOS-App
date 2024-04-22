@@ -1,7 +1,7 @@
 import Peripheral
 import Foundation
 
-protocol ArchiveProtocol {
+public protocol ArchiveProtocol {
     func getManifest(
         progress: (Double) -> Void
     ) async throws -> Manifest

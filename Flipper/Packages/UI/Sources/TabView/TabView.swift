@@ -4,10 +4,16 @@ import SwiftUI
 struct TabView: View {
     @EnvironmentObject var device: Device
     @EnvironmentObject var synchronization: Synchronization
+    @EnvironmentObject var applications: Applications
+
     @Binding var selected: Tab
     var extraAction: () -> Void
 
     @AppStorage(.hasReaderLog) var hasReaderLog = false
+
+    var hasAppUpdates: Bool {
+        applications.outdatedCount > 0
+    }
 
     enum Tab: String, CaseIterable {
         case device
@@ -57,7 +63,7 @@ struct TabView: View {
                     image: .init(Image(hubImageName)),
                     name: "Hub",
                     isSelected: selected == .hub,
-                    hasNotification: hasReaderLog
+                    hasNotification: hasReaderLog || hasAppUpdates
                 ) {
                     handleTap(on: .hub)
                 }

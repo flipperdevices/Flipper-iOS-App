@@ -3,19 +3,15 @@ import SwiftUI
 
 struct AppsOutdatedAppAlert: View {
     @Binding var isPresented: Bool
-    let application: Applications.Application
-    let category: Applications.Category?
+    let application: Application
 
     var action: () -> Void
 
     var body: some View {
         VStack(spacing: 24) {
             VStack(alignment: .center) {
-                AppRow.IconNameCategory(
-                    application: application,
-                    category: category
-                )
-                .padding(16)
+                AppRow.IconNameCategory(application: application)
+                    .padding(16)
             }
             .frame(maxWidth: .infinity)
             .background(Color("AppAlertBackground"))
@@ -23,12 +19,12 @@ struct AppsOutdatedAppAlert: View {
             .padding(.top, 24)
 
             VStack(spacing: 4) {
-                Text("App is Rebuilding")
+                Text("Outdated App")
                     .font(.system(size: 14, weight: .bold))
 
                 Text(
-                    "A new app version is rebuilding on the server. " +
-                    "Please wait, it can take some time."
+                    "Contact the developer on GitHub to request " +
+                    "further app support"
                 )
                 .font(.system(size: 14, weight: .medium))
                 .multilineTextAlignment(.center)
@@ -43,7 +39,7 @@ struct AppsOutdatedAppAlert: View {
                 HStack(spacing: 8) {
                     Image("GitHubButton")
 
-                    Text("Got It")
+                    Text("Go To GitHub")
                         .underline()
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(.white)

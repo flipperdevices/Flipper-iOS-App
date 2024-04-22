@@ -2,7 +2,7 @@ import Core
 import SwiftUI
 
 struct AppIssueView: View {
-    let application: Applications.Application
+    let application: Application
 
     @Environment(\.openURL) var openURL
     @Environment(\.dismiss) var dismiss
@@ -57,6 +57,7 @@ struct AppIssueView: View {
             .padding(.vertical, 24)
             .padding(.horizontal, 14)
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -64,6 +65,8 @@ struct AppIssueView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Report Bug")
             }
         }

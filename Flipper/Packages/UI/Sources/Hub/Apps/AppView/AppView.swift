@@ -12,7 +12,7 @@ struct AppView: View {
         return application?.current.name ?? "Loading..."
     }
 
-    @State private var application: Applications.Application?
+    @State private var application: Application?
     @State private var showNotFound = false
 
     var applicationURL: URL {
@@ -25,9 +25,7 @@ struct AppView: View {
                 AppNotFoundView()
                     .padding(24)
             } else {
-                RefreshableScrollView(isEnabled: true) {
-                    reload()
-                } content: {
+                LazyScrollView {
                     if let application {
                         LoadedAppView(application: application)
                             .padding(.vertical, 32)
@@ -36,9 +34,13 @@ struct AppView: View {
                             .padding(.vertical, 32)
                     }
                 }
+                .refreshable {
+                    reload()
+                }
             }
         }
         .background(Color.background)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -46,11 +48,10 @@ struct AppView: View {
                 BackButton {
                     dismiss()
                 }
-
-                Title(title)
-                    .padding(.leading, 8)
             }
-
+            PrincipalToolbarItems(alignment: .leading) {
+                Title(title)
+            }
             TrailingToolbarItems {
                 ShareButton {
                     share(applicationURL)
@@ -82,16 +83,15 @@ struct AppView: View {
     struct LoadedAppView: View {
         @EnvironmentObject var model: Applications
         @Environment(\.dismiss) var dismiss
-        let application: Applications.Application
+        let application: Application
 
-        @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+        @AppStorage(.hiddenApps) var hiddenApps: Set<String> = []
         @Environment(\.notifications) private var notifications
 
         var isHidden: Bool {
             hiddenApps.contains(application.id)
         }
 
-        @State var status: Applications.ApplicationStatus = .notInstalled
         @State var isHideAppPresented = false
 
         var isBuildReady: Bool {
@@ -127,17 +127,11 @@ struct AppView: View {
 
                     VersionSize(application: application)
 
-                    Buttons(
-                        application: application,
-                        status: status
-                    )
-                    .disabled(!isBuildReady)
+                    Buttons(application: application)
+                        .disabled(!isBuildReady)
 
                     if !isBuildReady || model.deviceInfo == nil {
-                        AppStatusButton(
-                            application: application,
-                            category: model.category(for: application)
-                        )
+                        AppStatusButton(application: application)
                     }
 
                     Divider()
@@ -185,14 +179,10 @@ struct AppView: View {
                     .padding(.horizontal, 14)
                 }
             }
-            .onReceive(model.$statuses) { statuses in
-                status = statuses[application.id] ?? .notInstalled
-            }
             .alert(isPresented: $isHideAppPresented) {
                 ConfirmHideAppAlert(
                     isPresented: $isHideAppPresented,
-                    application: application,
-                    category: model.category(for: application)
+                    application: application
                 ) {
                     recordAppHidden(application: application)
                     hide()
@@ -221,7 +211,7 @@ struct AppView: View {
 
         // MARK: Analytics
 
-        func recordAppHidden(application: Applications.Application) {
+        func recordAppHidden(application: Application) {
             analytics.appOpen(target: .fapHubHide(application.alias))
         }
     }

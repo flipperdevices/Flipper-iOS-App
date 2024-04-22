@@ -4,9 +4,14 @@ import SwiftUI
 struct UpdateAllAppButton: View {
     @EnvironmentObject var model: Applications
 
-    @State var updatesCount: Int?
-
     let action: () -> Void
+
+    struct Placeholder: View {
+        var body: some View {
+            AnimatedPlaceholder()
+                .frame(height: 36)
+        }
+    }
 
     var body: some View {
         Button {
@@ -17,10 +22,10 @@ struct UpdateAllAppButton: View {
                     .foregroundColor(.sGreenUpdate)
                     .font(.born2bSportyV2(size: 18))
 
-                if let updatesCount {
+                if model.outdatedCount > 0 {
                     Group {
                         Group {
-                            Text("\(updatesCount)")
+                            Text("\(model.outdatedCount)")
                                 .font(.system(size: 12, weight: .bold))
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 4)
@@ -39,16 +44,6 @@ struct UpdateAllAppButton: View {
                     .stroke(Color.sGreenUpdate, lineWidth: 2)
             }
         }
-        .onReceive(model.$statuses) { _ in
-            loadUpdates()
-        }
-        .task {
-            loadUpdates()
-        }
-    }
-
-    func loadUpdates() {
-        self.updatesCount = model.outdatedCount
     }
 }
 

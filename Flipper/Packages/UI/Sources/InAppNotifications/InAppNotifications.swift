@@ -12,6 +12,7 @@ struct InAppNotifications {
     struct Apps {
         var showHidden = false
         var showReported = false
+        var showUpdateAvailable = false
     }
 
     struct Notifications {

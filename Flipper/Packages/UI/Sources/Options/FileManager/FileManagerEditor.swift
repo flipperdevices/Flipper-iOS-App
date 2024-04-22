@@ -28,6 +28,7 @@ struct FileManagerEditor: View {
                 .padding(14)
             }
         }
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -35,13 +36,13 @@ struct FileManagerEditor: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title(path.lastComponent ?? "")
             }
             TrailingToolbarItems {
-                NavBarButton {
+                SaveButton {
                     save()
-                } label: {
-                    Text("Save")
                 }
             }
         }

@@ -127,11 +127,8 @@
 		8B7480DD2807483500692304 /* Born2bSportyV2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Born2bSportyV2.ttf; sourceTree = "<group>"; };
 		8B7C52702A1A993800AD6D81 /* Catalog */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Catalog; path = Packages/Catalog; sourceTree = "<group>"; };
 		8B82A62A2AD49D71007E9E67 /* Macro */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Macro; path = Packages/Macro; sourceTree = "<group>"; };
-		8B886F162759BA9A00D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Core/.swiftlint.yml; sourceTree = "<group>"; };
-		8B886F172759BAA500D9A682 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/UI/.swiftlint.yml; sourceTree = "<group>"; };
 		8B89527827581E7B00E4C336 /* UI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UI; path = Packages/UI; sourceTree = "<group>"; };
 		8B89527A27581E9500E4C336 /* Core */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Core; path = Packages/Core; sourceTree = "<group>"; };
-		8B8A5A82289D6FDA00F005F5 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Analytics/.swiftlint.yml; sourceTree = "<group>"; };
 		8BA14F322B14A5DB0026B9E9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8BA49B4B2902C86C00762ADF /* MFKey32v2 */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = MFKey32v2; path = Packages/MFKey32v2; sourceTree = "<group>"; };
 		8BA57F18273AD21D00A3A33B /* nfc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nfc.png; sourceTree = "<group>"; };
@@ -139,8 +136,8 @@
 		8BA57F1A273AD21D00A3A33B /* rfid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rfid.png; sourceTree = "<group>"; };
 		8BA57F1B273AD21D00A3A33B /* subhz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = subhz.png; sourceTree = "<group>"; };
 		8BA57F1C273AD21D00A3A33B /* irda.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = irda.png; sourceTree = "<group>"; };
+		8BB226F02B61242A00468E73 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		8BB7DF2F2911922D005C38C9 /* TodayWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodayWidget.entitlements; sourceTree = "<group>"; };
-		8BC4791227FB2D9400863945 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Peripheral/Sources/RPC/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
 		8BC7F2DF2B2FA3CC002F66A5 /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
 		8BCB0167278F135C00DA66F5 /* Intents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Intents.intentdefinition; sourceTree = "<group>"; };
 		8BCE39EA289D47EA00FB5704 /* HaxrCorpNeue.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HaxrCorpNeue.ttf; sourceTree = "<group>"; };
@@ -149,10 +146,8 @@
 		8BCFDDE1277A2405002DA4CD /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
 		8BCFDDE3277A2405002DA4CD /* PreviewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewProvider.swift; sourceTree = "<group>"; };
 		8BCFDDE8277A2405002DA4CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8BE40CF427F1265900288F66 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Peripheral/.swiftlint.yml; sourceTree = "<group>"; };
 		8BE40CF627F1266D00288F66 /* Peripheral */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Peripheral; path = Packages/Peripheral; sourceTree = "<group>"; };
 		8BED6143270B66D8009E51E2 /* perform_lint.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = perform_lint.sh; sourceTree = "<group>"; };
-		8BEE5AF928A54BF20070D01E /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = Packages/Analytics/Sources/Protobuf/.swiftlint.yml; sourceTree = "<group>"; };
 		8BF074E329C2500700DC688B /* ActivityWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ActivityWidget.entitlements; sourceTree = "<group>"; };
 		8BF8025A2B0C12C10083DF49 /* Notifications */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Notifications; path = Packages/Notifications; sourceTree = "<group>"; };
 		8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodayWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -243,15 +238,6 @@
 			path = ActivityWidget;
 			sourceTree = "<group>";
 		};
-		8B2D5D0B27EFA992005A2F56 /* Peripheral */ = {
-			isa = PBXGroup;
-			children = (
-				8BE40CF427F1265900288F66 /* .swiftlint.yml */,
-				8BED613F270B6258009E51E2 /* Protobuf */,
-			);
-			name = Peripheral;
-			sourceTree = "<group>";
-		};
 		8B7480D42807474900692304 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -274,15 +260,6 @@
 				8B7C52702A1A993800AD6D81 /* Catalog */,
 			);
 			name = Packages;
-			sourceTree = "<group>";
-		};
-		8B8A5A81289D6FA500F005F5 /* Analytics */ = {
-			isa = PBXGroup;
-			children = (
-				8BEE5AF828A54BE60070D01E /* Protobuf */,
-				8B8A5A82289D6FDA00F005F5 /* .swiftlint.yml */,
-			);
-			name = Analytics;
 			sourceTree = "<group>";
 		};
 		8BA57ED9273AA05900A3A33B /* FileIcons */ = {
@@ -310,45 +287,10 @@
 		8BED6139270B617B009E51E2 /* SwiftLint */ = {
 			isa = PBXGroup;
 			children = (
-				8B8A5A81289D6FA500F005F5 /* Analytics */,
-				8B2D5D0B27EFA992005A2F56 /* Peripheral */,
-				8BED613C270B61EE009E51E2 /* Core */,
-				8BED613E270B6202009E51E2 /* UI */,
+				8BB226F02B61242A00468E73 /* .swiftlint.yml */,
 				8BED6143270B66D8009E51E2 /* perform_lint.sh */,
 			);
 			name = SwiftLint;
-			sourceTree = "<group>";
-		};
-		8BED613C270B61EE009E51E2 /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				8B886F162759BA9A00D9A682 /* .swiftlint.yml */,
-			);
-			name = Core;
-			sourceTree = "<group>";
-		};
-		8BED613E270B6202009E51E2 /* UI */ = {
-			isa = PBXGroup;
-			children = (
-				8B886F172759BAA500D9A682 /* .swiftlint.yml */,
-			);
-			name = UI;
-			sourceTree = "<group>";
-		};
-		8BED613F270B6258009E51E2 /* Protobuf */ = {
-			isa = PBXGroup;
-			children = (
-				8BC4791227FB2D9400863945 /* .swiftlint.yml */,
-			);
-			name = Protobuf;
-			sourceTree = "<group>";
-		};
-		8BEE5AF828A54BE60070D01E /* Protobuf */ = {
-			isa = PBXGroup;
-			children = (
-				8BEE5AF928A54BF20070D01E /* .swiftlint.yml */,
-			);
-			name = Protobuf;
 			sourceTree = "<group>";
 		};
 		8BF9CECB28E21A4400CD5D31 /* TodayWidget */ = {
@@ -481,6 +423,7 @@
 			buildConfigurationList = F0DBFA4B24EF2F9900EB2880 /* Build configuration list for PBXNativeTarget "Flipper(iOS)" */;
 			buildPhases = (
 				49CE8F942525E73200B9CBE4 /* Check code with SwiftLint */,
+				8BE9EF8C2BB31B7900FC82E2 /* Clear .XCInstall */,
 				F0DBFA1D24EF2F9900EB2880 /* Sources */,
 				F0DBFA1E24EF2F9900EB2880 /* Frameworks */,
 				F0DBFA1F24EF2F9900EB2880 /* Resources */,
@@ -615,6 +558,25 @@
 			shellPath = /bin/sh;
 			shellScript = "# Initiate lint\n${PROJECT_DIR}/perform_lint.sh\n";
 		};
+		8BE9EF8C2BB31B7900FC82E2 /* Clear .XCInstall */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Clear .XCInstall";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -rf $TARGET_BUILD_DIR/.XCInstall/*\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -707,7 +669,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.7;
+				MARKETING_VERSION = 1.6.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.LiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -743,7 +705,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.7;
+				MARKETING_VERSION = 1.6.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.LiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -776,7 +738,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.7;
+				MARKETING_VERSION = 1.6.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.KeyPreview;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -807,7 +769,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.7;
+				MARKETING_VERSION = 1.6.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.KeyPreview;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -837,7 +799,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.7;
+				MARKETING_VERSION = 1.6.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.TodayWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -865,7 +827,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.7;
+				MARKETING_VERSION = 1.6.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main.TodayWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -932,8 +894,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -990,8 +952,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
@@ -1018,7 +980,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6.7;
+				MARKETING_VERSION = 1.6.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main;
 				PRODUCT_NAME = Flipper;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1047,7 +1009,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6.7;
+				MARKETING_VERSION = 1.6.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flipperdevices.main;
 				PRODUCT_NAME = Flipper;
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -9,11 +9,16 @@ struct ArchiveView: View {
     @EnvironmentObject var archive: ArchiveModel
     @EnvironmentObject var synchronization: Synchronization
 
-    @State private var importingItem: URL?
-    @State private var importedName = ""
     @Environment(\.notifications) private var notifications
 
+    @State private var importingItem: URL?
+    @State private var importedName = ""
+    @State private var showImportView = false
+
     @State private var selectedItem: ArchiveItem?
+    @State private var showInfoView = false
+
+    @State private var predicate = ""
     @State private var showSearchView = false
 
     var canPullToRefresh: Bool {
@@ -44,7 +49,7 @@ struct ArchiveView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 if device.status == .connecting {
                     VStack(spacing: 4) {
@@ -64,11 +69,10 @@ struct ArchiveView: View {
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.black30)
                     }
+                } else if !predicate.isEmpty {
+                    ArchiveSearchView(predicate: $predicate)
                 } else {
-                    RefreshableScrollView(
-                        isEnabled: canPullToRefresh,
-                        action: refresh
-                    ) {
+                    LazyScrollView {
                         CategoryCard(
                             groups: groups,
                             deletedCount: archive.deleted.count
@@ -78,6 +82,7 @@ struct ArchiveView: View {
                         if !favoriteItems.isEmpty {
                             FavoritesSection(items: favoriteItems) { item in
                                 selectedItem = item
+                                showInfoView = true
                             }
                             .padding(.horizontal, 14)
                             .padding(.bottom, 14)
@@ -86,32 +91,50 @@ struct ArchiveView: View {
                         if !archive.items.isEmpty {
                             AllItemsSection(items: sortedItems) { item in
                                 selectedItem = item
+                                showInfoView = true
                             }
                             .padding(.horizontal, 14)
                             .padding(.bottom, 14)
                         }
                     }
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.background)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                LeadingToolbarItems {
-                    Title("Archive")
-                        .padding(.leading, 8)
-                }
-                TrailingToolbarItems {
-                    SearchButton {
-                        showSearchView = true
+                    .refreshable(isEnabled: canPullToRefresh) {
+                        refresh()
                     }
                 }
             }
-            .sheet(item: $selectedItem) { item in
-                InfoView(item: item)
-            }
-            .sheet(item: $importingItem) { item in
-                ImportView(url: item)
+            // NOTE: Fixes Connecting/Syncing views size
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.background)
+            .navigationBarBackground(Color.a1)
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("")
+            .toolbar {
+                if !showSearchView {
+                    LeadingToolbarItems {
+                        Title("Archive")
+                            .padding(.leading, 8)
+                    }
+
+                    TrailingToolbarItems {
+                        SearchButton {
+                            showSearchView = true
+                        }
+                    }
+                } else {
+                    PrincipalToolbarItems {
+                        HStack(spacing: 14) {
+                            SearchField(
+                                placeholder: "Search by name and note",
+                                predicate: $predicate
+                            )
+
+                            CancelSearchButton {
+                                predicate = ""
+                                showSearchView = false
+                            }
+                        }
+                    }
+                }
             }
             .onReceive(archive.imported) { item in
                 onItemAdded(item: item)
@@ -119,16 +142,11 @@ struct ArchiveView: View {
             .notification(isPresented: notifications.archive.showImported) {
                 ImportedBanner(itemName: importedName)
             }
-            .fullScreenCover(isPresented: $showSearchView) {
-                ArchiveSearchView()
-            }
-            .navigationTitle("")
         }
-        .navigationViewStyle(.stack)
-        .navigationBarColors(foreground: .primary, background: .a1)
         .onOpenURL { url in
-            if (url.isKeyFile || url.isKeyURL), importingItem == nil {
+            if (url.isKeyFile || url.isKeyURL), !showImportView {
                 importingItem = url
+                showImportView = true
             }
         }
         .onDrop(of: [.item], isTargeted: nil) { providers in
@@ -139,8 +157,23 @@ struct ArchiveView: View {
             ) { (data, _) in
                 guard let url = data as? URL else { return }
                 importingItem = url
+                showImportView = true
             }
             return true
+        }
+        .background {
+            ZStack {
+                NavigationLink("", isActive: $showInfoView) {
+                    if let selectedItem {
+                        InfoView(item: selectedItem)
+                    }
+                }
+                NavigationLink("", isActive: $showImportView) {
+                    if let importingItem {
+                        ImportView(url: importingItem)
+                    }
+                }
+            }
         }
     }
 

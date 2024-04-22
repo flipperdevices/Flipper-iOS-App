@@ -3,8 +3,7 @@ import SwiftUI
 
 extension AppRow {
     struct IconNameCategory: View {
-        let application: Applications.Application
-        let category: Applications.Category?
+        let application: Application
 
         var body: some View {
             HStack(spacing: 8) {
@@ -18,10 +17,10 @@ extension AppRow {
                         .lineLimit(1)
 
                     HStack(spacing: 4) {
-                        CategoryIcon(category?.icon)
+                        CategoryIcon(application.category.icon.url)
                             .frame(width: 14, height: 14)
 
-                        CategoryName(category?.name)
+                        CategoryName(application.category.name)
                             .font(.system(size: 14, weight: .medium))
                     }
                 }

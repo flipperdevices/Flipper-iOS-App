@@ -41,9 +41,7 @@ struct DeviceInfoView: View {
     }
 
     var body: some View {
-        RefreshableScrollView(isEnabled: canRefresh) {
-            reload()
-        } content: {
+        LazyScrollView {
             VStack(spacing: 14) {
                 DeviceInfoViewCard(
                     title: "Flipper Device",
@@ -85,6 +83,7 @@ struct DeviceInfoView: View {
             .padding(.vertical, 14)
         }
         .background(Color.background)
+        .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -92,6 +91,8 @@ struct DeviceInfoView: View {
                 BackButton {
                     dismiss()
                 }
+            }
+            PrincipalToolbarItems(alignment: .leading) {
                 Title("Device Info")
             }
             TrailingToolbarItems {
@@ -101,6 +102,9 @@ struct DeviceInfoView: View {
                 .disabled(!device.isInfoReady)
                 .opacity(device.isInfoReady ? 1 : 0.4)
             }
+        }
+        .refreshable(isEnabled: canRefresh) {
+            reload()
         }
         .task {
             reload()

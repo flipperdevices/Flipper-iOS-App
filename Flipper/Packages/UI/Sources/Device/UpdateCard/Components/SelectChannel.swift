@@ -7,7 +7,7 @@ struct SelectChannel: View {
     let onChannelSelected: (Update.Channel) -> Void
 
     @State private var showChannelSelector = false
-    @State private var channelSelectorOffset: Double = .zero
+    @State private var channelSelectorOffset = 0.0
 
     var body: some View {
         SelectChannelButton(version: version) {
@@ -15,10 +15,10 @@ struct SelectChannel: View {
         }
         .background(GeometryReader {
             Color.clear.preference(
-                key: SelectChannelOffsetKey.self,
+                key: OffsetKey.self,
                 value: $0.frame(in: .global).origin.y)
         })
-        .onPreferenceChange(SelectChannelOffsetKey.self) {
+        .onPreferenceChange(OffsetKey.self) {
             channelSelectorOffset = $0
         }
         .popup(isPresented: $showChannelSelector) {
@@ -26,7 +26,7 @@ struct SelectChannel: View {
                 showChannelSelector = false
                 onChannelSelected($0)
             }
-            .offset(y: channelSelectorOffset - 14)
+            .offset(y: channelSelectorOffset + platformOffset)
             .padding(.trailing, 14)
         }
     }
@@ -61,15 +61,5 @@ struct SelectChannelButton: View {
             }
             .frame(height: 44)
         }
-    }
-}
-
-private struct SelectChannelOffsetKey: PreferenceKey {
-    typealias Value = Double
-
-    static var defaultValue = Double.zero
-
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value = nextValue()
     }
 }

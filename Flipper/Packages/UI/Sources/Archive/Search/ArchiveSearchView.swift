@@ -5,8 +5,10 @@ struct ArchiveSearchView: View {
     @EnvironmentObject var archive: ArchiveModel
     @Environment(\.dismiss) private var dismiss
 
-    @State private var predicate = ""
+    @Binding var predicate: String
+
     @State private var selectedItem: ArchiveItem?
+    @State private var showInfoView = false
 
     var filteredItems: [ArchiveItem] {
         guard !predicate.isEmpty else {
@@ -20,23 +22,6 @@ struct ArchiveSearchView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 14) {
-                SearchField(
-                    placeholder: "Search by name and note",
-                    predicate: $predicate
-                )
-                .frame(height: 36)
-
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Cancel")
-                        .font(.system(size: 18, weight: .regular))
-                }
-            }
-            .padding(.vertical, 14)
-            .padding(.horizontal, 16)
-
             if filteredItems.isEmpty {
                 NothingFoundView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -45,14 +30,19 @@ struct ArchiveSearchView: View {
                 ScrollView {
                     CategoryList(items: filteredItems) { item in
                         selectedItem = item
+                        showInfoView = true
                     }
                     .padding(14)
                 }
                 .customBackground(.background)
             }
         }
-        .sheet(item: $selectedItem) { item in
-            InfoView(item: item)
+        .background {
+            NavigationLink("", isActive: $showInfoView) {
+                if let selectedItem {
+                    InfoView(item: selectedItem)
+                }
+            }
         }
     }
 }

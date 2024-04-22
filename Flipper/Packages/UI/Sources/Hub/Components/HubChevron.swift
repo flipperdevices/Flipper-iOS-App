@@ -9,10 +9,11 @@ struct HubChevron: View {
 
     var body: some View {
         HStack(spacing: 2) {
-            Circle()
-                .frame(width: 14, height: 14)
-                .foregroundColor(.a1)
-                .opacity(hasNotification ? 1 : 0)
+            if hasNotification {
+                Circle()
+                    .frame(width: 14, height: 14)
+                    .foregroundColor(.a1)
+            }
 
             Image("ChevronRight")
                 .resizable()

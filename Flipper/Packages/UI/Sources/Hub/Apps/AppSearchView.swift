@@ -5,15 +5,15 @@ struct AppSearchView: View {
     @EnvironmentObject var model: Applications
     @Environment(\.dismiss) var dismiss
 
-    @AppStorage(.hiddenAppsKey) var hiddenApps: Set<String> = []
+    @AppStorage(.hiddenApps) var hiddenApps: Set<String> = []
 
-    @State private var predicate = ""
+    @Binding var predicate: String
     var predicateIsValid: Bool {
         predicate.count >= 2
     }
 
     @State private var inProgress: Bool = false
-    @State private var applications: [Applications.Application] = []
+    @State private var applications: [Application] = []
     @State private var error: Applications.Error?
 
     let debouncer = Debouncer(seconds: 1)
@@ -40,23 +40,6 @@ struct AppSearchView: View {
                         .padding(14)
                 }
                 .customBackground(.background)
-            }
-        }
-        .navigationBarBackButtonHidden(true)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            LeadingToolbarItems {
-                BackButton {
-                    dismiss()
-                }
-            }
-
-            PrincipalToolbarItems {
-                SearchField(
-                    placeholder: "App name, description",
-                    predicate: $predicate
-                )
-                .offset(x: -10)
             }
         }
         .onChange(of: predicate) { newValue in
