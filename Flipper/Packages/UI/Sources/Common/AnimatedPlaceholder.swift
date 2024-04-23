@@ -42,9 +42,11 @@ struct AnimatedPlaceholder: View {
         }
         .animation(isAnimating ? animation : nil, value: points)
         .task {
-            points = .init(
-                start: .init(x: 10, y: 0),
-                end: .init(x: 0, y: 0))
+            withAnimation {
+                points = .init(
+                    start: .init(x: 10, y: 0),
+                    end: .init(x: 0, y: 0))
+            }
         }
     }
 }
