@@ -13,7 +13,6 @@
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
 		65CAD4C22BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 65CAD4C12BD6946000628789 /* PrivacyInfo.xcprivacy */; };
 		65CAD4C42BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 65CAD4C12BD6946000628789 /* PrivacyInfo.xcprivacy */; };
-		65CAD4C52BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 65CAD4C12BD6946000628789 /* PrivacyInfo.xcprivacy */; };
 		8B064D5D2BD6C8F6008C00B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B064D5C2BD6C8F6008C00B3 /* Assets.xcassets */; };
 		8B064D5F2BD6DE41008C00B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B064D5E2BD6DE41008C00B3 /* Assets.xcassets */; };
 		8B10BF4C29A77D53007FC0F3 /* BlackHole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */; };
@@ -507,7 +506,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8B1BB6D429C1E67B008AE2A0 /* HaxrCorpNeue.ttf in Resources */,
-				65CAD4C52BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */,
 				8B064D5D2BD6C8F6008C00B3 /* Assets.xcassets in Resources */,
 				8B1BB6D529C1E67B008AE2A0 /* Born2bSportyV2.ttf in Resources */,
 			);
