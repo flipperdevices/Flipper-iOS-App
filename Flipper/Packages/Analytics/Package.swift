@@ -17,13 +17,13 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/apple/swift-log.git",
-            from: "1.4.2"),
+            from: "1.5.4"),
         .package(
             url: "https://github.com/Countly/countly-sdk-ios.git",
-            from: "21.11.2"),
+            from: "24.4.0"),
         .package(
             url: "https://github.com/apple/swift-protobuf.git",
-            from: "1.21.0")
+            from: "1.26.0")
     ],
     targets: [
         .target(

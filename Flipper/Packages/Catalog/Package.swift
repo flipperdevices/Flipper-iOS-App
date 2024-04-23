@@ -20,7 +20,7 @@ let package = Package(
             path: "../Macro"),
         .package(
             url: "https://github.com/apple/swift-log.git",
-            from: "1.4.2")
+            from: "1.5.4")
     ],
     targets: [
         .target(

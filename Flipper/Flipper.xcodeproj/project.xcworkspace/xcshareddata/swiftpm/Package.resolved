@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Countly/countly-sdk-ios.git",
       "state" : {
-        "revision" : "51a22dc9c040c4f6fccef7db3edef16d58dead12",
-        "version" : "21.11.2"
+        "revision" : "e12be8153743a17c1389f80f9f7401c9f7f7de61",
+        "version" : "24.4.0"
       }
     },
     {

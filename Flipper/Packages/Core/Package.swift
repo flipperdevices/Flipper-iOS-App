@@ -35,13 +35,13 @@ let package = Package(
             path: "../Catalog"),
         .package(
             url: "https://github.com/apple/swift-collections.git",
-            from: "1.0.0"),
+            from: "1.1.0"),
         .package(
             url: "https://github.com/apple/swift-protobuf.git",
-            from: "1.21.0"),
+            from: "1.26.0"),
         .package(
             url: "https://github.com/apple/swift-log.git",
-            from: "1.4.2"),
+            from: "1.5.4"),
         .package(
             url: "https://github.com/swiftstack/radix.git",
             branch: "dev"),
