@@ -16,7 +16,7 @@ struct AppSearchView: View {
     @State private var applications: [Application] = []
     @State private var error: Applications.Error?
 
-    let debouncer = Debouncer(seconds: 1)
+    @StateObject var debouncer = Debouncer(seconds: 1)
 
     var body: some View {
         VStack(spacing: 0) {

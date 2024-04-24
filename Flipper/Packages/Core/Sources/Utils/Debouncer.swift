@@ -1,4 +1,6 @@
-public actor Debouncer {
+import Combine
+
+public actor Debouncer: ObservableObject {
     private let milliseconds: Int
     private var task: Task<Void, Swift.Error>?
 
