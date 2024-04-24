@@ -82,6 +82,7 @@ struct AppsRowCard: View {
         var body: some View {
             Text("Updates Available")
                 .font(.system(size: 10, weight: .bold))
+                .foregroundColor(Color.white)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background {

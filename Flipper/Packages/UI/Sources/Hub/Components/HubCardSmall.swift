@@ -22,7 +22,7 @@ struct HubCardSmall: View {
                         HStack(spacing: 2) {
                             Circle()
                                 .frame(width: 14, height: 14)
-                                .foregroundColor(.a1)
+                                .foregroundColor(.sGreenUpdate)
                                 .opacity(hasNotification ? 1 : 0)
 
                             Image("ChevronRight")
