@@ -56,15 +56,19 @@ struct AppSearchView: View {
             }
             inProgress = true
             await debouncer.submit {
-                defer { inProgress = false }
                 do {
                     applications = try await model.search(for: string).filter {
                         !self.hiddenApps.contains($0.id)
                     }
+                    inProgress = false
                 } catch let error as Applications.Error {
-                    self.error = error
+                    if error != .canceled {
+                        self.error = error
+                        inProgress = false
+                    }
                 } catch {
                     applications = []
+                    inProgress = false
                 }
             }
         }

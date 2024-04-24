@@ -41,6 +41,7 @@ public class Applications: ObservableObject {
     }
 
     public enum Error: Swift.Error {
+        case canceled
         case notFound
         case noInternet
         case unknownSDK
@@ -237,6 +238,9 @@ public class Applications: ObservableObject {
         } catch let error as Catalog.CatalogError where error.httpCode == 404 {
             logger.error("apps: not found")
             throw Error.notFound
+        } catch let error as URLError where error.code == .cancelled {
+            logger.error("web: \(error)")
+            throw Error.canceled
         } catch let error as URLError {
             logger.error("web: \(error)")
             throw Error.noInternet
