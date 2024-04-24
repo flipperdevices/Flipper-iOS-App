@@ -45,6 +45,7 @@ private struct FocusedTextField: UIViewRepresentable {
         textField.delegate = context.coordinator
         textField.tintColor = .label
         textField.returnKeyType = .done
+        textField.autocorrectionType = .no
         textField.becomeFirstResponder()
         return textField
     }
