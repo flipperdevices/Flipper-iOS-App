@@ -56,8 +56,7 @@ struct ShareView: View {
                     .padding(.bottom, 64)
                 case .uploading:
                     VStack(spacing: 18) {
-                        Animation("Loading")
-                            .frame(width: 42, height: 42)
+                        Spinner()
                         VStack(spacing: 2) {
                             Text("via Secure Link")
                                 .font(.system(size: 14, weight: .medium))
