@@ -99,19 +99,7 @@ extension TabView {
         guard selected == .device else {
             return .black30
         }
-        switch device.status {
-        case .noDevice: return .black40
-        case .unsupported: return .sRed
-        case .outdatedMobile: return .sRed
-        case .connecting: return .black40
-        case .connected: return .a2
-        case .disconnected: return .black40
-        case .synchronizing: return .a2
-        case .synchronized: return .a2
-        case .updating: return .black40
-        case .invalidPairing: return .sRed
-        case .pairingFailed: return .sRed
-        }
+        return device.status.color
     }
 
     var archiveColor: Color {
@@ -125,35 +113,12 @@ extension TabView {
 
 extension TabView {
     var deviceImage: AnyView {
-        switch device.status {
-        case .connecting, .synchronizing:
-            return .init(
-                Animation(deviceImageName + "_animated")
-                    .frame(width: 42, height: 24))
-        default:
-            return .init(Image(deviceImageName))
-        }
-    }
-
-    var deviceImageName: String {
-        var name = "device_"
-        name += selected == .device ? "filled_" : "line_"
-
-        switch device.status {
-        case .noDevice: name += "no_device"
-        case .unsupported: name += "unsupported"
-        case .outdatedMobile: name += "unsupported"
-        case .connecting: name += "connecting"
-        case .connected: name += "connected"
-        case .disconnected: name += "disconnected"
-        case .synchronizing: name += "syncing"
-        case .synchronized: name += "synced"
-        case .updating: name += "connecting"
-        case .invalidPairing: name += "pairing_failed"
-        case .pairingFailed: name += "pairing_failed"
-        }
-
-        return name
+        return .init(
+            DeviceTabView(
+                status: device.status,
+                isActiveTab: selected == .device
+            )
+        )
     }
 
     var archiveImageName: String {
