@@ -440,13 +440,15 @@ public class Applications: ObservableObject {
 
         public var priotiry: Int {
             switch self {
-            case .installing: return 1
-            case .updating: return 2
-            case .notInstalled: return 3
-            case .outdated: return 4
-            case .installed, .opening: return 5
-            case .building: return 7
-            case .checking: return 8
+            case .installing(let value) where value > 0: return 1
+            case .installing: return 2
+            case .updating(let value) where value > 0: return 3
+            case .updating: return 4
+            case .notInstalled: return 5
+            case .outdated: return 6
+            case .installed, .opening: return 7
+            case .building: return 8
+            case .checking: return 9
             }
         }
     }
