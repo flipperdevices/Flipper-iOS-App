@@ -75,7 +75,7 @@ struct TabView: View {
     }
 }
 
-extension TabView {
+private extension TabView {
     var deviceTabName: String {
         switch device.status {
         case .noDevice: return "No Device"
@@ -94,7 +94,25 @@ extension TabView {
     }
 }
 
-extension TabView {
+extension Device.Status {
+    var color: Color {
+        switch self {
+        case .noDevice: .black40
+        case .unsupported: .sRed
+        case .outdatedMobile: .sRed
+        case .connecting: .black40
+        case .connected: .a2
+        case .disconnected: .black40
+        case .synchronizing: .a2
+        case .synchronized: .a2
+        case .updating: .black40
+        case .invalidPairing: .sRed
+        case .pairingFailed: .sRed
+        }
+    }
+}
+
+private extension TabView {
     var deviceColor: Color {
         guard selected == .device else {
             return .black30
@@ -111,12 +129,12 @@ extension TabView {
     }
 }
 
-extension TabView {
+private extension TabView {
     var deviceImage: AnyView {
         return .init(
-            DeviceTabView(
+            DeviceImage(
                 status: device.status,
-                isActiveTab: selected == .device
+                style: selected == .device ? .fill : .stroke
             )
         )
     }
