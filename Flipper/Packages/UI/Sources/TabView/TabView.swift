@@ -75,7 +75,7 @@ struct TabView: View {
     }
 }
 
-extension TabView {
+private extension TabView {
     var deviceTabName: String {
         switch device.status {
         case .noDevice: return "No Device"
@@ -94,24 +94,30 @@ extension TabView {
     }
 }
 
-extension TabView {
+extension Device.Status {
+    var color: Color {
+        switch self {
+        case .noDevice: .black40
+        case .unsupported: .sRed
+        case .outdatedMobile: .sRed
+        case .connecting: .black40
+        case .connected: .a2
+        case .disconnected: .black40
+        case .synchronizing: .a2
+        case .synchronized: .a2
+        case .updating: .black40
+        case .invalidPairing: .sRed
+        case .pairingFailed: .sRed
+        }
+    }
+}
+
+private extension TabView {
     var deviceColor: Color {
         guard selected == .device else {
             return .black30
         }
-        switch device.status {
-        case .noDevice: return .black40
-        case .unsupported: return .sRed
-        case .outdatedMobile: return .sRed
-        case .connecting: return .black40
-        case .connected: return .a2
-        case .disconnected: return .black40
-        case .synchronizing: return .a2
-        case .synchronized: return .a2
-        case .updating: return .black40
-        case .invalidPairing: return .sRed
-        case .pairingFailed: return .sRed
-        }
+        return device.status.color
     }
 
     var archiveColor: Color {
@@ -123,37 +129,14 @@ extension TabView {
     }
 }
 
-extension TabView {
+private extension TabView {
     var deviceImage: AnyView {
-        switch device.status {
-        case .connecting, .synchronizing:
-            return .init(
-                Animation(deviceImageName + "_animated")
-                    .frame(width: 42, height: 24))
-        default:
-            return .init(Image(deviceImageName))
-        }
-    }
-
-    var deviceImageName: String {
-        var name = "device_"
-        name += selected == .device ? "filled_" : "line_"
-
-        switch device.status {
-        case .noDevice: name += "no_device"
-        case .unsupported: name += "unsupported"
-        case .outdatedMobile: name += "unsupported"
-        case .connecting: name += "connecting"
-        case .connected: name += "connected"
-        case .disconnected: name += "disconnected"
-        case .synchronizing: name += "syncing"
-        case .synchronized: name += "synced"
-        case .updating: name += "connecting"
-        case .invalidPairing: name += "pairing_failed"
-        case .pairingFailed: name += "pairing_failed"
-        }
-
-        return name
+        return .init(
+            DeviceImage(
+                status: device.status,
+                style: selected == .device ? .fill : .stroke
+            )
+        )
     }
 
     var archiveImageName: String {
