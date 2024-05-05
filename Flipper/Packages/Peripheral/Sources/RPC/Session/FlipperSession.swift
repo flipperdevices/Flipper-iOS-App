@@ -42,31 +42,35 @@ public class FlipperSession: Session {
         for try await _ in await send(.message(message)).output { }
     }
 
+    let requestQueue = SerialTaskQueue()
+
     public func send(_ request: Request) async -> AsyncThrowingStreams {
         .init { output, input in
             Task {
-                let streams = await send(.request(request))
+                await requestQueue.enqueue {
+                    let streams = await self.send(.request(request))
 
-                do {
-                    for try await next in streams.output {
-                        logger.debug("> \(next)")
-                        output.yield(next)
+                    do {
+                        for try await next in streams.output {
+                            logger.debug("> \(next)")
+                            output.yield(next)
+                        }
+                        output.finish()
+                    } catch {
+                        logger.debug("< error(\(error))")
+                        output.finish(throwing: error)
                     }
-                    output.finish()
-                } catch {
-                    logger.debug("< error(\(error))")
-                    output.finish(throwing: error)
-                }
 
-                do {
-                    for try await next in streams.input {
-                        logger.debug("< response(\(next))")
-                        input.yield(next)
+                    do {
+                        for try await next in streams.input {
+                            logger.debug("< response(\(next))")
+                            input.yield(next)
+                        }
+                        input.finish()
+                    } catch {
+                        logger.debug("< error(\(error))")
+                        input.finish(throwing: error)
                     }
-                    input.finish()
-                } catch {
-                    logger.debug("< error(\(error))")
-                    input.finish(throwing: error)
                 }
             }
         }
