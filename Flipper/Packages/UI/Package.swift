@@ -26,10 +26,10 @@ let package = Package(
             path: "../Notifications"),
         .package(
             url: "https://github.com/airbnb/lottie-spm.git",
-            from: "4.4.0"),
+            from: "4.4.3"),
         .package(
             url: "https://github.com/gonzalezreal/swift-markdown-ui",
-            from: "2.0.2")
+            from: "2.3.0")
     ],
     targets: [
         .target(

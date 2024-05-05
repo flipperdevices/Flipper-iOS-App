@@ -16,7 +16,7 @@ struct AppSearchView: View {
     @State private var applications: [Application] = []
     @State private var error: Applications.Error?
 
-    let debouncer = Debouncer(seconds: 1)
+    @StateObject var debouncer = Debouncer(seconds: 1)
 
     var body: some View {
         VStack(spacing: 0) {
@@ -56,15 +56,19 @@ struct AppSearchView: View {
             }
             inProgress = true
             await debouncer.submit {
-                defer { inProgress = false }
                 do {
                     applications = try await model.search(for: string).filter {
                         !self.hiddenApps.contains($0.id)
                     }
+                    inProgress = false
                 } catch let error as Applications.Error {
-                    self.error = error
+                    if error != .canceled {
+                        self.error = error
+                        inProgress = false
+                    }
                 } catch {
                     applications = []
+                    inProgress = false
                 }
             }
         }

@@ -17,8 +17,8 @@ public struct UpdateProgressBar: View {
 
     var text: String? {
         state == .preparing
-        ? "..."
-        : nil
+            ? "..."
+            : nil
     }
 
     var color: Color {

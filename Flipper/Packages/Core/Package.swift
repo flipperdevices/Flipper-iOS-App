@@ -22,6 +22,9 @@ let package = Package(
             name: "Analytics",
             path: "../Analytics"),
         .package(
+            name: "Activity",
+            path: "../Activity"),
+        .package(
             name: "Peripheral",
             path: "../Peripheral"),
         .package(
@@ -32,13 +35,13 @@ let package = Package(
             path: "../Catalog"),
         .package(
             url: "https://github.com/apple/swift-collections.git",
-            from: "1.0.0"),
+            from: "1.1.0"),
         .package(
             url: "https://github.com/apple/swift-protobuf.git",
-            from: "1.21.0"),
+            from: "1.26.0"),
         .package(
             url: "https://github.com/apple/swift-log.git",
-            from: "1.4.2"),
+            from: "1.5.4"),
         .package(
             url: "https://github.com/swiftstack/radix.git",
             branch: "dev"),
@@ -52,6 +55,7 @@ let package = Package(
             dependencies: [
                 "Macro",
                 "Analytics",
+                "Activity",
                 "Peripheral",
                 "MFKey32v2",
                 "Catalog",
