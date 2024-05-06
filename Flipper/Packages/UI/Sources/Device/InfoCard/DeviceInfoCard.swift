@@ -104,7 +104,7 @@ struct DeviceInfoCard: View {
                 .padding(.horizontal, 12)
 
                 if isUpdating {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 14) {
                         Spinner()
                         Text(
                             "Waiting for Flipper to finish update.\n" +
