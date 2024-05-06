@@ -8,63 +8,35 @@ struct Spinner: View {
 }
 
 struct LoadingAnimation: View {
-    private var duration: Double = 1.0
-    private var degreesStep: Double = 25.0
+    @State private var degree = 90.0
+    @State private var length = 0.95
 
-    @State private var isAnimating = false
-    @State private var rotationDegrees: Double = 0
-    @State private var trimStart: CGFloat = 0
-    @State private var trimEnd: CGFloat
+    var rotateAnimation: Animation {
+        .linear(duration: 1.0).repeatForever(autoreverses: false)
+    }
 
-    init() {
-        trimEnd = degreesStep / 360
+    var lengthAnimagion: Animation {
+        .easeIn(duration: 1.5).repeatForever(autoreverses: true)
     }
 
     var body: some View {
         Circle()
-             .trim(from: trimStart, to: trimEnd)
-             .stroke(
-                 Color.a2,
-                 style: StrokeStyle(
-                     lineWidth: 2.5,
-                     lineCap: .round
-                 )
-             )
-             .rotationEffect(.degrees(rotationDegrees - 90))
-             .onAppear {
-                 isAnimating = true
-                 processAnimation()
-             }
-             .onDisappear {
-                 isAnimating = false
-            }
-    }
-
-    private func processAnimation() {
-        Task {
-            while isAnimating {
-                withAnimation(
-                    .linear(duration: duration)
-                ) {
-                    rotationDegrees = 180 + degreesStep
-                    trimEnd = 1 - degreesStep / 360
+            .trim(from: 0.0, to: length)
+            .stroke(
+                Color.blue,
+                style: StrokeStyle(
+                    lineWidth: 2.5,
+                    lineCap: .round
+                )
+            )
+            .rotationEffect(.degrees(degree))
+            .onAppear{
+                withAnimation(rotateAnimation) {
+                    degree += 360
                 }
-                try? await Task.sleep(seconds: duration)
-
-                withAnimation(
-                    .linear(duration: duration)
-                ) {
-                    rotationDegrees = 360 + degreesStep * 2
-                    trimStart = 1 - (degreesStep * 2) / 360
-                }
-                try? await Task.sleep(seconds: duration)
-
-                withAnimation(.linear(duration: 0)) {
-                    rotationDegrees = 0
-                    trimStart = 0
-                    trimEnd = degreesStep / 360.0
+                withAnimation(lengthAnimagion) {
+                    length = 0
                 }
             }
-        }
     }
 }
