@@ -14,9 +14,9 @@ struct EmulatingAnimation: View {
             Image("EmulatingDynamic")
                 .resizable()
                 .renderingMode(.template)
-                .foregroundColor(isAnimation ? .white : blinkColor)
+                .foregroundColor(isAnimation ? .clear : blinkColor)
                 .animation(
-                    .easeInOut(duration: 0.1)
+                    .easeInOut(duration: 0.09)
                     .repeatForever(autoreverses: true),
                     value: isAnimation
                 )
