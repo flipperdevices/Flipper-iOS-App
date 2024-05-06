@@ -6,6 +6,8 @@ import NotificationCenter
 public struct WidgetView: View {
     @EnvironmentObject var widget: TodayWidget
 
+    @AppStorage(.todayWidgetUpdated, store: .group) var keysUpdated: String = ""
+
     public init() {
     }
 
@@ -34,6 +36,9 @@ public struct WidgetView: View {
         }
         .onChange(of: widget.keyToEmulate) { _ in
             feedback(style: .soft)
+        }
+        .onChange(of: keysUpdated) { _ in
+            widget.loadKeys()
         }
     }
 }
