@@ -21,37 +21,41 @@ struct ConnectPlaceholderView: View {
 }
 
 struct DotsAnimation: View {
-    var body: some View {
-        HStack(alignment: .center, spacing: 8.0) {
-            DotAnimation(delay: 0)
-            DotAnimation(delay: 0.25)
-            DotAnimation(delay: 0.5)
+    @State var opacity = 0.5
+    @State var isAnimated = false
+
+    var animation: SwiftUI.Animation {
+        .easeInOut(duration: 0.5)
+        .repeatForever(autoreverses: true)
+    }
+
+    struct Dot: View {
+        var body: some View {
+            Circle()
+                .fill(Color.blue)
         }
     }
-}
-
-
-struct DotAnimation: View {
-    @State private var isAnimation: Bool = false
-    let delay: Double
 
     var body: some View {
-        Circle()
-            .fill(Color.a2)
-            .opacity(isAnimation ? 1.0 : 0.5)
-            .animation(
-                .easeInOut(duration: 0.5)
-                .repeatForever(autoreverses: true),
-                value: isAnimation
-            )
-            .onAppear {
-                Task {
-                    try await Task.sleep(seconds: delay)
-                    isAnimation = true
-                }
+        HStack(alignment: .center, spacing: 8.0) {
+            Dot()
+                .opacity(opacity)
+                .animation(animation.delay(0.0), value: isAnimated)
+            Dot()
+                .opacity(opacity)
+                .animation(animation.delay(0.25), value: isAnimated)
+            Dot()
+                .opacity(opacity)
+                .animation(animation.delay(0.5), value: isAnimated)
+        }
+        .onAppear {
+            withAnimation {
+                opacity = 1.0
+                isAnimated = true
             }
-            .onDisappear {
-                isAnimation = false
-            }
+        }
+        .onDisappear {
+            isAnimated = false
+        }
     }
 }
