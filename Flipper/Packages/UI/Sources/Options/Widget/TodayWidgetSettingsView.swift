@@ -2,17 +2,15 @@ import Core
 import SwiftUI
 
 struct TodayWidgetSettingsView: View {
-    @StateObject private var widget: TodayWidget = {
-        Dependencies.shared.widget
+    private var widgetStorage: TodayWidgetKeysStorage = {
+        Dependencies.shared.widgetStorage
     }()
     @Environment(\.dismiss) private var dismiss
 
     @State private var showAddKeyView = false
     @State private var showWidgetHelpView = false
 
-    private var keys: [WidgetKey] {
-        widget.keys
-    }
+    @State var keys: [WidgetKey] = []
 
     private let maxRows = 4
     private var keysRows: Int { keys.count / 2 + 1 }
@@ -48,7 +46,7 @@ struct TodayWidgetSettingsView: View {
 
                             if i1 < keys.count {
                                 WidgetAddedItem(key: keys[i1]) {
-                                    widget.delete(keys[i1])
+                                    deleteKey(keys[i1])
                                 }
                                 .padding(11)
                             } else {
@@ -63,7 +61,7 @@ struct TodayWidgetSettingsView: View {
                             Group {
                                 if i2 < keys.count {
                                     WidgetAddedItem(key: keys[i2]) {
-                                        widget.delete(keys[i2])
+                                        deleteKey(keys[i2])
                                     }
                                 } else if i1 < keys.count {
                                     WidgetAddButton {
@@ -86,7 +84,7 @@ struct TodayWidgetSettingsView: View {
                 }
                 .sheet(isPresented: $showAddKeyView) {
                     WidgetAddKeyView(widgetKeys: keys) {
-                        widget.add($0)
+                        addKey($0)
                     }
                 }
                 .background(Color.groupedBackground)
@@ -111,5 +109,26 @@ struct TodayWidgetSettingsView: View {
             SettingsWidgetHelpView()
         }
         .background(Color.background)
+        .task {
+            try? await loadKeys()
+        }
+    }
+
+    func loadKeys() async throws {
+        keys = try await widgetStorage.read()
+    }
+
+    func addKey(_ key: WidgetKey) {
+        Task {
+            keys.append(key)
+            try? await widgetStorage.write(keys)
+        }
+    }
+
+    func deleteKey(_ key: WidgetKey) {
+        Task {
+            keys = keys.filter { $0 != key }
+            try? await widgetStorage.write(keys)
+        }
     }
 }
