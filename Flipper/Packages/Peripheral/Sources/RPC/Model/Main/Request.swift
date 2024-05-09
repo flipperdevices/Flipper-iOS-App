@@ -361,7 +361,7 @@ extension Request.System: CustomStringConvertible {
         case .property(let key): return "property(\(key))"
         case .alert: return "alert"
         case .ping(let bytes): return "ping(\(bytes.count) bytes)"
-        case .getDate: return "info"
+        case .getDate: return "getDate"
         case .setDate(let date): return "setDate(\(date))"
         case .update(let manifest): return "update(\(manifest))"
         }
