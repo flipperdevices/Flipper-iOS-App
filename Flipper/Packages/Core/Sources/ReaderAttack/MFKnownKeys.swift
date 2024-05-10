@@ -20,7 +20,7 @@ public class MFKnownKeys {
     }
 
     private func readKeys(at path: Path) async throws -> Set<MFKey64> {
-        let bytes = try await storage.read(at: path)
+        let bytes = try await storage.read(at: path).drain()
         let array = String(decoding: bytes, as: UTF8.self)
             .split { $0 == "\n" || $0 == "\r\n" }
             .compactMap { line in
@@ -33,7 +33,7 @@ public class MFKnownKeys {
         let string = keys
             .map(\.hexValue)
             .joined(separator: "\n")
-        try await storage.write(at: path, string: string)
+        try await storage.write(at: path, string: string).drain()
     }
 
     public func readFlipperKeys() async throws -> Set<MFKey64> {

@@ -55,7 +55,7 @@ public class Device: ObservableObject {
 
         Task { @MainActor in
             while !Task.isCancelled {
-                for await frame in gui.screenFrame {
+                for await frame in await gui.screenFrame {
                     self.frame = frame
                 }
             }
@@ -270,7 +270,7 @@ public class Device: ObservableObject {
 
     private var hardwareRegion: Int? {
         get async throws {
-            let info = try await system.deviceInfo()
+            let info = try await system.deviceInfo().drain()
             return Int(info["hardware_region"] ?? "")
         }
     }
@@ -287,7 +287,8 @@ public class Device: ObservableObject {
         }
         try await storage.write(
             at: Provisioning.location,
-            bytes: Provisioning().provideRegion().encode())
+            bytes: Provisioning().provideRegion().encode()
+        ).drain()
     }
 
     public func showUpdatingFrame() async throws {
@@ -324,7 +325,7 @@ public class Device: ObservableObject {
 
     func updateValues(_ key: String) async {
         do {
-            for try await property in system.property(key) {
+            for try await property in await system.property(key) {
                 info.update(key: property.key, value: property.value)
             }
         } catch {
@@ -334,7 +335,7 @@ public class Device: ObservableObject {
 
     public func getDeviceInfo() async {
         do {
-            for try await (key, value) in system.deviceInfo() {
+            for try await (key, value) in await system.deviceInfo() {
                 info.update(key: key, value: value)
             }
         } catch {
@@ -343,7 +344,7 @@ public class Device: ObservableObject {
     }
 
     public func getRegion() async throws -> Provisioning.Region {
-        let bytes = try await storage.read(at: Provisioning.location)
+        let bytes = try await storage.read(at: Provisioning.location).drain()
         return try Provisioning.Region(decoding: bytes)
     }
 
@@ -360,7 +361,7 @@ public class Device: ObservableObject {
 
     public func getPowerInfo() async {
         do {
-            for try await (key, value) in system.powerInfo() {
+            for try await (key, value) in await system.powerInfo() {
                 info.update(key: key, value: value)
             }
         } catch {
@@ -456,7 +457,7 @@ fileprivate extension Device {
 
     // TODO: Move to SystemAPI extension
     private func getProperty(_ path: String) async throws -> String {
-        for try await property in system.property(path) {
+        for try await property in await system.property(path) {
             return property.value
         }
         return ""

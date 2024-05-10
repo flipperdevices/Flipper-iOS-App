@@ -69,7 +69,7 @@ public class StressTest: ObservableObject {
 
             while isRunning {
                 do {
-                    try await storage.write(at: path, bytes: bytes)
+                    try await storage.write(at: path, bytes: bytes).drain()
                     log(.debug, "did write \(bytes.count) bytes at \(path)")
                 } catch {
                     log(.error, "error wiring at \(path): \(error)")
@@ -78,7 +78,7 @@ public class StressTest: ObservableObject {
                 guard isRunning else { return }
 
                 do {
-                    let received = try await storage.read(at: path)
+                    let received = try await storage.read(at: path).drain()
                     log(.debug, "did read \(received.count) bytes from \(path)")
                     switch bytes == received {
                     case true: log(.success, "buffers are equal")

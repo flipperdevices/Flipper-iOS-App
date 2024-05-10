@@ -41,7 +41,7 @@ public class Emulate: ObservableObject {
     func subscribeToPublishers() {
         Task { @MainActor in
             while !Task.isCancelled {
-                for await state in application.state {
+                for await state in await application.state {
                     onFlipperAppStateChanged(state)
                 }
             }

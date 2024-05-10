@@ -215,8 +215,8 @@ public class Applications: ObservableObject {
 
     private func getFlipperTarget() async throws -> String {
         var target: String = ""
-        for try await property in system.property("devinfo.hardware.target") {
-            target = property.value
+        for try await next in await system.property("devinfo.hardware.target") {
+            target = next.value
         }
         return "f\(target)"
     }
@@ -224,10 +224,10 @@ public class Applications: ObservableObject {
     private func getFlipperAPI() async throws -> String {
         var major: String = "0"
         var minor: String = "0"
-        for try await property in system.property("devinfo.firmware.api") {
-            switch property.key {
-            case "firmware.api.major": major = property.value
-            case "firmware.api.minor": minor = property.value
+        for try await next in await system.property("devinfo.firmware.api") {
+            switch next.key {
+            case "firmware.api.major": major = next.value
+            case "firmware.api.minor": minor = next.value
             default: logger.error("unexpected api property")
             }
         }
