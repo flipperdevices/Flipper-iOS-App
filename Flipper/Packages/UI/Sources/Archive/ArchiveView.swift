@@ -52,14 +52,14 @@ struct ArchiveView: View {
         NavigationStack {
             VStack {
                 if device.status == .connecting {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 14) {
                         Spinner()
                         Text("Connecting to Flipper...")
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.black30)
                     }
                 } else if device.status == .synchronizing {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 14) {
                         Spinner()
                         Text(
                             synchronization.progress == 0
