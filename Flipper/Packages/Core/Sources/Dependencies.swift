@@ -179,12 +179,16 @@ public class Dependencies: ObservableObject {
         )
     }()
 
+    public lazy var widgetStorage: TodayWidgetKeysStorage = {
+        FilteredWidgetStorage(
+            widgetStorage: JSONTodayWidgetStorage(),
+            mobileArchive: mobileArchive)
+    }()
+
     @MainActor
     public lazy var widget: TodayWidget = {
         .init(
-            widgetStorage: FilteredWidgetStorage(
-                widgetStorage: JSONTodayWidgetStorage(),
-                mobileArchive: mobileArchive),
+            widgetStorage: widgetStorage,
             emulate: emulate,
             archive: archive,
             central: central,

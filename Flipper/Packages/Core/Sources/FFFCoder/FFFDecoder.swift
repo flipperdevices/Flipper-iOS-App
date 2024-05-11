@@ -25,14 +25,24 @@ class _FFFDecoder: Decoder {
     let dictionary: [String: String]
 
     init(text: String) {
+        // TODO: Improve decoder to support comments and reuse for ArchiveItem
         var dictionary = [String: String]()
-        for line in text.split(separator: "\n") {
-            let parts = line.split(separator: ":")
-            guard parts.count == 2 else {
+
+        let lines = text.split { $0 == "\n" || $0 == "\r\n" }
+
+        for line in lines {
+            guard !line.starts(with: "#") else {
                 continue
             }
-            let key = String(parts[0]).trimmingCharacters(in: .whitespaces)
-            let value = String(parts[1].dropFirst())
+            guard line.contains(":") else {
+                continue
+            }
+            let keyValue = line.split(separator: ":", maxSplits: 1)
+            let keyPart = keyValue[0]
+            let valuePart = keyValue.count == 2 ? keyValue[1] : ""
+
+            let key = String(keyPart.trimmingCharacters(in: .whitespaces))
+            let value = String(valuePart.trimmingCharacters(in: .whitespaces))
             dictionary[key] = value
         }
         self.dictionary = dictionary

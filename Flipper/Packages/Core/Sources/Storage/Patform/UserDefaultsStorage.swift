@@ -76,6 +76,12 @@ public struct UserDefault<T> {
 }
 
 public extension UserDefaults {
+    static var group: UserDefaults {
+        .init(suiteName: "group.com.flipperdevices.main")!
+    }
+}
+
+public extension UserDefaults {
     enum Keys: String, CaseIterable {
         case isFirstLaunch = "isFirstLaunch"
         case selectedTab = "selectedTab"
@@ -93,5 +99,7 @@ public extension UserDefaults {
         case isDevCatalog = "isDevCatalog"
 
         case appsSortOrder = "appsSortOrder"
+
+        case todayWidgetUpdated = "todayWidgetUpdated"
     }
 }

@@ -55,14 +55,6 @@ public class TodayWidget: ObservableObject {
     }
 
     func subscribeToPublisher() {
-        widgetStorage.didChange
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                guard let self else { return }
-                self.loadKeys()
-            }
-            .store(in: &cancellables)
-
         emulate.$state
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
@@ -95,7 +87,7 @@ public class TodayWidget: ObservableObject {
             .store(in: &cancellables)
     }
 
-    private func loadKeys() {
+    public func loadKeys() {
         Task {
             keys = try await widgetStorage.read()
         }

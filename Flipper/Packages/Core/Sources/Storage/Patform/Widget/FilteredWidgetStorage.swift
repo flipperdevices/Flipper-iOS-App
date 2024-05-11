@@ -6,8 +6,6 @@ class FilteredWidgetStorage: TodayWidgetKeysStorage {
     private var widgetStorage: TodayWidgetKeysStorage
     private var mobileArchive: ArchiveProtocol
 
-    var didChange: AnyPublisher<Void, Never> { widgetStorage.didChange }
-
     init(widgetStorage: TodayWidgetKeysStorage, mobileArchive: ArchiveProtocol) {
         self.widgetStorage = widgetStorage
         self.mobileArchive = mobileArchive

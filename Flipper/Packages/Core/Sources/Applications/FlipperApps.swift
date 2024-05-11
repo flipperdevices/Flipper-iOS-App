@@ -76,20 +76,25 @@ actor FlipperApps {
         }
     }
 
-    private func listManifests() async throws -> [File] {
-        try await storage.list(
-            at: .appsManifests,
-            calculatingMD5: true
-        )
-        .files
-        .filter({ $0.name.hasSuffix(".fim") })
-        .filter({ !$0.name.hasPrefix(".") })
+    private func listManifests() async -> [File] {
+        do {
+            return try await storage.list(
+                at: .appsManifests,
+                calculatingMD5: true
+            )
+            .files
+            .filter({ $0.name.hasSuffix(".fim") })
+            .filter({ !$0.name.hasPrefix(".") })
+        } catch {
+            logger.error("list manifests: \(error)")
+            return []
+        }
     }
 
     private func loadManifests() async throws -> AsyncStream<Manifest> {
         .init { continuation in
             let task = Task {
-                for file in try await listManifests() {
+                for file in await listManifests() {
                     do {
                         continuation.yield(try await loadManifest(file))
                     } catch {

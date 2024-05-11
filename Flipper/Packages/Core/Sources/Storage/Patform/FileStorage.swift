@@ -46,24 +46,8 @@ actor FileStorage {
     }
 
     func read(_ path: Path) throws -> Data {
-        var data: Data = .init()
         let url = makeURL(for: path)
-        var readError: Swift.Error?
-        var nsReadError: NSError?
-        let coord = NSFileCoordinator(filePresenter: nil)
-        coord.coordinate(readingItemAt: url, error: &nsReadError) { readURL in
-            do {
-                data = try .init(contentsOf: readURL)
-            } catch {
-                readError = error
-            }
-        }
-        if let error = readError {
-            throw error
-        }
-        if let error = nsReadError {
-            throw error
-        }
+        let data = try Data(contentsOf: url)
         return data
     }
 
@@ -74,29 +58,7 @@ actor FileStorage {
     func write(_ content: String, at path: Path) throws {
         try makeDirectory(for: path)
         let url = makeURL(for: path)
-        var writeError: Swift.Error?
-        var nsWriteError: NSError?
-        let coord = NSFileCoordinator(filePresenter: nil)
-        coord.coordinate(
-            writingItemAt: url,
-            options: .forReplacing,
-            error: &nsWriteError
-        ) { writeURL in
-            do {
-                try content.write(
-                    to: writeURL,
-                    atomically: true,
-                    encoding: .utf8)
-            } catch {
-                writeError = error
-            }
-        }
-        if let error = writeError {
-            throw error
-        }
-        if let error = nsWriteError {
-            throw error
-        }
+        try content.write(to: url, atomically: true, encoding: .utf8)
     }
 
     func append(_ content: String, at path: Path) throws {
