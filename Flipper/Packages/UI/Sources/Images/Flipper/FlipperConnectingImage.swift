@@ -19,7 +19,7 @@ struct FlipperConnectingImage: View {
     private var imageHeightPercent: Double {
         46.1 / flipperDefaultHeight
     }
-    
+
     private var imageRoundCornerPercent: Double {
         2.8 / flipperDefaultWidth
     }

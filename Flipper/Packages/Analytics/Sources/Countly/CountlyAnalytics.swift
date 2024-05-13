@@ -146,7 +146,7 @@ extension CountlyAnalytics: EventHandler {
             key: "debug",
             segmentation: [
                 "key": info.key,
-                "value": info.value,
+                "value": info.value
             ])
     }
 }

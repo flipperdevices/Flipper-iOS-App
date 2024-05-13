@@ -85,7 +85,7 @@ public enum DebugInfo: Sendable {
 
     public var key: String {
         switch self {
-        case .unknownNFCVersion(_): return "nfc_failed_parse"
+        case .unknownNFCVersion: return "nfc_failed_parse"
         }
     }
 
