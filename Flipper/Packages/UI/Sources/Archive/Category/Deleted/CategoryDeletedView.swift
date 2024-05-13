@@ -36,8 +36,7 @@ struct CategoryDeletedView: View {
                 }
                 .padding(14)
             }
-
-            NavigationLink("", isActive: $showDeletedView) {
+            .navigationDestination(isPresented: $showDeletedView) {
                 if let selectedItem {
                     DeletedInfoView(item: selectedItem)
                 }

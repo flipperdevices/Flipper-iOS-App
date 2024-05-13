@@ -27,11 +27,16 @@ struct HubView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 14) {
-                    NavigationLink(isActive: $appsState.showApplications) {
-                        AppsView(selectedSegment: $appsState.selectedSegment)
-                            .environmentObject(applications)
+                    Button {
+                        appsState.showApplications = true
                     } label: {
                         AppsRowCard()
+                            .environmentObject(applications)
+                    }
+                    .navigationDestination(
+                        isPresented: $appsState.showApplications
+                    ) {
+                        AppsView(selectedSegment: $appsState.selectedSegment)
                             .environmentObject(applications)
                     }
                     .onReceive(router.showApps) {
@@ -58,12 +63,6 @@ struct HubView: View {
                     }
                 }
                 .padding(14)
-
-                NavigationLink("", isActive: $appsState.showApplication) {
-                    if let applicationAlias = appsState.applicationAlias{
-                        AppView(alias: applicationAlias)
-                    }
-                }
             }
             .background(Color.background)
             .navigationBarBackground(Color.a1)
@@ -91,6 +90,11 @@ struct HubView: View {
         }
         .fullScreenCover(isPresented: $showDetectReader) {
             DetectReaderView()
+        }
+        .navigationDestination(isPresented: $appsState.showApplication) {
+            if let applicationAlias = appsState.applicationAlias{
+                AppView(alias: applicationAlias)
+            }
         }
     }
 

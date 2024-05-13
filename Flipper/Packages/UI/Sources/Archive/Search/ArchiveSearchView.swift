@@ -37,11 +37,9 @@ struct ArchiveSearchView: View {
                 .customBackground(.background)
             }
         }
-        .background {
-            NavigationLink("", isActive: $showInfoView) {
-                if let selectedItem {
-                    InfoView(item: selectedItem)
-                }
+        .navigationDestination(isPresented: $showInfoView) {
+            if let selectedItem {
+                InfoView(item: selectedItem)
             }
         }
     }

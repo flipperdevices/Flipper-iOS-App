@@ -27,8 +27,7 @@ struct CategoryView: View {
                 }
                 .padding(14)
             }
-
-            NavigationLink("", isActive: $showInfoView) {
+            .navigationDestination(isPresented: $showInfoView) {
                 if let selectedItem {
                     InfoView(item: selectedItem)
                 }

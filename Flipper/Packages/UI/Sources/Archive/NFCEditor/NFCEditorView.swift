@@ -62,8 +62,7 @@ struct NFCEditorView: View {
                     }
                     .padding(14)
                 }
-
-                NavigationLink("", isActive: $showSaveAs) {
+                .navigationDestination(isPresented: $showSaveAs) {
                     SaveAsView(item: $item)
                         .onDisappear {
                             dismiss()
