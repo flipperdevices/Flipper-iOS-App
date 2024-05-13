@@ -142,6 +142,16 @@ struct ArchiveView: View {
             .notification(isPresented: notifications.archive.showImported) {
                 ImportedBanner(itemName: importedName)
             }
+            .navigationDestination(isPresented: $showInfoView) {
+                if let selectedItem {
+                    InfoView(item: selectedItem)
+                }
+            }
+            .navigationDestination(isPresented: $showImportView) {
+                if let importingItem {
+                    ImportView(url: importingItem)
+                }
+            }
         }
         .onOpenURL { url in
             if (url.isKeyFile || url.isKeyURL), !showImportView {
@@ -160,20 +170,6 @@ struct ArchiveView: View {
                 showImportView = true
             }
             return true
-        }
-        .background {
-            ZStack {
-                NavigationLink("", isActive: $showInfoView) {
-                    if let selectedItem {
-                        InfoView(item: selectedItem)
-                    }
-                }
-                NavigationLink("", isActive: $showImportView) {
-                    if let importingItem {
-                        ImportView(url: importingItem)
-                    }
-                }
-            }
         }
     }
 
