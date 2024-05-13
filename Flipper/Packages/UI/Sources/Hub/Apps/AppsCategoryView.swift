@@ -48,9 +48,9 @@ struct AppsCategoryView: View {
                             showPlaceholder: isLoading && !isAllLoaded)
                     }
                     .padding(.vertical, 18)
-                    .refreshable {
-                        reload()
-                    }
+                }
+                .refreshable {
+                    reload()
                 }
             }
         }

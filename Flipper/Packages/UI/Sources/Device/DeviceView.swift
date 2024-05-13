@@ -65,7 +65,7 @@ struct DeviceView: View {
             VStack(spacing: 0) {
                 DeviceHeader(device: flipper)
 
-                LazyScrollView {
+                ScrollView {
                     VStack(spacing: 0) {
                         switch device.status {
                         case .unsupported:

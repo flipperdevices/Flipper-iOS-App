@@ -41,7 +41,7 @@ struct DeviceInfoView: View {
     }
 
     var body: some View {
-        LazyScrollView {
+        ScrollView {
             VStack(spacing: 14) {
                 DeviceInfoViewCard(
                     title: "Flipper Device",

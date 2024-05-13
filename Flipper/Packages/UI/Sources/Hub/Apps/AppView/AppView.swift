@@ -25,7 +25,7 @@ struct AppView: View {
                 AppNotFoundView()
                     .padding(24)
             } else {
-                LazyScrollView {
+                ScrollView {
                     if let application {
                         LoadedAppView(application: application)
                             .padding(.vertical, 32)

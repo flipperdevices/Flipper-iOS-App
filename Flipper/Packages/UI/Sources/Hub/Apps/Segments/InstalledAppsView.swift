@@ -67,7 +67,7 @@ struct InstalledAppsView: View {
                     }
                     .opacity(noApps ? 1 : 0)
 
-                    LazyScrollView {
+                    ScrollView {
                         VStack(spacing: 18) {
                             Group {
                                 if isNetworkIssue {

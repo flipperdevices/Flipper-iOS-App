@@ -72,7 +72,7 @@ struct ArchiveView: View {
                 } else if !predicate.isEmpty {
                     ArchiveSearchView(predicate: $predicate)
                 } else {
-                    LazyScrollView {
+                    ScrollView {
                         CategoryCard(
                             groups: groups,
                             deletedCount: archive.deleted.count
