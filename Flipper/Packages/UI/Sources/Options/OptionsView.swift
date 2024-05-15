@@ -20,23 +20,32 @@ struct OptionsView: View {
         device.status == .synchronized
     }
 
+    enum Destination {
+        case ping
+        case stressTest
+        case speedTest
+        case logs
+        case fileManager
+        case reportBug
+    }
+
     var body: some View {
         List {
             Section(header: Text("Utils")) {
-                NavigationLink("Ping") {
-                    PingView()
+                NavigationLink(value: Destination.ping) {
+                    Text("Ping")
                 }
                 .disabled(!isDeviceAvailable)
-                NavigationLink("Stress Test") {
-                    StressTestView()
+                NavigationLink(value: Destination.stressTest) {
+                    Text("Stress Test")
                 }
                 .disabled(!isDeviceAvailable)
-                NavigationLink("Speed Test") {
-                    SpeedTestView()
+                NavigationLink(value: Destination.speedTest) {
+                    Text("Speed Test")
                 }
                 .disabled(!isDeviceAvailable)
-                NavigationLink("Logs") {
-                    LogsView()
+                NavigationLink(value: Destination.logs) {
+                    Text("Logs")
                 }
                 Button("Backup Keys") {
                     Task { share(await archive.backupKeys()) }
@@ -45,8 +54,8 @@ struct OptionsView: View {
             }
 
             Section(header: Text("Remote")) {
-                NavigationLink("File Manager") {
-                    FileManagerView()
+                NavigationLink(value: Destination.fileManager) {
+                    Text("File Manager")
                 }
                 Button("Reboot Flipper") {
                     device.reboot()
@@ -84,8 +93,8 @@ struct OptionsView: View {
                 HStack {
                     Image("ListBug")
                         .renderingMode(.template)
-                    NavigationLink("Report Bug") {
-                        ReportBugView()
+                    NavigationLink(value: Destination.reportBug) {
+                        Text("Report Bug")
                     }
                 }
             }
@@ -133,6 +142,16 @@ struct OptionsView: View {
         }
         .alert(isPresented: $showRestartTheApp) {
             RestartTheAppAlert(isPresented: $showRestartTheApp)
+        }
+        .navigationDestination(for: Destination.self) { destination in
+            switch destination {
+            case .ping: PingView()
+            case .stressTest: StressTestView()
+            case .speedTest: SpeedTestView()
+            case .logs: LogsView()
+            case .fileManager: FileManagerView()
+            case .reportBug: ReportBugView()
+            }
         }
     }
 }

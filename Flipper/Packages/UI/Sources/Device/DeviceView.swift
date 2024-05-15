@@ -60,6 +60,11 @@ struct DeviceView: View {
         device.status != .noDevice
     }
 
+    enum Destination {
+        case info
+        case options
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -82,9 +87,7 @@ struct DeviceView: View {
                                     .padding(.top, 24)
                                     .padding(.horizontal, 14)
                             }
-                            NavigationLink {
-                                DeviceInfoView()
-                            } label: {
+                            NavigationLink(value: Destination.info) {
                                 DeviceInfoCard()
                                     .padding(.top, 24)
                                     .padding(.horizontal, 14)
@@ -96,10 +99,9 @@ struct DeviceView: View {
                             VStack(spacing: 0) {
                                 NavigationButton(
                                     image: "Options",
-                                    title: "Options"
-                                ) {
-                                    OptionsView()
-                                }
+                                    title: "Options",
+                                    destination: Destination.options
+                                )
                             }
                             .cornerRadius(10)
 
@@ -194,6 +196,12 @@ struct DeviceView: View {
             }
             .navigationBarHidden(true)
             .navigationBarBackground(Color.a1)
+            .navigationDestination(for: Destination.self) { destination in
+                switch destination {
+                case .info: DeviceInfoView()
+                case .options: OptionsView()
+                }
+            }
         }
         .alert(isPresented: $showOutdatedFirmwareAlert) {
             OutdatedFirmwareAlert(isPresented: $showOutdatedFirmwareAlert)
