@@ -264,18 +264,8 @@ struct RemoteControlView: View {
     }
 
     func screenshot() {
-        guard
-            let data = screenshotImage?.pngData(),
-            let url = try? FileManager.default.createTempFile(
-                name: "\(screenshotName).png",
-                data: data
-            )
-        else {
-            return
-        }
-        UI.share(url) {
-            try? FileManager.default.removeItem(at: url)
-        }
+        guard let data = screenshotImage?.pngData() else { return }
+        UI.shareImage(name: screenshotName, data: data)
     }
 }
 

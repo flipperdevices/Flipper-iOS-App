@@ -12,6 +12,14 @@ struct AppRow: View {
         application.current.status == .ready
     }
 
+    var screenshots: [URL] {
+        application.current.screenshots
+    }
+
+    var title: String {
+        application.current.name
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -46,8 +54,11 @@ struct AppRow: View {
                     .padding(.horizontal, 14)
                     .lineLimit(2)
 
-                AppScreens(application.current.screenshots)
-                    .frame(height: 84)
+                AppScreenshots(
+                    title: title,
+                    screenshots: screenshots
+                )
+                .frame(height: 84)
             }
         }
     }
