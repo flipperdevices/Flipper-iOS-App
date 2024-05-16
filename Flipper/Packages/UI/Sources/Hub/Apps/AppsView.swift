@@ -37,6 +37,8 @@ struct AppsView: View {
                 .environmentObject(model)
                 .opacity(!predicate.isEmpty ? 1 : 0)
         }
+        // NOTE: Fixes Error views size
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.background)
         .navigationBarBackground(Color.a1)
         .navigationBarBackButtonHidden(true)

@@ -8,6 +8,7 @@ struct AppsAPIError: View {
     var body: some View {
         switch error.wrappedValue {
         case .noInternet: AppsNoInternetView(retry: retry)
+        case .unknownSDK: AppsNotCompatibleFirmware()
         default: EmptyView()
         }
     }
