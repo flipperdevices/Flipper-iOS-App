@@ -30,8 +30,10 @@ struct AppsView: View {
             AllAppsView()
                 .opacity(allSelected && predicate.isEmpty ? 1 : 0)
 
-            InstalledAppsView()
-                .opacity(installedSelected && predicate.isEmpty ? 1 : 0)
+            if model.enableProgressUpdates {
+                InstalledAppsView()
+                    .opacity(installedSelected && predicate.isEmpty ? 1 : 0)
+            }
 
             AppSearchView(predicate: $predicate)
                 .environmentObject(model)
