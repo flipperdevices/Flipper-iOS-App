@@ -8,6 +8,7 @@ struct HubView: View {
     @EnvironmentObject var device: Device
     @EnvironmentObject var router: Router
 
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.notifications) private var notifications
 
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
@@ -94,6 +95,14 @@ struct HubView: View {
         .navigationDestination(isPresented: $appsState.showApplication) {
             if let applicationAlias = appsState.applicationAlias{
                 AppView(alias: applicationAlias)
+            }
+        }
+        .onChange(of: scenePhase) { phase in
+            switch phase {
+            case .active: applications.enableProgressUpdates = true
+            case .inactive: applications.enableProgressUpdates = false
+            case .background: break
+            @unknown default: break
             }
         }
     }

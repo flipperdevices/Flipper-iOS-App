@@ -22,6 +22,8 @@ public class Applications: ObservableObject {
     @Published public var installed: [Application] = []
     @Published public var installedStatus: InstalledStatus = .error
     @Published public var statuses: [Application.ID: ApplicationStatus] = [:]
+    // Minimize CPU usage in background to prevent iOS from killing the app
+    public var enableProgressUpdates = true
 
     public var outdated: [Application] {
         installed.filter { statuses[$0.id] == .outdated }
@@ -138,7 +140,9 @@ public class Applications: ObservableObject {
         await installQueue.enqueue {
             do {
                 try await self._install(application) { progress in
-                    self.setStatus(.installing(progress), for: application)
+                    if self.enableProgressUpdates {
+                        self.setStatus(.installing(progress), for: application)
+                    }
                 }
                 self.setStatus(.installed, for: application)
             } catch {
@@ -153,7 +157,9 @@ public class Applications: ObservableObject {
         await installQueue.enqueue {
             do {
                 try await self._install(application) { progress in
-                    self.setStatus(.updating(progress), for: application)
+                    if self.enableProgressUpdates {
+                        self.setStatus(.updating(progress), for: application)
+                    }
                 }
                 self.setStatus(.installed, for: application)
             } catch {
