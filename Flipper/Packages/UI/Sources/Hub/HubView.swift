@@ -4,51 +4,19 @@ import Catalog
 import SwiftUI
 
 struct HubView: View {
-    @EnvironmentObject var applications: Applications
     @EnvironmentObject var device: Device
-    @EnvironmentObject var router: Router
 
-    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.notifications) private var notifications
 
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
 
-    @State private var appsState: AppsState = .init()
     @State private var showRemoteControl = false
     @State private var showDetectReader = false
-
-    struct AppsState {
-        var showApplications = false
-        var applicationAlias: String?
-        var showApplication = false
-        var selectedSegment: AppsSegments.Segment = .all
-    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 14) {
-                    Button {
-                        appsState.showApplications = true
-                    } label: {
-                        AppsRowCard()
-                            .environmentObject(applications)
-                    }
-                    .navigationDestination(
-                        isPresented: $appsState.showApplications
-                    ) {
-                        AppsView(selectedSegment: $appsState.selectedSegment)
-                            .environmentObject(applications)
-                    }
-                    .onReceive(router.showApps) {
-                        appsState.selectedSegment = .installed
-                        appsState.showApplications = true
-                        selectedTab = .hub
-                    }
-                    .analyzingTapGesture {
-                        recordAppsOpened()
-                    }
-
                     HStack(spacing: 14) {
                         Button {
                             showRemoteControl = true
@@ -80,30 +48,13 @@ struct HubView: View {
             }
         }
         .onOpenURL { url in
-            if url.isApplicationURL {
-                appsState.applicationAlias = url.applicationAlias
-                selectedTab = .hub
-                appsState.showApplication = true
-            } else if url == .mfkey32Link {
+            if url == .mfkey32Link {
                 selectedTab = .hub
                 showDetectReader = true
             }
         }
         .fullScreenCover(isPresented: $showDetectReader) {
             DetectReaderView()
-        }
-        .navigationDestination(isPresented: $appsState.showApplication) {
-            if let applicationAlias = appsState.applicationAlias{
-                AppView(alias: applicationAlias)
-            }
-        }
-        .onChange(of: scenePhase) { phase in
-            switch phase {
-            case .active: applications.enableProgressUpdates = true
-            case .inactive: applications.enableProgressUpdates = false
-            case .background: break
-            @unknown default: break
-            }
         }
     }
 
@@ -131,12 +82,6 @@ struct HubView: View {
                 hasNotification: false
             )
         }
-    }
-
-    // MARK: Analytics
-
-    func recordAppsOpened() {
-        analytics.appOpen(target: .fapHub)
     }
 }
 

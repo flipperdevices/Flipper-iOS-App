@@ -18,6 +18,7 @@ struct TabView: View {
     enum Tab: String, CaseIterable {
         case device
         case archive
+        case apps
         case hub
     }
 
@@ -45,7 +46,7 @@ struct TabView: View {
                 }
                 .foregroundColor(deviceColor)
 
-                Spacer()
+                Spacer(minLength: 0)
 
                 TabViewItem(
                     image: .init(Image(archiveImageName)),
@@ -57,13 +58,28 @@ struct TabView: View {
                 }
                 .foregroundColor(archiveColor)
 
-                Spacer()
+                Spacer(minLength: 0)
+
+                TabViewItem(
+                    image: .init(Image(appsImageName)),
+                    name: "Apps",
+                    isSelected: selected == .apps,
+                    hasNotification: hasAppUpdates
+                ) {
+                    handleTap(on: .apps)
+                }
+                .foregroundColor(appsColor)
+                .analyzingTapGesture {
+                    recordAppsOpened()
+                }
+
+                Spacer(minLength: 0)
 
                 TabViewItem(
                     image: .init(Image(hubImageName)),
                     name: "Hub",
                     isSelected: selected == .hub,
-                    hasNotification: hasReaderLog || hasAppUpdates
+                    hasNotification: hasReaderLog
                 ) {
                     handleTap(on: .hub)
                 }
@@ -72,6 +88,12 @@ struct TabView: View {
             .padding(3)
         }
         .background(systemBackground)
+    }
+
+    // MARK: Analytics
+
+    func recordAppsOpened() {
+        analytics.appOpen(target: .fapHub)
     }
 }
 
@@ -124,6 +146,10 @@ private extension TabView {
         selected == .archive ? .black80 : .black30
     }
 
+    var appsColor: Color {
+        selected == .apps ? .black80 : .black30
+    }
+
     var hubColor: Color {
         selected == .hub ? .black80 : .black30
     }
@@ -141,6 +167,10 @@ private extension TabView {
 
     var archiveImageName: String {
         selected == .archive ? "archive_filled_icon" : "archive_line_icon"
+    }
+
+    var appsImageName: String {
+        selected == .apps ? "apps_filled_icon" : "apps_line_icon"
     }
 
     var hubImageName: String {

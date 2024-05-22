@@ -33,9 +33,10 @@ struct TabViewItem: View {
                     }
 
                 Text(name)
+                    .lineLimit(1)
                     .font(.system(size: 10, weight: .bold))
             }
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 7)
             .frame(minWidth: 69, minHeight: 46)
             .background(
                 isSelected
