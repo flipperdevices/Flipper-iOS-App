@@ -44,3 +44,17 @@ func shareFile(name: String, content: String) {
         try? FileManager.default.removeItem(at: url)
     }
 }
+
+func shareImage(name: String, ext: String = "png", data: Data) {
+    guard
+        let url = try? FileManager.default.createTempFile(
+            name: "\(name).\(ext)",
+            data: data
+        )
+    else {
+        return
+    }
+    UI.share(url) {
+        try? FileManager.default.removeItem(at: url)
+    }
+}

@@ -24,10 +24,7 @@ struct SheetHeader: View {
                 Title(title, description: description)
             },
             trailing: {
-                NavBarButton(action: onCancel) {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 18, weight: .medium))
-                }
+                CloseButton(action: onCancel)
             }
         )
         .padding(.vertical, 8)

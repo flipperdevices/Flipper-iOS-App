@@ -120,6 +120,10 @@ struct AppView: View {
             application.current.links.manifest
         }
 
+        var title: String {
+            application.current.name
+        }
+
         var body: some View {
             VStack(spacing: 18) {
                 VStack(spacing: 12) {
@@ -139,8 +143,11 @@ struct AppView: View {
                 .padding(.horizontal, 14)
 
                 VStack(alignment: .leading, spacing: 32) {
-                    AppScreens(screenshots)
-                        .frame(height: 108)
+                    AppScreenshots(
+                        title: title,
+                        screenshots: screenshots
+                    )
+                    .frame(height: 108)
 
                     Description(description: description)
                         .padding(.horizontal, 14)

@@ -4,7 +4,7 @@ import SwiftUI
 public struct CachedAsyncImage<Content, PlaceholderContent, ErrorContent>: View
 where Content: View, PlaceholderContent: View, ErrorContent: View {
 
-    public typealias ContentImage = ((Image) -> Content)
+    public typealias ContentImage = ((UIImage) -> Content)
     public typealias ContentPlaceholder = (() -> PlaceholderContent)
     public typealias ContentError = (() -> ErrorContent)
 
@@ -14,7 +14,7 @@ where Content: View, PlaceholderContent: View, ErrorContent: View {
     private let contentError: ContentError?
 
     enum ImageState {
-        case ready(Image)
+        case ready(UIImage)
         case inProgress
         case error
     }
@@ -71,8 +71,7 @@ where Content: View, PlaceholderContent: View, ErrorContent: View {
                 return
             }
 
-            let image = Image(uiImage: uiImage)
-            self.state = .ready(image)
+            self.state = .ready(uiImage)
         } catch {
             self.state = .error
         }
