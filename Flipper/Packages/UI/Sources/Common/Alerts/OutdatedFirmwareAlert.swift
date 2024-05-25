@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct OutdatedFirmwareAlert: View {
+    @Environment(\.openURL) private var openURL
     @Binding var isPresented: Bool
 
     var body: some View {
@@ -10,7 +11,7 @@ struct OutdatedFirmwareAlert: View {
                 .frame(width: 82, height: 82)
                 .padding(.top, 8)
 
-            Text("Outdated firmware version")
+            Text("Outdated Firmware Version")
                 .font(.system(size: 14, weight: .bold))
                 .padding(.top, 24)
 
@@ -24,9 +25,20 @@ struct OutdatedFirmwareAlert: View {
             .padding(.top, 4)
 
             Button {
+                openURL(.helpToInstallFirmware)
                 isPresented = false
             } label: {
-                Text("Ok")
+                Text("How to update Flipper")
+                    .underline()
+            }
+            .font(.system(size: 14, weight: .medium))
+            .foregroundColor(.a2)
+            .padding(.top, 8)
+
+            Button {
+                isPresented = false
+            } label: {
+                Text("Got It")
                     .frame(height: 41)
                     .frame(maxWidth: .infinity)
                     .font(.system(size: 14, weight: .bold))

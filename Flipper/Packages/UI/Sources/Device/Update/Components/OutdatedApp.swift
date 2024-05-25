@@ -9,7 +9,7 @@ extension DeviceUpdateView {
             VStack(spacing: 0) {
                 Image("OutdatedApp")
 
-                Text("Outdated mobile app version")
+                Text("Outdated Mobile App Version")
                     .font(.system(size: 14, weight: .medium))
                     .padding(.top, 12)
 
