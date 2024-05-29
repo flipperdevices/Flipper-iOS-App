@@ -3,12 +3,18 @@ import SwiftUI
 
 struct DeviceUpdateCard: View {
     @EnvironmentObject var updateModel: UpdateModel
+    @EnvironmentObject var device: Device
+    @EnvironmentObject var synchronization: Synchronization
     @Environment(\.scenePhase) private var scenePhase
 
     @State private var showUpdate = false
 
     @Environment(\.alerts.device.showUpdateSuccess) var showUpdateSuccess
     @Environment(\.alerts.device.showUpdateFailure) var showUpdateFailure
+    @Environment(\.alerts.device.showConfirmUpdate) var showConfirmUpdate
+
+    @State private var showPauseSync = false
+    @State private var showCharge = false
 
     private var updateVersion: String {
         updateModel.intent?.desiredVersion.description ?? ""
@@ -21,6 +27,12 @@ struct DeviceUpdateCard: View {
                     Text("Firmware Update")
                         .font(.system(size: 16, weight: .bold))
                     Spacer()
+
+                    UpdateWhatsNewButton {
+                        prepareUpdate {
+                            updateModel.startUpdate()
+                        }
+                    }
                 }
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
@@ -33,7 +45,11 @@ struct DeviceUpdateCard: View {
                     CardStateInProgress()
 
                 case .ready(let state):
-                    CardStateReady(state: state)
+                    CardStateReady(state: state) {
+                        prepareUpdate {
+                            showConfirmUpdate.wrappedValue = true
+                        }
+                    }
 
                 case .error(.noCard):
                     CardNoSDError(retry: update)
@@ -75,6 +91,28 @@ struct DeviceUpdateCard: View {
                 firmwareVersion: updateVersion
             )
         }
+        .alert(isPresented: showConfirmUpdate) {
+            ConfirmUpdateAlert(
+                isPresented: showConfirmUpdate,
+                installedVersion: updateModel.installed!,
+                availableVersion: updateModel.available!
+            ) {
+                updateModel.startUpdate()
+            }
+        }
+        .alert(isPresented: $showCharge) {
+            LowBatteryAlert(isPresented: $showCharge)
+        }
+        .alert(isPresented: $showPauseSync) {
+            PauseSyncAlert(
+                isPresented: $showPauseSync,
+                installedVersion: updateModel.installed!,
+                availableVersion: updateModel.available!
+            ) {
+                synchronization.cancelSync()
+                updateModel.startUpdate()
+            }
+        }
         .task {
             update()
         }
@@ -82,5 +120,18 @@ struct DeviceUpdateCard: View {
 
     func update() {
         updateModel.updateAvailableFirmware()
+    }
+
+
+    private func prepareUpdate(action: () -> Void) {
+        guard device.hasBatteryCharged else {
+            showCharge = true
+            return
+        }
+        guard device.status != .synchronizing else {
+            showPauseSync = true
+            return
+        }
+        action()
     }
 }
