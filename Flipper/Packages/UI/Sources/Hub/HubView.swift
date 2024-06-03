@@ -10,7 +10,6 @@ struct HubView: View {
 
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
 
-    @State private var showRemoteControl = false
     @State private var showDetectReader = false
 
     var body: some View {
@@ -18,11 +17,6 @@ struct HubView: View {
             ScrollView {
                 VStack(spacing: 14) {
                     HStack(spacing: 14) {
-                        Button {
-                            showRemoteControl = true
-                        } label: {
-                            RemoteControlCard()
-                        }
 
                         NavigationLink {
                             NFCToolsView($showDetectReader)
@@ -42,10 +36,6 @@ struct HubView: View {
                         .padding(.leading, 8)
                 }
             }
-            .sheet(isPresented: $showRemoteControl) {
-                RemoteControlView()
-                    .environmentObject(device)
-            }
         }
         .onOpenURL { url in
             if url == .mfkey32Link {
@@ -62,24 +52,12 @@ struct HubView: View {
         @AppStorage(.hasReaderLog) var hasReaderLog = false
 
         var body: some View {
-            HubCardSmall(
+            NavigationCard(
                 name: "NFC Tools",
                 description:
                     "Calculate MIFARE Classic card keys using Flipper Zero",
                 image: "nfc",
                 hasNotification: hasReaderLog
-            )
-        }
-    }
-
-    struct RemoteControlCard: View {
-        var body: some View {
-            HubCardSmall(
-                name: "Remote Control",
-                description:
-                    "Control your Flipper Zero remotely via mobile phone",
-                image: "HubRemoteControl",
-                hasNotification: false
             )
         }
     }
