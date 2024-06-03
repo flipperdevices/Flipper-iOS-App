@@ -6,6 +6,8 @@ struct TabView: View {
     @EnvironmentObject var synchronization: Synchronization
     @EnvironmentObject var applications: Applications
 
+    @Environment(\.colorScheme) var colorScheme
+
     @Binding var selected: Tab
     var extraAction: () -> Void
 
@@ -33,14 +35,29 @@ struct TabView: View {
         }
     }
 
+    struct Badge: View {
+        let offset: Double
+
+        var body: some View {
+            Circle()
+                .frame(width: 12, height: 12)
+                .foregroundColor(.white)
+                .overlay(alignment: .center) {
+                    Circle()
+                        .frame(width: 10, height: 10)
+                        .foregroundColor(.sGreenUpdate)
+                }
+                .offset(x: offset, y: -2)
+        }
+    }
+
     var body: some View {
         Group {
             HStack(alignment: .top) {
                 TabViewItem(
                     image: deviceImage,
                     name: deviceTabName,
-                    isSelected: selected == .device,
-                    hasNotification: false
+                    isSelected: selected == .device
                 ) {
                     handleTap(on: .device)
                 }
@@ -49,10 +66,9 @@ struct TabView: View {
                 Spacer(minLength: 0)
 
                 TabViewItem(
-                    image: .init(Image(archiveImageName)),
+                    image: archiveImage,
                     name: "Archive",
-                    isSelected: selected == .archive,
-                    hasNotification: false
+                    isSelected: selected == .archive
                 ) {
                     handleTap(on: .archive)
                 }
@@ -61,10 +77,9 @@ struct TabView: View {
                 Spacer(minLength: 0)
 
                 TabViewItem(
-                    image: .init(Image(appsImageName)),
+                    image: appsImage,
                     name: "Apps",
-                    isSelected: selected == .apps,
-                    hasNotification: hasAppUpdates
+                    isSelected: selected == .apps
                 ) {
                     handleTap(on: .apps)
                 }
@@ -76,10 +91,9 @@ struct TabView: View {
                 Spacer(minLength: 0)
 
                 TabViewItem(
-                    image: .init(Image(hubImageName)),
-                    name: "Hub",
-                    isSelected: selected == .hub,
-                    hasNotification: hasReaderLog
+                    image: hubImage,
+                    name: "Tools",
+                    isSelected: selected == .hub
                 ) {
                     handleTap(on: .hub)
                 }
@@ -136,32 +150,64 @@ extension Device.Status {
 
 private extension TabView {
     var deviceColor: Color {
-        guard selected == .device else {
-            return .black30
-        }
+        guard selected == .device else { return .black30 }
         return device.status.color
     }
 
     var archiveColor: Color {
-        selected == .archive ? .black80 : .black30
+        guard selected == .archive else { return .black30 }
+        return colorScheme == .light ? .black : .black30
     }
 
     var appsColor: Color {
-        selected == .apps ? .black80 : .black30
+        guard selected == .apps else { return .black30 }
+        return colorScheme == .light ? .black : .black30
     }
 
     var hubColor: Color {
-        selected == .hub ? .black80 : .black30
+        guard selected == .hub else { return .black30 }
+        return colorScheme == .light ? .black : .black30
     }
 }
 
 private extension TabView {
     var deviceImage: AnyView {
-        return .init(
+        .init(
             DeviceImage(
                 status: device.status,
                 style: selected == .device ? .fill : .stroke
             )
+        )
+    }
+
+    var archiveImage: AnyView {
+        .init(
+            Image(archiveImageName)
+                .renderingMode(.template)
+        )
+    }
+
+    var appsImage: AnyView {
+        .init(
+            Image(appsImageName)
+                .renderingMode(.template)
+                .overlay(alignment: .topLeading) {
+                    if hasAppUpdates {
+                        Badge(offset: 24)
+                    }
+                }
+        )
+    }
+
+    var hubImage: AnyView {
+        .init(
+            Image(hubImageName)
+                .renderingMode(.template)
+                .overlay(alignment: .topLeading) {
+                    if hasReaderLog {
+                        Badge(offset: 30)
+                    }
+                }
         )
     }
 
@@ -174,6 +220,6 @@ private extension TabView {
     }
 
     var hubImageName: String {
-        selected == .hub ? "hub_filled_icon" : "hub_line_icon"
+        selected == .hub ? "tools_filled_icon" : "tools_line_icon"
     }
 }
