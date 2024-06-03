@@ -129,7 +129,7 @@ public extension Color {
     }
 
     static var custom: Color {
-        .black16
+        .black40
     }
 
     // MARK: Keys
