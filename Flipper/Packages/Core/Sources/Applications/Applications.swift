@@ -282,16 +282,6 @@ public class Applications: ObservableObject {
         return .init(category: category)
     }
 
-    public func loadTopApp() async throws -> Application {
-        try await handlingWebErrors {
-            _ = try await loadCategories()
-            guard let app = try await catalog.featured().get().first else {
-                throw Error.noInternet
-            }
-            return mapApp(from: app)
-        }
-    }
-
     private var categoriesTask: Task<[Category], Swift.Error>?
 
     public func loadCategories() async throws -> [Category] {
