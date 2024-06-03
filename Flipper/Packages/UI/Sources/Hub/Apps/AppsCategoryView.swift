@@ -33,9 +33,7 @@ struct AppsCategoryView: View {
                 EmptyCategoryView()
                     .padding(.horizontal, 24)
             } else {
-                LazyScrollView {
-                    await load()
-                } content: {
+                ScrollView {
                     VStack(spacing: 18) {
                         HStack {
                             Spacer()
@@ -45,7 +43,13 @@ struct AppsCategoryView: View {
 
                         AppList(
                             applications: filteredApplications,
-                            showPlaceholder: isLoading && !isAllLoaded)
+                            showPlaceholder: isLoading && !isAllLoaded
+                        ) {
+                            Task {
+                                await load()
+                            }
+                        }
+
                     }
                     .padding(.vertical, 18)
                 }

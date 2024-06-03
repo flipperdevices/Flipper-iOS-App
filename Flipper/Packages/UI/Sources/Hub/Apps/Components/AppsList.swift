@@ -6,15 +6,18 @@ struct AppList: View {
     let applications: [Application]
     let isInstalled: Bool
     let showPlaceholder: Bool
+    let onLoadMore: () -> Void
 
     init(
         applications: [Application],
         isInstalled: Bool = false,
-        showPlaceholder: Bool = false
+        showPlaceholder: Bool = false,
+        onLoadMore: @escaping () -> Void = {}
     ) {
         self.applications = applications
         self.isInstalled = isInstalled
         self.showPlaceholder = showPlaceholder
+        self.onLoadMore = onLoadMore
     }
 
     struct Divider: View {
@@ -36,6 +39,11 @@ struct AppList: View {
                         application: application,
                         isInstalled: isInstalled
                     )
+                    .onAppear {
+                        if application == applications.last {
+                            onLoadMore()
+                        }
+                    }
                 }
                 .foregroundColor(.primary)
                 .analyzingTapGesture {

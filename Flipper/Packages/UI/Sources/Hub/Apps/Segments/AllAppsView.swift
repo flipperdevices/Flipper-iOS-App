@@ -20,9 +20,7 @@ struct AllAppsView: View {
             AppsAPIError(error: $error, action: reload)
                 .padding(.horizontal, 14)
         } else {
-            LazyScrollView {
-                await loadApplications()
-            } content: {
+            ScrollView {
                 VStack(spacing: 0) {
                     AppsCategories(categories: categories)
                         .padding(.horizontal, 14)
@@ -44,13 +42,15 @@ struct AllAppsView: View {
                         .padding(.top, 32)
                         .padding(.horizontal, 14)
 
-                        AppList(applications: filteredApplications)
-                            .padding(.top, 24)
-
-                        if isLoading, !isAllLoaded {
-                            AppRowPreview()
-                                .padding(.top, 12)
+                        AppList(
+                            applications: filteredApplications,
+                            showPlaceholder: isLoading && !isAllLoaded
+                        ) {
+                            Task {
+                                await loadApplications()
+                            }
                         }
+                        .padding(.top, 24)
                     }
                 }
                 .padding(.top, 14)
