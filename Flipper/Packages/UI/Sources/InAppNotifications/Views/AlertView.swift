@@ -46,7 +46,7 @@ struct AlertView<Content: View>: View {
             hide()
         }
         .onAppear {
-            show()
+             show()
         }
     }
 
