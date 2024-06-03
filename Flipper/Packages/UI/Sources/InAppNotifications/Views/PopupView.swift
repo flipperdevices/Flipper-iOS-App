@@ -15,7 +15,10 @@ struct PopupView<Content: View>: View {
             Color.black.opacity(0.3)
                 .ignoresSafeArea()
                 .onTapGesture {
+                    guard isPresented else { return }
                     isPresented = false
+
+                    hide()
                 }
                 .opacity(isPresentedAnimated ? 1 : 0)
 
