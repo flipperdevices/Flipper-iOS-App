@@ -31,10 +31,9 @@ struct AppList: View {
     var body: some View {
         LazyVStack(spacing: 12) {
             ForEach(applications) { application in
-                NavigationLink {
-                    AppView(alias: application.alias)
-                        .environmentObject(model)
-                } label: {
+                NavigationLink(
+                    value: AppsView.Destination.app(application.alias)
+                ) {
                     AppRow(
                         application: application,
                         isInstalled: isInstalled

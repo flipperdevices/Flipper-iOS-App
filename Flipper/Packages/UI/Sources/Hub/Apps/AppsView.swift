@@ -9,17 +9,11 @@ struct AppsView: View {
 
     @AppStorage(.selectedTab) private var selectedTab: TabView.Tab = .device
 
+    @State private var path = NavigationPath()
     @State private var selectedSegment: AppsSegments.Segment = .all
 
     @State private var predicate = ""
     @State private var showSearchView = false
-
-    @State private var sharedApp: SharedApp = .init()
-
-    struct SharedApp {
-        var alias: String?
-        var show = false
-    }
 
     @State private var isNotConnectedAlertPresented = false
 
@@ -31,11 +25,16 @@ struct AppsView: View {
         selectedSegment == .installed
     }
 
+    enum Destination: Hashable {
+        case app(String)
+        case category(Applications.Category)
+    }
+
     init() {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ZStack {
                 AllAppsView()
                     .opacity(allSelected && predicate.isEmpty ? 1 : 0)
@@ -96,13 +95,18 @@ struct AppsView: View {
             }
             .onOpenURL { url in
                 if url.isApplicationURL {
-                    sharedApp.alias = url.applicationAlias
+                    guard let alias = url.applicationAlias else {
+                        return
+                    }
+                    path.append(Destination.app(alias))
                     selectedTab = .apps
-                    sharedApp.show = true
                 }
             }
-            .navigationDestination(isPresented: $sharedApp.show) {
-                if let alias = sharedApp.alias {
+            .navigationDestination(for: Destination.self) { destination in
+                switch destination {
+                case .category(let category):
+                    AppsCategoryView(category: category)
+                case .app(let alias):
                     AppView(alias: alias)
                 }
             }

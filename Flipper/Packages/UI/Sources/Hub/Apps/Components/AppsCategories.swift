@@ -17,10 +17,9 @@ struct AppsCategories: View {
                 }
             } else {
                 ForEach(categories) { category in
-                    NavigationLink {
-                        AppsCategoryView(category: category)
-                            .environmentObject(model)
-                    } label: {
+                    NavigationLink(
+                        value: AppsView.Destination.category(category)
+                    ) {
                         AppsCategory(category: category)
                     }
                     .analyzingTapGesture {

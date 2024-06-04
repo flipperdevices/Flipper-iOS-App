@@ -1,7 +1,7 @@
 import Catalog
 import Foundation
 
-public struct Category: Identifiable {
+public struct Category: Identifiable, Hashable {
     public let id: String
     public let name: String
     public let icon: URL
