@@ -3,8 +3,10 @@ import SwiftUI
 
 struct FullScreenshotsView: View {
     @Environment(\.dismiss) private var dismiss
+
     @State private var storage: [Int: UIImage] = [:]
     @State private var currentIndex: Int
+
     private let screenshots: [URL]
     private let title: String
 
@@ -60,16 +62,12 @@ struct FullScreenshotsView: View {
                             .frame(width: UIScreen.main.bounds.width)
                         }
                     }
+                    .scrollTargetLayoutBackport()
                 }
-                .scrollDisabled(true)
-                .onChange(of: currentIndex) { newIndex in
+                .scrollPositionBackport(id: $currentIndex, anchor: .center)
+                .onAppearOrChange(of: currentIndex) { newIndex in
                     withAnimation {
                         proxy.scrollTo(newIndex, anchor: .center)
-                    }
-                }
-                .onAppear {
-                    withAnimation {
-                        proxy.scrollTo(currentIndex, anchor: .center)
                     }
                 }
             }
@@ -89,14 +87,9 @@ struct FullScreenshotsView: View {
                         .frame(height: geometry.size.height)
                         .frame(minWidth: geometry.size.width)
                     }
-                    .onChange(of: currentIndex) { newIndex in
+                    .onAppearOrChange(of: currentIndex) { newIndex in
                         withAnimation {
                             proxy.scrollTo(newIndex, anchor: .center)
-                        }
-                    }
-                    .onAppear {
-                        withAnimation {
-                            proxy.scrollTo(currentIndex, anchor: .center)
                         }
                     }
                 }
@@ -120,12 +113,16 @@ struct FullScreenshotsView: View {
     }
 
     private func onSwipeRight() {
+        if #available(iOS 17.0, *) { return }
+
         if currentIndex < screenshots.count - 1 {
             currentIndex += 1
         }
     }
 
     private func onSwipeLeft() {
+        if #available(iOS 17.0, *) { return }
+
         if currentIndex > 0 {
             currentIndex -= 1
         }
@@ -168,5 +165,48 @@ private extension UIImage {
         UIGraphicsEndImageContext()
 
         return newImage
+    }
+}
+
+extension View {
+    func onAppearOrChange<Element: Equatable>(
+        of item: Element,
+        action: @escaping (Element) -> Void
+    ) -> some View {
+        self
+            .onAppear {
+                action(item)
+            }
+            .onChange(of: item) { newValue in
+                action(newValue)
+            }
+    }
+
+    func scrollTargetLayoutBackport() -> some View {
+        if #available(iOS 17.0, *) {
+            return self.scrollTargetLayout()
+        } else {
+            return self
+        }
+    }
+
+    func scrollPositionBackport<Element: Hashable>(
+        id: Binding<Element>,
+        anchor: UnitPoint? = nil
+    ) -> some View {
+        let binding = Binding<Element?>(
+            get: { id.wrappedValue },
+            set: {
+                if let newValue = $0 {
+                    id.wrappedValue = newValue
+                }
+            }
+        )
+
+        if #available(iOS 17.0, *) {
+            return self.scrollPosition(id: binding, anchor: anchor)
+        } else {
+            return self.scrollDisabled(true)
+        }
     }
 }
