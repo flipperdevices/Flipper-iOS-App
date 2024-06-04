@@ -3,11 +3,10 @@ import SwiftUI
 
 struct CategoryView: View {
     @EnvironmentObject var archive: ArchiveModel
+    @Environment(\.path) private var path
     @Environment(\.dismiss) private var dismiss
 
     let kind: ArchiveItem.Kind
-    @State private var selectedItem: ArchiveItem?
-    @State private var showInfoView = false
 
     var items: [ArchiveItem] {
         archive.items.filter { $0.kind == kind }
@@ -22,15 +21,9 @@ struct CategoryView: View {
 
             ScrollView {
                 CategoryList(items: items) { item in
-                    selectedItem = item
-                    showInfoView = true
+                    path.append(ArchiveView.Destination.info(item))
                 }
                 .padding(14)
-            }
-            .navigationDestination(isPresented: $showInfoView) {
-                if let selectedItem {
-                    InfoView(item: selectedItem)
-                }
             }
         }
         .background(Color.background)

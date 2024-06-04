@@ -32,10 +32,7 @@ struct CategoryLink: View {
     let count: Int
 
     var body: some View {
-        NavigationLink {
-            CategoryView(
-                kind: kind)
-        } label: {
+        NavigationLink(value: ArchiveView.Destination.category(kind)) {
             CategoryRow(
                 image: kind.icon,
                 name: kind.name,
@@ -48,9 +45,7 @@ struct CategoryDeletedLink: View {
     let count: Int
 
     var body: some View {
-        NavigationLink {
-            CategoryDeletedView()
-        } label: {
+        NavigationLink(value: ArchiveView.Destination.categoryDeleted) {
             CategoryRow(image: nil, name: "Deleted", count: count)
         }
     }
