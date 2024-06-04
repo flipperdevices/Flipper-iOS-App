@@ -25,10 +25,10 @@ struct UpdateWhatsNewButton: View {
                     .frame(width: 12, height: 12)
 
                 Text("What’s New")
-                    .font(.system(size: 12, weight: .regular))
+                    .font(.system(size: 10))
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 3)
             .foregroundColor(.black12)
             .overlay(
                 RoundedRectangle(cornerRadius: 30)
