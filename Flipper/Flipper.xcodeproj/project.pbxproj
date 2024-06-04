@@ -13,6 +13,7 @@
 		49CE8F9E25262E2300B9CBE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49CE8F9D25262E2300B9CBE4 /* LaunchScreen.storyboard */; };
 		65CAD4C22BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 65CAD4C12BD6946000628789 /* PrivacyInfo.xcprivacy */; };
 		65CAD4C42BD6946000628789 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 65CAD4C12BD6946000628789 /* PrivacyInfo.xcprivacy */; };
+		65FBBC312C0F266B00A3D2AD /* Notifications in Frameworks */ = {isa = PBXBuildFile; productRef = 65FBBC302C0F266B00A3D2AD /* Notifications */; };
 		8B064D5D2BD6C8F6008C00B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B064D5C2BD6C8F6008C00B3 /* Assets.xcassets */; };
 		8B064D5F2BD6DE41008C00B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B064D5E2BD6DE41008C00B3 /* Assets.xcassets */; };
 		8B10BF4C29A77D53007FC0F3 /* BlackHole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B10BF4B29A77D53007FC0F3 /* BlackHole.swift */; };
@@ -191,6 +192,7 @@
 				8BB7DF2C29115FC3005C38C9 /* UI in Frameworks */,
 				8BB7DF2E29115FC7005C38C9 /* Core in Frameworks */,
 				8BF9CECA28E21A4400CD5D31 /* NotificationCenter.framework in Frameworks */,
+				65FBBC312C0F266B00A3D2AD /* Notifications in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,6 +422,7 @@
 			packageProductDependencies = (
 				8BB7DF2B29115FC3005C38C9 /* UI */,
 				8BB7DF2D29115FC7005C38C9 /* Core */,
+				65FBBC302C0F266B00A3D2AD /* Notifications */,
 			);
 			productName = TodayWidget;
 			productReference = 8BF9CEC828E21A4400CD5D31 /* TodayWidget.appex */;
@@ -1084,6 +1087,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		65FBBC302C0F266B00A3D2AD /* Notifications */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Notifications;
+		};
 		8B7064CB26E27429006CB4A8 /* UI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = UI;
