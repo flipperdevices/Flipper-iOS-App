@@ -23,7 +23,7 @@ public class Applications: ObservableObject {
     @Published public var installedStatus: InstalledStatus = .error
     @Published public var statuses: [Application.ID: ApplicationStatus] = [:]
     // Minimize CPU usage in background to prevent iOS from killing the app
-    public var enableProgressUpdates = true
+    @Published public var enableProgressUpdates = true
 
     public var outdated: [Application] {
         installed.filter { statuses[$0.id] == .outdated }
