@@ -4,8 +4,10 @@ import SwiftUI
 extension DeviceUpdateCard {
     struct CardStateReady: View {
         @EnvironmentObject var updateModel: UpdateModel
+        @State private var showFileImporter = false
 
         let state: UpdateModel.State.Ready
+        let startUpdate: () -> Void
 
         var version: Update.Version? {
             updateModel.available
@@ -15,15 +17,6 @@ extension DeviceUpdateCard {
             get { updateModel.updateChannel }
             nonmutating set { updateModel.updateChannel = newValue }
         }
-
-        @EnvironmentObject var device: Device
-        @EnvironmentObject var synchronization: Synchronization
-
-        @Environment(\.alerts.device.showConfirmUpdate) var showConfirmUpdate
-        @State private var showFileImporter = false
-
-        @State private var showPauseSync = false
-        @State private var showCharge = false
 
         var description: String {
             switch state {
@@ -88,28 +81,6 @@ extension DeviceUpdateCard {
                     .padding(.horizontal, 12)
                 }
             }
-            .alert(isPresented: $showPauseSync) {
-                PauseSyncAlert(
-                    isPresented: $showPauseSync,
-                    installedVersion: updateModel.installed!,
-                    availableVersion: updateModel.available!
-                ) {
-                    synchronization.cancelSync()
-                    updateModel.startUpdate()
-                }
-            }
-            .alert(isPresented: showConfirmUpdate) {
-                ConfirmUpdateAlert(
-                    isPresented: showConfirmUpdate,
-                    installedVersion: updateModel.installed!,
-                    availableVersion: updateModel.available!
-                ) {
-                    updateModel.startUpdate()
-                }
-            }
-            .alert(isPresented: $showCharge) {
-                LowBatteryAlert(isPresented: $showCharge)
-            }
             .fileImporter(
                 isPresented: $showFileImporter,
                 allowedContentTypes: [.gzip]
@@ -146,18 +117,6 @@ extension DeviceUpdateCard {
                 updateModel.customFirmware = firmware
                 startUpdate()
             }
-        }
-
-        func startUpdate() {
-            guard device.hasBatteryCharged else {
-                showCharge = true
-                return
-            }
-            guard device.status != .synchronizing else {
-                showPauseSync = true
-                return
-            }
-            showConfirmUpdate.wrappedValue = true
         }
     }
 }
