@@ -40,3 +40,11 @@ struct AppScreenshot: View {
         )
     }
 }
+
+#Preview("Correct url screenshot") {
+    AppScreenshot(url: .mockValidAppScreenshotFirst) { _ in }
+}
+
+#Preview("Unknown url screenshot") {
+    AppScreenshot(url: .mockUnknownAppScreenshot) { _ in }
+}

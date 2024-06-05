@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct ZoomAppScreenshot: View {
-    let currentIndex: Int
-    let url: URL
+struct ZoomScreenshot: View {
+    let screenshot: URL
+    @Binding var currentIndex: Int
     let onSwipeRight: () -> Void
     let onSwipeLeft: () -> Void
 
@@ -20,7 +20,7 @@ struct ZoomAppScreenshot: View {
         GeometryReader { geometry in
             VStack {
                 Spacer()
-                CachedAsyncImage(url: url) { image in
+                CachedAsyncImage(url: screenshot) { image in
                     Image(uiImage: image)
                         .interpolation(.none)
                         .resizable()

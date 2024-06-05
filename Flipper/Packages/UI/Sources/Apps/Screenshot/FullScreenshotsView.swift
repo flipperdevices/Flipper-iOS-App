@@ -4,29 +4,17 @@ import SwiftUI
 struct FullScreenshotsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var storage: [Int: UIImage] = [:]
-    @State private var currentIndex: Int
-    private let screenshots: [URL]
-    private let title: String
+    @State private var currentIndex: Int = 0
 
-    init(
-        _ currentIndex: Int,
-        screenshots: [URL],
-        title: String
-    ) {
-        self.currentIndex = currentIndex
-        self.screenshots = screenshots
-        self.title = title
+    let title: String
+    let screenshots: [URL]
+    let initialIndex: Int
+
+    private var description: String? {
+        screenshots.isEmpty ? nil : "\(currentIndex + 1)/\(screenshots.count)"
     }
 
-    private var currentScreenshot: URL {
-        screenshots[currentIndex]
-    }
-
-    private var description: String {
-        "\(currentIndex + 1)/\(screenshots.count)"
-    }
-
-    private var disabledShare: Bool {
+    private var isShareDisabled: Bool {
         storage[currentIndex] == nil
     }
 
@@ -43,68 +31,24 @@ struct FullScreenshotsView: View {
                 },
                 trailing: {
                     ShareButton(action: onShare)
-                        .disabled(disabledShare)
-                        .opacity(disabledShare ? 0.4 : 1)
+                        .disabled(isShareDisabled)
+                        .opacity(isShareDisabled ? 0.4 : 1)
                 }
             )
-            ScrollViewReader { proxy in
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 0) {
-                        ForEachIndexed(screenshots) { screenshot, _ in
-                            ZoomAppScreenshot(
-                                currentIndex: currentIndex,
-                                url: screenshot,
-                                onSwipeRight: onSwipeRight,
-                                onSwipeLeft: onSwipeLeft
-                            )
-                            .frame(width: UIScreen.main.bounds.width)
-                        }
-                    }
-                }
-                .scrollDisabled(true)
-                .onChange(of: currentIndex) { newIndex in
-                    withAnimation {
-                        proxy.scrollTo(newIndex, anchor: .center)
-                    }
-                }
-                .onAppear {
-                    withAnimation {
-                        proxy.scrollTo(currentIndex, anchor: .center)
-                    }
+            if screenshots.isEmpty {
+                Spacer()
+                Text("The screenshots for this app are missing")
+                Spacer()
+            } else {
+                ScrollScreenshots(
+                    screenshots: screenshots,
+                    currentIndex: $currentIndex
+                ) { image, index in
+                    storage[index] = image
                 }
             }
-            GeometryReader { geometry in
-                ScrollViewReader { proxy in
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 4.0) {
-                            ForEachIndexed(screenshots) { screenshot, index in
-                                AppScreenshot(
-                                    url: screenshot,
-                                    onComplete: { storage[index] = $0 }
-                                )
-                                .scaleEffect(currentIndex == index ? 1 : 0.8)
-                                .onTapGesture { currentIndex = index }
-                            }
-                        }
-                        .frame(height: geometry.size.height)
-                        .frame(minWidth: geometry.size.width)
-                    }
-                    .onChange(of: currentIndex) { newIndex in
-                        withAnimation {
-                            proxy.scrollTo(newIndex, anchor: .center)
-                        }
-                    }
-                    .onAppear {
-                        withAnimation {
-                            proxy.scrollTo(currentIndex, anchor: .center)
-                        }
-                    }
-                }
-            }
-            .frame(height: 64)
-            .padding(.bottom, 12)
-            .padding(.horizontal, 18)
         }
+        .onAppear { currentIndex = initialIndex }
     }
 
     private func onShare() {
@@ -117,18 +61,6 @@ struct FullScreenshotsView: View {
 
         let name = "Screenshot from \(title)"
         UI.shareImage(name: name, data: data)
-    }
-
-    private func onSwipeRight() {
-        if currentIndex < screenshots.count - 1 {
-            currentIndex += 1
-        }
-    }
-
-    private func onSwipeLeft() {
-        if currentIndex > 0 {
-            currentIndex -= 1
-        }
     }
 }
 
@@ -169,4 +101,46 @@ private extension UIImage {
 
         return newImage
     }
+}
+
+#Preview("Screenshots start by first") {
+    FullScreenshotsView(
+        title: "Some App",
+        screenshots: [
+            .mockValidAppScreenshotFirst,
+            .mockUnknownAppScreenshot,
+            .mockValidAppScreenshotSecond,
+            .mockValidAppScreenshotThird
+        ],
+        initialIndex: 0
+    )
+}
+
+#Preview("Screenshots start by third") {
+    FullScreenshotsView(
+        title: "Some App",
+        screenshots: [
+            .mockValidAppScreenshotFirst,
+            .mockUnknownAppScreenshot,
+            .mockValidAppScreenshotSecond,
+            .mockValidAppScreenshotThird
+        ],
+        initialIndex: 2
+    )
+}
+
+#Preview("One screenshot") {
+    FullScreenshotsView(
+        title: "Some App",
+        screenshots: [.mockValidAppScreenshotFirst],
+        initialIndex: 0
+    )
+}
+
+#Preview("Empty screenshots") {
+    FullScreenshotsView(
+        title: "Some App",
+        screenshots: [],
+        initialIndex: 0
+    )
 }
