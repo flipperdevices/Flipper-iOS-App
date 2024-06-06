@@ -82,6 +82,8 @@ struct AllAppsView: View {
     func loadCategories() async {
         do {
             categories = try await model.loadCategories()
+        } catch let error as Applications.Error {
+            self.error = error
         } catch {
             categories = []
         }
