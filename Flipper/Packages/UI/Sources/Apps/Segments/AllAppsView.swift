@@ -56,7 +56,7 @@ struct AllAppsView: View {
                 .padding(.top, 14)
             }
             .onChange(of: sortOrder) { _ in
-                reloadApplications()
+                Task { await reloadApplications() }
             }
             .onReceive(model.$deviceInfo) { _ in
                 reload()
@@ -115,22 +115,20 @@ struct AllAppsView: View {
     }
 
     func reload() {
-        reloadCategories()
-        reloadApplications()
-    }
-
-    func reloadCategories() {
         Task {
-            categories = []
-            await loadCategories()
+            await reloadCategories()
+            await reloadApplications()
         }
     }
 
-    func reloadApplications() {
-        Task {
-            applications = []
-            isAllLoaded = false
-            await loadApplications()
-        }
+    func reloadCategories() async {
+        categories = []
+        await loadCategories()
+    }
+
+    func reloadApplications() async {
+        applications = []
+        isAllLoaded = false
+        await loadApplications()
     }
 }
