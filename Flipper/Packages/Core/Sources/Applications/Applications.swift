@@ -285,23 +285,28 @@ public class Applications: ObservableObject {
     private var categoriesTask: Task<[Category], Swift.Error>?
 
     public func loadCategories() async throws -> [Category] {
-        if let task = categoriesTask {
-            return try await task.value
-        } else {
-            let task = Task<[Category], Swift.Error> {
-                try await handlingWebErrors {
-                    try await catalog
-                        .categories()
-                        .target(deviceInfo?.target)
-                        .api(deviceInfo?.api)
-                        .get()
+        do {
+            if let task = categoriesTask {
+                return try await task.value
+            } else {
+                let task = Task<[Category], Swift.Error> {
+                    try await handlingWebErrors {
+                        try await catalog
+                            .categories()
+                            .target(deviceInfo?.target)
+                            .api(deviceInfo?.api)
+                            .get()
+                    }
+                    .map { .init($0) }
                 }
-                .map { .init($0) }
+                categoriesTask = task
+                categories = try await task.value
+                categoriesTask = nil
+                return categories
             }
-            categoriesTask = task
-            categories = try await task.value
+        } catch {
             categoriesTask = nil
-            return categories
+            throw error
         }
     }
 
