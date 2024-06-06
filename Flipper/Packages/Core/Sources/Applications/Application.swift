@@ -46,3 +46,7 @@ public struct Application: Identifiable, Equatable {
     public var updated: Date { application.updated.date }
     public var current: Catalog.Application.Current { application.current }
 }
+
+extension Application.Category {
+    static var unknown: Application.Category { .init(name: "Unknown") }
+}

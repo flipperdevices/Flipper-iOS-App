@@ -270,7 +270,7 @@ public class Applications: ObservableObject {
 
     private func category(id: String) -> Application.Category {
         guard let category = categories.first(where: { $0.id == id }) else {
-            return .init(name: "Unknown")
+            return .unknown
         }
         return .init(category: category)
     }
@@ -408,6 +408,7 @@ public class Applications: ObservableObject {
                     .map { mapApp(from: $0) }
 
                 loaded
+                    .filter { $0.category != .unknown }
                     .forEach { updateInstalledApp($0) }
 
                 let missing = slice
