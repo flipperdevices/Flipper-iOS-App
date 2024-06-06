@@ -25,6 +25,9 @@ public class UserDefaultsStorage {
     @UserDefault(key: .isDebugMode, defaultValue: false)
     public var isDebugMode: Bool
 
+    @UserDefault(key: .isSyncingDisabled, defaultValue: false)
+    public var isSyncingDisabled: Bool
+
     @UserDefault(key: .isProvisioningDisabled, defaultValue: false)
     public var isProvisioningDisabled: Bool
 
@@ -95,6 +98,7 @@ public extension UserDefaults {
         case hiddenApps = "hiddenApps"
 
         case isDebugMode = "isDebugMode"
+        case isSyncingDisabled = "isSyncingDisabled"
         case isProvisioningDisabled = "isProvisioningDisabled"
         case isDevCatalog = "isDevCatalog"
 

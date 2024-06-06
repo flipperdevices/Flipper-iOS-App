@@ -9,6 +9,7 @@ struct OptionsView: View {
     @Environment(\.dismiss) private var dismiss
 
     @AppStorage(.isDebugMode) var isDebugMode = false
+    @AppStorage(.isSyncingDisabled) var isSyncingDisabled = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
     @AppStorage(.isDevCatalog) var isDevCatalog = false
 
@@ -102,6 +103,10 @@ struct OptionsView: View {
 
             if isDebugMode {
                 Section(header: Text("Debug")) {
+                    Toggle(isOn: $isSyncingDisabled) {
+                        Text("Disable automatic syncing")
+                    }
+                    .tint(.a1)
                     Toggle(isOn: $isProvisioningDisabled) {
                         Text("Disable provisioning")
                     }
