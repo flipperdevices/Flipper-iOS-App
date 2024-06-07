@@ -1,14 +1,14 @@
 import SwiftUI
 
-struct NavigationButton<Destination: View>: View {
+struct NavigationButton<Destination: Hashable>: View {
     let image: String
     let title: String
-    let destination: () -> Destination
+    let destination: Destination?
 
     init(
         image: String,
         title: String,
-        @ViewBuilder destination: @escaping () -> Destination
+        destination: Destination?
     ) {
         self.image = image
         self.title = title
@@ -16,7 +16,7 @@ struct NavigationButton<Destination: View>: View {
     }
 
     var body: some View {
-        NavigationLink(destination: destination) {
+        NavigationLink(value: destination) {
             HStack {
                 Image(image)
                     .renderingMode(.template)

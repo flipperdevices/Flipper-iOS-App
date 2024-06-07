@@ -1,7 +1,9 @@
-actor SerialTaskQueue {
+public actor SerialTaskQueue {
     var taskQueue: [() async -> Void] = []
 
-    func enqueue(_ task: @escaping () async -> Void) async {
+    public init() {}
+
+    public func enqueue(_ task: @escaping () async -> Void) async {
         taskQueue.append(task)
         if taskQueue.count == 1 {
             await processQueue()

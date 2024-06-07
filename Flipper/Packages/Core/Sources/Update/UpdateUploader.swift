@@ -37,8 +37,9 @@ public class FirmwareUploader {
         var totalSent = 0
 
         for file in files {
+            let bytes = file.data
             let path = path.appending(file.name)
-            for try await sent in storage.write(at: path, bytes: file.data) {
+            for try await sent in await storage.write(at: path, bytes: bytes) {
                 totalSent += sent
                 progress(Double(totalSent) / Double(totalSize))
             }

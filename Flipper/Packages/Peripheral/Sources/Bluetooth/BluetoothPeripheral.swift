@@ -21,6 +21,7 @@ public protocol BluetoothPeripheral: AnyObject {
     func onError(_ error: Swift.Error)
 
     func send(_ data: Data)
+    func restartSession()
 }
 
 public extension BluetoothPeripheral {

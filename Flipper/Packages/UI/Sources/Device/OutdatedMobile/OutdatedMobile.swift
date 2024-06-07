@@ -8,7 +8,7 @@ struct OutdatedMobileCard: View {
             VStack(spacing: 0) {
                 Image("OutdatedMobile")
 
-                Text("Outdated mobile app version")
+                Text("Outdated Mobile App Version")
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .padding(.top, 4)

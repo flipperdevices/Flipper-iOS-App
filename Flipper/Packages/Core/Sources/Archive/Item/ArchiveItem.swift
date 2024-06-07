@@ -1,7 +1,7 @@
 import Peripheral
 import Foundation
 
-public struct ArchiveItem: Equatable, Identifiable {
+public struct ArchiveItem: Equatable, Identifiable, Hashable {
     public var id: ID {
         .init(path: path)
     }

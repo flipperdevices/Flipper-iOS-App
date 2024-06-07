@@ -53,7 +53,7 @@ extension EmulateView {
             ZStack {
                 HStack {
                     if isEmulating {
-                        Animation("Sending")
+                        SendingAnimation()
                             .frame(width: 32, height: 32)
                     } else {
                         Image("Send")

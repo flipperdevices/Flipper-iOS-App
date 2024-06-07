@@ -122,7 +122,7 @@ actor FlipperApps {
     }
 
     private func remoteManifest(_ path: Path) async throws -> Manifest {
-        let data = try await storage.read(at: path)
+        let data = try await storage.read(at: path).drain()
         try await cache.upsert(String(decoding: data, as: UTF8.self), at: path)
         let manifest = try FFFDecoder.decode(Manifest.self, from: data)
         return manifest

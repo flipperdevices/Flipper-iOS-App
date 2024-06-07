@@ -22,6 +22,8 @@ public class Applications: ObservableObject {
     @Published public var installed: [Application] = []
     @Published public var installedStatus: InstalledStatus = .error
     @Published public var statuses: [Application.ID: ApplicationStatus] = [:]
+    // Minimize CPU usage in background to prevent iOS from killing the app
+    @Published public var enableProgressUpdates = true
 
     public var outdated: [Application] {
         installed.filter { statuses[$0.id] == .outdated }
@@ -129,28 +131,40 @@ public class Applications: ObservableObject {
         }
     }
 
+    let installQueue = SerialTaskQueue()
+
     public func install(_ application: Application) async {
-        do {
-            installed.append(application)
-            setStatus(.installing(0), for: application)
-            try await _install(application) { progress in
-                setStatus(.installing(progress), for: application)
+        installed.append(application)
+        setStatus(.installing(0), for: application)
+
+        await installQueue.enqueue {
+            do {
+                try await self._install(application) { progress in
+                    if self.enableProgressUpdates {
+                        self.setStatus(.installing(progress), for: application)
+                    }
+                }
+                self.setStatus(.installed, for: application)
+            } catch {
+                logger.error("install app: \(error)")
             }
-            setStatus(.installed, for: application)
-        } catch {
-            logger.error("install app: \(error)")
         }
     }
 
     public func update(_ application: Application) async {
-        do {
-            setStatus(.updating(0), for: application)
-            try await _install(application) { progress in
-                setStatus(.updating(progress), for: application)
+        setStatus(.updating(0), for: application)
+
+        await installQueue.enqueue {
+            do {
+                try await self._install(application) { progress in
+                    if self.enableProgressUpdates {
+                        self.setStatus(.updating(progress), for: application)
+                    }
+                }
+                self.setStatus(.installed, for: application)
+            } catch {
+                logger.error("update app: \(error)")
             }
-            setStatus(.installed, for: application)
-        } catch {
-            logger.error("update app: \(error)")
         }
     }
 
@@ -207,8 +221,8 @@ public class Applications: ObservableObject {
 
     private func getFlipperTarget() async throws -> String {
         var target: String = ""
-        for try await property in system.property("devinfo.hardware.target") {
-            target = property.value
+        for try await next in await system.property("devinfo.hardware.target") {
+            target = next.value
         }
         return "f\(target)"
     }
@@ -216,10 +230,10 @@ public class Applications: ObservableObject {
     private func getFlipperAPI() async throws -> String {
         var major: String = "0"
         var minor: String = "0"
-        for try await property in system.property("devinfo.firmware.api") {
-            switch property.key {
-            case "firmware.api.major": major = property.value
-            case "firmware.api.minor": minor = property.value
+        for try await next in await system.property("devinfo.firmware.api") {
+            switch next.key {
+            case "firmware.api.major": major = next.value
+            case "firmware.api.minor": minor = next.value
             default: logger.error("unexpected api property")
             }
         }
@@ -256,7 +270,7 @@ public class Applications: ObservableObject {
 
     private func category(id: String) -> Application.Category {
         guard let category = categories.first(where: { $0.id == id }) else {
-            return .init(name: "Unknown")
+            return .unknown
         }
         return .init(category: category)
     }
@@ -268,36 +282,31 @@ public class Applications: ObservableObject {
         return .init(category: category)
     }
 
-    public func loadTopApp() async throws -> Application {
-        try await handlingWebErrors {
-            _ = try await loadCategories()
-            guard let app = try await catalog.featured().get().first else {
-                throw Error.noInternet
-            }
-            return mapApp(from: app)
-        }
-    }
-
     private var categoriesTask: Task<[Category], Swift.Error>?
 
     public func loadCategories() async throws -> [Category] {
-        if let task = categoriesTask {
-            return try await task.value
-        } else {
-            let task = Task<[Category], Swift.Error> {
-                try await handlingWebErrors {
-                    try await catalog
-                        .categories()
-                        .target(deviceInfo?.target)
-                        .api(deviceInfo?.api)
-                        .get()
+        do {
+            if let task = categoriesTask {
+                return try await task.value
+            } else {
+                let task = Task<[Category], Swift.Error> {
+                    try await handlingWebErrors {
+                        try await catalog
+                            .categories()
+                            .target(deviceInfo?.target)
+                            .api(deviceInfo?.api)
+                            .get()
+                    }
+                    .map { .init($0) }
                 }
-                .map { .init($0) }
+                categoriesTask = task
+                categories = try await task.value
+                categoriesTask = nil
+                return categories
             }
-            categoriesTask = task
-            categories = try await task.value
+        } catch {
             categoriesTask = nil
-            return categories
+            throw error
         }
     }
 
@@ -404,6 +413,7 @@ public class Applications: ObservableObject {
                     .map { mapApp(from: $0) }
 
                 loaded
+                    .filter { $0.category != .unknown }
                     .forEach { updateInstalledApp($0) }
 
                 let missing = slice

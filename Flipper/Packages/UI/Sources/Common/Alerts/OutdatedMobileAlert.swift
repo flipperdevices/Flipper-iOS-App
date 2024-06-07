@@ -12,7 +12,7 @@ struct OutdatedMobileAlert: View {
                 .frame(width: 120, height: 72)
                 .padding(.top, 8)
 
-            Text("Outdated mobile app version")
+            Text("Outdated Mobile App Version")
                 .font(.system(size: 14, weight: .bold))
                 .padding(.top, 24)
 

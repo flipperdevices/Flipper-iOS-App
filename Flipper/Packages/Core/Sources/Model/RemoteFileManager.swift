@@ -42,7 +42,7 @@ public class RemoteFileManager: ObservableObject {
 
     public func readFile(at path: Path) async throws -> String {
         do {
-            let bytes = try await storage.read(at: path)
+            let bytes = try await storage.read(at: path).drain()
             return .init(decoding: bytes, as: UTF8.self)
         } catch {
             logger.error("read file: \(error)")
@@ -52,7 +52,7 @@ public class RemoteFileManager: ObservableObject {
 
     public func writeFile(_ content: String, at path: Path) async throws {
         do {
-            try await storage.write(at: path, string: content)
+            try await storage.write(at: path, string: content).drain()
         } catch {
             logger.error("write file: \(error)")
             throw Error.unknown(.init(describing: error))
@@ -77,7 +77,7 @@ public class RemoteFileManager: ObservableObject {
 
             let path = path.appending(name)
             let bytes = try [UInt8](Data(contentsOf: url))
-            try await storage.write(at: path, bytes: bytes)
+            try await storage.write(at: path, bytes: bytes).drain()
         } catch {
             logger.error("import file: \(error)")
             throw Error.unknown(.init(describing: error))

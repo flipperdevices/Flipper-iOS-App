@@ -11,15 +11,20 @@ struct ArchiveView: View {
 
     @Environment(\.notifications) private var notifications
 
-    @State private var importingItem: URL?
-    @State private var importedName = ""
-    @State private var showImportView = false
+    @State private var path = NavigationPath()
 
-    @State private var selectedItem: ArchiveItem?
-    @State private var showInfoView = false
+    @State private var importedName = ""
 
     @State private var predicate = ""
     @State private var showSearchView = false
+
+    enum Destination: Hashable {
+        case info(ArchiveItem)
+        case infoDeleted(ArchiveItem)
+        case importing(URL)
+        case category(ArchiveItem.Kind)
+        case categoryDeleted
+    }
 
     var canPullToRefresh: Bool {
         device.status == .connected ||
@@ -49,17 +54,17 @@ struct ArchiveView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             VStack {
                 if device.status == .connecting {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 14) {
                         Spinner()
                         Text("Connecting to Flipper...")
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.black30)
                     }
                 } else if device.status == .synchronizing {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 14) {
                         Spinner()
                         Text(
                             synchronization.progress == 0
@@ -72,7 +77,7 @@ struct ArchiveView: View {
                 } else if !predicate.isEmpty {
                     ArchiveSearchView(predicate: $predicate)
                 } else {
-                    LazyScrollView {
+                    ScrollView {
                         CategoryCard(
                             groups: groups,
                             deletedCount: archive.deleted.count
@@ -80,21 +85,15 @@ struct ArchiveView: View {
                         .padding(14)
 
                         if !favoriteItems.isEmpty {
-                            FavoritesSection(items: favoriteItems) { item in
-                                selectedItem = item
-                                showInfoView = true
-                            }
-                            .padding(.horizontal, 14)
-                            .padding(.bottom, 14)
+                            FavoritesSection(items: favoriteItems)
+                                .padding(.horizontal, 14)
+                                .padding(.bottom, 14)
                         }
 
                         if !archive.items.isEmpty {
-                            AllItemsSection(items: sortedItems) { item in
-                                selectedItem = item
-                                showInfoView = true
-                            }
-                            .padding(.horizontal, 14)
-                            .padding(.bottom, 14)
+                            AllItemsSection(items: sortedItems)
+                                .padding(.horizontal, 14)
+                                .padding(.bottom, 14)
                         }
                     }
                     .refreshable(isEnabled: canPullToRefresh) {
@@ -142,11 +141,20 @@ struct ArchiveView: View {
             .notification(isPresented: notifications.archive.showImported) {
                 ImportedBanner(itemName: importedName)
             }
+            .navigationDestination(for: Destination.self) { destination in
+                switch destination {
+                case .info(let item): InfoView(item: item)
+                case .infoDeleted(let item): DeletedInfoView(item: item)
+                case .importing(let url): ImportView(url: url)
+                case .category(let kind): CategoryView(kind: kind)
+                case .categoryDeleted: CategoryDeletedView()
+                }
+            }
         }
+        .environment(\.path, $path)
         .onOpenURL { url in
-            if (url.isKeyFile || url.isKeyURL), !showImportView {
-                importingItem = url
-                showImportView = true
+            if url.isKeyFile || url.isKeyURL {
+                path.append(Destination.importing(url))
             }
         }
         .onDrop(of: [.item], isTargeted: nil) { providers in
@@ -156,24 +164,9 @@ struct ArchiveView: View {
                 options: nil
             ) { (data, _) in
                 guard let url = data as? URL else { return }
-                importingItem = url
-                showImportView = true
+                path.append(Destination.importing(url))
             }
             return true
-        }
-        .background {
-            ZStack {
-                NavigationLink("", isActive: $showInfoView) {
-                    if let selectedItem {
-                        InfoView(item: selectedItem)
-                    }
-                }
-                NavigationLink("", isActive: $showImportView) {
-                    if let importingItem {
-                        ImportView(url: importingItem)
-                    }
-                }
-            }
         }
     }
 

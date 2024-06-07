@@ -12,6 +12,7 @@ struct DeviceView: View {
 
     @Environment(\.scenePhase) var scenePhase
 
+    @State private var showRemoteControl = false
     @State private var showForgetAction = false
     @State private var showOutdatedFirmwareAlert = false
     @State private var showOutdatedMobileAlert = false
@@ -60,12 +61,17 @@ struct DeviceView: View {
         device.status != .noDevice
     }
 
+    enum Destination {
+        case info
+        case options
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 DeviceHeader(device: flipper)
 
-                LazyScrollView {
+                ScrollView {
                     VStack(spacing: 0) {
                         switch device.status {
                         case .unsupported:
@@ -82,24 +88,29 @@ struct DeviceView: View {
                                     .padding(.top, 24)
                                     .padding(.horizontal, 14)
                             }
-                            NavigationLink {
-                                DeviceInfoView()
-                            } label: {
+                            NavigationLink(value: Destination.info) {
                                 DeviceInfoCard()
                                     .padding(.top, 24)
                                     .padding(.horizontal, 14)
                             }
                             .disabled(!isDeviceAvailable)
+
+                            Button {
+                                showRemoteControl = true
+                            } label: {
+                                RemoteControlCard()
+                            }
+                            .padding(.top, 24)
+                            .padding(.horizontal, 14)
                         }
 
                         VStack(spacing: 24) {
                             VStack(spacing: 0) {
                                 NavigationButton(
                                     image: "Options",
-                                    title: "Options"
-                                ) {
-                                    OptionsView()
-                                }
+                                    title: "Options",
+                                    destination: Destination.options
+                                )
                             }
                             .cornerRadius(10)
 
@@ -194,6 +205,12 @@ struct DeviceView: View {
             }
             .navigationBarHidden(true)
             .navigationBarBackground(Color.a1)
+            .navigationDestination(for: Destination.self) { destination in
+                switch destination {
+                case .info: DeviceInfoView()
+                case .options: OptionsView()
+                }
+            }
         }
         .alert(isPresented: $showOutdatedFirmwareAlert) {
             OutdatedFirmwareAlert(isPresented: $showOutdatedFirmwareAlert)
@@ -234,6 +251,10 @@ struct DeviceView: View {
         .notification(isPresented: inApp.notifications.showDisabled) {
             NotificationsDisabledBanner(
                 isPresented: inApp.notifications.showDisabled)
+        }
+        .sheet(isPresented: $showRemoteControl) {
+            RemoteControlView()
+                .environmentObject(device)
         }
     }
 

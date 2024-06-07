@@ -3,12 +3,10 @@ import SwiftUI
 
 struct ArchiveSearchView: View {
     @EnvironmentObject var archive: ArchiveModel
+    @Environment(\.path) private var path
     @Environment(\.dismiss) private var dismiss
 
     @Binding var predicate: String
-
-    @State private var selectedItem: ArchiveItem?
-    @State private var showInfoView = false
 
     var filteredItems: [ArchiveItem] {
         guard !predicate.isEmpty else {
@@ -29,19 +27,11 @@ struct ArchiveSearchView: View {
             } else {
                 ScrollView {
                     CategoryList(items: filteredItems) { item in
-                        selectedItem = item
-                        showInfoView = true
+                        path.append(ArchiveView.Destination.info(item))
                     }
                     .padding(14)
                 }
                 .customBackground(.background)
-            }
-        }
-        .background {
-            NavigationLink("", isActive: $showInfoView) {
-                if let selectedItem {
-                    InfoView(item: selectedItem)
-                }
             }
         }
     }

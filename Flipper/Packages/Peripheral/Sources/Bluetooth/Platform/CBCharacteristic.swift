@@ -47,4 +47,8 @@ extension Array where Element == CBCharacteristic {
     var flowControl: CBCharacteristic? {
         first { $0.uuid == .flowControl }
     }
+
+    var restartSession: CBCharacteristic? {
+        first { $0.uuid == .restartSession }
+    }
 }

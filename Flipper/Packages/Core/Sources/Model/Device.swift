@@ -19,10 +19,16 @@ public class Device: ObservableObject {
     @Published public var isLocked = false
 
     @Published public var flipper: Flipper?
+    @Published public var storageInfo: StorageInfo?
     @Published public private(set) var frame: ScreenFrame?
 
     @Published public private(set) var info: Info = .init()
     @Published public private(set) var isInfoReady = false
+
+    public struct StorageInfo: Equatable {
+        public var `internal`: StorageSpace?
+        public var external: StorageSpace?
+    }
 
     public init(
         central: Central,
@@ -55,7 +61,7 @@ public class Device: ObservableObject {
 
         Task { @MainActor in
             while !Task.isCancelled {
-                for await frame in gui.screenFrame {
+                for await frame in await gui.screenFrame {
                     self.frame = frame
                 }
             }
@@ -201,9 +207,9 @@ public class Device: ObservableObject {
     // MARK: API
 
     private func loadStorageInfo() async throws {
-        var storageInfo = Flipper.StorageInfo()
+        var storageInfo = StorageInfo()
         defer {
-            flipper?.storage = storageInfo
+            self.storageInfo = storageInfo
         }
         do {
             storageInfo.internal = try await storage.space(of: "/int")
@@ -254,6 +260,18 @@ public class Device: ObservableObject {
         }
     }
 
+    public func restartSession() {
+        guard let info = flipper?.information else {
+            return
+        }
+        if info.protobufRevision >= .v0_13 {
+            pairedDevice.restartSession()
+        } else {
+            pairedDevice.disconnect()
+            pairedDevice.connect()
+        }
+    }
+
     public func reboot() {
         Task {
             do {
@@ -270,7 +288,7 @@ public class Device: ObservableObject {
 
     private var hardwareRegion: Int? {
         get async throws {
-            let info = try await system.deviceInfo()
+            let info = try await system.deviceInfo().drain()
             return Int(info["hardware_region"] ?? "")
         }
     }
@@ -287,7 +305,8 @@ public class Device: ObservableObject {
         }
         try await storage.write(
             at: Provisioning.location,
-            bytes: Provisioning().provideRegion().encode())
+            bytes: Provisioning().provideRegion().encode()
+        ).drain()
     }
 
     public func showUpdatingFrame() async throws {
@@ -324,7 +343,7 @@ public class Device: ObservableObject {
 
     func updateValues(_ key: String) async {
         do {
-            for try await property in system.property(key) {
+            for try await property in await system.property(key) {
                 info.update(key: property.key, value: property.value)
             }
         } catch {
@@ -334,7 +353,7 @@ public class Device: ObservableObject {
 
     public func getDeviceInfo() async {
         do {
-            for try await (key, value) in system.deviceInfo() {
+            for try await (key, value) in await system.deviceInfo() {
                 info.update(key: key, value: value)
             }
         } catch {
@@ -343,7 +362,7 @@ public class Device: ObservableObject {
     }
 
     public func getRegion() async throws -> Provisioning.Region {
-        let bytes = try await storage.read(at: Provisioning.location)
+        let bytes = try await storage.read(at: Provisioning.location).drain()
         return try Provisioning.Region(decoding: bytes)
     }
 
@@ -360,7 +379,7 @@ public class Device: ObservableObject {
 
     public func getPowerInfo() async {
         do {
-            for try await (key, value) in system.powerInfo() {
+            for try await (key, value) in await system.powerInfo() {
                 info.update(key: key, value: value)
             }
         } catch {
@@ -415,7 +434,7 @@ extension Device {
         Task {
             guard
                 let protobufRevision = flipper?.information?.protobufRevision,
-                let storage = flipper?.storage
+                let storage = storageInfo
             else {
                 return
             }
@@ -456,7 +475,7 @@ fileprivate extension Device {
 
     // TODO: Move to SystemAPI extension
     private func getProperty(_ path: String) async throws -> String {
-        for try await property in system.property(path) {
+        for try await property in await system.property(path) {
             return property.value
         }
         return ""

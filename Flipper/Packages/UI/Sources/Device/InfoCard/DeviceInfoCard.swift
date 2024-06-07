@@ -68,7 +68,7 @@ struct DeviceInfoCard: View {
     }
 
     var internalSpace: AttributedString? {
-        guard isConnected, let int = device.flipper?.storage?.internal else {
+        guard isConnected, let int = device.storageInfo?.internal else {
             return nil
         }
         var result = AttributedString(int.description)
@@ -79,10 +79,10 @@ struct DeviceInfoCard: View {
     }
 
     var externalSpace: AttributedString? {
-        guard isConnected, device.flipper?.storage?.internal != nil else {
+        guard isConnected, device.storageInfo?.internal != nil else {
             return nil
         }
-        guard let ext = device.flipper?.storage?.external else {
+        guard let ext = device.storageInfo?.external else {
             return "—"
         }
         var result = AttributedString(ext.description)
@@ -99,12 +99,15 @@ struct DeviceInfoCard: View {
                     Text("Device Info")
                         .font(.system(size: 16, weight: .bold))
                     Spacer()
+                    Image("ChevronRight")
+                        .resizable()
+                        .frame(width: 14, height: 14)
                 }
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
 
                 if isUpdating {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 14) {
                         Spinner()
                         Text(
                             "Waiting for Flipper to finish update.\n" +
@@ -152,14 +155,6 @@ struct DeviceInfoCard: View {
                             value: externalSpace
                         )
                         .padding(.horizontal, 12)
-
-                        HStack {
-                            Text("Full info")
-                            Image(systemName: "chevron.right")
-                        }
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.black16)
-                        .padding(.top, 5)
                     }
                     .padding(.top, 18)
                     .padding(.bottom, 12)

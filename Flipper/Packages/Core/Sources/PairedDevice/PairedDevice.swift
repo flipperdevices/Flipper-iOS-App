@@ -8,5 +8,6 @@ public protocol PairedDevice {
 
     func connect()
     func disconnect()
+    func restartSession()
     func forget()
 }

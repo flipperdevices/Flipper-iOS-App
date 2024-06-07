@@ -1,7 +1,7 @@
 import Peripheral
 
 public protocol ApplicationAPI {
-    var state: AsyncStream<IncomingMessage.AppState> { get }
+    var state: AsyncStream<IncomingMessage.AppState> { get async }
 
     var isLocked: Bool { get async throws }
 

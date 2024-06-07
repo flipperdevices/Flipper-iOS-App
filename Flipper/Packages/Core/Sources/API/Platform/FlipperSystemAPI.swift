@@ -10,15 +10,15 @@ class FlipperSystemAPI: SystemAPI {
         self.pairedDevice = pairedDevice
     }
 
-    func deviceInfo() -> AsyncThrowingStream<(String, String), Swift.Error> {
+    func deviceInfo() -> OldInfoStream {
         rpc.deviceInfo()
     }
 
-    func powerInfo() -> AsyncThrowingStream<(String, String), Swift.Error> {
+    func powerInfo() -> OldInfoStream {
         rpc.powerInfo()
     }
 
-    func property(_ key: String) -> AsyncThrowingStream<Property, Swift.Error> {
+    func property(_ key: String) -> ProperyStream {
         rpc.property(key)
     }
 

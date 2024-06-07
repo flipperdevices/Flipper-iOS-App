@@ -34,7 +34,7 @@ struct AppIcon: View {
 
         var body: some View {
             CachedAsyncImage(url: url) { image in
-                image
+                Image(uiImage: image)
                     .renderingMode(.template)
                     .interpolation(.none)
                     .resizable()

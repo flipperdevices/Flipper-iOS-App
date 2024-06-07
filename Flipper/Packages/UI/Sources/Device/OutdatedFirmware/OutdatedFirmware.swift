@@ -8,7 +8,7 @@ struct OutdatedFirmwareCard: View {
             VStack(spacing: 0) {
                 Image("OutdatedFirmware")
 
-                Text("Outdated firmware version")
+                Text("Outdated Firmware Version")
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
                     .padding(.top, 4)

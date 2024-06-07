@@ -94,15 +94,35 @@ class FlipperPeripheral: NSObject, BluetoothPeripheral {
 
     func send(_ data: Data) {
         guard state == .connected else {
-            logger.error("invalid state")
+            logger.error("send: not connected")
             return
         }
         guard let serialWrite = serialWrite else {
-            logger.critical("no serial service")
+            logger.critical("send: no serial service")
             return
         }
         peripheral.writeValue(data, for: serialWrite, type: .withResponse)
         freeSpace -= data.count
+    }
+
+    func restartSession() {
+        guard state == .connected else {
+            logger.error("restart: not connected")
+            return
+        }
+        guard let service = peripheral.services?.first(
+            where: { $0.uuid == .serial }
+        ) else {
+            logger.critical("restart: no serial service")
+            return
+        }
+        guard let restart = service.characteristics?.first(
+            where: { $0.uuid == .restartSession }
+        ) else {
+            logger.critical("restart: no restart session characteristic")
+            return
+        }
+        peripheral.writeValue(.init([0]), for: restart, type: .withResponse)
     }
 }
 
@@ -160,7 +180,6 @@ extension FlipperPeripheral: CBPeripheralDelegate {
         if let batteryPowerState = characteristics.batteryPowerState {
             peripheral.setNotifyValue(true, for: batteryPowerState)
             peripheral.readValue(for: batteryPowerState)
-            return
         }
     }
 

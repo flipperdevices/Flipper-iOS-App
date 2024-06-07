@@ -6,7 +6,10 @@ class FilteredWidgetStorage: TodayWidgetKeysStorage {
     private var widgetStorage: TodayWidgetKeysStorage
     private var mobileArchive: ArchiveProtocol
 
-    init(widgetStorage: TodayWidgetKeysStorage, mobileArchive: ArchiveProtocol) {
+    init(
+        widgetStorage: TodayWidgetKeysStorage,
+        mobileArchive: ArchiveProtocol
+    ) {
         self.widgetStorage = widgetStorage
         self.mobileArchive = mobileArchive
     }

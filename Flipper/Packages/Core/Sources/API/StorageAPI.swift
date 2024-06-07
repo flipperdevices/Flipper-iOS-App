@@ -20,8 +20,8 @@ public protocol StorageAPI {
 
     func create(at path: Path, isDirectory: Bool) async throws
     func delete(at path: Path, force: Bool) async throws
-    func read(at path: Path) -> ByteStream
-    func write(at path: Path, bytes: [UInt8]) -> ByteCountStream
+    func read(at path: Path) async -> ByteStream
+    func write(at path: Path, bytes: [UInt8]) async -> ByteCountStream
     func move(at path: Path, to: Path) async throws
 }
 
@@ -45,6 +45,18 @@ extension StorageAPI {
             calculatingMD5: false,
             sizeLimit: sizeLimit)
     }
+
+    func createDirectory(at path: Path) async throws {
+        try await create(at: path, isDirectory: true)
+    }
+
+    func delete(at path: Path) async throws {
+        try await delete(at: path, force: false)
+    }
+
+    func write(at path: Path, string: String) async -> ByteCountStream {
+        await write(at: path, bytes: .init(string.utf8))
+    }
 }
 
 extension StorageAPI {
@@ -56,31 +68,26 @@ extension StorageAPI {
             return false
         }
     }
-
-    func createDirectory(at path: Path) async throws {
-        try await create(at: path, isDirectory: true)
-    }
 }
 
-extension StorageAPI {
-    func read(at path: Path) async throws -> [UInt8] {
+extension StorageAPI.ByteStream {
+    func drain() async throws -> [UInt8] {
         var result: [UInt8] = []
-        for try await next in read(at: path) {
+        for try await next in self {
             result += next
         }
         return result
     }
+}
 
-    func write(at path: Path, bytes: [UInt8]) async throws {
-        for try await _ in write(at: path, bytes: bytes) { }
-    }
-
-    func write(at path: Path, string: String) async throws {
-        try await write(at: path, bytes: .init(string.utf8))
-    }
-
-    func delete(at path: Path) async throws {
-        try await delete(at: path, force: false)
+extension StorageAPI.ByteCountStream {
+    @discardableResult
+    func drain() async throws -> Int {
+        var result: Int = 0
+        for try await next in self {
+            result += next
+        }
+        return result
     }
 }
 
@@ -95,7 +102,7 @@ extension StorageAPI {
             return ""
         }
         var bytes: [UInt8] = []
-        for try await next in read(at: path) {
+        for try await next in await read(at: path) {
             bytes += next
             progress(Double(bytes.count) / Double(size))
         }
@@ -112,7 +119,7 @@ extension StorageAPI {
             return
         }
         var sent = 0
-        for try await next in write(at: path, bytes: bytes) {
+        for try await next in await write(at: path, bytes: bytes) {
             sent += next
             progress(Double(sent) / Double(bytes.count))
         }

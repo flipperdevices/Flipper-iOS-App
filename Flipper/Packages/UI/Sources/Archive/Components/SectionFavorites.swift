@@ -3,8 +3,9 @@ import SwiftUI
 
 extension ArchiveView {
     struct FavoritesSection: View {
+        @Environment(\.path) private var path
+
         let items: [ArchiveItem]
-        var onItemSelected: (ArchiveItem) -> Void
 
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
@@ -19,7 +20,7 @@ extension ArchiveView {
                 }
 
                 CompactList(items: items) { item in
-                    onItemSelected(item)
+                    path.append(Destination.info(item))
                 }
             }
         }

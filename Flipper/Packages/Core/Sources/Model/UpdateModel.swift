@@ -114,7 +114,7 @@ public class UpdateModel: ObservableObject {
     var provisionedRegion: LazyResult<ISOCode, Swift.Error> = .idle
 
     var hasSDCard: LazyResult<Bool, Swift.Error> {
-        guard let storage = flipper?.storage else { return .working }
+        guard let storage = device.storageInfo else { return .working }
         return .success(storage.external != nil)
     }
 
@@ -392,10 +392,7 @@ public class UpdateModel: ObservableObject {
     public func cancel() {
         Task {
             state = .update(.result(.canceled))
-            device.disconnect()
-            updateTaskHandle = nil
-            try? await Task.sleep(milliseconds: 333)
-            device.connect()
+            device.restartSession()
         }
     }
 

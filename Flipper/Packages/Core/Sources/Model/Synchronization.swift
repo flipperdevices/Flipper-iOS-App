@@ -16,6 +16,10 @@ public class Synchronization: ObservableObject {
     private var archive: Archive
     private var cancellables: [AnyCancellable] = .init()
 
+    private var isSyncingDisabled: Bool {
+        UserDefaultsStorage.shared.isSyncingDisabled
+    }
+
     init(
         archive: Archive,
         device: Device,
@@ -33,6 +37,7 @@ public class Synchronization: ObservableObject {
     // next step
     var deviceStatus: Device.Status = .disconnected {
         didSet {
+            guard !isSyncingDisabled else { return }
             #if !DEBUG
             if oldValue == .connecting, deviceStatus == .connected {
                 self.start(syncDateTime: true)
