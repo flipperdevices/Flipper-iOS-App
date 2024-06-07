@@ -254,6 +254,18 @@ public class Device: ObservableObject {
         }
     }
 
+    public func restartSession() {
+        guard let info = flipper?.information else {
+            return
+        }
+        if info.protobufRevision >= .v0_13 {
+            pairedDevice.restartSession()
+        } else {
+            pairedDevice.disconnect()
+            pairedDevice.connect()
+        }
+    }
+
     public func reboot() {
         Task {
             do {

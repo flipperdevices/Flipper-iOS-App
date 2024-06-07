@@ -392,10 +392,7 @@ public class UpdateModel: ObservableObject {
     public func cancel() {
         Task {
             state = .update(.result(.canceled))
-            device.disconnect()
-            updateTaskHandle = nil
-            try? await Task.sleep(milliseconds: 333)
-            device.connect()
+            device.restartSession()
         }
     }
 
