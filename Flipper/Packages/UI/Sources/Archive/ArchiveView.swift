@@ -11,6 +11,8 @@ struct ArchiveView: View {
 
     @Environment(\.notifications) private var notifications
 
+    @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
+
     @State private var path = NavigationPath()
 
     @State private var importedName = ""
@@ -155,6 +157,7 @@ struct ArchiveView: View {
         .onOpenURL { url in
             if url.isKeyFile || url.isKeyURL {
                 path.append(Destination.importing(url))
+                selectedTab = .archive
             }
         }
         .onDrop(of: [.item], isTargeted: nil) { providers in

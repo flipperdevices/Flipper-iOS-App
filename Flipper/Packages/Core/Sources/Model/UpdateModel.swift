@@ -123,6 +123,11 @@ public class UpdateModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .assign(to: \.flipper, on: self)
             .store(in: &cancellables)
+
+        device.$storageInfo
+            .receive(on: DispatchQueue.main)
+            .sink { _ in self.updateState() }
+            .store(in: &cancellables)
     }
 
     func onStateChanged(_ oldValue: State) {
