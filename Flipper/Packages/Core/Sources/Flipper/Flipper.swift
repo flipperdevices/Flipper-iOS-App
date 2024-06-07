@@ -9,7 +9,6 @@ public struct Flipper: Equatable, Identifiable {
     public var state: FlipperState = .disconnected
     public var information: DeviceInformation?
     public var battery: Battery?
-    public var storage: StorageInfo?
 
     // swiftlint:disable discouraged_optional_boolean
     public var hasProtobufVersion: Bool?
@@ -32,11 +31,6 @@ public struct Flipper: Equatable, Identifiable {
         self.information = information
         self.battery = battery
         self.hasProtobufVersion = hasProtobufVersion
-    }
-
-    public struct StorageInfo: Equatable {
-        public var `internal`: StorageSpace?
-        public var external: StorageSpace?
     }
 }
 

@@ -19,10 +19,16 @@ public class Device: ObservableObject {
     @Published public var isLocked = false
 
     @Published public var flipper: Flipper?
+    @Published public var storageInfo: StorageInfo?
     @Published public private(set) var frame: ScreenFrame?
 
     @Published public private(set) var info: Info = .init()
     @Published public private(set) var isInfoReady = false
+
+    public struct StorageInfo: Equatable {
+        public var `internal`: StorageSpace?
+        public var external: StorageSpace?
+    }
 
     public init(
         central: Central,
@@ -201,9 +207,9 @@ public class Device: ObservableObject {
     // MARK: API
 
     private func loadStorageInfo() async throws {
-        var storageInfo = Flipper.StorageInfo()
+        var storageInfo = StorageInfo()
         defer {
-            flipper?.storage = storageInfo
+            self.storageInfo = storageInfo
         }
         do {
             storageInfo.internal = try await storage.space(of: "/int")
@@ -428,7 +434,7 @@ extension Device {
         Task {
             guard
                 let protobufRevision = flipper?.information?.protobufRevision,
-                let storage = flipper?.storage
+                let storage = storageInfo
             else {
                 return
             }

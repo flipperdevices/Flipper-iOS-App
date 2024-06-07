@@ -126,11 +126,11 @@ struct DeviceInfoView: View {
     private func share() {
         var array = info.keys.toArray().sorted()
 
-        if let int = device.flipper?.storage?.internal {
+        if let int = device.storageInfo?.internal {
             array.append("storage.int.available: \(int.free)")
             array.append("storage.int.total: \(int.total)")
         }
-        if let ext = device.flipper?.storage?.external {
+        if let ext = device.storageInfo?.external {
             array.append("storage.ext.available: \(ext.free)")
             array.append("storage.ext.total: \(ext.total)")
         }

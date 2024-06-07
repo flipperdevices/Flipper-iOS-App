@@ -180,7 +180,6 @@ extension FlipperPeripheral: CBPeripheralDelegate {
         if let batteryPowerState = characteristics.batteryPowerState {
             peripheral.setNotifyValue(true, for: batteryPowerState)
             peripheral.readValue(for: batteryPowerState)
-            return
         }
     }
 

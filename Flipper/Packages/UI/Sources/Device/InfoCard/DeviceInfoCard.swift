@@ -68,7 +68,7 @@ struct DeviceInfoCard: View {
     }
 
     var internalSpace: AttributedString? {
-        guard isConnected, let int = device.flipper?.storage?.internal else {
+        guard isConnected, let int = device.storageInfo?.internal else {
             return nil
         }
         var result = AttributedString(int.description)
@@ -79,10 +79,10 @@ struct DeviceInfoCard: View {
     }
 
     var externalSpace: AttributedString? {
-        guard isConnected, device.flipper?.storage?.internal != nil else {
+        guard isConnected, device.storageInfo?.internal != nil else {
             return nil
         }
-        guard let ext = device.flipper?.storage?.external else {
+        guard let ext = device.storageInfo?.external else {
             return "—"
         }
         var result = AttributedString(ext.description)
