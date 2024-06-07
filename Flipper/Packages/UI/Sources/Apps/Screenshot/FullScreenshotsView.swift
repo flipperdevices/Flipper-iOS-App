@@ -28,6 +28,7 @@ struct FullScreenshotsView: View {
                 },
                 principal: {
                     Title(title, description: description)
+                        .padding(.horizontal, 44)
                 },
                 trailing: {
                     ShareButton(action: onShare)
