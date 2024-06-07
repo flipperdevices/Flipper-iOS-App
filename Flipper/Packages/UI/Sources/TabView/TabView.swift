@@ -6,8 +6,6 @@ struct TabView: View {
     @EnvironmentObject var synchronization: Synchronization
     @EnvironmentObject var applications: Applications
 
-    @Environment(\.colorScheme) var colorScheme
-
     @Binding var selected: Tab
     var extraAction: () -> Void
 
@@ -20,7 +18,6 @@ struct TabView: View {
     enum Tab: String, CaseIterable {
         case device
         case archive
-        case apps
         case hub
     }
 
@@ -35,65 +32,38 @@ struct TabView: View {
         }
     }
 
-    struct Badge: View {
-        let offset: Double
-
-        var body: some View {
-            Circle()
-                .frame(width: 12, height: 12)
-                .foregroundColor(.white)
-                .overlay(alignment: .center) {
-                    Circle()
-                        .frame(width: 10, height: 10)
-                        .foregroundColor(.sGreenUpdate)
-                }
-                .offset(x: offset, y: -2)
-        }
-    }
-
     var body: some View {
         Group {
             HStack(alignment: .top) {
                 TabViewItem(
                     image: deviceImage,
                     name: deviceTabName,
-                    isSelected: selected == .device
+                    isSelected: selected == .device,
+                    hasNotification: false
                 ) {
                     handleTap(on: .device)
                 }
                 .foregroundColor(deviceColor)
 
-                Spacer(minLength: 0)
+                Spacer()
 
                 TabViewItem(
-                    image: archiveImage,
+                    image: .init(Image(archiveImageName)),
                     name: "Archive",
-                    isSelected: selected == .archive
+                    isSelected: selected == .archive,
+                    hasNotification: false
                 ) {
                     handleTap(on: .archive)
                 }
                 .foregroundColor(archiveColor)
 
-                Spacer(minLength: 0)
+                Spacer()
 
                 TabViewItem(
-                    image: appsImage,
-                    name: "Apps",
-                    isSelected: selected == .apps
-                ) {
-                    handleTap(on: .apps)
-                }
-                .foregroundColor(appsColor)
-                .analyzingTapGesture {
-                    recordAppsOpened()
-                }
-
-                Spacer(minLength: 0)
-
-                TabViewItem(
-                    image: hubImage,
-                    name: "Tools",
-                    isSelected: selected == .hub
+                    image: .init(Image(hubImageName)),
+                    name: "Hub",
+                    isSelected: selected == .hub,
+                    hasNotification: hasReaderLog || hasAppUpdates
                 ) {
                     handleTap(on: .hub)
                 }
@@ -102,12 +72,6 @@ struct TabView: View {
             .padding(3)
         }
         .background(systemBackground)
-    }
-
-    // MARK: Analytics
-
-    func recordAppsOpened() {
-        analytics.appOpen(target: .fapHub)
     }
 }
 
@@ -150,29 +114,24 @@ extension Device.Status {
 
 private extension TabView {
     var deviceColor: Color {
-        guard selected == .device else { return .black30 }
+        guard selected == .device else {
+            return .black30
+        }
         return device.status.color
     }
 
     var archiveColor: Color {
-        guard selected == .archive else { return .black30 }
-        return colorScheme == .light ? .black : .black30
-    }
-
-    var appsColor: Color {
-        guard selected == .apps else { return .black30 }
-        return colorScheme == .light ? .black : .black30
+        selected == .archive ? .black80 : .black30
     }
 
     var hubColor: Color {
-        guard selected == .hub else { return .black30 }
-        return colorScheme == .light ? .black : .black30
+        selected == .hub ? .black80 : .black30
     }
 }
 
 private extension TabView {
     var deviceImage: AnyView {
-        .init(
+        return .init(
             DeviceImage(
                 status: device.status,
                 style: selected == .device ? .fill : .stroke
@@ -180,46 +139,11 @@ private extension TabView {
         )
     }
 
-    var archiveImage: AnyView {
-        .init(
-            Image(archiveImageName)
-                .renderingMode(.template)
-        )
-    }
-
-    var appsImage: AnyView {
-        .init(
-            Image(appsImageName)
-                .renderingMode(.template)
-                .overlay(alignment: .topLeading) {
-                    if hasAppUpdates {
-                        Badge(offset: 24)
-                    }
-                }
-        )
-    }
-
-    var hubImage: AnyView {
-        .init(
-            Image(hubImageName)
-                .renderingMode(.template)
-                .overlay(alignment: .topLeading) {
-                    if hasReaderLog {
-                        Badge(offset: 30)
-                    }
-                }
-        )
-    }
-
     var archiveImageName: String {
         selected == .archive ? "archive_filled_icon" : "archive_line_icon"
     }
 
-    var appsImageName: String {
-        selected == .apps ? "apps_filled_icon" : "apps_line_icon"
-    }
-
     var hubImageName: String {
-        selected == .hub ? "tools_filled_icon" : "tools_line_icon"
+        selected == .hub ? "hub_filled_icon" : "hub_line_icon"
     }
 }

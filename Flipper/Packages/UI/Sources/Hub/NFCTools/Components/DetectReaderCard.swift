@@ -34,7 +34,7 @@ struct DetectReaderCard: View {
                         HStack(spacing: 2) {
                             Circle()
                                 .frame(width: 14, height: 14)
-                                .foregroundColor(.sGreenUpdate)
+                                .foregroundColor(.a1)
                                 .opacity(hasNotification ? 1 : 0)
 
                             Image("ChevronRight")

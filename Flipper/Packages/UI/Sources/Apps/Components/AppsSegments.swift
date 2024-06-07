@@ -6,7 +6,7 @@ struct AppsSegments: View {
 
     @Binding var selected: Segment
 
-    enum Segment {
+    enum Segment: Hashable {
         case all
         case installed
     }

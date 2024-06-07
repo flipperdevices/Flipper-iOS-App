@@ -53,7 +53,7 @@ struct AllAppsView: View {
                         .padding(.top, 24)
                     }
                 }
-                .padding(.top, 14)
+                .padding(.vertical, 14)
             }
             .onChange(of: sortOrder) { _ in
                 onSortOrderChanged()

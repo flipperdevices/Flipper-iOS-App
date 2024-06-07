@@ -99,9 +99,6 @@ struct DeviceInfoCard: View {
                     Text("Device Info")
                         .font(.system(size: 16, weight: .bold))
                     Spacer()
-                    Image("ChevronRight")
-                        .resizable()
-                        .frame(width: 14, height: 14)
                 }
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
@@ -155,6 +152,14 @@ struct DeviceInfoCard: View {
                             value: externalSpace
                         )
                         .padding(.horizontal, 12)
+
+                        HStack {
+                            Text("Full info")
+                            Image(systemName: "chevron.right")
+                        }
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.black16)
+                        .padding(.top, 5)
                     }
                     .padding(.top, 18)
                     .padding(.bottom, 12)
