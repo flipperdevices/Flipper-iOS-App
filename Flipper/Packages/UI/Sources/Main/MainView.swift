@@ -19,7 +19,7 @@ struct MainView: View {
                 ArchiveView()
                     .opacity(selectedTab == .archive ? 1 : 0)
                 AppsView()
-                    .opacity(selectedTab == .apps ? 1 : 0)    
+                    .opacity(selectedTab == .apps ? 1 : 0)
                 HubView()
                     .opacity(selectedTab == .hub ? 1 : 0)
             }

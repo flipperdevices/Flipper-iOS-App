@@ -122,7 +122,6 @@ struct DeviceUpdateCard: View {
         updateModel.updateAvailableFirmware()
     }
 
-
     private func prepareUpdate(action: () -> Void) {
         guard device.hasBatteryCharged else {
             showCharge = true
