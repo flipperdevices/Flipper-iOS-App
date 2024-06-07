@@ -73,6 +73,10 @@ class BluetoothPeripheralMock: BluetoothPeripheral {
     func send(_ data: Data) {
         print("send data")
     }
+
+    func restartSession() {
+        print("restart session")
+    }
 }
 
 fileprivate extension String {

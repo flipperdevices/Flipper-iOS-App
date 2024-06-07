@@ -84,6 +84,10 @@ class PairedFlipper: PairedDevice, ObservableObject {
         }
     }
 
+    func restartSession() {
+        bluetoothPeripheral?.restartSession()
+    }
+
     func forget() {
         disconnect()
         _flipper.value = nil
