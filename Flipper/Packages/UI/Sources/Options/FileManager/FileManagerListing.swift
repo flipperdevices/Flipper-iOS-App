@@ -6,6 +6,8 @@ import UniformTypeIdentifiers
 
 extension FileManagerView {
     struct FileManagerListing: View {
+        @Environment(\.path) var navigationPath
+
         let path: Peripheral.Path
 
         @EnvironmentObject var fileManager: RemoteFileManager
@@ -54,26 +56,26 @@ extension FileManagerView {
                                 NavigationLink(value: Destination.listing(
                                     path.appending(directory.name)
                                 )) {
-                                    HStack {
-                                        Image(systemName: "folder.fill")
-                                            .frame(width: 20)
-
-                                        Text(directory.name)
-                                    }
+                                    DirectoryRow(directory: directory)
                                 }
                                 .foregroundColor(.primary)
                             case .file(let file):
-                                NavigationLink(value: Destination.editor(
-                                    path.appending(file.name)
-                                )) {
-                                    HStack {
-                                        Image(systemName: "doc")
-                                            .frame(width: 20)
-
-                                        FileRow(file: file)
-                                    }
+                                HStack {
+                                    FileRow(file: file)
+                                        .onTapGesture {
+                                            navigationPath.append(
+                                                Destination.editor(
+                                                    path.appending(file.name)
+                                                )
+                                            )
+                                        }
+                                    DownloadFileIcon()
+                                        .onTapGesture {
+                                            Task {
+                                                await downloadFile(file)
+                                            }
+                                        }
                                 }
-                                .disabled(!fileManager.canRead(file))
                             }
                         }
                         .onDelete { indexSet in
@@ -217,19 +219,59 @@ extension FileManagerView {
                 self.error = String(describing: error)
             }
         }
+
+        func downloadFile(_ file: File) async {
+            isBusy = true
+            defer { isBusy = false }
+            do {
+                let bytes = try await fileManager.readRaw(
+                    at: path.appending(file.name))
+                let url = try FileManager.default.createTempFile(
+                    name: file.name,
+                    data: .init(bytes))
+                share(url) {
+                    try? FileManager.default.removeItem(at: url)
+                }
+            } catch {
+                self.error = String(describing: error)
+            }
+        }
     }
 }
 
 extension FileManagerView.FileManagerListing {
+    struct DirectoryRow: View {
+        let directory: Directory
+
+        var body: some View {
+            HStack {
+                Image(systemName: "folder.fill")
+                    .frame(width: 20)
+
+                Text(directory.name)
+            }
+        }
+    }
+
     struct FileRow: View {
         let file: File
 
         var body: some View {
             HStack {
+                Image(systemName: "doc")
+                    .frame(width: 20)
                 Text(file.name)
                 Spacer()
                 Text("\(file.size) bytes")
             }
+            .contentShape(Rectangle())
+        }
+    }
+
+    struct DownloadFileIcon: View {
+        var body: some View {
+            Image(systemName: "icloud.and.arrow.down")
+                .frame(width: 20, height: 20)
         }
     }
 }

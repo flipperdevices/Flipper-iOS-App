@@ -50,6 +50,15 @@ public class RemoteFileManager: ObservableObject {
         }
     }
 
+    public func readRaw(at path: Path) async throws -> [UInt8] {
+        do {
+            return try await storage.read(at: path).drain()
+        } catch {
+            logger.error("read raw: \(error)")
+            throw Error.unknown(.init(describing: error))
+        }
+    }
+
     public func writeFile(_ content: String, at path: Path) async throws {
         do {
             try await storage.write(at: path, string: content).drain()

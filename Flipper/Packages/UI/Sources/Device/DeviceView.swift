@@ -12,6 +12,8 @@ struct DeviceView: View {
 
     @Environment(\.scenePhase) var scenePhase
 
+    @State private var path = NavigationPath()
+
     @State private var showRemoteControl = false
     @State private var showForgetAction = false
     @State private var showOutdatedFirmwareAlert = false
@@ -67,7 +69,7 @@ struct DeviceView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             VStack(spacing: 0) {
                 DeviceHeader(device: flipper)
 
@@ -256,6 +258,7 @@ struct DeviceView: View {
             RemoteControlView()
                 .environmentObject(device)
         }
+        .environment(\.path, $path)
     }
 
     func suggestNotifications() {
