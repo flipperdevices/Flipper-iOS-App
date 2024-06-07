@@ -5,13 +5,25 @@ import SwiftUI
 
 struct FileManagerView: View {
     // next step
-    @ObservedObject var fileManager = Dependencies.shared.fileManager
-    @Environment(\.dismiss) private var dismiss
+    @StateObject var fileManager = Dependencies.shared.fileManager
+
+    enum Destination: Hashable {
+        case listing(Peripheral.Path)
+        case editor(Peripheral.Path)
+    }
 
     var body: some View {
-        VStack {
-            FileManagerListing(path: "/")
-                .environmentObject(fileManager)
-        }
+        FileManagerListing(path: "/")
+            .environmentObject(fileManager)
+            .navigationDestination(for: Destination.self) { destination in
+                switch destination {
+                case .listing(let path):
+                    FileManagerListing(path: path)
+                        .environmentObject(fileManager)
+                case .editor(let path):
+                    FileManagerEditor(path: path)
+                        .environmentObject(fileManager)
+                }
+            }
     }
 }
