@@ -354,9 +354,16 @@ public class Applications: ObservableObject {
         .map { mapApp(from: $0) }
     }
 
+    private func reloadCategoriesIfNeeded() async {
+        if categories.isEmpty, categoriesTask == nil  {
+            _ = try? await loadCategories()
+        }
+    }
+
     public func loadInstalled() async throws {
         do {
             guard let deviceInfo else { return }
+            await reloadCategoriesIfNeeded()
 
             guard installedStatus != .loading else { return }
             installedStatus = .loading
