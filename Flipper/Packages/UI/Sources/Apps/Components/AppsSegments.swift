@@ -5,15 +5,16 @@ struct AppsSegments: View {
     @EnvironmentObject var model: Applications
 
     @Binding var selected: Segment
+    @Namespace private var animation
 
     enum Segment {
         case all
         case installed
     }
 
-    @State var updatesCount: Int = 0
-
-    @Namespace private var animation
+    var outdatedCount: Int {
+        model.outdatedCount
+    }
 
     var body: some View {
         HStack(spacing: 2) {
@@ -30,24 +31,12 @@ struct AppsSegments: View {
                 id: .installed,
                 image: "InstalledApps",
                 title: "Installed",
-                badge: updatesCount == 0 ? nil : "\(updatesCount)",
+                badge: outdatedCount == 0 ? nil : "\(outdatedCount)",
                 namespace: animation
             )
         }
         .background(.white.opacity(0.3))
         .cornerRadius(10)
-        .onReceive(model.$statuses) { _ in
-            Task {
-                loadUpdates()
-            }
-        }
-        .task {
-            loadUpdates()
-        }
-    }
-
-    func loadUpdates() {
-        self.updatesCount = model.outdatedCount
     }
 }
 

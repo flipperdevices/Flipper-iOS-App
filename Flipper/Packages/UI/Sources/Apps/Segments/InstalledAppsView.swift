@@ -20,6 +20,10 @@ struct InstalledAppsView: View {
         (!isLoading && applications.isEmpty)
     }
 
+    var outdatedCount: Int {
+        model.outdatedCount
+    }
+
     struct NetworkIssue: View {
         var body: some View {
             VStack(alignment: .center) {
@@ -61,7 +65,7 @@ struct InstalledAppsView: View {
                             Group {
                                 if isNetworkIssue {
                                     NetworkIssue()
-                                } else if model.outdatedCount > 0 {
+                                } else if outdatedCount > 0 {
                                     UpdateAllAppButton {
                                         updateAll()
                                     }

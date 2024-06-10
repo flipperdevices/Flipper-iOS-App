@@ -6,6 +6,10 @@ struct UpdateAllAppButton: View {
 
     let action: () -> Void
 
+    var outdatedCount: Int {
+        model.outdatedCount
+    }
+
     struct Placeholder: View {
         var body: some View {
             AnimatedPlaceholder()
@@ -22,10 +26,10 @@ struct UpdateAllAppButton: View {
                     .foregroundColor(.sGreenUpdate)
                     .font(.born2bSportyV2(size: 18))
 
-                if model.outdatedCount > 0 {
+                if outdatedCount > 0 {
                     Group {
                         Group {
-                            Text("\(model.outdatedCount)")
+                            Text("\(outdatedCount)")
                                 .font(.system(size: 12, weight: .bold))
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 4)
