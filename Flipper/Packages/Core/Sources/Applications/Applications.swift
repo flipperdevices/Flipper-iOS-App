@@ -21,7 +21,7 @@ public class Applications: ObservableObject {
 
     @Published public var installed: [Application] = []
     @Published public var installedStatus: InstalledStatus = .error
-    var statuses: [Application.ID: ApplicationStatus] = [:]
+    public var statuses: [Application.ID: ApplicationStatus] = [:]
     public var statusChanged = PassthroughSubject<Application.ID, Never>()
     // Minimize CPU usage in background to prevent iOS from killing the app
     @Published public var enableProgressUpdates = true
