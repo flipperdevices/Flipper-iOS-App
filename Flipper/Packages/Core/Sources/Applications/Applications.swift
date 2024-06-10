@@ -374,11 +374,8 @@ public class Applications: ObservableObject {
 
             installed = []
             statuses = [:]
-            for await var app in try await flipperApps.load() {
-                // TODO: Cache categories to show without internet connection
-                app.category = category(name: app.category.name)
-                installed.append(app)
-                setStatus(.checking, for: app)
+            for await app in try await flipperApps.load() {
+                await appendInstalled(app)
             }
 
             if installedStatus == .loading {
@@ -392,6 +389,18 @@ public class Applications: ObservableObject {
                 setStatus(await offlineStatus(for: $0), for: $0)
             }
             logger.error("load installed: \(error)")
+        }
+    }
+
+    private func appendInstalled(_ app: Application) async {
+        // TODO: Cache categories to show without internet connection
+        var app = app
+        app.category = category(name: app.category.name)
+        installed.append(app)
+        if categories.isEmpty {
+            setStatus(await offlineStatus(for: app), for: app)
+        } else {
+            setStatus(.checking, for: app)
         }
     }
 
