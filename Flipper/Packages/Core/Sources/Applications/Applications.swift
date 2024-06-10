@@ -136,8 +136,10 @@ public class Applications: ObservableObject {
     public func install(_ application: Application) async {
         installed.append(application)
         setStatus(.installing(0), for: application)
+        sortInstalled()
 
         await installQueue.enqueue {
+            self.sortInstalled()
             do {
                 try await self._install(application) { progress in
                     if self.enableProgressUpdates {
@@ -149,12 +151,15 @@ public class Applications: ObservableObject {
                 logger.error("install app: \(error)")
             }
         }
+        sortInstalled()
     }
 
     public func update(_ application: Application) async {
         setStatus(.updating(0), for: application)
+        sortInstalled()
 
         await installQueue.enqueue {
+            self.sortInstalled()
             do {
                 try await self._install(application) { progress in
                     if self.enableProgressUpdates {
@@ -166,6 +171,7 @@ public class Applications: ObservableObject {
                 logger.error("update app: \(error)")
             }
         }
+        sortInstalled()
     }
 
     public func update(_ applications: [Application]) async {
@@ -378,6 +384,8 @@ public class Applications: ObservableObject {
                 await appendInstalled(app)
             }
 
+            sortInstalled()
+
             if installedStatus == .loading {
                 installedStatus = .loaded
             }
@@ -445,12 +453,31 @@ public class Applications: ObservableObject {
                 }
                 installedStatus = .error
             }
+
+            sortInstalled()
         }
     }
 
     private func updateInstalledApp(_ app: Application) {
         if let index = installed.firstIndex(where: { $0.id == app.id }) {
             installed[index] = app
+        }
+    }
+
+    private func sortInstalled() {
+        Task { @MainActor in
+            installed = installed.sorted {
+                guard
+                    let priority0 = statuses[$0.id]?.priotiry,
+                    let priority1 = statuses[$1.id]?.priotiry
+                else {
+                    return false
+                }
+                guard priority0 != priority1 else {
+                    return $0.current.name < $1.current.name
+                }
+                return priority0 < priority1
+            }
         }
     }
 

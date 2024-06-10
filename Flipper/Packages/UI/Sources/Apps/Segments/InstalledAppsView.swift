@@ -5,18 +5,7 @@ struct InstalledAppsView: View {
     @EnvironmentObject var model: Applications
 
     var applications: [Application] {
-        model.installed.sorted {
-            guard
-                let priority0 = model.statuses[$0.id]?.priotiry,
-                let priority1 = model.statuses[$1.id]?.priotiry
-            else {
-                return false
-            }
-            guard priority0 != priority1 else {
-                return $0.current.name < $1.current.name
-            }
-            return priority0 < priority1
-        }
+        model.installed
     }
 
     var isLoading: Bool {
