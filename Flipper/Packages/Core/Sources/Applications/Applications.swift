@@ -21,7 +21,8 @@ public class Applications: ObservableObject {
 
     @Published public var installed: [Application] = []
     @Published public var installedStatus: InstalledStatus = .error
-    @Published public var statuses: [Application.ID: ApplicationStatus] = [:]
+    var statuses: [Application.ID: ApplicationStatus] = [:]
+    public var statusChanged = PassthroughSubject<Application.ID, Never>()
     // Minimize CPU usage in background to prevent iOS from killing the app
     @Published public var enableProgressUpdates = true
 
@@ -126,8 +127,9 @@ public class Applications: ObservableObject {
     }
 
     private func setStatus(_ status: ApplicationStatus, for app: Application) {
+        statuses[app.id] = status
         Task { @MainActor in
-            statuses[app.id] = status
+            statusChanged.send(app.id)
         }
     }
 
