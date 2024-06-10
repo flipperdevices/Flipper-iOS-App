@@ -5,18 +5,7 @@ struct InstalledAppsView: View {
     @EnvironmentObject var model: Applications
 
     var applications: [Application] {
-        model.installed.sorted {
-            guard
-                let priority0 = model.statuses[$0.id]?.priotiry,
-                let priority1 = model.statuses[$1.id]?.priotiry
-            else {
-                return false
-            }
-            guard priority0 != priority1 else {
-                return $0.current.name < $1.current.name
-            }
-            return priority0 < priority1
-        }
+        model.installed
     }
 
     var isLoading: Bool {
@@ -29,6 +18,10 @@ struct InstalledAppsView: View {
 
     var noApps: Bool {
         (!isLoading && applications.isEmpty)
+    }
+
+    var outdatedCount: Int {
+        model.outdatedCount
     }
 
     struct NetworkIssue: View {
@@ -72,7 +65,7 @@ struct InstalledAppsView: View {
                             Group {
                                 if isNetworkIssue {
                                     NetworkIssue()
-                                } else if model.outdatedCount > 0 {
+                                } else if outdatedCount > 0 {
                                     UpdateAllAppButton {
                                         updateAll()
                                     }

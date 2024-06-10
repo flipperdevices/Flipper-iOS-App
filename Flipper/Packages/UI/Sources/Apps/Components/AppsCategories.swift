@@ -2,7 +2,6 @@ import Core
 import SwiftUI
 
 struct AppsCategories: View {
-    @EnvironmentObject var model: Applications
     let categories: [Applications.Category]
 
     var columns: [GridItem] {

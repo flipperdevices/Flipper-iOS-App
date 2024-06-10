@@ -75,15 +75,7 @@ struct AppRow: View {
 
         let application: Application
 
-        var status: Applications.ApplicationStatus {
-            if let status = model.statuses[application.id] {
-                return status
-            } else if model.installedStatus == .loading {
-                return .checking
-            } else {
-                return .notInstalled
-            }
-        }
+        @State var status: Applications.ApplicationStatus = .checking
 
         @State var isNotConnectedAlertPresented = false
         @State var isFlipperBusyAlertPresented = false
@@ -145,6 +137,24 @@ struct AppRow: View {
                 RemoteControlView()
                     .environmentObject(device)
                     .navigationBarHidden(true)
+            }
+            .task {
+                updateStatus()
+            }
+            .onReceive(model.statusChanged) { newValue in
+                if newValue == application.id {
+                    updateStatus()
+                }
+            }
+        }
+
+        func updateStatus() {
+            if let status = model.statuses[application.id] {
+                self.status = status
+            } else if model.installedStatus == .loading {
+                self.status = .checking
+            } else {
+                self.status = .notInstalled
             }
         }
 
