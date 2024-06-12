@@ -25,8 +25,8 @@ let package = Package(
             name: "Notifications",
             path: "../Notifications"),
         .package(
-            url: "https://github.com/gonzalezreal/swift-markdown-ui",
-            from: "2.3.0")
+            url: "https://github.com/tonyfreeman/swift-markdown-ui",
+            branch: "main")
     ],
     targets: [
         .target(

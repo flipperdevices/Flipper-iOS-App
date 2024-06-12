@@ -20,7 +20,10 @@ struct ScrollScreenshots: View {
                     }
                 }
             }
+            // TODO: Remove when fixed
+            #if !DEBUG
             .scrollDisabled(true)
+            #endif
             .onChange(of: currentIndex) { newIndex in
                 withAnimation {
                     proxy.scrollTo(newIndex, anchor: .center)

@@ -111,10 +111,10 @@
     {
       "identity" : "swift-markdown-ui",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/gonzalezreal/swift-markdown-ui",
+      "location" : "https://github.com/tonyfreeman/swift-markdown-ui",
       "state" : {
-        "revision" : "ae799d015a5374708f7b4c85f3294c05f2a564e2",
-        "version" : "2.3.0"
+        "branch" : "main",
+        "revision" : "6f31c0a1f85631ef21a83187884ae7f71d627911"
       }
     },
     {
