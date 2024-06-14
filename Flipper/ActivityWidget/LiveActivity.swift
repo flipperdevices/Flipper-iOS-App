@@ -3,7 +3,6 @@ import WidgetKit
 import SwiftUI
 import Activity
 
-@available(iOSApplicationExtension 16.2, *)
 struct LiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: UpdateActivityAttibutes.self) { context in
@@ -33,7 +32,6 @@ struct LiveActivity: Widget {
     }
 }
 
-@available(iOSApplicationExtension 16.2, *)
 struct ActivityWidgetLiveActivity_Previews: PreviewProvider {
     static let attributes = UpdateActivityAttibutes(version: .init(
         name: "0.61",
@@ -57,7 +55,6 @@ struct ActivityWidgetLiveActivity_Previews: PreviewProvider {
     }
 }
 
-@available(iOSApplicationExtension 16.2, *)
 struct ActivityWidgetLiveActivity2_Previews: PreviewProvider {
     static let attributes = UpdateActivityAttibutes(version: .init(
         name: "0.61",

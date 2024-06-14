@@ -195,22 +195,6 @@ public final class Dependencies: ObservableObject, Sendable {
         )
     }()
 
-    public lazy var widgetStorage: TodayWidgetKeysStorage = {
-        FilteredWidgetStorage(
-            widgetStorage: JSONTodayWidgetStorage(),
-            mobileArchive: mobileArchive)
-    }()
-
-    @MainActor
-    public lazy var widget: TodayWidget = {
-        .init(
-            widgetStorage: widgetStorage,
-            emulate: emulate,
-            archive: archive,
-            central: central,
-            device: pairedDevice)
-    }()
-
     // utils
 
     @MainActor
