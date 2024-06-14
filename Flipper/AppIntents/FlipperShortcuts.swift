@@ -3,7 +3,7 @@ import Foundation
 
 @available(iOS 16.0, *)
 struct FlipperShortcuts: AppShortcutsProvider {
-    static var shortcutTileColor: ShortcutTileColor = .orange
+    static let shortcutTileColor: ShortcutTileColor = .orange
 
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
