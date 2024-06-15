@@ -3,11 +3,14 @@ import SwiftUI
 
 struct AppsView: View {
     @EnvironmentObject var model: Applications
+    @EnvironmentObject var update: UpdateModel
     @EnvironmentObject var router: Router
     @Environment(\.dismiss) var dismiss
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.notifications) private var notifications
 
     @AppStorage(.selectedTab) private var selectedTab: TabView.Tab = .device
+    @AppStorage(.showAppsUpdate) var showAppsUpdate = false
 
     @State private var path = NavigationPath()
     @State private var selectedSegment: AppsSegments.Segment = .all
@@ -110,6 +113,22 @@ struct AppsView: View {
                     AppView(alias: alias)
                 }
             }
+            .onChange(of: update.state) { newValue in
+                guard newValue == .update(.result(.succeeded)) else { return }
+                showAppsUpdate = true
+                showAppsUpdateIfNeeded()
+            }
+            .onChange(of: model.installedStatus) { newValue in
+                guard newValue == .loaded else { return }
+                showAppsUpdateIfNeeded()
+
+            }
+            .notification(isPresented: notifications.apps.showUpdateAvailable) {
+                AppsUpdateAvailableBanner(
+                    isPresented: notifications.apps.showUpdateAvailable
+                )
+                .environmentObject(router)
+            }
             .onChange(of: scenePhase) { phase in
                 switch phase {
                 case .active: model.enableProgressUpdates = true
@@ -118,6 +137,13 @@ struct AppsView: View {
                 @unknown default: break
                 }
             }
+        }
+    }
+
+    func showAppsUpdateIfNeeded() {
+        if model.outdatedCount > 0 {
+            showAppsUpdate = false
+            notifications.apps.showUpdateAvailable = true
         }
     }
 
