@@ -9,6 +9,7 @@ struct HubView: View {
     @Environment(\.notifications) private var notifications
 
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
+    @AppStorage(.hasReaderLog) var hasReaderLog = false
 
     @State private var showDetectReader = false
 
@@ -16,13 +17,10 @@ struct HubView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 14) {
-                    HStack(spacing: 14) {
-
-                        NavigationLink {
-                            NFCToolsView($showDetectReader)
-                        } label: {
-                            NFCCard()
-                        }
+                    Button {
+                        showDetectReader = true
+                    } label: {
+                        DetectReaderCard(hasNotification: hasReaderLog)
                     }
                 }
                 .padding(14)
