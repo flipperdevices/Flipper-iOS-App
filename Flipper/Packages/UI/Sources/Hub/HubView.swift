@@ -30,7 +30,7 @@ struct HubView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 LeadingToolbarItems {
-                    Title("Hub")
+                    Title("Tools")
                         .padding(.leading, 8)
                 }
             }
