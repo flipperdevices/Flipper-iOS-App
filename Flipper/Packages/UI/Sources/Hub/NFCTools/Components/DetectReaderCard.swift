@@ -32,9 +32,7 @@ struct DetectReaderCard: View {
                         Spacer(minLength: 8)
 
                         HStack(spacing: 2) {
-                            Circle()
-                                .frame(width: 14, height: 14)
-                                .foregroundColor(.a1)
+                            Badge()
                                 .opacity(hasNotification ? 1 : 0)
 
                             Image("ChevronRight")
@@ -49,5 +47,18 @@ struct DetectReaderCard: View {
         .padding(.trailing, 8)
         .background(Color.groupedBackground)
         .cornerRadius(10)
+    }
+
+    struct Badge: View {
+        var body: some View {
+            Circle()
+                .frame(width: 16, height: 16)
+                .foregroundColor(.white)
+                .overlay(alignment: .center) {
+                    Circle()
+                        .frame(width: 14, height: 14)
+                        .foregroundColor(.sGreenUpdate)
+                }
+        }
     }
 }

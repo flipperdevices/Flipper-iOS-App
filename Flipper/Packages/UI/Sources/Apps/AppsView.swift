@@ -2,17 +2,22 @@ import Core
 import SwiftUI
 
 struct AppsView: View {
-    var initialSegment: AppsSegments.Segment
-
     @EnvironmentObject var model: Applications
+    @EnvironmentObject var update: UpdateModel
+    @EnvironmentObject var router: Router
     @Environment(\.dismiss) var dismiss
+    @Environment(\.scenePhase) var scenePhase
+    @Environment(\.notifications) private var notifications
+
+    @AppStorage(.selectedTab) private var selectedTab: TabView.Tab = .device
+    @AppStorage(.showAppsUpdate) var showAppsUpdate = false
+
+    @State private var path = NavigationPath()
+    @State private var selectedSegment: AppsSegments.Segment = .all
 
     @State private var predicate = ""
     @State private var showSearchView = false
 
-    @State private var selectedSegment: AppsSegments.Segment = .all
-
-    @Environment(\.notifications) private var notifications
     @State private var isNotConnectedAlertPresented = false
 
     var allSelected: Bool {
@@ -23,69 +28,122 @@ struct AppsView: View {
         selectedSegment == .installed
     }
 
-    init(initialSegment: AppsSegments.Segment) {
-        self.initialSegment = initialSegment
+    enum Destination: Hashable {
+        case app(String)
+        case category(Applications.Category)
+    }
+
+    init() {
     }
 
     var body: some View {
-        ZStack {
-            AllAppsView()
-                .opacity(allSelected && predicate.isEmpty ? 1 : 0)
+        NavigationStack(path: $path) {
+            ZStack {
+                AllAppsView()
+                    .opacity(allSelected && predicate.isEmpty ? 1 : 0)
 
-            if model.enableProgressUpdates {
-                InstalledAppsView()
-                    .opacity(installedSelected && predicate.isEmpty ? 1 : 0)
+                if model.enableProgressUpdates {
+                    InstalledAppsView()
+                        .opacity(installedSelected && predicate.isEmpty ? 1 : 0)
+                }
+
+                AppSearchView(predicate: $predicate)
+                    .environmentObject(model)
+                    .opacity(!predicate.isEmpty ? 1 : 0)
             }
-
-            AppSearchView(predicate: $predicate)
-                .environmentObject(model)
-                .opacity(!predicate.isEmpty ? 1 : 0)
-        }
-        // NOTE: Fixes Error views size
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.background)
-        .navigationBarBackground(Color.a1)
-        .navigationBarBackButtonHidden(true)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if !showSearchView {
-                LeadingToolbarItems {
-                    BackButton {
-                        dismiss()
+            // NOTE: Fixes Error views size
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.background)
+            .navigationBarBackground(Color.a1)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                if !showSearchView {
+                    LeadingToolbarItems {
+                        SearchButton { }
+                            .opacity(0)
                     }
-                }
 
-                PrincipalToolbarItems {
-                    AppsSegments(selected: $selectedSegment)
-                }
-
-                TrailingToolbarItems {
-                    SearchButton {
-                        selectedSegment = .all
-                        showSearchView = true
+                    PrincipalToolbarItems {
+                        AppsSegments(selected: $selectedSegment)
                     }
-                    .analyzingTapGesture {
-                        recordSearchOpened()
-                    }
-                }
-            } else {
-                PrincipalToolbarItems {
-                    HStack(spacing: 14) {
-                        SearchField(
-                            placeholder: "App name, description",
-                            predicate: $predicate
-                        )
 
-                        CancelSearchButton {
-                            predicate = ""
-                            showSearchView = false
+                    TrailingToolbarItems {
+                        SearchButton {
+                            selectedSegment = .all
+                            showSearchView = true
+                        }
+                        .analyzingTapGesture {
+                            recordSearchOpened()
+                        }
+                    }
+                } else {
+                    PrincipalToolbarItems {
+                        HStack(spacing: 14) {
+                            SearchField(
+                                placeholder: "App name, description",
+                                predicate: $predicate
+                            )
+
+                            CancelSearchButton {
+                                predicate = ""
+                                showSearchView = false
+                            }
                         }
                     }
                 }
             }
+            .onReceive(router.showApps) {
+                selectedSegment = .installed
+                selectedTab = .apps
+            }
+            .onOpenURL { url in
+                if url.isApplicationURL {
+                    guard let alias = url.applicationAlias else {
+                        return
+                    }
+                    path.append(Destination.app(alias))
+                    selectedTab = .apps
+                }
+            }
+            .navigationDestination(for: Destination.self) { destination in
+                switch destination {
+                case .category(let category):
+                    AppsCategoryView(category: category)
+                case .app(let alias):
+                    AppView(alias: alias)
+                }
+            }
+            .onChange(of: update.state) { newValue in
+                guard newValue == .update(.result(.succeeded)) else { return }
+                showAppsUpdate = true
+                showAppsUpdateIfNeeded()
+            }
+            .onChange(of: model.installedStatus) { newValue in
+                guard newValue == .loaded else { return }
+                showAppsUpdateIfNeeded()
+
+            }
+            .notification(isPresented: notifications.apps.showUpdateAvailable) {
+                AppsUpdateAvailableBanner(
+                    isPresented: notifications.apps.showUpdateAvailable
+                )
+                .environmentObject(router)
+            }
+            .onChange(of: scenePhase) { phase in
+                switch phase {
+                case .active: model.enableProgressUpdates = true
+                case .inactive: model.enableProgressUpdates = false
+                case .background: break
+                @unknown default: break
+                }
+            }
         }
-        .task {
-            self.selectedSegment = initialSegment
+    }
+
+    func showAppsUpdateIfNeeded() {
+        if model.outdatedCount > 0 {
+            showAppsUpdate = false
+            notifications.apps.showUpdateAvailable = true
         }
     }
 

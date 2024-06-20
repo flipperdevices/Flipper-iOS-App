@@ -9,7 +9,7 @@ import Foundation
 
 // Temporary service locator while refactoring in progress
 
-public class Dependencies: ObservableObject {
+public final class Dependencies: ObservableObject, Sendable {
     private static let queue = DispatchQueue(label: "com.flipper.dependencies")
 
     private static var sharedInstance: Dependencies?

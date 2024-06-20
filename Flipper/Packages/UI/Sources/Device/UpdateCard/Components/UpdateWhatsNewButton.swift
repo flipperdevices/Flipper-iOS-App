@@ -5,6 +5,8 @@ struct UpdateWhatsNewButton: View {
     @EnvironmentObject var updateModel: UpdateModel
     @State private var showChangelog: Bool = false
 
+    @Environment(\.colorScheme) var colorScheme
+
     let startUpdate: () -> Void
 
     private var readyState: UpdateModel.State.Ready? {
@@ -14,6 +16,20 @@ struct UpdateWhatsNewButton: View {
             return state
         } else {
             return nil
+        }
+    }
+
+    var textColor: Color {
+        switch colorScheme {
+        case .light: return .black40
+        default: return .black30
+        }
+    }
+
+    var borderColor: Color {
+        switch colorScheme {
+        case .light: return .black8
+        default: return .black80
         }
     }
 
@@ -29,10 +45,10 @@ struct UpdateWhatsNewButton: View {
             }
             .padding(.horizontal, 5)
             .padding(.vertical, 3)
-            .foregroundColor(.black12)
+            .foregroundColor(textColor)
             .overlay(
                 RoundedRectangle(cornerRadius: 30)
-                    .stroke(Color.black4, lineWidth: 1)
+                    .stroke(borderColor, lineWidth: 1)
             )
             .onTapGesture { showChangelog = true }
             .fullScreenCover(isPresented: $showChangelog) {

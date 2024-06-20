@@ -5,11 +5,11 @@ import SwiftUI
 
 @available(iOS 16, *)
 struct ArchivedItemEntity: AppEntity {
-    static var typeDisplayRepresentation = TypeDisplayRepresentation(
+    static let typeDisplayRepresentation = TypeDisplayRepresentation(
         name: "Archived Item"
     )
 
-    static var defaultQuery = ArchivedItemEntityQuery()
+    static let defaultQuery = ArchivedItemEntityQuery()
 
     let id: String
     let name: String

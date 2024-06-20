@@ -4,8 +4,8 @@ import Foundation
 
 @available(iOS 16, *)
 struct SendArchivedItem: AppIntent {
-    static var title: LocalizedStringResource = "Emulate/Send archived item"
-    static var description: IntentDescription = .init(
+    static let title: LocalizedStringResource = "Emulate/Send archived item"
+    static let description: IntentDescription = .init(
         "Use your flipper to send or emulate an item from your archive.",
         categoryName: "Archive"
     )
