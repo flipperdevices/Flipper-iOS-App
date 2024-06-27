@@ -26,9 +26,14 @@ struct DeviceUpdateCard: View {
                 HStack {
                     Text("Firmware Update")
                         .font(.system(size: 16, weight: .bold))
+                        .padding(.vertical, 2)
                     Spacer()
 
-                    UpdateWhatsNewButton {
+                    UpdateWhatsNewButton(
+                        updateState: updateModel.state,
+                        updateChannel: updateModel.updateChannel,
+                        firmware: updateModel.firmware
+                    ) {
                         prepareUpdate {
                             updateModel.startUpdate()
                         }

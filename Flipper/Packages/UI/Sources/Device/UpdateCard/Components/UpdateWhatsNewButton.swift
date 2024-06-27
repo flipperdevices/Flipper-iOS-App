@@ -2,22 +2,13 @@ import Core
 import SwiftUI
 
 struct UpdateWhatsNewButton: View {
-    @EnvironmentObject var updateModel: UpdateModel
+    @Environment(\.colorScheme) var colorScheme
     @State private var showChangelog: Bool = false
 
-    @Environment(\.colorScheme) var colorScheme
-
+    let updateState: UpdateModel.State
+    let updateChannel: Update.Channel
+    let firmware: Update.Firmware?
     let startUpdate: () -> Void
-
-    private var readyState: UpdateModel.State.Ready? {
-        if case .ready(let state) = updateModel.state,
-           state == .versionUpdate || state == .channelUpdate,
-           updateModel.updateChannel != .custom {
-            return state
-        } else {
-            return nil
-        }
-    }
 
     var textColor: Color {
         switch colorScheme {
@@ -34,17 +25,21 @@ struct UpdateWhatsNewButton: View {
     }
 
     var body: some View {
-        if let state = readyState, let firmware = updateModel.firmware {
+        if
+            let firmware = firmware, updateChannel != .custom,
+            case .ready(let state) = updateState,
+            state == .versionUpdate || state == .channelUpdate
+        {
             HStack(spacing: 4) {
                 Image("WhatsNew")
                     .resizable()
                     .frame(width: 12, height: 12)
 
                 Text("What’s New")
-                    .font(.system(size: 10))
+                    .font(.system(size: 12))
             }
-            .padding(.horizontal, 5)
-            .padding(.vertical, 3)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
             .foregroundColor(textColor)
             .overlay(
                 RoundedRectangle(cornerRadius: 30)
@@ -63,7 +58,6 @@ struct UpdateWhatsNewButton: View {
 }
 
 struct WhatsNewScreen: View {
-    @EnvironmentObject var device: Device
     @Environment(\.dismiss) private var dismiss
 
     let firmware: Update.Firmware
@@ -73,7 +67,6 @@ struct WhatsNewScreen: View {
     var body: some View {
         VStack(spacing: 4) {
             NavBar(
-                leading: { EmptyView() },
                 principal: {
                     VStack(spacing: 0) {
                         Text("What’s New")
