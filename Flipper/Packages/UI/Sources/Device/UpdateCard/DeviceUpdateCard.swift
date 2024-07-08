@@ -40,7 +40,7 @@ struct DeviceUpdateCard: View {
                         .padding(.vertical, 2)
                     Spacer()
 
-                    UpdateWhatsNewButton(showChangelog: $showChangelog)
+                    UpdateWhatsNewButton()
                         .opacity(isWhatsNewVisible ? 1 : 0)
                         .onTapGesture { showChangelog = true }
                 }
@@ -83,10 +83,7 @@ struct DeviceUpdateCard: View {
                 let firmware = updateModel.firmware,
                 case .ready(let state) = updateModel.state
             {
-                WhatsNewScreen(
-                    firmware: firmware,
-                    state: state
-                ) {
+                UpdateWhatsNewView(firmware: firmware, state: state) {
                     prepareUpdate {
                         updateModel.startUpdate()
                     }

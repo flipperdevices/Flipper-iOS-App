@@ -1,7 +1,7 @@
 import Core
 import SwiftUI
 
-struct WhatsNewScreen: View {
+struct UpdateWhatsNewView: View {
     @Environment(\.dismiss) private var dismiss
 
     let firmware: Update.Firmware
