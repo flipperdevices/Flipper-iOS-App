@@ -8,6 +8,7 @@ struct DeviceUpdateCard: View {
     @Environment(\.scenePhase) private var scenePhase
 
     @State private var showUpdate = false
+    @State private var showChangelog = false
 
     @Environment(\.alerts.device.showUpdateSuccess) var showUpdateSuccess
     @Environment(\.alerts.device.showUpdateFailure) var showUpdateFailure
@@ -20,6 +21,16 @@ struct DeviceUpdateCard: View {
         updateModel.intent?.desiredVersion.description ?? ""
     }
 
+    private var isWhatsNewVisible: Bool {
+        guard
+            updateModel.firmware != nil,
+            updateModel.updateChannel != .custom,
+            case .ready(let state) = updateModel.state
+        else { return false }
+
+        return state == .versionUpdate || state == .channelUpdate
+    }
+
     var body: some View {
         Card {
             VStack(spacing: 0) {
@@ -29,15 +40,8 @@ struct DeviceUpdateCard: View {
                         .padding(.vertical, 2)
                     Spacer()
 
-                    UpdateWhatsNewButton(
-                        updateState: updateModel.state,
-                        updateChannel: updateModel.updateChannel,
-                        firmware: updateModel.firmware
-                    ) {
-                        prepareUpdate {
-                            updateModel.startUpdate()
-                        }
-                    }
+                    UpdateWhatsNewButton(showChangelog: $showChangelog)
+                        .opacity(isWhatsNewVisible ? 1 : 0)
                 }
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
@@ -71,6 +75,21 @@ struct DeviceUpdateCard: View {
         .fullScreenCover(isPresented: $updateModel.showUpdate) {
             if let firmware = updateModel.firmware {
                 DeviceUpdateView(firmware: firmware)
+            }
+        }
+        .fullScreenCover(isPresented: $showChangelog) {
+            if
+                let firmware = updateModel.firmware,
+                case .ready(let state) = updateModel.state
+            {
+                WhatsNewScreen(
+                    firmware: firmware,
+                    state: state
+                ) {
+                    prepareUpdate {
+                        updateModel.startUpdate()
+                    }
+                }
             }
         }
         .onChange(of: updateModel.state) { state in
