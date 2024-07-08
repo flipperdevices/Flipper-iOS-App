@@ -3,7 +3,6 @@ import SwiftUI
 
 struct UpdateWhatsNewButton: View {
     @Environment(\.colorScheme) var colorScheme
-    @Binding var showChangelog: Bool
 
     var contentColor: Color {
         switch colorScheme {
@@ -36,6 +35,5 @@ struct UpdateWhatsNewButton: View {
             RoundedRectangle(cornerRadius: 30)
                 .stroke(borderColor, lineWidth: 1)
         )
-        .onTapGesture { showChangelog = true }
     }
 }

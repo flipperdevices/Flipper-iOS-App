@@ -42,6 +42,7 @@ struct DeviceUpdateCard: View {
 
                     UpdateWhatsNewButton(showChangelog: $showChangelog)
                         .opacity(isWhatsNewVisible ? 1 : 0)
+                        .onTapGesture { showChangelog = true }
                 }
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
