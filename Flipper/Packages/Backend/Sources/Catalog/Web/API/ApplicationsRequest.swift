@@ -1,12 +1,13 @@
+import Backend
 import Foundation
 
-public struct ApplicationsRequest: CatalogRequest {
+public struct ApplicationsRequest: BackendRequest {
     public typealias Result = [Application]
 
-    var path: String { "1/application" }
-    var queryItems: [URLQueryItem] = []
+    public var path: String { "1/application" }
+    public var queryItems: [URLQueryItem] = []
 
-    let baseURL: URL
+    public let baseURL: URL
 
     struct Params: Encodable {
         var offset: Int?
@@ -38,8 +39,8 @@ public struct ApplicationsRequest: CatalogRequest {
 
     var params: Params = .init()
 
-    var method: String? { "POST" }
-    var body: Encodable? { params }
+    public var method: String? { "POST" }
+    public var body: Encodable? { params }
 
     init(baseURL: URL) {
         self.baseURL = baseURL

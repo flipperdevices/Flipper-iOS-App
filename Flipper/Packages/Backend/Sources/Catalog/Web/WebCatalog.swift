@@ -1,3 +1,4 @@
+import Backend
 import Foundation
 
 public class WebCatalog: CatalogService {

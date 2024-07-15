@@ -1,14 +1,15 @@
+import Backend
 import Foundation
 
-public struct BuildRequest: CatalogRequest {
+public struct BuildRequest: BackendRequest {
     public typealias Result = Data
-    var path: String { "0/application/version/\(uid)/build/compatible" }
-    var queryItems: [URLQueryItem] = []
+    public var path: String { "0/application/version/\(uid)/build/compatible" }
+    public var queryItems: [URLQueryItem] = []
 
-    let baseURL: URL
-    let uid: String
+    public let baseURL: URL
+    public let uid: String
 
-    init(baseURL: URL, uid: String) {
+    public init(baseURL: URL, uid: String) {
         self.baseURL = baseURL
         self.uid = uid
     }

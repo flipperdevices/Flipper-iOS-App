@@ -1,17 +1,20 @@
+import Backend
 import Foundation
 
-public struct ApplicationRequest: CatalogRequest {
-    public typealias Result = Application
+public struct CategoriesRequest: BackendRequest {
+    public typealias Result = [Category]
 
-    var path: String { "0/application/\(uid)" }
-    var queryItems: [URLQueryItem] = []
+    public var path: String { "0/category" }
+    public var queryItems: [URLQueryItem] = []
 
-    let baseURL: URL
-    let uid: String
+    public let baseURL: URL
 
-    init(baseURL: URL, uid: String) {
+    public init(baseURL: URL) {
         self.baseURL = baseURL
-        self.uid = uid
+    }
+
+    public func take(_ count: Int) -> Self {
+        setQueryItem(name: "limit", value: count)
     }
 
     public func target(_ target: String?) -> Self {
@@ -28,9 +31,5 @@ public struct ApplicationRequest: CatalogRequest {
         } else {
             return self
         }
-    }
-
-    public func releaseBuild(_ hasRelease: Bool) -> Self {
-        setQueryItem(name: "is_latest_release_version", value: hasRelease)
     }
 }

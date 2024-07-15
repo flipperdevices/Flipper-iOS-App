@@ -2,12 +2,12 @@ import Foundation
 
 // MARK: Internal protocol to inherit 'endpoint' property
 
-protocol Endpoint {
+public protocol Endpoint {
     var path: String { get }
     var baseURL: URL { get }
 }
 
-extension Endpoint {
+public extension Endpoint {
     var endpoint: URL {
         baseURL.appendingPathComponent(path)
     }
@@ -23,19 +23,21 @@ public protocol Request {
 
 // MARK: Internal protocol to inherit 'append' and 'get' functions
 
-protocol CatalogRequest: Endpoint, Request {
+public protocol BackendRequest: Endpoint, Request {
     var queryItems: [URLQueryItem] { get set }
 
     var method: String? { get }
     var body: Encodable? { get }
+
+    func getError(data: Data, response: HTTPURLResponse) -> Swift.Error
 }
 
-extension CatalogRequest {
+public extension BackendRequest {
     var method: String? { nil }
     var body: Encodable? { nil }
 }
 
-extension CatalogRequest {
+public extension BackendRequest {
     func setQueryItem(name: String, value: String) -> Self {
         var request = self
         request.queryItems.append(.init(name: name, value: value))
@@ -80,8 +82,8 @@ extension CatalogRequest {
     }
 }
 
-extension CatalogRequest {
-    public func get() async throws -> Result {
+public extension BackendRequest {
+    func get() async throws -> Result {
         var request = URLRequest(url: try makeURL())
         if let method {
             request.httpMethod = method
@@ -124,24 +126,9 @@ extension CatalogRequest {
             throw URLError(.unknown)
         }
         guard response.statusCode == 200 else {
-            if let error = try? error(decoding: data) {
-                throw CatalogError(
-                    httpCode: response.statusCode,
-                    serverError: error)
-            } else {
-                throw URLError(.init(rawValue: response.statusCode))
-            }
+            throw getError(data: data, response: response)
         }
         return data
-    }
-
-    private func error(decoding data: Data) throws -> ServerError {
-        do {
-            return try JSONDecoder().decode(ServerError.self, from: data)
-        } catch {
-            logger.error("decoding: \(error)")
-            throw error
-        }
     }
 }
 

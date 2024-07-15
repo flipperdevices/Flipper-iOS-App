@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Catalog",
+    name: "Backend",
     platforms: [
         .iOS(.v16),
         .watchOS(.v9),
@@ -11,8 +11,8 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "Catalog",
-            targets: ["Catalog"])
+            name: "Backend",
+            targets: ["Catalog", "Backend"])
     ],
     dependencies: [
         .package(
@@ -24,15 +24,19 @@ let package = Package(
     ],
     targets: [
         .target(
+            name: "Backend",
+            path: "Sources/Backend"),
+        .target(
             name: "Catalog",
             dependencies: [
+                "Backend",
                 "Macro",
                 .product(name: "Logging", package: "swift-log")
             ],
-            path: "Sources"),
+            path: "Sources/Catalog"),
         .testTarget(
             name: "CatalogTests",
             dependencies: ["Catalog"],
-            path: "Tests")
+            path: "Tests/Catalog")
     ]
 )

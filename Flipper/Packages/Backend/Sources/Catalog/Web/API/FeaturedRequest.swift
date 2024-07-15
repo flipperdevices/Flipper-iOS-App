@@ -1,14 +1,15 @@
+import Backend
 import Foundation
 
-public struct FeaturedRequest: CatalogRequest {
+public struct FeaturedRequest: BackendRequest {
     public typealias Result = [Application]
 
-    var path: String { "0/application/featured" }
-    var queryItems: [URLQueryItem] = []
+    public var path: String { "0/application/featured" }
+    public var queryItems: [URLQueryItem] = []
 
-    let baseURL: URL
+    public let baseURL: URL
 
-    init(baseURL: URL) {
+    public init(baseURL: URL) {
         self.baseURL = baseURL
     }
 
