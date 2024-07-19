@@ -1,5 +1,6 @@
 import SwiftUI
 import Core
+import Infrared
 
 struct TextInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor

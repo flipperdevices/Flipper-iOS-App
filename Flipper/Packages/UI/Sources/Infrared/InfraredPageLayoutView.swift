@@ -1,14 +1,24 @@
 import SwiftUI
 import Core
+import Infrared
 
 struct InfraredPageLayoutView: View {
-    let page: InfraredPageLayout = .mock
+    private var infraredService = WebInfraredService(
+        baseURL: URL(string: "https://infrared.flipperzero.one")!
+    )
+
+    @State private var layout: InfraredLayout?
+    @State private var currentId: Int?
+
+    private var firstPages: InfraredPageLayout {
+        layout?.pages.first ?? InfraredPageLayout(buttons: [])
+    }
 
     var body: some View {
         GeometryReader { viewGeometry in
             ZStack {
                 GeometryReader { layoutGeometry in
-                    ForEach(page.buttons) { button in
+                    ForEach(firstPages.buttons) { button in
                         InfraredButtonView(
                             button: button,
                             cellLenght: calculateCellLenght(layoutGeometry.size)
@@ -21,6 +31,31 @@ struct InfraredPageLayoutView: View {
                 }
             }
             .layoutModifier(viewGeometry.size)
+        }
+        .overlay(alignment: .bottomTrailing) {
+            VStack {
+                Text("Current id \(currentId)")
+                Text("Reload")
+                    .onTapGesture { getRandomUI() }
+            }
+        }
+        .onAppear {
+            getRandomUI()
+        }
+    }
+
+    private func getRandomUI() {
+        Task {
+            let randomId = Int.random(in: 1...5000)
+            do {
+                print("Getting by \(randomId)")
+                self.layout = try await infraredService
+                    .layout(forIfrID: randomId)
+                    .get()
+                self.currentId = randomId
+            } catch {
+                print("Error on parse layout \(error)")
+            }
         }
     }
 }

@@ -138,3 +138,9 @@ private extension URLRequest {
         set { setValue(newValue, forHTTPHeaderField: "Content-Type") }
     }
 }
+
+public extension URLQueryItem {
+    init(name: String, value: Int) {
+        self.init(name: name, value: "\(value)")
+    }
+}

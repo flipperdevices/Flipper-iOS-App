@@ -6,4 +6,8 @@ public struct InfraredLayout: Decodable, Equatable {
 
 public struct InfraredPageLayout: Decodable, Equatable {
     public let buttons: [InfraredButton]
+
+    public init(buttons: [InfraredButton]) {
+        self.buttons = buttons
+    }
 }

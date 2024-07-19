@@ -1,5 +1,6 @@
 import SwiftUI
 import Core
+import Infrared
 
 struct InfraredButtonView: View {
     let button: InfraredButton

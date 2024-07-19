@@ -12,7 +12,7 @@ let package = Package(
     products: [
         .library(
             name: "Backend",
-            targets: ["Catalog", "Backend"])
+            targets: ["Catalog", "Backend", "Infrared"])
     ],
     dependencies: [
         .package(
@@ -34,9 +34,24 @@ let package = Package(
                 .product(name: "Logging", package: "swift-log")
             ],
             path: "Sources/Catalog"),
+        .target(
+            name: "Infrared",
+            dependencies: [
+                "Backend",
+                .product(name: "Logging", package: "swift-log")
+            ],
+            path: "Sources/Infrared"),
         .testTarget(
             name: "CatalogTests",
             dependencies: ["Catalog"],
-            path: "Tests/Catalog")
+            path: "Tests/Catalog"),
+        .testTarget(
+            name: "InfraredTests",
+            dependencies: ["Infrared"],
+            path: "Tests/Infrared"),
+        .executableTarget(
+            name: "InfraredContractTests",
+            dependencies: ["Infrared"],
+            path: "Tests/InfraredContract")
     ]
 )
