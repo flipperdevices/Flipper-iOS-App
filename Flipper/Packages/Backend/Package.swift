@@ -48,10 +48,6 @@ let package = Package(
         .testTarget(
             name: "InfraredTests",
             dependencies: ["Infrared"],
-            path: "Tests/Infrared"),
-        .executableTarget(
-            name: "InfraredContractTests",
-            dependencies: ["Infrared"],
-            path: "Tests/InfraredContract")
+            path: "Tests/Infrared")
     ]
 )
