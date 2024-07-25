@@ -58,14 +58,14 @@ public struct InfraredIconButton {
         self.keyId = .init(data.keyId)
 
         self.type = switch data.icon {
-            case .back: .back
-            case .home: .home
-            case .info: .info
-            case .more: .more
-            case .mute: .mute
-            case .cool: .cool
-            case .heat: .heat
-            case .power:  .power
+        case .back: .back
+        case .home: .home
+        case .info: .info
+        case .more: .more
+        case .mute: .mute
+        case .cool: .cool
+        case .heat: .heat
+        case .power:  .power
         }
     }
 }

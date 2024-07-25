@@ -16,7 +16,6 @@ fileprivate extension InfraredKeyContent {
     )
 }
 
-
 fileprivate extension Data {
     static let mock =
     """

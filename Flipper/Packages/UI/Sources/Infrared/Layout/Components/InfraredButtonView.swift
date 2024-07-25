@@ -14,7 +14,6 @@ struct InfraredButtonView: View {
     }
 }
 
-
 struct InfraredButtonTypeView: View {
     let data: InfraredButtonType
 

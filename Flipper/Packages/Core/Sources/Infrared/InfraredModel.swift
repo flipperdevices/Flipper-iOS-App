@@ -8,7 +8,7 @@ public class InfraredModel: ObservableObject {
     private let service: InfraredService
 
     @Published public var categories: [InfraredCategory] = []
-    @Published public var brands: [Int:[InfraredBrand]] = [:]
+    @Published public var brands: [Int: [InfraredBrand]] = [:]
 
     public init(service: InfraredService) {
         self.service = service
@@ -24,7 +24,6 @@ public class InfraredModel: ObservableObject {
                 let task = Task<[InfraredCategory], Swift.Error> {
                     try await service
                         .categories()
-                        .get()
                         .categories
                         .map { .init(category: $0) }
                 }
@@ -48,7 +47,6 @@ public class InfraredModel: ObservableObject {
                 let task = Task<[InfraredBrand], Swift.Error> {
                     try await service
                         .brands(forCategoryID: forCategoryID)
-                        .get()
                         .brands
                         .map { .init($0, forCategoryID) }
                 }
@@ -70,17 +68,14 @@ public class InfraredModel: ObservableObject {
         let response = try await service
             .signal(
                 forBrandID: brand.id,
-                forCategoryID: brand.categoryID
-            )
-            .filter(
-                failedResults: failureControls,
-                successResults: successControls
-            )
-            .get()
+                forCategoryID: brand.categoryID,
+                successResults: successControls,
+                failedResults: failureControls
+           )
         return InfraredSignal(response)
     }
 
     public func loadContent(irFileId: Int) async throws -> String {
-        try await service.content(forIfrID: irFileId).get().content
+        try await service.content(forIfrID: irFileId).content
     }
 }

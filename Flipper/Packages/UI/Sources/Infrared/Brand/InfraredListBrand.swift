@@ -87,7 +87,7 @@ extension InfraredListBrand {
             let key = sortedKeys[indexPath.section]
             let section = groupedBrands[key]!
             let brand = section[indexPath.row]
-            
+
             onTap(brand)
             tableView.deselectRow(at: indexPath, animated: true)
         }

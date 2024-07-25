@@ -8,7 +8,7 @@ final class InfraredSignalDataTest: BaseDecodableTestCase<InfraredSignalData> {
         testCases = [
             (.mockRaw, .mockRaw),
             (.mockParsed, .mockParsed),
-            (.mockUnknown, .mockUnknown),
+            (.mockUnknown, .mockUnknown)
         ]
     }
 }
@@ -24,7 +24,6 @@ fileprivate extension InfraredSignalData {
 
     static let mockUnknown = InfraredSignalData.unknown
 }
-
 
 fileprivate extension Data {
     static let mockRaw =

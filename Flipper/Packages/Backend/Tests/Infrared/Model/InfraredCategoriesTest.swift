@@ -27,7 +27,6 @@ fileprivate extension InfraredCategories {
     )
 }
 
-
 fileprivate extension Data {
     static let mock =
     """
@@ -48,4 +47,3 @@ fileprivate extension Data {
     }
     """.data(using: .utf8)!
 }
-

@@ -34,12 +34,11 @@ fileprivate extension InfraredLayout {
                         contentWidth: 2,
                         contentHeight: 1
                     )
-                ),
-            ]),
+                )
+            ])
         ]
     )
 }
-
 
 fileprivate extension Data {
     static let mock =

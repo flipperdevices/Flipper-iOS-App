@@ -8,7 +8,7 @@ final class InfraredButtonPositionTest
         super.setUp()
         testCases = [
             (.mockAllField, .mockAllField),
-            (.mockEmptyFields, .mockEmptyFields),
+            (.mockEmptyFields, .mockEmptyFields)
         ]
     }
 
@@ -38,7 +38,6 @@ fileprivate extension InfraredButtonPosition {
         x: 1
     )
 }
-
 
 fileprivate extension Data {
     static let mockAllField =

@@ -28,7 +28,6 @@ fileprivate extension InfraredSignal {
     )
 }
 
-
 fileprivate extension Data {
     static let mock =
     """

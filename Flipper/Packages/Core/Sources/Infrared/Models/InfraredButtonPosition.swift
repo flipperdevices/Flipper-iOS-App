@@ -59,13 +59,13 @@ private extension Infrared.InfraredButton {
     var alignment: InfraredButtonPosition.Alignment {
         if let alignment = self.position.alignment {
             return switch alignment {
-                case .center: .center
-                case .topLeft: .topLeft
-                case .topRight: .topRight
-                case .bottomLeft: .bottomLeft
-                case .bottomRight: .bottomRight
-                case .centerLeft: .centerLeft
-                case .centerRight: .centerRight
+            case .center: .center
+            case .topLeft: .topLeft
+            case .topRight: .topRight
+            case .bottomLeft: .bottomLeft
+            case .bottomRight: .bottomRight
+            case .centerLeft: .centerLeft
+            case .centerRight: .centerRight
             }
         }
         return .center

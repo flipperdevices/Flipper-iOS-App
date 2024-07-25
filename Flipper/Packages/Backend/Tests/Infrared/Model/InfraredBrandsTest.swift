@@ -12,10 +12,9 @@ final class InfraredBrandsTest: BaseDecodableTestCase<InfraredBrands> {
 fileprivate extension InfraredBrands {
     static let mock = InfraredBrands(brands: [
         InfraredBrand(id: 1, name: "one"),
-        InfraredBrand(id: 2, name: "two"),
+        InfraredBrand(id: 2, name: "two")
     ])
 }
-
 
 fileprivate extension Data {
     static let mock =
