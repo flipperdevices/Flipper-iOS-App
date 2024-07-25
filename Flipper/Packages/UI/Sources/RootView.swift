@@ -21,6 +21,7 @@ public struct RootView: View {
             .environmentObject(dependencies.sharing)
             .environmentObject(dependencies.emulate)
             .environmentObject(dependencies.applications)
+            .environmentObject(dependencies.infraredModel)
             .environmentObject(Notifications.shared)
             .environmentObject(overlayController)
     }

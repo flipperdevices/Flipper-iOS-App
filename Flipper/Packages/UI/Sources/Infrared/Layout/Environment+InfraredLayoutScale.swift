@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct InfraredLayoutScaleKey: EnvironmentKey {
-    static let defaultValue: Double = 0.0
+    static let defaultValue: Double = 1.0
 }
 
 extension EnvironmentValues {

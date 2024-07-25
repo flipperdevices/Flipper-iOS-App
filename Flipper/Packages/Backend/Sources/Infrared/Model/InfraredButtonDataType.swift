@@ -85,3 +85,9 @@ public struct ChannelButtonData: Decodable, Equatable {
         case reduceKeyId = "reduce_key_id"
     }
 }
+
+extension KeyedDecodingContainer {
+    func decode(_ type: KeyID.Type, forKey key: K) throws -> KeyID {
+        return try decodeIfPresent(KeyID.self, forKey: key) ?? .unknown
+    }
+}

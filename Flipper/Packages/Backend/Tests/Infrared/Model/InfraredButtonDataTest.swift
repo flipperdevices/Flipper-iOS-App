@@ -73,7 +73,6 @@ fileprivate extension Data {
     static let mockTextButtonType =
     """
     {
-        "key_id": {},
         "text": "Text Button",
         "type": "TEXT"
     }
@@ -82,7 +81,6 @@ fileprivate extension Data {
     static let mockIconButtonType =
     """
     {
-        "key_id": {},
         "type": "ICON",
         "icon_id": "POWER"
     }

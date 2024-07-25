@@ -1,26 +1,25 @@
 import SwiftUI
 import Core
-import Infrared
 
 struct IconInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
 
-    let data: IconButtonData
+    let data: InfraredIconButton
 
     var body: some View {
         InfraredSquareButton {
-            Image(data.icon.image)
+            Image(data.image)
                 .renderingMode(.template)
                 .resizable()
                 .frame(width: 24 * scaleFactor, height: 24 * scaleFactor)
-                .foregroundColor(data.icon.color)
+                .foregroundColor(data.color)
         }
     }
 }
 
-private extension IconButtonData.IconType {
+private extension InfraredIconButton {
     var image: String {
-        return switch self {
+        return switch self.type {
             case .back: "InfraredBack"
             case .home: "InfraredHome"
             case .info: "InfraredInfo"
@@ -33,7 +32,7 @@ private extension IconButtonData.IconType {
     }
 
     var color: Color {
-        switch self {
+        switch self.type {
         case .power: .red
         default: .white
         }

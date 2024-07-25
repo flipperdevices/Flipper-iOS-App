@@ -28,7 +28,7 @@ public struct InfraredSignalModel: Decodable, Equatable {
     public let brandId: Int
     public let categoryId: Int
     public let name: String
-    public let fff: InfraredSignalData
+//    public let remote: InfraredSignalData
     public let hash: String
 
     enum CodingKeys: String, CodingKey {
@@ -38,6 +38,6 @@ public struct InfraredSignalModel: Decodable, Equatable {
         case categoryId = "category_id"
         case name
         case hash
-        case fff
+//        case remote
     }
 }

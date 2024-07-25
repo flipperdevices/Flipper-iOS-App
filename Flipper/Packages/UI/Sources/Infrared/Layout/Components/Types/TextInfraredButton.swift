@@ -1,11 +1,10 @@
 import SwiftUI
 import Core
-import Infrared
 
 struct TextInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
 
-    let data: TextButtonData
+    let data: InfraredTextButton
 
     var body: some View {
         InfraredSquareButton {

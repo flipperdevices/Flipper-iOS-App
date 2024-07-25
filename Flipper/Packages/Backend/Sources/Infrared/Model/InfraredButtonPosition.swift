@@ -1,17 +1,17 @@
 import Foundation
 
 public struct InfraredButtonPosition: Decodable, Equatable {
-    let y: Int
-    let x: Int
+    public let y: Int
+    public let x: Int
 
-    let alignment: Alignment?
-    let zIndex: Double?
+    public let alignment: Alignment?
+    public let zIndex: Double?
 
-    let containerWidth: Int?
-    let containerHeight: Int?
+    public let containerWidth: Int?
+    public let containerHeight: Int?
 
-    let contentWidth: Int?
-    let contentHeight: Int?
+    public let contentWidth: Int?
+    public let contentHeight: Int?
 
     init(
         y: Int,

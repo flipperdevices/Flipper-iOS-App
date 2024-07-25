@@ -1,24 +1,14 @@
 import SwiftUI
 import Core
-import Infrared
 
 struct InfraredPageLayoutView: View {
-    private var infraredService = WebInfraredService(
-        baseURL: URL(string: "https://infrared.flipperzero.one")!
-    )
-
-    @State private var layout: InfraredLayout?
-    @State private var currentId: Int?
-
-    private var firstPages: InfraredPageLayout {
-        layout?.pages.first ?? InfraredPageLayout(buttons: [])
-    }
+    let buttons: [InfraredButton]
 
     var body: some View {
         GeometryReader { viewGeometry in
             ZStack {
                 GeometryReader { layoutGeometry in
-                    ForEach(firstPages.buttons) { button in
+                    ForEach(buttons) { button in
                         InfraredButtonView(
                             button: button,
                             cellLenght: calculateCellLenght(layoutGeometry.size)
@@ -31,31 +21,6 @@ struct InfraredPageLayoutView: View {
                 }
             }
             .layoutModifier(viewGeometry.size)
-        }
-        .overlay(alignment: .bottomTrailing) {
-            VStack {
-                Text("Current id \(currentId)")
-                Text("Reload")
-                    .onTapGesture { getRandomUI() }
-            }
-        }
-        .onAppear {
-            getRandomUI()
-        }
-    }
-
-    private func getRandomUI() {
-        Task {
-            let randomId = Int.random(in: 1...5000)
-            do {
-                print("Getting by \(randomId)")
-                self.layout = try await infraredService
-                    .layout(forIfrID: randomId)
-                    .get()
-                self.currentId = randomId
-            } catch {
-                print("Error on parse layout \(error)")
-            }
         }
     }
 }
@@ -93,14 +58,14 @@ private extension View {
         button: InfraredButton,
         layoutSize: CGSize
     ) -> some View {
-        let xCenter = button.x + button.containerWidth / 2
-        let yCenter = button.y + button.containerHeight / 2
+        let xCenter = button.position.x + button.position.containerWidth / 2
+        let yCenter = button.position.y + button.position.containerHeight / 2
 
         let widthFactor = layoutSize.width / widthCellCount
         let heightFactor = layoutSize.height / heightCellCount
 
-        let cellWidth = widthFactor * button.containerWidth
-        let cellHeight = heightFactor * button.containerHeight
+        let cellWidth = widthFactor * button.position.containerWidth
+        let cellHeight = heightFactor * button.position.containerHeight
 
         let cellX = layoutSize.width * xCenter / widthCellCount
         let cellY = layoutSize.height * yCenter / heightCellCount
@@ -113,7 +78,7 @@ private extension View {
                 alignment: cellAlignment
             )
             .position(x: cellX, y: cellY)
-            .zIndex(button.zIndex)
+            .zIndex(button.position.zIndex)
     }
 
     var cellHeightCoefficient: Double { 12 }
@@ -129,7 +94,7 @@ private extension View {
 
 extension InfraredButton {
     public var cellAlignment: SwiftUI.Alignment {
-        switch self.alignment {
+        switch self.position.alignment {
         case .center: .center
         case .topLeft: .topLeading
         case .topRight: .topTrailing
@@ -139,8 +104,4 @@ extension InfraredButton {
         case .centerRight: .trailing
         }
     }
-}
-
-#Preview {
-    InfraredPageLayoutView()
 }

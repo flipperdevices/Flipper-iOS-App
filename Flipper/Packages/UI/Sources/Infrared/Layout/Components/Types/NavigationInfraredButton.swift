@@ -1,11 +1,10 @@
 import SwiftUI
 import Core
-import Infrared
 
 struct NavigationInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
 
-    let data: NavigationButtonData
+    let data: InfraredNavigationButton
 
     var body: some View {
         GeometryReader { proxy in

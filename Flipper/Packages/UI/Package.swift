@@ -25,9 +25,6 @@ let package = Package(
             name: "Notifications",
             path: "../Notifications"),
         .package(
-            name: "Backend",
-            path: "../Backend"), // Remove when create infrared model in Core
-        .package(
             url: "https://github.com/gonzalezreal/swift-markdown-ui",
             from: "2.3.1")
     ],
@@ -38,7 +35,6 @@ let package = Package(
                 "Core",
                 "Analytics",
                 "Notifications",
-                .product(name: "Backend", package: "Backend"),
                 .product(name: "MarkdownUI", package: "swift-markdown-ui")
             ],
             path: "Sources"),

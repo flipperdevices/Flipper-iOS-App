@@ -21,14 +21,16 @@ struct OptionsView: View {
         device.status == .synchronized
     }
 
-    enum Destination {
+    enum Destination: Hashable {
         case ping
         case stressTest
         case speedTest
         case logs
         case fileManager
         case reportBug
-        case infrared
+        case infraredChooseCategory
+        case infraredChooseBrand(InfraredCategory)
+        case infraredChooseLayout(InfraredBrand)
     }
 
     var body: some View {
@@ -117,7 +119,7 @@ struct OptionsView: View {
                     }
                     .tint(.a1)
 
-                    NavigationLink(value: Destination.infrared) {
+                    NavigationLink(value: Destination.infraredChooseCategory) {
                         Text("Infrared Layout")
                     }
                 }
@@ -164,7 +166,11 @@ struct OptionsView: View {
             case .logs: LogsView()
             case .fileManager: FileManagerView()
             case .reportBug: ReportBugView()
-            case .infrared: InfraredLayoutView()
+            case .infraredChooseCategory: InfraredChooseCategory()
+            case .infraredChooseBrand(let category):
+                InfraredChooseBrand(category: category)
+            case .infraredChooseLayout(let brand):
+                InfraredChooseSignal(brand: brand)
             }
         }
     }

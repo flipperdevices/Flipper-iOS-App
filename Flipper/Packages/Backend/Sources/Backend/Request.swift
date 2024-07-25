@@ -89,7 +89,7 @@ public extension BackendRequest {
             request.httpMethod = method
         }
         if let body {
-            request.contentType = ""
+            request.contentType = "application/json"
             request.httpBody = try JSONEncoder().encode(body)
         }
         return try await object(for: request)

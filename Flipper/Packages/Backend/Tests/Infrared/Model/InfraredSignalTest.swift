@@ -18,7 +18,7 @@ fileprivate extension InfraredSignal {
                 brandId: 0,
                 categoryId: 0,
                 name: "name",
-                fff: .unknown,
+//                fff: .unknown,
                 hash: "hash"
             ),
             message: "message",
