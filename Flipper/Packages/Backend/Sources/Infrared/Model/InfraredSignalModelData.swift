@@ -34,5 +34,3 @@ public enum InfraredSignalModelData: Decodable, Equatable {
         }
     }
 }
-
-

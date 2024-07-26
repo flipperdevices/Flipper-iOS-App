@@ -9,11 +9,10 @@ extension InfraredView {
         @Environment(\.dismiss) private var dismiss
         @Environment(\.path) private var path
 
-        @State public var isLoading: Bool = true
+        @State private var brands: [InfraredBrand] = []
 
-        private var brands: [InfraredBrand] {
-            infraredModel.brands[category.id] ?? []
-        }
+        @State private var isLoading: Bool = true
+        @State private var isError: Bool = false
 
         let category: InfraredCategory
 
@@ -21,6 +20,8 @@ extension InfraredView {
             VStack(spacing: 0) {
                 if isLoading {
                     Spinner()
+                } else if isError {
+                    Text("Some Error on Load Brands")
                 } else {
                     InfraredListBrand(brands: brands) {
                         path.append(Destination.infraredChooseSignal($0))
@@ -43,8 +44,14 @@ extension InfraredView {
                 }
             }
             .task {
-                await infraredModel.loadBrand(forCategoryID: category.id)
-                isLoading = false
+                do {
+                    guard brands.isEmpty else { return }
+                    brands = try await infraredModel
+                        .loadBrand(forCategoryID: category.id)
+                    isLoading = false
+                } catch {
+                    isError = true
+                }
             }
         }
     }

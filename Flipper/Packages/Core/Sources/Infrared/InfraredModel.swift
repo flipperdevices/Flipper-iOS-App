@@ -7,56 +7,33 @@ import Foundation
 public class InfraredModel: ObservableObject {
     private let service: InfraredService
 
-    @Published public var categories: [InfraredCategory] = []
-    @Published public var brands: [Int: [InfraredBrand]] = [:]
-
     public init(service: InfraredService) {
         self.service = service
     }
 
-    private var categoriesTask: Task<[InfraredCategory], Swift.Error>?
-
-    public func loadCategories() async {
+    public func loadCategories() async throws -> [InfraredCategory] {
         do {
-            if let task = categoriesTask {
-                categories = try await task.value
-            } else {
-                let task = Task<[InfraredCategory], Swift.Error> {
-                    try await service
-                        .categories()
-                        .categories
-                        .map { .init(category: $0) }
-                }
-
-                categoriesTask = task
-                categories = try await task.value
-                categoriesTask = nil
-            }
+            return try await service
+                .categories()
+                .categories
+                .map { .init(category: $0) }
         } catch {
             logger.error("load category \(error)")
+            throw error
         }
     }
 
-    private var brandTasks: [Int: Task<[InfraredBrand], Swift.Error>] = [:]
-
-    public func loadBrand(forCategoryID: Int) async {
+    public func loadBrand(
+        forCategoryID: Int
+    ) async throws -> [InfraredBrand] {
         do {
-            if let task = brandTasks[forCategoryID] {
-                brands[forCategoryID] = try await task.value
-            } else {
-                let task = Task<[InfraredBrand], Swift.Error> {
-                    try await service
-                        .brands(forCategoryID: forCategoryID)
-                        .brands
-                        .map { .init($0, forCategoryID) }
-                }
-
-                brandTasks[forCategoryID] = task
-                brands[forCategoryID] = try await task.value
-                brandTasks[forCategoryID] = nil
-            }
+            return try await service
+                .brands(forCategoryID: forCategoryID)
+                .brands
+                .map { .init($0, forCategoryID) }
         } catch {
-            logger.error("load brand \(forCategoryID) \(error)")
+            logger.error("load brand \(error)")
+            throw error
         }
     }
 
@@ -65,14 +42,19 @@ public class InfraredModel: ObservableObject {
         successControls: [Int],
         failureControls: [Int]
     ) async throws -> InfraredSignal {
-        let response = try await service
-            .signal(
-                forBrandID: brand.id,
-                forCategoryID: brand.categoryID,
-                successResults: successControls,
-                failedResults: failureControls
-           )
-        return InfraredSignal(response)
+        do {
+            let response = try await service
+                .signal(
+                    forBrandID: brand.id,
+                    forCategoryID: brand.categoryID,
+                    successResults: successControls,
+                    failedResults: failureControls
+               )
+            return InfraredSignal(response)
+        } catch {
+            logger.error("load signal \(error)")
+            throw error
+        }
     }
 
     public func loadContent(irFileId: Int) async throws -> String {
