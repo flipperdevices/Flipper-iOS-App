@@ -4,7 +4,7 @@ import Core
 struct Base64ImageInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
 
-    let data: InfraredBas64ImageButton
+    let data: InfraredBase64ImageButton
 
     private var imageSize: CGSize {
         .init(width: 24 * scaleFactor, height: 24 * scaleFactor)

@@ -28,9 +28,7 @@ struct OptionsView: View {
         case logs
         case fileManager
         case reportBug
-        case infraredChooseCategory
-        case infraredChooseBrand(InfraredCategory)
-        case infraredChooseLayout(InfraredBrand)
+        case infrared
     }
 
     var body: some View {
@@ -119,8 +117,8 @@ struct OptionsView: View {
                     }
                     .tint(.a1)
 
-                    NavigationLink(value: Destination.infraredChooseCategory) {
-                        Text("Infrared Layout")
+                    NavigationLink(value: Destination.infrared) {
+                        Text("Infrared")
                     }
                 }
 
@@ -166,11 +164,7 @@ struct OptionsView: View {
             case .logs: LogsView()
             case .fileManager: FileManagerView()
             case .reportBug: ReportBugView()
-            case .infraredChooseCategory: InfraredChooseCategory()
-            case .infraredChooseBrand(let category):
-                InfraredChooseBrand(category: category)
-            case .infraredChooseLayout(let brand):
-                InfraredChooseSignal(brand: brand)
+            case .infrared: InfraredView()
             }
         }
     }
