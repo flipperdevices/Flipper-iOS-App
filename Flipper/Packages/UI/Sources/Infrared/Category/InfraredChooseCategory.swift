@@ -10,8 +10,6 @@ extension InfraredView {
         @Environment(\.path) private var path
 
         @State private var categories: [InfraredCategory] = []
-
-        @State private var isLoading: Bool = true
         @State private var isError: Bool = false
 
         private let columns = [
@@ -21,18 +19,17 @@ extension InfraredView {
 
         var body: some View {
             VStack(spacing: 0) {
-                if isLoading {
-                    Spinner()
-                } else if isError {
+                if isError {
                     Text("Some Error on Load Category")
+                } else if categories.isEmpty {
+                    Spinner()
                 } else {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 12) {
                             ForEach(categories) { category in
                                 CategoryCard(item: category) {
                                     path.append(
-                                        Destination
-                                            .infraredChooseBrand(category)
+                                        Destination.chooseBrand(category)
                                     )
                                 }
                             }
@@ -60,7 +57,6 @@ extension InfraredView {
                 do {
                     guard categories.isEmpty else { return }
                     categories = try await infraredModel.loadCategories()
-                    isLoading = false
                 } catch {
                     isError = true
                 }

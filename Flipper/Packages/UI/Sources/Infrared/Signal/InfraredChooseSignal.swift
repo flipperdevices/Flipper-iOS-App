@@ -9,16 +9,19 @@ struct InfraredChooseSignal: View {
     @Environment(\.path) private var path
 
     @State private var isLoading: Bool = true
+    @State private var isError: Bool = false
     @State private var signal: InfraredSignal?
 
-    @State private var successControls: [Int] = []
-    @State private var failureControls: [Int] = []
+    @State private var successSignals: [Int] = []
+    @State private var failedSignals: [Int] = []
 
     let brand: InfraredBrand
 
     var body: some View {
         VStack(spacing: 0) {
-            if isLoading {
+            if isError {
+                Text("Some Error on Load Signal")
+            } else if isLoading {
                 Spinner()
             } else if let signal {
                 VStack(alignment: .center, spacing: 14) {
@@ -51,12 +54,12 @@ struct InfraredChooseSignal: View {
                 signal = try await infraredModel
                     .loadSignal(
                         brand: brand,
-                        successControls: successControls,
-                        failureControls: failureControls
+                        successSignals: successSignals,
+                        failedSignals: failedSignals
                     )
                 isLoading = false
             } catch {
-                print("load signal \(brand) \(error)")
+                isError = true
             }
         }
     }

@@ -38,37 +38,18 @@ public struct InfraredButtonPosition {
     }
 }
 
-private extension InfraredButtonPosition.Alignment {
-    init(_ alignment: Infrared.InfraredButtonPosition.Alignment?) {
-        if let alignment {
-            self = switch alignment {
-            case .center: .center
-            case .topLeft: .topLeft
-            case .topRight: .topRight
-            case .bottomLeft: .bottomLeft
-            case .bottomRight: .bottomRight
-            case .centerLeft: .centerLeft
-            case .centerRight: .centerRight
-            }
-        }
-        self = .center
-    }
-}
-
 private extension Infrared.InfraredButton {
     var alignment: InfraredButtonPosition.Alignment {
-        if let alignment = self.position.alignment {
-            return switch alignment {
-            case .center: .center
-            case .topLeft: .topLeft
-            case .topRight: .topRight
-            case .bottomLeft: .bottomLeft
-            case .bottomRight: .bottomRight
-            case .centerLeft: .centerLeft
-            case .centerRight: .centerRight
-            }
+        switch position.alignment {
+        case .center: .center
+        case .topLeft: .topLeft
+        case .topRight: .topRight
+        case .bottomLeft: .bottomLeft
+        case .bottomRight: .bottomRight
+        case .centerLeft: .centerLeft
+        case .centerRight: .centerRight
+        default: .center
         }
-        return .center
     }
 
     var x: Double {

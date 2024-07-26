@@ -23,15 +23,15 @@ public class WebInfraredService: InfraredService {
     public func signal(
         forBrandID: Int,
         forCategoryID: Int,
-        successResults: [Int],
-        failedResults: [Int]
+        successSignals: [Int],
+        failedSignals: [Int]
     ) async throws -> InfraredSignal {
         return try await SignalRequest(
             baseURL: baseURL,
             brandId: forBrandID,
             categoryId: forCategoryID,
-            successResults: successResults,
-            failedResults: failedResults
+            successSignals: successSignals,
+            failedSignals: failedSignals
         ).get()
     }
 

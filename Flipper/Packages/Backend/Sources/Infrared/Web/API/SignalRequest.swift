@@ -8,68 +8,68 @@ public struct SignalRequest: BackendRequest {
     public var queryItems: [URLQueryItem] = []
 
     public var method: String? { "POST" }
-    public var body: Encodable? { response }
+    public var body: Encodable? { progress }
 
     public let baseURL: URL
-    var response: Response
+    private let progress: DetectionProgress
 
     public init(
         baseURL: URL,
         brandId: Int,
         categoryId: Int,
-        successResults: [Int],
-        failedResults: [Int]
+        successSignals: [Int],
+        failedSignals: [Int]
     ) {
         self.baseURL = baseURL
-        self.response = Response(
+        self.progress = DetectionProgress(
             brandId: brandId,
             categoryId: categoryId,
-            failedResults: failedResults,
-            successResults: successResults
+            failedSignals: failedSignals,
+            successSignals: successSignals
         )
     }
 }
 
 extension SignalRequest {
-    struct Response: Encodable {
-        var brandId: Int
-        var categoryId: Int
-        var failedResults: [InfraredSignalResult]
-        var successResults: [InfraredSignalResult]
+    struct DetectionProgress: Encodable {
+        let brandId: Int
+        let categoryId: Int
+        let failedSignals: [InfraredSignalReguest]
+        let successSignals: [InfraredSignalReguest]
 
         enum CodingKeys: String, CodingKey {
             case brandId = "brand_id"
             case categoryId = "category_id"
-            case failedResults = "failed_results"
-            case successResults = "success_results"
+            case failedSignals = "failed_results"
+            case successSignals = "success_results"
         }
 
         init(
             brandId: Int,
             categoryId: Int,
-            failedResults: [Int],
-            successResults: [Int]
+            failedSignals: [Int],
+            successSignals: [Int]
         ) {
             self.brandId = brandId
             self.categoryId = categoryId
-            self.failedResults = failedResults.map { .init(signalId: $0) }
-            self.successResults = successResults.map { .init(signalId: $0) }
+            self.failedSignals = failedSignals.map { .init(signalId: $0) }
+            self.successSignals = successSignals.map { .init(signalId: $0) }
         }
     }
-}
 
-// MARK: Remove after fix model
-struct InfraredSignalResult: Encodable {
-    let signalId: Int
-    let ifrFileId: Int
+    // MARK: Remove after fix model
+    struct InfraredSignalReguest: Encodable {
+        let signalId: Int
+        let ifrFileId: Int
 
-    init(signalId: Int) {
-        self.signalId = signalId
-        self.ifrFileId = 0
-    }
+        init(signalId: Int) {
+            self.signalId = signalId
+            self.ifrFileId = 0
+        }
 
-    enum CodingKeys: String, CodingKey {
-        case signalId = "signal_id"
-        case ifrFileId = "ifr_file_id"
+        enum CodingKeys: String, CodingKey {
+            case signalId = "signal_id"
+            case ifrFileId = "ifr_file_id"
+        }
     }
 }

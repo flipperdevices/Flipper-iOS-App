@@ -39,16 +39,16 @@ public class InfraredModel: ObservableObject {
 
     public func loadSignal(
         brand: InfraredBrand,
-        successControls: [Int],
-        failureControls: [Int]
+        successSignals: [Int],
+        failedSignals: [Int]
     ) async throws -> InfraredSignal {
         do {
             let response = try await service
                 .signal(
                     forBrandID: brand.id,
                     forCategoryID: brand.categoryID,
-                    successResults: successControls,
-                    failedResults: failureControls
+                    successSignals: successSignals,
+                    failedSignals: failedSignals
                )
             return InfraredSignal(response)
         } catch {

@@ -4,17 +4,17 @@ import SwiftUI
 struct InfraredView: View {
 
     enum Destination: Hashable {
-        case infraredChooseBrand(InfraredCategory)
-        case infraredChooseSignal(InfraredBrand)
+        case chooseBrand(InfraredCategory)
+        case chooseSignal(InfraredBrand)
     }
 
     var body: some View {
         InfraredChooseCategory()
             .navigationDestination(for: Destination.self) { destination in
                 switch destination {
-                case .infraredChooseBrand(let category):
+                case .chooseBrand(let category):
                     InfraredChooseBrand(category: category)
-                case .infraredChooseSignal(let brand):
+                case .chooseSignal(let brand):
                     InfraredChooseSignal(brand: brand)
                 }
             }
