@@ -3,7 +3,7 @@ import Infrared
 public enum InfraredButtonType {
     case text(InfraredTextButton)
     case icon(InfraredIconButton)
-    case base64Image(InfraredBas64ImageButton)
+    case base64Image(InfraredBase64ImageButton)
     case navigation(InfraredNavigationButton)
     case channel(InfraredChannelButton)
     case volume(InfraredVolumeButton)
@@ -16,7 +16,7 @@ public enum InfraredButtonType {
         case .icon(let data):
             self = .icon(InfraredIconButton(data))
         case .base64Image(let data):
-            self = .base64Image(InfraredBas64ImageButton(data))
+            self = .base64Image(InfraredBase64ImageButton(data))
         case .navigation(let data):
             self = .navigation(InfraredNavigationButton(data))
         case .volume(let data):
@@ -70,7 +70,7 @@ public struct InfraredIconButton {
     }
 }
 
-public struct InfraredBas64ImageButton {
+public struct InfraredBase64ImageButton {
     public let keyId: InfraredKeyID
     public let image: String
 
