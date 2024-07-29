@@ -56,7 +56,6 @@ public struct InfraredIconButton {
 
     init(_ data: Infrared.IconButtonData) {
         self.keyId = .init(data.keyId)
-
         self.type = switch data.icon {
         case .back: .back
         case .home: .home
@@ -65,7 +64,7 @@ public struct InfraredIconButton {
         case .mute: .mute
         case .cool: .cool
         case .heat: .heat
-        case .power:  .power
+        case .power: .power
         }
     }
 }
