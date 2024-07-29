@@ -17,16 +17,17 @@ fileprivate extension InfraredButton {
 }
 
 fileprivate extension Data {
-    static let mock =
-    """
-    {
-        "data": {
-            "type": "hakuna-matata"
-        },
-        "position": {
-            "y": 0,
-            "x": 0
+    static let mock = Data(
+        """
+        {
+            "data": {
+                "type": "hakuna-matata"
+            },
+            "position": {
+                "y": 0,
+                "x": 0
+            }
         }
-    }
-    """.data(using: .utf8)!
+        """.utf8
+    )
 }

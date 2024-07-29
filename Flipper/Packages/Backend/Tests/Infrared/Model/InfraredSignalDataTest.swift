@@ -26,31 +26,34 @@ fileprivate extension InfraredSignalData {
 }
 
 fileprivate extension Data {
-    static let mockRaw =
-    """
-    {
-        "frequency": "0",
-        "duty_cycle": "0",
-        "data": "0",
-        "type": "raw"
-    }
-    """.data(using: .utf8)!
+    static let mockRaw = Data(
+        """
+        {
+            "frequency": "0",
+            "duty_cycle": "0",
+            "data": "0",
+            "type": "raw"
+        }
+        """.utf8
+    )
 
-    static let mockParsed =
-    """
-    {
-        "protocol": "0",
-        "address": "0",
-        "command": "0",
-        "type": "parsed"
-    }
-    """.data(using: .utf8)!
+    static let mockParsed = Data(
+        """
+        {
+            "protocol": "0",
+            "address": "0",
+            "command": "0",
+            "type": "parsed"
+        }
+        """.utf8
+    )
 
-    static let mockUnknown =
-    """
-    {
-        "command": "0",
-        "type": "hakuna-matata"
-    }
-    """.data(using: .utf8)!
+    static let mockUnknown = Data(
+        """
+        {
+            "command": "0",
+            "type": "hakuna-matata"
+        }
+        """.utf8
+    )
 }

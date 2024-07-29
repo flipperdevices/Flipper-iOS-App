@@ -17,21 +17,22 @@ fileprivate extension InfraredBrands {
 }
 
 fileprivate extension Data {
-    static let mock =
-    """
-    {
-        "brands": [
-            {
-                "id": 1,
-                "name": "one",
-                "category_id": 1
-            },
-            {
-                "id": 2,
-                "name": "two",
-                "category_id": 1
-            }
-        ]
-    }
-    """.data(using: .utf8)!
+    static let mock = Data(
+        """
+        {
+            "brands": [
+                {
+                    "id": 1,
+                    "name": "one",
+                    "category_id": 1
+                },
+                {
+                    "id": 2,
+                    "name": "two",
+                    "category_id": 1
+                }
+            ]
+        }
+        """.utf8
+    )
 }

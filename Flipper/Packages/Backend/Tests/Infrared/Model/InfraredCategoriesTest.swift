@@ -28,22 +28,23 @@ fileprivate extension InfraredCategories {
 }
 
 fileprivate extension Data {
-    static let mock =
-    """
-    {
-        "categories": [
-            {
-                "id": 1,
-                "meta": {
-                    "icn_png_base64": "png",
-                    "icn_svg_base64": "svg",
-                    "manifest_content": {
-                        "display_name": "A/V Receiver",
-                        "singular_display_name": "A/V Singular Receiver"
+    static let mock = Data(
+        """
+        {
+            "categories": [
+                {
+                    "id": 1,
+                    "meta": {
+                        "icn_png_base64": "png",
+                        "icn_svg_base64": "svg",
+                        "manifest_content": {
+                            "display_name": "A/V Receiver",
+                            "singular_display_name": "A/V Singular Receiver"
+                        }
                     }
-                }
-            },
-        ]
-    }
-    """.data(using: .utf8)!
+                },
+            ]
+        }
+        """.utf8
+    )
 }

@@ -41,36 +41,37 @@ fileprivate extension InfraredLayout {
 }
 
 fileprivate extension Data {
-    static let mock =
-    """
-    {
-       "pages": [
-          {
-             "buttons": [
-                {
-                   "data": {
-                      "key_id": {
-                         "type": "SHA_256",
-                         "key_name": "power",
-                         "sha_256_string": "hash"
-                      },
-                      "icon_id": "POWER",
-                      "type": "ICON"
-                   },
-                   "position":{
-                      "y": 0,
-                      "x": 1,
-                      "alignment": "BOTTOM_LEFT",
-                      "z_index": 10,
-                      "container_width": 2,
-                      "container_height": 1,
-                      "content_width": 2,
-                      "content_height": 1
-                   }
-                }
-             ]
-          }
-       ]
-    }
-    """.data(using: .utf8)!
+    static let mock = Data(
+        """
+        {
+           "pages": [
+              {
+                 "buttons": [
+                    {
+                       "data": {
+                          "key_id": {
+                             "type": "SHA_256",
+                             "key_name": "power",
+                             "sha_256_string": "hash"
+                          },
+                          "icon_id": "POWER",
+                          "type": "ICON"
+                       },
+                       "position":{
+                          "y": 0,
+                          "x": 1,
+                          "alignment": "BOTTOM_LEFT",
+                          "z_index": 10,
+                          "container_width": 2,
+                          "container_height": 1,
+                          "content_width": 2,
+                          "content_height": 1
+                       }
+                    }
+                 ]
+              }
+           ]
+        }
+        """.utf8
+    )
 }

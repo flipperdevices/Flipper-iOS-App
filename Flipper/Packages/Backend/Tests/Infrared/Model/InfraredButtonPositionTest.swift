@@ -40,34 +40,37 @@ fileprivate extension InfraredButtonPosition {
 }
 
 fileprivate extension Data {
-    static let mockAllField =
-    """
-    {
-        "y": 0,
-        "x": 1,
-        "alignment": "BOTTOM_LEFT",
-        "z_index": 10,
-        "container_width": 2,
-        "container_height": 1,
-        "content_width": 2,
-        "content_height": 1
-    }
-    """.data(using: .utf8)!
+    static let mockAllField = Data(
+        """
+        {
+            "y": 0,
+            "x": 1,
+            "alignment": "BOTTOM_LEFT",
+            "z_index": 10,
+            "container_width": 2,
+            "container_height": 1,
+            "content_width": 2,
+            "content_height": 1
+        }
+        """.utf8
+    )
 
-    static let mockEmptyFields =
-    """
-    {
-        "y": 0,
-        "x": 1
-    }
-    """.data(using: .utf8)!
+    static let mockEmptyFields = Data(
+        """
+        {
+            "y": 0,
+            "x": 1
+        }
+        """.utf8
+    )
 
-    static let mockWrongAlignment =
-    """
-    {
-        "y": 0,
-        "x": 1,
-        "alignment": "hakuna-matata"
-    }
-    """.data(using: .utf8)!
+    static let mockWrongAlignment = Data(
+        """
+        {
+            "y": 0,
+            "x": 1,
+            "alignment": "hakuna-matata"
+        }
+        """.utf8
+    )
 }

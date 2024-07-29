@@ -17,10 +17,11 @@ fileprivate extension InfraredKeyContent {
 }
 
 fileprivate extension Data {
-    static let mock =
-    """
-    {
-        "content": "hakuna-matata"
-    }
-    """.data(using: .utf8)!
+    static let mock = Data(
+        """
+        {
+            "content": "hakuna-matata"
+        }
+        """.utf8
+    )
 }

@@ -31,37 +31,41 @@ fileprivate extension KeyID {
 }
 
 fileprivate extension Data {
-    static let mockNameKeyID =
-    """
-    {
-        "type": "NAME",
-        "key_name": "mock"
-    }
-    """.data(using: .utf8)!
+    static let mockNameKeyID = Data(
+        """
+        {
+            "type": "NAME",
+            "key_name": "mock"
+        }
+        """.utf8
+    )
 
-    static let mockSHA256KeyID =
-    """
-    {
-        "type": "SHA_256",
-        "sha_256_string": "sha256",
-        "key_name": "mock"
-    }
-    """.data(using: .utf8)!
+    static let mockSHA256KeyID = Data(
+        """
+        {
+            "type": "SHA_256",
+            "sha_256_string": "sha256",
+            "key_name": "mock"
+        }
+        """.utf8
+    )
 
-    static let mockMD5KeyID =
-    """
-    {
-        "type": "MD5",
-        "md5_string": "md5",
-        "key_name": "mock"
-    }
-    """.data(using: .utf8)!
+    static let mockMD5KeyID = Data(
+        """
+        {
+            "type": "MD5",
+            "md5_string": "md5",
+            "key_name": "mock"
+        }
+        """.utf8
+    )
 
-    static let mockUnknownKeyID =
-    """
-    {
-        "type": "hakuna-matata",
-        "key_name": "mock"
-    }
-    """.data(using: .utf8)!
+    static let mockUnknownKeyID = Data(
+        """
+        {
+            "type": "hakuna-matata",
+            "key_name": "mock"
+        }
+        """.utf8
+    )
 }

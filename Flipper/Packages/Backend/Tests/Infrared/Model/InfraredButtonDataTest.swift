@@ -70,76 +70,84 @@ fileprivate extension InfraredButtonData {
 }
 
 fileprivate extension Data {
-    static let mockTextButtonType =
-    """
-    {
-        "text": "Text Button",
-        "type": "TEXT"
-    }
-    """.data(using: .utf8)!
+    static let mockTextButtonType = Data(
+        """
+        {
+            "text": "Text Button",
+            "type": "TEXT"
+        }
+        """.utf8
+    )
 
-    static let mockIconButtonType =
-    """
-    {
-        "type": "ICON",
-        "icon_id": "POWER"
-    }
-    """.data(using: .utf8)!
+    static let mockIconButtonType = Data(
+        """
+        {
+            "type": "ICON",
+            "icon_id": "POWER"
+        }
+        """.utf8
+    )
 
-    static let mockWrongIconButtonType =
-    """
-    {
-        "key_id": {},
-        "type": "ICON",
-        "icon_id": "hakuna-matata"
-    }
-    """.data(using: .utf8)!
+    static let mockWrongIconButtonType = Data(
+        """
+        {
+            "key_id": {},
+            "type": "ICON",
+            "icon_id": "hakuna-matata"
+        }
+        """.utf8
+    )
 
-    static let mockBase64ButtonType =
-    """
-    {
-        "key_id": {},
-        "type": "BASE64_IMAGE",
-        "png_base64": "image"
-    }
-    """.data(using: .utf8)!
+    static let mockBase64ButtonType = Data(
+        """
+        {
+            "key_id": {},
+            "type": "BASE64_IMAGE",
+            "png_base64": "image"
+        }
+        """.utf8
+    )
 
-    static let mockNavigationButtonType =
-    """
-    {
-        "up_key_id": {},
-        "left_key_id": {},
-        "down_key_id": {},
-        "right_key_id": {},
-        "ok_key_id": {},
-        "type": "NAVIGATION"
-    }
-    """.data(using: .utf8)!
+    static let mockNavigationButtonType = Data(
+        """
+        {
+            "up_key_id": {},
+            "left_key_id": {},
+            "down_key_id": {},
+            "right_key_id": {},
+            "ok_key_id": {},
+            "type": "NAVIGATION"
+        }
+        """.utf8
+    )
 
-    static let mockVolumeButtonType =
-    """
-    {
-        "add_key_id": {},
-        "reduce_key_id": {},
-        "type": "VOLUME"
-    }
-    """.data(using: .utf8)!
+    static let mockVolumeButtonType = Data(
+        """
+        {
+            "add_key_id": {},
+            "reduce_key_id": {},
+            "type": "VOLUME"
+        }
+        """.utf8
+    )
 
-    static let mockChannelButtonType =
-    """
-    {
-        "add_key_id": {},
-        "reduce_key_id": {},
-        "type": "CHANNEL"
-    }
-    """.data(using: .utf8)!
+    static let mockChannelButtonType = Data(
+        """
+        {
+            "add_key_id": {},
+            "reduce_key_id": {},
+            "type": "CHANNEL"
+        }
+        """.utf8
+    )
 
-    static let mockUknownType =
-    """
-    {
-        "add_key_id": {},
-        "reduce_key_id": {},
-        "type": "hakuna-matata"
-    }
-    """.data(using: .utf8)!
+    static let mockUknownType = Data(
+        """
+        {
+            "add_key_id": {},
+            "reduce_key_id": {},
+            "type": "hakuna-matata"
+        }
+        """.utf8
+    )
 }
