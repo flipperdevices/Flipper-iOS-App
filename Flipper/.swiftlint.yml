@@ -21,6 +21,7 @@ disabled_rules:
 - function_body_length
 - function_parameter_count
 - unhandled_throwing_task
+- non_optional_string_data_conversion
 
 line_length: 80
 
