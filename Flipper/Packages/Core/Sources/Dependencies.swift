@@ -2,6 +2,7 @@ import Macro
 import Analytics
 import Peripheral
 import Catalog
+import Infrared
 
 import Logging
 import Combine
@@ -176,6 +177,18 @@ public final class Dependencies: ObservableObject, Sendable {
             pairedDevice: pairedDevice,
             system: api.system,
             application: api.application
+        )
+    }()
+
+    @MainActor
+    public lazy var infraredModel: InfraredModel = {
+        var devURL = #URL("https://infrared.dev.flipp.dev")
+        var prodURL = #URL("https://infrared.flipperzero.one")
+
+        let infraredService = WebInfraredService(baseURL: prodURL)
+
+        return .init(
+            service: infraredService
         )
     }()
 

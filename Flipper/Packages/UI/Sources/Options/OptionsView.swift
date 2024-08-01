@@ -21,7 +21,7 @@ struct OptionsView: View {
         device.status == .synchronized
     }
 
-    enum Destination {
+    enum Destination: Hashable {
         case ping
         case stressTest
         case speedTest
@@ -118,7 +118,7 @@ struct OptionsView: View {
                     .tint(.a1)
 
                     NavigationLink(value: Destination.infrared) {
-                        Text("Infrared Layout")
+                        Text("Infrared")
                     }
                 }
 
@@ -164,7 +164,7 @@ struct OptionsView: View {
             case .logs: LogsView()
             case .fileManager: FileManagerView()
             case .reportBug: ReportBugView()
-            case .infrared: InfraredLayoutView()
+            case .infrared: InfraredView()
             }
         }
     }

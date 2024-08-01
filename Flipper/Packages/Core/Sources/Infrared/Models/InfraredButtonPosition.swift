@@ -1,56 +1,114 @@
-import Foundation
+import Infrared
 
-public struct InfraredButtonPosition: Decodable, Equatable {
-    let y: Int
-    let x: Int
+public struct InfraredButtonPosition {
+    public let x: Double
+    public let y: Double
 
-    let alignment: Alignment?
-    let zIndex: Double?
+    public let alignment: Alignment
+    public let zIndex: Double
 
-    let containerWidth: Int?
-    let containerHeight: Int?
+    public let containerWidth: Double
+    public let containerHeight: Double
 
-    let contentWidth: Int?
-    let contentHeight: Int?
+    public let contentWidth: Double
+    public let contentHeight: Double
 
-    init(
-        y: Int,
-        x: Int,
-        alignment: Alignment? = nil,
-        zIndex: Double? = nil,
-        containerWidth: Int? = nil,
-        containerHeight: Int? = nil,
-        contentWidth: Int? = nil,
-        contentHeight: Int? = nil
-    ) {
-        self.y = y
-        self.x = x
-        self.alignment = alignment
-        self.zIndex = zIndex
-        self.containerWidth = containerWidth
-        self.containerHeight = containerHeight
-        self.contentWidth = contentWidth
-        self.contentHeight = contentHeight
+    public enum Alignment {
+        case center
+        case topLeft
+        case topRight
+        case bottomLeft
+        case bottomRight
+        case centerLeft
+        case centerRight
     }
 
-    public enum Alignment: String, Codable {
-        case center = "CENTER"
-        case topLeft = "TOP_LEFT"
-        case topRight = "TOP_RIGHT"
-        case bottomLeft = "BOTTOM_LEFT"
-        case bottomRight = "BOTTOM_RIGHT"
-        case centerLeft = "CENTER_LEFT"
-        case centerRight = "CENTER_RIGHT"
+    init(_ button: Infrared.InfraredButton) {
+        self.x = button.x
+        self.y = button.y
+
+        self.zIndex = button.zIndex
+        self.alignment = button.alignment
+
+        self.containerWidth = button.containerWidth
+        self.containerHeight = button.containerHeight
+
+        self.contentWidth = button.contentWidth
+        self.contentHeight = button.contentHeight
+    }
+}
+
+private extension Infrared.InfraredButton {
+    var alignment: InfraredButtonPosition.Alignment {
+        switch position.alignment {
+        case .center: .center
+        case .topLeft: .topLeft
+        case .topRight: .topRight
+        case .bottomLeft: .bottomLeft
+        case .bottomRight: .bottomRight
+        case .centerLeft: .centerLeft
+        case .centerRight: .centerRight
+        default: .center
+        }
     }
 
-    enum CodingKeys: String, CodingKey {
-        case x
-        case y
-        case alignment
-        case zIndex = "z_index"
-        case containerWidth = "container_width"
-        case containerHeight = "container_height"
-        case contentWidth = "content_width"
-        case contentHeight = "content_height"
+    var x: Double {
+        Double(position.x)
+    }
+
+    var y: Double {
+        Double(position.y)
+    }
+
+    var zIndex: Double {
+        position.zIndex ?? 1.0
+    }
+
+    var containerWidth: Double {
+        Double(position.containerWidth ?? containerDefaultWidth)
+    }
+
+    var containerHeight: Double {
+        Double(position.containerHeight ?? containerDefaultHeight)
+    }
+
+    var contentWidth: Double {
+        Double(position.contentWidth ?? contentDefaultWidth)
+    }
+
+    var contentHeight: Double {
+        Double(position.contentHeight ?? contentDefaultHeight)
+    }
+
+    var containerDefaultWidth: Int {
+        switch self.data {
+        case .text, .icon, .base64Image, .unknown: 1
+        case .navigation: 3
+        case .volume, .channel: 1
+        }
+    }
+
+    var containerDefaultHeight: Int {
+        switch self.data {
+        case .text, .icon, .base64Image, .unknown: 1
+        case .navigation: 3
+        case .volume, .channel: 3
+        }
+    }
+
+    var contentDefaultWidth: Int {
+        switch self.data {
+        case .text, .icon, .base64Image, .unknown: 1
+        case .navigation: 3
+        case .volume, .channel: 1
+        }
+    }
+
+    var contentDefaultHeight: Int {
+        switch self.data {
+        case .text, .icon, .base64Image, .unknown: 1
+        case .navigation: 3
+        case .volume, .channel: 3
+        }
     }
 }
