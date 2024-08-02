@@ -2,7 +2,7 @@ import Backend
 import Foundation
 
 public struct SignalRequest: BackendRequest {
-    public typealias Result = InfraredSignal
+    public typealias Result = InfraredSelection
 
     public var path: String { "signal" }
     public var queryItems: [URLQueryItem] = []
@@ -57,19 +57,11 @@ extension SignalRequest {
         }
     }
 
-    // MARK: Remove after fix model
     struct InfraredSignalReguest: Encodable {
         let signalId: Int
-        let ifrFileId: Int
-
-        init(signalId: Int) {
-            self.signalId = signalId
-            self.ifrFileId = 0
-        }
 
         enum CodingKeys: String, CodingKey {
             case signalId = "signal_id"
-            case ifrFileId = "ifr_file_id"
         }
     }
 }

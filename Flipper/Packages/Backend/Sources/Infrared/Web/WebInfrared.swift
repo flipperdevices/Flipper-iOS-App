@@ -25,7 +25,7 @@ public class WebInfraredService: InfraredService {
         forCategoryID: Int,
         successSignals: [Int],
         failedSignals: [Int]
-    ) async throws -> InfraredSignal {
+    ) async throws -> InfraredSelection {
         return try await SignalRequest(
             baseURL: baseURL,
             brandId: forBrandID,
