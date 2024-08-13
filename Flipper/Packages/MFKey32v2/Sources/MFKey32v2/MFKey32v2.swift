@@ -1,3 +1,4 @@
+import Darwin
 import CCrapto1
 
 public enum MFKey32v2 {
