@@ -32,7 +32,11 @@ struct NotificationView<Content: View>: View {
                 isPresentedAnimated = true
             }
             try? await Task.sleep(seconds: presentingDuration)
+
+            guard isPresented else { return }
             isPresented = false
+
+            hide()
         }
     }
 

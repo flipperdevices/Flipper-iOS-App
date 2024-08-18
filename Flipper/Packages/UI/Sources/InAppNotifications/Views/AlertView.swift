@@ -20,7 +20,10 @@ struct AlertView<Content: View>: View {
                 HStack {
                     Spacer()
                     Button {
+                        guard isPresented else { return }
                         isPresented = false
+
+                        hide()
                     } label: {
                         Image(systemName: "xmark")
                     }
