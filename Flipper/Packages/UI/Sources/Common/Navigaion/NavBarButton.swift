@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct NavBarButton<Label: View>: View {
+    @Environment(\.isEnabled) private var isEnabled
+
     var action: () -> Void
     @ViewBuilder var label: () -> Label
 
@@ -11,5 +13,6 @@ struct NavBarButton<Label: View>: View {
                 .foregroundColor(.primary)
         }
         .buttonStyle(.borderless)
+        .opacity(isEnabled ? 1 : 0.4)
     }
 }
