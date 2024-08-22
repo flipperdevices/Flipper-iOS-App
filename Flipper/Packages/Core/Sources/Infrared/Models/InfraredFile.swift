@@ -2,10 +2,19 @@ import Infrared
 
 public struct InfraredFile: Equatable, Hashable {
     public let id: Int
-    public let fileName: String
+    public let name: String
 
-    public init(_ file: Infrared.InfraredFile) {
+    public var idStr: String {
+        String(id)
+    }
+
+    init(_ file: Infrared.InfraredFile) {
         self.id = file.id
-        self.fileName = file.fileName
+        self.name = file.folderName
+    }
+
+    public init (id: Int, name: String) {
+        self.id = id
+        self.name = name
     }
 }

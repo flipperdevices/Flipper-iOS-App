@@ -10,20 +10,41 @@ extension InfraredView {
         @Environment(\.path) private var path
 
         @State private var brands: [InfraredBrand] = []
-        @State private var isError: Bool = false
+        @State private var error: InfraredModel.Error.Network?
+
+        @State private var predicate = ""
+        @State private var isSearchableActive = false
+
+        private var filteredBrands: [InfraredBrand] {
+            if predicate.isEmpty {
+                return brands
+            } else {
+                return brands.filter {
+                    $0.name.lowercased().contains(predicate.lowercased())
+                }
+            }
+        }
 
         let category: InfraredCategory
 
         var body: some View {
             VStack(spacing: 0) {
-                if isError {
-                    Text("Some Error on Load Brand")
+                if let error {
+                    InfraredNetworkError(error: error, action: retry)
                 } else if brands.isEmpty {
-                    Spinner()
+                    List {
+                        ForEach(1...10, id: \.self) { _ in
+                            InfraredChooseBrandPlaceholder()
+                        }
+                    }
                 } else {
-                    InfraredListBrand(brands: brands) {
+                    InfraredListBrand(brands: filteredBrands) {
                         path.append(Destination.chooseSignal($0))
                     }
+                    .searchable(
+                        text: $predicate,
+                        prompt: "Brand Name"
+                    )
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -42,13 +63,26 @@ extension InfraredView {
                 }
             }
             .task {
-                do {
-                    guard brands.isEmpty else { return }
-                    brands = try await infraredModel
-                        .loadBrand(forCategoryID: category.id)
-                } catch {
-                    isError = true
-                }
+                UISearchBar.appearance().tintColor = .black
+
+                guard brands.isEmpty else { return }
+                await loadBrands()
+            }
+        }
+
+        private func loadBrands() async {
+            do {
+                brands = try await infraredModel.loadBrand(category)
+            } catch let error as InfraredModel.Error.Network {
+                self.error = error
+            } catch {}
+        }
+
+        private func retry() {
+            Task {
+                error = nil
+                brands = []
+                await loadBrands()
             }
         }
     }

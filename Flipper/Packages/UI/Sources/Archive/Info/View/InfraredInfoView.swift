@@ -8,8 +8,6 @@ struct InfraredInfoView: View {
     @Binding var current: ArchiveItem
     @Binding var isEditing: Bool
 
-    @State private var showHowToUse: Bool = false
-    @State private var showInfraredOption = false
     @State private var showEditor = false
 
     @Environment(\.dismiss) private var dismiss

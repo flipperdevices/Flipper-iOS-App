@@ -1,6 +1,6 @@
 import Infrared
 
-public struct InfraredButtonPosition {
+public struct InfraredButtonPosition: Equatable, Codable {
     public let x: Double
     public let y: Double
 
@@ -13,7 +13,7 @@ public struct InfraredButtonPosition {
     public let contentWidth: Double
     public let contentHeight: Double
 
-    public enum Alignment {
+    public enum Alignment: Codable {
         case center
         case topLeft
         case topRight
@@ -110,5 +110,15 @@ private extension Infrared.InfraredButton {
         case .navigation: 3
         case .volume, .channel: 3
         }
+    }
+}
+
+extension InfraredButtonPosition {
+    init(x: Int, y: Int) {
+        let position = Infrared.InfraredButtonPosition(y: y, x: x)
+        let data = Infrared.InfraredButtonData.unknown
+        let button = Infrared.InfraredButton(data: data, position: position)
+
+        self.init(button)
     }
 }

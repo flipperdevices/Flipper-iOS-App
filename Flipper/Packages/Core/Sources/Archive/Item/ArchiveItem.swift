@@ -10,6 +10,7 @@ public struct ArchiveItem: Equatable, Identifiable, Hashable {
     public let kind: Kind
     public var properties: [Property]
     public var shadowCopy: [Property]
+    public var layout: Data?
     public var isFavorite: Bool
     public var status: Status
     public var note: String
@@ -29,6 +30,7 @@ public struct ArchiveItem: Equatable, Identifiable, Hashable {
         kind: Kind,
         properties: [Property],
         shadowCopy: [Property],
+        layout: Data? = nil,
         isFavorite: Bool = false,
         status: Status = .imported,
         note: String = "",
@@ -39,6 +41,7 @@ public struct ArchiveItem: Equatable, Identifiable, Hashable {
         self.isFavorite = isFavorite
         self.properties = properties
         self.shadowCopy = shadowCopy
+        self.layout = layout
         self.status = status
         self.note = note
         self.date = date

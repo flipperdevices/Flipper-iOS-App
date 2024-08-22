@@ -64,52 +64,56 @@ struct InfraredMenu: View {
         }
         .frame(width: 220)
     }
+}
 
-    struct InfraredMenuItem: View {
-        @Environment(\.isEnabled) private var isEnabled
+struct InfraredMenuItem: View {
+    @Environment(\.isEnabled) private var isEnabled
 
-        let title: String
-        let image: String
-        let action: () -> Void
-        let role: ButtonRole?
+    let title: String
+    let image: String
+    let action: () -> Void
+    let role: ButtonRole?
+    let imageColor: Color?
 
-        init(
-            title: String,
-            image: String,
-            role: ButtonRole? = nil,
-            action: @escaping () -> Void
-        ) {
-            self.title = title
-            self.image = image
-            self.action = action
-            self.role = role
+    init(
+        title: String,
+        image: String,
+        role: ButtonRole? = nil,
+        imageColor: Color? = nil,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.image = image
+        self.action = action
+        self.imageColor = imageColor
+        self.role = role
+    }
+
+    var color: Color {
+        switch (role, isEnabled) {
+        case (.destructive, true):
+            return .red
+        case (.destructive, false):
+            return .red.opacity(0.5)
+        case (_, true):
+            return .primary
+        case (_, false):
+            return .emulateDisabled
         }
+    }
 
-        var color: Color {
-            switch (role, isEnabled) {
-            case (.destructive, true):
-                return .red
-            case (.destructive, false):
-                return .red.opacity(0.5)
-            case (_, true):
-                return .primary
-            case (_, false):
-                return .emulateDisabled
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(image)
+                    .renderingMode(.template)
+                    .foregroundColor(imageColor ?? color)
+                Text(title)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(color)
+                Spacer()
             }
         }
-
-        var body: some View {
-            Button(action: action) {
-                HStack(spacing: 8) {
-                    Image(image)
-                        .renderingMode(.template)
-                    Text(title)
-                        .font(.system(size: 14, weight: .medium))
-                    Spacer()
-                }
-            }
-            .foregroundColor(color)
-            .padding(12)
-        }
+        .padding(12)
     }
 }

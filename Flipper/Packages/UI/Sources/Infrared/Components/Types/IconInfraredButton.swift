@@ -3,21 +3,23 @@ import Core
 
 struct IconInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
+    @Environment(\.emulateAction) private var action
 
-    let data: InfraredIconButton
+    let data: InfraredButtonData.Icon
 
     var body: some View {
-        InfraredSquareButton {
+        InfraredSquareButton(color: data.color) {
             Image(data.image)
                 .renderingMode(.template)
                 .resizable()
                 .frame(width: 24 * scaleFactor, height: 24 * scaleFactor)
-                .foregroundColor(data.color)
+                .foregroundColor(.white)
+                .onTapGesture { action(data.keyId) }
         }
     }
 }
 
-private extension InfraredIconButton {
+private extension InfraredButtonData.Icon {
     var image: String {
         return switch self.type {
             case .back: "InfraredBack"
@@ -31,10 +33,10 @@ private extension InfraredIconButton {
             }
     }
 
-    var color: Color {
+    var color: Color? {
         switch self.type {
         case .power: .red
-        default: .white
+        default: nil
         }
     }
 }
