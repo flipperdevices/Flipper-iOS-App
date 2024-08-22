@@ -14,8 +14,8 @@ final class InfraredSignalTest: BaseDecodableTestCase<InfraredSelection> {
 }
 
 fileprivate extension InfraredSelection {
-    static let mockResponseRaw = InfraredSelection(
-        signal: .init(
+    static let mockResponseRaw = InfraredSelection.signal(
+        .init(
             message: "message",
             categoryName: "categoryName",
             data: .unknown,
@@ -32,8 +32,8 @@ fileprivate extension InfraredSelection {
         )
     )
 
-    static let mockResponseParsed = InfraredSelection(
-        signal: .init(
+    static let mockResponseParsed = InfraredSelection.signal(
+        .init(
             message: "message",
             categoryName: "categoryName",
             data: .unknown,
@@ -50,8 +50,8 @@ fileprivate extension InfraredSelection {
         )
     )
 
-    static let mockIfrModelResponseRaw = InfraredSelection(
-        file: .init(
+    static let mockIfrModelResponseRaw = InfraredSelection.file(
+        .init(
             id: 0,
             brandId: 0,
             fileName: "filename",

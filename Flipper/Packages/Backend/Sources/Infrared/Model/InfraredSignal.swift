@@ -35,7 +35,7 @@ public enum InfraredSignalRemote: Decodable, Equatable {
         }
     }
 
-    public enum `Type`: String, Decodable {
+    enum `Type`: String, Decodable {
         case raw
         case parsed
     }

@@ -1,11 +1,11 @@
 import Foundation
 
-public struct InfraredButton: Decodable, Equatable {
+public struct InfraredButton: Codable, Equatable {
     public let data: InfraredButtonData
     public let position: InfraredButtonPosition
 
-    enum CodingKeys: String, CodingKey {
-        case data
-        case position
+    public init(data: InfraredButtonData, position: InfraredButtonPosition) {
+        self.data = data
+        self.position = position
     }
 }

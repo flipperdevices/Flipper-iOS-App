@@ -1,7 +1,7 @@
 import XCTest
 @testable import Infrared
 
-final class InfraredKeyIDTest: BaseDecodableTestCase<KeyID> {
+final class InfraredKeyIDTest: BaseDecodableTestCase<InfraredKeyID> {
 
     override func setUp() {
         super.setUp()
@@ -14,20 +14,20 @@ final class InfraredKeyIDTest: BaseDecodableTestCase<KeyID> {
     }
 }
 
-fileprivate extension KeyID {
-    static let mockName = KeyID.name(
-        NameKeyIDType(name: "mock")
+fileprivate extension InfraredKeyID {
+    static let mockName = InfraredKeyID.name(
+        Name(name: "mock")
     )
 
-    static let mockSHA256 = KeyID.sha256(
-        SHA256KeyIDType(name: "mock", hash: "sha256")
+    static let mockSHA256 = InfraredKeyID.sha256(
+        SHA256(name: "mock", hash: "sha256")
     )
 
-    static let mockMD5 = KeyID.md5(
-        MD5KeyIDType(name: "mock", hash: "md5")
+    static let mockMD5 = InfraredKeyID.md5(
+        MD5(name: "mock", hash: "md5")
     )
 
-    static let mockUnknown = KeyID.unknown
+    static let mockUnknown = InfraredKeyID.unknown
 }
 
 fileprivate extension Data {

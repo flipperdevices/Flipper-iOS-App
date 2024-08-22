@@ -1,7 +1,16 @@
 import XCTest
 @testable import Infrared
 
-final class InfraredLayoutTest: BaseDecodableTestCase<InfraredLayout> {
+final class InfraredDecodeLayoutTest: BaseDecodableTestCase<InfraredLayout> {
+
+    override func setUp() {
+        super.setUp()
+        testCases = [(.mock, .mock)]
+    }
+}
+
+
+final class InfraredEncodeLayoutTest: BaseEncodableTestCase<InfraredLayout> {
 
     override func setUp() {
         super.setUp()
@@ -16,12 +25,12 @@ fileprivate extension InfraredLayout {
                 .init(
                     data: .icon(
                         .init(
-                            keyId: KeyID.sha256(
-                                SHA256KeyIDType(
+                            keyId: InfraredKeyID.sha256(
+                                InfraredKeyID.SHA256(
                                     name: "power",
                                     hash: "hash")
                             ),
-                            icon: .power
+                            type: .power
                         )
                     ),
                     position: .init(

@@ -1,6 +1,6 @@
 import Foundation
 
-public struct InfraredButtonPosition: Decodable, Equatable {
+public struct InfraredButtonPosition: Codable, Equatable {
     public let y: Int
     public let x: Int
 
@@ -13,7 +13,7 @@ public struct InfraredButtonPosition: Decodable, Equatable {
     public let contentWidth: Int?
     public let contentHeight: Int?
 
-    init(
+    public init(
         y: Int,
         x: Int,
         alignment: Alignment? = nil,
