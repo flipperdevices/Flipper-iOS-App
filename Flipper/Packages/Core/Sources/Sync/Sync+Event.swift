@@ -6,5 +6,6 @@ extension ArchiveSync {
         case imported(Path)
         case exported(Path)
         case deleted(Path)
+        case identical(Path)
     }
 }

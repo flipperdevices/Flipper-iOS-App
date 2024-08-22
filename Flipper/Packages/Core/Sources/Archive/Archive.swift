@@ -86,7 +86,7 @@ public class Archive {
     ) async throws -> [ArchiveItem] {
         var items = [ArchiveItem]()
         let paths = try await archive.getManifest().paths.filter {
-            !$0.isShadowFile
+            !$0.isShadowFile && !$0.isLayoutFile
         }
         for path in paths {
             do {
@@ -107,6 +107,10 @@ public class Archive {
         if let path = item.shadowPath {
             let content = (try? await archive.read(path)) ?? ""
             item.shadowCopy = .init(content: content) ?? []
+        }
+        if let path = item.layoutPath {
+            let content = (try? await archive.read(path)) ?? ""
+            item.layout = content.data(using: .utf8)
         }
         return item
     }
@@ -150,6 +154,14 @@ extension Archive {
                 ? try await mobileArchive.delete(path)
                 : try await mobileArchive.upsert(item.shadowContent, at: path)
         }
+        if let path = item.layoutPath {
+            if let layout = item.layout {
+                let content = String(decoding: layout, as: UTF8.self)
+                try await mobileArchive.upsert(content, at: path)
+            } else {
+                try await mobileArchive.delete(path)
+            }
+        }
         try await mobileNotes.upsert(item.note, at: item.path)
         _items.value.removeAll { $0.path == item.path }
         _items.value.append(item)
@@ -171,6 +183,9 @@ extension Archive {
             try await mobileArchive.delete(item.path)
             if let shadowPath = item.shadowPath {
                 try await mobileArchive.delete(shadowPath)
+            }
+            if let layoutPath = item.layoutPath {
+                try await mobileArchive.delete(layoutPath)
             }
             _items.value.removeAll { $0.path == item.path }
         }

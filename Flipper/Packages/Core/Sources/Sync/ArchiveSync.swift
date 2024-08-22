@@ -90,9 +90,11 @@ class ArchiveSync: ArchiveSyncProtocol {
             case .delete(.flipper):
                 try await deleteOnFlipper(path, progress: preciseProgress)
             case .conflict:
-                path.isShadowFile
+                path.isShadowFile || path.isLayoutFile
                     ? try await updateOnMobile(path, progress: preciseProgress)
                     : try await keepBoth(path, progress: preciseProgress)
+            case .match:
+                try await syncMatched(path, progress: preciseProgress)
             }
             currentProgress += syncItemFactor
         }
@@ -181,6 +183,14 @@ class ArchiveSync: ArchiveSyncProtocol {
         }
     }
 
+    private func syncMatched(
+        _ path: Path,
+        progress: (Double) -> Void
+    ) async throws {
+        eventsSubject.send(.identical(path))
+        progress(1)
+    }
+
     // MARK: Duplicating item
 
     private func duplicate(_ path: Path) async throws -> Path? {
@@ -195,5 +205,12 @@ extension Path {
     var isShadowFile: Bool {
         guard let filename = lastComponent else { return false }
         return filename.hasSuffix(FileType.shadow.extension)
+    }
+
+    var isLayoutFile: Bool {
+        guard let filename = lastComponent else { return false }
+        return FileType
+            .supportedLayouts
+            .contains { filename.hasSuffix($0.extension) }
     }
 }

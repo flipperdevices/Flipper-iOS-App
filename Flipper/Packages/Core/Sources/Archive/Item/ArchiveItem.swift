@@ -98,10 +98,18 @@ extension ArchiveItem {
 
 extension ArchiveItem {
     public var shadowPath: Path? {
-        guard kind == .nfc else {
-            return nil
-        }
-        return .init(components: ["any", kind.location, "\(name).shd"])
+        guard kind == .nfc else { return nil }
+        return .init(
+            components: [
+                "any",
+                kind.location,
+                "\(name).\(FileType.shadow.extension)"
+            ]
+        )
+    }
+
+    public var layoutPath: Path? {
+        return self.path.layoutPath
     }
 }
 

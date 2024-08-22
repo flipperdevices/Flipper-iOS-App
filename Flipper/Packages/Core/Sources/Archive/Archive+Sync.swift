@@ -46,8 +46,8 @@ extension Archive {
         case .syncing(let path):
             setStatus(.synchronizing, for: .init(path: path))
         case .imported(let path):
-            if path.isShadowFile {
-                try await reloadOrigin(forShadow: path)
+            if path.isShadowFile || path.isLayoutFile {
+                try await reloadOrigin(for: path)
             } else {
                 try await reload(.init(path: path))
             }
@@ -55,29 +55,24 @@ extension Archive {
         case .exported(let path):
             setStatus(.synchronized, for: .init(path: path))
         case .deleted(let path):
-            if path.isShadowFile {
+            if path.isShadowFile || path.isLayoutFile {
                 try await mobileArchive.delete(path)
-                try await reloadOrigin(forShadow: path)
+                try await reloadOrigin(for: path)
             } else {
                 try await delete(.init(path: path))
             }
+        case .identical(let path):
+            setStatus(.synchronized, for: .init(path: path))
         }
     }
 
     // TODO: do not reload origin if doesn't exist yet
-    private func reloadOrigin(forShadow path: Path) async throws {
+    private func reloadOrigin(for path: Path) async throws {
         do {
-            let path = originPath(forShadow: path)
+            let path = path.originPath ?? path
             try await reload(.init(path: path))
         } catch let error as NSError where error.code == 260 {
-            logger.info("orphan shadow file loaded")
+            logger.info("orphan \(path) file loaded")
         }
-    }
-
-    private func originPath(forShadow path: Path) -> Path {
-        guard path.string.hasSuffix(".shd") else {
-            return path
-        }
-        return "\(path.string.dropLast(".shd".count)).nfc"
     }
 }
