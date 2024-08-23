@@ -1,0 +1,197 @@
+import Core
+import SwiftUI
+
+extension InfraredView {
+    struct InfraredPagesLayout: View {
+        @Environment(\.dismiss) private var dismiss
+        @Environment(\.path) private var path
+
+        @EnvironmentObject private var emulate: Emulate
+        @EnvironmentObject private var device: Device
+        @EnvironmentObject private var archive: ArchiveModel
+        @EnvironmentObject private var infraredModel: InfraredModel
+
+        @State private var layout: InfraredLayout?
+        @State private var content: InfraredKeyContent?
+
+        @State private var isFlipperBusyAlertPresented: Bool = false
+        @State private var showRemoteControl = false
+
+        @State private var viewState: ViewState = .loadLayoyt
+        @State private var layoutState: InfraredLayoutState = .default
+
+        private var canSaveLayout: Bool {
+            if case .display(_, let state) = viewState {
+                return state == .default
+            } else {
+                return false
+            }
+        }
+
+        private var archiveItem: ArchiveItem? {
+            guard let content else { return nil }
+
+            return .init(
+                name: "",
+                kind: .infrared,
+                properties: content.properties,
+                shadowCopy: [],
+                layout: layout?.data
+            )
+        }
+
+        let file: InfraredFile
+
+        enum ViewState: Equatable {
+            case loadLayoyt
+            case flipperNotConnected
+            case display(InfraredLayout, InfraredLayoutState)
+            case syncing(InfraredLayout, Double)
+            case error(InfraredModel.Error.Network)
+        }
+
+        var body: some View {
+            VStack(spacing: 0) {
+                switch viewState {
+                case .loadLayoyt:
+                    InfraredPageLayoutView(
+                        buttons: InfraredPageLayout.progressMock.buttons
+                    )
+                    .environment(\.layoutState, .syncing)
+                case .error(let error):
+                    InfraredNetworkError(error: error, action: retry)
+                case .flipperNotConnected:
+                    InfraredFlipperNotConnectedError()
+                case .syncing(let layout, _):
+                    if let page = layout.pages.first {
+                        InfraredPageLayoutView(buttons: page.buttons)
+                            .environment(\.layoutState, .syncing)
+                    }
+                case .display(let layout, let state):
+                    if let page = layout.pages.first {
+                        InfraredPageLayoutView(buttons: page.buttons)
+                            .environment(\.layoutState, state)
+                            .environment(\.emulateAction, emulate)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.background)
+            .navigationBarBackButtonHidden(true)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                LeadingToolbarItems {
+                    BackButton {
+                        dismiss()
+                    }
+                }
+                PrincipalToolbarItems {
+                    let description = switch viewState {
+                    case .loadLayoyt:
+                        "Downloading layout"
+                    case .syncing(_, let progress):
+                        "Uploading to Flipper: \(Int(progress * 100))%"
+                    default:
+                        "Remote"
+                    }
+                    Title(file.name, description: description)
+                }
+                TrailingToolbarItems {
+                    HStack {
+                        SaveButton {
+                            guard let item = archiveItem else { return }
+                            path.append(Destination.save(file, item))
+                        }
+                        .disabled(!canSaveLayout)
+
+                        CloseButton {
+                            path.clear()
+                        }
+                    }
+                }
+            }
+            .alert(isPresented: $isFlipperBusyAlertPresented) {
+                FlipperIsBusyAlert(
+                    isPresented: $isFlipperBusyAlertPresented,
+                    goToRemote: { showRemoteControl = true }
+                )
+            }
+            .sheet(isPresented: $showRemoteControl) {
+                RemoteControlView()
+                    .environmentObject(device)
+            }
+            .task {
+                if device.status != .connected {
+                    viewState = .flipperNotConnected
+                    return
+                }
+                if layout != nil, content != nil {
+                    return
+                }
+                await processLoadFile()
+            }
+            .onChange(of: device.status) { status in
+                if status != .connected {
+                    viewState = .flipperNotConnected
+                } else {
+                    retry()
+                }
+            }
+            .onChange(of: emulate.state) { state in
+                guard let layout else { return }
+
+                if state == .closed {
+                    viewState = .display(layout, .default)
+                }
+                if state == .locked {
+                    viewState = .display(layout, .default)
+                    self.isFlipperBusyAlertPresented = true
+                }
+                if state == .staring || state == .started || state == .closed {
+                    feedback(style: .soft)
+                }
+            }
+        }
+
+        private func processLoadFile() async {
+            viewState = .loadLayoyt
+            do {
+                let layout = try await infraredModel.loadLayout(file)
+                let fileContent = try await infraredModel.loadContent(file)
+                self.layout = layout
+                self.content = fileContent
+                viewState = .syncing(layout, 0)
+
+                try await infraredModel
+                    .sendTempContent(fileContent.properties.content){
+                    viewState = .syncing(layout, $0 / 2)
+                }
+
+                try await infraredModel.sendTempLayout(layout) {
+                    viewState = .syncing(layout, $0 / 2 + 0.5)
+                }
+
+                viewState = .display(layout, .default)
+            } catch let error as InfraredModel.Error.Network {
+                viewState = .error(error)
+            } catch {}
+        }
+
+        private func emulate(_ keyID: InfraredKeyID) {
+            guard
+                let layout, let content,
+                let index = content.properties.getIndex(by: keyID)
+            else { return }
+
+            viewState = .display(layout, .emulating)
+            emulate.startEmulate(.tempIfr, config: .byIndex(index))
+            emulate.stopEmulate()
+        }
+
+        private func retry() {
+            Task {
+                await processLoadFile()
+            }
+        }
+    }
+}

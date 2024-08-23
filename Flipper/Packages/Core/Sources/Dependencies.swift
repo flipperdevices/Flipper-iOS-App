@@ -185,10 +185,13 @@ public final class Dependencies: ObservableObject, Sendable {
         var devURL = #URL("https://infrared.dev.flipp.dev")
         var prodURL = #URL("https://infrared.flipperzero.one")
 
-        let infraredService = WebInfraredService(baseURL: prodURL)
+        let infraredService = WebInfraredService(baseURL: devURL)
 
         return .init(
-            service: infraredService
+            service: infraredService,
+            storage: api.storage,
+            application: api.application,
+            pairedDevice: pairedDevice
         )
     }()
 

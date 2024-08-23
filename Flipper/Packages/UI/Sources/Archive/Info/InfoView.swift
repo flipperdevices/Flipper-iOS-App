@@ -37,11 +37,20 @@ struct InfoView: View {
                     isEditing: $isEditing)
             } else {
                 if item.kind == .infrared {
-                    InfraredInfoView(
-                        onShare: shareKey,
-                        onDelete: delete,
-                        current: $current,
-                        isEditing: $isEditing)
+                    if let infraredLayout = item.infraredLayout {
+                        InfraredLayoutView(
+                            onShare: shareKey,
+                            onDelete: delete,
+                            layout: infraredLayout,
+                            current: $current,
+                            isEditing: $isEditing)
+                    } else {
+                        InfraredInfoView(
+                            onShare: shareKey,
+                            onDelete: delete,
+                            current: $current,
+                            isEditing: $isEditing)
+                    }
                 } else {
                     BaseInfoView(
                         onShare: shareKey,
@@ -158,5 +167,12 @@ struct InfoView: View {
 
     func openNFCEditor() {
         showDumpEditor = true
+    }
+}
+
+extension ArchiveItem {
+    var infraredLayout: InfraredLayout? {
+        guard let layout else { return nil }
+        return try? JSONDecoder().decode(InfraredLayout.self, from: layout)
     }
 }

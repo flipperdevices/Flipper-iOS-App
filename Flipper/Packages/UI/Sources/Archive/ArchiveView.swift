@@ -26,6 +26,7 @@ struct ArchiveView: View {
         case importing(URL)
         case category(ArchiveItem.Kind)
         case categoryDeleted
+        case infrared
     }
 
     var canPullToRefresh: Bool {
@@ -150,9 +151,11 @@ struct ArchiveView: View {
                 case .importing(let url): ImportView(url: url)
                 case .category(let kind): CategoryView(kind: kind)
                 case .categoryDeleted: CategoryDeletedView()
+                case .infrared: InfraredView()
                 }
             }
         }
+        .tint(.primary)
         .environment(\.path, $path)
         .onOpenURL { url in
             if url.isKeyFile || url.isKeyURL {

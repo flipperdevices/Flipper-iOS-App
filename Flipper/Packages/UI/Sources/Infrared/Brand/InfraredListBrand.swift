@@ -3,6 +3,8 @@ import SwiftUI
 import UIKit
 
 struct InfraredListBrand: UIViewControllerRepresentable {
+    @Environment(\.dismissSearch) private var dismissSearch
+
     let brands: [InfraredBrand]
     let onTap: (InfraredBrand) -> Void
 
@@ -18,11 +20,15 @@ struct InfraredListBrand: UIViewControllerRepresentable {
         _ uiViewController: UITableViewController,
         context: Context
     ) {
+        context.coordinator.updateBrands(brands: brands)
         uiViewController.tableView.reloadData()
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(brands: brands, onTap: onTap)
+        Coordinator(brands: brands) {
+            dismissSearch()
+            onTap($0)
+        }
     }
 }
 
@@ -41,6 +47,10 @@ extension InfraredListBrand {
             self.brands = brands
             self.onTap = onTap
             super.init()
+            updateBrands(brands: brands)
+        }
+
+        func updateBrands(brands: [InfraredBrand]) {
             groupedBrands = groupBrandsByFirstLetter(brands: brands)
             sortedKeys = groupedBrands.keys.sorted()
         }

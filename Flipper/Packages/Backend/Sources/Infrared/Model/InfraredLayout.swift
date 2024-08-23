@@ -1,10 +1,10 @@
 import Foundation
 
-public struct InfraredLayout: Decodable, Equatable {
+public struct InfraredLayout: Codable, Equatable {
     public let pages: [InfraredPageLayout]
 }
 
-public struct InfraredPageLayout: Decodable, Equatable {
+public struct InfraredPageLayout: Codable, Equatable {
     public let buttons: [InfraredButton]
 
     public init(buttons: [InfraredButton]) {

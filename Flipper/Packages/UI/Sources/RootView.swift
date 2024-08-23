@@ -39,6 +39,7 @@ private struct RootViewImpl: View {
 
     @State var alerts: Alerts = .init()
     @State var inAppNotifications: InAppNotifications = .init()
+    @State var popups: Popups = .init()
 
     init() {}
 
@@ -77,5 +78,6 @@ private struct RootViewImpl: View {
         }
         .environment(\.alerts, $alerts)
         .environment(\.notifications, $inAppNotifications)
+        .environment(\.popups, $popups)
     }
 }

@@ -1,14 +1,21 @@
 import Infrared
 import Foundation
 
-public struct InfraredButton: Identifiable {
-    public let id: UUID = UUID()
+public typealias InfraredButtonData = Infrared.InfraredButtonData
+
+public struct InfraredButton: Identifiable, Equatable, Codable {
+    public var id: UUID = UUID()
 
     public let position: InfraredButtonPosition
-    public let data: InfraredButtonType
+    public let data: InfraredButtonData
 
     init(_ button: Infrared.InfraredButton) {
         self.position = InfraredButtonPosition(button)
-        self.data = InfraredButtonType(button.data)
+        self.data = button.data
+    }
+
+    init(position: InfraredButtonPosition, data: InfraredButtonData) {
+        self.position = position
+        self.data = data
     }
 }

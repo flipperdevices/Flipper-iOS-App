@@ -4,6 +4,8 @@ import SwiftUI
 extension ArchiveView {
     struct CategoryView: View {
         @EnvironmentObject var archive: ArchiveModel
+        @EnvironmentObject private var device: Device
+
         @Environment(\.path) private var path
         @Environment(\.dismiss) private var dismiss
 
@@ -11,6 +13,11 @@ extension ArchiveView {
 
         var items: [ArchiveItem] {
             archive.items.filter { $0.kind == kind }
+        }
+
+        var canAddRemoteInfrared: Bool {
+            guard let flipper = device.flipper else { return false }
+            return flipper.hasInfraredEmulateSupport
         }
 
         var body: some View {
@@ -38,6 +45,18 @@ extension ArchiveView {
                     }
                     Text(kind.name)
                         .font(.system(size: 20, weight: .bold))
+                }
+
+                if kind == .infrared {
+                    TrailingToolbarItems {
+                        NavBarButton {
+                            path.append(Destination.infrared)
+                        } label: {
+                            Text("Add Remote")
+                                .font(.system(size: 14, weight: .bold))
+                        }
+                        .disabled(!canAddRemoteInfrared)
+                    }
                 }
             }
         }

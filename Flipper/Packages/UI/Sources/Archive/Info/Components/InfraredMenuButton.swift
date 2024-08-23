@@ -2,11 +2,12 @@ import Core
 import SwiftUI
 
 struct InfraredMenuButton: View {
+    @Environment(\.popups) private var popups
+
     let onShare: () -> Void
     let onDelete: () -> Void
     let onEdit: () -> Void
 
-    @State private var showMenu = false
     @State private var showHowToUse: Bool = false
 
     // FIXME: Rewrite by use more flexible env object
@@ -14,16 +15,16 @@ struct InfraredMenuButton: View {
 
     var body: some View {
         EllipsisButton {
-            showMenu = true
+            popups.infrared.showOptions = true
         }
         .alert(isPresented: $showHowToUse) {
             InfraredHowToUseDialog(isPresented: $showHowToUse)
         }
-        .popup(isPresented: $showMenu) {
+        .popup(isPresented: popups.infrared.showOptions) {
             HStack {
                 Spacer()
                 InfraredMenu(
-                    isPresented: $showMenu,
+                    isPresented: popups.infrared.showOptions,
                     onShare: onShare,
                     onHowTo: { showHowToUse = true },
                     onDelete: onDelete,

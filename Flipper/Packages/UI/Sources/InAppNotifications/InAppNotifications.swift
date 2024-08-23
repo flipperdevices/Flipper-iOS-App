@@ -48,7 +48,3 @@ extension EnvironmentValues {
 private struct InAppNotificationsKey: EnvironmentKey {
     static let defaultValue: Binding<InAppNotifications> = .constant(.init())
 }
-
-private struct NotificationShowArchiveImportedKey: EnvironmentKey {
-    static let defaultValue: Binding<Bool> = .constant(.init())
-}

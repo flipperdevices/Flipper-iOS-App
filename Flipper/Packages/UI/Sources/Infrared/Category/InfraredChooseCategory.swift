@@ -10,7 +10,7 @@ extension InfraredView {
         @Environment(\.path) private var path
 
         @State private var categories: [InfraredCategory] = []
-        @State private var isError: Bool = false
+        @State private var error: InfraredModel.Error.Network?
 
         private let columns = [
             GridItem(.flexible(), spacing: 12),
@@ -19,10 +19,17 @@ extension InfraredView {
 
         var body: some View {
             VStack(spacing: 0) {
-                if isError {
-                    Text("Some Error on Load Category")
+                if let error {
+                    InfraredNetworkError(error: error, action: retry)
                 } else if categories.isEmpty {
-                    Spinner()
+                    ScrollView {
+                        LazyVGrid(columns: columns, spacing: 12) {
+                            ForEach(1...8, id: \.self) { _ in
+                                InfraredCategoryPlaceholder()
+                            }
+                        }
+                        .padding(14)
+                    }
                 } else {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 12) {
@@ -54,42 +61,25 @@ extension InfraredView {
                 }
             }
             .task {
-                do {
-                    guard categories.isEmpty else { return }
-                    categories = try await infraredModel.loadCategories()
-                } catch {
-                    isError = true
-                }
+                guard categories.isEmpty else { return }
+                await loadCategories()
             }
         }
-    }
 
-    struct CategoryCard: View {
-        let item: InfraredCategory
-        let onItemSelected: () -> Void
-
-        private var uiImage: UIImage? {
-            let data = Data(base64Encoded: item.image) ?? Data()
-            return UIImage(data: data)
+        private func loadCategories() async {
+            do {
+                categories = try await infraredModel.loadCategories()
+            } catch let error as InfraredModel.Error.Network {
+                self.error = error
+            } catch {}
         }
 
-        var body: some View {
-            VStack(spacing: 8) {
-                if let uiImage {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .frame(width: 36, height: 36)
-                }
-
-                Text(item.name)
-                    .font(.system(size: 18, weight: .regular))
+        private func retry() {
+            Task {
+                error = nil
+                categories = []
+                await loadCategories()
             }
-            .padding(12)
-            .frame(maxWidth: .infinity)
-            .background(Color.groupedBackground)
-            .cornerRadius(16)
-            .shadow(color: .shadow, radius: 16, x: 0, y: 4)
-            .onTapGesture { onItemSelected() }
         }
     }
 }

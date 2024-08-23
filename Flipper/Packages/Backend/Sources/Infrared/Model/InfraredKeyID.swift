@@ -1,9 +1,9 @@
 import Foundation
 
-public enum KeyID: Decodable, Equatable {
-    case name(NameKeyIDType)
-    case sha256(SHA256KeyIDType)
-    case md5(MD5KeyIDType)
+public enum InfraredKeyID: Codable, Equatable {
+    case name(Name)
+    case sha256(SHA256)
+    case md5(MD5)
     case unknown
 
     enum CodingKeys: String, CodingKey {
@@ -13,27 +13,76 @@ public enum KeyID: Decodable, Equatable {
         case type
     }
 
+    enum `Type`: String, Decodable {
+        case name = "NAME"
+        case sha256 = "SHA_256"
+        case md5 = "MD5"
+    }
+
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         guard let type = try? container.decode(
-            KeyIDType.self,
+            `Type`.self,
             forKey: .type)
         else {
             self = .unknown
             return
         }
 
-        switch type {
+        self = switch type {
         case .name:
-            let data = try NameKeyIDType(from: decoder)
-            self = .name(data)
+            .name(try Name(from: decoder))
         case .sha256:
-            let data = try SHA256KeyIDType(from: decoder)
-            self = .sha256(data)
+            .sha256(try SHA256(from: decoder))
         case .md5:
-            let data = try MD5KeyIDType(from: decoder)
-            self = .md5(data)
+            .md5(try MD5(from: decoder))
+        }
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        switch self {
+        case .name(let name):
+            try container.encode(`Type`.name.rawValue, forKey: .type)
+            try name.encode(to: encoder)
+        case .sha256(let sha256):
+            try container.encode(`Type`.sha256.rawValue, forKey: .type)
+            try sha256.encode(to: encoder)
+        case .md5(let md5):
+            try container.encode(`Type`.md5.rawValue, forKey: .type)
+            try md5.encode(to: encoder)
+        case .unknown:
+            break
+        }
+    }
+
+    public struct Name: Codable, Equatable {
+        public let name: String
+
+        enum CodingKeys: String, CodingKey {
+            case name = "key_name"
+        }
+    }
+
+    public struct SHA256: Codable, Equatable {
+        public let name: String
+        public let hash: String
+
+        enum CodingKeys: String, CodingKey {
+            case name = "key_name"
+            case hash = "sha_256_string"
+        }
+    }
+
+    public struct MD5: Codable, Equatable {
+        public let name: String
+        public let hash: String
+
+        enum CodingKeys: String, CodingKey {
+            case name = "key_name"
+            case hash = "md5_string"
         }
     }
 }

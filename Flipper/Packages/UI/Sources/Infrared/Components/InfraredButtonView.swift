@@ -15,7 +15,7 @@ struct InfraredButtonView: View {
 }
 
 struct InfraredButtonTypeView: View {
-    let data: InfraredButtonType
+    let data: Core.InfraredButtonData
 
     var body: some View {
         switch data {

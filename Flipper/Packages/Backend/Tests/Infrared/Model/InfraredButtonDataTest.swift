@@ -27,25 +27,25 @@ final class InfraredButtonDataTest: BaseDecodableTestCase<InfraredButtonData> {
 
 fileprivate extension InfraredButtonData {
     static let mockText = InfraredButtonData.text(
-        TextButtonData(
+        Text(
             keyId: .unknown,
             text: "Text Button")
     )
 
     static let mockIcon = InfraredButtonData.icon(
-        IconButtonData(
+        Icon(
             keyId: .unknown,
-            icon: .power)
+            type: .power)
     )
 
     static let mockBase64Image = InfraredButtonData.base64Image(
-        Base64ImageButtonData(
+        Base64Image(
             keyId: .unknown,
             pngBase64: "image")
     )
 
     static let mockNavigation = InfraredButtonData.navigation(
-        NavigationButtonData(
+        Navigation(
             upKeyId: .unknown,
             leftKeyId: .unknown,
             downKeyId: .unknown,
@@ -55,13 +55,13 @@ fileprivate extension InfraredButtonData {
     )
 
     static let mockVolume = InfraredButtonData.volume(
-        VolumeButtonData(
+        Volume(
             addKeyId: .unknown,
             reduceKeyId: .unknown)
     )
 
     static let mockChannel = InfraredButtonData.channel(
-        ChannelButtonData(
+        Channel(
             addKeyId: .unknown,
             reduceKeyId: .unknown)
     )

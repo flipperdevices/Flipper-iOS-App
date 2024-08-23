@@ -3,16 +3,22 @@ import Core
 
 struct Base64ImageInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
+    @Environment(\.layoutState) private var state
+    @Environment(\.emulateAction) private var action
 
-    let data: InfraredBase64ImageButton
+    let data: InfraredButtonData.Base64Image
 
     private var imageSize: CGSize {
         .init(width: 24 * scaleFactor, height: 24 * scaleFactor)
     }
 
     private var uiImage: UIImage? {
+        let image = data
+            .pngBase64
+            .replacing("data:image/png;base64,", with: "")
+
         guard
-            let data = Data(base64Encoded: data.image),
+            let data = Data(base64Encoded: image),
             let image = UIImage(data: data),
             let scaledImage = image.scaled(to: imageSize)
         else { return nil }
@@ -24,6 +30,9 @@ struct Base64ImageInfraredButton: View {
         InfraredSquareButton {
             if let uiImage = uiImage {
                 Image(uiImage: uiImage)
+                    .onTapGesture {
+                        action(data.keyId)
+                    }
             } else {
                 EmptyView()
             }

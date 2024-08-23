@@ -5,6 +5,7 @@ extension ArchiveSync {
         case update(Target)
         case delete(Target)
         case conflict
+        case skip
 
         enum Target {
             case mobile
@@ -46,7 +47,8 @@ extension ArchiveSync {
                 case (.deleted, .modified): result[id] = .update(.mobile)
                 case (.modified, .deleted): result[id] = .update(.flipper)
                 // possible conflicts
-                case (.modified, .modified): result[id] = .conflict
+                case let (.modified(mobileHash), .modified(flipperHash)):
+                    result[id] = mobileHash == flipperHash ? .skip : .conflict
                 // nothing to do
                 case (.deleted, .deleted): continue
                 }
@@ -67,6 +69,7 @@ extension ArchiveSync.Action: CustomStringConvertible {
         case .update(let target): return "update: \(target)"
         case .delete(let target): return "delete \(target)"
         case .conflict: return "conflict"
+        case .skip: return "skip"
         }
     }
 }

@@ -16,4 +16,8 @@ extension Binding where Value == NavigationPath {
     func append<V>(_ value: V) where V: Hashable {
         wrappedValue.append(value)
     }
+
+    func clear() {
+        wrappedValue.removeLast(wrappedValue.count)
+    }
 }
