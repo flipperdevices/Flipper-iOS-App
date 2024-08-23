@@ -63,8 +63,6 @@ extension InfraredView {
                 }
             }
             .task {
-                UISearchBar.appearance().tintColor = .black
-
                 guard brands.isEmpty else { return }
                 await loadBrands()
             }

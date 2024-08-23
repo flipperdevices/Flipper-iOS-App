@@ -49,23 +49,12 @@ extension FileType {
         }
     }
 
-    public var matchLayout: FileType? {
-        switch self {
-        case .infrared: return .infraredUI
-        default: return nil
-        }
-    }
-
-    public var matchOrigin: FileType? {
+    public var origin: FileType? {
         switch self {
         case .infraredUI: return .infrared
         case .shadow: return .nfc
         default: return nil
         }
-    }
-
-    public static var supportedLayouts: [FileType] {
-        return [.infraredUI]
     }
 }
 

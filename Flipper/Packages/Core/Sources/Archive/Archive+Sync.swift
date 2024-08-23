@@ -61,7 +61,7 @@ extension Archive {
             } else {
                 try await delete(.init(path: path))
             }
-        case .identical(let path):
+        case .synced(let path):
             setStatus(.synchronized, for: .init(path: path))
         }
     }
@@ -69,10 +69,23 @@ extension Archive {
     // TODO: do not reload origin if doesn't exist yet
     private func reloadOrigin(for path: Path) async throws {
         do {
-            let path = path.originPath ?? path
+            let path = originPath(for: path)
             try await reload(.init(path: path))
         } catch let error as NSError where error.code == 260 {
             logger.info("orphan \(path) file loaded")
         }
+    }
+
+    private func originPath(for path: Path) -> Path {
+        guard
+            let filename = path.lastComponent,
+            let fileType = FileType(filename: filename),
+            let origin = fileType.origin
+        else {
+            return path
+        }
+        return .init(string: path.string
+            .dropLast(fileType.extension.count)
+            .appending(origin.extension))
     }
 }

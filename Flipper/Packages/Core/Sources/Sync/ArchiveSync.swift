@@ -93,8 +93,8 @@ class ArchiveSync: ArchiveSyncProtocol {
                 path.isShadowFile || path.isLayoutFile
                     ? try await updateOnMobile(path, progress: preciseProgress)
                     : try await keepBoth(path, progress: preciseProgress)
-            case .match:
-                try await syncMatched(path, progress: preciseProgress)
+            case .skip:
+                try await markSynced(path, progress: preciseProgress)
             }
             currentProgress += syncItemFactor
         }
@@ -183,11 +183,11 @@ class ArchiveSync: ArchiveSyncProtocol {
         }
     }
 
-    private func syncMatched(
+    private func markSynced(
         _ path: Path,
         progress: (Double) -> Void
     ) async throws {
-        eventsSubject.send(.identical(path))
+        eventsSubject.send(.synced(path))
         progress(1)
     }
 
@@ -209,8 +209,6 @@ extension Path {
 
     var isLayoutFile: Bool {
         guard let filename = lastComponent else { return false }
-        return FileType
-            .supportedLayouts
-            .contains { filename.hasSuffix($0.extension) }
+        return filename.hasSuffix(FileType.infraredUI.extension)
     }
 }

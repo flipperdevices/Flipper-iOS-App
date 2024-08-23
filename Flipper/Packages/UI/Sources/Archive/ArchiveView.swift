@@ -155,6 +155,7 @@ struct ArchiveView: View {
                 }
             }
         }
+        .tint(.primary)
         .environment(\.path, $path)
         .onOpenURL { url in
             if url.isKeyFile || url.isKeyURL {

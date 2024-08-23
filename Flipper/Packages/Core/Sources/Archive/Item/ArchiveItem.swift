@@ -109,7 +109,14 @@ extension ArchiveItem {
     }
 
     public var layoutPath: Path? {
-        return self.path.layoutPath
+        guard kind == .infrared else { return nil }
+        return .init(
+            components: [
+                "any",
+                kind.location,
+                "\(name).\(FileType.infraredUI.extension)"
+            ]
+        )
     }
 }
 

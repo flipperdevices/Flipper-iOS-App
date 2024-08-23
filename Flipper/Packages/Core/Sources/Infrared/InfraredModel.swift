@@ -146,7 +146,7 @@ public class InfraredModel: ObservableObject {
 
     public func sendTempContent(
         _ content: String,
-        _  progress: (Double) -> Void = { _ in }
+        _ progress: (Double) -> Void = { _ in }
     ) async throws {
         do {
             try await storage.write(
@@ -162,7 +162,7 @@ public class InfraredModel: ObservableObject {
 
     public func sendTempLayout(
         _ layout: InfraredLayout,
-        _  progress: (Double) -> Void = { _ in }
+        _ progress: (Double) -> Void = { _ in }
     ) async throws {
         do {
             guard let path = ArchiveItem.tempIfr.layoutPath else { return }

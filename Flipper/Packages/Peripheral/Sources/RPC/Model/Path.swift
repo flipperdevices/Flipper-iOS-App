@@ -72,29 +72,3 @@ extension Path: ExpressibleByStringInterpolation {
         self.init(string: stringLiteral)
     }
 }
-
-extension Path {
-    public var layoutPath: Path? {
-        return self.transformedPath { $0.matchLayout }
-    }
-
-    public var originPath: Path? {
-        return self.transformedPath { $0.matchOrigin }
-    }
-
-    func transformedPath(convert: (FileType) -> FileType?) -> Path? {
-        guard
-            let filename = self.lastComponent,
-            let fileType = FileType(filename: filename),
-            let layoutType = convert(fileType)
-        else { return nil }
-
-        let layoutName = filename
-            .replacingOccurrences(
-                of: fileType.extension,
-                with: layoutType.extension
-            )
-
-        return self.removingLastComponent.appending(layoutName)
-    }
-}
