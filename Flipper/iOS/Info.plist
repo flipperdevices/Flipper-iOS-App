@@ -200,10 +200,10 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>SubHz Key</string>
+			<string>SubGHz Key</string>
 			<key>UTTypeIconFiles</key>
 			<array>
-				<string>subhz.png</string>
+				<string>subghz.png</string>
 			</array>
 			<key>UTTypeIdentifier</key>
 			<string>com.flipperdevices.sub</string>
