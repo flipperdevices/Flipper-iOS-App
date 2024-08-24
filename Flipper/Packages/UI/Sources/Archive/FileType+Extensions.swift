@@ -14,7 +14,7 @@ extension ArchiveItem.Kind {
 
     var icon: Image {
         switch self {
-        case .subghz: return .init("subhz")
+        case .subghz: return .init("subghz")
         case .rfid: return .init("rfid")
         case .nfc: return .init("nfc")
         case .infrared: return .init("infrared")
