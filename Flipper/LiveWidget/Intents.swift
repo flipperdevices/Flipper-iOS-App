@@ -16,7 +16,7 @@ struct EmulateIntent: LiveActivityIntent {
         self.entity = entity
     }
 
-    func perform() async throws -> some IntentResult {
+    func perform() async throws -> Never {
         fatalError()
     }
 }
