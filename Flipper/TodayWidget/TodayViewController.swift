@@ -1,30 +1,23 @@
-import UI
-import Combine
 import SwiftUI
-import NotificationCenter
-import Core
+
+struct WidgetView: View {
+    var body: some View {
+        VStack(alignment: .center, spacing: 8) {
+            Spacer()
+            Text("This Widget is deprecated")
+            Text("Use standard Widget from Home Screen")
+            Spacer()
+        }
+    }
+}
 
 @objc(TodayViewController)
-@MainActor class TodayViewController: UIViewController, WidgetProviding {
-    private let widget = Dependencies.shared.widget
-
-    private var isError: Bool = false
-    private var cancellables: [AnyCancellable] = []
-
-    private let compactModeHeight = 110.0
-    private var expandedModeHeight = 110.0
-
+class TodayViewController: UIViewController, WidgetProviding {
     override func loadView() {
         // Enable expanded mode
-        self.extensionContext?.widgetAvailableDisplayMode = .expanded
+        self.extensionContext?.widgetAvailableDisplayMode = .compact
         // Add SwiftUI
         let widgetView = WidgetView()
-            .environmentObject(widget)
-            .onHeightChanged { [weak self] in
-                guard let self else { return }
-                self.expandedModeHeight = $0
-                self.updatePreferredHeight()
-            }
         let hostingController = UIHostingController(rootView: widgetView)
         addChild(hostingController)
 
@@ -32,25 +25,6 @@ import Core
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
         hostingController.view.addConstraints(to: self.view)
-
-        subscribeToKeysChanged()
-    }
-
-    func subscribeToKeysChanged() {
-        widget.$keys
-            .sink { [weak self] _ in
-                guard let self else { return }
-                self.view.setNeedsLayout()
-            }
-            .store(in: &cancellables)
-
-        widget.$error
-            .sink { [weak self] error in
-                guard let self else { return }
-                self.isError = error != nil
-                self.updatePreferredHeight()
-            }
-            .store(in: &cancellables)
     }
 
     nonisolated func widgetPerformUpdate(
@@ -69,21 +43,6 @@ import Core
         _ activeDisplayMode: WidgetDisplayMode,
         withMaximumSize maxSize: CGSize
     ) {
-        Task { @MainActor in
-            widget.isExpanded = activeDisplayMode == .expanded
-            updatePreferredHeight()
-        }
-    }
-
-    func updatePreferredHeight() {
-        guard !isError else {
-            preferredContentSize.height = compactModeHeight
-            return
-        }
-        switch widget.isExpanded {
-        case true: preferredContentSize.height = expandedModeHeight
-        case false: preferredContentSize.height = compactModeHeight
-        }
     }
 }
 
@@ -95,35 +54,5 @@ private extension UIView {
         rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         backgroundColor = .clear
-    }
-}
-
-extension View {
-    func onHeightChanged(_ action: @escaping (Double) -> Void) -> some View {
-        self
-            .background(GeometryReader {
-                Color.clear.preference(
-                    key: HeightPreferenceKey.self,
-                    value: $0.frame(in: .global).height
-                )
-            })
-            .onPreferenceChange(HeightPreferenceKey.self, perform: action)
-    }
-}
-
-private struct HeightPreferenceKey: PreferenceKey {
-    typealias Value = Double
-
-    static var defaultValue = Double.zero
-
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        let height = nextValue()
-        guard
-            height != 0.0,
-            height != value
-        else {
-            return
-        }
-        value = height
     }
 }

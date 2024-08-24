@@ -1,15 +1,15 @@
 import Core
 import SwiftUI
+import WidgetKit
 
 struct MainView: View {
     @EnvironmentObject var device: Device
     @EnvironmentObject var archive: ArchiveModel
+    @EnvironmentObject var emulate: Emulate
 
     @StateObject var tabViewController: TabViewController = .init()
 
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
-
-    @State private var showTodayWidgetSettings = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -35,8 +35,6 @@ struct MainView: View {
         .environmentObject(tabViewController)
         .onOpenURL { url in
             switch url {
-            case .todayWidgetSettings:
-                showTodayWidgetSettings = true
             case .updateDeviceLink:
                 selectedTab = .device
                 tabViewController.popToRootView(for: .device)
@@ -44,8 +42,13 @@ struct MainView: View {
                 break
             }
         }
-        .fullScreenCover(isPresented: $showTodayWidgetSettings) {
-            TodayWidgetSettingsView()
+        .onReceive(device.$status) { status in
+            if status == .disconnected {
+                UserDefaults.group.set("", forKey: "emulating")
+                UserDefaults.group.synchronize()
+                emulate.stopEmulate()
+                WidgetCenter.shared.reloadTimelines(ofKind: "LiveWidget")
+            }
         }
     }
 }

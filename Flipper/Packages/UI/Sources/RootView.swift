@@ -61,9 +61,6 @@ private struct RootViewImpl: View {
         .alert(isPresented: $isUpdateAvailable) {
             MobileUpdateAlert(isPresented: $isUpdateAvailable)
         }
-        .onContinueUserActivity("PlayAlertIntent") { _ in
-            device.playAlert()
-        }
         .onChange(of: device.status) {
             if $0 == .invalidPairing {
                 isPairingIssue = true

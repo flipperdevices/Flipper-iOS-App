@@ -13,7 +13,6 @@ struct OptionsView: View {
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
     @AppStorage(.isDevCatalog) var isDevCatalog = false
 
-    @State private var showWidgetSettings = false
     @State private var showRestartTheApp = false
 
     var isDeviceAvailable: Bool {
@@ -67,11 +66,6 @@ struct OptionsView: View {
 
             Section {
                 NotificationsToggle()
-
-                Button("Widget Settings") {
-                    showWidgetSettings = true
-                }
-                .foregroundColor(.primary)
             }
 
             Section {
@@ -141,9 +135,6 @@ struct OptionsView: View {
             PrincipalToolbarItems(alignment: .leading) {
                 Title("Options")
             }
-        }
-        .fullScreenCover(isPresented: $showWidgetSettings) {
-            TodayWidgetSettingsView()
         }
         .onChange(of: isDevCatalog) { _ in
             showRestartTheApp = true

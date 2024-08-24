@@ -1,4 +1,5 @@
 import Peripheral
+import Foundation
 
 class SyncedManifest: ManifestStorage {
     private let storage: FileStorage = .init()
@@ -14,6 +15,9 @@ class SyncedManifest: ManifestStorage {
 
     func upsert(_ manifest: Manifest) async throws {
         try await storage.write(manifest, at: manifestPath)
+        UserDefaults
+            .group
+            .set(manifest.items.keys.map(\.string), forKey: "synced_manifest")
     }
 
     func delete() async throws {

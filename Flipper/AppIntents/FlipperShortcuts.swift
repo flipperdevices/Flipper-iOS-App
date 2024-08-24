@@ -15,5 +15,11 @@ struct FlipperShortcuts: AppShortcutsProvider {
                 "Emulate item on \(.applicationName)"
             ]
         )
+        AppShortcut(
+            intent: PlayAlert(),
+            phrases: [
+                "Find Flipper"
+            ]
+        )
     }
 }
