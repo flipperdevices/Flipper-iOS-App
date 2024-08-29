@@ -18,6 +18,7 @@ struct InfraredLayoutView: View {
     @State private var isFlipperBusyAlertPresented: Bool = false
     @State private var showRemoteControl = false
     @State private var showHowToUse: Bool = false
+    @State private var showFlipperNotSupported: Bool = false
 
     var layoutState: InfraredLayoutState {
         if device.status == .disconnected {
@@ -80,11 +81,25 @@ struct InfraredLayoutView: View {
             }
         }
         .alert(isPresented: $showHowToUse) {
-            InfraredHowToUseDialog(isPresented: $showHowToUse)
+            InfraredHowToUseRemoteDialog(isPresented: $showHowToUse)
         }
         .sheet(isPresented: $showRemoteControl) {
             RemoteControlView()
                 .environmentObject(device)
+        }
+        .alert(isPresented: $showFlipperNotSupported) {
+            NotSupportedFeatureAlert(
+                isPresented: $showFlipperNotSupported)
+        }
+        .onReceive(device.$flipper) { flipper in
+            guard
+                let flipper = flipper,
+                flipper.state == .connected
+            else { return }
+
+            if !flipper.hasInfraredEmulateSupport {
+                self.showFlipperNotSupported = true
+            }
         }
         .onChange(of: emulate.state) { state in
             if state == .locked {

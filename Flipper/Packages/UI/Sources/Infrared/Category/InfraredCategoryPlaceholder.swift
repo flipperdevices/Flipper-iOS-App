@@ -2,10 +2,9 @@ import Core
 import SwiftUI
 
 extension InfraredView {
-    struct InfraredCategoryPlaceholder: View {
+    struct CategoryPlaceholder: View {
         var body: some View {
             AnimatedPlaceholder()
-                .padding(12)
                 .frame(maxWidth: .infinity)
                 .frame(height: 100)
                 .cornerRadius(16)

@@ -21,23 +21,20 @@ extension InfraredView {
             VStack(spacing: 0) {
                 if let error {
                     InfraredNetworkError(error: error, action: retry)
-                } else if categories.isEmpty {
-                    ScrollView {
-                        LazyVGrid(columns: columns, spacing: 12) {
-                            ForEach(1...8, id: \.self) { _ in
-                                InfraredCategoryPlaceholder()
-                            }
-                        }
-                        .padding(14)
-                    }
                 } else {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 12) {
-                            ForEach(categories) { category in
-                                CategoryCard(item: category) {
-                                    path.append(
-                                        Destination.chooseBrand(category)
-                                    )
+                            if categories.isEmpty {
+                                ForEach(1...8, id: \.self) { _ in
+                                    CategoryPlaceholder()
+                                }
+                            } else {
+                                ForEach(categories) { category in
+                                    CategoryCard(item: category) {
+                                        path.append(
+                                            Destination.chooseBrand(category)
+                                        )
+                                    }
                                 }
                             }
                         }

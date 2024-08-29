@@ -48,6 +48,12 @@ extension InfraredView {
                             .frame(width: 60, height: 60)
                             .environment(\.layoutState, .syncing)
 
+                        AnimatedPlaceholder()
+                            .frame(width: 200, height: 20)
+
+                        AnimatedPlaceholder()
+                            .frame(width: 150, height: 20)
+
                         Spacer()
                     }
                 case .error(let error):
@@ -68,8 +74,8 @@ extension InfraredView {
                             .environment(\.layoutState, state)
 
                         Text(
-                            "Point Flipper at the \(signal.category)\n" +
-                            "and tap the button"
+                            "Point your Flipper Zero at the device\n" +
+                            "and tap the button above"
                         )
                         .font(.system(size: 14, weight: .medium))
                         .multilineTextAlignment(.center)

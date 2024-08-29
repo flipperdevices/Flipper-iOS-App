@@ -13,7 +13,7 @@ struct InfraredFlipperNotConnectedError: View {
                     .font(.system(size: 12, weight: .bold))
                     .multilineTextAlignment(.center)
 
-                Text("Connect your Flipper to work with infrared")
+                Text("Connect your Flipper to use remote")
                     .font(.system(size: 12, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black40)

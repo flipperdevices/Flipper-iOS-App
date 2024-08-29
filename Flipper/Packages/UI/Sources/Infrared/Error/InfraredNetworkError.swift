@@ -22,11 +22,11 @@ extension InfraredNetworkError {
                 VStack(spacing: 4) {
                     Image("ServerError")
 
-                    Text("Unable to get controls")
+                    Text("No Server Connection")
                         .font(.system(size: 12, weight: .bold))
                         .multilineTextAlignment(.center)
 
-                    Text("Can’t connect to collection server")
+                    Text("Can't access remotes library")
                         .font(.system(size: 12, weight: .medium))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.black40)
@@ -55,13 +55,10 @@ extension InfraredNetworkError {
                         .font(.system(size: 12, weight: .bold))
                         .multilineTextAlignment(.center)
 
-                    Text(
-                        "Turn on mobile data or Wi-Fi\n" +
-                         "to access infrared collection"
-                    )
-                    .font(.system(size: 12, weight: .medium))
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.black40)
+                    Text("Turn on mobile data or Wi-Fi to add remote")
+                        .font(.system(size: 12, weight: .medium))
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(.black40)
                 }
 
                 Button {

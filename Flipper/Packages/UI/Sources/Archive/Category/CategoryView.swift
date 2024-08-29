@@ -9,15 +9,13 @@ extension ArchiveView {
         @Environment(\.path) private var path
         @Environment(\.dismiss) private var dismiss
 
+        @State private var showFlipperDisconnected: Bool = false
+        @State private var showFlipperNotSupported: Bool = false
+
         let kind: ArchiveItem.Kind
 
         var items: [ArchiveItem] {
             archive.items.filter { $0.kind == kind }
-        }
-
-        var canAddRemoteInfrared: Bool {
-            guard let flipper = device.flipper else { return false }
-            return flipper.hasInfraredEmulateSupport
         }
 
         var body: some View {
@@ -50,15 +48,40 @@ extension ArchiveView {
                 if kind == .infrared {
                     TrailingToolbarItems {
                         NavBarButton {
-                            path.append(Destination.infrared)
+                            addInfraredRemote()
                         } label: {
                             Text("Add Remote")
                                 .font(.system(size: 14, weight: .bold))
+                                .padding(.horizontal, 14)
                         }
-                        .disabled(!canAddRemoteInfrared)
                     }
                 }
             }
+            .alert(isPresented: $showFlipperDisconnected) {
+                DeviceDisconnectedAlert(
+                    isPresented: $showFlipperDisconnected)
+            }
+            .alert(isPresented: $showFlipperNotSupported) {
+                NotSupportedFeatureAlert(
+                    isPresented: $showFlipperNotSupported)
+            }
+        }
+
+        private func addInfraredRemote() {
+            guard
+                let flipper = device.flipper,
+                device.status == .connected
+            else {
+                showFlipperDisconnected = true
+                return
+            }
+
+            guard flipper.hasInfraredEmulateSupport else {
+                showFlipperNotSupported = true
+                return
+            }
+
+            path.append(Destination.infrared)
         }
     }
 }
