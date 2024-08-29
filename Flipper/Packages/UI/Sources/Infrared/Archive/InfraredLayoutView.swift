@@ -46,7 +46,7 @@ struct InfraredLayoutView: View {
             if let page = layout.pages.first {
                 InfraredPageLayoutView(buttons: page.buttons)
                     .environment(\.layoutState, layoutState)
-                    .environment(\.emulateAction, emulate)
+                    .environment(\.emulateAction, onStartEmulate)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -111,12 +111,11 @@ struct InfraredLayoutView: View {
         }
     }
 
-    private func emulate(_ keyID: InfraredKeyID) {
+    private func onStartEmulate(_ keyID: InfraredKeyID) {
         guard
             let index = current.properties.getIndex(by: keyID)
         else { return }
 
         emulate.startEmulate(current, config: .byIndex(index))
-        emulate.stopEmulate()
     }
 }

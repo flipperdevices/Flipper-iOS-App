@@ -3,7 +3,6 @@ import Core
 
 struct IconInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
-    @Environment(\.emulateAction) private var action
 
     let data: InfraredButtonData.Icon
 
@@ -14,7 +13,7 @@ struct IconInfraredButton: View {
                 .resizable()
                 .frame(width: 24 * scaleFactor, height: 24 * scaleFactor)
                 .foregroundColor(.white)
-                .onTapGesture { action(data.keyId) }
+                .onEmulate(keyID: data.keyId)
         }
     }
 }

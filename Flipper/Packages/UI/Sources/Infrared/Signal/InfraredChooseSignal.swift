@@ -70,8 +70,8 @@ extension InfraredView {
 
                         InfraredButtonTypeView(data: signal.button)
                             .frame(width: 60, height: 60)
-                            .environment(\.emulateAction, processSendSignal)
                             .environment(\.layoutState, state)
+                            .environment(\.emulateAction, onStartEmulate)
 
                         Text(
                             "Point your Flipper Zero at the device\n" +
@@ -176,6 +176,8 @@ extension InfraredView {
                 switch selection {
                 case .signal(let signal):
                     self.signal = signal
+                    try await infraredModel.sendTempContent(signal.content)
+
                     viewState = .display(signal, .default)
                 case .file(let file):
                     if successSignals.isEmpty && failedSignals.isEmpty {
@@ -191,20 +193,10 @@ extension InfraredView {
             } catch {}
         }
 
-        private func processSendSignal(_ keyID: InfraredKeyID) {
+        private func onStartEmulate(_ keyID: InfraredKeyID) {
             guard let signal = signal else { return }
-
-            Task {
-                do {
-                    viewState = .display(signal, .emulating)
-
-                    try await infraredModel.sendTempContent(signal.content)
-                    emulate.startEmulate(.tempIfr, config: .byIndex(0))
-                    emulate.stopEmulate()
-                } catch let error as InfraredModel.Error.Network {
-                    viewState = .error(error)
-                } catch {}
-            }
+            viewState = .display(signal, .emulating)
+            emulate.startEmulate(.tempIfr, config: .byIndex(0))
         }
 
         private func processConfirmSignal(isSuccess: Bool) {

@@ -3,7 +3,6 @@ import Core
 
 struct ChannelInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
-    @Environment(\.emulateAction) private var action
 
     let data: InfraredButtonData.Channel
 
@@ -14,7 +13,7 @@ struct ChannelInfraredButton: View {
 
                 Text("+")
                     .font(.system(size: 20 * scaleFactor, weight: .medium))
-                    .onTapGesture { action(data.addKeyId) }
+                    .onEmulate(keyID: data.addKeyId)
 
                 Spacer()
 
@@ -25,7 +24,7 @@ struct ChannelInfraredButton: View {
 
                 Text("-")
                     .font(.system(size: 20 * scaleFactor, weight: .medium))
-                    .onTapGesture { action(data.reduceKeyId) }
+                    .onEmulate(keyID: data.reduceKeyId)
 
                 Spacer()
             }

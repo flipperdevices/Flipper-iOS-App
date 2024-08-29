@@ -71,7 +71,7 @@ extension InfraredView {
                     if let page = layout.pages.first {
                         InfraredPageLayoutView(buttons: page.buttons)
                             .environment(\.layoutState, state)
-                            .environment(\.emulateAction, emulate)
+                            .environment(\.emulateAction, onStartEmulate)
                     }
                 }
             }
@@ -177,7 +177,7 @@ extension InfraredView {
             } catch {}
         }
 
-        private func emulate(_ keyID: InfraredKeyID) {
+        private func onStartEmulate(_ keyID: InfraredKeyID) {
             guard
                 let layout, let content,
                 let index = content.properties.getIndex(by: keyID)
@@ -185,7 +185,6 @@ extension InfraredView {
 
             viewState = .display(layout, .emulating)
             emulate.startEmulate(.tempIfr, config: .byIndex(index))
-            emulate.stopEmulate()
         }
 
         private func retry() {

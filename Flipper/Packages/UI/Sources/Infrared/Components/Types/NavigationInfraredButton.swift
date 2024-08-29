@@ -3,7 +3,6 @@ import Core
 
 struct NavigationInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
-    @Environment(\.emulateAction) private var action
 
     let data: InfraredButtonData.Navigation
 
@@ -15,32 +14,34 @@ struct NavigationInfraredButton: View {
                         Spacer()
 
                         buttonNavigation()
-                            .onTapGesture { action(data.leftKeyId) }
+                            .onEmulate(keyID: data.leftKeyId)
 
                         Spacer()
                     }
                     GridRow {
                         buttonNavigation()
                             .rotationEffect(.degrees(-90))
-                            .onTapGesture { action(data.upKeyId) }
+                            .onEmulate(keyID: data.upKeyId)
 
                         buttonOk()
                             .frame(
                                 width: proxy.size.width / 3,
                                 height: proxy.size.height / 3
                             )
-                            .onTapGesture { action(data.okKeyId) }
+                            .onEmulate(keyID: data.okKeyId)
+
 
                         buttonNavigation()
                             .rotationEffect(.degrees(90))
-                            .onTapGesture { action(data.downKeyId) }
+                            .onEmulate(keyID: data.downKeyId)
+
                     }
                     GridRow {
                         Spacer()
 
                         buttonNavigation()
                             .rotationEffect(.degrees(180))
-                            .onTapGesture { action(data.rightKeyId) }
+                            .onEmulate(keyID: data.rightKeyId)
 
                         Spacer()
                     }

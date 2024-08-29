@@ -4,7 +4,6 @@ import Core
 struct Base64ImageInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
     @Environment(\.layoutState) private var state
-    @Environment(\.emulateAction) private var action
 
     let data: InfraredButtonData.Base64Image
 
@@ -30,9 +29,7 @@ struct Base64ImageInfraredButton: View {
         InfraredSquareButton {
             if let uiImage = uiImage {
                 Image(uiImage: uiImage)
-                    .onTapGesture {
-                        action(data.keyId)
-                    }
+                    .onEmulate(keyID: data.keyId)
             } else {
                 EmptyView()
             }
