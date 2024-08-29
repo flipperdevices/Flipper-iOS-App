@@ -179,8 +179,8 @@ extension InfraredView {
 
         private func onStartEmulate(_ keyID: InfraredKeyID) {
             guard
-                let layout, let content,
-                let index = content.properties.getIndex(by: keyID)
+                let layout, let archiveItem,
+                let index = archiveItem.infraredSignals.getIndex(keyId: keyID)
             else { return }
 
             viewState = .display(layout, .emulating)

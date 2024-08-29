@@ -207,6 +207,19 @@ public extension Array where Element == ArchiveItem.Property {
     }
 }
 
+public extension Array where Element == ArchiveItem.InfraredSignal {
+    func getIndex(keyId: InfraredKeyID) -> Int? {
+        return switch keyId {
+        case .name(let keyId):
+            self.getIndex(name: keyId.name)
+        case .sha256(let keyId):
+            self.getIndex(hash: keyId.hash)
+        case .unknown:
+            nil
+        }
+    }
+}
+
 public extension ArchiveItem {
     static let tempIfr: ArchiveItem = .init(
         name: ".tmp",

@@ -1,6 +1,10 @@
+import CryptoKit
+import Foundation
+
 extension ArchiveItem {
     public struct InfraredSignal: Equatable {
         public var name: String
+        public let hash: String
         public let type: SignalType
 
         public enum SignalType: Equatable {
@@ -72,11 +76,21 @@ extension ArchiveItem {
                     let data = group["data"]
                 else { continue }
 
-                let remote = InfraredSignal(name: name, type: .raw(.init(
-                    frequency: frequency,
-                    dutyCycle: dutyCycle,
-                    data: data
-                )))
+                let hash = calculateSHA256(
+                    fields: [type, frequency, dutyCycle, data]
+                )
+
+                let remote = InfraredSignal(
+                    name: name,
+                    hash: hash,
+                    type: .raw(
+                        .init(
+                            frequency: frequency,
+                            dutyCycle: dutyCycle,
+                            data: data
+                        )
+                    )
+                )
 
                 result.append(remote)
             case "parsed":
@@ -86,11 +100,21 @@ extension ArchiveItem {
                     let command = group["command"]
                 else { continue }
 
-                let remote = InfraredSignal(name: name, type: .parsed(.init(
-                    protocol: proto,
-                    address: address,
-                    command: command
-                )))
+                let hash = calculateSHA256(
+                    fields: [type, proto, address, command]
+                )
+
+                let remote = InfraredSignal(
+                    name: name,
+                    hash: hash,
+                    type: .parsed(
+                        .init(
+                            protocol: proto,
+                            address: address,
+                            command: command
+                        )
+                    )
+                )
 
                 result.append(remote)
             default:
@@ -99,6 +123,17 @@ extension ArchiveItem {
         }
 
         return result
+    }
+
+    private func calculateSHA256(fields: [String]) -> String {
+        let bytes: [UInt8] = fields
+            .compactMap { Array($0.utf8) }
+            .flatMap { Array($0) }
+
+        return SHA256
+            .hash(data: Data(bytes))
+            .map { String(format: "%02x", $0) }
+            .joined()
     }
 
     private func joinProperties(
@@ -135,5 +170,15 @@ extension ArchiveItem {
 
     public var infraredSignalNames: [String] {
         return infraredSignals.map { $0.name }
+    }
+}
+
+public extension Array where Element == ArchiveItem.InfraredSignal {
+    func getIndex(name: String) -> Int? {
+        return self.firstIndex(where: { $0.name == name })
+    }
+
+    func getIndex(hash: String) -> Int? {
+        return self.firstIndex(where: { $0.hash == hash })
     }
 }
