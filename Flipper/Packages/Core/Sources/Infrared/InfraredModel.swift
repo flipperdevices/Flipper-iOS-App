@@ -130,6 +130,22 @@ public class InfraredModel: ObservableObject {
         }
     }
 
+    public func loadInfraredFiles(
+        _ brand: InfraredBrand
+    ) async throws -> [InfraredFile] {
+        do {
+            return try await handlingWebErrors {
+                try await service
+                    .brandFiles(forBrandID: brand.id)
+                    .files
+                    .map { InfraredFile($0) }
+            }
+        } catch {
+            logger.error("load ifr files \(error)")
+            throw error
+        }
+    }
+
     private func handlingWebErrors<T>(
         _ body: () async throws -> T
     ) async rethrows -> T {

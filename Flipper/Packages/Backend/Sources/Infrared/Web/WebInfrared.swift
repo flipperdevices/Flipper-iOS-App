@@ -52,4 +52,13 @@ public class WebInfraredService: InfraredService {
             ifrId: forIfrID
         ).get()
     }
+
+    public func brandFiles(
+        forBrandID: Int
+    ) async throws -> InfraredBrandFiles {
+        return try await BrandFilesRequest(
+            baseURL: baseURL,
+            brandId: forBrandID
+        ).get()
+    }
 }
