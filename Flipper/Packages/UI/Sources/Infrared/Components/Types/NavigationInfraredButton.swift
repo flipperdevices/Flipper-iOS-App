@@ -7,48 +7,33 @@ struct NavigationInfraredButton: View {
     let data: InfraredButtonData.Navigation
 
     var body: some View {
-        GeometryReader { proxy in
-            InfraredSquareButton {
-                Grid {
-                    GridRow {
-                        Spacer()
-
-                        buttonNavigation()
-                            .onEmulate(keyID: data.leftKeyId)
-
-                        Spacer()
-                    }
-                    GridRow {
-                        buttonNavigation()
-                            .rotationEffect(.degrees(-90))
-                            .onEmulate(keyID: data.upKeyId)
-
-                        buttonOk()
-                            .frame(
-                                width: proxy.size.width / 3,
-                                height: proxy.size.height / 3
-                            )
-                            .onEmulate(keyID: data.okKeyId)
-
-
-                        buttonNavigation()
-                            .rotationEffect(.degrees(90))
-                            .onEmulate(keyID: data.downKeyId)
-
-                    }
-                    GridRow {
-                        Spacer()
-
-                        buttonNavigation()
-                            .rotationEffect(.degrees(180))
-                            .onEmulate(keyID: data.rightKeyId)
-
-                        Spacer()
-                    }
+        InfraredSquareButton {
+            Grid {
+                GridRow {
+                    Spacer()
+                    buttonNavigation()
+                        .onEmulate(keyID: data.leftKeyId)
+                    Spacer()
+                }
+                GridRow {
+                    buttonNavigation()
+                        .rotationEffect(.degrees(-90))
+                        .onEmulate(keyID: data.upKeyId)
+                    Spacer()
+                    buttonNavigation()
+                        .rotationEffect(.degrees(90))
+                        .onEmulate(keyID: data.downKeyId)
+                }
+                GridRow {
+                    Spacer()
+                    buttonNavigation()
+                        .rotationEffect(.degrees(180))
+                        .onEmulate(keyID: data.rightKeyId)
+                    Spacer()
                 }
             }
-            .cornerRadius(.infinity)
         }
+        .cornerRadius(.infinity)
     }
 
     @ViewBuilder
@@ -59,22 +44,56 @@ struct NavigationInfraredButton: View {
                 width: 24 * scaleFactor,
                 height: 24 * scaleFactor)
     }
+}
 
-    @ViewBuilder
-    private func buttonOk() -> some View {
-        ZStack {
-            Circle()
-                .fill(Color.black60)
+#Preview("Default") {
+    NavigationInfraredButton(
+        data: .init(
+            upKeyId: .unknown,
+            leftKeyId: .unknown,
+            downKeyId: .unknown,
+            rightKeyId: .unknown
+        )
+    )
+    .frame(width: 300, height: 300)
+    .environment(\.layoutState, .default)
+}
 
-            Circle()
-                .strokeBorder(.black, lineWidth: 3)
+#Preview("Disabled") {
+    NavigationInfraredButton(
+        data: .init(
+            upKeyId: .unknown,
+            leftKeyId: .unknown,
+            downKeyId: .unknown,
+            rightKeyId: .unknown
+        )
+    )
+    .frame(width: 300, height: 300)
+    .environment(\.layoutState, .disabled)
+}
 
-            Text("OK")
-                .font(.system(
-                    size: 14 * scaleFactor,
-                    weight: .medium)
-                )
-                .foregroundColor(.white)
-        }
-    }
+#Preview("Syncing") {
+    NavigationInfraredButton(
+        data: .init(
+            upKeyId: .unknown,
+            leftKeyId: .unknown,
+            downKeyId: .unknown,
+            rightKeyId: .unknown
+        )
+    )
+    .frame(width: 300, height: 300)
+    .environment(\.layoutState, .syncing)
+}
+
+#Preview("Emulating") {
+    NavigationInfraredButton(
+        data: .init(
+            upKeyId: .unknown,
+            leftKeyId: .unknown,
+            downKeyId: .unknown,
+            rightKeyId: .unknown
+        )
+    )
+    .frame(width: 300, height: 300)
+    .environment(\.layoutState, .emulating)
 }

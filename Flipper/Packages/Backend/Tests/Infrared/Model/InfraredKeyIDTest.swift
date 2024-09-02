@@ -8,7 +8,6 @@ final class InfraredKeyIDTest: BaseDecodableTestCase<InfraredKeyID> {
         testCases = [
             (.mockName, .mockNameKeyID),
             (.mockSHA256, .mockSHA256KeyID),
-            (.mockMD5, .mockMD5KeyID),
             (.mockUnknown, .mockUnknownKeyID)
         ]
     }
@@ -21,10 +20,6 @@ fileprivate extension InfraredKeyID {
 
     static let mockSHA256 = InfraredKeyID.sha256(
         SHA256(name: "mock", hash: "sha256")
-    )
-
-    static let mockMD5 = InfraredKeyID.md5(
-        MD5(name: "mock", hash: "md5")
     )
 
     static let mockUnknown = InfraredKeyID.unknown

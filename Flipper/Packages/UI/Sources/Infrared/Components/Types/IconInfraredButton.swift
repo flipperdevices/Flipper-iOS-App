@@ -7,7 +7,7 @@ struct IconInfraredButton: View {
     let data: InfraredButtonData.Icon
 
     var body: some View {
-        InfraredSquareButton(color: data.color) {
+        InfraredSquareButton {
             Image(data.image)
                 .renderingMode(.template)
                 .resizable()
@@ -20,22 +20,11 @@ struct IconInfraredButton: View {
 
 private extension InfraredButtonData.Icon {
     var image: String {
-        return switch self.type {
-            case .back: "InfraredBack"
-            case .home: "InfraredHome"
-            case .info: "InfraredInfo"
-            case .more: "InfraredMore"
-            case .mute: "InfraredMute"
-            case .power: "InfraredPower"
-            case .cool: "InfraredCool"
-            case .heat: "InfraredHeat"
-            }
-    }
-
-    var color: Color? {
-        switch self.type {
-        case .power: .red
-        default: nil
-        }
+        let name = type
+            .rawValue
+            .split(separator: "_")
+            .map { $0.capitalized }
+            .joined()
+        return "Infrared\(name)"
     }
 }

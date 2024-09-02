@@ -81,7 +81,7 @@ struct InfraredLayoutView: View {
             }
         }
         .alert(isPresented: $showHowToUse) {
-            InfraredHowToUseRemoteDialog(isPresented: $showHowToUse)
+            InfraredHowToUseDialog(isPresented: $showHowToUse, type: .library)
         }
         .sheet(isPresented: $showRemoteControl) {
             RemoteControlView()

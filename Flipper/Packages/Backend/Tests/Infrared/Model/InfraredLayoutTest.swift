@@ -29,7 +29,7 @@ fileprivate extension InfraredLayout {
                                     name: "power",
                                     hash: "hash")
                             ),
-                            type: .power
+                            type: .home
                         )
                     ),
                     position: .init(
@@ -62,7 +62,7 @@ fileprivate extension Data {
                              "key_name": "power",
                              "sha_256_string": "hash"
                           },
-                          "icon_id": "POWER",
+                          "icon_id": "HOME",
                           "type": "ICON"
                        },
                        "position":{

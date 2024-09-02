@@ -11,8 +11,10 @@ struct ChannelInfraredButton: View {
             VStack {
                 Spacer()
 
-                Text("+")
-                    .font(.system(size: 20 * scaleFactor, weight: .medium))
+                Image("InfraredPlus")
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(width: 24 * scaleFactor, height: 24 * scaleFactor)
                     .onEmulate(keyID: data.addKeyId)
 
                 Spacer()
@@ -22,8 +24,10 @@ struct ChannelInfraredButton: View {
 
                 Spacer()
 
-                Text("-")
-                    .font(.system(size: 20 * scaleFactor, weight: .medium))
+                Image("InfraredMinus")
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(width: 24 * scaleFactor, height: 24 * scaleFactor)
                     .onEmulate(keyID: data.reduceKeyId)
 
                 Spacer()

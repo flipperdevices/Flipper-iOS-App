@@ -5,25 +5,28 @@ struct InfraredSquareButton<Content: View>: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.layoutState) private var state
 
-    let color: Color?
+    let forceColor: Color?
     @ViewBuilder var content: () -> Content
 
     init(
-        color: Color? = nil,
+        forceColor: Color? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) {
-        self.color = color
+        self.forceColor = forceColor
         self.content = content
     }
 
+    private var defaultColor: Color {
+        switch colorScheme {
+        case .light: Color.black60
+        default: Color.black80
+        }
+    }
+
     private var disabledColor: Color {
-        return if let color {
-            color.opacity(0.2)
-        } else {
-            switch colorScheme {
-            case .light: Color.black80.opacity(0.2)
-            default: Color.black40
-            }
+        switch colorScheme {
+        case .light: Color.black20
+        default: Color.black88
         }
     }
 
@@ -32,13 +35,13 @@ struct InfraredSquareButton<Content: View>: View {
             switch state {
             case .default:
                 RoundedRectangle(cornerRadius: 12 * scaleFactor)
-                    .fill(color ?? .black80)
+                    .fill(forceColor ?? defaultColor)
             case .emulating, .syncing:
                 AnimatedPlaceholder()
                     .cornerRadius(12 * scaleFactor)
             case .disabled, .notSupported:
                 RoundedRectangle(cornerRadius: 12 * scaleFactor)
-                    .fill(disabledColor)
+                    .fill(forceColor ?? disabledColor)
             }
 
             content()

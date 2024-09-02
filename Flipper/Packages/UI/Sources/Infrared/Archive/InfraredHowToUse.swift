@@ -1,12 +1,34 @@
 import SwiftUI
 
-struct InfraredHowToUseRemoteDialog: View {
+struct InfraredHowToUseDialog: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     @Binding var isPresented: Bool
+    let type: `Type`
+
+    enum `Type` {
+        case fff
+        case library
+    }
+
+    private var descriptionColor: Color {
+        switch colorScheme {
+        case .light: .black40
+        default: .black30
+        }
+    }
+
+    private var image: String {
+        switch type {
+        case .fff: "InfraredHowToFFF"
+        case .library: "InfraredHowToRemoteLibrary"
+        }
+    }
 
     var body: some View {
         VStack(spacing: 24) {
-            Image("InfraredHowTo")
-                .padding(.top, 17)
+            Image(image)
+                .padding(.top, 16)
 
             VStack(spacing: 4) {
                 Text("How to Use")
@@ -16,7 +38,7 @@ struct InfraredHowToUseRemoteDialog: View {
                      "the button from your phone to send the signal remotely")
                     .font(.system(size: 14, weight: .medium))
                     .multilineTextAlignment(.center)
-                    .foregroundColor(.black40)
+                    .foregroundColor(descriptionColor)
             }
             .padding(.horizontal, 12)
 
