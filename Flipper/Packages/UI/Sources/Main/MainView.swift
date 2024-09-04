@@ -45,10 +45,23 @@ struct MainView: View {
         .onReceive(device.$status) { status in
             if status == .disconnected {
                 UserDefaults.group.set("", forKey: "emulating")
+                UserDefaults.group.set(-1, forKey: "battery_level")
+                UserDefaults.group.set(false, forKey: "battery_charging")
                 UserDefaults.group.synchronize()
+
                 emulate.stopEmulate()
                 WidgetCenter.shared.reloadTimelines(ofKind: "LiveWidget")
+                WidgetCenter.shared.reloadTimelines(ofKind: "BatteryWidget")
             }
+        }
+        .onReceive(device.$flipper) { flipper in
+            let battery = flipper?.battery?.level ?? -1
+            let isCharging = flipper?.battery?.state == .charging
+
+            UserDefaults.group.set(battery, forKey: "battery_level")
+            UserDefaults.group.set(isCharging, forKey: "battery_charging")
+            UserDefaults.group.synchronize()
+            WidgetCenter.shared.reloadTimelines(ofKind: "BatteryWidget")
         }
     }
 }
