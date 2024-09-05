@@ -1,15 +1,19 @@
 import Infrared
 import Foundation
 
-public struct InfraredLayout: Equatable, Codable {
+public struct InfraredLayout: Equatable, Codable, Hashable {
     public let pages: [InfraredPageLayout]
 
     init(_ layout: Infrared.InfraredLayout) {
         self.pages = layout.pages.map(InfraredPageLayout.init)
     }
+
+    init(pages: [InfraredPageLayout]) {
+        self.pages = pages
+    }
 }
 
-public struct InfraredPageLayout: Equatable, Codable {
+public struct InfraredPageLayout: Equatable, Codable, Hashable {
     public let buttons: [InfraredButton]
 
     init(_ page: Infrared.InfraredPageLayout) {
@@ -39,6 +43,10 @@ public extension InfraredLayout {
             .replacingOccurrences(of: "\t", with: "")
             .replacingOccurrences(of: "\r", with: "")
     }
+}
+
+public extension InfraredLayout {
+    static let progressMock: InfraredLayout = .init(pages: [.progressMock])
 }
 
 public extension InfraredPageLayout {

@@ -1,6 +1,6 @@
 import Foundation
 
-public enum InfraredKeyID: Codable, Equatable {
+public enum InfraredKeyID: Codable, Equatable, Hashable {
     case name(Name)
     case sha256(SHA256)
     case unknown
@@ -50,7 +50,7 @@ public enum InfraredKeyID: Codable, Equatable {
         }
     }
 
-    public struct Name: Codable, Equatable {
+    public struct Name: Codable, Equatable, Hashable {
         public let name: String
 
         enum CodingKeys: String, CodingKey {
@@ -58,7 +58,7 @@ public enum InfraredKeyID: Codable, Equatable {
         }
     }
 
-    public struct SHA256: Codable, Equatable {
+    public struct SHA256: Codable, Equatable, Hashable {
         public let name: String
         public let hash: String
 

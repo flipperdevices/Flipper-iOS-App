@@ -1,6 +1,6 @@
 import Infrared
 
-public struct InfraredButtonPosition: Equatable, Codable {
+public struct InfraredButtonPosition: Equatable, Codable, Hashable {
     public let x: Double
     public let y: Double
 

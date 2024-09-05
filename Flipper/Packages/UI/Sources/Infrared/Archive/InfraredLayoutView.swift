@@ -42,12 +42,9 @@ struct InfraredLayoutView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // TODO: wait design for many-pages
-            if let page = layout.pages.first {
-                InfraredPageLayoutView(buttons: page.buttons)
-                    .environment(\.layoutState, layoutState)
-                    .environment(\.emulateAction, onStartEmulate)
-            }
+            InfraredLayoutPagesView(layout: layout)
+                .environment(\.layoutState, layoutState)
+                .environment(\.emulateAction, onStartEmulate)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.background)

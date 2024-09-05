@@ -1,6 +1,6 @@
 import Foundation
 
-public enum InfraredButtonData: Codable, Equatable {
+public enum InfraredButtonData: Codable, Equatable, Hashable {
     case text(Text)
     case icon(Icon)
     case power(Power)
@@ -97,7 +97,7 @@ public enum InfraredButtonData: Codable, Equatable {
         }
     }
 
-    public struct Text: Codable, Equatable {
+    public struct Text: Codable, Equatable, Hashable {
         public let keyId: InfraredKeyID
         public let text: String
 
@@ -107,7 +107,7 @@ public enum InfraredButtonData: Codable, Equatable {
         }
     }
 
-    public struct Icon: Codable, Equatable {
+    public struct Icon: Codable, Equatable, Hashable {
         public let keyId: InfraredKeyID
         public let type: `Type`
 
@@ -191,7 +191,7 @@ public enum InfraredButtonData: Codable, Equatable {
         }
     }
 
-    public struct Base64Image: Codable, Equatable {
+    public struct Base64Image: Codable, Equatable, Hashable {
         public let keyId: InfraredKeyID
         public let pngBase64: String
 
@@ -201,7 +201,7 @@ public enum InfraredButtonData: Codable, Equatable {
         }
     }
 
-    public struct Power: Codable, Equatable {
+    public struct Power: Codable, Equatable, Hashable {
         public let keyId: InfraredKeyID
 
         enum CodingKeys: String, CodingKey {
@@ -209,7 +209,7 @@ public enum InfraredButtonData: Codable, Equatable {
         }
     }
 
-    public struct Volume: Codable, Equatable {
+    public struct Volume: Codable, Equatable, Hashable {
         public let addKeyId: InfraredKeyID
         public let reduceKeyId: InfraredKeyID
 
@@ -219,7 +219,7 @@ public enum InfraredButtonData: Codable, Equatable {
         }
     }
 
-    public struct Shutter: Codable, Equatable {
+    public struct Shutter: Codable, Equatable, Hashable {
         public let keyId: InfraredKeyID
 
         enum CodingKeys: String, CodingKey {
@@ -231,7 +231,7 @@ public enum InfraredButtonData: Codable, Equatable {
         }
     }
 
-    public struct Channel: Codable, Equatable {
+    public struct Channel: Codable, Equatable, Hashable {
         public let addKeyId: InfraredKeyID
         public let reduceKeyId: InfraredKeyID
 
@@ -241,7 +241,7 @@ public enum InfraredButtonData: Codable, Equatable {
         }
     }
 
-    public struct OkNavigation: Codable, Equatable {
+    public struct OkNavigation: Codable, Equatable, Hashable {
         public let upKeyId: InfraredKeyID
         public let leftKeyId: InfraredKeyID
         public let downKeyId: InfraredKeyID
@@ -271,7 +271,7 @@ public enum InfraredButtonData: Codable, Equatable {
         }
     }
 
-    public struct Navigation: Codable, Equatable {
+    public struct Navigation: Codable, Equatable, Hashable {
         public let upKeyId: InfraredKeyID
         public let leftKeyId: InfraredKeyID
         public let downKeyId: InfraredKeyID

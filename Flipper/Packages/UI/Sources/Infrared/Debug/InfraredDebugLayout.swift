@@ -130,11 +130,9 @@ extension InfraredDebugLayout {
                 Text("File: '\(file.id)'")
                     .font(.system(size: 14, weight: .medium))
 
-                if let page = layout.pages.first {
-                    InfraredPageLayoutView(buttons: page.buttons)
-                        .frame(width: UIScreen.main.bounds.width)
-                        .frame(maxHeight: .infinity)
-                }
+                InfraredLayoutPagesView(layout: layout)
+                    .frame(width: UIScreen.main.bounds.width)
+                    .frame(maxHeight: .infinity)
             }
         }
     }

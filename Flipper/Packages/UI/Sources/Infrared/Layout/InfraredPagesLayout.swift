@@ -54,8 +54,8 @@ extension InfraredView {
             VStack(spacing: 0) {
                 switch viewState {
                 case .loadLayoyt:
-                    InfraredPageLayoutView(
-                        buttons: InfraredPageLayout.progressMock.buttons
+                    InfraredLayoutPagesView(
+                        layout: InfraredLayout.progressMock
                     )
                     .environment(\.layoutState, .syncing)
                 case .error(let error):
@@ -63,16 +63,12 @@ extension InfraredView {
                 case .flipperNotConnected:
                     InfraredFlipperNotConnectedError()
                 case .syncing(let layout, _):
-                    if let page = layout.pages.first {
-                        InfraredPageLayoutView(buttons: page.buttons)
-                            .environment(\.layoutState, .syncing)
-                    }
+                    InfraredLayoutPagesView(layout: layout)
+                        .environment(\.layoutState, .syncing)
                 case .display(let layout, let state):
-                    if let page = layout.pages.first {
-                        InfraredPageLayoutView(buttons: page.buttons)
-                            .environment(\.layoutState, state)
-                            .environment(\.emulateAction, onStartEmulate)
-                    }
+                    InfraredLayoutPagesView(layout: layout)
+                        .environment(\.layoutState, state)
+                        .environment(\.emulateAction, onStartEmulate)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

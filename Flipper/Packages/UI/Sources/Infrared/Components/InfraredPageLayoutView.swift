@@ -1,14 +1,14 @@
 import SwiftUI
 import Core
 
-struct InfraredPageLayoutView: View {
-    let buttons: [InfraredButton]
+struct InfraredLayoutPageView: View {
+    let page: InfraredPageLayout
 
     var body: some View {
         GeometryReader { viewGeometry in
             ZStack {
                 GeometryReader { layoutGeometry in
-                    ForEach(buttons) { button in
+                    ForEach(page.buttons, id: \.self) { button in
                         InfraredButtonView(
                             button: button,
                             cellLenght: calculateCellLenght(layoutGeometry.size)

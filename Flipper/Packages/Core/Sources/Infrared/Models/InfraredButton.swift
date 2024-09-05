@@ -3,9 +3,7 @@ import Foundation
 
 public typealias InfraredButtonData = Infrared.InfraredButtonData
 
-public struct InfraredButton: Identifiable, Equatable, Codable {
-    public var id: UUID = UUID()
-
+public struct InfraredButton: Equatable, Codable, Hashable {
     public let position: InfraredButtonPosition
     public let data: InfraredButtonData
 
