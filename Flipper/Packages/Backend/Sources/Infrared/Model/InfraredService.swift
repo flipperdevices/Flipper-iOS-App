@@ -5,7 +5,8 @@ public protocol InfraredService {
         forBrandID: Int,
         forCategoryID: Int,
         successSignals: [Int],
-        failedSignals: [Int]
+        failedSignals: [Int],
+        skippedSignals: [Int]
     ) async throws -> InfraredSelection
     func content(forIfrID: Int) async throws -> InfraredKeyContent
     func layout(forIfrID: Int) async throws -> InfraredLayout

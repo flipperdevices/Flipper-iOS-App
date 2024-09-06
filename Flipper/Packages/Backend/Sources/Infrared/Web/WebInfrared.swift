@@ -24,14 +24,16 @@ public class WebInfraredService: InfraredService {
         forBrandID: Int,
         forCategoryID: Int,
         successSignals: [Int],
-        failedSignals: [Int]
+        failedSignals: [Int],
+        skippedSignals: [Int]
     ) async throws -> InfraredSelection {
         return try await SignalRequest(
             baseURL: baseURL,
             brandId: forBrandID,
             categoryId: forCategoryID,
             successSignals: successSignals,
-            failedSignals: failedSignals
+            failedSignals: failedSignals,
+            skippedSignals: skippedSignals
         ).get()
     }
 

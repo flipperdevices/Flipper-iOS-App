@@ -17,7 +17,7 @@ public struct InfraredSignalModel: Decodable, Equatable {
     public let remote: InfraredSignalRemote
 }
 
-public enum InfraredSignalRemote: Decodable, Equatable {
+public enum InfraredSignalRemote: Decodable, Equatable, Hashable {
     case raw(Raw)
     case parsed(Parsed)
 
@@ -40,7 +40,7 @@ public enum InfraredSignalRemote: Decodable, Equatable {
         case parsed
     }
 
-    public struct Raw: Decodable, Equatable {
+    public struct Raw: Decodable, Equatable, Hashable {
         public let frequency: String
         public let dutyCycle: String
         public let data: String
@@ -54,7 +54,7 @@ public enum InfraredSignalRemote: Decodable, Equatable {
         }
     }
 
-    public struct Parsed: Decodable, Equatable {
+    public struct Parsed: Decodable, Equatable, Hashable {
         public let `protocol`: String
         public let address: String
         public let command: String

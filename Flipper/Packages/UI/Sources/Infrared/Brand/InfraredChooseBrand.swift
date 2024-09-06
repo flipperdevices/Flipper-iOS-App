@@ -35,7 +35,7 @@ extension InfraredView {
                     ChooseBrandPlaceholder()
                 } else {
                     ListBrand(brands: filteredBrands) {
-                        path.append(Destination.chooseSignal($0))
+                        path.append(Destination.chooseSignal($0, [:]))
                     }
                     .searchable(
                         text: $predicate,

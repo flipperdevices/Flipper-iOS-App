@@ -83,7 +83,8 @@ public class InfraredModel: ObservableObject {
     public func loadSignal(
         brand: InfraredBrand,
         successSignals: [Int],
-        failedSignals: [Int]
+        failedSignals: [Int],
+        skippedSignals: [Int]
     ) async throws -> InfraredSelection {
         do {
             return try await handlingWebErrors {
@@ -92,7 +93,8 @@ public class InfraredModel: ObservableObject {
                         forBrandID: brand.id,
                         forCategoryID: brand.categoryID,
                         successSignals: successSignals,
-                        failedSignals: failedSignals
+                        failedSignals: failedSignals,
+                        skippedSignals: skippedSignals
                     )
                 return InfraredSelection(response)
             }

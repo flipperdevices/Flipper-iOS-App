@@ -11,14 +11,11 @@ extension InfraredView {
         @Environment(\.dismiss) private var dismiss
         @Environment(\.path) private var path
 
-        @State private var signal: InfraredSignal?
+        @State private var currentSignal: InfraredSignal?
+
         @State private var showConfirmDialog: Bool = false
+        @State private var isFinalSignal: Bool = false
 
-        @State private var successSignals: [Int] = []
-        @State private var failedSignals: [Int] = []
-        @State private var isSingleSignal: Bool = false
-
-        @State private var isEmulating = false
         @State private var isFlipperBusyAlertPresented: Bool = false
         @State private var showRemoteControl = false
 
@@ -32,6 +29,15 @@ extension InfraredView {
         }
 
         let brand: InfraredBrand
+        let signals: InfraredSignals
+
+        init(
+            brand: InfraredBrand,
+            signals: InfraredSignals
+        ) {
+            self.brand = brand
+            self.signals = signals
+        }
 
         var body: some View {
             VStack(spacing: 0) {
@@ -49,10 +55,10 @@ extension InfraredView {
                             .environment(\.layoutState, .syncing)
 
                         AnimatedPlaceholder()
-                            .frame(width: 200, height: 20)
+                            .frame(width: 150, height: 12)
 
                         AnimatedPlaceholder()
-                            .frame(width: 150, height: 20)
+                            .frame(width: 100, height: 12)
 
                         Spacer()
                     }
@@ -104,7 +110,7 @@ extension InfraredView {
                 isPresented: $showConfirmDialog,
                 onDismiss: onDismissSheet
             ) {
-                if let signal {
+                if let signal = currentSignal {
                     InfraredChooseSignalSheet(
                         message: signal
                             .message
@@ -131,8 +137,9 @@ extension InfraredView {
                     viewState = .flipperNotConnected
                     return
                 }
-                // Disable loop when we found signal and go layout
-                if isSingleSignal {
+
+                // Disable loop when we found file
+                if isFinalSignal {
                     dismiss()
                     return
                 }
@@ -147,7 +154,7 @@ extension InfraredView {
                 }
             }
             .onChange(of: emulate.state) { state in
-                guard let signal else { return }
+                guard let signal = currentSignal else { return }
 
                 if state == .closed {
                     viewState = .display(signal, .default)
@@ -169,23 +176,19 @@ extension InfraredView {
                 let selection = try await infraredModel
                     .loadSignal(
                         brand: brand,
-                        successSignals: successSignals,
-                        failedSignals: failedSignals
+                        successSignals: signals.successSignals,
+                        failedSignals: signals.failedSignals,
+                        skippedSignals: signals.skippedSignals
                     )
 
                 switch selection {
                 case .signal(let signal):
-                    self.signal = signal
+                    self.currentSignal = signal
                     try await infraredModel.sendTempContent(signal.content)
 
                     viewState = .display(signal, .default)
                 case .file(let file):
-                    if successSignals.isEmpty && failedSignals.isEmpty {
-                        isSingleSignal = true
-                    }
-
-                    successSignals = []
-                    failedSignals = []
+                    isFinalSignal = true
                     path.append(Destination.layout(file))
                 }
             } catch let error as InfraredModel.Error.Network {
@@ -194,31 +197,47 @@ extension InfraredView {
         }
 
         private func onStartEmulate(_ keyID: InfraredKeyID) {
-            guard let signal = signal else { return }
+            guard let signal = currentSignal else { return }
             viewState = .display(signal, .emulating)
             emulate.startEmulate(.tempIfr, config: .byIndex(0))
         }
 
-        private func processConfirmSignal(isSuccess: Bool) {
-            guard let signal = signal else { return }
+        private func processConfirmSignal(type: InfraredChooseSignalType) {
+            guard let signal = currentSignal else { return }
             showConfirmDialog = false
 
-            if isSuccess {
-                successSignals.append(signal.id)
-            } else {
-                failedSignals.append(signal.id)
-            }
-
-            Task { await loadSignal() }
+            var newSignals = signals
+            newSignals[signal] = type
+            path.append(Destination.chooseSignal(brand, newSignals))
         }
 
         private func onDismissSheet() {
-            guard let signal = signal else { return }
+            guard let signal = currentSignal else { return }
             viewState = .display(signal, .default)
         }
 
         private func retry() {
             Task { await loadSignal() }
         }
+    }
+}
+
+private extension Dictionary
+    where Key == InfraredSignal, Value == InfraredChooseSignalType {
+
+    private func signals(for type: InfraredChooseSignalType) -> [Int] {
+        self.filter { _, value in value == type }.map(\.key.id)
+    }
+
+    var successSignals: [Int] {
+        self.signals(for: .success)
+    }
+
+    var failedSignals: [Int] {
+        self.signals(for: .failed)
+    }
+
+    var skippedSignals: [Int] {
+        self.signals(for: .skipped)
     }
 }
