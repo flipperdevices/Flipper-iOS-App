@@ -198,9 +198,3 @@ private extension URL {
         path == "/s" || path == "/sf"
     }
 }
-
-extension URL: Identifiable {
-    public var id: URL {
-        self
-    }
-}

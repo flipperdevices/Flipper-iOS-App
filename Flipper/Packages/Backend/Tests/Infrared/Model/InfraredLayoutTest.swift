@@ -9,7 +9,6 @@ final class InfraredDecodeLayoutTest: BaseDecodableTestCase<InfraredLayout> {
     }
 }
 
-
 final class InfraredEncodeLayoutTest: BaseEncodableTestCase<InfraredLayout> {
 
     override func setUp() {

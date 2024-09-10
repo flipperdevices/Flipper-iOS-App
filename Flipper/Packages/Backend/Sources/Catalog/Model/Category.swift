@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Category: Decodable {
+public struct Category: Identifiable, Decodable {
     public let id: String
     public let priority: Int
     public let name: String

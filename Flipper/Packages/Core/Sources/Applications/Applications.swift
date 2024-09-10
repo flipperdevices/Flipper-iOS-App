@@ -563,9 +563,6 @@ public class Applications: ObservableObject {
     }
 }
 
-extension Catalog.Category: Identifiable {}
-extension Catalog.Application: Identifiable {}
-
 extension Catalog.SortBy {
     init(source: Applications.SortOption) {
         switch source {

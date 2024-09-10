@@ -163,9 +163,3 @@ struct DeviceInfoCard: View {
         }
     }
 }
-
-extension StorageSpace: CustomStringConvertible {
-    public var description: String {
-        "\(used.hr) / \(total.hr)"
-    }
-}

@@ -1,8 +1,8 @@
 import XCTest
 @testable import Infrared
 
-final class InfraredSignalDataTest: BaseDecodableTestCase<InfraredSignalRemote> {
-
+final class InfraredSignalDataTest: BaseDecodableTestCase<InfraredSignalRemote>
+{
     override func setUp() {
         super.setUp()
         testCases = [

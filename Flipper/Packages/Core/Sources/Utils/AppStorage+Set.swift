@@ -1,6 +1,6 @@
 import Foundation
 
-extension Set: RawRepresentable where Element: Codable {
+extension Set: @retroactive RawRepresentable where Element: Codable {
     public init?(rawValue: String) {
         do {
             self = try JSONDecoder()
@@ -13,7 +13,7 @@ extension Set: RawRepresentable where Element: Codable {
     public var rawValue: String {
         do {
             let data = try JSONEncoder().encode(self)
-            return String(data: data, encoding: .utf8) ?? "[]"
+            return String(decoding: data, as: UTF8.self)
         } catch {
             return "[]"
         }

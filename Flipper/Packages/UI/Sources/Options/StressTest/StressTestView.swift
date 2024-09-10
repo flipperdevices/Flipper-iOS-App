@@ -81,9 +81,3 @@ extension StressTest.Event {
         }
     }
 }
-
-extension StressTest.Event: CustomStringConvertible {
-    public var description: String {
-        "[\(self.kind)] \(self.message)"
-    }
-}

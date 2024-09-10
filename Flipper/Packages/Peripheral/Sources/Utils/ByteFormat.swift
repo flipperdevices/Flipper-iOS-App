@@ -15,8 +15,8 @@ extension Int {
         let unit = units[exp - 1]
         let number = Double(self) / pow(Double(bytes), Double(exp))
         return (exp <= 1 || number >= 100)
-        ? String(format: "%.0f %@", number, unit)
-        : String(format: "%.1f %@", number, unit)
-            .replacingOccurrences(of: ".0", with: "")
+            ? String(format: "%.0f %@", number, unit)
+            : String(format: "%.1f %@", number, unit)
+                .replacingOccurrences(of: ".0", with: "")
     }
 }

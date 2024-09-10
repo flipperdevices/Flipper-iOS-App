@@ -65,6 +65,12 @@ extension Element {
     }
 }
 
+extension StorageSpace: CustomStringConvertible {
+    public var description: String {
+        "\(used.hr) / \(total.hr)"
+    }
+}
+
 extension Element: CustomStringConvertible {
     public var description: String {
         switch self {

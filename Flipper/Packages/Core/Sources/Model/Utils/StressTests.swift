@@ -102,3 +102,9 @@ public class StressTest: ObservableObject {
         progressSubject.value.append(.init(kind: kind, message: message))
     }
 }
+
+extension StressTest.Event: CustomStringConvertible {
+    public var description: String {
+        "[\(self.kind)] \(self.message)"
+    }
+}

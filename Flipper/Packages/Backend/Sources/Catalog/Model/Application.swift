@@ -1,7 +1,7 @@
 import Macro
 import Foundation
 
-public struct Application: Equatable, Decodable {
+public struct Application: Equatable, Identifiable, Decodable {
     public let id: String
     public let alias: String
     public let categoryId: String
