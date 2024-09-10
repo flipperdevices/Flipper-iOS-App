@@ -127,8 +127,8 @@ public class Applications: ObservableObject {
     }
 
     private func setStatus(_ status: ApplicationStatus, for app: Application) {
-        statuses[app.id] = status
         Task { @MainActor in
+            statuses[app.id] = status
             statusChanged.send(app.id)
         }
     }
