@@ -11,12 +11,5 @@ struct Alerts {
 }
 
 extension EnvironmentValues {
-    var alerts: Binding<Alerts> {
-        get { self[AlertsKey.self] }
-        set { self[AlertsKey.self] = newValue }
-    }
-}
-
-private struct AlertsKey: EnvironmentKey {
-    static let defaultValue: Binding<Alerts> = .constant(.init())
+    @Entry var alerts: Binding<Alerts> = .constant(.init())
 }

@@ -16,12 +16,5 @@ extension Binding where Value == Popups {
 }
 
 extension EnvironmentValues {
-    var popups: Binding<Popups> {
-        get { self[PopupsKey.self] }
-        set { self[PopupsKey.self] = newValue }
-    }
-}
-
-private struct PopupsKey: EnvironmentKey {
-    static let defaultValue: Binding<Popups> = .constant(.init())
+    @Entry var popups: Binding<Popups> = .constant(.init())
 }
