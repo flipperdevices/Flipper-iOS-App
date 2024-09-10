@@ -25,7 +25,7 @@ class ArchiveTests: XCTestCase {
     func testMobileManifest() async throws {
         let archive = MobileArchive(storage: InMemoryStorageAPI(entries: [
             "mobile": .directory(.init(entries: [
-                "any": .directory(.init())
+                "ext": .directory(.init())
             ]))
         ]))
         try await _testManifest(archive: archive)
@@ -34,7 +34,7 @@ class ArchiveTests: XCTestCase {
     func testMobileArchive() async throws {
         let archive = MobileArchive(storage: InMemoryStorageAPI(entries: [
             "mobile": .directory(.init(entries: [
-                "any": .directory(.init())
+                "ext": .directory(.init())
             ]))
         ]))
         try await _testArchive(archive: archive)

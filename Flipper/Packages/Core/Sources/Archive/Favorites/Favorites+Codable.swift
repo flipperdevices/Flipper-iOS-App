@@ -3,7 +3,10 @@ import Peripheral
 extension Favorites: PlaintextCodable {
     init(decoding content: String) throws {
         var favorites: Favorites = .init()
-        for line in content.split(separator: "\n") {
+        for var line in content.split(separator: "\n") {
+            if line.starts(with: "/any/") {
+                line = "/ext" + line.dropFirst(4)
+            }
             favorites.upsert(.init(string: line))
         }
         self = favorites

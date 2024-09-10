@@ -7,14 +7,14 @@ class ArchiveSyncLayoutTests: XCTestCase {
     func testInfraredLayout() {
         let originPath = Path(
             components: [
-                "any",
+                "ext",
                 "infrared",
                 "test.ir"
             ]
         )
         let expectedLayoutPath = Path(
             components: [
-                "any",
+                "ext",
                 "infrared",
                 "test.irui"
             ]
@@ -27,7 +27,7 @@ class ArchiveSyncLayoutTests: XCTestCase {
     func testUnsupportedLayout() {
         let originPath = Path(
             components: [
-                "any",
+                "ext",
                 "nfc",
                 "test.nfc"
             ]

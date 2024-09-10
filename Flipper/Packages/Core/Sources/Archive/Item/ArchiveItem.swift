@@ -88,7 +88,7 @@ extension ArchiveItem {
     }
 
     public var path: Path {
-        .init(components: ["any", kind.location, filename])
+        .init(components: ["ext", kind.location, filename])
     }
 
     public var filename: String {
@@ -101,7 +101,7 @@ extension ArchiveItem {
         guard kind == .nfc else { return nil }
         return .init(
             components: [
-                "any",
+                "ext",
                 kind.location,
                 "\(name).\(FileType.shadow.extension)"
             ]
@@ -112,7 +112,7 @@ extension ArchiveItem {
         guard kind == .infrared else { return nil }
         return .init(
             components: [
-                "any",
+                "ext",
                 kind.location,
                 "\(name).\(FileType.infraredUI.extension)"
             ]
