@@ -144,13 +144,6 @@ struct DeviceInfoCard: View {
 
                         Divider()
                         CardRow(
-                            name: "Int. Flash (Used/Total)",
-                            value: internalSpace
-                        )
-                        .padding(.horizontal, 12)
-
-                        Divider()
-                        CardRow(
                             name: "SD Card (Used/Total)",
                             value: externalSpace
                         )
