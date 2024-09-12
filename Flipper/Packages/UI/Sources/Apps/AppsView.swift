@@ -153,3 +153,12 @@ struct AppsView: View {
         analytics.appOpen(target: .fapHubSearch)
     }
 }
+
+extension URL {
+    var applicationAlias: String? {
+        guard pathComponents.count == 3, !pathComponents[2].isEmpty else {
+            return nil
+        }
+        return pathComponents[2]
+    }
+}

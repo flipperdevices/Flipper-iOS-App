@@ -6,8 +6,6 @@ import SwiftUI
 struct HubView: View {
     @EnvironmentObject var device: Device
 
-    @Environment(\.notifications) private var notifications
-
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
     @AppStorage(.hasReaderLog) var hasReaderLog = false
 
@@ -45,20 +43,6 @@ struct HubView: View {
             DetectReaderView()
         }
     }
-
-    struct NFCCard: View {
-        @AppStorage(.hasReaderLog) var hasReaderLog = false
-
-        var body: some View {
-            NavigationCard(
-                name: "NFC Tools",
-                description:
-                    "Calculate MIFARE Classic card keys using Flipper Zero",
-                image: "nfc",
-                hasNotification: hasReaderLog
-            )
-        }
-    }
 }
 
 extension URL {
@@ -66,12 +50,5 @@ extension URL {
         (host == "lab.flipp.dev" || host == "lab.flipper.net")
         && pathComponents.count == 3
         && pathComponents[1] == "apps"
-    }
-
-    var applicationAlias: String? {
-        guard pathComponents.count == 3, !pathComponents[2].isEmpty else {
-            return nil
-        }
-        return pathComponents[2]
     }
 }
