@@ -211,7 +211,7 @@ public class Applications: ObservableObject {
             let path = "/ext/apps/\(app.category.name)/\(app.alias).fap"
             logger.info("open app \(app.id) by \(path)")
 
-            try await application.start(path, args: "RPC")
+            try await application.start(path, args: "")
             logger.info("open app success")
             return .success
         } catch {
