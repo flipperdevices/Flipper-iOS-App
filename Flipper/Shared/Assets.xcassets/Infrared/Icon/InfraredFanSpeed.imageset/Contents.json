@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "icon=fan_speed.svg",
+      "filename" : "InfraredFanSpeed.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },

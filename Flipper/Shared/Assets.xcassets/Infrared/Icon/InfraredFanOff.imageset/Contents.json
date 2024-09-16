@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "icon=fan_off.svg",
+      "filename" : "InfraredFanOff.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },

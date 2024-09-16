@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "icon=temperature_down.svg",
+      "filename" : "InfraredTemperatureDown.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },

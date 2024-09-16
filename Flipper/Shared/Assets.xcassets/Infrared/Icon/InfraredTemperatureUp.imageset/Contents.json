@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "icon=temperature_up.svg",
+      "filename" : "InfraredTemperatureUp.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },

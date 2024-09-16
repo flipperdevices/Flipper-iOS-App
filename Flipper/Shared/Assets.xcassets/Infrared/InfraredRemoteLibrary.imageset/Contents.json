@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Remotes_Library_icon_light.svg",
+      "filename" : "InfraredRemoteLibraryLight.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -12,7 +12,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Remotes_Library_icon_dark.svg",
+      "filename" : "InfraredRemoteLibraryDark.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },

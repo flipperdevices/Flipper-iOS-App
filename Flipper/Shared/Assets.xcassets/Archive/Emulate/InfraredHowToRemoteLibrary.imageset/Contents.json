@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Infrared Illustration (Light).svg",
+      "filename" : "InfraredHowToRemoteLibraryLight.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -12,7 +12,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Infrared Illustration (Dark).svg",
+      "filename" : "InfraredHowToRemoteLibraryDark.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
