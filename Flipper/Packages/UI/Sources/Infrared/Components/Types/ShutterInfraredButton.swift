@@ -27,7 +27,7 @@ struct ShutterInfraredButton: View {
                 .resizable()
                 .frame(width: 48 * scaleFactor, height: 48 * scaleFactor)
                 .foregroundColor(.white)
-                .onEmulate(keyID: data.keyId)
+                .emulatable(keyID: data.keyId)
         }
         .cornerRadius(.infinity)
     }

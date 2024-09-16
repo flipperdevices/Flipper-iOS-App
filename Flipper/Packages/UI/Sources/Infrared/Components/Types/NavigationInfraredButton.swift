@@ -12,23 +12,23 @@ struct NavigationInfraredButton: View {
                 GridRow {
                     Spacer()
                     buttonNavigation()
-                        .onEmulate(keyID: data.leftKeyId)
+                        .emulatable(keyID: data.leftKeyId)
                     Spacer()
                 }
                 GridRow {
                     buttonNavigation()
                         .rotationEffect(.degrees(-90))
-                        .onEmulate(keyID: data.upKeyId)
+                        .emulatable(keyID: data.upKeyId)
                     Spacer()
                     buttonNavigation()
                         .rotationEffect(.degrees(90))
-                        .onEmulate(keyID: data.downKeyId)
+                        .emulatable(keyID: data.downKeyId)
                 }
                 GridRow {
                     Spacer()
                     buttonNavigation()
                         .rotationEffect(.degrees(180))
-                        .onEmulate(keyID: data.rightKeyId)
+                        .emulatable(keyID: data.rightKeyId)
                     Spacer()
                 }
             }

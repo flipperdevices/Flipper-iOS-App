@@ -34,7 +34,7 @@ private struct EmulateActionModifier: ViewModifier {
 }
 
 extension View {
-    func onEmulate(keyID: InfraredKeyID) -> some View {
+    func emulatable(keyID: InfraredKeyID) -> some View {
         self.modifier(EmulateActionModifier(keyID: keyID))
     }
 }

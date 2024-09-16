@@ -15,7 +15,7 @@ struct VolumeInfraredButton: View {
                     .renderingMode(.template)
                     .resizable()
                     .frame(width: 24 * scaleFactor, height: 24 * scaleFactor)
-                    .onEmulate(keyID: data.addKeyId)
+                    .emulatable(keyID: data.addKeyId)
 
                 Spacer()
 
@@ -28,7 +28,7 @@ struct VolumeInfraredButton: View {
                     .renderingMode(.template)
                     .resizable()
                     .frame(width: 24 * scaleFactor, height: 24 * scaleFactor)
-                    .onEmulate(keyID: data.reduceKeyId)
+                    .emulatable(keyID: data.reduceKeyId)
 
                 Spacer()
             }

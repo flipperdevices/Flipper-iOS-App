@@ -29,7 +29,7 @@ struct Base64ImageInfraredButton: View {
         InfraredSquareButton {
             if let uiImage = uiImage {
                 Image(uiImage: uiImage)
-                    .onEmulate(keyID: data.keyId)
+                    .emulatable(keyID: data.keyId)
             } else {
                 EmptyView()
             }

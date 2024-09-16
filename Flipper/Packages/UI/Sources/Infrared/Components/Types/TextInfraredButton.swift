@@ -14,7 +14,7 @@ struct TextInfraredButton: View {
                 .lineLimit(1)
                 .foregroundColor(.white)
                 .padding(2)
-                .onEmulate(keyID: data.keyId)
+                .emulatable(keyID: data.keyId)
         }
     }
 }

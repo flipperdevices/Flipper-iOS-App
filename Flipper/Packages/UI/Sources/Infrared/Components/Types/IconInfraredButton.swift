@@ -13,7 +13,7 @@ struct IconInfraredButton: View {
                 .resizable()
                 .frame(width: 24 * scaleFactor, height: 24 * scaleFactor)
                 .foregroundColor(.white)
-                .onEmulate(keyID: data.keyId)
+                .emulatable(keyID: data.keyId)
         }
     }
 }

@@ -15,29 +15,29 @@ struct OkNavigationInfraredButton: View {
                     GridRow {
                         Spacer()
                         buttonNavigation()
-                            .onEmulate(keyID: data.leftKeyId)
+                            .emulatable(keyID: data.leftKeyId)
                         Spacer()
                     }
                     GridRow {
                         buttonNavigation()
                             .rotationEffect(.degrees(-90))
-                            .onEmulate(keyID: data.upKeyId)
+                            .emulatable(keyID: data.upKeyId)
                         buttonOk(layoutState)
                             .frame(
                                 width: proxy.size.width / 3,
                                 height: proxy.size.height / 3
                             )
-                            .onEmulate(keyID: data.okKeyId)
+                            .emulatable(keyID: data.okKeyId)
                         buttonNavigation()
                             .rotationEffect(.degrees(90))
-                            .onEmulate(keyID: data.downKeyId)
+                            .emulatable(keyID: data.downKeyId)
 
                     }
                     GridRow {
                         Spacer()
                         buttonNavigation()
                             .rotationEffect(.degrees(180))
-                            .onEmulate(keyID: data.rightKeyId)
+                            .emulatable(keyID: data.rightKeyId)
                         Spacer()
                     }
                 }

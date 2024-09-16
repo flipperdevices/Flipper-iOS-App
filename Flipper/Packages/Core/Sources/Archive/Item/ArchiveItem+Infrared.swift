@@ -174,11 +174,11 @@ extension ArchiveItem {
 }
 
 public extension Array where Element == ArchiveItem.InfraredSignal {
-    func getIndex(name: String) -> Int? {
+    func firstIndex(name: String) -> Int? {
         return self.firstIndex(where: { $0.name == name })
     }
 
-    func getIndex(hash: String) -> Int? {
+    func firstIndex(hash: String) -> Int? {
         return self.firstIndex(where: { $0.hash == hash })
     }
 }

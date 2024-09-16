@@ -216,22 +216,13 @@ public class InfraredModel: ObservableObject {
     }
 }
 
-public extension Array where Element == ArchiveItem.Property {
-    func getIndex(by keyId: InfraredKeyID) -> Int? {
-        guard let name = keyId.name else { return nil }
-        let names = self.filter({$0.key == "name"}).map { $0.value }
-
-        return names.firstIndex(where: { $0 == name })
-    }
-}
-
 public extension Array where Element == ArchiveItem.InfraredSignal {
-    func getIndex(keyId: InfraredKeyID) -> Int? {
+    func firstIndex(keyId: InfraredKeyID) -> Int? {
         return switch keyId {
         case .name(let keyId):
-            self.getIndex(name: keyId.name)
+            self.firstIndex(name: keyId.name)
         case .sha256(let keyId):
-            self.getIndex(hash: keyId.hash)
+            self.firstIndex(hash: keyId.hash)
         case .unknown:
             nil
         }

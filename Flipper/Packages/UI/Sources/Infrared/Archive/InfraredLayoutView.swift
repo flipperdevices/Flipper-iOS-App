@@ -110,7 +110,7 @@ struct InfraredLayoutView: View {
 
     private func onStartEmulate(_ keyID: InfraredKeyID) {
         guard
-            let index = current.infraredSignals.getIndex(keyId: keyID)
+            let index = current.infraredSignals.firstIndex(keyId: keyID)
         else { return }
 
         emulate.startEmulate(current, config: .byIndex(index))
