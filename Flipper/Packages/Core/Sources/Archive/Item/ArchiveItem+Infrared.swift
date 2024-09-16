@@ -126,12 +126,10 @@ extension ArchiveItem {
     }
 
     private func calculateSHA256(fields: [String]) -> String {
-        let bytes: [UInt8] = fields
-            .compactMap { Array($0.utf8) }
-            .flatMap { Array($0) }
+        let joined = fields.map(\.utf8).joined()
 
         return SHA256
-            .hash(data: Data(bytes))
+            .hash(data: Data(joined))
             .map { String(format: "%02x", $0) }
             .joined()
     }
