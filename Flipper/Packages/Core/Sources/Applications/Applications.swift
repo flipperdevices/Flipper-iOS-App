@@ -126,10 +126,13 @@ public class Applications: ObservableObject {
         try? await Task.sleep(seconds: 1)
     }
 
-    private func setStatus(_ status: ApplicationStatus, for app: Application) {
+    private func setStatus(
+        _ status: ApplicationStatus?,
+        for id: Application.ID
+    ) {
         Task { @MainActor in
-            statuses[app.id] = status
-            statusChanged.send(app.id)
+            statuses[id] = status
+            statusChanged.send(id)
         }
     }
 
@@ -137,18 +140,18 @@ public class Applications: ObservableObject {
 
     public func install(_ application: Application) async {
         installed.append(application)
-        setStatus(.installing(0), for: application)
+        setStatus(.installing(0), for: application.id)
         sortInstalled()
 
-        await installQueue.enqueue {
-            self.sortInstalled()
+        await installQueue.enqueue { [self] in
+            sortInstalled()
             do {
-                try await self._install(application) { progress in
-                    if self.enableProgressUpdates {
-                        self.setStatus(.installing(progress), for: application)
+                try await _install(application) { progress in
+                    if enableProgressUpdates {
+                        setStatus(.installing(progress), for: application.id)
                     }
                 }
-                self.setStatus(.installed, for: application)
+                setStatus(.installed, for: application.id)
             } catch {
                 logger.error("install app: \(error)")
             }
@@ -157,18 +160,18 @@ public class Applications: ObservableObject {
     }
 
     public func update(_ application: Application) async {
-        setStatus(.updating(0), for: application)
+        setStatus(.updating(0), for: application.id)
         sortInstalled()
 
-        await installQueue.enqueue {
-            self.sortInstalled()
+        await installQueue.enqueue { [self] in
+            sortInstalled()
             do {
-                try await self._install(application) { progress in
-                    if self.enableProgressUpdates {
-                        self.setStatus(.updating(progress), for: application)
+                try await _install(application) { progress in
+                    if enableProgressUpdates {
+                        setStatus(.updating(progress), for: application.id)
                     }
                 }
-                self.setStatus(.installed, for: application)
+                setStatus(.installed, for: application.id)
             } catch {
                 logger.error("update app: \(error)")
             }
@@ -178,7 +181,7 @@ public class Applications: ObservableObject {
 
     public func update(_ applications: [Application]) async {
         for application in applications {
-            setStatus(.updating(0), for: application)
+            setStatus(.updating(0), for: application.id)
         }
         for application in applications {
             await update(application)
@@ -189,7 +192,7 @@ public class Applications: ObservableObject {
         do {
             try await flipperApps.delete(id)
             installed.removeAll { $0.id == id }
-            statuses[id] = nil
+            setStatus(nil, for: id)
         } catch {
             logger.error("delete app: \(error)")
         }
@@ -203,9 +206,9 @@ public class Applications: ObservableObject {
 
     public func openApp(_ app: Application) async -> OpenAppStatus {
         do {
-            setStatus(.opening, for: app)
+            setStatus(.opening, for: app.id)
             defer {
-                setStatus(.installed, for: app)
+                setStatus(.installed, for: app.id)
             }
 
             let path = "/ext/apps/\(app.category.name)/\(app.alias).fap"
@@ -396,7 +399,7 @@ public class Applications: ObservableObject {
         } catch {
             installedStatus = .error
             await installed.forEach {
-                setStatus(await offlineStatus(for: $0), for: $0)
+                setStatus(await offlineStatus(for: $0), for: $0.id)
             }
             logger.error("load installed: \(error)")
         }
@@ -408,9 +411,9 @@ public class Applications: ObservableObject {
         app.category = category(name: app.category.name)
         installed.append(app)
         if categories.isEmpty {
-            setStatus(await offlineStatus(for: app), for: app)
+            setStatus(await offlineStatus(for: app), for: app.id)
         } else {
-            setStatus(.checking, for: app)
+            setStatus(.checking, for: app.id)
         }
     }
 
@@ -446,12 +449,12 @@ public class Applications: ObservableObject {
                     .filter { !loaded.map(\.id).contains($0.id) }
 
                 await loaded
-                    .forEach { setStatus(await status(for: $0), for: $0) }
+                    .forEach { setStatus(await status(for: $0), for: $0.id) }
                 missing
-                    .forEach { setStatus(.building, for: $0) }
+                    .forEach { setStatus(.building, for: $0.id) }
             } catch {
                 await slice.forEach {
-                    setStatus(await offlineStatus(for: $0), for: $0)
+                    setStatus(await offlineStatus(for: $0), for: $0.id)
                 }
                 installedStatus = .error
             }
