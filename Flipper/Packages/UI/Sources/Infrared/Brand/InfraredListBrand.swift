@@ -2,37 +2,40 @@ import Core
 import SwiftUI
 import UIKit
 
-struct InfraredListBrand: UIViewControllerRepresentable {
-    @Environment(\.dismissSearch) private var dismissSearch
+extension InfraredView {
+    struct ListBrand: UIViewControllerRepresentable {
+        @Environment(\.dismissSearch) private var dismissSearch
 
-    let brands: [InfraredBrand]
-    let onTap: (InfraredBrand) -> Void
+        let brands: [InfraredBrand]
+        let onTap: (InfraredBrand) -> Void
 
-    func makeUIViewController(context: Context) -> UITableViewController {
-        let tableViewController = UITableViewController(style: .plain)
-        tableViewController.tableView.dataSource = context.coordinator
-        tableViewController.tableView.delegate = context.coordinator
-        tableViewController.tableView.sectionIndexColor = UIColor(Color.black40)
-        return tableViewController
-    }
+        func makeUIViewController(context: Context) -> UITableViewController {
+            let tableViewController = UITableViewController(style: .plain)
+            tableViewController.tableView.dataSource = context.coordinator
+            tableViewController.tableView.delegate = context.coordinator
+            tableViewController.tableView
+                .sectionIndexColor = UIColor(Color.black40)
+            return tableViewController
+        }
 
-    func updateUIViewController(
-        _ uiViewController: UITableViewController,
-        context: Context
-    ) {
-        context.coordinator.updateBrands(brands: brands)
-        uiViewController.tableView.reloadData()
-    }
+        func updateUIViewController(
+            _ uiViewController: UITableViewController,
+            context: Context
+        ) {
+            context.coordinator.updateBrands(brands: brands)
+            uiViewController.tableView.reloadData()
+        }
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(brands: brands) {
-            dismissSearch()
-            onTap($0)
+        func makeCoordinator() -> Coordinator {
+            Coordinator(brands: brands) {
+                dismissSearch()
+                onTap($0)
+            }
         }
     }
 }
 
-extension InfraredListBrand {
+extension InfraredView {
     class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
         let brands: [InfraredBrand]
         let onTap: (InfraredBrand) -> Void

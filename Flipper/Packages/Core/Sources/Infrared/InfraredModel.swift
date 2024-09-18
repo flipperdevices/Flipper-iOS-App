@@ -83,7 +83,8 @@ public class InfraredModel: ObservableObject {
     public func loadSignal(
         brand: InfraredBrand,
         successSignals: [Int],
-        failedSignals: [Int]
+        failedSignals: [Int],
+        skippedSignals: [Int]
     ) async throws -> InfraredSelection {
         do {
             return try await handlingWebErrors {
@@ -92,7 +93,8 @@ public class InfraredModel: ObservableObject {
                         forBrandID: brand.id,
                         forCategoryID: brand.categoryID,
                         successSignals: successSignals,
-                        failedSignals: failedSignals
+                        failedSignals: failedSignals,
+                        skippedSignals: skippedSignals
                     )
                 return InfraredSelection(response)
             }
@@ -126,6 +128,22 @@ public class InfraredModel: ObservableObject {
             }
         } catch {
             logger.error("load content \(error)")
+            throw error
+        }
+    }
+
+    public func loadInfraredFiles(
+        _ brand: InfraredBrand
+    ) async throws -> [InfraredFile] {
+        do {
+            return try await handlingWebErrors {
+                try await service
+                    .brandFiles(forBrandID: brand.id)
+                    .files
+                    .map { InfraredFile($0) }
+            }
+        } catch {
+            logger.error("load ifr files \(error)")
             throw error
         }
     }
@@ -198,12 +216,16 @@ public class InfraredModel: ObservableObject {
     }
 }
 
-public extension Array where Element == ArchiveItem.Property {
-    func getIndex(by keyId: InfraredKeyID) -> Int? {
-        guard let name = keyId.name else { return nil }
-        let names = self.filter({$0.key == "name"}).map { $0.value }
-
-        return names.firstIndex(where: { $0 == name })
+public extension Array where Element == ArchiveItem.InfraredSignal {
+    func firstIndex(keyId: InfraredKeyID) -> Int? {
+        return switch keyId {
+        case .name(let keyId):
+            self.firstIndex(name: keyId.name)
+        case .sha256(let keyId):
+            self.firstIndex(hash: keyId.hash)
+        case .unknown:
+            nil
+        }
     }
 }
 

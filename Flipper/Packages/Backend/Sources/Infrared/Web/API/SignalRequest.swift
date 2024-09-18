@@ -18,14 +18,16 @@ public struct SignalRequest: BackendRequest {
         brandId: Int,
         categoryId: Int,
         successSignals: [Int],
-        failedSignals: [Int]
+        failedSignals: [Int],
+        skippedSignals: [Int]
     ) {
         self.baseURL = baseURL
         self.progress = DetectionProgress(
             brandId: brandId,
             categoryId: categoryId,
             failedSignals: failedSignals,
-            successSignals: successSignals
+            successSignals: successSignals,
+            skippedSignals: skippedSignals
         )
     }
 }
@@ -36,24 +38,28 @@ extension SignalRequest {
         let categoryId: Int
         let failedSignals: [InfraredSignalReguest]
         let successSignals: [InfraredSignalReguest]
+        let skippedSignals: [InfraredSignalReguest]
 
         enum CodingKeys: String, CodingKey {
             case brandId = "brand_id"
             case categoryId = "category_id"
             case failedSignals = "failed_results"
             case successSignals = "success_results"
+            case skippedSignals = "skipped_results"
         }
 
         init(
             brandId: Int,
             categoryId: Int,
             failedSignals: [Int],
-            successSignals: [Int]
+            successSignals: [Int],
+            skippedSignals: [Int]
         ) {
             self.brandId = brandId
             self.categoryId = categoryId
             self.failedSignals = failedSignals.map { .init(signalId: $0) }
             self.successSignals = successSignals.map { .init(signalId: $0) }
+            self.skippedSignals = skippedSignals.map { .init(signalId: $0) }
         }
     }
 

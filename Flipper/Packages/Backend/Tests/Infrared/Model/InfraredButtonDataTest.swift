@@ -8,10 +8,12 @@ final class InfraredButtonDataTest: BaseDecodableTestCase<InfraredButtonData> {
         testCases = [
             (.mockText, .mockTextButtonType),
             (.mockIcon, .mockIconButtonType),
+            (.mockPower, .mockPowerButtonType),
             (.mockBase64Image, .mockBase64ButtonType),
-            (.mockNavigation, .mockNavigationButtonType),
             (.mockVolume, .mockVolumeButtonType),
             (.mockChannel, .mockChannelButtonType),
+            (.mockNavigation, .mockNavigationButtonType),
+            (.mockOkNavigation, .mockOkNavigationButtonType),
             (.mockUnknown, .mockUknownType)
         ]
     }
@@ -35,23 +37,17 @@ fileprivate extension InfraredButtonData {
     static let mockIcon = InfraredButtonData.icon(
         Icon(
             keyId: .unknown,
-            type: .power)
+            type: .home)
+    )
+
+    static let mockPower = InfraredButtonData.power(
+        Power(keyId: .unknown)
     )
 
     static let mockBase64Image = InfraredButtonData.base64Image(
         Base64Image(
             keyId: .unknown,
             pngBase64: "image")
-    )
-
-    static let mockNavigation = InfraredButtonData.navigation(
-        Navigation(
-            upKeyId: .unknown,
-            leftKeyId: .unknown,
-            downKeyId: .unknown,
-            rightKeyId: .unknown,
-            okKeyId: .unknown
-        )
     )
 
     static let mockVolume = InfraredButtonData.volume(
@@ -66,6 +62,25 @@ fileprivate extension InfraredButtonData {
             reduceKeyId: .unknown)
     )
 
+    static let mockNavigation = InfraredButtonData.navigation(
+        Navigation(
+            upKeyId: .unknown,
+            leftKeyId: .unknown,
+            downKeyId: .unknown,
+            rightKeyId: .unknown
+        )
+    )
+
+    static let mockOkNavigation = InfraredButtonData.okNavigation(
+        OkNavigation(
+            upKeyId: .unknown,
+            leftKeyId: .unknown,
+            downKeyId: .unknown,
+            rightKeyId: .unknown,
+            okKeyId: .unknown
+        )
+    )
+
     static let mockUnknown = InfraredButtonData.unknown
 }
 
@@ -73,6 +88,7 @@ fileprivate extension Data {
     static let mockTextButtonType = Data(
         """
         {
+            "key_id": {},
             "text": "Text Button",
             "type": "TEXT"
         }
@@ -82,8 +98,18 @@ fileprivate extension Data {
     static let mockIconButtonType = Data(
         """
         {
+            "key_id": {},
             "type": "ICON",
-            "icon_id": "POWER"
+            "icon_id": "HOME"
+        }
+        """.utf8
+    )
+
+    static let mockPowerButtonType = Data(
+        """
+        {
+            "key_id": {},
+            "type": "POWER"
         }
         """.utf8
     )
@@ -108,19 +134,6 @@ fileprivate extension Data {
         """.utf8
     )
 
-    static let mockNavigationButtonType = Data(
-        """
-        {
-            "up_key_id": {},
-            "left_key_id": {},
-            "down_key_id": {},
-            "right_key_id": {},
-            "ok_key_id": {},
-            "type": "NAVIGATION"
-        }
-        """.utf8
-    )
-
     static let mockVolumeButtonType = Data(
         """
         {
@@ -137,6 +150,31 @@ fileprivate extension Data {
             "add_key_id": {},
             "reduce_key_id": {},
             "type": "CHANNEL"
+        }
+        """.utf8
+    )
+
+    static let mockNavigationButtonType = Data(
+        """
+        {
+            "up_key_id": {},
+            "left_key_id": {},
+            "down_key_id": {},
+            "right_key_id": {},
+            "type": "NAVIGATION"
+        }
+        """.utf8
+    )
+
+    static let mockOkNavigationButtonType = Data(
+        """
+        {
+            "up_key_id": {},
+            "left_key_id": {},
+            "down_key_id": {},
+            "right_key_id": {},
+            "ok_key_id": {},
+            "type": "OK_NAVIGATION"
         }
         """.utf8
     )

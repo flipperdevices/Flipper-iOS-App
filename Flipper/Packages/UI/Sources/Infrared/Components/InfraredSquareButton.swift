@@ -1,103 +1,52 @@
 import SwiftUI
 
 struct InfraredSquareButton<Content: View>: View {
+    @Environment(\.layoutScaleFactor) private var scaleFactor
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.layoutState) private var state
 
-    let color: Color?
+    let forceColor: Color?
     @ViewBuilder var content: () -> Content
 
     init(
-        color: Color? = nil,
+        forceColor: Color? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) {
-        self.color = color
+        self.forceColor = forceColor
         self.content = content
     }
 
+    private var defaultColor: Color {
+        switch colorScheme {
+        case .light: Color.black60
+        default: Color.black80
+        }
+    }
+
+    private var disabledColor: Color {
+        switch colorScheme {
+        case .light: Color.black20
+        default: Color.black88
+        }
+    }
+
     var body: some View {
-        switch state {
-        case .default:
-            InfraredSquareButtonDefault(
-                color: color,
-                content: content)
-        case .emulating:
-            InfraredSquareButtonEmulating(content: content)
-        case .syncing:
-            InfraredSquareButtonSyncing()
-        case .disabled, .notSupported:
-            InfraredSquareButtonDisabled(
-                color: color,
-                content: content)
-        }
-    }
-}
-
-fileprivate extension InfraredSquareButton {
-
-    struct InfraredSquareButtonDefault: View {
-        @Environment(\.layoutScaleFactor) private var scaleFactor
-
-        let color: Color?
-        @ViewBuilder var content: () -> Content
-
-        var body: some View {
-            RoundedRectangle(cornerRadius: 12 * scaleFactor)
-                .fill(color ?? .black80)
-                .overlay {
-                    content()
-                }
-        }
-    }
-
-    struct InfraredSquareButtonEmulating: View {
-        @Environment(\.layoutScaleFactor) private var scaleFactor
-        @ViewBuilder var content: () -> Content
-
-        var body: some View {
-            AnimatedPlaceholder()
-                .cornerRadius(12 * scaleFactor)
-                .overlay {
-                    content()
-                        .disabled(true)
-                }
-        }
-    }
-
-    struct InfraredSquareButtonSyncing: View {
-        @Environment(\.layoutScaleFactor) private var scaleFactor
-
-        var body: some View {
-            AnimatedPlaceholder()
-                .cornerRadius(12 * scaleFactor)
-        }
-    }
-
-    struct InfraredSquareButtonDisabled: View {
-        @Environment(\.layoutScaleFactor) private var scaleFactor
-
-        let color: Color?
-        @Environment(\.colorScheme) private var colorScheme
-
-        @ViewBuilder var content: () -> Content
-
-        private var disabledColor: Color {
-            return if let color {
-                color.opacity(0.2)
-            } else {
-                switch colorScheme {
-                case .light: Color.black80.opacity(0.2)
-                default: Color.black40
-                }
+        ZStack {
+            switch state {
+            case .default:
+                RoundedRectangle(cornerRadius: 12 * scaleFactor)
+                    .fill(forceColor ?? defaultColor)
+            case .emulating, .syncing:
+                AnimatedPlaceholder()
+                    .cornerRadius(12 * scaleFactor)
+            case .disabled, .notSupported:
+                RoundedRectangle(cornerRadius: 12 * scaleFactor)
+                    .fill(forceColor ?? disabledColor)
             }
-        }
 
-        var body: some View {
-            RoundedRectangle(cornerRadius: 12 * scaleFactor)
-                .fill(disabledColor)
-                .overlay {
-                    content()
-                        .disabled(true)
-                }
+            content()
+                .opacity(state == .syncing ? 0 : 1)
+                .disabled(state == .disabled || state == .syncing)
         }
     }
 }

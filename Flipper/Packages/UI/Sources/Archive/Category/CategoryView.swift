@@ -15,11 +15,6 @@ extension ArchiveView {
             archive.items.filter { $0.kind == kind }
         }
 
-        var canAddRemoteInfrared: Bool {
-            guard let flipper = device.flipper else { return false }
-            return flipper.hasInfraredEmulateSupport
-        }
-
         var body: some View {
             ZStack {
                 Text("You have no keys yet")
@@ -45,18 +40,6 @@ extension ArchiveView {
                     }
                     Text(kind.name)
                         .font(.system(size: 20, weight: .bold))
-                }
-
-                if kind == .infrared {
-                    TrailingToolbarItems {
-                        NavBarButton {
-                            path.append(Destination.infrared)
-                        } label: {
-                            Text("Add Remote")
-                                .font(.system(size: 14, weight: .bold))
-                        }
-                        .disabled(!canAddRemoteInfrared)
-                    }
                 }
             }
         }

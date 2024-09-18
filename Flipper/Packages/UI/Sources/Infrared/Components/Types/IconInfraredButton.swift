@@ -3,40 +3,28 @@ import Core
 
 struct IconInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
-    @Environment(\.emulateAction) private var action
 
     let data: InfraredButtonData.Icon
 
     var body: some View {
-        InfraredSquareButton(color: data.color) {
+        InfraredSquareButton {
             Image(data.image)
                 .renderingMode(.template)
                 .resizable()
                 .frame(width: 24 * scaleFactor, height: 24 * scaleFactor)
                 .foregroundColor(.white)
-                .onTapGesture { action(data.keyId) }
+                .emulatable(keyID: data.keyId)
         }
     }
 }
 
 private extension InfraredButtonData.Icon {
     var image: String {
-        return switch self.type {
-            case .back: "InfraredBack"
-            case .home: "InfraredHome"
-            case .info: "InfraredInfo"
-            case .more: "InfraredMore"
-            case .mute: "InfraredMute"
-            case .power: "InfraredPower"
-            case .cool: "InfraredCool"
-            case .heat: "InfraredHeat"
-            }
-    }
-
-    var color: Color? {
-        switch self.type {
-        case .power: .red
-        default: nil
-        }
+        let name = type
+            .rawValue
+            .split(separator: "_")
+            .map { $0.capitalized }
+            .joined()
+        return "Infrared\(name)"
     }
 }

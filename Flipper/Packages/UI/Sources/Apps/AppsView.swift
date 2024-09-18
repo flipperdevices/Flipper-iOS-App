@@ -153,3 +153,18 @@ struct AppsView: View {
         analytics.appOpen(target: .fapHubSearch)
     }
 }
+
+extension URL {
+    var isApplicationURL: Bool {
+        (host == "lab.flipp.dev" || host == "lab.flipper.net")
+        && pathComponents.count == 3
+        && pathComponents[1] == "apps"
+    }
+
+    var applicationAlias: String? {
+        guard pathComponents.count == 3, !pathComponents[2].isEmpty else {
+            return nil
+        }
+        return pathComponents[2]
+    }
+}

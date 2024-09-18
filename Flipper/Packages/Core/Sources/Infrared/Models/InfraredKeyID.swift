@@ -9,8 +9,6 @@ public extension InfraredKeyID {
             name.name
         case .sha256(let sha256):
             sha256.name
-        case .md5(let md5):
-            md5.name
         case .unknown:
             nil
         }

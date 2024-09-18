@@ -32,14 +32,10 @@ extension InfraredView {
                 if let error {
                     InfraredNetworkError(error: error, action: retry)
                 } else if brands.isEmpty {
-                    List {
-                        ForEach(1...10, id: \.self) { _ in
-                            InfraredChooseBrandPlaceholder()
-                        }
-                    }
+                    ChooseBrandPlaceholder()
                 } else {
-                    InfraredListBrand(brands: filteredBrands) {
-                        path.append(Destination.chooseSignal($0))
+                    ListBrand(brands: filteredBrands) {
+                        path.append(Destination.chooseSignal($0, [:]))
                     }
                     .searchable(
                         text: $predicate,

@@ -3,6 +3,8 @@ import SwiftUI
 
 extension InfraredView {
     struct InfraredSaveRemote: View {
+        @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
+
         @EnvironmentObject private var archive: ArchiveModel
         @EnvironmentObject private var infrared: InfraredModel
 
@@ -63,6 +65,7 @@ extension InfraredView {
                     try await infrared.copyTemp(currentItem)
                     try await archive.add(currentItem)
                     path.clear()
+                    selectedTab = .archive
                 } catch {
                     self.error = String(describing: error)
                 }

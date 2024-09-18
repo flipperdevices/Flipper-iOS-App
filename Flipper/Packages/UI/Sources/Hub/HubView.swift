@@ -4,23 +4,28 @@ import Catalog
 import SwiftUI
 
 struct HubView: View {
-    @EnvironmentObject var device: Device
-
-    @Environment(\.notifications) private var notifications
-
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
     @AppStorage(.hasReaderLog) var hasReaderLog = false
+    @AppStorage(.showInfraredLibrary) var showInfraredLibrary = false
 
     @State private var showDetectReader = false
+    @State private var path = NavigationPath()
+
+    enum Destination: Hashable {
+        case infrared
+    }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ScrollView {
                 VStack(spacing: 14) {
-                    Button {
-                        showDetectReader = true
-                    } label: {
+                    Button { showDetectReader = true } label: {
                         DetectReaderCard(hasNotification: hasReaderLog)
+                    }
+                    if showInfraredLibrary {
+                        InfraredLibraryCardButton {
+                            path.append(Destination.infrared)
+                        }
                     }
                 }
                 .padding(14)
@@ -34,7 +39,13 @@ struct HubView: View {
                         .padding(.leading, 8)
                 }
             }
+            .navigationDestination(for: Destination.self) { destination in
+                switch destination {
+                case .infrared: InfraredView()
+                }
+            }
         }
+        .environment(\.path, $path)
         .onOpenURL { url in
             if url == .mfkey32Link {
                 selectedTab = .hub
@@ -44,34 +55,5 @@ struct HubView: View {
         .fullScreenCover(isPresented: $showDetectReader) {
             DetectReaderView()
         }
-    }
-
-    struct NFCCard: View {
-        @AppStorage(.hasReaderLog) var hasReaderLog = false
-
-        var body: some View {
-            NavigationCard(
-                name: "NFC Tools",
-                description:
-                    "Calculate MIFARE Classic card keys using Flipper Zero",
-                image: "nfc",
-                hasNotification: hasReaderLog
-            )
-        }
-    }
-}
-
-extension URL {
-    var isApplicationURL: Bool {
-        (host == "lab.flipp.dev" || host == "lab.flipper.net")
-        && pathComponents.count == 3
-        && pathComponents[1] == "apps"
-    }
-
-    var applicationAlias: String? {
-        guard pathComponents.count == 3, !pathComponents[2].isEmpty else {
-            return nil
-        }
-        return pathComponents[2]
     }
 }

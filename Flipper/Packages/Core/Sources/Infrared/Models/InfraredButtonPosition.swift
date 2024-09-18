@@ -1,6 +1,6 @@
 import Infrared
 
-public struct InfraredButtonPosition: Equatable, Codable {
+public struct InfraredButtonPosition: Equatable, Codable, Hashable {
     public let x: Double
     public let y: Double
 
@@ -82,32 +82,32 @@ private extension Infrared.InfraredButton {
 
     var containerDefaultWidth: Int {
         switch self.data {
-        case .text, .icon, .base64Image, .unknown: 1
-        case .navigation: 3
+        case .text, .icon, .power, .base64Image, .unknown: 1
+        case .navigation, .okNavigation, .shutter: 3
         case .volume, .channel: 1
         }
     }
 
     var containerDefaultHeight: Int {
         switch self.data {
-        case .text, .icon, .base64Image, .unknown: 1
-        case .navigation: 3
+        case .text, .icon, .power, .base64Image, .unknown: 1
+        case .navigation, .okNavigation, .shutter: 3
         case .volume, .channel: 3
         }
     }
 
     var contentDefaultWidth: Int {
         switch self.data {
-        case .text, .icon, .base64Image, .unknown: 1
-        case .navigation: 3
+        case .text, .icon, .power, .base64Image, .unknown: 1
+        case .navigation, .okNavigation, .shutter: 3
         case .volume, .channel: 1
         }
     }
 
     var contentDefaultHeight: Int {
         switch self.data {
-        case .text, .icon, .base64Image, .unknown: 1
-        case .navigation: 3
+        case .text, .icon, .power, .base64Image, .unknown: 1
+        case .navigation, .okNavigation, .shutter: 3
         case .volume, .channel: 3
         }
     }

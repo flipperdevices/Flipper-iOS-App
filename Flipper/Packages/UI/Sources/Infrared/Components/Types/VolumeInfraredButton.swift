@@ -3,7 +3,6 @@ import Core
 
 struct VolumeInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
-    @Environment(\.emulateAction) private var action
 
     let data: InfraredButtonData.Volume
 
@@ -12,9 +11,11 @@ struct VolumeInfraredButton: View {
             VStack {
                 Spacer()
 
-                Text("+")
-                    .font(.system(size: 20 * scaleFactor, weight: .medium))
-                    .onTapGesture { action(data.addKeyId) }
+                Image("InfraredPlus")
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(width: 24 * scaleFactor, height: 24 * scaleFactor)
+                    .emulatable(keyID: data.addKeyId)
 
                 Spacer()
 
@@ -23,9 +24,11 @@ struct VolumeInfraredButton: View {
 
                 Spacer()
 
-                Text("-")
-                    .font(.system(size: 20 * scaleFactor, weight: .medium))
-                    .onTapGesture { action(data.reduceKeyId) }
+                Image("InfraredMinus")
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(width: 24 * scaleFactor, height: 24 * scaleFactor)
+                    .emulatable(keyID: data.reduceKeyId)
 
                 Spacer()
             }

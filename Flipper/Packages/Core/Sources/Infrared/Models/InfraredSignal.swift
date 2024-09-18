@@ -2,7 +2,7 @@ import Infrared
 
 public typealias InfraredSignalType = Infrared.InfraredSignalRemote
 
-public struct InfraredSignal {
+public struct InfraredSignal: Hashable {
     public let id: Int
     public let message: String
     public let category: String

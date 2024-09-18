@@ -79,17 +79,6 @@ struct InfraredLayoutMenu: View {
                     .padding(0)
 
                 InfraredMenuItem(
-                    title: "Share",
-                    image: "Share"
-                ) {
-                    isPresented = false
-                    onShare()
-                }
-
-                Divider()
-                    .padding(0)
-
-                InfraredMenuItem(
                     title: "How to Use",
                     image: "HowTo"
                 ) {

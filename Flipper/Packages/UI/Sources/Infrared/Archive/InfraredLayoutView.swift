@@ -18,6 +18,7 @@ struct InfraredLayoutView: View {
     @State private var isFlipperBusyAlertPresented: Bool = false
     @State private var showRemoteControl = false
     @State private var showHowToUse: Bool = false
+    @State private var showFlipperNotSupported: Bool = false
 
     var layoutState: InfraredLayoutState {
         if device.status == .disconnected {
@@ -41,12 +42,9 @@ struct InfraredLayoutView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // TODO: wait design for many-pages
-            if let page = layout.pages.first {
-                InfraredPageLayoutView(buttons: page.buttons)
-                    .environment(\.layoutState, layoutState)
-                    .environment(\.emulateAction, emulate)
-            }
+            InfraredLayoutPagesView(layout: layout)
+                .environment(\.layoutState, layoutState)
+                .environment(\.emulateAction, onStartEmulate)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.background)
@@ -80,11 +78,25 @@ struct InfraredLayoutView: View {
             }
         }
         .alert(isPresented: $showHowToUse) {
-            InfraredHowToUseDialog(isPresented: $showHowToUse)
+            InfraredHowToUseDialog(isPresented: $showHowToUse, type: .library)
         }
         .sheet(isPresented: $showRemoteControl) {
             RemoteControlView()
                 .environmentObject(device)
+        }
+        .alert(isPresented: $showFlipperNotSupported) {
+            NotSupportedFeatureAlert(
+                isPresented: $showFlipperNotSupported)
+        }
+        .onReceive(device.$flipper) { flipper in
+            guard
+                let flipper = flipper,
+                flipper.state == .connected
+            else { return }
+
+            if !flipper.hasInfraredEmulateSupport {
+                self.showFlipperNotSupported = true
+            }
         }
         .onChange(of: emulate.state) { state in
             if state == .locked {
@@ -96,12 +108,11 @@ struct InfraredLayoutView: View {
         }
     }
 
-    private func emulate(_ keyID: InfraredKeyID) {
+    private func onStartEmulate(_ keyID: InfraredKeyID) {
         guard
-            let index = current.properties.getIndex(by: keyID)
+            let index = current.infraredSignals.firstIndex(keyId: keyID)
         else { return }
 
         emulate.startEmulate(current, config: .byIndex(index))
-        emulate.stopEmulate()
     }
 }

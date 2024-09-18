@@ -18,7 +18,7 @@ struct InfraredMenuButton: View {
             popups.infrared.showOptions = true
         }
         .alert(isPresented: $showHowToUse) {
-            InfraredHowToUseDialog(isPresented: $showHowToUse)
+            InfraredHowToUseDialog(isPresented: $showHowToUse, type: .fff)
         }
         .popup(isPresented: popups.infrared.showOptions) {
             HStack {

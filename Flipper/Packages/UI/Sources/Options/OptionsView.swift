@@ -12,6 +12,7 @@ struct OptionsView: View {
     @AppStorage(.isSyncingDisabled) var isSyncingDisabled = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
     @AppStorage(.isDevCatalog) var isDevCatalog = false
+    @AppStorage(.showInfraredLibrary) var showInfraredLibrary = false
 
     @State private var showRestartTheApp = false
 
@@ -27,6 +28,7 @@ struct OptionsView: View {
         case logs
         case fileManager
         case reportBug
+        case infrared
     }
 
     var body: some View {
@@ -109,6 +111,16 @@ struct OptionsView: View {
                         Text("Use dev catalog")
                     }
                     .tint(.a1)
+                    Toggle(isOn: $showInfraredLibrary) {
+                        Text("Infrared remotes library")
+                    }
+                    .tint(.a1)
+
+                    #if DEBUG
+                    NavigationLink(value: Destination.infrared) {
+                        Text("Infrared layouts")
+                    }
+                    #endif
                 }
 
                 Section {
@@ -150,6 +162,7 @@ struct OptionsView: View {
             case .logs: LogsView()
             case .fileManager: FileManagerView()
             case .reportBug: ReportBugView()
+            case .infrared: InfraredDebugLayout()
             }
         }
     }

@@ -1,22 +1,19 @@
 import Foundation
 
-public enum InfraredKeyID: Codable, Equatable {
+public enum InfraredKeyID: Codable, Equatable, Hashable {
     case name(Name)
     case sha256(SHA256)
-    case md5(MD5)
     case unknown
 
     enum CodingKeys: String, CodingKey {
         case name = "key_name"
         case sha256 = "sha_256_string"
-        case md5 = "md5_string"
         case type
     }
 
     enum `Type`: String, Decodable {
         case name = "NAME"
         case sha256 = "SHA_256"
-        case md5 = "MD5"
     }
 
     public init(from decoder: any Decoder) throws {
@@ -35,8 +32,6 @@ public enum InfraredKeyID: Codable, Equatable {
             .name(try Name(from: decoder))
         case .sha256:
             .sha256(try SHA256(from: decoder))
-        case .md5:
-            .md5(try MD5(from: decoder))
         }
     }
 
@@ -50,15 +45,12 @@ public enum InfraredKeyID: Codable, Equatable {
         case .sha256(let sha256):
             try container.encode(`Type`.sha256.rawValue, forKey: .type)
             try sha256.encode(to: encoder)
-        case .md5(let md5):
-            try container.encode(`Type`.md5.rawValue, forKey: .type)
-            try md5.encode(to: encoder)
         case .unknown:
             break
         }
     }
 
-    public struct Name: Codable, Equatable {
+    public struct Name: Codable, Equatable, Hashable {
         public let name: String
 
         enum CodingKeys: String, CodingKey {
@@ -66,7 +58,7 @@ public enum InfraredKeyID: Codable, Equatable {
         }
     }
 
-    public struct SHA256: Codable, Equatable {
+    public struct SHA256: Codable, Equatable, Hashable {
         public let name: String
         public let hash: String
 

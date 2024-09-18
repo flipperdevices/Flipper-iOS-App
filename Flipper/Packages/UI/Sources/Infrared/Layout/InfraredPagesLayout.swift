@@ -54,8 +54,8 @@ extension InfraredView {
             VStack(spacing: 0) {
                 switch viewState {
                 case .loadLayoyt:
-                    InfraredPageLayoutView(
-                        buttons: InfraredPageLayout.progressMock.buttons
+                    InfraredLayoutPagesView(
+                        layout: InfraredLayout.progressMock
                     )
                     .environment(\.layoutState, .syncing)
                 case .error(let error):
@@ -63,16 +63,12 @@ extension InfraredView {
                 case .flipperNotConnected:
                     InfraredFlipperNotConnectedError()
                 case .syncing(let layout, _):
-                    if let page = layout.pages.first {
-                        InfraredPageLayoutView(buttons: page.buttons)
-                            .environment(\.layoutState, .syncing)
-                    }
+                    InfraredLayoutPagesView(layout: layout)
+                        .environment(\.layoutState, .syncing)
                 case .display(let layout, let state):
-                    if let page = layout.pages.first {
-                        InfraredPageLayoutView(buttons: page.buttons)
-                            .environment(\.layoutState, state)
-                            .environment(\.emulateAction, emulate)
-                    }
+                    InfraredLayoutPagesView(layout: layout)
+                        .environment(\.layoutState, state)
+                        .environment(\.emulateAction, onStartEmulate)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -177,15 +173,14 @@ extension InfraredView {
             } catch {}
         }
 
-        private func emulate(_ keyID: InfraredKeyID) {
+        private func onStartEmulate(_ keyID: InfraredKeyID) {
             guard
-                let layout, let content,
-                let index = content.properties.getIndex(by: keyID)
+                let layout, let archiveItem,
+                let index = archiveItem.infraredSignals.firstIndex(keyId: keyID)
             else { return }
 
             viewState = .display(layout, .emulating)
             emulate.startEmulate(.tempIfr, config: .byIndex(index))
-            emulate.stopEmulate()
         }
 
         private func retry() {

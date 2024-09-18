@@ -3,7 +3,6 @@ import Core
 
 struct TextInfraredButton: View {
     @Environment(\.layoutScaleFactor) private var scaleFactor
-    @Environment(\.emulateAction) private var action
 
     let data: InfraredButtonData.Text
 
@@ -15,9 +14,7 @@ struct TextInfraredButton: View {
                 .lineLimit(1)
                 .foregroundColor(.white)
                 .padding(2)
-                .onTapGesture {
-                    action(data.keyId)
-                }
+                .emulatable(keyID: data.keyId)
         }
     }
 }
