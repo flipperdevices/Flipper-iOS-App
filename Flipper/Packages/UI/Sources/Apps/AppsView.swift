@@ -141,7 +141,7 @@ struct AppsView: View {
     }
 
     func showAppsUpdateIfNeeded() {
-        if model.outdatedCount > 0 {
+        if showAppsUpdate, model.outdatedCount > 0 {
             showAppsUpdate = false
             notifications.apps.showUpdateAvailable = true
         }
