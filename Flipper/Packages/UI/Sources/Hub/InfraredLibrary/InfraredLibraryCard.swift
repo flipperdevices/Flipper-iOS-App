@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 
 struct InfraredLibraryCard: View {
@@ -37,5 +38,45 @@ struct InfraredLibraryCard: View {
                 )
                 .padding(.trailing, 4)
         }
+    }
+}
+
+struct InfraredLibraryCardButton: View {
+    let onTap: () -> Void
+
+    @EnvironmentObject var device: Device
+
+    @State private var showFlipperDisconnected: Bool = false
+    @State private var showFlipperNotSupported: Bool = false
+
+    var body: some View {
+        Button { openInfraredLibrary() } label: {
+            InfraredLibraryCard()
+        }
+        .alert(isPresented: $showFlipperDisconnected) {
+            DeviceDisconnectedAlert(
+                isPresented: $showFlipperDisconnected)
+        }
+        .alert(isPresented: $showFlipperNotSupported) {
+            NotSupportedFeatureAlert(
+                isPresented: $showFlipperNotSupported)
+        }
+    }
+
+    private func openInfraredLibrary() {
+        guard
+            let flipper = device.flipper,
+            device.status == .connected
+        else {
+            showFlipperDisconnected = true
+            return
+        }
+
+        guard flipper.hasInfraredEmulateSupport else {
+            showFlipperNotSupported = true
+            return
+        }
+
+        onTap()
     }
 }
