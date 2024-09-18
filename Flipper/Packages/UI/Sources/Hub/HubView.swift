@@ -6,6 +6,7 @@ import SwiftUI
 struct HubView: View {
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
     @AppStorage(.hasReaderLog) var hasReaderLog = false
+    @AppStorage(.showInfraredLibrary) var showInfraredLibrary = false
 
     @State private var showDetectReader = false
     @State private var path = NavigationPath()
@@ -21,8 +22,10 @@ struct HubView: View {
                     Button { showDetectReader = true } label: {
                         DetectReaderCard(hasNotification: hasReaderLog)
                     }
-                    InfraredLibraryCardButton {
-                        path.append(Destination.infrared)
+                    if showInfraredLibrary {
+                        InfraredLibraryCardButton {
+                            path.append(Destination.infrared)
+                        }
                     }
                 }
                 .padding(14)
