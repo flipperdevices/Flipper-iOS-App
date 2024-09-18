@@ -2,6 +2,7 @@ import Macro
 import Analytics
 import Peripheral
 import Catalog
+import Infrared
 
 import Logging
 import Combine
@@ -179,20 +180,19 @@ public final class Dependencies: ObservableObject, Sendable {
         )
     }()
 
-    public lazy var widgetStorage: TodayWidgetKeysStorage = {
-        FilteredWidgetStorage(
-            widgetStorage: JSONTodayWidgetStorage(),
-            mobileArchive: mobileArchive)
-    }()
-
     @MainActor
-    public lazy var widget: TodayWidget = {
-        .init(
-            widgetStorage: widgetStorage,
-            emulate: emulate,
-            archive: archive,
-            central: central,
-            device: pairedDevice)
+    public lazy var infraredModel: InfraredModel = {
+        var devURL = #URL("https://infrared.dev.flipp.dev")
+        var prodURL = #URL("https://infrared.flipperzero.one")
+
+        let infraredService = WebInfraredService(baseURL: devURL)
+
+        return .init(
+            service: infraredService,
+            storage: api.storage,
+            application: api.application,
+            pairedDevice: pairedDevice
+        )
     }()
 
     // utils

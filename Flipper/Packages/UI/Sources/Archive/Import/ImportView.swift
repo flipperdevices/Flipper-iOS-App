@@ -16,7 +16,7 @@ struct ImportView: View {
     @State private var isEditing = false
     @State private var error: String?
 
-    enum ImportState {
+    enum ImportState: Equatable {
         case loading
         case loaded
         case error(Error)
@@ -87,18 +87,6 @@ struct ImportView: View {
                         )
                         .padding(.top, 6)
                         .padding(.horizontal, 24)
-
-                        Button {
-                            add()
-                        } label: {
-                            Text("Save to Archive")
-                                .roundedButtonStyle(maxWidth: .infinity)
-                        }
-                        .padding(.top, 18)
-                        .padding(.horizontal, 24)
-                        .opacity(isEditing ? 0 : 1)
-
-                        Spacer()
                     }
                 }
             }
@@ -130,6 +118,11 @@ struct ImportView: View {
                     SaveButton {
                         saveChanges()
                     }
+                } else {
+                    SaveButton {
+                        add()
+                    }
+                    .disabled(state != .loaded)
                 }
             }
         }

@@ -31,7 +31,12 @@ public func migration() async {
 
     // migrate storage to group
     if previousBuild <= 127 {
-        try? migrateStorage()
+        migrateStorageToGroup()
+    }
+
+    // migrate archive to /ext
+    if previousBuild <= 552 {
+        migrateArchive()
     }
 }
 
@@ -40,25 +45,43 @@ private func resetStorage() async {
     try? await FileStorage().reset()
 }
 
-func migrateStorage() throws {
-    let oldBaseURL = FileManager.default.urls(
-        for: .applicationSupportDirectory,
-        in: .userDomainMask)[0]
-
-    guard let newBaseURL = FileManager.default.containerURL(
-        forSecurityApplicationGroupIdentifier: .appGroup
-    ) else {
+func migrateStorageToGroup() {
+    guard
+        let oldBaseURL = FileManager.default.applicationSupportDirectory,
+        let newBaseURL = FileManager.default.groupContainer,
+        let contents = try? FileManager.default
+            .contentsOfDirectory(atPath: oldBaseURL.path)
+    else {
         return
     }
-
-    let contents = try FileManager
-        .default
-        .contentsOfDirectory(atPath: oldBaseURL.path)
 
     for path in contents {
         let old = oldBaseURL.appendingPathComponent(path)
         let new = newBaseURL.appendingPathComponent(path)
-        try FileManager.default.moveItem(at: old, to: new)
+        try? FileManager.default.moveItem(at: old, to: new)
+    }
+}
+
+func migrateArchive() {
+    guard let rootURL = FileManager.default.groupContainer else { return }
+
+    let mobileURL = rootURL.appendingPathComponent("mobile")
+    let oldArchiveURL = mobileURL.appendingPathComponent("any")
+    let newArchiveURL = mobileURL.appendingPathComponent("ext")
+
+    try? FileManager.default.moveItem(at: oldArchiveURL, to: newArchiveURL)
+}
+
+extension FileManager {
+    var applicationSupportDirectory: URL? {
+        FileManager.default.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask
+        ).first
+    }
+
+    var groupContainer: URL? {
+        containerURL(forSecurityApplicationGroupIdentifier: .appGroup)
     }
 }
 

@@ -4,6 +4,7 @@ public enum FileType: Hashable, Comparable, CaseIterable {
     case nfc
     case shadow
     case infrared
+    case infraredUI
     case ibutton
 }
 
@@ -18,6 +19,7 @@ extension FileType {
         case "nfc": self = .nfc
         case "shd": self = .shadow
         case "ir": self = .infrared
+        case "irui": self = .infraredUI
         case "ibtn": self = .ibutton
         default: return nil
         }
@@ -30,6 +32,7 @@ extension FileType {
         case .nfc: return "nfc"
         case .shadow: return "shd"
         case .infrared: return "ir"
+        case .infraredUI: return "irui"
         case .ibutton: return "ibtn"
         }
     }
@@ -41,7 +44,16 @@ extension FileType {
         case .nfc: return "nfc"
         case .shadow: return "nfc"
         case .infrared: return "infrared"
+        case .infraredUI: return "infrared"
         case .ibutton: return "ibutton"
+        }
+    }
+
+    public var origin: FileType? {
+        switch self {
+        case .infraredUI: return .infrared
+        case .shadow: return .nfc
+        default: return nil
         }
     }
 }

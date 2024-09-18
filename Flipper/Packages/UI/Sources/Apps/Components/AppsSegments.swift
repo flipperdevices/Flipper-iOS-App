@@ -7,7 +7,7 @@ struct AppsSegments: View {
     @Binding var selected: Segment
     @Namespace private var animation
 
-    enum Segment: Hashable {
+    enum Segment {
         case all
         case installed
     }

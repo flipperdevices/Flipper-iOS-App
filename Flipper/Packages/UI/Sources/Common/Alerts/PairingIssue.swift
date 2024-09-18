@@ -85,8 +85,5 @@ struct PairingIssueAlert: View {
         }
         .frame(width: 292)
         .padding(.top, 9)
-        .background(RoundedRectangle(cornerRadius: 18)
-            .fill(Color.secondaryGroupedBackground)
-        )
     }
 }

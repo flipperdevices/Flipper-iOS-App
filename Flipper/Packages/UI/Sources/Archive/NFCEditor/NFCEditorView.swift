@@ -104,7 +104,7 @@ struct NFCEditorView: View {
         var index = uid.count
 
         // UID should be 4 or 7 bytes, Sector 0 should be 64 bytes
-        guard (index == 4 || index == 7), bytes.count >= 64 else { return }
+        guard index == 4 || index == 7, bytes.count >= 64 else { return }
 
         // ATQA byte order depends on version
         guard let version = item.version else { return }

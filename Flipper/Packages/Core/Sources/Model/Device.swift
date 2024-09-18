@@ -95,7 +95,7 @@ public class Device: ObservableObject {
 
         // We want to preserve unsupportedDevice state instead of disconnected
         if
-            (status == .unsupported || status == .outdatedMobile),
+            status == .unsupported || status == .outdatedMobile,
             flipper.state == .disconnected
         {
             return

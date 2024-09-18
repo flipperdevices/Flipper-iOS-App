@@ -98,8 +98,6 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>COUNTLY_APP_KEY</key>
 	<string>$(XC_COUNTLY_APP_KEY)</string>
-	<key>SENTRY_KEY</key>
-	<string>$(XC_SENTRY_KEY)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
@@ -114,10 +112,10 @@
 	<string>This will allow Flipper app to connect to your Flipper Device</string>
 	<key>NSSiriUsageDescription</key>
 	<string>To control Flipper</string>
-	<key>NSUserActivityTypes</key>
-	<array>
-		<string>PlayAlertIntent</string>
-	</array>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>SENTRY_KEY</key>
+	<string>$(XC_SENTRY_KEY)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Born2bSportyV2.ttf</string>
@@ -151,9 +149,6 @@
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
@@ -205,10 +200,10 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>SubHz Key</string>
+			<string>SubGHz Key</string>
 			<key>UTTypeIconFiles</key>
 			<array>
-				<string>subhz.png</string>
+				<string>subghz.png</string>
 			</array>
 			<key>UTTypeIdentifier</key>
 			<string>com.flipperdevices.sub</string>
@@ -263,7 +258,5 @@
 			</dict>
 		</dict>
 	</array>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
 </dict>
 </plist>

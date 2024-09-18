@@ -153,6 +153,7 @@ struct ArchiveView: View {
                 }
             }
         }
+        .tint(.primary)
         .environment(\.path, $path)
         .onOpenURL { url in
             if url.isKeyFile || url.isKeyURL {
@@ -193,11 +194,5 @@ private extension URL {
 
     var isKeyURL: Bool {
         path == "/s" || path == "/sf"
-    }
-}
-
-extension URL: Identifiable {
-    public var id: URL {
-        self
     }
 }

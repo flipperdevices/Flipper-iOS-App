@@ -6,7 +6,9 @@ extension Manifest: PlaintextCodable {
             guard parts.count == 2 else {
                 continue
             }
-            let path = String(parts[0])
+            let path = parts[0].starts(with: "/any")
+                ? "/ext" + String(parts[0].dropFirst("/any".count))
+                : String(parts[0])
             let hash = String(parts[1])
             manifest[.init(string: path)] = .init(hash)
         }

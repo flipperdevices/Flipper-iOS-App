@@ -8,8 +8,6 @@ class InMemoryStorageAPI: StorageAPI, FileSystemArchiveAPI {
     convenience init() {
         self.init(
             entries: [
-                "any": .directory(.init(entries: [:], timestamp: .init())),
-                "int": .directory(.init(entries: [:], timestamp: .init())),
                 "ext": .directory(.init(entries: [:], timestamp: .init()))
             ]
         )
@@ -20,9 +18,7 @@ class InMemoryStorageAPI: StorageAPI, FileSystemArchiveAPI {
     }
 
     func space(of path: Path) async throws -> StorageSpace {
-        path == "int"
-            ? .init(free: 228 * 1024 - 28, total: 228 * 1024)
-            : .init(free: 128 * 1024 * 1024, total: 256 * 1024 * 1024)
+        .init(free: 128 * 1024 * 1024, total: 256 * 1024 * 1024)
     }
 
     func list(

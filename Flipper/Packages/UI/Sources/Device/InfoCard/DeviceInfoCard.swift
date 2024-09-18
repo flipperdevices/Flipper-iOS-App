@@ -99,6 +99,9 @@ struct DeviceInfoCard: View {
                     Text("Device Info")
                         .font(.system(size: 16, weight: .bold))
                     Spacer()
+                    Image("ChevronRight")
+                        .resizable()
+                        .frame(width: 14, height: 14)
                 }
                 .padding(.top, 12)
                 .padding(.horizontal, 12)
@@ -141,36 +144,15 @@ struct DeviceInfoCard: View {
 
                         Divider()
                         CardRow(
-                            name: "Int. Flash (Used/Total)",
-                            value: internalSpace
-                        )
-                        .padding(.horizontal, 12)
-
-                        Divider()
-                        CardRow(
                             name: "SD Card (Used/Total)",
                             value: externalSpace
                         )
                         .padding(.horizontal, 12)
-
-                        HStack {
-                            Text("Full info")
-                            Image(systemName: "chevron.right")
-                        }
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.black16)
-                        .padding(.top, 5)
                     }
                     .padding(.top, 18)
                     .padding(.bottom, 12)
                 }
             }
         }
-    }
-}
-
-extension StorageSpace: CustomStringConvertible {
-    public var description: String {
-        "\(used.hr) / \(total.hr)"
     }
 }

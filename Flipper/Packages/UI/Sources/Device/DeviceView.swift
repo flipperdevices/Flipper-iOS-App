@@ -14,6 +14,7 @@ struct DeviceView: View {
 
     @State private var path = NavigationPath()
 
+    @State private var showRemoteControl = false
     @State private var showForgetAction = false
     @State private var showOutdatedFirmwareAlert = false
     @State private var showOutdatedMobileAlert = false
@@ -95,6 +96,14 @@ struct DeviceView: View {
                                     .padding(.horizontal, 14)
                             }
                             .disabled(!isDeviceAvailable)
+
+                            Button {
+                                showRemoteControl = true
+                            } label: {
+                                RemoteControlCard()
+                            }
+                            .padding(.top, 24)
+                            .padding(.horizontal, 14)
                         }
 
                         VStack(spacing: 24) {
@@ -244,6 +253,10 @@ struct DeviceView: View {
         .notification(isPresented: inApp.notifications.showDisabled) {
             NotificationsDisabledBanner(
                 isPresented: inApp.notifications.showDisabled)
+        }
+        .sheet(isPresented: $showRemoteControl) {
+            RemoteControlView()
+                .environmentObject(device)
         }
         .environment(\.path, $path)
     }

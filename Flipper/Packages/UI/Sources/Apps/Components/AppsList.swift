@@ -32,7 +32,7 @@ struct AppList: View {
         LazyVStack(spacing: 12) {
             ForEach(applications) { application in
                 NavigationLink(
-                    value: HubView.Destination.application(application.alias)
+                    value: AppsView.Destination.app(application.alias)
                 ) {
                     AppRow(
                         application: application,

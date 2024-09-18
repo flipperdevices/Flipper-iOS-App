@@ -17,11 +17,11 @@ class FileSystemArchive: ArchiveProtocol {
         progress: (Double) -> Void
     ) async throws -> Manifest {
         let (manifest, direcrories) = try await manifest.get(
-            at: root.appending("any"),
+            at: root.appending("ext"),
             progress: progress
         )
         self.knownDirectories = direcrories
-        return inserting("/any", to: manifest)
+        return inserting("/ext", to: manifest)
     }
 
     // TODO: Remove

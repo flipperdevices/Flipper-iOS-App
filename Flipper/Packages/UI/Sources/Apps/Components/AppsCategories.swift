@@ -17,7 +17,7 @@ struct AppsCategories: View {
             } else {
                 ForEach(categories) { category in
                     NavigationLink(
-                        value: HubView.Destination.category(category)
+                        value: AppsView.Destination.category(category)
                     ) {
                         AppsCategory(category: category)
                     }

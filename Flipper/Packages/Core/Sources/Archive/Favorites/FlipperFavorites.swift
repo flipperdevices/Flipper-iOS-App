@@ -1,8 +1,7 @@
 import Peripheral
 
 class FlipperFavorites: FavoritesStorage {
-    let filename = "favorites.txt"
-    var path: Path { .init(components: ["any", filename]) }
+    let path: Path = "/ext/favorites.txt"
 
     private var storage: StorageAPI
 

@@ -23,11 +23,13 @@ public extension Activity.Update.State.Result {
     }
 }
 
+#if canImport(ActivityKit)
 public extension UpdateActivityAttibutes {
     init(_ other: Core.Update.Version) {
         self.init(version: Activity.Update.Version(other))
     }
 }
+#endif
 
 public extension Activity.Update.Version {
     init(_ other: Core.Update.Version) {

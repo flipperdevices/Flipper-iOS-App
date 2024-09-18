@@ -1,24 +1,9 @@
 import SwiftUI
 import Peripheral
 
-struct FlipperStyleKey: EnvironmentKey {
-    static let defaultValue: FlipperTemplate.Style = .white
-}
-
-struct FlipperStateKey: EnvironmentKey {
-    static let defaultValue: FlipperTemplate.State = .normal
-}
-
 extension EnvironmentValues {
-    var flipperStyle: FlipperTemplate.Style {
-        get { self[FlipperStyleKey.self] }
-        set { self[FlipperStyleKey.self] = newValue }
-    }
-
-    var flipperState: FlipperTemplate.State {
-        get { self[FlipperStateKey.self] }
-        set { self[FlipperStateKey.self] = newValue }
-    }
+    @Entry var flipperStyle: FlipperTemplate.Style = .white
+    @Entry var flipperState: FlipperTemplate.State = .normal
 }
 
 extension View {

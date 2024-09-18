@@ -2,8 +2,7 @@ import Peripheral
 
 class SyncedFavorites: FavoritesStorage {
     let storage: FileStorage = .init()
-    let filename = "synced_favorites.txt"
-    var path: Path { .init(string: filename) }
+    var path: Path = "synced_favorites.txt"
 
     func read() async throws -> Favorites {
         await storage.isExists(path)

@@ -9,9 +9,11 @@ struct SpeedTestView: View {
     var body: some View {
         VStack {
             Spacer()
-            Text(String("\(speedTest.bps) bytes per second"))
+            Text(String("current: \(speedTest.bps) bps"))
             Spacer()
-            Text(String("\(speedTest.bpsMin) ~ \(speedTest.bpsMax) bps"))
+            Text(String("range: \(speedTest.bpsMin) ~ \(speedTest.bpsMax) bps"))
+            Spacer()
+            Text(String("total: \(speedTest.totalBPS) bps"))
             Spacer()
             Text("Packet size: \(Int(speedTest.packetSize))")
             Slider(

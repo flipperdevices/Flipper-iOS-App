@@ -4,6 +4,8 @@ import SwiftUI
 extension ArchiveView {
     struct CategoryView: View {
         @EnvironmentObject var archive: ArchiveModel
+        @EnvironmentObject private var device: Device
+
         @Environment(\.path) private var path
         @Environment(\.dismiss) private var dismiss
 

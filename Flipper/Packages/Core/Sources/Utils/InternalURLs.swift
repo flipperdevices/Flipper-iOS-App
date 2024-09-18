@@ -6,10 +6,6 @@ extension URL {
         "flipper://"
     )
 
-    public static var todayWidgetSettings = #URL(
-        "flipper://todaywidget-settings"
-    )
-
     public static var updateDeviceLink = #URL(
         "https://flpr.app/o/update"
     )

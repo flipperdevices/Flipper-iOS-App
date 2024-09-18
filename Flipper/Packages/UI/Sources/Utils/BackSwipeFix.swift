@@ -1,8 +1,8 @@
 import SwiftUI
 
-// MARK: Fix back swipe with custom back button
+// MARK: Fixes back swipe with custom back button
 
-extension UINavigationController: UIGestureRecognizerDelegate {
+extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
     override open func viewDidLoad() {
         super.viewDidLoad()
         interactivePopGestureRecognizer?.delegate = self

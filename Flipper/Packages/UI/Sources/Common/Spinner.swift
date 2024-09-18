@@ -38,5 +38,9 @@ struct LoadingAnimation: View {
                     length = 0
                 }
             }
+            .onDisappear {
+                degree = 90.0
+                length = 0.95
+            }
     }
 }

@@ -12,8 +12,8 @@ struct OptionsView: View {
     @AppStorage(.isSyncingDisabled) var isSyncingDisabled = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
     @AppStorage(.isDevCatalog) var isDevCatalog = false
+    @AppStorage(.showInfraredLibrary) var showInfraredLibrary = false
 
-    @State private var showWidgetSettings = false
     @State private var showRestartTheApp = false
 
     var isDeviceAvailable: Bool {
@@ -21,13 +21,14 @@ struct OptionsView: View {
         device.status == .synchronized
     }
 
-    enum Destination {
+    enum Destination: Hashable {
         case ping
         case stressTest
         case speedTest
         case logs
         case fileManager
         case reportBug
+        case infrared
     }
 
     var body: some View {
@@ -67,11 +68,6 @@ struct OptionsView: View {
 
             Section {
                 NotificationsToggle()
-
-                Button("Widget Settings") {
-                    showWidgetSettings = true
-                }
-                .foregroundColor(.primary)
             }
 
             Section {
@@ -115,6 +111,19 @@ struct OptionsView: View {
                         Text("Use dev catalog")
                     }
                     .tint(.a1)
+                    Toggle(isOn: $showInfraredLibrary) {
+                        Text("Infrared remotes library")
+                    }
+                    .tint(.a1)
+
+                    #if DEBUG
+                    NavigationLink(value: Destination.infrared) {
+                        Text("Infrared layouts")
+                    }
+                    #endif
+                }
+
+                Section {
                     ResetButton()
                 }
             }
@@ -139,9 +148,6 @@ struct OptionsView: View {
                 Title("Options")
             }
         }
-        .fullScreenCover(isPresented: $showWidgetSettings) {
-            TodayWidgetSettingsView()
-        }
         .onChange(of: isDevCatalog) { _ in
             showRestartTheApp = true
         }
@@ -156,6 +162,7 @@ struct OptionsView: View {
             case .logs: LogsView()
             case .fileManager: FileManagerView()
             case .reportBug: ReportBugView()
+            case .infrared: InfraredDebugLayout()
             }
         }
     }

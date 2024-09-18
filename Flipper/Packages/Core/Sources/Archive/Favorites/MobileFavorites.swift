@@ -2,8 +2,7 @@ import Peripheral
 
 class MobileFavorites: FavoritesStorage {
     let storage: FileStorage = .init()
-    let filename = "mobile_favorites.txt"
-    var path: Path { .init(string: filename) }
+    var path: Path = "mobile_favorites.txt"
 
     func read() async throws -> Favorites {
         await storage.isExists(path)

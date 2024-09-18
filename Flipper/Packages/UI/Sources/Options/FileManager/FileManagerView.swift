@@ -13,7 +13,7 @@ struct FileManagerView: View {
     }
 
     var body: some View {
-        FileManagerListing(path: "/")
+        FileManagerListing(path: "/ext")
             .environmentObject(fileManager)
             .navigationDestination(for: Destination.self) { destination in
                 switch destination {

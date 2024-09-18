@@ -27,8 +27,8 @@ public class ServerFileExporter: Exporter {
     // TODO: remove /any/ from item.id
     func trimPath(_ path: String) -> String {
         var path = path
-        if path.starts(with: "/any/") {
-            path.removeFirst("/any/".count)
+        if path.starts(with: "/ext/") {
+            path.removeFirst("/ext/".count)
         }
         return path
     }

@@ -21,6 +21,7 @@ public struct RootView: View {
             .environmentObject(dependencies.sharing)
             .environmentObject(dependencies.emulate)
             .environmentObject(dependencies.applications)
+            .environmentObject(dependencies.infraredModel)
             .environmentObject(Notifications.shared)
             .environmentObject(overlayController)
     }
@@ -38,6 +39,7 @@ private struct RootViewImpl: View {
 
     @State var alerts: Alerts = .init()
     @State var inAppNotifications: InAppNotifications = .init()
+    @State var popups: Popups = .init()
 
     init() {}
 
@@ -59,9 +61,6 @@ private struct RootViewImpl: View {
         .alert(isPresented: $isUpdateAvailable) {
             MobileUpdateAlert(isPresented: $isUpdateAvailable)
         }
-        .onContinueUserActivity("PlayAlertIntent") { _ in
-            device.playAlert()
-        }
         .onChange(of: device.status) {
             if $0 == .invalidPairing {
                 isPairingIssue = true
@@ -76,5 +75,6 @@ private struct RootViewImpl: View {
         }
         .environment(\.alerts, $alerts)
         .environment(\.notifications, $inAppNotifications)
+        .environment(\.popups, $popups)
     }
 }

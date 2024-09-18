@@ -16,6 +16,16 @@ extension AppView {
                 .joined(separator: "\n")
         }
 
+        private var fullChangelog: String {
+            changelog
+                .split(separator: "\n")
+                .joined(separator: "\n")
+        }
+
+        private var showMoreButton: Bool {
+            fullChangelog.count > shortChangelog.count
+        }
+
         struct Title: View {
             var body: some View {
                 Text("Changelog")
@@ -28,7 +38,7 @@ extension AppView {
                 VStack(alignment: .leading, spacing: 8) {
                     Title()
 
-                    Markdown(showMore ? changelog : shortChangelog)
+                    Markdown(showMore ? fullChangelog : shortChangelog)
                         .customMarkdownStyle()
                         .lineLimit(showMore ? nil : 4)
                 }
@@ -43,6 +53,7 @@ extension AppView {
                             .foregroundColor(.black30)
                     }
                 }
+                .opacity(showMoreButton ? 1 : 0)
             }
             .foregroundColor(.primary)
         }
