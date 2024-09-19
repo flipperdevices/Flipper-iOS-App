@@ -6,8 +6,6 @@ struct NotificationView<Content: View>: View {
 
     @State private var isPresentedAnimated: Bool = false
 
-    @EnvironmentObject var controller: OverlayController
-
     var animationDuration: Double { 0.1 }
     var presentingDuration: Double { 3.0 }
 
@@ -42,7 +40,6 @@ struct NotificationView<Content: View>: View {
                 isPresentedAnimated = false
             }
             try? await Task.sleep(seconds: animationDuration)
-            controller.dismiss()
         }
     }
 }

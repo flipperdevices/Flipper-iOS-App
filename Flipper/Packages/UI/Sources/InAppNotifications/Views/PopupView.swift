@@ -6,8 +6,6 @@ struct PopupView<Content: View>: View {
 
     @State private var isPresentedAnimated: Bool = false
 
-    @EnvironmentObject var controller: OverlayController
-
     var animationDuration: Double { 0.1 }
 
     var body: some View {
@@ -43,7 +41,6 @@ struct PopupView<Content: View>: View {
                 isPresentedAnimated = false
             }
             try? await Task.sleep(seconds: animationDuration)
-            controller.dismiss()
         }
     }
 }
