@@ -34,14 +34,16 @@ struct LiveWidget: Widget {
 
 extension ConfigurationAppIntent {
     fileprivate static var cyfral: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.entity = .init(id: "", name: "Cyfral", kind: .ibutton)
+        let intent = ConfigurationAppIntent(
+            entity: .init(id: "", name: "Cyfral", kind: .ibutton)
+        )
         return intent
     }
 
     fileprivate static var garage: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.entity = .init(id: "", name: "Garage", kind: .subghz)
+        let intent = ConfigurationAppIntent(
+            entity: .init(id: "", name: "Garage", kind: .subghz)
+        )
         return intent
     }
 }
