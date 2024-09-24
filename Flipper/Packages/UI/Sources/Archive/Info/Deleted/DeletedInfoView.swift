@@ -9,7 +9,7 @@ struct DeletedInfoView: View {
     let item: ArchiveItem
     @State private var showDeleteSheet = false
     @State private var isEditing = false
-    @State private var error: String?
+    @State private var error: IdentifiableError?
 
     var body: some View {
         ScrollView {
@@ -60,7 +60,7 @@ struct DeletedInfoView: View {
             }
         }
         .alert(item: $error) { error in
-            Alert(title: Text(error))
+            Alert(title: Text(error.description))
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
@@ -89,7 +89,7 @@ struct DeletedInfoView: View {
     }
 
     func showError(_ error: Swift.Error) {
-        self.error = String(describing: error)
+        self.error = IdentifiableError(from: error)
     }
 }
 

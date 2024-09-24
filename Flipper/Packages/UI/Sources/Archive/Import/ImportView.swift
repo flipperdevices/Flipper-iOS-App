@@ -14,7 +14,7 @@ struct ImportView: View {
     @State private var backup: ArchiveItem = .none
 
     @State private var isEditing = false
-    @State private var error: String?
+    @State private var error: IdentifiableError?
 
     enum ImportState: Equatable {
         case loading
@@ -127,7 +127,7 @@ struct ImportView: View {
             }
         }
         .alert(item: $error) { error in
-            Alert(title: Text(error))
+            Alert(title: Text(error.description))
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
@@ -190,7 +190,7 @@ struct ImportView: View {
     }
 
     func showError(_ error: Swift.Error) {
-        self.error = String(describing: error)
+        self.error = IdentifiableError(from: error)
     }
 }
 
@@ -202,9 +202,4 @@ extension ArchiveItem {
             properties: [],
             shadowCopy: [])
     }
-}
-
-// FIXME: Use Identifiable Error
-extension String: Identifiable {
-    public var id: Self { self }
 }

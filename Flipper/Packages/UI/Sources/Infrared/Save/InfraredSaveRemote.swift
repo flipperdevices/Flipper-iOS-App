@@ -12,7 +12,7 @@ extension InfraredView {
         @Environment(\.path) private var path
 
         @State private var currentItem: ArchiveItem = .none
-        @State private var error: String?
+        @State private var error: IdentifiableError?
 
         let file: InfraredFile
         let item: ArchiveItem
@@ -55,7 +55,7 @@ extension InfraredView {
                 currentItem = item
             }
             .alert(item: $error) { error in
-                Alert(title: Text(error))
+                Alert(title: Text(error.description))
             }
         }
 
@@ -67,7 +67,7 @@ extension InfraredView {
                     path.clear()
                     selectedTab = .archive
                 } catch {
-                    self.error = String(describing: error)
+                    self.error = IdentifiableError(from: error)
                 }
             }
         }
