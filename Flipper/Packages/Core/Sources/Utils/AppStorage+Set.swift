@@ -11,11 +11,10 @@ extension Set: @retroactive RawRepresentable where Element: Codable {
     }
 
     public var rawValue: String {
-        do {
-            let data = try JSONEncoder().encode(self)
-            return String(decoding: data, as: UTF8.self)
-        } catch {
-            return "[]"
-        }
+        guard
+            let data = try? JSONEncoder().encode(self),
+            let content = String(data: data, encoding: .utf8)
+        else { return "[]" }
+        return content
     }
 }

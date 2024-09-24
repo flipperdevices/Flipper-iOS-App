@@ -27,8 +27,7 @@ class Tranfser {
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {
             throw URLError(.badServerResponse)
         }
-        let responseContent = String(decoding: data, as: UTF8.self)
-        return code(from: responseContent)
+        return code(from: try data.utf8String)
     }
 
     func download(code: String) async throws -> [UInt8] {
