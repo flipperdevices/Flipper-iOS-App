@@ -66,7 +66,9 @@ struct InfraredLibraryCardButton: View {
     private func openInfraredLibrary() {
         guard
             let flipper = device.flipper,
-            device.status == .connected
+            device.status == .connected ||
+            device.status == .synchronized ||
+            device.status == .synchronizing
         else {
             showFlipperDisconnected = true
             return
