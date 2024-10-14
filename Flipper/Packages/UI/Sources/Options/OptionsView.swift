@@ -12,7 +12,6 @@ struct OptionsView: View {
     @AppStorage(.isSyncingDisabled) var isSyncingDisabled = false
     @AppStorage(.isProvisioningDisabled) var isProvisioningDisabled = false
     @AppStorage(.isDevCatalog) var isDevCatalog = false
-    @AppStorage(.showInfraredLibrary) var showInfraredLibrary = false
 
     @State private var showRestartTheApp = false
 
@@ -109,10 +108,6 @@ struct OptionsView: View {
                     .tint(.a1)
                     Toggle(isOn: $isDevCatalog) {
                         Text("Use dev catalog")
-                    }
-                    .tint(.a1)
-                    Toggle(isOn: $showInfraredLibrary) {
-                        Text("Infrared remotes library")
                     }
                     .tint(.a1)
 
