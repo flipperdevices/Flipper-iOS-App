@@ -28,11 +28,20 @@ extension InfraredView {
             }
         }
 
+        private var keyName: Substring {
+            file.name
+                .replacingOccurrences(of: " ", with: "_")
+                .replacingOccurrences(of: "\\", with: "_")
+                .replacingOccurrences(of: "/", with: "_")
+                .replacingOccurrences(of: ".", with: "_")
+                .prefix(21)
+        }
+
         private var archiveItem: ArchiveItem? {
             guard let content else { return nil }
 
             return .init(
-                name: "",
+                name: .init(keyName),
                 kind: .infrared,
                 properties: content.properties,
                 shadowCopy: [],
@@ -159,9 +168,9 @@ extension InfraredView {
                 viewState = .syncing(layout, 0)
 
                 try await infraredModel
-                    .sendTempContent(fileContent.properties.content){
-                    viewState = .syncing(layout, $0 / 2)
-                }
+                    .sendTempContent(fileContent.properties.content) {
+                        viewState = .syncing(layout, $0 / 2)
+                    }
 
                 try await infraredModel.sendTempLayout(layout) {
                     viewState = .syncing(layout, $0 / 2 + 0.5)
