@@ -9,7 +9,7 @@ struct NotificationView<Content: View>: View {
     @EnvironmentObject var controller: OverlayController
 
     var animationDuration: Double { 0.1 }
-    var presentingDuration: Double { 3.0 }
+    var presentingDuration: Double { 5.0 }
 
     var body: some View {
         ZStack(alignment: .bottom) {
