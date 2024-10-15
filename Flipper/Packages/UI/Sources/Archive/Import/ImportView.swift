@@ -129,6 +129,7 @@ struct ImportView: View {
         .alert(item: $error) { error in
             Alert(title: Text(error))
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
         .task {
