@@ -5,6 +5,7 @@ extension InfraredView {
     struct InfraredPagesLayout: View {
         @Environment(\.dismiss) private var dismiss
         @Environment(\.path) private var path
+        @Environment(\.notifications) private var notifications
 
         @EnvironmentObject private var emulate: Emulate
         @EnvironmentObject private var device: Device
@@ -16,6 +17,7 @@ extension InfraredView {
 
         @State private var isFlipperBusyAlertPresented: Bool = false
         @State private var showRemoteControl = false
+        @State private var remoteFoundAlertPresented: Bool = false
 
         @State private var viewState: ViewState = .loadLayoyt
         @State private var layoutState: InfraredLayoutState = .default
@@ -115,6 +117,11 @@ extension InfraredView {
                     }
                 }
             }
+            .notification(
+                isPresented: notifications.infraredLibrary.showFoundRemote
+            ) {
+                FoundRemoteBanner()
+            }
             .alert(isPresented: $isFlipperBusyAlertPresented) {
                 FlipperIsBusyAlert(
                     isPresented: $isFlipperBusyAlertPresented,
@@ -159,6 +166,7 @@ extension InfraredView {
         }
 
         private func processLoadFile() async {
+            notifications.infraredLibrary.showFoundRemote = true
             viewState = .loadLayoyt
             do {
                 let layout = try await infraredModel.loadLayout(file)
@@ -194,6 +202,7 @@ extension InfraredView {
 
         private func retry() {
             Task {
+                notifications.infraredLibrary.showFoundRemote = false
                 await processLoadFile()
             }
         }
