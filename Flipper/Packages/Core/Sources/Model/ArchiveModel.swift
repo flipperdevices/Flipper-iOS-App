@@ -1,6 +1,8 @@
 import Combine
 import Foundation
 
+import Peripheral
+
 @MainActor
 public class ArchiveModel: ObservableObject {
     let synchronization: Synchronization
@@ -127,6 +129,13 @@ public class ArchiveModel: ObservableObject {
 
     public func backupKeys() async -> URL? {
         await archive.backupKeys()
+    }
+
+    public func getItem(by path: String) -> ArchiveItem? {
+        let keyPath = Path(string: path)
+        let keyID = ArchiveItem.ID(path: keyPath)
+
+        return archive.get(keyID)
     }
 
     // MARK: Analytics

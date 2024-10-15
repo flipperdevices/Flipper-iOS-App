@@ -65,11 +65,30 @@ extension InfraredView {
                     try await infrared.copyTemp(currentItem)
                     try await archive.add(currentItem)
                     path.clear()
-                    selectedTab = .archive
+
+                    guard
+                        let url = makeArchiveKeyURL(),
+                        UIApplication.shared.canOpenURL(url)
+                    else {
+                        selectedTab = .archive
+                        return
+                    }
+
+                    await UIApplication.shared.open(url)
                 } catch {
                     self.error = String(describing: error)
                 }
             }
+        }
+
+        private func makeArchiveKeyURL() -> URL? {
+            var components = URLComponents()
+            components.scheme = "flipper"
+            components.host = "archive-info"
+            components.queryItems = [
+                URLQueryItem(name: "path", value: item.path.string)
+            ]
+            return components.url
         }
     }
 }

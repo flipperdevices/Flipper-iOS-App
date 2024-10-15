@@ -160,6 +160,14 @@ struct ArchiveView: View {
                 path.append(Destination.importing(url))
                 selectedTab = .archive
             }
+
+            if
+                let keyPath = url.archiveKeyPath,
+                let item = archive.getItem(by: keyPath)
+            {
+                path.append(Destination.info(item))
+                selectedTab = .archive
+            }
         }
         .onDrop(of: [.item], isTargeted: nil) { providers in
             guard let provider = providers.first else { return false }
@@ -194,5 +202,22 @@ private extension URL {
 
     var isKeyURL: Bool {
         path == "/s" || path == "/sf"
+    }
+
+    var archiveKeyPath: String? {
+        guard scheme == "flipper", host == "archive-info" else { return nil }
+
+        let components = URLComponents(
+            url: self,
+            resolvingAgainstBaseURL: false)
+
+        guard
+            let queryItems = components?.queryItems,
+            let pathValue = queryItems
+                .first(where: { $0.name == "path" })?
+                .value
+        else { return nil }
+
+        return pathValue
     }
 }
