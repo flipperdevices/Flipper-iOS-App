@@ -65,6 +65,7 @@ struct InfraredLibraryCardButton: View {
             FeaturePauseSyncAlert(isPresented: $showFlipperSyncing) {
                 synchronization.cancelSync()
                 onTap()
+                recordInfraredLibraryOpened()
             }
         }
     }
@@ -90,5 +91,12 @@ struct InfraredLibraryCardButton: View {
         }
 
         onTap()
+        recordInfraredLibraryOpened()
+    }
+
+    // MARK: Analytics
+
+    private func recordInfraredLibraryOpened() {
+        analytics.appOpen(target: .infraredLibraryOpen)
     }
 }

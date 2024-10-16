@@ -75,6 +75,7 @@ extension InfraredView {
                     }
 
                     await UIApplication.shared.open(url)
+                    recordInfraredLibrarySave()
                 } catch {
                     self.error = String(describing: error)
                 }
@@ -89,6 +90,12 @@ extension InfraredView {
                 URLQueryItem(name: "path", value: item.path.string)
             ]
             return components.url
+        }
+
+        // MARK: Analytics
+
+        private func recordInfraredLibrarySave() {
+            analytics.appOpen(target: .infraredLibrarySave)
         }
     }
 }
