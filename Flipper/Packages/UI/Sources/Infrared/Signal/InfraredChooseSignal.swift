@@ -43,52 +43,23 @@ extension InfraredView {
             VStack(spacing: 0) {
                 switch viewState {
                 case .loadSignal:
-                    VStack(alignment: .center, spacing: 14) {
-                        Text("Checking Configurations")
-                            .font(.system(size: 16, weight: .bold))
-                            .padding(.top, 18)
-
-                        Spacer()
-
-                        InfraredButtonTypeView(data: .unknown)
-                            .frame(width: 60, height: 60)
-                            .environment(\.layoutState, .syncing)
-
-                        AnimatedPlaceholder()
-                            .frame(width: 150, height: 12)
-
-                        AnimatedPlaceholder()
-                            .frame(width: 100, height: 12)
-
-                        Spacer()
-                    }
+                    InfraredChooseSignalView(
+                        button: .unknown,
+                        state: .syncing,
+                        onStartEmulate: { _ in },
+                        onSkip: {}
+                    )
                 case .error(let error):
                     InfraredNetworkError(error: error, action: retry)
                 case .flipperNotConnected:
                     InfraredFlipperNotConnectedError()
                 case .display(let signal, let state):
-                    VStack(alignment: .center, spacing: 14) {
-                        Text("Checking Configurations")
-                            .font(.system(size: 16, weight: .bold))
-                            .padding(.top, 18)
-
-                        Spacer()
-
-                        InfraredButtonTypeView(data: signal.button)
-                            .frame(width: 60, height: 60)
-                            .environment(\.layoutState, state)
-                            .environment(\.emulateAction, onStartEmulate)
-
-                        Text(
-                            "Point your Flipper Zero at the device\n" +
-                            "and tap the button above"
-                        )
-                        .font(.system(size: 14, weight: .medium))
-                        .multilineTextAlignment(.center)
-
-                        Spacer()
-                    }
-                    .padding(.horizontal, 12)
+                    InfraredChooseSignalView(
+                        button: signal.button,
+                        state: state,
+                        onStartEmulate: onStartEmulate,
+                        onSkip: { processConfirmSignal(type: .skipped) }
+                    )
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
