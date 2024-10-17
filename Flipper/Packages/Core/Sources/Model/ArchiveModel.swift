@@ -90,10 +90,9 @@ public class ArchiveModel: ObservableObject {
 
     public func add(_ item: ArchiveItem, open: Bool = false) async throws {
         do {
-            try await archive.importKey(item)
+            try await archive.addKey(item)
             logger.info("added: \(item.filename)")
             added.send((item, open))
-            recordImport()
             synchronization.start()
         } catch {
             logger.error("add: \(error)")
@@ -135,9 +134,5 @@ public class ArchiveModel: ObservableObject {
 
     func recordEdit() {
         analytics.appOpen(target: .keyEdit)
-    }
-
-    func recordImport() {
-        analytics.appOpen(target: .keyImport)
     }
 }

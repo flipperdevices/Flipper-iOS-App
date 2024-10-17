@@ -328,7 +328,7 @@ extension Archive {
 }
 
 extension Archive {
-    func importKey(_ item: ArchiveItem) async throws {
+    func addKey(_ item: ArchiveItem) async throws {
         if !_items.value.contains(where: { item.path == $0.path }) {
             try await upsert(item)
         } else {
