@@ -32,7 +32,9 @@ class ArchiveSync: ArchiveSyncProtocol {
         case canceled
     }
 
-    func run(_ progress: (Double) -> Void) async throws -> Int {
+    func run(
+        _ progress: (Synchronization.Progress) -> Void
+    ) async throws -> Int {
         guard state == .idle else { return 0 }
         state = .running
         defer { state = .idle }
@@ -42,7 +44,9 @@ class ArchiveSync: ArchiveSyncProtocol {
     var manifestProgressFactor: Double { 0.5 }
     var syncProgressFactor: Double { 1.0 - manifestProgressFactor }
 
-    private func sync(_ progress: (Double) -> Void) async throws -> Int {
+    private func sync(
+        _ progress: (Synchronization.Progress) -> Void
+    ) async throws -> Int {
         let lastManifest = try await syncedManifest.get()
 
         let mobileChanges = try await mobileArchive
@@ -51,7 +55,8 @@ class ArchiveSync: ArchiveSyncProtocol {
 
         let flipperChanges = try await flipperArchive
             .getManifest { manifestProgress in
-                progress(manifestProgress * manifestProgressFactor)
+                let value = manifestProgress * manifestProgressFactor
+                progress(.syncManifest(value))
             }
             .changesSince(lastManifest)
 
@@ -61,15 +66,20 @@ class ArchiveSync: ArchiveSyncProtocol {
 
         guard !actions.isEmpty else {
             try await syncedManifest.upsert(mobileArchive.getManifest())
-            progress(1)
+            progress(.done)
             return 0
         }
 
         let syncItemFactor = syncProgressFactor / Double(actions.count)
         var currentProgress = manifestProgressFactor
 
-        func preciseProgress(_ itemProgress: Double) {
-            progress(currentProgress + syncItemFactor * itemProgress)
+        func preciseProgress(_ itemProgress: Double, _ path: Path) {
+            let value = currentProgress + syncItemFactor * itemProgress
+
+            // FIXME: find the issue (very rare)
+            guard value.isNormal else { return }
+
+            progress(.syncFile(value, path.lastComponent ?? path.description))
         }
 
         // NOTE: Flipper's filesystem is case-insensitive,
@@ -82,19 +92,21 @@ class ArchiveSync: ArchiveSyncProtocol {
             }
             switch action {
             case .update(.mobile):
-                try await updateOnMobile(path, progress: preciseProgress)
+                try await updateOnMobile(path) { preciseProgress($0, path) }
             case .delete(.mobile):
-                try await deleteOnMobile(path, progress: preciseProgress)
+                try await deleteOnMobile(path) { preciseProgress($0, path) }
             case .update(.flipper):
-                try await updateOnFlipper(path, progress: preciseProgress)
+                try await updateOnFlipper(path) { preciseProgress($0, path) }
             case .delete(.flipper):
-                try await deleteOnFlipper(path, progress: preciseProgress)
+                try await deleteOnFlipper(path) { preciseProgress($0, path) }
             case .conflict:
                 path.isShadowFile || path.isLayoutFile
-                    ? try await updateOnMobile(path, progress: preciseProgress)
-                    : try await keepBoth(path, progress: preciseProgress)
+                    ? try await updateOnMobile(path) {
+                        preciseProgress($0, path)
+                    }
+                    : try await keepBoth(path) { preciseProgress($0, path) }
             case .skip:
-                try await markSynced(path, progress: preciseProgress)
+                try await markSynced(path) { preciseProgress($0, path) }
             }
             currentProgress += syncItemFactor
         }

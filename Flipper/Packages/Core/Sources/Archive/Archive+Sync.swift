@@ -2,7 +2,9 @@ import Peripheral
 import Foundation
 
 extension Archive {
-    func synchronize(_ progress: (Double) -> Void) async throws -> Int {
+    func synchronize(
+        _ progress: (Synchronization.Progress) -> Void
+    ) async throws -> Int {
         guard !isLoading else {
             logger.critical("synchronize: archive isn't loaded")
             return 0

@@ -58,24 +58,8 @@ struct ArchiveView: View {
     var body: some View {
         NavigationStack(path: $path) {
             VStack {
-                if device.status == .connecting {
-                    VStack(spacing: 14) {
-                        Spinner()
-                        Text("Connecting to Flipper...")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.black30)
-                    }
-                } else if device.status == .synchronizing {
-                    VStack(spacing: 14) {
-                        Spinner()
-                        Text(
-                            synchronization.progress == 0
-                                ? "Syncing..."
-                                : "Syncing \(synchronization.progress)%"
-                        )
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.black30)
-                    }
+                if device.status == .synchronizing {
+                    SyncProgress(synchronization.progress)
                 } else if !predicate.isEmpty {
                     ArchiveSearchView(predicate: $predicate)
                 } else {
