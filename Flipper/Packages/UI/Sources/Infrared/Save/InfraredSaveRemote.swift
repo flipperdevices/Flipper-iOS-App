@@ -63,33 +63,13 @@ extension InfraredView {
             Task {
                 do {
                     try await infrared.copyTemp(currentItem)
-                    try await archive.add(currentItem)
+                    try await archive.add(currentItem, open: true)
                     path.clear()
-
-                    guard
-                        let url = makeArchiveKeyURL(),
-                        UIApplication.shared.canOpenURL(url)
-                    else {
-                        selectedTab = .archive
-                        return
-                    }
-
-                    await UIApplication.shared.open(url)
                     recordInfraredLibrarySave()
                 } catch {
                     self.error = String(describing: error)
                 }
             }
-        }
-
-        private func makeArchiveKeyURL() -> URL? {
-            var components = URLComponents()
-            components.scheme = "flipper"
-            components.host = "archive-info"
-            components.queryItems = [
-                URLQueryItem(name: "path", value: item.path.string)
-            ]
-            return components.url
         }
 
         // MARK: Analytics

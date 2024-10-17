@@ -137,8 +137,8 @@ struct ArchiveView: View {
                     }
                 }
             }
-            .onReceive(archive.imported) { item in
-                onItemAdded(item: item)
+            .onReceive(archive.added) { (item, shouldOpen) in
+                onItemAdded(item: item, open: shouldOpen)
             }
             .notification(isPresented: notifications.archive.showImported) {
                 ImportedBanner(itemName: importedName)
@@ -160,14 +160,6 @@ struct ArchiveView: View {
                 path.append(Destination.importing(url))
                 selectedTab = .archive
             }
-
-            if
-                let keyPath = url.archiveKeyPath,
-                let item = archive.getItem(by: keyPath)
-            {
-                path.append(Destination.info(item))
-                selectedTab = .archive
-            }
         }
         .onDrop(of: [.item], isTargeted: nil) { providers in
             guard let provider = providers.first else { return false }
@@ -186,8 +178,12 @@ struct ArchiveView: View {
         synchronization.start()
     }
 
-    func onItemAdded(item: ArchiveItem) {
+    func onItemAdded(item: ArchiveItem, open: Bool) {
         Task { @MainActor in
+            if open {
+                selectedTab = .archive
+                path.append(Destination.info(item))
+            }
             try? await Task.sleep(seconds: 1)
             importedName = item.name.value
             notifications.archive.showImported = true
@@ -202,22 +198,5 @@ private extension URL {
 
     var isKeyURL: Bool {
         path == "/s" || path == "/sf"
-    }
-
-    var archiveKeyPath: String? {
-        guard scheme == "flipper", host == "archive-info" else { return nil }
-
-        let components = URLComponents(
-            url: self,
-            resolvingAgainstBaseURL: false)
-
-        guard
-            let queryItems = components?.queryItems,
-            let pathValue = queryItems
-                .first(where: { $0.name == "path" })?
-                .value
-        else { return nil }
-
-        return pathValue
     }
 }

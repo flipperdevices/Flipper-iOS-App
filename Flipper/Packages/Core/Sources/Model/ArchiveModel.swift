@@ -13,7 +13,7 @@ public class ArchiveModel: ObservableObject {
     @Published public private(set) var items: [ArchiveItem] = []
     @Published public private(set) var deleted: [ArchiveItem] = []
 
-    public let imported = PassthroughSubject<ArchiveItem, Never>()
+    public let added = PassthroughSubject<(ArchiveItem, Bool), Never>()
 
     public init(archive: Archive, synchronization: Synchronization) {
         self.archive = archive
@@ -88,11 +88,11 @@ public class ArchiveModel: ObservableObject {
         }
     }
 
-    public func add(_ item: ArchiveItem) async throws {
+    public func add(_ item: ArchiveItem, open: Bool = false) async throws {
         do {
             try await archive.importKey(item)
             logger.info("added: \(item.filename)")
-            imported.send(item)
+            added.send((item, open))
             recordImport()
             synchronization.start()
         } catch {
@@ -129,13 +129,6 @@ public class ArchiveModel: ObservableObject {
 
     public func backupKeys() async -> URL? {
         await archive.backupKeys()
-    }
-
-    public func getItem(by path: String) -> ArchiveItem? {
-        let keyPath = Path(string: path)
-        let keyID = ArchiveItem.ID(path: keyPath)
-
-        return archive.get(keyID)
     }
 
     // MARK: Analytics
