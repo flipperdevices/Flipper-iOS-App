@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct FeaturePauseSyncAlert: View {
+struct PauseSyncAlert: View {
     @Binding var isPresented: Bool
     var onAction: () -> Void
 
@@ -10,12 +10,14 @@ struct FeaturePauseSyncAlert: View {
                 Text("Pause Synchronization?")
                     .font(.system(size: 14, weight: .bold))
 
-                Text("This feature can't be used during device synchronization."
-                     + " Wait for sync to finish or pause it.")
-                    .font(.system(size: 14, weight: .medium))
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.black40)
-                    .padding(.horizontal, 12)
+                Text(
+                    "This feature can't be used during device " +
+                    "synchronization. Wait for sync to finish or pause it."
+                )
+                .font(.system(size: 14, weight: .medium))
+                .multilineTextAlignment(.center)
+                .foregroundColor(.black40)
+                .padding(.horizontal, 12)
             }
             .padding(.top, 25)
 

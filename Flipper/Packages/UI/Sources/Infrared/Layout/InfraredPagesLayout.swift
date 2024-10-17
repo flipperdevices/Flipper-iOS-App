@@ -118,9 +118,9 @@ extension InfraredView {
                 }
             }
             .notification(
-                isPresented: notifications.infraredLibrary.showFoundRemote
+                isPresented: notifications.infraredLibrary.showRemoteFound
             ) {
-                FoundRemoteBanner()
+                RemoteFoundBanner()
             }
             .alert(isPresented: $isFlipperBusyAlertPresented) {
                 FlipperIsBusyAlert(
@@ -166,7 +166,7 @@ extension InfraredView {
         }
 
         private func processLoadFile() async {
-            notifications.infraredLibrary.showFoundRemote = true
+            notifications.infraredLibrary.showRemoteFound = true
             viewState = .loadLayoyt
             do {
                 let layout = try await infraredModel.loadLayout(file)
@@ -202,7 +202,7 @@ extension InfraredView {
 
         private func retry() {
             Task {
-                notifications.infraredLibrary.showFoundRemote = false
+                notifications.infraredLibrary.showRemoteFound = false
                 await processLoadFile()
             }
         }

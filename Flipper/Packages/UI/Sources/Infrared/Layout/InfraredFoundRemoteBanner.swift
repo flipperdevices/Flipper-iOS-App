@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension InfraredView {
-    struct FoundRemoteBanner: View {
+    struct RemoteFoundBanner: View {
         var body: some View {
             Banner(
                 image: "Done",

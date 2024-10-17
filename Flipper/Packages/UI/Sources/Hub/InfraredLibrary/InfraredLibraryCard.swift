@@ -2,15 +2,15 @@ import Core
 import SwiftUI
 
 struct InfraredLibraryCard: View {
-
     var body: some View {
         HubCard(
             icon: "infrared",
             title: "Infrared",
             image: "InfraredRemoteLibrary",
             subtitle: "Remotes Library",
-            description: "Find remotes for your devices from a "
-                        + "wide range of brands and models"
+            description:
+                "Find remotes for your devices from a " +
+                "wide range of brands and models"
         ) {
             Badge()
         }
@@ -62,7 +62,7 @@ struct InfraredLibraryCardButton: View {
             NotSupportedFeatureAlert(isPresented: $showFlipperNotSupported)
         }
         .alert(isPresented: $showFlipperSyncing) {
-            FeaturePauseSyncAlert(isPresented: $showFlipperSyncing) {
+            PauseSyncAlert(isPresented: $showFlipperSyncing) {
                 synchronization.cancelSync()
                 onTap()
                 recordInfraredLibraryOpened()

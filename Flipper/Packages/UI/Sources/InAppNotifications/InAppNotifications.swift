@@ -22,7 +22,7 @@ struct InAppNotifications {
     }
 
     struct InfraredLibrary {
-        var showFoundRemote = false
+        var showRemoteFound = false
     }
 }
 
