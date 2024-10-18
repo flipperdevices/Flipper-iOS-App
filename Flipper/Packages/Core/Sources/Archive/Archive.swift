@@ -328,8 +328,12 @@ extension Archive {
 }
 
 extension Archive {
+    func isExist(_ item: ArchiveItem) -> Bool {
+        return _items.value.contains(where: { item.path == $0.path })
+    }
+
     func addKey(_ item: ArchiveItem) async throws {
-        if !_items.value.contains(where: { item.path == $0.path }) {
+        if !isExist(item) {
             try await upsert(item)
         } else {
             throw Error.alreadyExists

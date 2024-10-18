@@ -88,6 +88,10 @@ public class ArchiveModel: ObservableObject {
         }
     }
 
+    public func isExist(_ item: ArchiveItem) -> Bool {
+        archive.isExist(item)
+    }
+
     public func add(_ item: ArchiveItem, open: Bool = false) async throws {
         do {
             try await archive.addKey(item)

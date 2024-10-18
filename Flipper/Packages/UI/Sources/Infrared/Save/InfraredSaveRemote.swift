@@ -62,6 +62,10 @@ extension InfraredView {
         private func save() {
             Task {
                 do {
+                    if archive.isExist(currentItem) {
+                        throw Archive.Error.alreadyExists
+                    }
+
                     try await infrared.copyTemp(currentItem)
                     try await archive.add(currentItem, open: true)
                     path.clear()
