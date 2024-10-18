@@ -63,6 +63,7 @@ extension InfraredView {
             Task {
                 do {
                     if archive.isExist(currentItem) {
+                        // TODO: remove dependency
                         throw Archive.Error.alreadyExists
                     }
 
