@@ -57,8 +57,7 @@ extension ArchiveItem {
     }
 
     init(filename: String, data: Data) throws {
-        let content = String(decoding: data, as: UTF8.self)
-        try self.init(filename: filename, content: content)
+        try self.init(filename: filename, content: data.utf8String)
     }
 
     init(path: Path, content: String) throws {

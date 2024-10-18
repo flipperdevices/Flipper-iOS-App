@@ -10,15 +10,19 @@ struct ConfigurationAppIntent: WidgetConfigurationIntent {
         case emulatable
     }
 
-    @Parameter(title: "Archive Key", default: .none)
-    var entity: KeyEntity
+    @Parameter(title: "Archive Key")
+    private var _entity: KeyEntity?
+
+    var entity: KeyEntity {
+        _entity ?? KeyEntity.invalid
+    }
 
     init() {
-        self.entity = .invalid
+        self._entity = .invalid
     }
 
     init(entity: KeyEntity) {
-        self.entity = entity
+        self._entity = entity
     }
 
     var kind: Kind {

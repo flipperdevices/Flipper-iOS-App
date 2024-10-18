@@ -156,8 +156,7 @@ extension Archive {
         }
         if let path = item.layoutPath {
             if let layout = item.layout {
-                let content = String(decoding: layout, as: UTF8.self)
-                try await mobileArchive.upsert(content, at: path)
+                try await mobileArchive.upsert(layout.utf8String, at: path)
             } else {
                 try await mobileArchive.delete(path)
             }

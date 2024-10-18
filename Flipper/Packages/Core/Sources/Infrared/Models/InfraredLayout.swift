@@ -35,10 +35,11 @@ public extension InfraredLayout {
         encoder.outputFormatting = .sortedKeys // Save order
 
         guard
-            let layout = try? encoder.encode(self)
+            let layout = try? encoder.encode(self),
+            let content = String(data: layout, encoding: .utf8)
         else { return nil }
 
-        return String(decoding: layout, as: UTF8.self)
+        return content
             .replacingOccurrences(of: "\n", with: "")
             .replacingOccurrences(of: "\t", with: "")
             .replacingOccurrences(of: "\r", with: "")

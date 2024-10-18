@@ -21,7 +21,7 @@ public class MFKnownKeys {
 
     private func readKeys(at path: Path) async throws -> Set<MFKey64> {
         let bytes = try await storage.read(at: path).drain()
-        let array = String(decoding: bytes, as: UTF8.self)
+        let array = try bytes.utf8String
             .split { $0 == "\n" || $0 == "\r\n" }
             .compactMap { line in
                 MFKey64(hexValue: line)

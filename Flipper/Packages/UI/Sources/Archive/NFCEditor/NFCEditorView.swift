@@ -25,7 +25,7 @@ struct NFCEditorView: View {
     @State private var bytes: [UInt8?] = []
     @State private var showSaveAs = false
     @State private var showSaveChanges = false
-    @State private var error: String?
+    @State private var error: IdentifiableError?
 
     var body: some View {
         NavigationStack {
@@ -90,7 +90,7 @@ struct NFCEditorView: View {
             .environmentObject(hexKeyboardController)
         }
         .alert(item: $error) { error in
-            Alert(title: Text(error))
+            Alert(title: Text(error.description))
         }
         .task {
             load()
@@ -190,7 +190,7 @@ struct NFCEditorView: View {
     }
 
     func showError(_ error: Swift.Error) {
-        self.error = String(describing: error)
+        self.error = IdentifiableError(from: error)
     }
 }
 

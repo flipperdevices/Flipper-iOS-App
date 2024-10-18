@@ -83,7 +83,7 @@ extension Notifications: UNUserNotificationCenterDelegate {
 }
 
 extension Notifications: MessagingDelegate {
-    public func messaging(
+    public nonisolated func messaging(
         _ messaging: Messaging,
         didReceiveRegistrationToken fcmToken: String?
     ) {
@@ -91,8 +91,10 @@ extension Notifications: MessagingDelegate {
         print("Firebase registration token: \(String(describing: fcmToken))")
         #endif
 
-        if messaging.apnsToken != nil, fcmToken != nil {
-            messaging.subscribe(toTopic: firmwareReleaseTopic)
+        Task { @MainActor in
+            if messaging.apnsToken != nil, fcmToken != nil {
+                messaging.subscribe(toTopic: firmwareReleaseTopic)
+            }
         }
 
         // TODO: If necessary send token to application server.

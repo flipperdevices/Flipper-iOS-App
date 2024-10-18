@@ -24,7 +24,9 @@ class URLSessionData {
 
     private func makeRequest() async throws -> Data {
         try await withCheckedThrowingContinuation { continuation in
-            makeRequest(continuation.resume)
+            makeRequest { result in
+                continuation.resume(with: result)
+            }
         }
     }
 

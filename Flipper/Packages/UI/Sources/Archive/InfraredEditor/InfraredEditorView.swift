@@ -9,7 +9,7 @@ struct InfraredEditorView: View {
 
     @State private var remotes: [ArchiveItem.InfraredSignal] = []
     @State private var showSaveChanges = false
-    @State private var error: String?
+    @State private var error: IdentifiableError?
 
     private var canSave: Bool {
         remotes.allSatisfy { !$0.name.isEmpty }
@@ -41,7 +41,7 @@ struct InfraredEditorView: View {
             .scrollContentBackground(.hidden)
         }
         .alert(item: $error) { error in
-            Alert(title: Text(error))
+            Alert(title: Text(error.description))
         }
         .alert(isPresented: $showSaveChanges) {
             SaveChangesAlert(
@@ -80,7 +80,7 @@ struct InfraredEditorView: View {
     }
 
     private func showError(_ error: Swift.Error) {
-        self.error = String(describing: error)
+        self.error = IdentifiableError(from: error)
     }
 
     private func dontSave() {

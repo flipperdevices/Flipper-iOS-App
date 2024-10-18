@@ -12,8 +12,7 @@ class FlipperFavorites: FavoritesStorage {
     func read() async throws -> Favorites {
         do {
             let bytes = try await storage.read(at: path).drain()
-            let content = String(decoding: bytes, as: UTF8.self)
-            return try .init(decoding: content)
+            return try .init(decoding: bytes.utf8String)
         } catch let error as Peripheral.Error {
             if error == .storage(.doesNotExist) {
                 return .init([])

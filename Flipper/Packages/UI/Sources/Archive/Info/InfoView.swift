@@ -20,7 +20,7 @@ struct InfoView: View {
     @State private var showDumpEditor = false
     @State private var isEditing = false
 
-    @State private var error: String?
+    @State private var error: IdentifiableError?
 
     // Don`t forget to change logic in InfraredMenu too
     private var isEditable: Bool {
@@ -80,7 +80,7 @@ struct InfoView: View {
             NFCEditorView(item: $current)
         }
         .alert(item: $error) { error in
-            Alert(title: Text(error))
+            Alert(title: Text(error.description))
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
@@ -158,7 +158,7 @@ struct InfoView: View {
     }
 
     func showError(_ error: Swift.Error) {
-        self.error = String(describing: error)
+        self.error = IdentifiableError(from: error)
     }
 
     func shareKey() {

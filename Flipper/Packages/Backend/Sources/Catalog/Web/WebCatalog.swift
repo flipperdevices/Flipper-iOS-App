@@ -60,8 +60,10 @@ public class WebCatalog: CatalogService {
             throw URLError(.badServerResponse)
         }
         guard statusCode == 200 else {
+            let response = String(data: data, encoding: .utf8) ?? "unknown"
+
             logger.error("report issue: invalid status code - \(statusCode)")
-            logger.debug("response: \(String(decoding: data, as: UTF8.self))")
+            logger.debug("response: \(response)")
             return
         }
     }

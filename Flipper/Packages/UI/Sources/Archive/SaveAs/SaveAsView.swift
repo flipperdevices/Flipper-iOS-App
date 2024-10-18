@@ -7,7 +7,7 @@ struct SaveAsView: View {
 
     @Binding var item: ArchiveItem
 
-    @State private var error: String?
+    @State private var error: IdentifiableError?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -58,7 +58,7 @@ struct SaveAsView: View {
         }
         .navigationBarHidden(true)
         .alert(item: $error) { error in
-            Alert(title: Text(error))
+            Alert(title: Text(error.description))
         }
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
@@ -77,6 +77,6 @@ struct SaveAsView: View {
     }
 
     func showError(_ error: Swift.Error) {
-        self.error = String(describing: error)
+        self.error = IdentifiableError(from: error)
     }
 }

@@ -18,6 +18,6 @@ extension FileStorage {
 
     func write<T: Codable>(_ value: T, at path: Path) throws {
         let data = try JSONEncoder().encode(value)
-        try write(String(decoding: data, as: UTF8.self), at: path)
+        try write(try data.utf8String, at: path)
     }
 }
