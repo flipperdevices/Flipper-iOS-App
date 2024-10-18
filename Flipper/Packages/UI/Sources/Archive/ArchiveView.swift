@@ -121,8 +121,8 @@ struct ArchiveView: View {
                     }
                 }
             }
-            .onReceive(archive.imported) { item in
-                onItemAdded(item: item)
+            .onReceive(archive.added) { (item, shouldOpen) in
+                onItemAdded(item: item, open: shouldOpen)
             }
             .notification(isPresented: notifications.archive.showImported) {
                 ImportedBanner(itemName: importedName)
@@ -162,8 +162,12 @@ struct ArchiveView: View {
         synchronization.start()
     }
 
-    func onItemAdded(item: ArchiveItem) {
+    func onItemAdded(item: ArchiveItem, open: Bool) {
         Task { @MainActor in
+            if open {
+                selectedTab = .archive
+                path.append(Destination.info(item))
+            }
             try? await Task.sleep(seconds: 1)
             importedName = item.name.value
             notifications.archive.showImported = true

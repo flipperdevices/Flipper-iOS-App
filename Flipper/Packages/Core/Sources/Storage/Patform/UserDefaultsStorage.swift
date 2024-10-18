@@ -34,9 +34,6 @@ public class UserDefaultsStorage {
     @UserDefault(key: .isDevCatalog, defaultValue: false)
     public var isDevCatalog: Bool
 
-    @UserDefault(key: .showInfraredLibrary, defaultValue: false)
-    public var showInfraredLibrary: Bool
-
     func reset() {
         UserDefaults.Keys
             .allCases
@@ -104,7 +101,6 @@ public extension UserDefaults {
         case isSyncingDisabled = "isSyncingDisabled"
         case isProvisioningDisabled = "isProvisioningDisabled"
         case isDevCatalog = "isDevCatalog"
-        case showInfraredLibrary = "showInfraredLibrary"
 
         case appsSortOrder = "appsSortOrder"
 

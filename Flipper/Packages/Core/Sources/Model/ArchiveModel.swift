@@ -1,6 +1,8 @@
 import Combine
 import Foundation
 
+import Peripheral
+
 @MainActor
 public class ArchiveModel: ObservableObject {
     let synchronization: Synchronization
@@ -11,7 +13,7 @@ public class ArchiveModel: ObservableObject {
     @Published public private(set) var items: [ArchiveItem] = []
     @Published public private(set) var deleted: [ArchiveItem] = []
 
-    public let imported = PassthroughSubject<ArchiveItem, Never>()
+    public let added = PassthroughSubject<(ArchiveItem, Bool), Never>()
 
     public init(archive: Archive, synchronization: Synchronization) {
         self.archive = archive
@@ -86,12 +88,15 @@ public class ArchiveModel: ObservableObject {
         }
     }
 
-    public func add(_ item: ArchiveItem) async throws {
+    public func isExist(_ item: ArchiveItem) -> Bool {
+        archive.isExist(item)
+    }
+
+    public func add(_ item: ArchiveItem, open: Bool = false) async throws {
         do {
-            try await archive.importKey(item)
+            try await archive.addKey(item)
             logger.info("added: \(item.filename)")
-            imported.send(item)
-            recordImport()
+            added.send((item, open))
             synchronization.start()
         } catch {
             logger.error("add: \(error)")
@@ -133,9 +138,5 @@ public class ArchiveModel: ObservableObject {
 
     func recordEdit() {
         analytics.appOpen(target: .keyEdit)
-    }
-
-    func recordImport() {
-        analytics.appOpen(target: .keyImport)
     }
 }

@@ -4,6 +4,7 @@ struct InAppNotifications {
     var archive: Archive = .init()
     var apps: Apps = .init()
     var notifications: Notifications = .init()
+    var infraredLibrary: InfraredLibrary = .init()
 
     struct Archive {
         var showImported = false
@@ -18,6 +19,10 @@ struct InAppNotifications {
     struct Notifications {
         var showEnabled = false
         var showDisabled = false
+    }
+
+    struct InfraredLibrary {
+        var showRemoteFound = false
     }
 }
 
@@ -35,6 +40,11 @@ extension Binding where Value == InAppNotifications {
     var notifications: Value.Notifications {
         get { wrappedValue.notifications }
         nonmutating set { wrappedValue.notifications = newValue }
+    }
+
+    var infraredLibrary: Value.InfraredLibrary {
+        get { wrappedValue.infraredLibrary }
+        nonmutating set { wrappedValue.infraredLibrary = newValue }
     }
 }
 

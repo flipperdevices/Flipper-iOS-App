@@ -5,6 +5,7 @@ extension InfraredView {
     struct InfraredPagesLayout: View {
         @Environment(\.dismiss) private var dismiss
         @Environment(\.path) private var path
+        @Environment(\.notifications) private var notifications
 
         @EnvironmentObject private var emulate: Emulate
         @EnvironmentObject private var device: Device
@@ -16,6 +17,7 @@ extension InfraredView {
 
         @State private var isFlipperBusyAlertPresented: Bool = false
         @State private var showRemoteControl = false
+        @State private var remoteFoundAlertPresented: Bool = false
 
         @State private var viewState: ViewState = .loadLayoyt
         @State private var layoutState: InfraredLayoutState = .default
@@ -28,11 +30,20 @@ extension InfraredView {
             }
         }
 
+        private var keyName: Substring {
+            file.name
+                .replacingOccurrences(of: " ", with: "_")
+                .replacingOccurrences(of: "\\", with: "_")
+                .replacingOccurrences(of: "/", with: "_")
+                .replacingOccurrences(of: ".", with: "_")
+                .prefix(21)
+        }
+
         private var archiveItem: ArchiveItem? {
             guard let content else { return nil }
 
             return .init(
-                name: "",
+                name: .init(keyName),
                 kind: .infrared,
                 properties: content.properties,
                 shadowCopy: [],
@@ -106,6 +117,11 @@ extension InfraredView {
                     }
                 }
             }
+            .notification(
+                isPresented: notifications.infraredLibrary.showRemoteFound
+            ) {
+                RemoteFoundBanner()
+            }
             .alert(isPresented: $isFlipperBusyAlertPresented) {
                 FlipperIsBusyAlert(
                     isPresented: $isFlipperBusyAlertPresented,
@@ -150,6 +166,7 @@ extension InfraredView {
         }
 
         private func processLoadFile() async {
+            notifications.infraredLibrary.showRemoteFound = true
             viewState = .loadLayoyt
             do {
                 let layout = try await infraredModel.loadLayout(file)
@@ -159,9 +176,9 @@ extension InfraredView {
                 viewState = .syncing(layout, 0)
 
                 try await infraredModel
-                    .sendTempContent(fileContent.properties.content){
-                    viewState = .syncing(layout, $0 / 2)
-                }
+                    .sendTempContent(fileContent.properties.content) {
+                        viewState = .syncing(layout, $0 / 2)
+                    }
 
                 try await infraredModel.sendTempLayout(layout) {
                     viewState = .syncing(layout, $0 / 2 + 0.5)
@@ -185,6 +202,7 @@ extension InfraredView {
 
         private func retry() {
             Task {
+                notifications.infraredLibrary.showRemoteFound = false
                 await processLoadFile()
             }
         }

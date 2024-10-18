@@ -126,7 +126,7 @@ struct DeviceUpdateCard: View {
             LowBatteryAlert(isPresented: $showCharge)
         }
         .alert(isPresented: $showPauseSync) {
-            PauseSyncAlert(
+            PauseSyncToUpdateAlert(
                 isPresented: $showPauseSync,
                 installedVersion: updateModel.installed!,
                 availableVersion: updateModel.available!
