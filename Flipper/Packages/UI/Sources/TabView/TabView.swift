@@ -121,7 +121,7 @@ private extension TabView {
         case .connected: return "Connected"
         // TODO: Think about .notConnected state
         case .disconnected: return "Not Connected"
-        case .synchronizing: return "Syncing \(synchronization.progress)%"
+        case .synchronizing: return "Syncing \(synchronization.progress.value)%"
         case .synchronized: return "Synced!"
         case .updating: return "Connecting..."
         case .invalidPairing: return "Pairing Failed"

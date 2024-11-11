@@ -19,7 +19,10 @@ class ArchiveSyncLayoutTests: XCTestCase {
                 "test.irui"
             ]
         )
-        let actualLayoutPath = originPath.layoutPath
+        let actualLayoutPath = try? ArchiveItem(
+            path: originPath,
+            content: ""
+        ).layoutPath
 
         XCTAssertEqual(expectedLayoutPath, actualLayoutPath)
     }
@@ -32,6 +35,11 @@ class ArchiveSyncLayoutTests: XCTestCase {
                 "test.nfc"
             ]
         )
-        XCTAssertNil(originPath.layoutPath)
+        let layoutPath = try? ArchiveItem(
+            path: originPath,
+            content: ""
+        ).layoutPath
+
+        XCTAssertNil(layoutPath)
     }
 }

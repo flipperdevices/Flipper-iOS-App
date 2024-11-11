@@ -8,7 +8,7 @@ public class Synchronization: ObservableObject {
     // next step
     let device: Device
 
-    @Published public var progress: Int = 0
+    @Published public private(set) var progress: Progress = .prepare
 
     private var system: SystemAPI
     private var storage: StorageAPI
@@ -18,6 +18,22 @@ public class Synchronization: ObservableObject {
 
     private var isSyncingDisabled: Bool {
         UserDefaultsStorage.shared.isSyncingDisabled
+    }
+
+    public enum Progress: Equatable {
+        case prepare
+        case syncManifest(Double)
+        case syncFile(Double, String)
+        case done
+
+        public var value: Int {
+            return switch self {
+            case .prepare: 0
+            case .syncManifest(let value): Int(value * 100)
+            case .syncFile(let value, _): Int(value * 100)
+            case .done: 100
+            }
+        }
     }
 
     init(
@@ -62,7 +78,8 @@ public class Synchronization: ObservableObject {
                 logger.info("synchronize")
                 device.status = .synchronizing
 
-                progress = 0
+                progress = .prepare
+
                 if syncDateTime {
                     try await self.synchronizeDateTime()
                 }
@@ -91,10 +108,8 @@ public class Synchronization: ObservableObject {
         var changesCount = 0
         let time = try await measure {
             changesCount = try await archive.synchronize { progress in
-                // FIXME: find the issue (very rare)
-                guard progress.isNormal else { return }
                 Task { @MainActor in
-                    self.progress = Int(progress * 100)
+                    self.progress = progress
                 }
             }
         }

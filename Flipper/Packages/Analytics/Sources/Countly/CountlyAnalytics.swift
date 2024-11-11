@@ -173,6 +173,8 @@ fileprivate extension OpenTarget {
         case .fapHubApp: return 16
         case .fapHubInstall: return 17
         case .fapHubHide: return 18
+        case .infraredLibraryOpen: return 19
+        case .infraredLibrarySave: return 20
         }
     }
 }

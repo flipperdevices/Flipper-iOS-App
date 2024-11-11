@@ -68,6 +68,8 @@ public enum OpenTarget: Sendable {
     case fapHubApp(String)
     case fapHubInstall(String)
     case fapHubHide(String)
+    case infraredLibraryOpen
+    case infraredLibrarySave
 
     public var value: String {
         switch self {

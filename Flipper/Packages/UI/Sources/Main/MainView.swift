@@ -10,6 +10,7 @@ struct MainView: View {
     @StateObject var tabViewController: TabViewController = .init()
 
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
+    @AppStorage(.showInfraredRemoteTab) var showInfraredRemoteTab = true
 
     var body: some View {
         VStack(spacing: 0) {
@@ -48,6 +49,12 @@ struct MainView: View {
                 UserDefaults.group.synchronize()
                 emulate.stopEmulate()
                 WidgetCenter.shared.reloadTimelines(ofKind: "LiveWidget")
+            }
+        }
+        .onAppear {
+            if showInfraredRemoteTab {
+                selectedTab = .hub
+                showInfraredRemoteTab = false
             }
         }
     }

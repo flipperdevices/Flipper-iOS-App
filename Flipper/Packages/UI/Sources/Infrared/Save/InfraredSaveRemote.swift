@@ -62,14 +62,25 @@ extension InfraredView {
         private func save() {
             Task {
                 do {
+                    if archive.isExist(currentItem) {
+                        // TODO: remove dependency
+                        throw Archive.Error.alreadyExists
+                    }
+
                     try await infrared.copyTemp(currentItem)
-                    try await archive.add(currentItem)
+                    try await archive.add(currentItem, open: true)
                     path.clear()
-                    selectedTab = .archive
+                    recordInfraredLibrarySave()
                 } catch {
                     self.error = String(describing: error)
                 }
             }
+        }
+
+        // MARK: Analytics
+
+        private func recordInfraredLibrarySave() {
+            analytics.appOpen(target: .infraredLibrarySave)
         }
     }
 }

@@ -11,7 +11,7 @@ class CentryClient {
     }
 
     private var apiURL: URL {
-        #URL("https://sentry.flipperdevices.com/api/3/envelope/")
+        #URL("https://sentry.flipp.dev/api/3/envelope/")
     }
 
     private var sentryKey: String? {

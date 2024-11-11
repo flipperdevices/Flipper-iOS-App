@@ -58,24 +58,8 @@ struct ArchiveView: View {
     var body: some View {
         NavigationStack(path: $path) {
             VStack {
-                if device.status == .connecting {
-                    VStack(spacing: 14) {
-                        Spinner()
-                        Text("Connecting to Flipper...")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.black30)
-                    }
-                } else if device.status == .synchronizing {
-                    VStack(spacing: 14) {
-                        Spinner()
-                        Text(
-                            synchronization.progress == 0
-                                ? "Syncing..."
-                                : "Syncing \(synchronization.progress)%"
-                        )
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.black30)
-                    }
+                if device.status == .synchronizing {
+                    SyncProgress(synchronization.progress)
                 } else if !predicate.isEmpty {
                     ArchiveSearchView(predicate: $predicate)
                 } else {
@@ -137,8 +121,8 @@ struct ArchiveView: View {
                     }
                 }
             }
-            .onReceive(archive.imported) { item in
-                onItemAdded(item: item)
+            .onReceive(archive.added) { (item, shouldOpen) in
+                onItemAdded(item: item, open: shouldOpen)
             }
             .notification(isPresented: notifications.archive.showImported) {
                 ImportedBanner(itemName: importedName)
@@ -178,8 +162,12 @@ struct ArchiveView: View {
         synchronization.start()
     }
 
-    func onItemAdded(item: ArchiveItem) {
+    func onItemAdded(item: ArchiveItem, open: Bool) {
         Task { @MainActor in
+            if open {
+                selectedTab = .archive
+                path.append(Destination.info(item))
+            }
             try? await Task.sleep(seconds: 1)
             importedName = item.name.value
             notifications.archive.showImported = true

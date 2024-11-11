@@ -129,6 +129,7 @@ struct ImportView: View {
         .alert(item: $error) { error in
             Alert(title: Text(error))
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.background)
         .edgesIgnoringSafeArea(.bottom)
         .task {
@@ -162,6 +163,7 @@ struct ImportView: View {
         Task { @MainActor in
             do {
                 try await archive.add(item)
+                recordImport()
                 dismiss()
             } catch {
                 showError(error)
@@ -191,6 +193,12 @@ struct ImportView: View {
 
     func showError(_ error: Swift.Error) {
         self.error = String(describing: error)
+    }
+
+    // MARK: Analytics
+
+    private func recordImport() {
+        analytics.appOpen(target: .keyImport)
     }
 }
 

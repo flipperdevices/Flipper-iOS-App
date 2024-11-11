@@ -20,6 +20,9 @@ public class UserDefaultsStorage {
     @UserDefault(key: .hasReaderLog, defaultValue: false)
     public var hasReaderLog: Bool
 
+    @UserDefault(key: .showInfraredRemoteTab, defaultValue: true)
+    public var showInfraredRemoteTab: Bool
+
     // MARK: Debug
 
     @UserDefault(key: .isDebugMode, defaultValue: false)
@@ -33,9 +36,6 @@ public class UserDefaultsStorage {
 
     @UserDefault(key: .isDevCatalog, defaultValue: false)
     public var isDevCatalog: Bool
-
-    @UserDefault(key: .showInfraredLibrary, defaultValue: false)
-    public var showInfraredLibrary: Bool
 
     func reset() {
         UserDefaults.Keys
@@ -99,12 +99,12 @@ public extension UserDefaults {
         case hasReaderLog = "hasReaderLog"
         case showAppsUpdate = "showAppsUpdate"
         case hiddenApps = "hiddenApps"
+        case showInfraredRemoteTab = "showInfraredRemoteTab"
 
         case isDebugMode = "isDebugMode"
         case isSyncingDisabled = "isSyncingDisabled"
         case isProvisioningDisabled = "isProvisioningDisabled"
         case isDevCatalog = "isDevCatalog"
-        case showInfraredLibrary = "showInfraredLibrary"
 
         case appsSortOrder = "appsSortOrder"
 

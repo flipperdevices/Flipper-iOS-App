@@ -180,6 +180,8 @@ fileprivate extension Metric_Events_Open.OpenTarget {
         case .fapHubApp: self = .openFaphubApp
         case .fapHubInstall: self = .installFaphubApp
         case .fapHubHide: self = .hideFaphubApp
+        case .infraredLibraryOpen: self = .openInfraredLibrary
+        case .infraredLibrarySave: self = .saveInfraredLibrary
         }
     }
 }

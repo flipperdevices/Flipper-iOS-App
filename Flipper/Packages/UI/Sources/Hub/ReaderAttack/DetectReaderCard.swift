@@ -8,8 +8,8 @@ struct DetectReaderCard: View {
             icon: "nfc",
             title: "MIFARE Classic",
             image: "DetectReader",
-            subtitle: "Mfkey32 (Detect Reader)",
-            description: "Calculate keys from Detect Reader"
+            subtitle: "Mfkey32 (Extract MF Keys)",
+            description: "Calculate keys from Extract MF Keys"
         ) {
             Badge()
                 .opacity(hasNotification ? 1 : 0)

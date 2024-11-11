@@ -25,7 +25,7 @@ extension InfraredView {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 12) {
                             if categories.isEmpty {
-                                ForEach(1...8, id: \.self) { _ in
+                                ForEach(1..<9) { _ in
                                     CategoryPlaceholder()
                                 }
                             } else {

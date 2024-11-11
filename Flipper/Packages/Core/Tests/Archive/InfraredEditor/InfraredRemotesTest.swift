@@ -26,6 +26,7 @@ class InfraredRemoteParserTest: XCTestCase {
     static let mockRemotes = [
         ArchiveItem.InfraredSignal(
             name: "Up",
+            hash: "",
             type: .parsed(.init(
                 protocol: "NECext",
                 address: "EE 87 00 00",
@@ -33,6 +34,7 @@ class InfraredRemoteParserTest: XCTestCase {
         ),
         ArchiveItem.InfraredSignal(
             name: "Right",
+            hash: "",
             type: .raw(.init(
                 frequency: "38000",
                 dutyCycle: "0.330000",

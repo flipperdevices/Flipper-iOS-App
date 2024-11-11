@@ -10,6 +10,11 @@ public class Router: ObservableObject {
 
     public init() {
         isFirstLaunch = UserDefaultsStorage.shared.isFirstLaunch
+
+        // TODO: Find better way
+        if isFirstLaunch {
+            UserDefaultsStorage.shared.showInfraredRemoteTab = false
+        }
     }
 
     public func showWelcomeScreen() {

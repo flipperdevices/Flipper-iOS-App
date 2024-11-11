@@ -1,7 +1,7 @@
 import Core
 import SwiftUI
 
-struct PauseSyncAlert: View {
+struct PauseSyncToUpdateAlert: View {
     @Binding var isPresented: Bool
     let installedVersion: Update.Version
     let availableVersion: Update.Version

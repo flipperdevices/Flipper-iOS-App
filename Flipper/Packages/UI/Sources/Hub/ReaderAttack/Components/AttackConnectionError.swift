@@ -10,7 +10,7 @@ struct AttackConnectionError: View {
             "Make sure Flipper is Turned On",
             "If Flipper doesn’t respond, reboot it and connect to " +
             "the app via Bluetooth",
-            "Restart **Mfkey32 (Detect Reader)**"
+            "Restart **Mfkey32 (Extract MF Keys)**"
         ]
         .compactMap {
             try? .init(
