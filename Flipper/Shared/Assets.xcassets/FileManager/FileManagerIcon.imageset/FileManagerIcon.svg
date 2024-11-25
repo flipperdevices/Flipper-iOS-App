@@ -1,0 +1,21 @@
+<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1671_7185)">
+<mask id="path-1-inside-1_1671_7185" fill="white">
+<path d="M27 29H4V1H19V3H6V27H25V9H27V29Z"/>
+</mask>
+<path d="M4 29H2V31H4V29ZM27 29V31H29V29H27ZM27 9H29V7H27V9ZM19 1H21V-1H19V1ZM4 1V-1H2V1H4ZM19 3V5H21V3H19ZM6 3V1H4V3H6ZM6 27H4V29H6V27ZM25 27V29H27V27H25ZM25 9V7H23V9H25ZM4 31H27V27H4V31ZM29 29V9H25V29H29ZM19 -1H4V3H19V-1ZM2 1V29H6V1H2ZM17 1V3H21V1H17ZM19 1H6V5H19V1ZM4 3V27H8V3H4ZM6 29H25V25H6V29ZM27 27V9H23V27H27ZM25 11H27V7H25V11Z" fill="black" mask="url(#path-1-inside-1_1671_7185)"/>
+<rect x="19" y="3" width="2" height="2" fill="black"/>
+<rect x="17" y="3" width="4" height="8" fill="black"/>
+<rect x="21" y="5" width="2" height="2" fill="black"/>
+<rect x="23" y="7" width="2" height="2" fill="black"/>
+<rect x="17" y="7" width="8" height="4" fill="black"/>
+<rect x="10" y="14" width="11" height="2" fill="black"/>
+<rect x="10" y="18" width="11" height="2" fill="black"/>
+<rect x="10" y="22" width="11" height="2" fill="black"/>
+</g>
+<defs>
+<clipPath id="clip0_1671_7185">
+<rect width="23" height="28" fill="white" transform="translate(4 1)"/>
+</clipPath>
+</defs>
+</svg>

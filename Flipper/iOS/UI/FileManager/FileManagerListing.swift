@@ -1,91 +1,79 @@
 import Core
+import UniformTypeIdentifiers
 import Peripheral
 
 import SwiftUI
-import UniformTypeIdentifiers
 
 extension FileManagerView {
     struct FileManagerListing: View {
+        @EnvironmentObject var fileManager: RemoteFileManager
+        @EnvironmentObject var device: Device
+
         @Environment(\.path) var navigationPath
+        @Environment(\.dismiss) var dismiss
+
+        @State private var _elements: [Element] = []
+        @State private var isLoading = true
+        @State private var error: String?
+
+        @State private var isFileImporterPresented = false
+        @State private var showOptions = false
+        @State private var selectedElement: Element?
+
+        @AppStorage(.fileManagerShowHiddenFiles)
+        private var isHiddenFilesShow: Bool = false
+
+        @AppStorage(.fileManagerDisplayType)
+        private var displayType: DisplayType = .list
 
         let path: Peripheral.Path
 
-        @EnvironmentObject var fileManager: RemoteFileManager
-        @Environment(\.dismiss) var dismiss
-
-        @State private var elements: [Element] = []
-        @State private var error: String?
-        @State private var isBusy = false
-
-        @State private var name = ""
-        @State private var isNewFile = false
-        @State private var isNewDirectory = false
-        @FocusState var isNameFocused: Bool
-        var namePlaceholder: String {
-            "\(isNewFile ? "file" : "directory") name"
+        private var title: String {
+            path.isRoot ? "File Manager" : path.lastComponent ?? "/"
         }
 
-        @State private var selectedIndexSet: IndexSet?
-        @State private var isForceDeletePresented = false
-        @State private var isFileImporterPresented = false
+        enum DisplayType: String {
+            case list
+            case grid
+        }
+
+        var elements: [Element] {
+            isHiddenFilesShow
+                ? _elements
+                : _elements.filter { !$0.name.hasPrefix(".") }
+        }
 
         var body: some View {
             VStack {
-                if isBusy {
-                    ProgressView()
-                } else if let error = error {
+                if let error = error {
                     Text(error)
+                } else if isLoading {
+                    ProgressView()
                 } else {
                     List {
-                        if !path.isEmpty {
-                            Button("..") {
-                                dismiss()
-                            }
-                            .foregroundColor(.primary)
+                        if path.isRoot {
+                            SDCardInfo(device.storageInfo?.external)
+                        } else {
+                            NavigationPathView(path: path)
                         }
-                        if isNewFile || isNewDirectory {
-                            TextField(namePlaceholder, text: $name)
-                                .onSubmit {
-                                    submitNewElement()
-                                }
-                                .focused($isNameFocused)
-                        }
-                        ForEach(elements, id: \.description) {
-                            switch $0 {
-                            case .directory(let directory):
-                                NavigationLink(value: Destination.listing(
-                                    path.appending(directory.name)
-                                )) {
-                                    DirectoryRow(directory: directory)
-                                }
-                                .foregroundColor(.primary)
-                            case .file(let file):
-                                HStack {
-                                    FileRow(file: file)
-                                        .onTapGesture {
-                                            navigationPath.append(
-                                                Destination.editor(
-                                                    path.appending(file.name)
-                                                )
-                                            )
-                                        }
-                                    DownloadFileIcon()
-                                        .onTapGesture {
-                                            Task {
-                                                await downloadFile(file)
-                                            }
-                                        }
-                                }
-                            }
-                        }
-                        .onDelete { indexSet in
-                            Task {
-                                await delete(indexSet)
-                            }
+
+                        if elements.isEmpty {
+                            EmptyFolder(onUpload: showUpload)
+                        } else {
+                            FileManagerElements(
+                                elements: elements,
+                                displayType: displayType,
+                                onTap: navigate,
+                                onDelete: deleteFile,
+                                onAction: { selectedElement = $0 }
+                            )
                         }
                     }
+                    .listRowSpacing(12)
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.background)
             .navigationBarBackground(Color.a1)
             .navigationBarBackButtonHidden(true)
             .navigationBarTitleDisplayMode(.inline)
@@ -95,183 +83,132 @@ extension FileManagerView {
                         dismiss()
                     }
                 }
+
                 PrincipalToolbarItems(alignment: .leading) {
-                    Title(path.lastComponent ?? "/")
+                    Title(title)
                 }
+
                 TrailingToolbarItems {
-                    if !path.isEmpty {
-                        NavBarMenu {
-                            Button {
-                                newElement(isDirectory: false)
-                            } label: {
-                                Text("File")
-                            }
-
-                            Button {
-                                newElement(isDirectory: true)
-                            } label: {
-                                Text("Folder")
-                            }
-
-                            Button {
-                                isFileImporterPresented = true
-                            } label: {
-                                Text("Import")
-                            }
-                        } label: {
-                            Image(systemName: "plus")
-                        }
+                    EllipsisButton {
+                        showOptions = true
                     }
+                    .disabled(isLoading || error != nil)
                 }
             }
-            .alert(
-                "Directory is not empty",
-                isPresented: $isForceDeletePresented,
-                presenting: selectedIndexSet
-            ) { selectedIndexSet in
-                Button("Force Delete", role: .destructive) {
-                    Task {
-                        await delete(selectedIndexSet, force: true)
-                    }
-                }
+            .popup(isPresented: $showOptions) {
+                FileListingOptions(
+                    isPresented: $showOptions,
+                    upload: showUpload,
+                    selectDisplayType: { displayType = $0 },
+                    toggleHidenFiles: { isHiddenFilesShow = $0 },
+                    isHiddenFilesShow: isHiddenFilesShow
+                )
+            }
+            .sheet(item: $selectedElement) { element in
+                SelectedElementSheet(
+                    element: element,
+                    onExport: downloadFile,
+                    onDelete: deleteFile
+                )
             }
             .fileImporter(
                 isPresented: $isFileImporterPresented,
-                allowedContentTypes: [UTType.item]
+                allowedContentTypes: [UTType.item],
+                allowsMultipleSelection: true
             ) { result in
-                if case .success(let url) = result {
-                    Task {
-                        await importFile(url)
+                switch result {
+                case .success(let urls):
+                    importFiles(urls)
+                case .failure(let error):
+                    self.error = String(describing: error)
+                }
+            }
+            .task { await load() }
+            .refreshable { await load() }
+        }
+
+        private func load() async {
+            isLoading = true
+            defer { isLoading = false }
+
+            do {
+                _elements = try await fileManager.list(at: path)
+            } catch {
+                self.error = String(describing: error)
+            }
+        }
+
+        private func navigate(_ element: Element) {
+            switch element {
+            case .directory(let directory):
+                let nextPath = path.appending(directory.name)
+                navigationPath.append(Destination.listing(nextPath))
+            case .file(let file):
+                let nextPath = path.appending(file.name)
+                navigationPath.append(Destination.editor(nextPath))
+            }
+        }
+
+        private func importFiles(_ urls: [URL]) {
+            isLoading = true
+            defer { isLoading = false }
+
+            Task {
+                do {
+                    try await urls.forEach { url in
+                        try await fileManager.importFile(url: url, at: path)
                     }
+                    await load()
+                } catch {
+                    self.error = String(describing: error)
                 }
             }
-            .task {
-                await list()
-            }
         }
 
-        func showingProgress(_ task: () async throws -> Void) async throws {
-            isBusy = true
-            defer { isBusy = false }
-            try await task()
-        }
+        private func downloadFile(_ element: Element) {
+            isLoading = true
+            defer { isLoading = false }
 
-        func list() async {
-            do {
-                try await showingProgress {
-                    elements = try await fileManager.list(at: path)
-                }
-            } catch {
-                self.error = String(describing: error)
-            }
-        }
+            guard case let .file(file) = element else { return }
 
-        func delete(_ indexSet: IndexSet, force: Bool = false) async {
-            guard let index = indexSet.first else { return }
-            let element = elements.remove(at: index)
-            do {
-                try await fileManager.delete(element, at: path, force: force)
-            } catch let error as RemoteFileManager.Error
-                        where error == .directoryIsNotEmpty && !force {
-                elements.insert(element, at: index)
-                self.selectedIndexSet = indexSet
-                self.isForceDeletePresented = true
-            } catch {
-                self.error = String(describing: error)
-                elements.insert(element, at: index)
-            }
-        }
-
-        func newElement(isDirectory: Bool) {
-            name = ""
-            isNewFile = !isDirectory
-            isNewDirectory = isDirectory
-            isNameFocused = true
-        }
-
-        func submitNewElement() {
-            if !name.isEmpty {
-                let path = path.appending(name)
-                let isDirectory = isNewDirectory
-                Task {
-                    do {
-                        try await fileManager.create(
-                            path: path,
-                            isDirectory: isDirectory)
-                        await list()
-                    } catch {
-                        self.error = String(describing: error)
+            Task {
+                do {
+                    let bytes = try await fileManager.readRaw(
+                        at: path.appending(file.name))
+                    let url = try FileManager.default.createTempFile(
+                        name: file.name,
+                        data: .init(bytes))
+                    share(url) {
+                        try? FileManager.default.removeItem(at: url)
                     }
+                } catch {
+                    self.error = String(describing: error)
                 }
-            }
-            name = ""
-            isNewFile = false
-            isNewDirectory = false
-        }
-
-        func importFile(_ url: URL) async {
-            do {
-                try await showingProgress {
-                    try await fileManager.importFile(url: url, at: path)
-                }
-                await list()
-            } catch {
-                self.error = String(describing: error)
             }
         }
 
-        func downloadFile(_ file: File) async {
-            isBusy = true
-            defer { isBusy = false }
-            do {
-                let bytes = try await fileManager.readRaw(
-                    at: path.appending(file.name))
-                let url = try FileManager.default.createTempFile(
-                    name: file.name,
-                    data: .init(bytes))
-                share(url) {
-                    try? FileManager.default.removeItem(at: url)
+        private func deleteFile(_ element: Element) {
+            isLoading = true
+            defer { isLoading = false }
+
+            Task {
+                do {
+                    try await fileManager.delete(element, at: path)
+                    await load()
+                } catch {
+                    self.error = String(describing: error)
                 }
-            } catch {
-                self.error = String(describing: error)
             }
+        }
+
+        private func showUpload() {
+            isFileImporterPresented = true
         }
     }
 }
 
-extension FileManagerView.FileManagerListing {
-    struct DirectoryRow: View {
-        let directory: Directory
-
-        var body: some View {
-            HStack {
-                Image(systemName: "folder.fill")
-                    .frame(width: 20)
-
-                Text(directory.name)
-            }
-        }
-    }
-
-    struct FileRow: View {
-        let file: File
-
-        var body: some View {
-            HStack {
-                Image(systemName: "doc")
-                    .frame(width: 20)
-                Text(file.name)
-                Spacer()
-                Text("\(file.size) bytes")
-            }
-            .contentShape(Rectangle())
-        }
-    }
-
-    struct DownloadFileIcon: View {
-        var body: some View {
-            Image(systemName: "icloud.and.arrow.down")
-                .frame(width: 20, height: 20)
-        }
+fileprivate extension Peripheral.Path {
+    var isRoot: Bool {
+        self == "/ext"
     }
 }

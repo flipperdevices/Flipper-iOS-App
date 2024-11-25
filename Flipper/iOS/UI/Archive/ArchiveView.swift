@@ -34,6 +34,11 @@ struct ArchiveView: View {
         device.status == .synchronized
     }
 
+    var isFileManagerAvailable: Bool {
+        device.status == .connected ||
+        device.status == .synchronized
+    }
+
     var items: [ArchiveItem] {
         archive.items
     }
@@ -72,16 +77,11 @@ struct ArchiveView: View {
                         .padding(14)
 
                         NavigationLink(value: Destination.fileManager) {
-                            Card {
-                                HStack {
-                                    Text("File Manager")
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(14)
-                            }
-                            .padding(.horizontal, 14)
-                            .padding(.bottom, 14)
+                            FileManagerSection()
+                                .padding(.horizontal, 14)
+                                .padding(.bottom, 14)
                         }
+                        .disabled(!isFileManagerAvailable)
 
                         if !favoriteItems.isEmpty {
                             FavoritesSection(items: favoriteItems)

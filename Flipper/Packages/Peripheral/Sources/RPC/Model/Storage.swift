@@ -7,9 +7,11 @@ public struct StorageSpace: Equatable {
     public var used: Int { total - free }
 }
 
-public enum Element: Equatable {
+public enum Element: Equatable, Identifiable {
     case file(File)
     case directory(Directory)
+
+    public var id: String { name }
 
     public var name: String {
         switch self {
