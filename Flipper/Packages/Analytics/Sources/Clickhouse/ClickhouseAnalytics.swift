@@ -2,7 +2,7 @@ import Foundation
 import SwiftProtobuf
 
 public class ClickhouseAnalytics {
-    private let host = "https://metric.flipperdevices.com/report"
+    private let host = "https://metric.flipp.dev/report"
     private var hostURL: URL { .init(string: host).unsafelyUnwrapped }
 
     public init() {}
