@@ -23,9 +23,11 @@ public class RemoteFileManager: ObservableObject {
 
     // MARK: Directory
 
-    public func list(at path: Path) async throws -> [Element] {
+    public func list(at path: Path) async throws -> [ExtendedElement] {
         do {
-            return try await storage.list(at: path)
+            return try await storage
+                .list(at: path)
+                .map { .init(element: $0, relativeTo: path) }
         } catch {
             logger.error("list directory: \(error)")
             throw Error.unknown(.init(describing: error))

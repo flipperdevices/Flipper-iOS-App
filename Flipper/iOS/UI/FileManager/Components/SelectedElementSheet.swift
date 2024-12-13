@@ -1,4 +1,4 @@
-import Peripheral
+import Core
 
 import SwiftUI
 
@@ -7,24 +7,24 @@ extension FileManagerView.FileManagerListing {
         @Environment(\.colorScheme) var colorScheme
         @Environment(\.dismiss) private var dismiss
 
-        let element: Element
+        let element: ExtendedElement
 
-        let onExport: (Element) -> Void
-        let onDelete: (Element) -> Void
+        let onExport: (ExtendedElement) -> Void
+        let onDelete: (ExtendedElement) -> Void
 
         private var backgroundColor: Color {
             colorScheme == .light ? .white : .black88
         }
 
         private var type: String {
-            switch element {
+            switch element.type {
             case .directory: "Folder"
             case .file: "File"
             }
         }
 
         private var isDirectory: Bool {
-            return if case .directory = element {
+            return if case .directory = element.type {
                 true
             } else {
                 false

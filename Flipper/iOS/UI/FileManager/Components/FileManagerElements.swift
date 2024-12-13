@@ -1,15 +1,15 @@
-import Peripheral
+import Core
 
 import SwiftUI
 
 extension FileManagerView.FileManagerListing {
     struct FileManagerElements: View {
-        let elements: [Element]
+        let elements: [ExtendedElement]
         let displayType: DisplayType
 
-        let onTap: (Element) -> Void
-        let onDelete: (Element) -> Void
-        let onAction: (Element) -> Void
+        let onTap: (ExtendedElement) -> Void
+        let onDelete: (ExtendedElement) -> Void
+        let onAction: (ExtendedElement) -> Void
 
         private let columns = [GridItem(.flexible()), GridItem(.flexible())]
 
@@ -17,7 +17,7 @@ extension FileManagerView.FileManagerListing {
             Group {
                 switch displayType {
                 case .list:
-                    ForEach(elements, id: \.description) { element in
+                    ForEach(elements) { element in
                         ElementRow(
                             element: element,
                             type: displayType,
@@ -36,7 +36,7 @@ extension FileManagerView.FileManagerListing {
                     }
                 case .grid:
                     LazyVGrid(columns: columns, spacing: 12) {
-                        ForEach(elements, id: \.description) { element in
+                        ForEach(elements) { element in
                             ElementRow(
                                 element: element,
                                 type: displayType,

@@ -12,13 +12,13 @@ extension FileManagerView {
         @Environment(\.path) var navigationPath
         @Environment(\.dismiss) var dismiss
 
-        @State private var _elements: [Element] = []
+        @State private var _elements: [ExtendedElement] = []
         @State private var isLoading = true
         @State private var error: String?
 
         @State private var isFileImporterPresented = false
         @State private var showOptions = false
-        @State private var selectedElement: Element?
+        @State private var selectedElement: ExtendedElement?
 
         @AppStorage(.fileManagerShowHiddenFiles)
         private var isHiddenFilesShow: Bool = false
@@ -37,7 +37,7 @@ extension FileManagerView {
             case grid
         }
 
-        var elements: [Element] {
+        var elements: [ExtendedElement] {
             isHiddenFilesShow
                 ? _elements
                 : _elements.filter { !$0.name.hasPrefix(".") }
@@ -104,9 +104,9 @@ extension FileManagerView {
                     isHiddenFilesShow: isHiddenFilesShow
                 )
             }
-            .sheet(item: $selectedElement) { element in
+            .sheet(item: $selectedElement) {
                 SelectedElementSheet(
-                    element: element,
+                    element: $0,
                     onExport: downloadFile,
                     onDelete: deleteFile
                 )
@@ -138,8 +138,8 @@ extension FileManagerView {
             }
         }
 
-        private func navigate(_ element: Element) {
-            switch element {
+        private func navigate(_ extended: ExtendedElement) {
+            switch extended.type {
             case .directory(let directory):
                 let nextPath = path.appending(directory.name)
                 navigationPath.append(Destination.listing(nextPath))
@@ -165,11 +165,11 @@ extension FileManagerView {
             }
         }
 
-        private func downloadFile(_ element: Element) {
+        private func downloadFile(_ extended: ExtendedElement) {
             isLoading = true
             defer { isLoading = false }
 
-            guard case let .file(file) = element else { return }
+            guard case let .file(file) = extended.type else { return }
 
             Task {
                 do {
@@ -187,13 +187,13 @@ extension FileManagerView {
             }
         }
 
-        private func deleteFile(_ element: Element) {
+        private func deleteFile(_ extended: ExtendedElement) {
             isLoading = true
             defer { isLoading = false }
 
             Task {
                 do {
-                    try await fileManager.delete(element, at: path)
+                    try await fileManager.delete(extended.type, at: path)
                     await load()
                 } catch {
                     self.error = String(describing: error)

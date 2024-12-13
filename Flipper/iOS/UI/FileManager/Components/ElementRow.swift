@@ -1,11 +1,10 @@
 import Core
-import Peripheral
 
 import SwiftUI
 
 extension FileManagerView.FileManagerListing {
     struct ElementRow: View {
-        let element: Element
+        let element: ExtendedElement
         let type: DisplayType
 
         let onAction: () -> Void
@@ -40,10 +39,10 @@ extension FileManagerView.FileManagerListing {
 
 fileprivate extension FileManagerView.FileManagerListing.ElementRow {
     struct Icon: View {
-        let element: Element
+        let element: ExtendedElement
 
         private var image: Image {
-            switch element {
+            switch element.type {
             case .directory:
                 return .init("Folder")
             case .file:
@@ -55,7 +54,7 @@ fileprivate extension FileManagerView.FileManagerListing.ElementRow {
             }
         }
 
-        init(for element: Element) {
+        init(for element: ExtendedElement) {
             self.element = element
         }
 
@@ -69,9 +68,9 @@ fileprivate extension FileManagerView.FileManagerListing.ElementRow {
     }
 
     struct Title: View {
-        let element: Element
+        let element: ExtendedElement
 
-        init(for element: Element) {
+        init(for element: ExtendedElement) {
             self.element = element
         }
 
@@ -82,7 +81,7 @@ fileprivate extension FileManagerView.FileManagerListing.ElementRow {
                     .foregroundColor(.primary)
                     .lineLimit(1)
 
-                if case let .file(file) = element {
+                if case let .file(file) = element.type {
                     Text(file.size.hr)
                         .font(.system(size: 10, weight: .medium))
                         .foregroundColor(.black30)
