@@ -26,6 +26,7 @@ struct ArchiveView: View {
         case importing(URL)
         case category(ArchiveItem.Kind)
         case categoryDeleted
+        case fileManager
     }
 
     var canPullToRefresh: Bool {
@@ -69,6 +70,18 @@ struct ArchiveView: View {
                             deletedCount: archive.deleted.count
                         )
                         .padding(14)
+
+                        NavigationLink(value: Destination.fileManager) {
+                            Card {
+                                HStack {
+                                    Text("File Manager")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(14)
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.bottom, 14)
+                        }
 
                         if !favoriteItems.isEmpty {
                             FavoritesSection(items: favoriteItems)
@@ -134,6 +147,7 @@ struct ArchiveView: View {
                 case .importing(let url): ImportView(url: url)
                 case .category(let kind): CategoryView(kind: kind)
                 case .categoryDeleted: CategoryDeletedView()
+                case .fileManager: FileManagerView()
                 }
             }
         }
