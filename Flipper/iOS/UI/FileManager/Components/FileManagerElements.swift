@@ -5,7 +5,7 @@ import SwiftUI
 extension FileManagerView.FileManagerListing {
     struct FileManagerElements: View {
         let elements: [ExtendedElement]
-        let displayType: DisplayType
+        let displayType: FileManagerSettings.DisplayType
 
         let onTap: (ExtendedElement) -> Void
         let onDelete: (ExtendedElement) -> Void

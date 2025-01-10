@@ -20,11 +20,8 @@ extension FileManagerView {
         @State private var showOptions = false
         @State private var selectedElement: ExtendedElement?
 
-        @AppStorage(.fileManagerShowHiddenFiles)
-        private var isHiddenFilesShow: Bool = false
-
-        @AppStorage(.fileManagerDisplayType)
-        private var displayType: DisplayType = .list
+        @AppStorage(.fileManagerSettings)
+        private var settings: FileManagerSettings = .init()
 
         let path: Peripheral.Path
 
@@ -32,13 +29,8 @@ extension FileManagerView {
             path.isRoot ? "File Manager" : path.lastComponent ?? "/"
         }
 
-        enum DisplayType: String {
-            case list
-            case grid
-        }
-
         var elements: [ExtendedElement] {
-            isHiddenFilesShow
+            settings.isHiddenFilesShow
                 ? _elements
                 : _elements.filter { !$0.name.hasPrefix(".") }
         }
@@ -62,7 +54,7 @@ extension FileManagerView {
                         } else {
                             FileManagerElements(
                                 elements: elements,
-                                displayType: displayType,
+                                displayType: settings.displayType,
                                 onTap: navigate,
                                 onDelete: deleteFile,
                                 onAction: { selectedElement = $0 }
@@ -98,10 +90,8 @@ extension FileManagerView {
             .popup(isPresented: $showOptions) {
                 FileListingOptions(
                     isPresented: $showOptions,
-                    upload: showUpload,
-                    selectDisplayType: { displayType = $0 },
-                    toggleHidenFiles: { isHiddenFilesShow = $0 },
-                    isHiddenFilesShow: isHiddenFilesShow
+                    settings: $settings,
+                    upload: showUpload
                 )
             }
             .sheet(item: $selectedElement) {

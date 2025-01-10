@@ -3,12 +3,9 @@ import SwiftUI
 extension FileManagerView.FileManagerListing {
     struct FileListingOptions: View {
         @Binding var isPresented: Bool
+        @Binding var settings: FileManagerSettings
 
         let upload: () -> Void
-        let selectDisplayType: (DisplayType) -> Void
-        let toggleHidenFiles: (Bool) -> Void
-
-        let isHiddenFilesShow: Bool
 
         var body: some View {
             HStack {
@@ -24,22 +21,20 @@ extension FileManagerView.FileManagerListing {
 
                         Option(title: "List", image: "List") {
                             isPresented = false
-                            selectDisplayType(.list)
+                            settings.displayType = .list
                         }
 
                         Option(title: "Grid", image: "Grid") {
                             isPresented = false
-                            selectDisplayType(.grid)
+                            settings.displayType = .grid
                         }
 
                         Divider()
 
                         ShowHiddenFilesOption(
-                            isHiddenFilesShow: isHiddenFilesShow
-                        ) {
-                            isPresented = false
-                            toggleHidenFiles(!isHiddenFilesShow)
-                        }
+                            isPresented: $isPresented,
+                            settings: $settings
+                        )
                     }
                 }
                 .frame(width: 200)
@@ -75,17 +70,22 @@ fileprivate extension FileManagerView.FileManagerListing.FileListingOptions {
     }
 
     struct ShowHiddenFilesOption: View {
-        let isHiddenFilesShow: Bool
-        let onTap: () -> Void
+        @Binding var isPresented: Bool
+        @Binding var settings: FileManagerSettings
 
         var body: some View {
-            Button(action: onTap) {
+            Button(
+                action: {
+                    settings.isHiddenFilesShow.toggle()
+                    isPresented = false
+                }
+            ) {
                 HStack(spacing: 8) {
                     ZStack {
                         Circle()
                             .stroke(Color.black30, lineWidth: 2)
 
-                        if isHiddenFilesShow {
+                        if settings.isHiddenFilesShow {
                             Circle()
                                 .fill(Color.a1)
                                 .padding(4)

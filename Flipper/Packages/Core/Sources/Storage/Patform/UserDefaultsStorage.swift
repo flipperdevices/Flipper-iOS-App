@@ -110,7 +110,6 @@ public extension UserDefaults {
 
         case todayWidgetUpdated = "todayWidgetUpdated"
 
-        case fileManagerDisplayType = "fileManagerDisplayType"
-        case fileManagerShowHiddenFiles = "fileManagerShowHiddenFiles"
+        case fileManagerSettings = "fileManagerSettings"
     }
 }
