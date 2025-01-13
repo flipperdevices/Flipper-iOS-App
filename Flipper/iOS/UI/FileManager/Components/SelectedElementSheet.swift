@@ -5,7 +5,6 @@ import SwiftUI
 extension FileManagerView.FileManagerListing {
     struct SelectedElementSheet: View {
         @Environment(\.colorScheme) var colorScheme
-        @Environment(\.dismiss) private var dismiss
 
         let element: ExtendedElement
 
@@ -45,7 +44,6 @@ extension FileManagerView.FileManagerListing {
                     image: "Share",
                     title: "Export"
                 ) {
-                    dismiss()
                     onExport(element)
                 }
                 .disabled(isDirectory)
@@ -55,7 +53,6 @@ extension FileManagerView.FileManagerListing {
                     image: "Delete",
                     title: "Delete"
                 ) {
-                    dismiss()
                     onDelete(element)
                 }
                 .disabled(isDirectory)

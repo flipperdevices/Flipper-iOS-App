@@ -170,6 +170,8 @@ extension FileManagerView {
                         data: .init(bytes))
                     share(url) {
                         try? FileManager.default.removeItem(at: url)
+                        // Sheet close before present share activity
+                        selectedElement = nil
                     }
                 } catch {
                     self.error = String(describing: error)
