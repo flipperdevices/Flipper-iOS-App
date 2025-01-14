@@ -55,7 +55,6 @@ extension FileManagerView.FileManagerListing {
                 ) {
                     onDelete(element)
                 }
-                .disabled(isDirectory)
                 .foregroundColor(.red)
             }
             .padding(.horizontal, 14)

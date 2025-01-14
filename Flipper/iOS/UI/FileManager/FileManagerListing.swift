@@ -16,9 +16,12 @@ extension FileManagerView {
         @State private var isLoading = true
         @State private var error: String?
 
+        @State private var isForceDeletePresented = false
         @State private var isFileImporterPresented = false
         @State private var showOptions = false
+
         @State private var selectedElement: ExtendedElement?
+        @State private var deletedElement: ExtendedElement?
 
         @AppStorage(.fileManagerSettings)
         private var settings: FileManagerSettings = .init()
@@ -56,7 +59,7 @@ extension FileManagerView {
                                 elements: elements,
                                 displayType: settings.displayType,
                                 onTap: navigate,
-                                onDelete: deleteFile,
+                                onDelete: { deleteFile($0) },
                                 onAction: { selectedElement = $0 }
                             )
                         }
@@ -98,8 +101,17 @@ extension FileManagerView {
                 SelectedElementSheet(
                     element: $0,
                     onExport: downloadFile,
-                    onDelete: deleteFile
+                    onDelete: { deleteFile($0) }
                 )
+            }
+            .alert(
+                "Directory is not empty",
+                isPresented: $isForceDeletePresented,
+                presenting: deletedElement
+            ) { deletedElement in
+                Button("Force Delete", role: .destructive) {
+                    deleteFile(deletedElement, force: true)
+                }
             }
             .fileImporter(
                 isPresented: $isFileImporterPresented,
@@ -179,14 +191,26 @@ extension FileManagerView {
             }
         }
 
-        private func deleteFile(_ extended: ExtendedElement) {
+        private func deleteFile(
+            _ extended: ExtendedElement,
+            force: Bool = false
+        ) {
+            deletedElement = extended
             isLoading = true
             defer { isLoading = false }
 
             Task {
+                defer { selectedElement = nil }
                 do {
-                    try await fileManager.delete(extended.type, at: path)
+                    try await fileManager.delete(
+                        extended.type,
+                        at: path,
+                        force: force
+                    )
                     await load()
+                } catch let error as RemoteFileManager.Error
+                            where error == .directoryIsNotEmpty && !force {
+                    self.isForceDeletePresented = true
                 } catch {
                     self.error = String(describing: error)
                 }
