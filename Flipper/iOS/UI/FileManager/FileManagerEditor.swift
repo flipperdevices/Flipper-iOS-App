@@ -30,17 +30,13 @@ extension FileManagerView {
                 } else if isLoading {
                     ProgressView()
                 } else {
-                    Card {
-                        TextEditor(text: $current)
-                            .focused($textFieldFocus)
-                            .font(.system(size: 14, weight: .medium))
-                            .hideScrollBackground()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .padding(4)
-                    }
-                    .padding(14)
+                    TextEditor(text: $current)
+                        .focused($textFieldFocus)
+                        .font(.system(size: 14, weight: .medium))
+                        .hideScrollBackground()
                 }
             }
+            .padding(14)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
             .navigationBarBackground(Color.a1)
