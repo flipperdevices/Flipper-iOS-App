@@ -15,36 +15,58 @@ extension FileManagerView {
                 .filter { $0 != "ext" }
         }
 
+        var gradient: LinearGradient {
+            LinearGradient(
+                gradient: Gradient(
+                    stops: [
+                        Gradient.Stop(color: .background, location: 0.2),
+                        Gradient.Stop(color: .clear, location: 1),
+                    ]
+                ),
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        }
+
         var body: some View {
-            HStack(spacing: 8) {
-                Image("SDCard")
+            HStack(spacing: 0) {
+                Image("SDCardDummy")
                     .resizable()
                     .renderingMode(.template)
-                    .frame(width: 24, height: 24)
+                    .frame(width: 20, height: 24)
                     .foregroundColor(.primary)
                     .onTapGesture { navigate(to: 0) }
 
-                Text("/")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.black30)
+                ZStack(alignment: .leading) {
+                    ScrollViewReader { proxy in
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                Spacer()
+                                    .frame(width: 0, height: 0)
 
-                ScrollViewReader { proxy in
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(components.indices, id: \.self) { index in
-                                Element(
-                                    component: components[index],
-                                    index: index,
-                                    onTap: navigate
-                                )
+                                ForEach(
+                                    components.indices,
+                                    id: \.self
+                                ) { index in
+                                    Element(
+                                        component: components[index],
+                                        index: index,
+                                        onTap: navigate
+                                    )
+                                    .id(index)
+                                }
+                            }
+                        }
+                        .onAppear {
+                            if let lastIndex = components.indices.last {
+                                proxy.scrollTo(lastIndex, anchor: .trailing)
                             }
                         }
                     }
-                    .onAppear {
-                        if let lastIndex = components.indices.last {
-                            proxy.scrollTo(lastIndex, anchor: .trailing)
-                        }
-                    }
+
+                    Rectangle()
+                        .fill(gradient)
+                        .frame(width: 8, height: 24)
                 }
             }
         }
@@ -64,18 +86,36 @@ fileprivate extension FileManagerView.NavigationPathView {
 
         var body: some View {
             HStack(spacing: 8) {
-                if index != 0 {
-                    Text("/")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.black30)
-                }
+                Text("/")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.black30)
 
                 Text(component)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.primary)
                     .onTapGesture { onTap(index + 1) }
             }
-            .id(index)
         }
     }
+}
+
+#Preview {
+    VStack {
+        FileManagerView.NavigationPathView(
+            path: Peripheral.Path(string: "/ext/apps")
+        )
+
+        FileManagerView.NavigationPathView(
+            path: Peripheral.Path(string: "/ext/Downloads/2021/08/17")
+        )
+
+        FileManagerView.NavigationPathView(
+            path: Peripheral.Path(
+                string: "/ext/Downloads/2021/08/17/dummy/test/file"
+            )
+        )
+    }
+    .environment(\.path, .constant(NavigationPath()))
+    .padding(12)
+    .background(Color.background)
 }
