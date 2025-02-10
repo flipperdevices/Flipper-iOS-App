@@ -23,6 +23,10 @@ extension FileManagerView {
         @State private var selectedElement: ExtendedElement?
         @State private var deletedElement: ExtendedElement?
 
+        // MARK: Create File/Directory
+        @FocusState var isNameFocused: Bool
+        @State private var newElement: FileManagerNewElement?
+
         @AppStorage(.fileManagerSettings)
         private var settings: FileManagerSettings = .init()
 
@@ -58,6 +62,20 @@ extension FileManagerView {
                             }
                         }
                         .padding([.horizontal, .top], 14)
+
+                        if let newElement {
+                            TextField(
+                                newElement.namePlaceholder,
+                                text: Binding(
+                                    get: { self.newElement?.name ?? "" },
+                                    set: { self.newElement?.name = $0 }
+                                )
+                            )
+                            .textFieldStyle(.roundedBorder)
+                            .onSubmit { submitNewElement() }
+                            .focused($isNameFocused)
+                            .padding([.horizontal, .top], 14)
+                        }
 
                         Group {
                             if elements.isEmpty {
@@ -103,6 +121,8 @@ extension FileManagerView {
                 FileListingOptions(
                     isPresented: $showOptions,
                     settings: $settings,
+                    createFolder: { newElement(isDirectory: true) },
+                    createFile: { newElement(isDirectory: false) },
                     upload: showUpload
                 )
             }
@@ -228,6 +248,34 @@ extension FileManagerView {
 
         private func showUpload() {
             isFileImporterPresented = true
+        }
+
+        // MARK: Create File/Directory
+        func newElement(isDirectory: Bool) {
+            newElement = .init(name: "", isNewDirectory: isDirectory)
+            isNameFocused = true
+        }
+
+        func submitNewElement() {
+            guard let newElement = newElement else { return }
+            let name = newElement.name
+            let isNewDirectory = newElement.isNewDirectory
+
+            if !name.isEmpty {
+                let path = path.appending(name)
+                let isDirectory = isNewDirectory
+                Task {
+                    do {
+                        try await fileManager.create(
+                            path: path,
+                            isDirectory: isDirectory)
+                        await load()
+                    } catch {
+                        self.error = String(describing: error)
+                    }
+                }
+            }
+            self.newElement = nil
         }
     }
 }

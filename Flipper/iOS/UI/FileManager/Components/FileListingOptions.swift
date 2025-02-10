@@ -5,6 +5,8 @@ extension FileManagerView.FileManagerListing {
         @Binding var isPresented: Bool
         @Binding var settings: FileManagerSettings
 
+        let createFolder: () -> Void
+        let createFile: () -> Void
         let upload: () -> Void
 
         var body: some View {
@@ -12,6 +14,16 @@ extension FileManagerView.FileManagerListing {
                 Spacer()
                 Card {
                     VStack(alignment: .leading, spacing: 0) {
+                        Option(title: "Create Folder", image: "CreateFolder") {
+                            isPresented = false
+                            createFolder()
+                        }
+
+                        Option(title: "Create File", image: "CreateFile") {
+                            isPresented = false
+                            createFile()
+                        }
+
                         Option(title: "Upload", image: "Share") {
                             isPresented = false
                             upload()

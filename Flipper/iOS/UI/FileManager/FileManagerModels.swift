@@ -49,3 +49,17 @@ struct FileManagerSettings: Codable, RawRepresentable {
         try container.encode(displayType, forKey: .displayType)
     }
 }
+
+struct FileManagerNewElement {
+    var name: String
+    let isNewDirectory: Bool
+
+    init(name: String, isNewDirectory: Bool) {
+        self.name = name
+        self.isNewDirectory = isNewDirectory
+    }
+
+    var namePlaceholder: String {
+        "\(isNewDirectory ? "directory" : "file") name"
+    }
+}
