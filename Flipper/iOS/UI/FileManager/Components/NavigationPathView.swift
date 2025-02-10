@@ -20,7 +20,7 @@ extension FileManagerView {
                 gradient: Gradient(
                     stops: [
                         Gradient.Stop(color: .background, location: 0.2),
-                        Gradient.Stop(color: .clear, location: 1),
+                        Gradient.Stop(color: .clear, location: 1)
                     ]
                 ),
                 startPoint: .leading,
@@ -69,6 +69,7 @@ extension FileManagerView {
                         .frame(width: 8, height: 24)
                 }
             }
+            .padding(4)
         }
 
         private func navigate(to index: Int) {

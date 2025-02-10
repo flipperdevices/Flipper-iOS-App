@@ -43,32 +43,37 @@ extension FileManagerView {
         }
 
         var body: some View {
-            VStack {
+            Group {
                 if let error = error {
                     Text(error)
                 } else if isLoading {
                     ProgressView()
                 } else {
-                    List {
-                        if path.isRoot {
-                            SDCardInfo(storage: storage)
-                        } else {
-                            NavigationPathView(path: path)
+                    FixedScrollView(showsIndicators: false) {
+                        Group {
+                            if path.isRoot {
+                                SDCardInfo(storage: storage)
+                            } else {
+                                NavigationPathView(path: path)
+                            }
                         }
+                        .padding([.horizontal, .top], 14)
 
-                        if elements.isEmpty {
-                            EmptyFolder(onUpload: showUpload)
-                        } else {
-                            FileManagerElements(
-                                elements: elements,
-                                displayType: settings.displayType,
-                                onTap: navigate,
-                                onDelete: { deleteFile($0) },
-                                onAction: { selectedElement = $0 }
-                            )
+                        Group {
+                            if elements.isEmpty {
+                                EmptyFolder(onUpload: showUpload)
+                            } else {
+                                FileManagerElements(
+                                    elements: elements,
+                                    displayType: settings.displayType,
+                                    onTap: navigate,
+                                    onDelete: { deleteFile($0) },
+                                    onSelect: { selectedElement = $0 }
+                                )
+                            }
                         }
+                        .padding(14)
                     }
-                    .listRowSpacing(12)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -230,5 +235,31 @@ extension FileManagerView {
 fileprivate extension Peripheral.Path {
     var isRoot: Bool {
         self == "/ext"
+    }
+}
+
+private struct FixedScrollView<Content: View>: View {
+    let showsIndicators: Bool
+    let content: () -> Content
+
+    init(
+        showsIndicators: Bool,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.showsIndicators = showsIndicators
+        self.content = content
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView(showsIndicators: showsIndicators) {
+                VStack(spacing: 0) {
+                    content()
+                    Spacer()
+                }
+                .frame(minHeight: geometry.size.height)
+            }
+            .frame(width: geometry.size.width)
+        }
     }
 }

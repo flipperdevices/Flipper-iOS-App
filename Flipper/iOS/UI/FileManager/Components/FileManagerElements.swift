@@ -9,54 +9,35 @@ extension FileManagerView.FileManagerListing {
 
         let onTap: (ExtendedElement) -> Void
         let onDelete: (ExtendedElement) -> Void
-        let onAction: (ExtendedElement) -> Void
+        let onSelect: (ExtendedElement) -> Void
 
         private let columns = [GridItem(.flexible()), GridItem(.flexible())]
 
         var body: some View {
-            Group {
-                switch displayType {
-                case .list:
+            switch displayType {
+            case .list:
+                LazyVStack(spacing: 12) {
                     ForEach(elements) { element in
                         ElementRow(
                             element: element,
                             type: displayType,
-                            onAction: { onAction(element) }
+                            onAction: { onSelect(element) }
                         )
                         .onTapGesture { onTap(element) }
-                        .swipeActions {
-                            Button(role: .destructive) {
-                                onDelete(element)
-                            } label: {
-                                Image("Delete")
-                                    .foregroundColor(.red)
-                            }
-                            .tint(.red.opacity(0.1))
-                        }
                     }
-                case .grid:
-                    LazyVGrid(columns: columns, spacing: 12) {
-                        ForEach(elements) { element in
-                            ElementRow(
-                                element: element,
-                                type: displayType,
-                                onAction: { onAction(element) }
-                            )
-                            .onTapGesture { onTap(element) }
-                        }
+                }
+            case .grid:
+                LazyVGrid(columns: columns, spacing: 12) {
+                    ForEach(elements) { element in
+                        ElementRow(
+                            element: element,
+                            type: displayType,
+                            onAction: { onSelect(element) }
+                        )
+                        .onTapGesture { onTap(element) }
                     }
                 }
             }
-            .listRowSeparator(.hidden)
-            .listRowInsets(
-                .init(
-                    top: 0,
-                    leading: 0,
-                    bottom: 0,
-                    trailing: 0
-                )
-            )
-            .listRowBackground(Color.clear)
         }
     }
 }

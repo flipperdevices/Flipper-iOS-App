@@ -74,12 +74,10 @@ fileprivate extension FileManagerView.FileManagerListing.FileListingOptions {
         @Binding var settings: FileManagerSettings
 
         var body: some View {
-            Button(
-                action: {
-                    settings.isHiddenFilesShow.toggle()
-                    isPresented = false
-                }
-            ) {
+            Button(action: {
+                settings.isHiddenFilesShow.toggle()
+                isPresented = false
+            }, label: {
                 HStack(spacing: 8) {
                     ZStack {
                         Circle()
@@ -99,7 +97,7 @@ fileprivate extension FileManagerView.FileManagerListing.FileListingOptions {
                         .foregroundColor(.primary)
                     Spacer()
                 }
-            }
+            })
             .padding(12)
         }
     }

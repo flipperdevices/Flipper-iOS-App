@@ -25,7 +25,10 @@ extension FileManagerView.FileManagerListing {
 
                 Spacer()
             }
-            .frame(maxWidth: .infinity)
         }
     }
+}
+
+#Preview {
+    FileManagerView.FileManagerListing.EmptyFolder(onUpload: {})
 }
