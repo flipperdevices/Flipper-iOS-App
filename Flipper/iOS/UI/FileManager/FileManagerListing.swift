@@ -38,6 +38,10 @@ extension FileManagerView {
                 : _elements.filter { !$0.name.hasPrefix(".") }
         }
 
+        var storage: StorageSpace? {
+            device.storageInfo?.external
+        }
+
         var body: some View {
             VStack {
                 if let error = error {
@@ -47,7 +51,7 @@ extension FileManagerView {
                 } else {
                     List {
                         if path.isRoot {
-                            SDCardInfo(device.storageInfo?.external)
+                            SDCardInfo(storage: storage)
                         } else {
                             NavigationPathView(path: path)
                         }

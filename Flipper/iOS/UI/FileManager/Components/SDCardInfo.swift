@@ -5,10 +5,6 @@ extension FileManagerView {
     struct SDCardInfo: View {
         let storage: StorageSpace?
 
-        init(_ storage: StorageSpace?) {
-            self.storage = storage
-        }
-
         var body: some View {
             HStack(spacing: 32) {
                 VStack(alignment: .leading, spacing: 12) {
@@ -32,7 +28,7 @@ extension FileManagerView {
                     .frame(width: 84, height: 84)
                     .foregroundColor(.primary)
             }
-            .padding(8)
+            .padding(12)
             .background(Color.groupedBackground)
             .cornerRadius(12)
         }
@@ -96,4 +92,14 @@ fileprivate extension StorageSpace {
         guard total > 0 else { return 0 }
         return CGFloat(used) / CGFloat(total)
     }
+}
+
+#Preview {
+    VStack {
+        FileManagerView.SDCardInfo(storage: nil)
+
+        FileManagerView.SDCardInfo(storage: .init(free: 10, total: 40))
+    }
+    .padding(12)
+    .background(Color.background)
 }

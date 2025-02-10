@@ -5,6 +5,11 @@ public struct StorageSpace: Equatable {
     public let total: Int
 
     public var used: Int { total - free }
+
+    public init(free: Int, total: Int) {
+        self.free = free
+        self.total = total
+    }
 }
 
 public enum Element: Equatable {
