@@ -18,23 +18,22 @@ extension FileManagerView.FileManagerListing {
             case .list:
                 LazyVStack(spacing: 12) {
                     ForEach(elements) { element in
-                        ElementRow(
+                        ElementRowList(
                             element: element,
-                            type: displayType,
-                            onAction: { onSelect(element) }
+                            onSelect: { onSelect(element) },
+                            onDelete: { onDelete(element) },
+                            onTap: { onTap(element) }
                         )
-                        .onTapGesture { onTap(element) }
                     }
                 }
             case .grid:
                 LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(elements) { element in
-                        ElementRow(
+                        ElementRowGrid(
                             element: element,
-                            type: displayType,
-                            onAction: { onSelect(element) }
+                            onSelect: { onSelect(element) },
+                            onTap: { onTap(element) }
                         )
-                        .onTapGesture { onTap(element) }
                     }
                 }
             }
