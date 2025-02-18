@@ -47,6 +47,7 @@ extension FileManagerView.FileManagerListing {
             .background(Color.groupedBackground)
             .modifier(
                 SwipeToDeleteModifier(
+                    element: element,
                     offset: $offset,
                     onDelete: onDelete,
                     onTap: onTap
@@ -129,7 +130,16 @@ fileprivate extension FileManagerView.FileManagerListing {
 }
 
 fileprivate extension FileManagerView.FileManagerListing {
+    final class CurrentElementHolder: ObservableObject {
+        @MainActor static let shared = CurrentElementHolder()
+
+        @Published var element: ExtendedElement?
+    }
+
     struct SwipeToDeleteModifier: ViewModifier {
+        @ObservedObject private var currentHolder = CurrentElementHolder.shared
+
+        let element: ExtendedElement
         @Binding var offset: CGFloat
 
         let onDelete: () -> Void
@@ -184,6 +194,10 @@ fileprivate extension FileManagerView.FileManagerListing {
                             coordinateSpace: .local
                         )
                         .onChanged { value in
+                            if currentHolder.element != element {
+                                currentHolder.element = element
+                            }
+
                             let translation = value.translation.width
 
                             if value.isHorizontal {
@@ -219,6 +233,11 @@ fileprivate extension FileManagerView.FileManagerListing {
                             closeAction()
                         } else {
                             onTap()
+                        }
+                    }
+                    .onChange(of: currentHolder.element) { new in
+                        if new != element && offset != 0 {
+                            closeAction()
                         }
                     }
             }
