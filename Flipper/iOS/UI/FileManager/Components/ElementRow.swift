@@ -130,8 +130,6 @@ fileprivate extension FileManagerView.FileManagerListing {
 
 fileprivate extension FileManagerView.FileManagerListing {
     struct SwipeToDeleteModifier: ViewModifier {
-        @State private var offset: CGFloat = 0
-        @GestureState private var isDragging: Bool = false
         @Binding var offset: CGFloat
 
         let onDelete: () -> Void
@@ -141,7 +139,7 @@ fileprivate extension FileManagerView.FileManagerListing {
         private var iconPadding: Double { 16 }
 
         private var deleteThreshold: CGFloat { -(iconSize + iconPadding * 2) }
-        private var fullDeleteThreshold: CGFloat { -120 }
+        private var fullDeleteThreshold: CGFloat { -160 }
 
         private var delay: Double { 0.5 }
         private var animation: Animation { .easeOut(duration: delay) }
@@ -153,26 +151,17 @@ fileprivate extension FileManagerView.FileManagerListing {
         }
 
         func body(content: Content) -> some View {
-            ZStack {
-                Rectangle()
-                    .foregroundColor(.red.opacity(0.1))
-                    .cornerRadius(12)
-                    .overlay(
-                        Image("Delete")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(.red)
-                            .frame(width: iconSize, height: iconSize)
-                            .padding(16)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(animation) {
-                                    offset = 0
-                                }
-                                onDelete()
-                            },
-                        alignment: .trailing
-                    )
+            ZStack(alignment: .trailing) {
+                Image("Delete")
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundColor(.red)
+                    .frame(width: iconSize, height: iconSize)
+                    .padding(16)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        deleteAction()
+                    }
 
                 content
                     .clipShape(
@@ -183,43 +172,43 @@ fileprivate extension FileManagerView.FileManagerListing {
                             topTrailingRadius: radius
                         )
                     )
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.red.opacity(0.1))
+                            .offset(x: -offset)
+                    )
                     .offset(x: offset)
                     .simultaneousGesture(
                         DragGesture(
-                            minimumDistance: 50,
+                            minimumDistance: 10,
                             coordinateSpace: .local
                         )
-                        .updating($isDragging) { _, state, _ in
-                            state = true
-                        }
                         .onChanged { value in
                             let translation = value.translation.width
-                            if translation <= 0 {
-                                offset = translation
+
+                            if value.isHorizontal {
+                                if translation <= 0 {
+                                    withAnimation(.interactiveSpring()) {
+                                        offset = translation
+                                    }
+                                }
                             }
                         }
                         .onEnded { value in
                             let translation = value.translation.width
 
-                            if translation <= fullDeleteThreshold {
-                                withAnimation(animation) {
-                                    offset = -UIScreen.main.bounds.width
-                                }
-
-                                Task { @MainActor in
-                                    try await Task.sleep(seconds: delay)
-                                    onDelete()
-
+                            if value.isHorizontal {
+                                if translation <= fullDeleteThreshold {
+                                    deleteAction()
+                                } else if translation <= deleteThreshold {
                                     withAnimation(animation) {
-                                        offset = 0
+                                        offset = deleteThreshold
                                     }
-                                }
-                            } else if translation <= deleteThreshold {
-                                withAnimation(animation) {
-                                    offset = deleteThreshold
+                                } else {
+                                    closeAction()
                                 }
                             } else {
-                                withAnimation(animation) {
+                                withAnimation(.interactiveSpring()) {
                                     offset = 0
                                 }
                             }
@@ -227,14 +216,40 @@ fileprivate extension FileManagerView.FileManagerListing {
                     )
                     .onTapGesture {
                         if offset != 0 {
-                            withAnimation(animation) {
-                                offset = 0
-                            }
+                            closeAction()
                         } else {
                             onTap()
                         }
                     }
             }
         }
+
+        private func closeAction() {
+            withAnimation(animation) {
+                offset = 0
+            }
+        }
+
+        private func deleteAction() {
+            Task { @MainActor in
+                withAnimation(animation) {
+                    offset = -UIScreen.main.bounds.width
+                }
+                try await Task.sleep(seconds: delay)
+                onDelete()
+
+                withAnimation(animation) {
+                    offset = 0
+                }
+            }
+        }
+    }
+}
+
+fileprivate extension DragGesture.Value {
+    var isHorizontal: Bool {
+        let horizontalAmount = abs(translation.width)
+        let verticalAmount = abs(translation.height)
+        return horizontalAmount > verticalAmount
     }
 }
