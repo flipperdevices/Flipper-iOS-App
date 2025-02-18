@@ -26,9 +26,15 @@ struct ArchiveView: View {
         case importing(URL)
         case category(ArchiveItem.Kind)
         case categoryDeleted
+        case fileManager
     }
 
     var canPullToRefresh: Bool {
+        device.status == .connected ||
+        device.status == .synchronized
+    }
+
+    var isFileManagerAvailable: Bool {
         device.status == .connected ||
         device.status == .synchronized
     }
@@ -69,6 +75,13 @@ struct ArchiveView: View {
                             deletedCount: archive.deleted.count
                         )
                         .padding(14)
+
+                        NavigationLink(value: Destination.fileManager) {
+                            FileManagerSection()
+                                .padding(.horizontal, 14)
+                                .padding(.bottom, 14)
+                        }
+                        .disabled(!isFileManagerAvailable)
 
                         if !favoriteItems.isEmpty {
                             FavoritesSection(items: favoriteItems)
@@ -134,6 +147,7 @@ struct ArchiveView: View {
                 case .importing(let url): ImportView(url: url)
                 case .category(let kind): CategoryView(kind: kind)
                 case .categoryDeleted: CategoryDeletedView()
+                case .fileManager: FileManagerView()
                 }
             }
         }

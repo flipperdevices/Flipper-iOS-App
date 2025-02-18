@@ -25,7 +25,6 @@ struct OptionsView: View {
         case stressTest
         case speedTest
         case logs
-        case fileManager
         case reportBug
         case infrared
     }
@@ -55,9 +54,6 @@ struct OptionsView: View {
             }
 
             Section(header: Text("Remote")) {
-                NavigationLink(value: Destination.fileManager) {
-                    Text("File Manager")
-                }
                 Button("Reboot Flipper") {
                     device.reboot()
                 }
@@ -155,7 +151,6 @@ struct OptionsView: View {
             case .stressTest: StressTestView()
             case .speedTest: SpeedTestView()
             case .logs: LogsView()
-            case .fileManager: FileManagerView()
             case .reportBug: ReportBugView()
             case .infrared: InfraredDebugLayout()
             }

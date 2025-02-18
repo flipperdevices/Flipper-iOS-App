@@ -109,5 +109,7 @@ public extension UserDefaults {
         case appsSortOrder = "appsSortOrder"
 
         case todayWidgetUpdated = "todayWidgetUpdated"
+
+        case fileManagerSettings = "fileManagerSettings"
     }
 }

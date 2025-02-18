@@ -1,0 +1,313 @@
+import Core
+import UniformTypeIdentifiers
+import Peripheral
+
+import SwiftUI
+
+extension FileManagerView {
+    struct FileManagerListing: View {
+        @EnvironmentObject var fileManager: RemoteFileManager
+        @EnvironmentObject var device: Device
+
+        @Environment(\.path) var navigationPath
+        @Environment(\.dismiss) var dismiss
+
+        @State private var _elements: [ExtendedElement] = []
+        @State private var isLoading = true
+        @State private var error: String?
+
+        @State private var isForceDeletePresented = false
+        @State private var isFileImporterPresented = false
+        @State private var showOptions = false
+
+        @State private var selectedElement: ExtendedElement?
+        @State private var deletedElement: ExtendedElement?
+
+        // MARK: Create File/Directory
+        @FocusState var isNameFocused: Bool
+        @State private var newElement: FileManagerNewElement?
+
+        @AppStorage(.fileManagerSettings)
+        private var settings: FileManagerSettings = .init()
+
+        let path: Peripheral.Path
+
+        private var title: String {
+            path.isRoot ? "File Manager" : path.lastComponent ?? "/"
+        }
+
+        var elements: [ExtendedElement] {
+            settings.isHiddenFilesShow
+                ? _elements
+                : _elements.filter { !$0.name.hasPrefix(".") }
+        }
+
+        var storage: StorageSpace? {
+            device.storageInfo?.external
+        }
+
+        var body: some View {
+            Group {
+                if let error = error {
+                    Text(error)
+                } else if isLoading {
+                    ProgressView()
+                } else {
+                    FixedScrollView(showsIndicators: false) {
+                        Group {
+                            if path.isRoot {
+                                SDCardInfo(storage: storage)
+                            } else {
+                                NavigationPathView(path: path)
+                            }
+                        }
+                        .padding([.horizontal, .top], 14)
+
+                        if let newElement {
+                            TextField(
+                                newElement.namePlaceholder,
+                                text: Binding(
+                                    get: { self.newElement?.name ?? "" },
+                                    set: { self.newElement?.name = $0 }
+                                )
+                            )
+                            .textFieldStyle(.roundedBorder)
+                            .onSubmit { submitNewElement() }
+                            .focused($isNameFocused)
+                            .padding([.horizontal, .top], 14)
+                        }
+
+                        Group {
+                            if elements.isEmpty {
+                                EmptyFolder(onUpload: showUpload)
+                            } else {
+                                FileManagerElements(
+                                    elements: elements,
+                                    displayType: settings.displayType,
+                                    onTap: navigate,
+                                    onDelete: { deleteFile($0) },
+                                    onSelect: { selectedElement = $0 }
+                                )
+                            }
+                        }
+                        .padding(14)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.background)
+            .navigationBarBackground(Color.a1)
+            .navigationBarBackButtonHidden(true)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                LeadingToolbarItems {
+                    BackButton {
+                        dismiss()
+                    }
+                }
+
+                PrincipalToolbarItems(alignment: .leading) {
+                    Title(title)
+                }
+
+                TrailingToolbarItems {
+                    EllipsisButton {
+                        showOptions = true
+                    }
+                    .disabled(isLoading || error != nil)
+                }
+            }
+            .popup(isPresented: $showOptions) {
+                FileListingOptions(
+                    isPresented: $showOptions,
+                    settings: $settings,
+                    createFolder: { newElement(isDirectory: true) },
+                    createFile: { newElement(isDirectory: false) },
+                    upload: showUpload
+                )
+            }
+            .sheet(item: $selectedElement) {
+                SelectedElementSheet(
+                    element: $0,
+                    onExport: downloadFile,
+                    onDelete: { deleteFile($0) }
+                )
+            }
+            .alert(
+                "Directory is not empty",
+                isPresented: $isForceDeletePresented,
+                presenting: deletedElement
+            ) { deletedElement in
+                Button("Force Delete", role: .destructive) {
+                    deleteFile(deletedElement, force: true)
+                }
+            }
+            .fileImporter(
+                isPresented: $isFileImporterPresented,
+                allowedContentTypes: [UTType.item],
+                allowsMultipleSelection: true
+            ) { result in
+                switch result {
+                case .success(let urls):
+                    importFiles(urls)
+                case .failure(let error):
+                    self.error = String(describing: error)
+                }
+            }
+            .task { await load() }
+            .refreshable { await load() }
+        }
+
+        private func load() async {
+            isLoading = true
+            defer { isLoading = false }
+
+            do {
+                _elements = try await fileManager.list(at: path)
+            } catch {
+                self.error = String(describing: error)
+            }
+        }
+
+        private func navigate(_ extended: ExtendedElement) {
+            switch extended.type {
+            case .directory(let directory):
+                let nextPath = path.appending(directory.name)
+                navigationPath.append(Destination.listing(nextPath))
+            case .file(let file):
+                let nextPath = path.appending(file.name)
+                navigationPath.append(Destination.editor(nextPath))
+            }
+        }
+
+        private func importFiles(_ urls: [URL]) {
+            isLoading = true
+            defer { isLoading = false }
+
+            Task {
+                do {
+                    try await urls.forEach { url in
+                        try await fileManager.importFile(url: url, at: path)
+                    }
+                    await load()
+                } catch {
+                    self.error = String(describing: error)
+                }
+            }
+        }
+
+        private func downloadFile(_ extended: ExtendedElement) {
+            isLoading = true
+            defer { isLoading = false }
+
+            guard case let .file(file) = extended.type else { return }
+
+            Task {
+                do {
+                    let bytes = try await fileManager.readRaw(
+                        at: path.appending(file.name))
+                    let url = try FileManager.default.createTempFile(
+                        name: file.name,
+                        data: .init(bytes))
+                    share(url) {
+                        try? FileManager.default.removeItem(at: url)
+                        // Sheet close before present share activity
+                        selectedElement = nil
+                    }
+                } catch {
+                    self.error = String(describing: error)
+                }
+            }
+        }
+
+        private func deleteFile(
+            _ extended: ExtendedElement,
+            force: Bool = false
+        ) {
+            deletedElement = extended
+            isLoading = true
+            defer { isLoading = false }
+
+            Task {
+                defer { selectedElement = nil }
+                do {
+                    try await fileManager.delete(
+                        extended.type,
+                        at: path,
+                        force: force
+                    )
+                    await load()
+                } catch let error as RemoteFileManager.Error
+                            where error == .directoryIsNotEmpty && !force {
+                    self.isForceDeletePresented = true
+                } catch {
+                    self.error = String(describing: error)
+                }
+            }
+        }
+
+        private func showUpload() {
+            isFileImporterPresented = true
+        }
+
+        // MARK: Create File/Directory
+        func newElement(isDirectory: Bool) {
+            newElement = .init(name: "", isNewDirectory: isDirectory)
+            isNameFocused = true
+        }
+
+        func submitNewElement() {
+            guard let newElement = newElement else { return }
+            let name = newElement.name
+            let isNewDirectory = newElement.isNewDirectory
+
+            if !name.isEmpty {
+                let path = path.appending(name)
+                let isDirectory = isNewDirectory
+                Task {
+                    do {
+                        try await fileManager.create(
+                            path: path,
+                            isDirectory: isDirectory)
+                        await load()
+                    } catch {
+                        self.error = String(describing: error)
+                    }
+                }
+            }
+            self.newElement = nil
+        }
+    }
+}
+
+fileprivate extension Peripheral.Path {
+    var isRoot: Bool {
+        self == "/ext"
+    }
+}
+
+private struct FixedScrollView<Content: View>: View {
+    let showsIndicators: Bool
+    let content: () -> Content
+
+    init(
+        showsIndicators: Bool,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.showsIndicators = showsIndicators
+        self.content = content
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView(showsIndicators: showsIndicators) {
+                VStack(spacing: 0) {
+                    content()
+                    Spacer()
+                }
+                .frame(minHeight: geometry.size.height)
+            }
+            .frame(width: geometry.size.width)
+        }
+    }
+}
