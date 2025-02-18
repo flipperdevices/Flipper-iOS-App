@@ -26,6 +26,8 @@ extension FileManagerView.FileManagerListing {
     }
 
     struct ElementRowList: View {
+        @State private var offset: CGFloat = 0
+
         let element: ExtendedElement
 
         let onSelect: () -> Void
@@ -38,10 +40,18 @@ extension FileManagerView.FileManagerListing {
                 Title(for: element)
                 Spacer()
                 Action(onTap: onSelect)
+                    .opacity(offset == 0 ? 1 : 0)
+                    .animation(nil, value: offset)
             }
             .padding(12)
             .background(Color.groupedBackground)
-            .modifier(SwipeToDeleteModifier(onDelete: onDelete, onTap: onTap))
+            .modifier(
+                SwipeToDeleteModifier(
+                    offset: $offset,
+                    onDelete: onDelete,
+                    onTap: onTap
+                )
+            )
         }
     }
 }
@@ -122,6 +132,7 @@ fileprivate extension FileManagerView.FileManagerListing {
     struct SwipeToDeleteModifier: ViewModifier {
         @State private var offset: CGFloat = 0
         @GestureState private var isDragging: Bool = false
+        @Binding var offset: CGFloat
 
         let onDelete: () -> Void
         let onTap: () -> Void
