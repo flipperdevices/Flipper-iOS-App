@@ -28,6 +28,7 @@ struct OptionsView: View {
         case fileManager
         case reportBug
         case infrared
+        case overlayTest
     }
 
     var body: some View {
@@ -112,6 +113,9 @@ struct OptionsView: View {
                     .tint(.a1)
 
                     #if DEBUG
+                    NavigationLink(value: Destination.overlayTest) {
+                        Text("Overlay test")
+                    }
                     NavigationLink(value: Destination.infrared) {
                         Text("Infrared layouts")
                     }
@@ -158,6 +162,7 @@ struct OptionsView: View {
             case .fileManager: FileManagerView()
             case .reportBug: ReportBugView()
             case .infrared: InfraredDebugLayout()
+            case .overlayTest: OverlayTestView()
             }
         }
     }

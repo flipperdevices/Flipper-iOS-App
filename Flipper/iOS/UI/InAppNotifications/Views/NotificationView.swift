@@ -7,6 +7,8 @@ struct NotificationView<Content: View>: View {
     @State private var isPresentedAnimated: Bool = false
 
     @EnvironmentObject var controller: OverlayController
+    @Environment(\.updateOverlayInteraction)
+    private var updateInteraction
 
     var animationDuration: Double { 0.1 }
     var presentingDuration: Double { 5.0 }
@@ -14,8 +16,29 @@ struct NotificationView<Content: View>: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             content
+                // NOTE: collapses the Spacer inside Banner so the
+                // measured frame is the visible banner, not the
+                // whole screen
+                .fixedSize(horizontal: false, vertical: true)
+                .background(
+                    GeometryReader { proxy in
+                        Color.clear
+                            .onAppear {
+                                updateInteraction(
+                                    .regions([proxy.frame(in: .global)]))
+                            }
+                            .onChange(of: proxy.frame(in: .global)) { frame in
+                                updateInteraction(.regions([frame]))
+                            }
+                    }
+                )
                 .padding(.bottom, 50)
                 .opacity(isPresentedAnimated ? 1 : 0)
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity,
+                    alignment: .bottom
+                )
         }
         .onChange(of: isPresented) { newValue in
             guard !newValue else { return }
@@ -53,7 +76,10 @@ extension View {
         isPresented: Binding<Bool>,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
-        self.modifier(OverlayModifier(isPresented: isPresented) {
+        self.modifier(OverlayModifier(
+            isPresented: isPresented,
+            interaction: .regions([])
+        ) {
             NotificationView(
                 isPresented: isPresented,
                 content: content())
