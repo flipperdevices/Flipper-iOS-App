@@ -106,7 +106,7 @@ struct ArchiveView: View {
                         }
                     }
                 } else {
-                    PrincipalToolbarItems {
+                    PrincipalToolbarItems(expanding: true) {
                         HStack(spacing: 14) {
                             SearchField(
                                 placeholder: "Search by name and note",
