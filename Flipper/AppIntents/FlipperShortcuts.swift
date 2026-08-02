@@ -18,7 +18,8 @@ struct FlipperShortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: PlayAlert(),
             phrases: [
-                "Find Flipper"
+                "Find \(.applicationName)",
+                "Find my \(.applicationName)"
             ]
         )
     }
