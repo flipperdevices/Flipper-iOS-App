@@ -77,7 +77,7 @@ struct AppsView: View {
                         }
                     }
                 } else {
-                    PrincipalToolbarItems {
+                    PrincipalToolbarItems(expanding: true) {
                         HStack(spacing: 14) {
                             SearchField(
                                 placeholder: "App name, description",
