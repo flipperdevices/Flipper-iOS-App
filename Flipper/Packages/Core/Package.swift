@@ -42,12 +42,18 @@ let package = Package(
         .package(
             url: "https://github.com/apple/swift-log.git",
             from: "1.5.4"),
+        // Pinned to exact revisions (was branch: "dev") because upstream
+        // force-pushed dev, removing the previously resolved commits and
+        // breaking clean checkouts (e.g. Xcode Cloud). These revisions have
+        // byte-identical trees to the last known-good pins. Stream is a
+        // transitive dep of dcompression (branch: "dev") and can't be
+        // revision-overridden here, so it stays locked via Package.resolved.
         .package(
             url: "https://github.com/swiftstack/radix.git",
-            branch: "dev"),
+            revision: "dd87b82361f7ee9db806d94c8e6043229c5c9c7d"),
         .package(
             url: "https://github.com/swiftstack/dcompression.git",
-            branch: "dev")
+            revision: "abc4483b7999c6a63a8053a12e72c6a7f953e763")
     ],
     targets: [
         .target(
