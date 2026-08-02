@@ -1,0 +1,61 @@
+name: Pullfrog Review
+
+on:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  issues: write
+  actions: read
+  checks: read
+  statuses: write
+
+concurrency:
+  group: pullfrog-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.label.name == 'pullfrog-review'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove trigger label
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              name: 'pullfrog-review',
+            });
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Build prompt
+        id: build_prompt
+        run: |
+          {
+            echo "prompt<<PULLFROG_EOF"
+            echo "Review pull request #${{ github.event.pull_request.number }} in ${{ github.repository }}."
+            echo "Fetch the PR diff and description via the GitHub API, review the changes for bugs, logic errors, and design problems, and leave a PR review with inline comments on specific problem areas. Do not push any commits."
+            echo "PULLFROG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run pullfrog
+        uses: pullfrog/pullfrog@cff281d72c6a5e38af001e7b38d15cf4dedda768 # v0.1.43
+        with:
+          prompt: ${{ steps.build_prompt.outputs.prompt }}
+          model: ${{ vars.PULLFROG_MODEL }}
+          push: disabled
+          status_checks: enabled
+          timeout: 30m
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
