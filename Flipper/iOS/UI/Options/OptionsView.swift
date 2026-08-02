@@ -112,11 +112,10 @@ struct OptionsView: View {
                     }
                     .tint(.a1)
 
+                    #if DEBUG
                     NavigationLink(value: Destination.overlayTest) {
                         Text("Overlay test")
                     }
-
-                    #if DEBUG
                     NavigationLink(value: Destination.infrared) {
                         Text("Infrared layouts")
                     }
