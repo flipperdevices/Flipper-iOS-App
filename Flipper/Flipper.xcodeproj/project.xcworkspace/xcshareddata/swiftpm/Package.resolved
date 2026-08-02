@@ -14,8 +14,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftstack/dcompression.git",
       "state" : {
-        "branch" : "dev",
-        "revision" : "9bb4eda095d9e9d962bcf3618993614f417c95c4"
+        "revision" : "abc4483b7999c6a63a8053a12e72c6a7f953e763"
       }
     },
     {
@@ -77,8 +76,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftstack/radix.git",
       "state" : {
-        "branch" : "dev",
-        "revision" : "21246051060c7050e707eb9f4b6796d99e7a1c60"
+        "revision" : "dd87b82361f7ee9db806d94c8e6043229c5c9c7d"
       }
     },
     {
@@ -87,7 +85,7 @@
       "location" : "https://github.com/swiftstack/stream.git",
       "state" : {
         "branch" : "dev",
-        "revision" : "67deefcfc7af25a914677ce15b9c42981529419a"
+        "revision" : "e3e0a60f7a3c709ffe13c25483af4497584a6108"
       }
     },
     {
