@@ -8,6 +8,15 @@ struct InstalledAppsView: View {
         model.installed
     }
 
+    var groupedApplications: [(category: String, apps: [Application])] {
+        Dictionary(grouping: applications, by: \.category.name)
+            .sorted {
+                let order = $0.key.localizedCaseInsensitiveCompare($1.key)
+                return order == .orderedAscending
+            }
+            .map { (category: $0.key, apps: $0.value) }
+    }
+
     var isLoading: Bool {
         model.installedStatus == .loading
     }
@@ -75,11 +84,37 @@ struct InstalledAppsView: View {
                             }
                             .padding(.horizontal, 14)
 
-                            AppList(
-                                applications: applications,
-                                isInstalled: true,
-                                showPlaceholder: isLoading
-                            )
+                            if groupedApplications.isEmpty {
+                                AppList(
+                                    applications: [],
+                                    isInstalled: true,
+                                    showPlaceholder: isLoading
+                                )
+                            } else {
+                                ForEach(
+                                    groupedApplications,
+                                    id: \.category
+                                ) { section in
+                                    let isLastSection = section.category ==
+                                        groupedApplications.last?.category
+
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        Text(section.category)
+                                            .font(.system(
+                                                size: 14,
+                                                weight: .bold
+                                            ))
+                                            .padding(.horizontal, 14)
+
+                                        AppList(
+                                            applications: section.apps,
+                                            isInstalled: true,
+                                            showPlaceholder:
+                                                isLoading && isLastSection
+                                        )
+                                    }
+                                }
+                            }
                         }
                         .padding(.vertical, 14)
                         .opacity(noApps ? 0 : 1)
