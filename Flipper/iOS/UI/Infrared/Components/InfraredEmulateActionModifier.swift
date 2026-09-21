@@ -26,7 +26,7 @@ private struct EmulateActionModifier: ViewModifier {
         else { return }
 
         if flipper.hasSingleEmulateSupport {
-            emulate.startEmulate(item, .infraredSingle(index: index))
+            emulate.emulateSingle(item, index: index)
         } else {
             emulate.startEmulate(item, .infrared(index: index))
             emulate.stopEmulate()
