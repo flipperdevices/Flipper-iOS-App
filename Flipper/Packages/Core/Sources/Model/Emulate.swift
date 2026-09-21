@@ -23,7 +23,6 @@ public class Emulate: ObservableObject {
         case `default`
         case subGhz
         case infrared(index: Int)
-        case infraredSingle(index: Int)
     }
 
     var item: ArchiveItem?
@@ -83,6 +82,32 @@ public class Emulate: ObservableObject {
         }
     }
 
+    public func emulateSingle(_ item: ArchiveItem, index: Int) {
+        guard self.item == nil else {
+            return
+        }
+        self.item = item
+        emulateTask = Task {
+            do {
+                try await startApp(item.kind.application)
+                try await loadFile(item.path)
+                try await sendLoaded(index: index)
+                recordEmulate()
+                try await waitForMinimumDuration(for: item)
+            } catch {
+                logger.error("emulating key: \(error)")
+            }
+            do {
+                try await exitApp()
+                try await waitForAppClosedEvent()
+            } catch {
+                logger.error("app exit: \(error)")
+            }
+            resetEmulate()
+            emulateTask = nil
+        }
+    }
+
     public func stopEmulate() {
         guard !stop else { return }
         self.stop = true
@@ -137,6 +162,12 @@ public class Emulate: ObservableObject {
         }
     }
 
+    private func waitForAppClosedEvent() async throws {
+        while state == .closing {
+            try await Task.sleep(nanoseconds: 100 * 1_000_000)
+        }
+    }
+
     private func loadFile(_ path: Peripheral.Path) async throws {
         state = .loading
         try await application.loadFile(path)
@@ -155,8 +186,6 @@ public class Emulate: ObservableObject {
         case .infrared(let index):
             try await application.buttonPress(index: index)
             try await waitForMinimumDuration(for: item)
-        case .infraredSingle(let index):
-            try await application.buttonPressRelease(index: index)
         case .subGhz:
             do {
                 try await application.buttonPress()
@@ -179,6 +208,14 @@ public class Emulate: ObservableObject {
             delayMilliseconds -= stepMilliseconds
             try await Task.sleep(milliseconds: stepMilliseconds)
         }
+    }
+
+    private func sendLoaded(index: Int) async throws {
+        guard state == .loaded else {
+            return
+        }
+        try await application.buttonPressRelease(index: index)
+        state = .emulating
     }
 
     private func stopLoaded(_ item: ArchiveItem) async throws {
