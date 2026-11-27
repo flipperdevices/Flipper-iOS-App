@@ -16,14 +16,17 @@ struct FileManagerView: View {
         FileManagerListing(path: "/ext")
             .environmentObject(fileManager)
             .navigationDestination(for: Destination.self) { destination in
-                switch destination {
-                case .listing(let path):
-                    FileManagerListing(path: path)
-                        .environmentObject(fileManager)
-                case .editor(let path):
-                    FileManagerEditor(path: path)
-                        .environmentObject(fileManager)
+                Group {
+                    switch destination {
+                    case .listing(let path):
+                        FileManagerListing(path: path)
+                            .environmentObject(fileManager)
+                    case .editor(let path):
+                        FileManagerEditor(path: path)
+                            .environmentObject(fileManager)
+                    }
                 }
+                .adaptiveTabBar()
             }
     }
 }

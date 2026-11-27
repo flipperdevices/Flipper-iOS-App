@@ -173,6 +173,7 @@ struct AppView: View {
 
                         NavigationLink {
                             AppReportView(application: application)
+                                .adaptiveTabBar()
                         } label: {
                             HStack {
                                 Image("AppReport")

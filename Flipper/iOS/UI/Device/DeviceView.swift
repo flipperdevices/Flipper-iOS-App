@@ -208,11 +208,15 @@ struct DeviceView: View {
             .navigationBarHidden(true)
             .navigationBarBackground(Color.a1)
             .navigationDestination(for: Destination.self) { destination in
-                switch destination {
-                case .info: DeviceInfoView()
-                case .options: OptionsView()
+                Group {
+                    switch destination {
+                    case .info: DeviceInfoView()
+                    case .options: OptionsView()
+                    }
                 }
+                .adaptiveTabBar(.device)
             }
+            .adaptiveTabBar(.device)
         }
         .alert(isPresented: $showOutdatedFirmwareAlert) {
             OutdatedFirmwareAlert(isPresented: $showOutdatedFirmwareAlert)

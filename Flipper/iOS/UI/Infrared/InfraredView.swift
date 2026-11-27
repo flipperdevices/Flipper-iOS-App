@@ -15,16 +15,19 @@ struct InfraredView: View {
     var body: some View {
         InfraredChooseCategory()
             .navigationDestination(for: Destination.self) { destination in
-                switch destination {
-                case .chooseBrand(let category):
-                    InfraredChooseBrand(category: category)
-                case .chooseSignal(let brand, let signals):
-                    InfraredChooseSignal(brand: brand, signals: signals)
-                case .layout(let file):
-                   InfraredPagesLayout(file: file)
-                case .save(let file, let item):
-                    InfraredSaveRemote(file: file, item: item)
+                Group {
+                    switch destination {
+                    case .chooseBrand(let category):
+                        InfraredChooseBrand(category: category)
+                    case .chooseSignal(let brand, let signals):
+                        InfraredChooseSignal(brand: brand, signals: signals)
+                    case .layout(let file):
+                       InfraredPagesLayout(file: file)
+                    case .save(let file, let item):
+                        InfraredSaveRemote(file: file, item: item)
+                    }
                 }
+                .adaptiveTabBar()
             }
     }
 }

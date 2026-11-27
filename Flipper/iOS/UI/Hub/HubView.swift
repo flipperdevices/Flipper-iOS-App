@@ -37,10 +37,14 @@ struct HubView: View {
                 }
             }
             .navigationDestination(for: Destination.self) { destination in
-                switch destination {
-                case .infrared: InfraredView()
+                Group {
+                    switch destination {
+                    case .infrared: InfraredView()
+                    }
                 }
+                .adaptiveTabBar(.hub)
             }
+            .adaptiveTabBar(.hub)
         }
         .environment(\.path, $path)
         .onOpenURL { url in

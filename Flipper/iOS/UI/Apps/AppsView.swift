@@ -5,6 +5,7 @@ struct AppsView: View {
     @EnvironmentObject var model: Applications
     @EnvironmentObject var update: UpdateModel
     @EnvironmentObject var router: Router
+    @Environment(\.usesVerticalToolbar) private var usesVerticalToolbar
     @Environment(\.dismiss) var dismiss
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.notifications) private var notifications
@@ -38,18 +39,28 @@ struct AppsView: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            ZStack {
-                AllAppsView()
-                    .opacity(allSelected && predicate.isEmpty ? 1 : 0)
-
-                if model.enableProgressUpdates {
-                    InstalledAppsView()
-                        .opacity(installedSelected && predicate.isEmpty ? 1 : 0)
+            VStack(spacing: 0) {
+                if usesVerticalToolbar, showSearchView, selectedTab == .apps {
+                    AdaptiveSearchField(
+                        text: $predicate,
+                        prompt: "App name, description")
                 }
 
-                AppSearchView(predicate: $predicate)
-                    .environmentObject(model)
-                    .opacity(!predicate.isEmpty ? 1 : 0)
+                ZStack {
+                    AllAppsView()
+                        .opacity(allSelected && predicate.isEmpty ? 1 : 0)
+
+                    if model.enableProgressUpdates {
+                        InstalledAppsView()
+                            .opacity(
+                                installedSelected && predicate.isEmpty ? 1 : 0)
+                    }
+
+                    AppSearchView(predicate: $predicate)
+                        .environmentObject(model)
+                        .opacity(!predicate.isEmpty ? 1 : 0)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             // NOTE: Fixes Error views size
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -57,36 +68,53 @@ struct AppsView: View {
             .navigationBarBackground(Color.a1)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                if !showSearchView {
-                    LeadingToolbarItems {
-                        SearchButton { }
-                            .opacity(0)
+                if #available(iOS 27.1, *), usesVerticalToolbar {
+                    if !showSearchView {
+                        ToolbarItem(placement: .principal) {
+                            AppsSegments(selected: $selectedSegment)
+                                .fixedSize()
+                        }
+                        .axisBehavior(.horizontalOnly)
+                        .sharedBackgroundVisibility(.hidden)
                     }
 
-                    PrincipalToolbarItems {
-                        AppsSegments(selected: $selectedSegment)
-                    }
-
-                    TrailingToolbarItems {
-                        SearchButton {
-                            selectedSegment = .all
-                            showSearchView = true
-                        }
-                        .analyzingTapGesture {
-                            recordSearchOpened()
-                        }
+                    if selectedTab == .apps {
+                        AdaptiveSearchToolbarItem(
+                            text: $predicate,
+                            isPresented: $showSearchView)
                     }
                 } else {
-                    PrincipalToolbarItems(expanding: true) {
-                        HStack(spacing: 14) {
-                            SearchField(
-                                placeholder: "App name, description",
-                                predicate: $predicate
-                            )
+                    if !showSearchView {
+                        LeadingToolbarItems {
+                            SearchButton { }
+                                .opacity(0)
+                        }
 
-                            CancelSearchButton {
-                                predicate = ""
-                                showSearchView = false
+                        PrincipalToolbarItems {
+                            AppsSegments(selected: $selectedSegment)
+                        }
+
+                        TrailingToolbarItems {
+                            SearchButton {
+                                selectedSegment = .all
+                                showSearchView = true
+                            }
+                            .analyzingTapGesture {
+                                recordSearchOpened()
+                            }
+                        }
+                    } else {
+                        PrincipalToolbarItems(expanding: true) {
+                            HStack(spacing: 14) {
+                                SearchField(
+                                    placeholder: "App name, description",
+                                    predicate: $predicate
+                                )
+
+                                CancelSearchButton {
+                                    predicate = ""
+                                    showSearchView = false
+                                }
                             }
                         }
                     }
@@ -106,13 +134,17 @@ struct AppsView: View {
                 }
             }
             .navigationDestination(for: Destination.self) { destination in
-                switch destination {
-                case .category(let category):
-                    AppsCategoryView(category: category)
-                case .app(let alias):
-                    AppView(alias: alias)
+                Group {
+                    switch destination {
+                    case .category(let category):
+                        AppsCategoryView(category: category)
+                    case .app(let alias):
+                        AppView(alias: alias)
+                    }
                 }
+                .adaptiveTabBar(.apps)
             }
+            .adaptiveTabBar(.apps)
             .onChange(of: update.state) { newValue in
                 guard newValue == .update(.result(.succeeded)) else { return }
                 showAppsUpdate = true
@@ -136,6 +168,12 @@ struct AppsView: View {
                 case .background: break
                 @unknown default: break
                 }
+            }
+        }
+        .onChange(of: showSearchView) { isPresented in
+            if usesVerticalToolbar, isPresented {
+                selectedSegment = .all
+                recordSearchOpened()
             }
         }
     }
