@@ -154,16 +154,19 @@ struct OptionsView: View {
             RestartTheAppAlert(isPresented: $showRestartTheApp)
         }
         .navigationDestination(for: Destination.self) { destination in
-            switch destination {
-            case .ping: PingView()
-            case .stressTest: StressTestView()
-            case .speedTest: SpeedTestView()
-            case .logs: LogsView()
-            case .fileManager: FileManagerView()
-            case .reportBug: ReportBugView()
-            case .infrared: InfraredDebugLayout()
-            case .overlayTest: OverlayTestView()
+            Group {
+                switch destination {
+                case .ping: PingView()
+                case .stressTest: StressTestView()
+                case .speedTest: SpeedTestView()
+                case .logs: LogsView()
+                case .fileManager: FileManagerView()
+                case .reportBug: ReportBugView()
+                case .infrared: InfraredDebugLayout()
+                case .overlayTest: OverlayTestView()
+                }
             }
+            .adaptiveTabBar(.device)
         }
     }
 }

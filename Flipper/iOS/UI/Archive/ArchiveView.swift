@@ -9,6 +9,7 @@ struct ArchiveView: View {
     @EnvironmentObject var archive: ArchiveModel
     @EnvironmentObject var synchronization: Synchronization
 
+    @Environment(\.usesVerticalToolbar) private var usesVerticalToolbar
     @Environment(\.notifications) private var notifications
 
     @AppStorage(.selectedTab) var selectedTab: TabView.Tab = .device
@@ -58,6 +59,13 @@ struct ArchiveView: View {
     var body: some View {
         NavigationStack(path: $path) {
             VStack {
+                if usesVerticalToolbar, showSearchView,
+                    selectedTab == .archive {
+                    AdaptiveSearchField(
+                        text: $predicate,
+                        prompt: "Search by name and note")
+                }
+
                 if device.status == .synchronizing {
                     SyncProgress(synchronization.progress)
                 } else if !predicate.isEmpty {
@@ -94,28 +102,43 @@ struct ArchiveView: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle("")
             .toolbar {
-                if !showSearchView {
-                    LeadingToolbarItems {
+                if #available(iOS 27.1, *), usesVerticalToolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
                         Title("Archive")
-                            .padding(.leading, 8)
+                            .fixedSize()
                     }
+                    .axisBehavior(.horizontalOnly)
+                    .sharedBackgroundVisibility(.hidden)
 
-                    TrailingToolbarItems {
-                        SearchButton {
-                            showSearchView = true
-                        }
+                    if selectedTab == .archive {
+                        AdaptiveSearchToolbarItem(
+                            text: $predicate,
+                            isPresented: $showSearchView)
                     }
                 } else {
-                    PrincipalToolbarItems(expanding: true) {
-                        HStack(spacing: 14) {
-                            SearchField(
-                                placeholder: "Search by name and note",
-                                predicate: $predicate
-                            )
+                    if !showSearchView {
+                        LeadingToolbarItems {
+                            Title("Archive")
+                                .padding(.leading, 8)
+                        }
 
-                            CancelSearchButton {
-                                predicate = ""
-                                showSearchView = false
+                        TrailingToolbarItems {
+                            SearchButton {
+                                showSearchView = true
+                            }
+                        }
+                    } else {
+                        PrincipalToolbarItems(expanding: true) {
+                            HStack(spacing: 14) {
+                                SearchField(
+                                    placeholder: "Search by name and note",
+                                    predicate: $predicate
+                                )
+
+                                CancelSearchButton {
+                                    predicate = ""
+                                    showSearchView = false
+                                }
                             }
                         }
                     }
@@ -128,14 +151,18 @@ struct ArchiveView: View {
                 ImportedBanner(itemName: importedName)
             }
             .navigationDestination(for: Destination.self) { destination in
-                switch destination {
-                case .info(let item): InfoView(item: item)
-                case .infoDeleted(let item): DeletedInfoView(item: item)
-                case .importing(let url): ImportView(url: url)
-                case .category(let kind): CategoryView(kind: kind)
-                case .categoryDeleted: CategoryDeletedView()
+                Group {
+                    switch destination {
+                    case .info(let item): InfoView(item: item)
+                    case .infoDeleted(let item): DeletedInfoView(item: item)
+                    case .importing(let url): ImportView(url: url)
+                    case .category(let kind): CategoryView(kind: kind)
+                    case .categoryDeleted: CategoryDeletedView()
+                    }
                 }
+                .adaptiveTabBar(.archive)
             }
+            .adaptiveTabBar(.archive)
         }
         .tint(.primary)
         .environment(\.path, $path)

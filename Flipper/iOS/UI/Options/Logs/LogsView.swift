@@ -22,6 +22,7 @@ struct LogsView: View {
                 NavigationLink(name) {
                     LogView(name: name)
                         .environmentObject(logs)
+                        .adaptiveTabBar(.device)
                 }
             }
             .onDelete { indexSet in

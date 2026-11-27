@@ -13,25 +13,28 @@ struct MainView: View {
     @AppStorage(.showInfraredRemoteTab) var showInfraredRemoteTab = true
 
     var body: some View {
-        VStack(spacing: 0) {
-            ZStack {
-                DeviceView()
-                    .opacity(selectedTab == .device ? 1 : 0)
-                ArchiveView()
-                    .opacity(selectedTab == .archive ? 1 : 0)
-                AppsView()
-                    .opacity(selectedTab == .apps ? 1 : 0)
-                HubView()
-                    .opacity(selectedTab == .hub ? 1 : 0)
-            }
-
-            if !tabViewController.isHidden {
-                TabView(selected: $selectedTab) {
-                    tabViewController.popToRootView(for: selectedTab)
+        AdaptiveToolbarLayout { usesVerticalToolbar in
+            VStack(spacing: 0) {
+                ZStack {
+                    DeviceView()
+                        .opacity(selectedTab == .device ? 1 : 0)
+                    ArchiveView()
+                        .opacity(selectedTab == .archive ? 1 : 0)
+                    AppsView()
+                        .opacity(selectedTab == .apps ? 1 : 0)
+                    HubView()
+                        .opacity(selectedTab == .hub ? 1 : 0)
                 }
-                .transition(.move(edge: .bottom))
+
+                if !usesVerticalToolbar, !tabViewController.isHidden {
+                    TabView(selected: $selectedTab) {
+                        tabViewController.popToRootView(for: selectedTab)
+                    }
+                    .transition(.move(edge: .bottom))
+                }
             }
         }
+        .background(Color.background.ignoresSafeArea())
         .ignoresSafeArea(.keyboard)
         .environmentObject(tabViewController)
         .onOpenURL { url in
